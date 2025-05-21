@@ -467,7 +467,7 @@ export function useGroupPosts(groupId: number | undefined) {
   });
 }
 
-// Marketplace hooks
+// Marketplace types and data fetching functions
 export function fetchMarketplaceItems() {
   return simulateApiCall(marketplaceItems);
 }
@@ -498,41 +498,55 @@ export function fetchMarketplaceItemById(id: number) {
 export function useMarketplaceItems() {
   return useQuery({
     queryKey: ['marketplaceItems'],
-    queryFn: fetchMarketplaceItems
+    queryFn: () => fetchMarketplaceItems()
   });
 }
 
-export function useMarketplaceItemsWithFilters(filters?: { 
-  search?: string; 
-  types?: ('product' | 'service' | 'equipment' | 'event')[]; 
+// Unified implementation of filtered marketplace items
+export function useMarketplaceItemsWithFilters(options?: {
+  search?: string;
+  type?: string;
+  condition?: string;
+  priceRange?: string;
+  tags?: string[];
+  sellerId?: number;
+  types?: ('product' | 'service' | 'equipment' | 'event')[];
   categories?: string[];
 }) {
   return useQuery({
-    queryKey: ['marketplaceItems', 'filters', filters],
+    queryKey: ['marketplaceItems', 'filtered', options],
     queryFn: async () => {
-      let filteredItems = [...marketplaceItems];
+      const items = await fetchMarketplaceItems();
       
-      if (filters?.search) {
-        const searchTerm = filters.search.toLowerCase();
-        filteredItems = filteredItems.filter(item => 
-          item.title.toLowerCase().includes(searchTerm) || 
-          item.description.toLowerCase().includes(searchTerm)
+      // Filter items based on options
+      let filtered = [...items];
+      
+      if (options?.search) {
+        const searchLower = options.search.toLowerCase();
+        filtered = filtered.filter(item => 
+          item.title.toLowerCase().includes(searchLower) || 
+          item.description.toLowerCase().includes(searchLower)
         );
       }
       
-      if (filters?.types && filters.types.length > 0) {
-        filteredItems = filteredItems.filter(item => 
-          filters.types?.includes(item.type)
-        );
+      if (options?.type && options.type !== 'all') {
+        filtered = filtered.filter(item => item.type === options.type);
       }
       
-      if (filters?.categories && filters.categories.length > 0) {
-        filteredItems = filteredItems.filter(item => 
-          filters.categories?.includes(item.category)
-        );
+      if (options?.types && options.types.length > 0) {
+        filtered = filtered.filter(item => options.types?.includes(item.type));
       }
       
-      return simulateApiCall(filteredItems);
+      if (options?.categories && options.categories.length > 0) {
+        filtered = filtered.filter(item => options.categories?.includes(item.category));
+      }
+      
+      if (options?.sellerId) {
+        filtered = filtered.filter(item => item.seller.id === options.sellerId);
+      }
+      
+      // Map to the Listing structure expected by components
+      return filtered.map(mapMarketplaceItemToListing);
     }
   });
 }
