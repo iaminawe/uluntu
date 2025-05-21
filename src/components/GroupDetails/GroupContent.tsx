@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Group } from './types';
 
@@ -16,7 +16,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Posts</h2>
             <Link
-              href={`/groups/${group.id}/posts`}
+              to={`/groups/${group.id}/posts`}
               className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
             >
               View All
@@ -49,7 +49,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                   </div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2">
                     <Link
-                      href={`/groups/${group.id}/posts/${post.id}`}
+                      to={`/groups/${group.id}/posts/${post.id}`}
                       className="hover:text-orange-500 transition-colors"
                     >
                       {post.title}
@@ -69,7 +69,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Upcoming Events</h2>
             <Link
-              href={`/groups/${group.id}/events`}
+              to={`/groups/${group.id}/events`}
               className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
             >
               View All
@@ -91,7 +91,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                   <div className="mb-2">
                     <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2">
                       <Link
-                        href={`/events/${event.id}`}
+                        to={`/events/${event.id}`}
                         className="hover:text-orange-500 transition-colors"
                       >
                         {event.title}
@@ -123,7 +123,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">New Members</h2>
             <Link
-              href={`/groups/${group.id}/members`}
+              to={`/groups/${group.id}/members`}
               className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
             >
               View All
@@ -141,7 +141,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                 <div>
                   <h3 className="font-medium text-slate-900 dark:text-white">
                     <Link
-                      href={`/directory/${member.id}`}
+                      to={`/directory/${member.id}`}
                       className="hover:text-orange-500 transition-colors"
                     >
                       {member.name}
@@ -161,7 +161,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Resources</h2>
             <Link
-              href={`/groups/${group.id}/resources`}
+              to={`/groups/${group.id}/resources`}
               className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
             >
               View All

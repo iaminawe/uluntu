@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { addMonths } from 'date-fns';
-import { members, companies, events, groups, EntityStatus } from '../data/mock/mockData';
+import { members, companies, events, groups, marketplaceItems, EntityStatus, MarketplaceItem } from '../data/mock/mockData';
 
 // Import or define newsArticles data
 const newsArticles = [
@@ -464,5 +464,107 @@ export function useGroupPosts(groupId: number | undefined) {
       return simulateApiCall(posts);
     },
     enabled: !!groupId
+  });
+}
+
+// Marketplace hooks
+export function fetchMarketplaceItems() {
+  return simulateApiCall(marketplaceItems);
+}
+
+// Mapper function to convert MarketplaceItem to the expected Listing structure
+function mapMarketplaceItemToListing(item: MarketplaceItem) {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    type: item.type as 'product' | 'service' | 'equipment',
+    price: item.price || 0, // Default to 0 if price is undefined
+    images: item.image ? [item.image] : [], // Convert single image to array
+    createdAt: item.datePosted,
+    seller: item.seller,
+    location: 'Kootenay Region, BC', // Default location
+    tags: ['technology', 'services'], // Default tags
+    condition: 'good' as 'new' | 'like-new' | 'good' | 'fair' | 'poor', // Default condition
+  };
+}
+
+export function fetchMarketplaceItemById(id: number) {
+  const item = marketplaceItems.find((item: MarketplaceItem) => item.id === id);
+  if (!item) throw new Error('Marketplace item not found');
+  return simulateApiCall(mapMarketplaceItemToListing(item));
+}
+
+export function useMarketplaceItems() {
+  return useQuery({
+    queryKey: ['marketplaceItems'],
+    queryFn: fetchMarketplaceItems
+  });
+}
+
+export function useMarketplaceItemsWithFilters(filters?: { 
+  search?: string; 
+  types?: ('product' | 'service' | 'equipment' | 'event')[]; 
+  categories?: string[];
+}) {
+  return useQuery({
+    queryKey: ['marketplaceItems', 'filters', filters],
+    queryFn: async () => {
+      let filteredItems = [...marketplaceItems];
+      
+      if (filters?.search) {
+        const searchTerm = filters.search.toLowerCase();
+        filteredItems = filteredItems.filter(item => 
+          item.title.toLowerCase().includes(searchTerm) || 
+          item.description.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (filters?.types && filters.types.length > 0) {
+        filteredItems = filteredItems.filter(item => 
+          filters.types?.includes(item.type)
+        );
+      }
+      
+      if (filters?.categories && filters.categories.length > 0) {
+        filteredItems = filteredItems.filter(item => 
+          filters.categories?.includes(item.category)
+        );
+      }
+      
+      return simulateApiCall(filteredItems);
+    }
+  });
+}
+
+export function useMarketplaceItem(id: number | undefined) {
+  return useQuery({
+    queryKey: ['marketplaceItems', id],
+    queryFn: () => id ? fetchMarketplaceItemById(id) : Promise.resolve(null),
+    enabled: !!id
+  });
+}
+
+export function useRelatedMarketplaceItems(itemId: number | undefined) {
+  return useQuery({
+    queryKey: ['marketplaceItems', 'related', itemId],
+    queryFn: async () => {
+      if (!itemId) return [];
+      
+      const currentItem = marketplaceItems.find((i: MarketplaceItem) => i.id === itemId);
+      if (!currentItem) return [];
+      
+      // Find items of the same type or category, excluding the current item
+      const relatedItems = marketplaceItems
+        .filter((item: MarketplaceItem) => 
+          item.id !== itemId && 
+          (item.type === currentItem.type || item.category === currentItem.category)
+        )
+        .slice(0, 3) // Limit to 3 related items
+        .map(mapMarketplaceItemToListing); // Map each item to the correct structure
+      
+      return simulateApiCall(relatedItems);
+    },
+    enabled: !!itemId
   });
 }

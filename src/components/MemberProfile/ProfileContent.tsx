@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Package } from 'lucide-react';
 import { Member } from './types';
 import { getTypeIcon } from './utils';
@@ -20,7 +20,7 @@ const ProfileContent = ({ member }: ProfileContentProps) => {
             <div key={group.id} className="flex justify-between items-center">
               <div>
                 <Link
-                  href={`/groups/${group.id}`}
+                  to={`/groups/${group.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {group.name}
@@ -44,7 +44,7 @@ const ProfileContent = ({ member }: ProfileContentProps) => {
             <div key={event.id} className="flex justify-between items-center">
               <div>
                 <Link
-                  href={`/events/${event.id}`}
+                  to={`/events/${event.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {event.title}
@@ -68,7 +68,7 @@ const ProfileContent = ({ member }: ProfileContentProps) => {
             <div key={resource.id} className="flex justify-between items-center">
               <div>
                 <Link
-                  href={`/resources/${resource.id}`}
+                  to={`/resources/${resource.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {resource.title}
@@ -91,7 +91,7 @@ const ProfileContent = ({ member }: ProfileContentProps) => {
           {member.marketplaceListings.map(listing => (
             <Link
               key={listing.id}
-              href={`/marketplace/${listing.id}`}
+              to={`/marketplace/${listing.id}`}
               className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
             >
               <div className="h-48">
@@ -130,7 +130,7 @@ const ProfileContent = ({ member }: ProfileContentProps) => {
             <div key={post.id} className="flex justify-between items-center">
               <div>
                 <Link
-                  href={`/groups/${post.group.id}/posts/${post.id}`}
+                  to={`/groups/${post.group.id}/posts/${post.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {post.title}

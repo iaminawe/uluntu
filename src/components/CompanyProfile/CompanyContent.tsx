@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Briefcase } from 'lucide-react';
 import { Company } from './types';
 
@@ -24,7 +24,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
               />
               <div>
                 <Link
-                  href={`/directory/${member.id}`}
+                  to={`/directory/${member.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {member.name}
@@ -47,7 +47,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.events.map(event => (
             <div key={event.id}>
               <Link
-                href={`/events/${event.id}`}
+                to={`/events/${event.id}`}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {event.title}
@@ -69,7 +69,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.resources.map(resource => (
             <div key={resource.id}>
               <Link
-                href={`/resources/${resource.id}`}
+                to={`/resources/${resource.id}`}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {resource.title}
@@ -91,7 +91,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.opportunities.map(opportunity => (
             <div key={opportunity.id}>
               <Link
-                href={`/opportunities/${opportunity.id}`}
+                to={`/opportunities/${opportunity.id}`}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {opportunity.title}
@@ -113,7 +113,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.posts.map(post => (
             <div key={post.id}>
               <Link
-                href={`/posts/${post.id}`}
+                to={`/posts/${post.id}`}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {post.title}

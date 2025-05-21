@@ -2,7 +2,7 @@ import React from 'react';
 import { FooterProps } from './types';
 import FooterColumn from './FooterColumn';
 import SocialLinks from './SocialLinks';
-import { GitHub, Linkedin, Twitter } from 'lucide-react';
+import { Github, Linkedin, Twitter } from 'lucide-react';
 
 const Footer: React.FC<FooterProps> = ({
   columns,
@@ -41,7 +41,7 @@ const Footer: React.FC<FooterProps> = ({
     {
       platform: 'GitHub',
       href: 'https://github.com',
-      icon: <GitHub className="h-5 w-5" />
+      icon: <Github className="h-5 w-5" />
     },
     {
       platform: 'LinkedIn',
