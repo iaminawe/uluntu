@@ -1,0 +1,174 @@
+import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useGroup } from '../../hooks/useQueries';
+import FormHeader from './FormHeader';
+import GroupInfo from './GroupInfo';
+import VisibilitySelect from './VisibilitySelect';
+import ImageUpload from './ImageUpload';
+import FormActions from './FormActions';
+import LoadingState from './LoadingState';
+import { FormData } from './types';
+
+const initialFormData: FormData = {
+  name: '',
+  description: '',
+  longDescription: '',
+  heroImage: '',
+  coverImage: '',
+  visibility: 'open'
+};
+
+export default function GroupEditPage() {
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+  const groupId = id ? parseInt(id) : undefined;
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  
+  const { 
+    data: group, 
+    isLoading: groupLoading
+  } = useGroup(groupId);
+  
+  // Populate form with group data when in edit mode
+  useEffect(() => {
+    if (isEditMode && group) {
+      setFormData({
+        name: group.name,
+        description: group.description,
+        longDescription: group.longDescription || '',
+        heroImage: group.heroImage || '',
+        coverImage: group.coverImage || '',
+        visibility: group.visibility
+      });
+    }
+  }, [isEditMode, group]);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when field is edited
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+  
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Group name is required';
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Short description is required';
+    }
+    
+    if (!formData.heroImage.trim()) {
+      newErrors.heroImage = 'Hero image is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setSubmitSuccess(true);
+      
+      // Navigate back after success
+      setTimeout(() => {
+        navigate(isEditMode ? `/groups/${id}` : '/groups');
+      }, 1500);
+    } catch (error) {
+      console.error('Error submitting group:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  if (groupLoading && isEditMode) {
+    return <LoadingState />;
+  }
+  
+  return (
+    <>
+      <Helmet>
+        <title>
+          {isEditMode ? `Edit Group: ${group?.name || 'Loading...'}` : 'Create New Group'} - Kootenay Tech Community
+        </title>
+        <meta 
+          name="description" 
+          content={`${isEditMode ? 'Edit' : 'Create'} a group for the Kootenay Tech Community.`} 
+        />
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <FormHeader 
+            isEditMode={isEditMode} 
+            groupName={group?.name || ''} 
+          />
+          
+          {submitSuccess ? (
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
+              <div className="flex">
+                <div>
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    {isEditMode 
+                      ? 'Group updated successfully!' 
+                      : 'Group created successfully!'
+                    } Redirecting...
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 shadow-md rounded-lg p-6 space-y-6">
+              <GroupInfo 
+                formData={formData}
+                handleChange={handleChange}
+                errors={errors}
+              />
+              
+              <VisibilitySelect 
+                formData={formData}
+                handleChange={handleChange}
+              />
+              
+              <ImageUpload 
+                formData={formData}
+                handleChange={handleChange}
+                errors={errors}
+              />
+              
+              <FormActions 
+                isEditMode={isEditMode}
+                isSubmitting={isSubmitting}
+                navigate={navigate}
+                id={id}
+              />
+            </form>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}

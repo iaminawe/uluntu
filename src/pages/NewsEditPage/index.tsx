@@ -1,0 +1,197 @@
+import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useNewsArticle } from '../../hooks/useQueries';
+import FormHeader from './FormHeader';
+import TagsInput from './TagsInput';
+import FormInputs from './FormInputs';
+import FormActions from './FormActions';
+import DeleteConfirmModal from './DeleteConfirmModal';
+import LoadingState from './LoadingState';
+import { FormData } from './types';
+import { EntityStatus } from '../../data/mock/mockData';
+
+const initialFormData: FormData = {
+  title: '',
+  excerpt: '',
+  content: '',
+  image: '',
+  tags: [],
+  authorId: 1, // Default author ID
+  status: 'draft' as EntityStatus, // Default status
+  featured: false // Default not featured
+};
+
+export default function NewsEditPage() {
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+  const articleId = id ? parseInt(id) : undefined;
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [newTag, setNewTag] = useState('');
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  const { 
+    data: article, 
+    isLoading: articleLoading
+  } = useNewsArticle(articleId);
+  
+  // Populate form with article data when in edit mode
+  useEffect(() => {
+    if (isEditMode && article) {
+      setFormData({
+        title: article.title,
+        excerpt: article.excerpt,
+        content: article.content,
+        image: article.image || '',
+        tags: article.tags || [],
+        authorId: article.author.id || 1,
+        status: article.status || 'draft' as EntityStatus,
+        featured: article.featured || false
+      });
+    }
+  }, [isEditMode, article]);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when field is edited
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+  
+  const handleAddTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+  
+  const handleRemoveTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate form
+    const newErrors: Partial<FormData> = {};
+    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.excerpt.trim()) newErrors.excerpt = 'Excerpt is required';
+    if (!formData.content.trim()) newErrors.content = 'Content is required';
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitSuccess(true);
+      
+      // Navigate after successful submission
+      setTimeout(() => {
+        navigate(isEditMode ? `/news/${id}` : '/news');
+      }, 1500);
+    }, 1500);
+  };
+  
+  const handleDelete = () => {
+    setIsSubmitting(true);
+    
+    // Simulate API call to delete the article
+    setTimeout(() => {
+      setIsSubmitting(false);
+      navigate('/news');
+    }, 1000);
+  };
+  
+  if (articleLoading && isEditMode) {
+    return <LoadingState />;
+  }
+  
+  return (
+    <>
+      <Helmet>
+        <title>
+          {isEditMode 
+            ? `Edit Article: ${article?.title || 'Loading...'}`
+            : 'Create New Article'
+          } - Kootenay Tech Community
+        </title>
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <FormHeader 
+            isEditMode={isEditMode} 
+            title={article?.title || ''} 
+          />
+          
+          {submitSuccess ? (
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
+              <div className="flex">
+                <div>
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    {isEditMode 
+                      ? 'Article updated successfully!' 
+                      : 'Article created successfully!'
+                    } Redirecting...
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 shadow-md rounded-lg p-6">
+              <FormInputs 
+                formData={formData}
+                handleChange={handleChange}
+                setFormData={setFormData}
+                errors={errors}
+              />
+              
+              <TagsInput 
+                tags={formData.tags}
+                newTag={newTag}
+                setNewTag={setNewTag}
+                handleAddTag={handleAddTag}
+                handleRemoveTag={handleRemoveTag}
+                errors={errors}
+              />
+              
+              <FormActions 
+                isEditMode={isEditMode}
+                formData={formData}
+                isSubmitting={isSubmitting}
+                navigate={navigate}
+                id={id}
+                setShowDeleteConfirm={setShowDeleteConfirm}
+              />
+            </form>
+          )}
+        </div>
+      </div>
+      
+      <DeleteConfirmModal
+        showDeleteConfirm={showDeleteConfirm}
+        setShowDeleteConfirm={setShowDeleteConfirm}
+        handleDelete={handleDelete}
+      />
+    </>
+  );
+}
