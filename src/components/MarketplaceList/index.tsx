@@ -6,13 +6,13 @@ import MarketplaceFilters from './MarketplaceFilters';
 import { 
   Listing, 
   MarketplaceListProps, 
-  FilterOptions, 
-  SAMPLE_LISTINGS 
+  FilterOptions 
 } from './types';
 import { 
   filterListings, 
   sortListingsByDate 
 } from './utils';
+import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
 
 const MarketplaceList = ({ 
   initialType = 'all', 
@@ -39,25 +39,25 @@ const MarketplaceList = ({
   // Filtered listings based on current filters
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   
-  // Fetch listings data (simulated)
+  // Fetch listings data using Tanstack Query
+  const { data, isLoading, error: queryError } = useMarketplaceItemsWithFilters({
+    type: filters.type !== 'all' ? filters.type : undefined,
+    search: filters.search || undefined,
+    sellerId: sellerId
+  });
+  
+  // Update local state based on query results
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        // In a real app, this would be an API call
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Set listings from sample data
-        setListings(SAMPLE_LISTINGS);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load marketplace listings. Please try again later.');
-        setLoading(false);
-      }
-    };
-    
-    fetchListings();
-  }, []);
+    if (isLoading) {
+      setLoading(true);
+    } else if (queryError) {
+      setError('Failed to load marketplace listings. Please try again later.');
+      setLoading(false);
+    } else if (data) {
+      setListings(data);
+      setLoading(false);
+    }
+  }, [data, isLoading, queryError]);
   
   // Apply filters when listings or filters change
   useEffect(() => {
