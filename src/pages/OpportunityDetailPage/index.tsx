@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
 import OpportunityHero from './OpportunityHero';
 import OpportunityInfo from './OpportunityInfo';
@@ -83,11 +85,10 @@ export default function OpportunityDetailPage() {
         <meta name="description" content={opportunity.description.substring(0, 160)} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+      <ContentContainer>
           <PageHeader id={id || ''} />
           
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+          <Card className="overflow-hidden">
             <OpportunityHero opportunity={opportunity} />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -102,9 +103,8 @@ export default function OpportunityDetailPage() {
                 handleApply={handleApply}
               />
             </div>
-          </div>
-        </div>
-      </div>
+          </Card>
+      </ContentContainer>
     </>
   );
 }

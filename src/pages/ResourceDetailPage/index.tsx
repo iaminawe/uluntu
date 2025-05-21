@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { FileText, Video, Image, Link as LinkIcon, Presentation } from 'lucide-react';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
 import ResourceInfo from './ResourceInfo';
 import ResourceSidebar from './ResourceSidebar';
@@ -95,36 +97,34 @@ export default function ResourceDetailPage() {
         <meta name="description" content={resource.description.substring(0, 160)} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <PageHeader id={id || ''} />
-          
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
-            <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content */}
-                <div className="lg:col-span-2">
-                  <ResourceInfo 
-                    resource={resource} 
-                    getTypeIcon={getTypeIcon} 
-                  />
-                  
-                  <RelatedResources 
-                    relatedResources={resource.relatedResources || []} 
-                    getTypeIcon={getTypeIcon} 
-                  />
-                </div>
-                
-                {/* Sidebar */}
-                <ResourceSidebar 
+      <ContentContainer>
+        <PageHeader id={id || ''} />
+        
+        <Card className="overflow-hidden">
+          <div className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main Content */}
+              <div className="lg:col-span-2">
+                <ResourceInfo 
                   resource={resource} 
                   getTypeIcon={getTypeIcon} 
                 />
+                
+                <RelatedResources 
+                  relatedResources={resource.relatedResources || []} 
+                  getTypeIcon={getTypeIcon} 
+                />
               </div>
+              
+              {/* Sidebar */}
+              <ResourceSidebar 
+                resource={resource} 
+                getTypeIcon={getTypeIcon} 
+              />
             </div>
           </div>
-        </div>
-      </div>
+        </Card>
+      </ContentContainer>
     </>
   );
 }

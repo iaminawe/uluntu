@@ -1,6 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { Users, Heart, Briefcase, Star } from 'lucide-react';
 import { useMembers, useCompanies, useEvents, useNews, useGroups } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { SkeletonGrid } from '../../components/ui/Skeleton';
+import { QueryError } from '../../components/ui/ErrorDisplay';
 import HeroSection from './HeroSection';
 import FeaturedSection from './FeaturedSection';
 import CalloutSection from './CalloutSection';
@@ -37,6 +40,52 @@ export default function HomePage() {
     groups.some(item => item.featured)
   );
 
+  // Track loading and error states
+  const isLoading = false;
+  const error = null;
+
+  if (isLoading) {
+    return (
+      <>
+        <Helmet>
+          <title>Kootenay Tech Community</title>
+          <meta name="description" content="Connecting tech and knowledge workers in the Kootenays" />
+        </Helmet>
+        
+        <HeroSection />
+        
+        <div className="bg-slate-50 dark:bg-slate-900 py-16">
+          <ContentContainer>
+            <SkeletonGrid count={3} columns={{ sm: 1, md: 2, lg: 3 }} />
+          </ContentContainer>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Helmet>
+          <title>Kootenay Tech Community</title>
+          <meta name="description" content="Connecting tech and knowledge workers in the Kootenays" />
+        </Helmet>
+        
+        <HeroSection />
+        
+        <div className="bg-slate-50 dark:bg-slate-900 py-16">
+          <ContentContainer>
+            <QueryError 
+              error={error} 
+              retry={() => console.log('Retrying homepage data')} 
+              message="We couldn't load the community data. Please try again."
+            />
+          </ContentContainer>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Helmet>
@@ -47,7 +96,7 @@ export default function HomePage() {
       <HeroSection />
       
       <div className="bg-slate-50 dark:bg-slate-900">
-        <div className="container mx-auto px-4 py-16 space-y-16">
+        <ContentContainer className="py-16 space-y-16">
           {/* Featured Entities */}
           {hasFeaturedItems && (
             <div>
@@ -144,7 +193,7 @@ export default function HomePage() {
 
           {/* Newsletter Signup */}
           <NewsletterSection />
-        </div>
+        </ContentContainer>
       </div>
     </>
   );

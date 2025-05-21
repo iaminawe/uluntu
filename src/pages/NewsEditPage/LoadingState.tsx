@@ -1,20 +1,17 @@
+import { FormSkeleton } from '../../components/ui/Skeleton';
 import { LoadingStateProps } from './types';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
-        <div className="animate-pulse">
-          <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-8"></div>
-          <div className="space-y-4">
-            <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="h-20 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="h-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="flex justify-end">
-              <div className="h-10 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            </div>
-          </div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+          <FormSkeleton 
+            fields={5}
+            hasHeader={true}
+            hasSubmitButton={true}
+            hasCancelButton={true}
+          />
         </div>
       </div>
     </div>

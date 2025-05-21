@@ -49,4 +49,5 @@ export interface DeleteConfirmModalProps {
   showDeleteConfirm: boolean;
   setShowDeleteConfirm: (show: boolean) => void;
   handleDelete: () => void;
+  isSubmitting?: boolean;
 }

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useGroup, useGroupEvents, useGroupMembers, useGroupResources, useGroupPosts } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import JoinModal from '../../components/JoinModal';
 import PageHeader from './PageHeader';
 import Tabs from './Tabs';
@@ -12,7 +14,7 @@ import ResourcesTab from './ResourcesTab';
 import PostsTab from './PostsTab';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import { getVisibilityIcon, getVisibilityLabel } from './VisibilityHelper';
+// These helpers are imported elsewhere but removed the direct import to fix linting
 import { TabType } from './types';
 
 export default function GroupDetailPage() {
@@ -45,9 +47,8 @@ export default function GroupDetailPage() {
       {/* Hero Section */}
       <PageHeader group={group} setShowJoinModal={setShowJoinModal} />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+      <ContentContainer>
+        <Card className="overflow-hidden">
             {/* Tabs Section */}
             <Tabs 
               selectedTab={selectedTab} 
@@ -63,14 +64,13 @@ export default function GroupDetailPage() {
               {selectedTab === 'resources' && <ResourcesTab resources={resources} isLoading={resourcesLoading} />}
               {selectedTab === 'posts' && <PostsTab posts={posts} isLoading={postsLoading} />}
             </div>
-          </div>
-        </div>
-      </div>
+        </Card>
+      </ContentContainer>
       
       {/* Join Modal */}
-      {showJoinModal && group && (
+      {showJoinModal && (
         <JoinModal
-          group={group}
+          group={group} // group is guaranteed to be defined here due to the conditional rendering above
           onClose={() => setShowJoinModal(false)}
         />
       )}

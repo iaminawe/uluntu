@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Users } from 'lucide-react';
-import { Member, Company, Event, Group, NewsArticle } from '../../types';
+import { Member, Company, Event, Group, NewsArticle } from './types';
 
 interface FeaturedItemsProps {
   members: Member[];
@@ -11,13 +11,22 @@ interface FeaturedItemsProps {
   news: NewsArticle[];
 }
 
-export const FeaturedItems: React.FC<FeaturedItemsProps> = ({ 
+interface FeaturedItemsResult {
+  featuredMembers: React.ReactNode[];
+  featuredCompanies: React.ReactNode[];
+  featuredEvents: React.ReactNode[];
+  activeGroups: React.ReactNode[];
+  latestNews: React.ReactNode[];
+}
+
+// Function that returns properly typed featured content
+export const FeaturedItems = ({ 
   members, 
   companies, 
   events, 
   groups, 
   news 
-}) => {
+}: FeaturedItemsProps): FeaturedItemsResult => {
   const featuredMembers = members
     .filter(member => member.featured)
     .map(member => (
