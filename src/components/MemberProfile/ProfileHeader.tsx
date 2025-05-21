@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
 import { Member } from './types';
 
@@ -74,7 +74,7 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
                   {member.organizations.map((org, index) => (
                     <span key={org.id}>
                       <Link
-                        href={`/companies/${org.id}`}
+                        to={`/companies/${org.id}`}
                         className="hover:text-orange-500 dark:hover:text-orange-400"
                       >
                         {org.name}
