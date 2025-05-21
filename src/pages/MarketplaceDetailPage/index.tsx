@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 import { useMarketplaceItem } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import { ListingType } from './types';
 import PageHeader from './PageHeader';
 import ListingDetails from './ListingDetails';
@@ -47,30 +49,35 @@ export default function MarketplaceDetailPage() {
         <meta name="description" content={`${listing.title} - ${listing.price} - ${listing.description.substring(0, 150)}...`} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <PageHeader id={id as string} listing={listing} />
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+      <ContentContainer>
+        <PageHeader id={id as string} listing={listing} />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="mb-8">
               <ListingDetails 
                 listing={listing} 
                 getTypeIcon={getTypeIcon} 
                 onContactClick={() => setShowContactModal(true)} 
               />
-              
-              <div className="mt-8 bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
-                <SellerInfo seller={listing.seller} />
-              </div>
-            </div>
+            </Card>
             
-            {/* This would typically be a sidebar with related listings */}
-            <div>
-              {/* Related listings component would go here */}
-            </div>
+            <Card>
+              <SellerInfo seller={listing.seller} />
+            </Card>
+          </div>
+          
+          {/* This would typically be a sidebar with related listings */}
+          <div>
+            <Card>
+              <div className="p-6">
+                <h3 className="text-lg font-medium mb-4">Related Listings</h3>
+                <p className="text-slate-500 dark:text-slate-400">No related listings available.</p>
+              </div>
+            </Card>
           </div>
         </div>
-      </div>
+      </ContentContainer>
 
       {showContactModal && (
         <ContactModal

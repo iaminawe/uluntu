@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGroup } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import FormHeader from './FormHeader';
 import GroupInfo from './GroupInfo';
 import VisibilitySelect from './VisibilitySelect';
@@ -33,7 +35,7 @@ export default function GroupEditPage() {
   const { 
     data: group, 
     isLoading: groupLoading
-  } = useGroup(groupId);
+  } = useGroup(groupId as number);
   
   // Populate form with group data when in edit mode
   useEffect(() => {
@@ -120,55 +122,57 @@ export default function GroupEditPage() {
         />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
+      <ContentContainer maxWidth="lg">
           <FormHeader 
             isEditMode={isEditMode} 
             groupName={group?.name || ''} 
           />
           
           {submitSuccess ? (
-            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
-              <div className="flex">
-                <div>
-                  <p className="text-sm text-green-700 dark:text-green-400">
-                    {isEditMode 
-                      ? 'Group updated successfully!' 
-                      : 'Group created successfully!'
-                    } Redirecting...
-                  </p>
+            <Card className="mb-6">
+              <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
+                <div className="flex">
+                  <div>
+                    <p className="text-sm text-green-700 dark:text-green-400">
+                      {isEditMode 
+                        ? 'Group updated successfully!' 
+                        : 'Group created successfully!'
+                      } Redirecting...
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Card>
           ) : (
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 shadow-md rounded-lg p-6 space-y-6">
-              <GroupInfo 
-                formData={formData}
-                handleChange={handleChange}
-                errors={errors}
-              />
-              
-              <VisibilitySelect 
-                formData={formData}
-                handleChange={handleChange}
-              />
-              
-              <ImageUpload 
-                formData={formData}
-                handleChange={handleChange}
-                errors={errors}
-              />
-              
-              <FormActions 
-                isEditMode={isEditMode}
-                isSubmitting={isSubmitting}
-                navigate={navigate}
-                id={id}
-              />
-            </form>
+            <Card>
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <GroupInfo 
+                  formData={formData}
+                  handleChange={handleChange}
+                  errors={errors}
+                />
+                
+                <VisibilitySelect 
+                  formData={formData}
+                  handleChange={handleChange}
+                />
+                
+                <ImageUpload 
+                  formData={formData}
+                  handleChange={handleChange}
+                  errors={errors}
+                />
+                
+                <FormActions 
+                  isEditMode={isEditMode}
+                  isSubmitting={isSubmitting}
+                  navigate={navigate}
+                  id={id}
+                />
+              </form>
+            </Card>
           )}
-        </div>
-      </div>
+      </ContentContainer>
     </>
   );
 }

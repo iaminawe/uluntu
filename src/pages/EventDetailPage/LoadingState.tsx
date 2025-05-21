@@ -1,17 +1,48 @@
 import { LoadingStateProps } from './types';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { SkeletonContainer, SkeletonImage, SkeletonText } from '../../components/ui/Skeleton';
+import { Card } from '../../components/ui/Card';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="animate-pulse">
-          <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded-xl mb-8"></div>
-          <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-8"></div>
-          <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+    <ContentContainer>
+      <SkeletonContainer>
+        {/* Back link */}
+        <div className="mb-4">
+          <SkeletonText width="w-24" height="h-4" />
         </div>
-      </div>
-    </div>
+        
+        <Card className="overflow-hidden">
+          {/* Event hero image */}
+          <SkeletonImage height="h-64" className="rounded-t-lg" />
+          
+          {/* Event title and date */}
+          <div className="p-8">
+            <SkeletonText width="w-3/4" height="h-8" className="mb-2" />
+            <SkeletonText width="w-1/2" height="h-4" className="mb-8" />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main content */}
+              <div className="lg:col-span-2">
+                <SkeletonText lines={10} className="mb-2" />
+              </div>
+              
+              {/* Sidebar */}
+              <div>
+                <div className="mb-6">
+                  <SkeletonText height="h-10" className="mb-3" />
+                  <SkeletonText lines={3} className="mb-2" />
+                </div>
+                
+                <div>
+                  <SkeletonText lines={4} className="mb-2" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </SkeletonContainer>
+    </ContentContainer>
   );
 };
 

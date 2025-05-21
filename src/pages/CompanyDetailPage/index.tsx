@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useCompany, useCompanyEmployees } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
 import CompanyInfoSection from './CompanyInfoSection';
 import SocialLinksSidebar from './SocialLinksSidebar';
@@ -30,11 +32,10 @@ export default function CompanyDetailPage() {
         <meta name="description" content={company.description} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+      <ContentContainer>
           <PageHeader id={id as string} />
           
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+          <Card className="overflow-hidden">
             {/* Header Section with Cover Image */}
             <div className="h-64 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative">
               {company.coverImage && (
@@ -60,11 +61,12 @@ export default function CompanyDetailPage() {
                 <SocialLinksSidebar company={company} />
               </div>
             </div>
-          </div>
+          </Card>
           
-          <EmployeesSection employees={employees} isLoading={employeesLoading} />
-        </div>
-      </div>
+          <Card className="mt-8">
+            <EmployeesSection employees={employees} isLoading={employeesLoading} />
+          </Card>
+      </ContentContainer>
     </>
   );
 }

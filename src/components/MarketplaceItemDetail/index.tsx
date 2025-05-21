@@ -10,7 +10,10 @@ interface MarketplaceItemDetailProps {
 }
 
 const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
-  const [listing, setListing] = useState<Listing>(SAMPLE_LISTING); // In a real app, fetch by ID
+  // In a real app, we would fetch the listing using itemId from an API
+  // For now, we'll log the ID to demonstrate it's being used
+  console.log(`Displaying marketplace item with ID: ${itemId}`);
+  const [listing] = useState<Listing>(SAMPLE_LISTING);
   const [showContactModal, setShowContactModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 

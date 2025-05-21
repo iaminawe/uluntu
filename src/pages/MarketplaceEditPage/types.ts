@@ -40,16 +40,14 @@ export interface BasicInfoSectionProps {
 
 export interface ImagesGallerySectionProps {
   images: string[];
+  handleImageChange: (file: File | null) => void;
   handleRemoveImage: (index: number) => void;
   isSubmitting: boolean;
 }
 
 export interface TagsSectionProps {
   tags: string[];
-  newTag: string;
-  handleTagChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleAddTag: () => void;
-  handleRemoveTag: (tag: string) => void;
+  handleTagsChange: (newTags: string[]) => void;
   isSubmitting: boolean;
 }
 
@@ -58,4 +56,19 @@ export interface DeleteConfirmProps {
   onClose: () => void;
   onConfirm: () => void;
   isSubmitting: boolean;
+}
+
+export interface FormHeaderProps {
+  isEditing: boolean;
+}
+
+export interface FormActionsProps {
+  isEditing: boolean;
+  isSubmitting: boolean;
+  formData: FormData;
+  setShowDeleteConfirm: (show: boolean) => void;
+}
+
+export interface LoadingStateProps {
+  // Can include any customization props in the future
 }

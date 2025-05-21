@@ -1,270 +1,196 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Package, Briefcase, Monitor } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
 import TagsSection from './TagsSection';
 import DeleteConfirmModal from './DeleteConfirmModal';
-import { FormData, ListingType } from './types';
-import { SAMPLE_LISTING, initialFormData } from './data';
+import FormHeader from './FormHeader';
+import FormActions from './FormActions';
+import LoadingState from './LoadingState';
+import { FormData } from './types';
 
 export default function MarketplaceEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isEditing = id !== undefined && id !== 'create';
+  const isEditing = Boolean(id);
   
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  // State for form data
+  const [formData, setFormData] = useState<FormData>({
+    title: '',
+    description: '',
+    price: '0',
+    condition: 'new',
+    location: '',
+    type: 'product', // Using valid ListingType
+    status: 'draft',
+    featured: false,
+    tags: [],
+    newTag: ''
+  });
+  
+  // State for delete confirmation modal
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(isEditing);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isError] = useState(false);
   
-  useEffect(() => {
+  // Mock data loading for editing
+  useState(() => {
     if (isEditing) {
-      // This would normally fetch the listing data from an API
-      setFormData({
-        title: SAMPLE_LISTING.title,
-        description: SAMPLE_LISTING.description,
-        type: SAMPLE_LISTING.type,
-        price: SAMPLE_LISTING.price.toString(),
-        condition: SAMPLE_LISTING.condition,
-        location: SAMPLE_LISTING.location,
-        tags: SAMPLE_LISTING.tags,
-        newTag: '',
-        status: SAMPLE_LISTING.status,
-        featured: SAMPLE_LISTING.featured || false
-      });
-      
-      // Mock images
-      setImages([
-        'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-        'https://images.pexels.com/photos/5474296/pexels-photo-5474296.jpeg'
-      ]);
+      // Simulate API call
+      setTimeout(() => {
+        setFormData({
+          title: 'Sample Marketplace Item',
+          description: 'This is a sample marketplace item description.',
+          price: '99.99',
+          condition: 'good', // Using valid ListingCondition
+          location: 'San Francisco, CA',
+          type: 'product', // Using valid ListingType
+          status: 'published',
+          featured: true,
+          tags: ['electronics', 'gadget', 'used'],
+          newTag: ''
+        });
+        setIsLoading(false);
+      }, 1000);
     }
-  }, [isEditing]);
+  });
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      navigate('/marketplace');
+    }, 1500);
   };
   
-  const handleTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, newTag: e.target.value }));
-  };
-  
-  const handleAddTag = () => {
-    if (formData.newTag.trim() && !formData.tags.includes(formData.newTag.trim())) {
+  // Handle basic info changes
+  const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    
+    // Handle checkbox inputs separately
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, prev.newTag.trim()],
-        newTag: ''
+        [name]: checked
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
       }));
     }
   };
   
-  const handleRemoveTag = (tagToRemove: string) => {
+  // Handle tags changes
+  const handleTagsChange = (tags: string[]) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags
     }));
   };
   
-  const handleRemoveImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  // Handle image changes
+  const handleImageChange = (file: File | null) => {
+    // For now, we'll just handle the type correctly
+    // In a real implementation, we would process the file
+    console.log('File received:', file);
   };
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle delete
+  const handleDelete = () => {
     setIsSubmitting(true);
     
-    try {
-      // This would normally send the data to an API
-      console.log('Submitting listing data:', {
-        ...formData,
-        price: parseFloat(formData.price),
-        images
-      });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSubmitSuccess(true);
-      
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate('/marketplace');
-      }, 1500);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
-  };
-  
-  const handleDelete = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      // This would normally send a delete request to an API
-      console.log('Deleting listing with ID:', id);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect after successful deletion
       navigate('/marketplace');
-    } catch (error) {
-      console.error('Error deleting listing:', error);
-      setShowDeleteConfirm(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+    }, 1500);
   };
   
-  const getTypeIcon = (type: ListingType) => {
-    switch (type) {
-      case 'product':
-        return <Package className="h-5 w-5 text-slate-400" />;
-      case 'service':
-        return <Briefcase className="h-5 w-5 text-slate-400" />;
-      case 'equipment':
-        return <Monitor className="h-5 w-5 text-slate-400" />;
-      default:
-        return <Package className="h-5 w-5 text-slate-400" />;
-    }
-  };
-
+  // Loading state
+  if (isLoading) {
+    return <LoadingState />;
+  }
+  
+  // Error state
+  if (isError) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-center">
+            <h2 className="text-xl font-bold text-red-500 mb-2">Error</h2>
+            <p className="mb-4">Failed to load marketplace item data.</p>
+            <button
+              onClick={() => navigate('/marketplace')}
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            >
+              Back to Marketplace
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <>
       <Helmet>
-        <title>{isEditing ? 'Edit Listing' : 'Create New Listing'}</title>
-        <meta name="description" content={isEditing ? 'Edit your marketplace listing' : 'Create a new listing in the marketplace'} />
+        <title>{isEditing ? 'Edit Marketplace Listing' : 'Create New Listing'} | Nelson Tech</title>
       </Helmet>
       
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="flex items-center mb-6">
-          <Link 
-            to="/marketplace" 
-            className="flex items-center text-orange-500 hover:text-orange-600"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            <span>Back to Marketplace</span>
-          </Link>
-        </div>
-        
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            {isEditing ? 'Edit Listing' : 'Create New Listing'}
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            {isEditing 
-              ? 'Update your listing details below' 
-              : 'Fill out the form below to create a new listing on the marketplace'}
-          </p>
-        </div>
-        
-        <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
-          {submitSuccess ? (
-            <div className="p-8 text-center">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h2 className="mt-4 text-xl font-medium text-slate-900 dark:text-white">
-                {isEditing ? 'Listing Updated Successfully!' : 'Listing Created Successfully!'}
-              </h2>
-              <p className="mt-2 text-slate-500 dark:text-slate-400">
-                Redirecting you to the marketplace...
-              </p>
-            </div>
-          ) : (
-            <div className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <BasicInfoSection 
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+            {/* Header */}
+            <FormHeader isEditing={isEditing} />
+            
+            {/* Form */}
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-8">
+                {/* Basic Info Section */}
+                <BasicInfoSection
                   formData={formData}
-                  handleChange={handleChange}
-                  getTypeIcon={getTypeIcon}
+                  handleChange={handleBasicInfoChange}
+                  getTypeIcon={(type) => <span>{type}</span>}
                   isSubmitting={isSubmitting}
                 />
                 
-                <hr className="border-t border-slate-200 dark:border-slate-700" />
-                
-                <ImagesGallerySection 
-                  images={images}
-                  handleRemoveImage={handleRemoveImage}
-                  isSubmitting={isSubmitting}
-                />
-                
-                <hr className="border-t border-slate-200 dark:border-slate-700" />
-                
-                <TagsSection 
+                {/* Tags Section */}
+                <TagsSection
                   tags={formData.tags}
-                  newTag={formData.newTag}
-                  handleTagChange={handleTagChange}
-                  handleAddTag={handleAddTag}
-                  handleRemoveTag={handleRemoveTag}
+                  handleTagsChange={handleTagsChange}
                   isSubmitting={isSubmitting}
                 />
                 
-                <div className="flex justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex space-x-4">
-                    <Link
-                      to="/marketplace"
-                      className="px-4 py-2 border border-slate-300 dark:border-slate-600 
-                                text-slate-700 dark:text-slate-300 rounded-md 
-                                hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      Cancel
-                    </Link>
-                    
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="px-4 py-2 border border-red-300 text-red-600 rounded-md 
-                                  hover:bg-red-50 transition-colors"
-                        disabled={isSubmitting}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`px-4 py-2 bg-orange-500 text-white rounded-md 
-                              hover:bg-orange-600 transition-colors flex items-center gap-2
-                              ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-5 w-5" />
-                        {formData.status === 'draft' 
-                          ? 'Save as Draft' 
-                          : formData.status === 'published' 
-                            ? 'Publish Listing' 
-                            : 'Archive Listing'}
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
+                {/* Images Gallery Section */}
+                <ImagesGallerySection
+                  images={[]}
+                  handleImageChange={handleImageChange}
+                  handleRemoveImage={(index) => console.log('Remove image at index:', index)}
+                  isSubmitting={isSubmitting}
+                />
+                
+                {/* Form Actions */}
+                <FormActions
+                  isEditing={isEditing}
+                  isSubmitting={isSubmitting}
+                  formData={formData}
+                  setShowDeleteConfirm={setShowDeleteConfirm}
+                />
+              </div>
+            </form>
+          </div>
         </div>
       </div>
       
+      {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

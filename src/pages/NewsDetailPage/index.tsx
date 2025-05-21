@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useNewsArticle, useRelatedNewsArticles } from '../../hooks/useQueries';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import ArticleHeader from './ArticleHeader';
 import ArticleContent from './ArticleContent';
 import AuthorInfo from './AuthorInfo';
@@ -38,17 +40,20 @@ export default function NewsDetailPage() {
         <meta name="description" content={article.excerpt} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="max-w-4xl mx-auto">
+      <ContentContainer maxWidth="xl">
+        <Card className="mb-6">
           <ArticleHeader article={article} id={id || ''} />
           <ArticleContent article={article} />
           <AuthorInfo author={article.author} />
+        </Card>
+        
+        <Card>
           <RelatedArticles 
             relatedArticles={relatedArticles} 
             isLoading={relatedLoading} 
           />
-        </div>
-      </div>
+        </Card>
+      </ContentContainer>
     </>
   );
 }

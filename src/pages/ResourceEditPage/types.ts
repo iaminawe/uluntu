@@ -30,9 +30,8 @@ export interface ResourceDetailsProps {
 
 export interface TagsInputProps {
   formData: FormData;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  handleAddTag: () => void;
-  handleRemoveTag: (tag: string) => void;
+  handleChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }
 
 export interface UrlInputProps {

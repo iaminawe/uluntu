@@ -1,17 +1,33 @@
-import { Link } from 'react-router-dom';
-import { PlusCircle } from 'lucide-react';
+import React from 'react';
+import { PlusCircle, Tag } from 'lucide-react';
+import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
 
 const ActionBar: React.FC = () => {
+  // These would normally come from a hook or state
+  const searchTerm = '';
+  const handleSearch = (value: string) => {
+    console.log('Searching for members:', value);
+    // This would normally update state or call a hook
+  };
+
   return (
-    <div className="flex justify-end mb-6 md:mb-8">
-      <Link
-        to="/directory/create"
-        className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors shadow hover:shadow-md"
-      >
-        <PlusCircle className="h-5 w-5 mr-2" />
-        Add New Member
-      </Link>
-    </div>
+    <SharedActionBar
+      searchTerm={searchTerm}
+      onSearch={handleSearch}
+      searchPlaceholder="Search members..."
+      createUrl="/directory/create"
+      createText="Add New Member"
+      createIcon={<PlusCircle className="h-5 w-5" />}
+      showSearch={true}
+      filters={
+        <div className="flex space-x-4 items-center">
+          <button className="flex items-center px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 rounded-md">
+            <Tag className="h-4 w-4 mr-2" />
+            Filter by Skills
+          </button>
+        </div>
+      }
+    />
   );
 };
 

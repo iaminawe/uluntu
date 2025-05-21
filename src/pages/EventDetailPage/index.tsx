@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useEvent } from '../../hooks/useQueries';
 import { format, parseISO } from 'date-fns';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
 import EventHero from './EventHero';
 import EventInfo from './EventInfo';
@@ -55,11 +57,10 @@ export default function EventDetailPage() {
         <meta name="description" content={event.description} />
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+      <ContentContainer>
           <PageHeader id={id as string} />
           
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+          <Card className="overflow-hidden">
             {/* Hero Section with image and title */}
             <EventHero event={event} dateRangeDisplay={dateRangeDisplay} />
             
@@ -92,9 +93,8 @@ export default function EventDetailPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </Card>
+      </ContentContainer>
     </>
   );
 }

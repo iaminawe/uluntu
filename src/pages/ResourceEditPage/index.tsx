@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { EntityStatus } from '../../data/mock/mockData';
+import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '../../components/ui/Card';
 import FormHeader from './FormHeader';
 import ResourceDetails from './ResourceDetails';
 import ResourceTypeSelect from './ResourceTypeSelect';
@@ -151,11 +153,10 @@ export default function ResourceEditPage() {
         <title>{isEditing ? 'Edit Resource' : 'Add New Resource'} - Kootenay Tech Community</title>
       </Helmet>
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
+      <ContentContainer maxWidth="lg">
           <FormHeader isEditing={isEditing} />
           
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+          <Card className="p-6">
             {submitSuccess ? (
               <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
                 <div className="flex">
@@ -210,9 +211,8 @@ export default function ResourceEditPage() {
                 />
               </form>
             )}
-          </div>
-        </div>
-      </div>
+          </Card>
+      </ContentContainer>
       
       <DeleteConfirm
         show={showDeleteConfirm}
