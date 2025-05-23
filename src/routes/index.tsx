@@ -30,8 +30,17 @@ import ResourceEditPage from '../pages/ResourceEditPage';
 import MarketplaceDetailPage from '../pages/MarketplaceDetailPage';
 import MarketplaceEditPage from '../pages/MarketplaceEditPage';
 
+// Auth pages
+import SignInPage from '../pages/SignInPage';
+import SignUpPage from '../pages/SignUpPage';
+import UnauthorizedPage from '../pages/UnauthorizedPage';
+
 // Error page
 import ErrorPage from '../pages/ErrorPage';
+
+// Auth components
+import ProtectedRoute from '../components/auth/ProtectedRoute';
+import GroupGuard from '../components/auth/GroupGuard';
 
 export const router = createBrowserRouter([
   {
@@ -41,37 +50,91 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'directory', element: <DirectoryPage /> },
-      { path: 'directory/create', element: <DirectoryEditPage /> },
+      { 
+        path: 'directory/create', 
+        element: <ProtectedRoute><DirectoryEditPage /></ProtectedRoute> 
+      },
       { path: 'directory/:id', element: <DirectoryDetailPage /> },
-      { path: 'directory/:id/edit', element: <DirectoryEditPage /> },
+      { 
+        path: 'directory/:id/edit', 
+        element: <ProtectedRoute><DirectoryEditPage /></ProtectedRoute> 
+      },
       { path: 'companies', element: <CompaniesPage /> },
-      { path: 'companies/create', element: <CompanyEditPage /> },
+      { 
+        path: 'companies/create', 
+        element: <ProtectedRoute><CompanyEditPage /></ProtectedRoute> 
+      },
       { path: 'companies/:id', element: <CompanyDetailPage /> },
-      { path: 'companies/:id/edit', element: <CompanyEditPage /> },
+      { 
+        path: 'companies/:id/edit', 
+        element: <ProtectedRoute><CompanyEditPage /></ProtectedRoute> 
+      },
       { path: 'events', element: <EventsPage /> },
-      { path: 'events/create', element: <EventEditPage /> },
+      { 
+        path: 'events/create', 
+        element: <ProtectedRoute><EventEditPage /></ProtectedRoute> 
+      },
       { path: 'events/:id', element: <EventDetailPage /> },
-      { path: 'events/:id/edit', element: <EventEditPage /> },
+      { 
+        path: 'events/:id/edit', 
+        element: <ProtectedRoute><EventEditPage /></ProtectedRoute> 
+      },
       { path: 'news', element: <NewsPage /> },
-      { path: 'news/create', element: <NewsEditPage /> },
+      { 
+        path: 'news/create', 
+        element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
+      },
       { path: 'news/:id', element: <NewsDetailPage /> },
-      { path: 'news/:id/edit', element: <NewsEditPage /> },
+      { 
+        path: 'news/:id/edit', 
+        element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
+      },
       { path: 'groups', element: <GroupsPage /> },
-      { path: 'groups/create', element: <GroupEditPage /> },
-      { path: 'groups/:id', element: <GroupDetailPage /> },
-      { path: 'groups/:id/edit', element: <GroupEditPage /> },
+      { 
+        path: 'groups/create', 
+        element: <ProtectedRoute><GroupEditPage /></ProtectedRoute> 
+      },
+      { 
+        path: 'groups/:id', 
+        element: <GroupGuard><GroupDetailPage /></GroupGuard> 
+      },
+      { 
+        path: 'groups/:id/edit', 
+        element: <ProtectedRoute><GroupGuard><GroupEditPage /></GroupGuard></ProtectedRoute> 
+      },
       { path: 'resources', element: <ResourcesPage /> },
-      { path: 'resources/create', element: <ResourceEditPage /> },
+      { 
+        path: 'resources/create', 
+        element: <ProtectedRoute><ResourceEditPage /></ProtectedRoute> 
+      },
       { path: 'resources/:id', element: <ResourceDetailPage /> },
-      { path: 'resources/:id/edit', element: <ResourceEditPage /> },
+      { 
+        path: 'resources/:id/edit', 
+        element: <ProtectedRoute><ResourceEditPage /></ProtectedRoute> 
+      },
       { path: 'marketplace', element: <MarketplacePage /> },
-      { path: 'marketplace/create', element: <MarketplaceEditPage /> },
+      { 
+        path: 'marketplace/create', 
+        element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 
+      },
       { path: 'marketplace/:id', element: <MarketplaceDetailPage /> },
-      { path: 'marketplace/:id/edit', element: <MarketplaceEditPage /> },
+      { 
+        path: 'marketplace/:id/edit', 
+        element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 
+      },
       { path: 'opportunities', element: <OpportunitiesPage /> },
-      { path: 'opportunities/create', element: <OpportunityEditPage /> },
+      { 
+        path: 'opportunities/create', 
+        element: <ProtectedRoute><OpportunityEditPage /></ProtectedRoute> 
+      },
       { path: 'opportunities/:id', element: <OpportunityDetailPage /> },
-      { path: 'opportunities/:id/edit', element: <OpportunityEditPage /> }
+      { 
+        path: 'opportunities/:id/edit', 
+        element: <ProtectedRoute><OpportunityEditPage /></ProtectedRoute> 
+      },
+      { path: 'signin', element: <SignInPage /> },
+      { path: 'signup', element: <SignUpPage /> },
+      { path: 'unauthorized', element: <UnauthorizedPage /> }
     ]
   }
 ]);

@@ -5,6 +5,7 @@ import { HeaderProps } from "./types";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ThemeToggle from "./ThemeToggle";
+import UserMenu from "./UserMenu";
 
 const Header: React.FC<HeaderProps> = ({
   logo = "Nelson Tech",
@@ -74,6 +75,7 @@ const Header: React.FC<HeaderProps> = ({
           {/* Mobile Menu Controls */}
           <div className="md:hidden flex items-center">
             <ThemeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
+            <UserMenu />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white p-2 ml-2"
@@ -81,6 +83,11 @@ const Header: React.FC<HeaderProps> = ({
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
+          </div>
+          
+          {/* User Menu (Desktop) */}
+          <div className="hidden md:flex items-center">
+            <UserMenu />
           </div>
         </div>
 
