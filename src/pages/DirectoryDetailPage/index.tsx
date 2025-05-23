@@ -2,12 +2,9 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useMember } from '../../hooks/useQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
-import ProfileHeader from './ProfileHeader';
-import ProfileInfo from './ProfileInfo';
-import ContactSidebar from './ContactSidebar';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
+import MemberProfile from '../../components/MemberProfile';
 
 export default function DirectoryDetailPage() {
   const { id } = useParams();
@@ -31,17 +28,8 @@ export default function DirectoryDetailPage() {
       </Helmet>
       
       <ContentContainer>
-          <ProfileHeader id={id as string} member={member} />
-          
-          <Card className="overflow-hidden">
-            {/* Profile Information */}
-            <div className="mt-16 p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <ProfileInfo member={member} />
-                <ContactSidebar member={member} />
-              </div>
-            </div>
-          </Card>
+        {/* Use our enhanced MemberProfile component that shows all contributions */}
+        <MemberProfile memberId={id as string} />
       </ContentContainer>
     </>
   );

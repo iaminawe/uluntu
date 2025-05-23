@@ -13,9 +13,9 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
         </div>
       )}
       
-      <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
+      <div className="prose prose-slate dark:prose-invert prose-lg max-w-none mb-12 leading-relaxed">
         {article.content.split('\n\n').map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
+          <p key={index} className="mb-6">{paragraph}</p>
         ))}
       </div>
     </>

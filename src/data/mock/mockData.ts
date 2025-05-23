@@ -104,6 +104,35 @@ export interface Group {
   posts?: GroupPost[];
 }
 
+// Session and Presenter types for events
+export interface EventSessionResource {
+  id: number;
+  title: string;
+  url: string;
+  type: 'slides' | 'document' | 'code' | 'website' | 'other';
+}
+
+export interface EventSession {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  presenters: EventPresenter[];
+  videoUrl?: string; // URL for YouTube or Vimeo video
+  resources?: EventSessionResource[];
+}
+
+export interface EventPresenter {
+  id: number;
+  name: string;
+  image: string;
+  bio?: string;
+  title?: string;
+  company?: string;
+  website?: string;
+}
+
 // Event types
 export interface Event {
   id: number;
@@ -123,6 +152,7 @@ export interface Event {
   url?: string;
   status: EntityStatus;
   featured?: boolean;
+  sessions?: EventSession[];
 }
 
 // News types
@@ -188,7 +218,7 @@ export interface Opportunity {
     name: string;
     logo: string;
   };
-  type: 'full-time' | 'part-time' | 'contract' | 'volunteer';
+  type: 'full-time' | 'part-time' | 'contract' | 'volunteer' | 'internship';
   location: string;
   remote: boolean;
   description: string;
@@ -461,8 +491,135 @@ Whether you're an AI expert or just starting to explore this field, you're welco
 
 // Events data
 export const events: Event[] = [
+  // Past events
   {
     id: 1,
+    title: 'Introduction to AI Workshop',
+    date: '2025-04-10T18:00:00',
+    endDate: '2025-04-10T20:00:00',
+    location: 'Nelson Innovation Centre, Nelson BC',
+    description: 'A beginner-friendly workshop on artificial intelligence and its applications in business and technology. Learn the basics of machine learning and how it can be applied to solve real-world problems.',
+    image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
+    organizer: {
+      id: 1,
+      name: 'Sarah Johnson',
+      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+    },
+    attendees: 32,
+    type: 'in-person',
+    status: 'published',
+    sessions: [
+      {
+        id: 1,
+        title: 'AI Fundamentals',
+        description: 'An introduction to the core concepts of artificial intelligence and machine learning.',
+        startTime: '2025-04-10T18:00:00',
+        endTime: '2025-04-10T19:00:00',
+        presenters: [
+          {
+            id: 1,
+            name: 'Sarah Johnson',
+            image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+            bio: 'AI researcher with 8+ years of experience in machine learning and neural networks.',
+            title: 'AI Research Lead',
+            company: 'Mountain Tech Solutions'
+          }
+        ],
+        videoUrl: 'https://www.youtube.com/watch?v=aircAruvnKk',
+        resources: [
+          {
+            id: 101,
+            title: 'AI Fundamentals Slides',
+            url: 'https://speakerdeck.com/example/ai-fundamentals',
+            type: 'slides'
+          },
+          {
+            id: 102,
+            title: 'Machine Learning Resources',
+            url: 'https://github.com/example/ml-resources',
+            type: 'code'
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: 'Practical Applications Workshop',
+        description: 'Hands-on session exploring real-world applications of AI in business and technology.',
+        startTime: '2025-04-10T19:00:00',
+        endTime: '2025-04-10T20:00:00',
+        presenters: [
+          {
+            id: 2,
+            name: 'Michael Chen',
+            image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg',
+            bio: 'Data scientist specializing in practical AI applications for small businesses.',
+            title: 'Data Science Consultant',
+            company: 'AI Solutions'
+          }
+        ],
+        videoUrl: 'https://vimeo.com/765419318',
+        resources: [
+          {
+            id: 103,
+            title: 'AI Applications Workshop Materials',
+            url: 'https://speakerdeck.com/example/ai-applications-workshop',
+            type: 'slides'
+          },
+          {
+            id: 104,
+            title: 'Workshop Code Examples',
+            url: 'https://github.com/example/ai-workshop-code',
+            type: 'code'
+          },
+          {
+            id: 105,
+            title: 'Additional Reading Materials',
+            url: 'https://example.com/ai-reading-materials.pdf',
+            type: 'document'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Tech Entrepreneur Networking',
+    date: '2025-04-25T17:30:00',
+    endDate: '2025-04-25T19:30:00',
+    location: 'Kootenay Co-working Space, Rossland BC',
+    description: 'Connect with fellow tech entrepreneurs and startup founders in the Kootenay region. Share experiences, challenges, and opportunities in a casual networking environment.',
+    image: 'https://images.pexels.com/photos/1181435/pexels-photo-1181435.jpeg',
+    organizer: {
+      id: 6,
+      name: 'James Wilson',
+      image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg'
+    },
+    attendees: 18,
+    type: 'in-person',
+    status: 'published'
+  },
+  {
+    id: 3,
+    title: 'Web Accessibility Webinar',
+    date: '2025-05-05T12:00:00',
+    endDate: '2025-05-05T13:30:00',
+    location: 'Online via Zoom',
+    description: 'Learn how to make your websites more accessible to users with disabilities. This webinar covers WCAG guidelines, practical implementation tips, and testing strategies.',
+    image: 'https://images.pexels.com/photos/196645/pexels-photo-196645.jpeg',
+    organizer: {
+      id: 4,
+      name: 'David Johnson',
+      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
+    },
+    attendees: 45,
+    type: 'online',
+    url: 'https://zoom.us/webinar',
+    status: 'published'
+  },
+  
+  // Upcoming events
+  {
+    id: 4,
     title: 'Kootenay Tech Meetup',
     date: '2025-06-15T18:00:00',
     endDate: '2025-06-15T20:00:00',
@@ -476,10 +633,86 @@ export const events: Event[] = [
     },
     attendees: 25,
     type: 'in-person',
-    status: 'published'
+    status: 'published',
+    sessions: [
+      {
+        id: 3,
+        title: 'The Future of AI in the Kootenays',
+        description: 'Exploring how artificial intelligence is shaping the tech landscape in our region.',
+        startTime: '2025-06-15T18:00:00',
+        endTime: '2025-06-15T18:30:00',
+        presenters: [
+          {
+            id: 1,
+            name: 'Sarah Johnson',
+            image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+            bio: 'AI researcher with 8+ years of experience in machine learning and neural networks.',
+            title: 'AI Research Lead',
+            company: 'Mountain Tech Solutions',
+            website: 'https://sarahjohnson.dev'
+          }
+        ],
+        resources: [
+          {
+            id: 106,
+            title: 'Upcoming Presentation Slides',
+            url: 'https://speakerdeck.com/sarahjohnson/future-of-ai-kootenays',
+            type: 'slides'
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: 'Modern Web Development Techniques',
+        description: 'A look at the latest frameworks and methodologies in web development.',
+        startTime: '2025-06-15T18:30:00',
+        endTime: '2025-06-15T19:15:00',
+        presenters: [
+          {
+            id: 4,
+            name: 'David Johnson',
+            image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+            bio: 'Frontend developer with expertise in React and modern JavaScript frameworks.',
+            title: 'Frontend Developer',
+            company: 'Creative Solutions',
+            website: 'https://davidjohnson.codes'
+          }
+        ],
+        resources: [
+          {
+            id: 107,
+            title: 'Modern Web Dev Presentation',
+            url: 'https://speakerdeck.com/davidjohnson/modern-web-dev-2025',
+            type: 'slides'
+          },
+          {
+            id: 108,
+            title: 'Demo Project Repository',
+            url: 'https://github.com/davidjohnson/modern-web-demo',
+            type: 'code'
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: 'Networking & Refreshments',
+        description: 'Connect with fellow tech professionals over drinks and snacks.',
+        startTime: '2025-06-15T19:15:00',
+        endTime: '2025-06-15T20:00:00',
+        presenters: [],
+        resources: [
+          {
+            id: 109,
+            title: 'Networking Tips & Resources',
+            url: 'https://example.com/networking-resources.pdf',
+            type: 'document'
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 2,
+    id: 5,
     title: 'Web Development Workshop',
     date: '2025-06-20T19:00:00',
     endDate: '2025-06-20T21:00:00',
@@ -497,7 +730,7 @@ export const events: Event[] = [
     status: 'published'
   },
   {
-    id: 3,
+    id: 6,
     title: 'Startup Pitch Night',
     date: '2025-06-25T18:30:00',
     endDate: '2025-06-25T21:00:00',
@@ -631,10 +864,11 @@ export const marketplaceItems: MarketplaceItem[] = [
 ];
 
 // Opportunities
-export const opportunities: Opportunity[] = [
+// Make sure opportunities is properly exported
+export const opportunities = [
 {
   id: 1,
-  title: 'Machine Learning Engineer',
+  title: 'Senior Full Stack Developer',
   company: {
     id: 1,
     name: 'Mountain Tech Solutions',
@@ -643,52 +877,390 @@ export const opportunities: Opportunity[] = [
   type: 'full-time',
   location: 'Nelson, BC',
   remote: true,
-  description: `We're looking for a talented Machine Learning Engineer to join our growing team. 
+  description: `We're looking for a talented Full Stack Developer to join our growing team. 
 
 Responsibilities:
-- Design and implement machine learning models
-- Work with data scientists to improve existing algorithms
-- Deploy and maintain ML systems in production
+- Design and implement web applications using React and Node.js
+- Work with our team to improve existing systems
+- Deploy and maintain applications in production
 
 Requirements:
-- Experience with Python, TensorFlow or PyTorch
-- Strong understanding of machine learning concepts
-- BS/MS/PhD in Computer Science or related field`,
-  salary: '$80,000 - $100,000',
-  postedDate: '2024-05-01',
-  deadline: '2024-06-01',
-  status: 'published'
+- 5+ years experience with modern JavaScript frameworks
+- Strong understanding of React, TypeScript, and Node.js
+- Experience with cloud platforms (AWS/Azure/GCP)`,
+  salary: '$90,000 - $120,000',
+  postedDate: '2025-04-15',
+  deadline: '2025-06-15',
+  status: 'published',
+  featured: true
 },
 {
   id: 2,
-  title: 'Front-end Developer',
+  title: 'UX/UI Designer',
   company: {
     id: 2,
-    name: 'Kootenay AI Solutions',
+    name: 'Creative Solutions',
     logo: 'https://images.pexels.com/photos/1438072/pexels-photo-1438072.jpeg'
+  },
+  type: 'contract',
+  location: 'Kelowna, BC',
+  remote: true,
+  status: 'published',
+  description: `Looking for a talented UX/UI designer to help create engaging user experiences for our digital products.
+
+Responsibilities:
+- Create wireframes, prototypes, and high-fidelity designs
+- Conduct user research and usability testing
+- Collaborate with developers to implement designs
+
+Requirements:
+- 3+ years of experience in UX/UI design
+- Proficiency in design tools (Figma, Sketch, Adobe XD)
+- Portfolio demonstrating strong design thinking`,
+  salary: '$40-60/hour',
+  postedDate: '2025-05-01',
+  deadline: '2025-06-01'
+},
+{
+  id: 3,
+  title: 'Community Outreach Coordinator',
+  company: {
+    id: 3,
+    name: 'Kootenay Tech Association',
+    logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg'
+  },
+  type: 'volunteer' as 'volunteer',
+  location: 'Remote',
+  remote: true,
+  status: 'published',
+  description: `Help our organization connect with local tech professionals and organize community events.
+
+Responsibilities:
+- Coordinate regular meetups and networking events
+- Manage social media accounts and community engagement
+- Connect with local businesses and professionals
+
+Requirements:
+- Excellent communication and organizational skills
+- Passion for technology and community building
+- Ability to commit 5-10 hours per week`,
+  postedDate: '2025-05-10'
+},
+{
+  id: 4,
+  title: 'Product Manager',
+  company: {
+    id: 4,
+    name: 'Alpine Software',
+    logo: 'https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg'
+  },
+  type: 'full-time',
+  location: 'Castlegar, BC',
+  remote: false,
+  status: 'published',
+  description: `Lead product development efforts for our suite of tourism management software.
+
+Responsibilities:
+- Define product vision, strategy, and roadmap
+- Gather and prioritize product requirements
+- Work closely with engineering, design, and marketing teams
+
+Requirements:
+- 5+ years of product management experience
+- Strong analytical and problem-solving skills
+- Experience with agile development methodologies`,
+  salary: '$85,000 - $110,000',
+  postedDate: '2025-04-20',
+  deadline: '2025-06-20',
+  featured: true
+},
+{
+  id: 5,
+  title: 'Marketing Intern',
+  company: {
+    id: 2,
+    name: 'Creative Solutions',
+    logo: 'https://images.pexels.com/photos/1438072/pexels-photo-1438072.jpeg'
+  },
+  type: 'internship',
+  location: 'Kelowna, BC',
+  remote: false,
+  status: 'published',
+  description: `Great opportunity for marketing students to gain hands-on experience in a dynamic tech company.
+
+Responsibilities:
+- Assist with social media management and content creation
+- Help organize marketing campaigns and events
+- Conduct market research and competitor analysis
+
+Requirements:
+- Currently enrolled in a marketing, communications, or business program
+- Strong written and verbal communication skills
+- Familiarity with social media platforms`,
+  postedDate: '2025-05-05',
+  deadline: '2025-05-25'
+},
+{
+  id: 6,
+  title: 'DevOps Engineer',
+  company: {
+    id: 1,
+    name: 'Mountain Tech Solutions',
+    logo: 'https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg'
+  },
+  type: 'full-time',
+  location: 'Nelson, BC',
+  remote: true,
+  status: 'published',
+  description: `Join our team to help build and maintain our cloud infrastructure and CI/CD pipelines.
+
+Responsibilities:
+- Design, implement and manage our AWS infrastructure
+- Set up and maintain CI/CD pipelines
+- Implement monitoring and alerting solutions
+
+Requirements:
+- Experience with AWS or other cloud platforms
+- Knowledge of containerization (Docker, Kubernetes)
+- Familiarity with CI/CD tools (Jenkins, GitHub Actions)`,
+  salary: '$85,000 - $110,000',
+  postedDate: '2025-04-25',
+  deadline: '2025-06-10'
+},
+{
+  id: 7,
+  title: 'Data Scientist',
+  company: {
+    id: 4,
+    name: 'Alpine Software',
+    logo: 'https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg'
+  },
+  type: 'contract',
+  location: 'Remote',
+  remote: true,
+  status: 'published',
+  description: `We're looking for a data scientist to help us extract insights from our tourism data.
+
+Responsibilities:
+- Analyze large datasets to identify patterns and trends
+- Build predictive models to forecast tourism demand
+- Create visualizations and reports for stakeholders
+
+Requirements:
+- Strong background in statistics and machine learning
+- Experience with Python, R, or similar data science tools
+- Ability to communicate complex findings to non-technical audiences`,
+  salary: '$50-70/hour',
+  postedDate: '2025-05-03',
+  deadline: '2025-06-03'
+},
+{
+  id: 8,
+  title: 'Technical Support Specialist',
+  company: {
+    id: 3,
+    name: 'Kootenay Tech Association',
+    logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg'
   },
   type: 'part-time',
   location: 'Rossland, BC',
-  remote: true,
+  remote: false,
   status: 'published',
-  description: `We're seeking a part-time Front-end Developer to help us build intuitive user interfaces for our AI applications.
+  description: `Provide technical support to our members and help maintain our community resources.
 
 Responsibilities:
-- Implement responsive user interfaces using React
-- Collaborate with designers and backend developers
-- Optimize applications for performance
+- Respond to technical support requests from members
+- Maintain and update our community website and resources
+- Assist with setting up equipment for events and workshops
 
 Requirements:
-- Experience with React and modern JavaScript
-- Knowledge of CSS, responsive design
-- Portfolio of previous work`,
-  postedDate: '2024-05-10'
+- Basic technical troubleshooting skills
+- Excellent customer service attitude
+- Ability to explain technical concepts clearly`,
+  salary: '$20-25/hour',
+  postedDate: '2025-05-08',
+  deadline: '2025-05-30'
 }
 ];
 
+// Add 10 new members to the mock data
+const additionalMembers: Member[] = [
+  {
+    id: 7,
+    name: 'Olivia Martinez',
+    title: 'Frontend Developer',
+    image: 'https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg',
+    company: 'Kootenay Digital',
+    location: 'Nelson, BC',
+    bio: 'Frontend developer specializing in React and modern JavaScript frameworks with a passion for accessible UI design.',
+    skills: ['JavaScript', 'React', 'TypeScript', 'CSS', 'Accessibility'],
+    joinDate: '2023-04-15',
+    status: 'published',
+    featured: true,
+    social: {
+      linkedin: 'https://linkedin.com/in/oliviamartinez',
+      github: 'https://github.com/oliviamartinez',
+      twitter: 'https://twitter.com/oliviamartinez'
+    }
+  },
+  {
+    id: 8,
+    name: 'Noah Wilson',
+    title: 'Backend Engineer',
+    image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    company: 'Alpine Software',
+    location: 'Rossland, BC',
+    bio: 'Backend engineer with expertise in building scalable APIs and microservices using Node.js and Go.',
+    skills: ['Node.js', 'Go', 'MongoDB', 'PostgreSQL', 'Docker'],
+    joinDate: '2023-05-10',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/noahwilson',
+      github: 'https://github.com/noahwilson'
+    }
+  },
+  {
+    id: 9,
+    name: 'Sophia Chen',
+    title: 'Machine Learning Engineer',
+    image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    company: 'Alpine Analytics',
+    location: 'Castlegar, BC',
+    bio: 'Machine learning engineer focused on developing AI solutions for environmental monitoring and conservation.',
+    skills: ['Python', 'TensorFlow', 'PyTorch', 'Data Science', 'Machine Learning'],
+    joinDate: '2023-06-22',
+    status: 'published',
+    featured: true,
+    social: {
+      linkedin: 'https://linkedin.com/in/sophiachen',
+      github: 'https://github.com/sophiachen',
+      website: 'https://sophiachen.ai'
+    }
+  },
+  {
+    id: 10,
+    title: 'Game Developer',
+    name: 'Ethan Jackson',
+    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    company: 'Pixel Pioneers',
+    location: 'Nelson, BC',
+    bio: 'Game developer with a focus on Unity and C# development, creating immersive experiences and educational games.',
+    skills: ['Unity', 'C#', 'Game Design', '3D Modeling', 'AR/VR'],
+    joinDate: '2023-07-05',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/ethanjackson',
+      github: 'https://github.com/ethanjackson'
+    }
+  },
+  {
+    id: 11,
+    name: 'Isabella Rodriguez',
+    title: 'UX Researcher',
+    image: 'https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg',
+    company: 'Creative Solutions',
+    location: 'Kelowna, BC',
+    bio: 'UX researcher with a background in psychology, specializing in user testing and creating accessible digital experiences.',
+    skills: ['User Research', 'Usability Testing', 'Figma', 'UI/UX', 'Accessibility'],
+    joinDate: '2023-08-12',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/isabellarodriguez',
+      twitter: 'https://twitter.com/isabellarodriguez'
+    }
+  },
+  {
+    id: 12,
+    name: 'Lucas Thompson',
+    title: 'Cloud Solutions Architect',
+    image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg',
+    company: 'Kootenay Cloud Services',
+    location: 'Trail, BC',
+    bio: 'Cloud solutions architect with expertise in designing and implementing scalable infrastructure on AWS and Azure.',
+    skills: ['AWS', 'Azure', 'Terraform', 'Kubernetes', 'DevOps'],
+    joinDate: '2023-09-18',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/lucasthompson',
+      github: 'https://github.com/lucasthompson'
+    }
+  },
+  {
+    id: 13,
+    name: 'Ava Patel',
+    title: 'Mobile App Developer',
+    image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+    company: 'Mountain Tech Solutions',
+    location: 'Nelson, BC',
+    bio: 'Mobile app developer specializing in cross-platform development using React Native and Flutter.',
+    skills: ['React Native', 'Flutter', 'JavaScript', 'Dart', 'Mobile Development'],
+    joinDate: '2023-10-05',
+    status: 'published',
+    featured: true,
+    social: {
+      linkedin: 'https://linkedin.com/in/avapatel',
+      github: 'https://github.com/avapatel',
+      website: 'https://avapatel.dev'
+    }
+  },
+  {
+    id: 14,
+    name: 'William Davis',
+    title: 'Cybersecurity Specialist',
+    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    company: 'Digital Ledger Tech',
+    location: 'Kelowna, BC',
+    bio: 'Cybersecurity specialist focused on application security, penetration testing, and secure coding practices.',
+    skills: ['Cybersecurity', 'Penetration Testing', 'OWASP', 'Security Auditing', 'Blockchain'],
+    joinDate: '2023-11-15',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/williamdavis',
+      github: 'https://github.com/williamdavis'
+    }
+  },
+  {
+    id: 15,
+    name: 'Mia Johnson',
+    title: 'Technical Project Manager',
+    image: 'https://images.pexels.com/photos/1181695/pexels-photo-1181695.jpeg',
+    company: 'Mountain Tech Solutions',
+    location: 'Nelson, BC',
+    bio: 'Technical project manager with a background in software development, specializing in agile methodologies and team leadership.',
+    skills: ['Project Management', 'Agile', 'Scrum', 'JIRA', 'Product Management'],
+    joinDate: '2023-12-01',
+    status: 'published',
+    social: {
+      linkedin: 'https://linkedin.com/in/miajohnson',
+      twitter: 'https://twitter.com/miajohnson'
+    }
+  },
+  {
+    id: 16,
+    name: 'Benjamin Lee',
+    title: 'Blockchain Developer',
+    image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg',
+    company: 'Digital Ledger Tech',
+    location: 'Rossland, BC',
+    bio: 'Blockchain developer with experience in smart contract development, DeFi applications, and web3 technologies.',
+    skills: ['Solidity', 'Ethereum', 'Web3.js', 'Smart Contracts', 'DeFi'],
+    joinDate: '2024-01-10',
+    status: 'published',
+    featured: true,
+    social: {
+      linkedin: 'https://linkedin.com/in/benjaminlee',
+      github: 'https://github.com/benjaminlee',
+      website: 'https://benjaminlee.dev'
+    }
+  }
+];
+
+// Combine original members with additional members
+const allMembers = [...members, ...additionalMembers];
+
 // Export all mock data
 export const mockData = {
-  members,
+  members: allMembers,
   companies,
   groups,
   events,

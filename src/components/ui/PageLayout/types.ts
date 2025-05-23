@@ -85,7 +85,7 @@ export interface ContentContainerProps {
   /**
    * Maximum width of the container
    */
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '7xl' | 'full';
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '7xl' | 'full';
   /**
    * Whether to add padding to the container
    */

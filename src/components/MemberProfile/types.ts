@@ -19,11 +19,13 @@ export interface MemberResource {
   title: string;
   type: string;
   date: string;
+  url: string;
 }
 
 export interface MemberPost {
   id: number;
   title: string;
+  excerpt?: string;
   group: {
     id: number;
     name: string;
@@ -46,6 +48,21 @@ export interface MarketplaceListing {
   createdAt: string;
 }
 
+export interface MemberOpportunity {
+  id: number;
+  title: string;
+  type: string;
+  location: string;
+  remote?: boolean;
+  description: string;
+}
+
+export interface MemberAchievement {
+  title: string;
+  description: string;
+  date: string;
+}
+
 export interface Member {
   id: number;
   name: string;
@@ -59,6 +76,9 @@ export interface Member {
   events: MemberEvent[];
   resources: MemberResource[];
   posts: MemberPost[];
+  marketplaceListings: MarketplaceListing[];
+  opportunities?: MemberOpportunity[];
+  achievements?: MemberAchievement[];
   website?: string;
   socialLinks?: {
     platform: string;
@@ -67,7 +87,6 @@ export interface Member {
   employmentStatus: 'full-time' | 'freelance' | 'looking' | 'not-looking';
   openToVolunteering: boolean;
   arrivedInNelson: string;
-  marketplaceListings: MarketplaceListing[];
 }
 
 // Sample data
@@ -136,13 +155,15 @@ export const SAMPLE_MEMBER: Member = {
       id: 1,
       title: 'Getting Started with AI',
       type: 'document',
-      date: '2024-02-01'
+      date: '2024-02-01',
+      url: 'https://example.com/ai-guide.pdf'
     },
     {
       id: 2,
       title: 'ML Workshop Slides',
       type: 'presentation',
-      date: '2024-03-01'
+      date: '2024-03-01',
+      url: 'https://example.com/ml-slides.pptx'
     }
   ],
   posts: [
@@ -172,6 +193,41 @@ export const SAMPLE_MEMBER: Member = {
       price: 2000,
       image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
       createdAt: '2025-03-15'
+    }
+  ],
+  opportunities: [
+    {
+      id: 1,
+      title: 'Frontend Developer Needed',
+      type: 'contract',
+      location: 'Nelson, BC',
+      remote: true,
+      description: 'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.'
+    },
+    {
+      id: 2,
+      title: 'Tech Mentor for Youth Program',
+      type: 'volunteer',
+      location: 'Kootenay Region',
+      remote: false,
+      description: 'Seeking experienced developers to mentor high school students in our after-school coding program. 2 hours per week commitment.'
+    }
+  ],
+  achievements: [
+    {
+      title: 'Kootenay Tech Innovation Award',
+      description: 'Recognized for contributions to the local tech community and innovative solutions',
+      date: '2023-11-15'
+    },
+    {
+      title: 'Open Source Contributor',
+      description: 'Top 10 contributor to the React Kootenay library',
+      date: '2023-08-22'
+    },
+    {
+      title: 'Workshop Facilitator',
+      description: 'Led 12 successful tech workshops for beginners in the community',
+      date: '2023-06-30'
     }
   ]
 };

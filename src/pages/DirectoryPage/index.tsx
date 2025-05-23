@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,26 +6,27 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MembersList from '../../components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useMembers } from '../../hooks/useQueries';
+import { FilterOptions } from '../../components/MembersList/types';
 
-// Define Member type based on migration plan
-interface Member {
-  id: number;
-  name: string;
-  title: string;
-  company?: string;
-  location?: string;
-  image: string;
-  bio?: string;
-  skills?: string[];
-  joinDate: string;
-}
+// Member type is already defined in the types.ts file
 
 export default function DirectoryPage() {
-  // These would normally come from a Tanstack Query hook like useMembers()
-  const isLoading = false;
-  const error = null;
-  const members: Member[] = []; // Would be populated from Tanstack Query
+  // Use the useMembers hook to fetch members data
+  const { data: members = [], isLoading, error } = useMembers();
   const hasMembers = members.length > 0;
+  
+  // State for search and filters that will be passed to ActionBar
+  const [filters, setFilters] = useState<FilterOptions>({
+    search: '',
+    skills: undefined
+  });
+  
+  useEffect(() => {
+    console.log('DirectoryPage - Members:', members);
+    console.log('DirectoryPage - Loading:', isLoading);
+    console.log('DirectoryPage - Error:', error);
+  }, [members, isLoading, error]);
   
   return (
     <>
@@ -36,7 +38,10 @@ export default function DirectoryPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          filters={filters}
+          setFilters={setFilters}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={8} columns={{ sm: 1, md: 2, lg: 4 }} />
@@ -55,7 +60,15 @@ export default function DirectoryPage() {
             </a>
           </div>
         ) : (
-          <MembersList />
+          <div className="mt-6">
+            <MembersList 
+              members={members} 
+              loading={isLoading} 
+              error={error} 
+              initialSearch={filters.search}
+              initialSkills={filters.skills}
+            />
+          </div>
         )}
       </ContentContainer>
     </>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Listing } from './types';
-import { getTypeIcon, formatPrice, getConditionDisplayName } from './utils';
+import { getTypeIcon, getConditionDisplayName, formatPrice } from './utils';
 
 interface ListingCardProps {
   listing: Listing;
@@ -26,7 +26,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
               {listing.title}
             </h3>
             <p className="text-orange-600 dark:text-orange-400">
-              {formatPrice(listing.price, listing.type)}
+              {listing.price !== undefined ? formatPrice(listing.price, listing.type) : 'Price on request'}
             </p>
           </div>
           <div className="p-2 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">

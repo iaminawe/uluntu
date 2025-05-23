@@ -1,25 +1,32 @@
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { QueryError } from '../../components/ui/ErrorDisplay';
 import { EmptyState } from '../../components/ui/PageLayout';
 import EventsList from '../../components/EventsList';
+import EventsCalendar from '../../components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useEvents } from '../../hooks/useQueries';
 
-// Define a simplified Event type
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-}
+// Using Event type from useQueries
 
 export default function EventsPage() {
-  // These would normally come from a hook like useEvents()
-  const isLoading = false;
-  const error = null;
-  const events: Event[] = []; // Assuming this would be populated from an API
+  // State for search term from ActionBar
+  const [searchTerm, setSearchTerm] = useState('');
+  // State for view mode (list or calendar)
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  
+  // Use the useEvents hook to fetch events data
+  const { data: events = [], isLoading, error } = useEvents();
   const hasEvents = events.length > 0;
+  
+  useEffect(() => {
+    console.log('EventsPage - Events:', events);
+    console.log('EventsPage - Loading:', isLoading);
+    console.log('EventsPage - Error:', error);
+  }, [events, isLoading, error]);
   
   return (
     <>
@@ -31,7 +38,11 @@ export default function EventsPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          onSearch={setSearchTerm} 
+          viewMode={viewMode} 
+          onViewModeChange={setViewMode} 
+        />
         
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
@@ -51,8 +62,14 @@ export default function EventsPage() {
               onClick: () => console.log('Navigate to create event')
             }}
           />
+        ) : viewMode === 'list' ? (
+          <EventsList initialSearch={searchTerm} />
         ) : (
-          <EventsList />
+          <EventsCalendar 
+            events={events} 
+            isLoading={isLoading} 
+            error={error} 
+          />
         )}
       </ContentContainer>
     </>

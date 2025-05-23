@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,19 +6,16 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import CompaniesList from '../../components/CompaniesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useCompanies } from '../../hooks/useQueries';
 
-// Define a simplified Company type
-interface Company {
-  id: number;
-  name: string;
-  industry: string[];
-}
 
 export default function CompaniesPage() {
-  // These would normally come from a hook like useCompanies()
-  const isLoading = false;
-  const error = null;
-  const companies: Company[] = []; // Assuming this would be populated from an API
+  // State for search and filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  
+  // Use the useCompanies hook to fetch companies data
+  const { data: companies = [], isLoading, error } = useCompanies();
   const hasCompanies = companies.length > 0;
   
   return (
@@ -30,7 +28,12 @@ export default function CompaniesPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          selectedIndustries={selectedIndustries}
+          onIndustryChange={setSelectedIndustries}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
@@ -51,7 +54,10 @@ export default function CompaniesPage() {
             }}
           />
         ) : (
-          <CompaniesList />
+          <CompaniesList 
+            initialSearch={searchTerm} 
+            initialIndustry={selectedIndustries.length === 1 ? selectedIndustries[0] : ''} 
+          />
         )}
       </ContentContainer>
     </>

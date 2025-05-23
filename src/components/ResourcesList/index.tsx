@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
 import { Resource, ResourceType, SAMPLE_RESOURCES } from './types';
 import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
 
 const ResourcesList = () => {
-  const [resources, setResources] = useState<Resource[]>(SAMPLE_RESOURCES);
-  const [searchQuery, setSearchQuery] = useState('');
+  const resources = SAMPLE_RESOURCES;
+  const searchQuery = '';
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
 
@@ -21,30 +20,10 @@ const ResourcesList = () => {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Resources</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
-        >
-          Add Resource
-        </button>
-      </div>
+    <div>
+      {/* Resource filters */}
 
       <div className="mb-6 space-y-4">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search resources..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md
-                     bg-white dark:bg-slate-700 text-slate-900 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
-        </div>
 
         <div className="flex flex-wrap gap-2">
           <button

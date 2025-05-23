@@ -18,6 +18,7 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
     'lg': 'max-w-lg',
     'xl': 'max-w-xl',
     '2xl': 'max-w-2xl',
+    '3xl': 'max-w-3xl',
     '7xl': 'max-w-7xl',
     'full': 'max-w-full'
   }[maxWidth];

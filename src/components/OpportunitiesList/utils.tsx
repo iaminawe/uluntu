@@ -49,8 +49,9 @@ export const filterOpportunities = (
       return false;
     }
     
-    // Filter by experience level
-    if (filters.experienceLevel !== 'all' && opportunity.experienceLevel !== filters.experienceLevel) {
+    // Filter by experience level (if both filter and opportunity have experienceLevel)
+    if (filters.experienceLevel && filters.experienceLevel !== 'all' && 
+        opportunity.experienceLevel && opportunity.experienceLevel !== filters.experienceLevel) {
       return false;
     }
     
@@ -62,13 +63,18 @@ export const filterOpportunities = (
     // Filter by search term (check title, company name, and description)
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      return (
+      const matchesSearch = (
         opportunity.title.toLowerCase().includes(searchLower) ||
         opportunity.company.name.toLowerCase().includes(searchLower) ||
         opportunity.description.toLowerCase().includes(searchLower)
       );
+      
+      if (!matchesSearch) {
+        return false;
+      }
     }
     
+    // If it passes all filters, include it
     return true;
   });
 };

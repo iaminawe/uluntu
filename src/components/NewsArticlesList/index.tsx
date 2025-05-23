@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { AlertTriangle, PlusCircle } from 'lucide-react';
+// NewsArticlesList component
+import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from './ArticleCard';
-import NewsArticlesFilters from './NewsArticlesFilters';
+import FeaturedArticleCard from './FeaturedArticleCard';
 import { FilterOptions, NewsArticlesListProps } from './types';
-import { extractTags } from './utils';
 import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
 const NewsArticlesList = ({ 
   initialTag = '', 
   initialSearch = '' 
 }: NewsArticlesListProps) => {
-  // State for filters
-  const [filters, setFilters] = useState<FilterOptions>({
+  // Use filters from props
+  const filters: FilterOptions = {
     search: initialSearch,
     tags: initialTag ? [initialTag] : [],
-  });
+  };
 
   // Get filtered articles using Tanstack Query
   const { 
@@ -30,25 +28,14 @@ const NewsArticlesList = ({
     tags: filters.tags.length > 0 ? filters.tags : undefined
   });
 
-  // Extract available tags for filtering
-  const availableTags = articles && articles.length > 0 
-    ? extractTags(articles) 
-    : [];
+  // No need to extract tags as filtering is handled in ActionBar
 
-  // When filters change, refetch data
-  useEffect(() => {
-    refetch();
-  }, [filters, refetch]);
+  // No need to watch filters changes as they come from props
 
   // Render loading state
   if (isLoading) {
     return (
       <div>
-        <NewsArticlesFilters 
-          filters={filters} 
-          setFilters={setFilters} 
-          availableTags={[]}
-        />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {[1, 2, 3, 4].map(i => (
@@ -101,24 +88,7 @@ const NewsArticlesList = ({
   
   return (
     <div>
-      <div className="flex justify-between mb-6">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">News Articles</h2>
-        <Link
-          to="/news/create"
-          className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg 
-                   hover:bg-orange-600 transition-colors shadow hover:shadow-md"
-        >
-          <PlusCircle className="h-5 w-5 mr-2" />
-          Create Article
-        </Link>
-      </div>
-      
-      {/* Filters */}
-      <NewsArticlesFilters 
-        filters={filters} 
-        setFilters={setFilters} 
-        availableTags={availableTags}
-      />
+      {/* News articles content */}
       
       {/* Show loading overlay when refetching */}
       <div className={`relative ${isRefetching ? 'opacity-60 pointer-events-none' : ''}`}>
@@ -138,17 +108,9 @@ const NewsArticlesList = ({
                 : 'No news articles have been published yet.'}
             </p>
             {(filters.search || filters.tags.length > 0) && (
-              <button
-                onClick={() => setFilters({
-                  search: '',
-                  tags: []
-                })}
-                className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 
-                        text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 
-                        dark:hover:bg-slate-700 transition-colors"
-              >
-                Reset Filters
-              </button>
+              <p className="text-slate-500 dark:text-slate-400">
+                Try adjusting your filters in the search bar above.
+              </p>
             )}
           </div>
         ) : (
@@ -157,11 +119,11 @@ const NewsArticlesList = ({
             {articles.some(article => article.featured) && (
               <div className="mb-10">
                 <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Featured</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 gap-8">
                   {articles
                     .filter(article => article.featured)
                     .map(article => (
-                      <ArticleCard key={article.id} article={article} />
+                      <FeaturedArticleCard key={article.id} article={article} />
                     ))}
                 </div>
               </div>

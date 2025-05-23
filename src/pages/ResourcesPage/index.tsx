@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,28 +6,20 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import ResourcesList from '../../components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useResources } from '../../hooks/useQueries';
 
-// Define Resource type based on migration plan
-interface Resource {
-  id: number;
-  title: string;
-  description: string;
-  type: 'guide' | 'tool' | 'article' | 'video' | 'document';
-  url: string;
-  image?: string;
-  dateAdded: string;
-  contributor: {
-    id: number;
-    name: string;
-  };
-}
+// Resource type is already defined in the types.ts file
 
 export default function ResourcesPage() {
-  // These would normally come from a Tanstack Query hook like useResources()
-  const isLoading = false;
-  const error = null;
-  const resources: Resource[] = []; // Would be populated from Tanstack Query
+  // Use the useResources hook to fetch resources data
+  const { data: resources = [], isLoading, error } = useResources();
   const hasResources = resources.length > 0;
+  
+  useEffect(() => {
+    console.log('ResourcesPage - Resources:', resources);
+    console.log('ResourcesPage - Loading:', isLoading);
+    console.log('ResourcesPage - Error:', error);
+  }, [resources, isLoading, error]);
   
   return (
     <>

@@ -20,7 +20,11 @@ export interface Member {
 
 export interface MembersListProps {
   initialSearch?: string;
+  initialSkills?: string[];
   companyId?: number;
+  members?: Member[];
+  loading?: boolean;
+  error?: any;
 }
 
 export interface FilterOptions {

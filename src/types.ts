@@ -1,5 +1,33 @@
 // Common types for the application
 
+// Session and Presenter types for events
+export interface EventSessionResource {
+  id: number;
+  title: string;
+  url: string;
+  type: 'slides' | 'document' | 'code' | 'website' | 'other';
+}
+
+export interface EventSession {
+  id: number;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  presenters: EventPresenter[];
+  videoUrl?: string; // URL for YouTube or Vimeo video
+  resources?: EventSessionResource[];
+}
+
+export interface EventPresenter {
+  id: number;
+  name: string;
+  image: string;
+  bio?: string;
+  title?: string;
+  company?: string;
+}
+
 export interface Member {
   id: number;
   name: string;
@@ -56,6 +84,8 @@ export interface Event {
   type: 'in-person' | 'online' | 'hybrid';
   featured?: boolean;
   url?: string;
+  status: 'draft' | 'published' | 'archived';
+  sessions?: EventSession[];
 }
 
 export interface GroupMember {
