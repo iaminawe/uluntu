@@ -1,66 +1,62 @@
 import { useState, useEffect } from 'react';
 import { EventType, DateRangeFilter } from './types';
 import { useEventsWithFilters } from '../../hooks/useQueries';
-import EventsFilters from './EventsFilters';
 import EventCard from './EventCard';
+import PastEventCard from './PastEventCard';
+
+// Helper function to determine if an event is in the past
+const isPastEvent = (date: string): boolean => {
+  const eventDate = new Date(date);
+  const today = new Date();
+  return eventDate < today;
+};
 
 interface EventsListProps {
   initialSearch?: string;
 }
 
 const EventsList = ({ initialSearch = '' }: EventsListProps) => {
-  const [search, setSearch] = useState(initialSearch);
-  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
+  // Use initialSearch directly without internal state management
+  // This will be controlled by the ActionBar component instead
   const [selectedTypes, setSelectedTypes] = useState<EventType[]>([]);
-  const [dateRange, setDateRange] = useState<DateRangeFilter>('upcoming');
+  const [dateRange, setDateRange] = useState<DateRangeFilter>('all'); // Changed from 'upcoming' to 'all'
   
   const { data: events = [], isLoading, error } = useEventsWithFilters({
-    search: debouncedSearch,
+    search: initialSearch,
     types: selectedTypes.length > 0 ? selectedTypes : undefined,
     dateRange: dateRange
   });
-  
-  // Debounce search input
+
+  // Debug logging
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
-    
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [search]);
+    console.log('EventsList - Filters:', { search: initialSearch, types: selectedTypes, dateRange });
+    console.log('EventsList - Events data:', events);
+    console.log('EventsList - Loading state:', isLoading);
+  }, [events, isLoading, initialSearch, selectedTypes, dateRange]);
   
-  const handleTypeToggle = (type: EventType) => {
-    setSelectedTypes(prev => 
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
-  };
+  // No need for debounce since search is handled by ActionBar
+  
+  // Type filters now handled by ActionBar
   
   const clearFilters = () => {
     setSelectedTypes([]);
-    setSearch('');
-    setDebouncedSearch('');
-    setDateRange('upcoming');
+    setDateRange('all');
   };
 
-  const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'upcoming' || debouncedSearch !== '';
+  const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'all' || initialSearch !== '';
+  
+  // Separate events into upcoming and past
+  const upcomingEvents = events.filter(event => !isPastEvent(event.date));
+  const pastEvents = events.filter(event => isPastEvent(event.date));
+  
+  // Sort upcoming events by date (soonest first)
+  upcomingEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  // Sort past events by date (most recent first)
+  pastEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   
   return (
     <div className="space-y-8">
-      {/* Search and Filters */}
-      <EventsFilters 
-        search={search}
-        setSearch={setSearch}
-        selectedTypes={selectedTypes}
-        handleTypeToggle={handleTypeToggle}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        clearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-      />
       
       {/* Loading state */}
       {isLoading && (
@@ -92,18 +88,35 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
         </div>
       )}
       
-      {/* Event list */}
-      {!isLoading && !error && events.length > 0 && (
-        <div className="space-y-6">
-          {events.map(event => (
-            <EventCard key={event.id} event={event} />
-          ))}
+      {/* Upcoming Events */}
+      {!isLoading && !error && upcomingEvents.length > 0 && (
+        <div className="mb-12">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Upcoming Events</h2>
+          <div className="space-y-6">
+            {upcomingEvents.map(event => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Past Events */}
+      {!isLoading && !error && pastEvents.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Recent Events</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pastEvents.map(event => (
+              <div key={event.id} className="h-full">
+                <PastEventCard event={event} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
       
       {/* Results summary */}
       {!isLoading && !error && events.length > 0 && (
-        <div className="text-center text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Showing {events.length} {events.length === 1 ? 'event' : 'events'}
           {hasActiveFilters && ' matching your filters'}
         </div>

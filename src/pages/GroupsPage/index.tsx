@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,14 +6,20 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import GroupsList from '../../components/GroupsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useGroups } from '../../hooks/useQueries';
+import { GroupVisibility } from '../../components/GroupsList/types';
 
 export default function GroupsPage() {
-  // These would normally come from a hook like useGroups()
-  const isLoading = false;
-  const error = null;
-  const groups: any[] = []; // Would be populated from API
+  // State for filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [visibilityFilter, setVisibilityFilter] = useState<GroupVisibility[]>([]);
+
+  // Filter state is managed by the ActionBar component
+
+  // Use the useGroups hook to fetch groups data
+  const { data: groups = [], isLoading, error } = useGroups();
   const hasGroups = groups.length > 0;
-  
+
   return (
     <>
       <Helmet>
@@ -23,7 +30,14 @@ export default function GroupsPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        {/* ActionBar will handle the page actions */}
+
+        <ActionBar 
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          visibilityFilter={visibilityFilter}
+          onVisibilityChange={setVisibilityFilter}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
@@ -44,7 +58,10 @@ export default function GroupsPage() {
             }}
           />
         ) : (
-          <GroupsList />
+          <GroupsList 
+            searchTerm={searchTerm} 
+            visibilityFilter={visibilityFilter} 
+          />
         )}
       </ContentContainer>
     </>

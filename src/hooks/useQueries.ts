@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { addMonths } from 'date-fns';
-import { members, companies, events, groups, marketplaceItems, EntityStatus, MarketplaceItem } from '../data/mock/mockData';
+import mockData, { EntityStatus, MarketplaceItem } from '../data/mock/mockData';
+
+// Extract data from mockData object
+const { members, companies, events, groups, marketplaceItems, resources } = mockData;
 
 // Import or define newsArticles data
 const newsArticles = [
@@ -86,6 +89,14 @@ const fetchCompanyById = async (id: number) => {
 
 const fetchEvents = async () => {
   await new Promise(resolve => setTimeout(resolve, 200));
+  console.log('fetchEvents - Raw events data from mockData:', events);
+  console.log('fetchEvents - Number of events in mock data:', events.length);
+  
+  // Log the status values that exist in the events array
+  const statusValues = [...new Set(events.map(event => event.status))];
+  console.log('fetchEvents - Status values in events:', statusValues);
+  
+  // Return all events regardless of status for debugging
   return events;
 };
 
@@ -285,7 +296,7 @@ export function useEvent(id: number) {
   return useQuery({
     queryKey: ['events', id],
     queryFn: () => fetchEventById(id),
-    enabled: !!id
+    enabled: id > 0 // Only fetch if ID is a positive number
   });
 }
 
@@ -580,5 +591,89 @@ export function useRelatedMarketplaceItems(itemId: number | undefined) {
       return simulateApiCall(relatedItems);
     },
     enabled: !!itemId
+  });
+}
+
+// Resources hooks
+const fetchResources = async () => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  console.log('fetchResources - Raw resources data from mockData:', resources);
+  console.log('fetchResources - Number of resources in mock data:', resources.length);
+  return resources;
+};
+
+export function useResources() {
+  return useQuery({
+    queryKey: ['resources'],
+    queryFn: fetchResources
+  });
+}
+
+// Opportunities hooks
+const fetchOpportunities = async () => {
+  try {
+    console.log('fetchOpportunities - Starting to fetch opportunities');
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Import opportunities directly to ensure we get the latest data
+    console.log('fetchOpportunities - About to import mockData');
+    const mockDataModule = await import('../data/mock/mockData');
+    console.log('fetchOpportunities - mockData imported successfully');
+    console.log('Available exports from mockData:', Object.keys(mockDataModule));
+    
+    if (!mockDataModule.opportunities || !Array.isArray(mockDataModule.opportunities)) {
+      console.error('Opportunities data is missing or not an array:', mockDataModule.opportunities);
+      // Fallback to hardcoded opportunities if the import fails
+      return [
+        {
+          id: 1,
+          title: 'Emergency Fallback: Senior Developer',
+          company: {
+            id: 1,
+            name: 'Fallback Tech Solutions',
+            logo: 'https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg'
+          },
+          type: 'full-time' as 'full-time',
+          location: 'Nelson, BC',
+          remote: true,
+          description: 'This is a fallback opportunity because the mock data failed to load.',
+          postedDate: '2025-04-15',
+          status: 'published',
+          featured: true
+        }
+      ];
+    }
+    
+    console.log('fetchOpportunities - Raw opportunities data from mockData:', mockDataModule.opportunities);
+    console.log('fetchOpportunities - Number of opportunities in mock data:', mockDataModule.opportunities.length);
+    return mockDataModule.opportunities;
+  } catch (error) {
+    console.error('Error fetching opportunities:', error);
+    // Return fallback data in case of error
+    return [
+      {
+        id: 1,
+        title: 'Error Fallback: Senior Developer',
+        company: {
+          id: 1,
+          name: 'Error Recovery Solutions',
+          logo: 'https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg'
+        },
+        type: 'full-time' as 'full-time',
+        location: 'Nelson, BC',
+        remote: true,
+        description: 'This is a fallback opportunity because there was an error loading the mock data.',
+        postedDate: '2025-04-15',
+        status: 'published',
+        featured: true
+      }
+    ];
+  }
+};
+
+export function useOpportunities() {
+  return useQuery({
+    queryKey: ['opportunities'],
+    queryFn: fetchOpportunities
   });
 }

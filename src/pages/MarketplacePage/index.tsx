@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,12 +6,22 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MarketplaceList from '../../components/MarketplaceList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
+import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
 
 export default function MarketplacePage() {
-  // These would normally come from a hook like useMarketplaceItems()
-  const isLoading = false;
-  const error = null;
-  const marketplaceItems: any[] = []; // Would be populated from API
+  // State for filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedType, setSelectedType] = useState<ListingType | 'all'>('all');
+  const [selectedCondition, setSelectedCondition] = useState<ListingCondition | 'all'>('all');
+  
+  // Use the useMarketplaceItemsWithFilters hook to fetch filtered marketplace data
+  const { data: marketplaceItems = [], isLoading, error } = useMarketplaceItemsWithFilters({
+    search: searchTerm,
+    type: selectedType !== 'all' ? selectedType : undefined,
+    condition: selectedCondition !== 'all' ? selectedCondition : undefined
+  });
+  
   const hasItems = marketplaceItems.length > 0;
   
   return (
@@ -23,7 +34,14 @@ export default function MarketplacePage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+          selectedCondition={selectedCondition}
+          setSelectedCondition={setSelectedCondition}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
@@ -44,7 +62,10 @@ export default function MarketplacePage() {
             }}
           />
         ) : (
-          <MarketplaceList />
+          <MarketplaceList 
+            initialSearch={searchTerm}
+            initialType={selectedType}
+          />
         )}
       </ContentContainer>
     </>

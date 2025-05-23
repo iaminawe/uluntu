@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from './ListingCard';
-import MarketplaceFilters from './MarketplaceFilters';
 import { 
   Listing, 
   MarketplaceListProps, 
@@ -19,17 +18,14 @@ const MarketplaceList = ({
   initialSearch = '', 
   sellerId 
 }: MarketplaceListProps) => {
-  // State for filters
-  const [filters, setFilters] = useState<FilterOptions>({
+  // Use filters from props
+  const filters: FilterOptions = {
     search: initialSearch,
     type: initialType,
     condition: 'all',
     priceRange: 'all',
     tags: []
-  });
-  
-  // State for advanced filters visibility
-  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
+  };
   
   // State for listings data
   const [listings, setListings] = useState<Listing[]>([]);
@@ -74,12 +70,6 @@ const MarketplaceList = ({
   if (loading) {
     return (
       <div>
-        <MarketplaceFilters 
-          filters={filters}
-          setFilters={setFilters}
-          advancedFiltersOpen={advancedFiltersOpen}
-          setAdvancedFiltersOpen={setAdvancedFiltersOpen}
-        />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
@@ -126,13 +116,7 @@ const MarketplaceList = ({
   
   return (
     <div>
-      {/* Filters */}
-      <MarketplaceFilters 
-        filters={filters}
-        setFilters={setFilters}
-        advancedFiltersOpen={advancedFiltersOpen}
-        setAdvancedFiltersOpen={setAdvancedFiltersOpen}
-      />
+      {/* Marketplace listings content */}
       
       {/* Results */}
       {filteredListings.length === 0 ? (
@@ -147,20 +131,9 @@ const MarketplaceList = ({
           <p className="text-slate-500 dark:text-slate-400 mb-4">
             Try adjusting your filters or search terms.
           </p>
-          <button
-            onClick={() => setFilters({
-              search: '',
-              type: 'all',
-              condition: 'all',
-              priceRange: 'all',
-              tags: []
-            })}
-            className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 
-                     text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 
-                     dark:hover:bg-slate-700 transition-colors"
-          >
-            Reset Filters
-          </button>
+          <p className="text-slate-500 dark:text-slate-400">
+            Try adjusting your filters in the search bar above.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

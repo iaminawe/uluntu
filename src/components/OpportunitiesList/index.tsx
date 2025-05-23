@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 import OpportunityCard from './OpportunityCard';
-import OpportunitiesFilters from './OpportunitiesFilters';
 import { 
   Opportunity, 
   OpportunitiesListProps, 
@@ -15,14 +13,25 @@ import {
   sortOpportunitiesByDate 
 } from './utils';
 
-const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProps) => {
+const OpportunitiesList = ({ 
+  initialCategory, 
+  companyId, 
+  opportunities: externalOpportunities,
+  initialFilters
+}: OpportunitiesListProps) => {
   // State for filter options
-  const [filters, setFilters] = useState<FilterOptions>({
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {
     type: 'all',
-    experienceLevel: 'all',
     remote: 'all',
     search: ''
   });
+  
+  // Update filters when initialFilters changes
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
   
   // State for opportunities data
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -32,14 +41,10 @@ const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProp
   // Filtered opportunities based on current filters
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
   
-  // Fetch opportunities data (simulated)
+  // Use external opportunities data or fetch from sample data
   useEffect(() => {
     const fetchOpportunities = async () => {
       try {
-        // In a real app, this would be an API call
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         // Set initial category filter if provided
         if (initialCategory) {
           setFilters(prev => ({
@@ -48,8 +53,21 @@ const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProp
           }));
         }
         
-        // Set opportunities from sample data
-        setOpportunities(SAMPLE_OPPORTUNITIES);
+        // Use external opportunities if provided, otherwise use sample data
+        if (externalOpportunities && externalOpportunities.length > 0) {
+          console.log('OpportunitiesList - Using external opportunities data:', externalOpportunities);
+          console.log('OpportunitiesList - Number of external opportunities:', externalOpportunities.length);
+          console.log('OpportunitiesList - First opportunity:', externalOpportunities[0]);
+          setOpportunities(externalOpportunities);
+        } else {
+          // In a real app, this would be an API call
+          // Simulate API delay for sample data
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.log('OpportunitiesList - Using sample opportunities data');
+          console.log('OpportunitiesList - Number of sample opportunities:', SAMPLE_OPPORTUNITIES.length);
+          setOpportunities(SAMPLE_OPPORTUNITIES);
+        }
+        
         setLoading(false);
       } catch (err) {
         setError('Failed to load opportunities. Please try again later.');
@@ -58,22 +76,34 @@ const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProp
     };
     
     fetchOpportunities();
-  }, [initialCategory]);
+  }, [initialCategory, externalOpportunities]);
   
   // Apply filters when opportunities or filters change
   useEffect(() => {
-    if (!opportunities.length) return;
+    if (!opportunities.length) {
+      console.log('OpportunitiesList - No opportunities to filter');
+      return;
+    }
+    
+    console.log('OpportunitiesList - Filtering opportunities:', opportunities);
+    console.log('OpportunitiesList - Using filters:', filters);
     
     // Apply filters and sort by date
     const filtered = filterOpportunities(opportunities, filters, companyId);
+    console.log('OpportunitiesList - Filtered opportunities:', filtered);
+    
     const sorted = sortOpportunitiesByDate(filtered);
+    console.log('OpportunitiesList - Sorted opportunities:', sorted);
     
     setFilteredOpportunities(sorted);
   }, [opportunities, filters, companyId]);
   
   // Show featured opportunities at the top
+  console.log('OpportunitiesList - filteredOpportunities before splitting:', filteredOpportunities);
   const featuredOpportunities = filteredOpportunities.filter(opp => opp.featured);
   const regularOpportunities = filteredOpportunities.filter(opp => !opp.featured);
+  console.log('OpportunitiesList - featuredOpportunities:', featuredOpportunities);
+  console.log('OpportunitiesList - regularOpportunities:', regularOpportunities);
   
   // Render loading state
   if (loading) {
@@ -102,30 +132,7 @@ const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProp
   
   return (
     <div className="space-y-6">
-      {/* Header and post opportunity button */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-0">
-          Opportunities
-          {companyId && <span className="text-lg font-normal ml-2">at this company</span>}
-        </h2>
-        
-        <Link
-          to="/opportunities/create"
-          className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 
-                 text-white rounded-md transition-colors"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Post Opportunity
-        </Link>
-      </div>
-      
-      {/* Filters */}
-      <OpportunitiesFilters 
-        filters={filters} 
-        setFilters={setFilters} 
-        resultsCount={filteredOpportunities.length} 
-        totalCount={opportunities.length} 
-      />
+      {/* Opportunities content */}
       
       {/* Results */}
       {filteredOpportunities.length === 0 ? (
@@ -157,28 +164,34 @@ const OpportunitiesList = ({ initialCategory, companyId }: OpportunitiesListProp
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Featured opportunities */}
+          {/* Featured opportunities - 2-up grid */}
           {featuredOpportunities.length > 0 && (
-            <div className="space-y-4">
-              {featuredOpportunities.map(opportunity => (
-                <OpportunityCard 
-                  key={opportunity.id} 
-                  opportunity={opportunity} 
-                  featured={true} 
-                />
-              ))}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Featured Opportunities</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {featuredOpportunities.map(opportunity => (
+                  <OpportunityCard 
+                    key={opportunity.id} 
+                    opportunity={opportunity} 
+                    featured={true} 
+                  />
+                ))}
+              </div>
             </div>
           )}
           
-          {/* Regular opportunities */}
+          {/* Regular opportunities - 3-up grid */}
           {regularOpportunities.length > 0 && (
-            <div className="space-y-4">
-              {regularOpportunities.map(opportunity => (
-                <OpportunityCard 
-                  key={opportunity.id} 
-                  opportunity={opportunity} 
-                />
-              ))}
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">All Opportunities</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {regularOpportunities.map(opportunity => (
+                  <OpportunityCard 
+                    key={opportunity.id} 
+                    opportunity={opportunity} 
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>

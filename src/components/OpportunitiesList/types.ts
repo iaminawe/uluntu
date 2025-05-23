@@ -33,11 +33,13 @@ export interface Opportunity {
 export interface OpportunitiesListProps {
   initialCategory?: OpportunityCategory;
   companyId?: number;
+  opportunities?: Opportunity[];
+  initialFilters?: FilterOptions;
 }
 
 export interface FilterOptions {
   type: OpportunityType | 'all';
-  experienceLevel: ExperienceLevel | 'all';
+  experienceLevel?: ExperienceLevel | 'all';
   remote: boolean | 'all';
   search: string;
 }

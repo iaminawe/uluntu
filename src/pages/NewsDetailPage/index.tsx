@@ -40,7 +40,7 @@ export default function NewsDetailPage() {
         <meta name="description" content={article.excerpt} />
       </Helmet>
       
-      <ContentContainer maxWidth="xl">
+      <ContentContainer maxWidth="3xl">
         <Card className="mb-6">
           <ArticleHeader article={article} id={id || ''} />
           <ArticleContent article={article} />

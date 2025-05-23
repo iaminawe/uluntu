@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -5,12 +6,19 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import NewsArticlesList from '../../components/NewsArticlesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
+import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
 export default function NewsPage() {
-  // These would normally come from a hook like useNewsArticles()
-  const isLoading = false;
-  const error = null;
-  const articles: any[] = []; // Would be populated from API
+  // State for filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
+  const { data: articles = [], isLoading, error } = useNewsArticlesWithFilters({
+    search: searchTerm,
+    tags: selectedTags.length > 0 ? selectedTags : undefined
+  });
+  
   const hasArticles = articles.length > 0;
   
   return (
@@ -23,7 +31,12 @@ export default function NewsPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          selectedTags={selectedTags}
+          onTagsChange={setSelectedTags}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
@@ -44,7 +57,10 @@ export default function NewsPage() {
             }}
           />
         ) : (
-          <NewsArticlesList />
+          <NewsArticlesList 
+            initialSearch={searchTerm}
+            initialTag={selectedTags.length > 0 ? selectedTags[0] : ''}
+          />
         )}
       </ContentContainer>
     </>

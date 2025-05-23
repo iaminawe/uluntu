@@ -1,4 +1,5 @@
 // Types for EventEditPage components
+import { EventSession } from '../../types';
 export interface FormData {
   title: string;
   date: string;
@@ -9,6 +10,7 @@ export interface FormData {
   type: 'in-person' | 'online' | 'hybrid';
   url?: string;
   organizerId: number;
+  sessions?: EventSession[];
 }
 
 export interface LoadingStateProps {
@@ -32,8 +34,12 @@ export interface EventImageProps {
 }
 
 export interface OrganizerSelectProps {
-  formData: FormData;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  organizer: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  onOrganizerChange: (organizer: { id: number; name: string; image: string }) => void;
 }
 
 export interface FormActionsProps {

@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEvent } from '../../hooks/useQueries';
+import { Event } from '../../types';
 import { format } from 'date-fns';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';
 import EventImage from './EventImage';
 import OrganizerSelect from './OrganizerSelect';
+import SessionsManager from './SessionsManager';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
-import { FormData } from './types';
+import { FormData } from './types'; // Removed duplicate import
 
 const initialFormData: FormData = {
   title: '',
@@ -20,13 +22,14 @@ const initialFormData: FormData = {
   image: '',
   type: 'in-person',
   url: '',
-  organizerId: 1
+  organizerId: 1,
+  sessions: []
 };
 
 export default function EventEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const eventId = id ? parseInt(id) : undefined;
+  const eventId = id ? parseInt(id) : 0; // Using 0 instead of undefined to avoid type issues
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -37,11 +40,17 @@ export default function EventEditPage() {
   const { 
     data: event, 
     isLoading: eventLoading
-  } = useEvent(eventId);
+  } = useEvent(isEditMode ? eventId : 0); // Only fetch if in edit mode
   
   // Populate form with event data when in edit mode
   useEffect(() => {
+    // Debug logging
+    console.log('EventEditPage - Event ID:', eventId);
+    console.log('EventEditPage - Event data:', event);
+    console.log('EventEditPage - Event loading:', eventLoading);
+    
     if (isEditMode && event) {
+      console.log('EventEditPage - Setting form data from event');
       setFormData({
         title: event.title,
         date: event.date,
@@ -51,10 +60,11 @@ export default function EventEditPage() {
         image: event.image || '',
         type: event.type,
         url: event.url || '',
-        organizerId: event.organizer.id
+        organizerId: event.organizer.id,
+        sessions: event.sessions || []
       });
     }
-  }, [isEditMode, event]);
+  }, [isEditMode, event, eventId, eventLoading]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -167,9 +177,18 @@ export default function EventEditPage() {
                 handleChange={handleChange}
               />
               
-              <OrganizerSelect 
-                formData={formData}
-                handleChange={handleChange}
+              <OrganizerSelect
+                organizer={{
+                  id: formData.organizerId,
+                  name: event?.organizer?.name || '',
+                  image: event?.organizer?.image || ''
+                }}
+                onOrganizerChange={(organizer) => setFormData({ ...formData, organizerId: organizer.id })}
+              />
+              
+              <SessionsManager
+                sessions={formData.sessions || []}
+                onSessionsChange={(sessions) => setFormData({ ...formData, sessions })}
               />
               
               <FormActions 

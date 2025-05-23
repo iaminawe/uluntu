@@ -1,4 +1,5 @@
 import { EventInfoProps } from './types';
+import EventSessions from './EventSessions';
 
 const EventInfo: React.FC<EventInfoProps> = ({ event }) => {
   return (
@@ -7,7 +8,10 @@ const EventInfo: React.FC<EventInfoProps> = ({ event }) => {
         {event.description}
       </p>
       
-      {/* Event organizer info could go here */}
+      {/* Event Sessions */}
+      <EventSessions event={event} />
+      
+      {/* Event organizer info */}
       <div className="flex items-start mt-8 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg">
         <img 
           src={event.organizer.image} 

@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import CompanyCard from './CompanyCard';
-import CompaniesFilters from './CompaniesFilters';
 import { CompaniesListProps, FilterOptions } from './types';
 import { useCompaniesWithFilters } from '../../hooks/useQueries';
 
@@ -15,6 +14,24 @@ const CompaniesList = ({
     search: initialSearch,
     industries: initialIndustry ? [initialIndustry] : []
   });
+  
+  // Update filters when initialSearch changes (from ActionBar)
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      search: initialSearch
+    }));
+  }, [initialSearch]);
+  
+  // Update filters when initialIndustry changes (from ActionBar)
+  useEffect(() => {
+    if (initialIndustry) {
+      setFilters(prev => ({
+        ...prev,
+        industries: [initialIndustry]
+      }));
+    }
+  }, [initialIndustry]);
   
   // Fetch companies using Tanstack Query
   const { 
@@ -29,11 +46,6 @@ const CompaniesList = ({
 
   return (
     <div className="space-y-8">
-      {/* Filters */}
-      <CompaniesFilters 
-        filters={filters} 
-        setFilters={setFilters} 
-      />
       
       {/* Companies List */}
       {isLoading ? (

@@ -2,24 +2,32 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import MemberCard from './MemberCard';
-import MembersFilter from './MembersFilter';
-import { Member, MembersListProps, FilterOptions, SAMPLE_MEMBERS } from './types';
+import { Member, MembersListProps, FilterOptions } from './types';
 import { filterMembers, sortMembersByName } from './utils';
 
-const MembersList = ({ initialSearch = '', companyId }: MembersListProps) => {
+const MembersList = ({ 
+  initialSearch = '', 
+  initialSkills,
+  companyId, 
+  members: parentMembers = [],
+  loading: parentLoading = false,
+  error: parentError = null
+}: MembersListProps) => {
   // State for search and filters
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
-    skills: undefined
+    skills: initialSkills
   });
   
   // State for debounced search input
   const [debouncedFilters, setDebouncedFilters] = useState<FilterOptions>(filters);
   
-  // State for members data
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Console log to debug members list
+  useEffect(() => {
+    console.log('MembersList - Parent Members:', parentMembers);
+    console.log('MembersList - Parent Loading:', parentLoading);
+    console.log('MembersList - Parent Error:', parentError);
+  }, [parentMembers, parentLoading, parentError]);
   
   // Filtered members based on current filters
   const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
@@ -35,36 +43,16 @@ const MembersList = ({ initialSearch = '', companyId }: MembersListProps) => {
     };
   }, [filters]);
   
-  // Fetch members data (simulated)
+  // Apply filters when parentMembers or debounced filters change
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        // In a real app, this would be an API call
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Set members from sample data
-        setMembers(SAMPLE_MEMBERS);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load members. Please try again later.');
-        setLoading(false);
-      }
-    };
-    
-    fetchMembers();
-  }, []);
-  
-  // Apply filters when members or debounced filters change
-  useEffect(() => {
-    if (!members.length) return;
+    if (!parentMembers.length) return;
     
     // Apply filters and sort by name
-    const filtered = filterMembers(members, debouncedFilters, companyId);
+    const filtered = filterMembers(parentMembers, debouncedFilters, companyId);
     const sorted = sortMembersByName(filtered);
     
     setFilteredMembers(sorted);
-  }, [members, debouncedFilters, companyId]);
+  }, [parentMembers, debouncedFilters, companyId]);
   
   // Reset all filters
   const clearFilters = () => {
@@ -75,15 +63,9 @@ const MembersList = ({ initialSearch = '', companyId }: MembersListProps) => {
   };
   
   // Render loading state
-  if (loading) {
+  if (parentLoading) {
     return (
       <div className="space-y-8">
-        <MembersFilter 
-          filters={filters} 
-          setFilters={setFilters} 
-          clearFilters={clearFilters} 
-        />
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="animate-pulse bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
@@ -110,26 +92,19 @@ const MembersList = ({ initialSearch = '', companyId }: MembersListProps) => {
   }
   
   // Render error state
-  if (error) {
+  if (parentError) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
                     rounded-lg p-6 text-center">
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading Members</h3>
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 dark:text-red-400">{parentError.message || 'Failed to load members. Please try again later.'}</p>
       </div>
     );
   }
   
   return (
-    <div className="space-y-8">
-      {/* Filter component */}
-      <MembersFilter 
-        filters={filters} 
-        setFilters={setFilters} 
-        clearFilters={clearFilters} 
-      />
-      
+    <div className="space-y-8">      
       {/* Results */}
       {filteredMembers.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
