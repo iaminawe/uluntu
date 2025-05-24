@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Users, Heart, Briefcase } from 'lucide-react';
-import { useMembers, useCompanies, useEvents, useNews, useGroups } from '../../hooks/useQueries';
+import { useMembers, useCompanies, useEvents, useNews, useGroups } from '../../hooks/useSupabaseQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { QueryError } from '../../components/ui/ErrorDisplay';

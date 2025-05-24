@@ -1,61 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { addMonths } from 'date-fns';
-import mockData, { EntityStatus, MarketplaceItem } from '../data/mock/mockData';
+import mockData, { MarketplaceItem } from '../data/mock/mockData';
 
 // Extract data from mockData object
-const { members, companies, events, groups, marketplaceItems, resources } = mockData;
+const { members, companies, events, groups, marketplaceItems, resources, newsArticles } = mockData;
 
-// Import or define newsArticles data
-const newsArticles = [
-  {
-    id: 1,
-    title: 'Kootenay Tech Scene Continues to Grow',
-    excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
-    content: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.\n\nOver the past year, the number of tech companies in the region has increased by 25%, bringing new jobs and opportunities to local communities. This growth is attributed to the region\'s high quality of life, affordable housing compared to major tech hubs, and the increasing viability of remote work.\n\n"We\'re seeing a significant influx of tech professionals who want to enjoy the lifestyle benefits of the Kootenays while maintaining their careers in the tech industry," says Sarah Johnson, director of the Kootenay Tech Association. "The pandemic has accelerated this trend, as more companies embrace remote work policies."\n\nLocal initiatives like coding bootcamps, tech meetups, and startup incubators are also contributing to the ecosystem\'s development. The Nelson Innovation Centre has supported over 15 new startups in the past year alone.\n\nAs the sector continues to grow, community leaders are focusing on infrastructure improvements, including better internet connectivity in rural areas and co-working spaces to support the distributed workforce.',
-    image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
-    date: '2025-03-15',
-    author: {
-      id: 1,
-      name: 'Sarah Johnson',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
-    },
-    tags: ['Community', 'Growth', 'Startups'],
-    status: 'published' as EntityStatus,
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Local AI Startup Secures Major Funding',
-    excerpt: 'A Nelson-based artificial intelligence startup has secured $2.5 million in seed funding to develop innovative solutions for environmental monitoring.',
-    content: 'A Nelson-based artificial intelligence startup has secured $2.5 million in seed funding to develop innovative solutions for environmental monitoring.\n\nEcoAI, founded by former Silicon Valley engineer Michael Chen, uses machine learning algorithms to analyze data from remote sensors, helping forestry companies and environmental agencies monitor ecosystem health and detect potential issues before they become critical.\n\n"This funding will allow us to expand our team and accelerate the development of our technology," says Chen. "We\'re particularly excited about deploying our solutions in the Kootenay region, which has such diverse and valuable ecosystems."\n\nThe funding round was led by Vancouver-based Emerald Tech Ventures, with participation from several angel investors who have backgrounds in both technology and environmental conservation.\n\n"What attracted us to EcoAI was their unique approach to combining cutting-edge AI with practical environmental applications," says Jennifer Wong, partner at Emerald Tech Ventures. "Their technology has the potential to revolutionize how we monitor and protect natural resources."\n\nThe company plans to hire 10 new employees over the next year, including data scientists, software engineers, and environmental specialists. They\'re also partnering with Selkirk College to provide internship opportunities for students in relevant programs.',
-    image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
-    date: '2025-03-10',
-    author: {
-      id: 2,
-      name: 'Michael Chen',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
-    },
-    tags: ['AI', 'Funding', 'Environment'],
-    status: 'published' as EntityStatus,
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Tech Education Program Launches for Rural Youth',
-    excerpt: 'A new initiative aims to bring coding and digital skills education to young people in the rural communities of the Kootenay region.',
-    content: 'A new initiative aims to bring coding and digital skills education to young people in the rural communities of the Kootenay region.\n\nThe "Digital Futures" program, launched by the Kootenay Tech Association in partnership with local schools and libraries, will provide free coding workshops, equipment loans, and mentorship opportunities to students aged 12-18 in communities outside the major centers.\n\n"We want to ensure that young people throughout the Kootenays have access to the skills and knowledge they\'ll need for the future job market, regardless of where they live," explains program director Alex Rodriguez. "Many rural communities have limited access to tech education, and we\'re working to bridge that gap."\n\nThe program will feature a mobile tech lab that travels to different communities, offering workshops on coding, digital design, and robotics. Additionally, online resources and virtual mentorship will provide ongoing support between in-person sessions.\n\nFunding for the initiative comes from a combination of government grants, corporate sponsorships, and community donations. Local tech professionals are also volunteering their time to serve as instructors and mentors.\n\n"We\'ve been overwhelmed by the positive response from both students and parents," says Rodriguez. "There\'s clearly a strong demand for these opportunities in our rural communities."',
-    image: 'https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg',
-    date: '2025-03-05',
-    author: {
-      id: 3,
-      name: 'Alex Rodriguez',
-      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
-    },
-    tags: ['Education', 'Youth', 'Rural'],
-    status: 'published' as EntityStatus,
-    featured: false
-  }
-];
+
 
 // Helper function to simulate API calls with delay
 const simulateApiCall = async <T>(data: T): Promise<T> => {
@@ -676,4 +626,107 @@ export function useOpportunities() {
     queryKey: ['opportunities'],
     queryFn: fetchOpportunities
   });
+}
+
+// Mock Delete Hooks
+export function useDeleteCompany() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting Company with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true; // Simulate successful deletion
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
+}
+
+export function useDeleteEvent() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting Event with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true;
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
+}
+
+export function useDeleteGroup() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting Group with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true;
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
+}
+
+export function useDeleteResource() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting Resource with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true;
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
+}
+
+export function useDeleteMarketplaceItem() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting MarketplaceItem with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true;
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
+}
+
+export function useDeleteOpportunity() {
+  return {
+    mutateAsync: async (id: string): Promise<boolean> => {
+      console.log(`Mock: Deleting Opportunity with id ${id}. This is a mock, no real data changed.`);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return true;
+    },
+    status: 'idle' as const,
+    data: undefined as boolean | undefined,
+    error: null as Error | null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isIdle: true,
+  };
 }

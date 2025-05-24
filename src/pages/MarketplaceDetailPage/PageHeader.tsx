@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { PageHeaderProps } from './types';
 
-const PageHeader: React.FC<PageHeaderProps> = ({ id, listing }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ id }) => {
   return (
     <div className="flex justify-between items-center mb-8">
       <Link

@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import CompaniesList from '../../components/CompaniesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useCompanies } from '../../hooks/useQueries';
+import { useCompanies } from '../../hooks/useSupabaseQueries';
 
 
 export default function CompaniesPage() {

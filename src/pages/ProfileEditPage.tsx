@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useMember } from '../hooks/useQueries';
+import { useMember } from '../hooks/useSupabaseQueries';
 import { ContentContainer } from '../components/ui/PageLayout';
 import BasicInfoSection from './DirectoryEditPage/BasicInfoSection';
 import SkillsSection from './DirectoryEditPage/SkillsSection';
@@ -43,6 +43,7 @@ export default function ProfileEditPage() {
         location: member.location || '',
         image: member.image || '',
         bio: member.bio || '',
+        intro: member.intro || '',
         skills: Array.isArray(member.skills) ? member.skills : [],
         joinDate: member.joinDate || new Date().toISOString().split('T')[0],
         social: {

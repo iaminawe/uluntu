@@ -3,6 +3,7 @@ import { EntityStatus } from '../../data/mock/mockData';
 
 export type GroupVisibility = 'open' | 'closed' | 'secret';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GroupMember {
   id: number;
   name: string;
@@ -12,6 +13,7 @@ export interface GroupMember {
   title?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Group {
   id: number;
   name: string;
@@ -27,11 +29,13 @@ export interface Group {
   status: EntityStatus;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GroupFilters {
   search?: string;
   visibility?: GroupVisibility[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GroupsListProps {
   searchTerm: string;
   visibilityFilter: GroupVisibility[];

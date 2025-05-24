@@ -224,6 +224,20 @@ export const companiesApi = {
     } catch (error) {
       handleSupabaseError(error);
     }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
   }
 };
 
@@ -336,6 +350,20 @@ export const eventsApi = {
     } catch (error) {
       handleSupabaseError(error);
     }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
   }
 };
 
@@ -399,12 +427,13 @@ export const groupsApi = {
     }
   },
 
-  async create(groupData: any) {
+  async update(id: string, groupData: any) {
     try {
       const supabaseData = adaptGroupToSupabase(groupData);
       const { data, error } = await supabase
         .from('groups')
-        .insert(supabaseData)
+        .update(supabaseData)
+        .eq('id', id)
         .select()
         .single();
 
@@ -415,13 +444,26 @@ export const groupsApi = {
     }
   },
 
-  async update(id: string, groupData: any) {
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('groups')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
+  },
+
+  async create(groupData: any) {
     try {
       const supabaseData = adaptGroupToSupabase(groupData);
       const { data, error } = await supabase
         .from('groups')
-        .update(supabaseData)
-        .eq('id', id)
+        .insert(supabaseData)
         .select()
         .single();
 
@@ -524,6 +566,20 @@ export const resourcesApi = {
 
       if (error) handleSupabaseError(error);
       return data ? adaptResourceFromSupabase(data) : null;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('resources')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
     } catch (error) {
       handleSupabaseError(error);
     }
@@ -640,6 +696,20 @@ export const marketplaceApi = {
     } catch (error) {
       handleSupabaseError(error);
     }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('marketplace_listings')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
   }
 };
 
@@ -723,6 +793,20 @@ export const opportunitiesApi = {
 
       if (error) handleSupabaseError(error);
       return data ? adaptOpportunityFromSupabase(data) : null;
+    } catch (error) {
+      handleSupabaseError(error);
+    }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase
+        .from('opportunities')
+        .delete()
+        .eq('id', id);
+
+      if (error) handleSupabaseError(error);
+      return true;
     } catch (error) {
       handleSupabaseError(error);
     }

@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import GroupsList from '../../components/GroupsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useGroups } from '../../hooks/useQueries';
+import { useGroups } from '../../hooks/useSupabaseQueries';
 import { GroupVisibility } from '../../components/GroupsList/types';
 
 export default function GroupsPage() {

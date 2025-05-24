@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMember } from './useQueries';
+import { useMember } from './useSupabaseQueries';
 
 // Types for member contributions
 export interface MemberContributions {

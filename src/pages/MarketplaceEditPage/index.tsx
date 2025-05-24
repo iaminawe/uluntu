@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import BasicInfoSection from './BasicInfoSection';
@@ -33,11 +33,12 @@ export default function MarketplaceEditPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditing);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isError] = useState(false);
+  // const [isError] = useState(false); // Removed unused isError state
   
   // Mock data loading for editing
-  useState(() => {
+  useEffect(() => {
     if (isEditing) {
+      setIsLoading(true);
       // Simulate API call
       setTimeout(() => {
         setFormData({
@@ -54,8 +55,10 @@ export default function MarketplaceEditPage() {
         });
         setIsLoading(false);
       }, 1000);
+    } else {
+      setIsLoading(false); // Ensure loading is false if not editing
     }
-  });
+  }, [isEditing]);
   
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -119,26 +122,7 @@ export default function MarketplaceEditPage() {
     return <LoadingState />;
   }
   
-  // Error state
-  if (isError) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-center">
-            <h2 className="text-xl font-bold text-red-500 mb-2">Error</h2>
-            <p className="mb-4">Failed to load marketplace item data.</p>
-            <button
-              onClick={() => navigate('/marketplace')}
-              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-            >
-              Back to Marketplace
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+  // Error state handling can be added here if actual error fetching logic is implemented
   return (
     <>
       <Helmet>

@@ -15,6 +15,8 @@ export interface FormData {
     twitter?: string;
     github?: string;
   };
+  status: string;
+  featured: boolean;
 }
 
 export interface CompanyData {
@@ -36,10 +38,14 @@ export interface CompanyData {
 }
 
 export interface BasicInfoSectionProps {
-  formData: FormData;
-  errors: Partial<Record<keyof FormData | 'social', string>>;
+  formData: Pick<FormData, 'name' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'website' | 'status' | 'featured'>;
+  errors: Partial<Record<keyof Pick<FormData, 'name' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'status' | 'featured'>, string>>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   isSubmitting: boolean;
+  logoFile: File | null;
+  coverImageFile: File | null;
+  onLogoFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCoverImageFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface IndustrySectionProps {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
-import { useMarketplaceItem } from '../../hooks/useQueries';
+import { useMarketplaceItem } from '../../hooks/useSupabaseQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import { ListingType } from './types';

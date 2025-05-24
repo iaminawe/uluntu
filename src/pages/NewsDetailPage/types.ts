@@ -23,10 +23,6 @@ export interface RelatedArticlesProps {
   isLoading: boolean;
 }
 
-export interface LoadingStateProps {
-  // Can include any customization props in the future
-}
+export type LoadingStateProps = Record<string, never>;
 
-export interface ErrorStateProps {
-  // Can include props like errorMessage in the future
-}
+export type ErrorStateProps = Record<string, never>;

@@ -1,22 +1,25 @@
-// NewsArticlesList component
+import { useState, useEffect } from 'react'; // Added useEffect
 import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from './ArticleCard';
 import FeaturedArticleCard from './FeaturedArticleCard';
+import Pagination from '../Pagination'; // Import Pagination
 import { FilterOptions, NewsArticlesListProps } from './types';
-import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
+import { useNewsArticlesWithFilters } from '../../hooks/useSupabaseQueries';
+
+const ARTICLES_PER_PAGE = 4;
 
 const NewsArticlesList = ({ 
   initialTag = '', 
   initialSearch = '' 
 }: NewsArticlesListProps) => {
-  // Use filters from props
+  const [currentPage, setCurrentPage] = useState(1);
+
   const filters: FilterOptions = {
     search: initialSearch,
     tags: initialTag ? [initialTag] : [],
   };
 
-  // Get filtered articles using Tanstack Query
   const { 
     data: articles = [], 
     isLoading, 
@@ -28,17 +31,32 @@ const NewsArticlesList = ({
     tags: filters.tags.length > 0 ? filters.tags : undefined
   });
 
-  // No need to extract tags as filtering is handled in ActionBar
+  // Reset page when articles change (due to filter changes)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [articles]);
 
-  // No need to watch filters changes as they come from props
+  const featuredArticles = articles.filter(article => article.featured);
+  const regularArticles = articles.filter(article => !article.featured);
 
-  // Render loading state
+  // Pagination logic for regular articles
+  const totalRegularArticles = regularArticles.length;
+  const totalPages = Math.ceil(totalRegularArticles / ARTICLES_PER_PAGE);
+  const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+  const endIndex = startIndex + ARTICLES_PER_PAGE;
+  const currentRegularArticlesToDisplay = regularArticles.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Consider scrolling to top: window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (isLoading) {
     return (
       <div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[1, 2, 3, 4].map(i => (
+        {/* Skeleton for featured (if any expected) could be added here */} 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+          {Array(ARTICLES_PER_PAGE).fill(0).map((_, i) => (
             <div key={i} className="animate-pulse bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
               <div className="h-48 bg-slate-200 dark:bg-slate-700"></div>
               <div className="p-6">
@@ -67,7 +85,6 @@ const NewsArticlesList = ({
     );
   }
   
-  // Render error state
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
@@ -88,12 +105,8 @@ const NewsArticlesList = ({
   
   return (
     <div>
-      {/* News articles content */}
-      
-      {/* Show loading overlay when refetching */}
       <div className={`relative ${isRefetching ? 'opacity-60 pointer-events-none' : ''}`}>
-        {/* Results */}
-        {articles.length === 0 ? (
+        {articles.length === 0 && !isLoading ? (
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
             <div className="mx-auto w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full 
                           flex items-center justify-center mb-4">
@@ -115,33 +128,38 @@ const NewsArticlesList = ({
           </div>
         ) : (
           <>
-            {/* Featured Articles */}
-            {articles.some(article => article.featured) && (
+            {featuredArticles.length > 0 && (
               <div className="mb-10">
                 <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Featured</h3>
                 <div className="grid grid-cols-1 gap-8">
-                  {articles
-                    .filter(article => article.featured)
-                    .map(article => (
+                  {featuredArticles.map(article => (
                       <FeaturedArticleCard key={article.id} article={article} />
-                    ))}
+                  ))}
                 </div>
               </div>
             )}
             
-            {/* Regular Articles */}
-            <div>
-              {articles.some(article => article.featured) && (
-                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Latest Articles</h3>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {articles
-                  .filter(article => !article.featured)
-                  .map(article => (
+            {regularArticles.length > 0 && (
+              <div>
+                {(featuredArticles.length > 0 || initialSearch || initialTag) && (
+                  <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">
+                    {initialSearch || initialTag ? 'Filtered Articles' : 'Latest Articles'}
+                  </h3>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {currentRegularArticlesToDisplay.map(article => (
                     <ArticleCard key={article.id} article={article} />
                   ))}
+                </div>
+                {totalPages > 1 && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                )}
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

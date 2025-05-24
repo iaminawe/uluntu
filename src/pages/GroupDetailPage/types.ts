@@ -1,5 +1,5 @@
 // Types for GroupDetailPage components
-import { Group, GroupEvent, GroupMember, GroupResource, GroupPost } from '../../types';
+import { Group, Event as GroupEvent, GroupMember, Resource as GroupResource, GroupPost } from '../../types';
 
 export type TabType = 'about' | 'events' | 'members' | 'resources' | 'posts';
 
@@ -38,10 +38,12 @@ export interface PostsTabProps {
   isLoading: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LoadingStateProps {
   // Can include any customization props in the future
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ErrorStateProps {
   // Can include props like errorMessage in the future
 }

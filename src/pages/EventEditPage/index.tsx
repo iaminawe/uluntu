@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEvent } from '../../hooks/useQueries';
+import { useEvent } from '../../hooks/useSupabaseQueries';
 import { format } from 'date-fns';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';

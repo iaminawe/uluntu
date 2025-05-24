@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useGroup, useGroupEvents, useGroupMembers, useGroupResources, useGroupPosts } from '../../hooks/useQueries';
+import { useGroup, useGroupEvents, useGroupMembers, useGroupResources, useGroupPosts } from '../../hooks/useSupabaseQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import JoinModal from '../../components/JoinModal';

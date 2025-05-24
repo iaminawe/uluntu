@@ -15,5 +15,7 @@ export const initialFormData: FormData = {
     linkedin: '',
     twitter: '',
     github: ''
-  }
+  },
+  status: 'published', // Default status
+  featured: false // Default featured state
 };

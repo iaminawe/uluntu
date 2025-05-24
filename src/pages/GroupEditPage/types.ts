@@ -8,9 +8,7 @@ export interface FormData {
   visibility: 'open' | 'closed' | 'secret';
 }
 
-export interface LoadingStateProps {
-  // Can include any customization props in the future
-}
+export type LoadingStateProps = Record<string, never>;
 
 export interface FormHeaderProps {
   isEditMode: boolean;

@@ -36,6 +36,7 @@ export interface Member {
   location?: string;
   image: string;
   bio?: string;
+  intro?: string; // Short introduction sentence
   skills?: string[];
   joinDate: string;
   featured?: boolean;
@@ -97,6 +98,18 @@ export interface GroupMember {
   title?: string;
 }
 
+export interface GroupPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  author: {
+    name: string;
+    image: string;
+  };
+  date: string;
+  image?: string;
+}
+
 export interface Group {
   id: number;
   name: string;
@@ -112,9 +125,9 @@ export interface Group {
   lastActive: string;
   featured?: boolean;
   members: GroupMember[];
-  events?: any[];
-  resources?: any[];
-  posts?: any[];
+  events?: Event[];
+  resources?: Resource[];
+  posts?: GroupPost[];
 }
 
 export interface NewsArticle {
