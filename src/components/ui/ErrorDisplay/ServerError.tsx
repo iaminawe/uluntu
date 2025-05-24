@@ -7,7 +7,7 @@ import { ServerErrorProps } from './types';
  * Specialized error component for server/5xx errors
  */
 const ServerError: React.FC<ServerErrorProps> = ({
-  error,
+  error: _error,
   message,
   backLink,
   className = '',

@@ -1,4 +1,4 @@
-import { Calendar, Mail, Globe } from 'lucide-react';
+import { Mail, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 import { ApplySidebarProps } from './types';
 

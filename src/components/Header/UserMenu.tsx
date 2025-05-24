@@ -63,8 +63,10 @@ export default function UserMenu() {
                   {user.email}
                 </p>
               </div>
-              <Link
-                to="/profile"
+              <a
+                href="http://localhost:5174/profile"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 onClick={() => setIsOpen(false)}
               >
@@ -72,7 +74,7 @@ export default function UserMenu() {
                   <User className="h-4 w-4 mr-2" />
                   Your Profile
                 </div>
-              </Link>
+              </a>
               <Link
                 to="/profile/edit"
                 className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"

@@ -10,7 +10,7 @@ import {
 const EventDetails: React.FC<EventDetailsProps> = ({ 
   formData, 
   handleChange, 
-  errors 
+  errors: _errors 
 }) => {
   return (
     <>
@@ -21,7 +21,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         required
         value={formData.title}
         onChange={handleChange}
-        error={errors.title}
+        error={_errors.title}
         placeholder="Enter event title"
       />
       
@@ -34,7 +34,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
           dateType="datetime-local"
           value={formData.date}
           onChange={handleChange}
-          error={errors.date}
+          error={_errors.date}
           containerClassName="flex-1"
         />
         
@@ -56,7 +56,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         required
         value={formData.location}
         onChange={handleChange}
-        error={errors.location}
+        error={_errors.location}
         placeholder="Enter location or 'Online'"
       />
       
@@ -81,7 +81,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
           required={formData.type === 'online'}
           value={formData.url}
           onChange={handleChange}
-          error={errors.url}
+          error={_errors.url}
           placeholder="https://zoom.us/meeting/..."
         />
       )}
@@ -93,7 +93,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         required
         value={formData.description}
         onChange={handleChange}
-        error={errors.description}
+        error={_errors.description}
         placeholder="Describe your event..."
         rows={6}
       />

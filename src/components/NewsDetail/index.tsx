@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft } from 'lucide-react';
 
@@ -15,10 +15,8 @@ interface NewsDetailProps {
   isPreview?: boolean;
 }
 
-const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
-  const params = useParams();
+const NewsDetail = ({ articleId: _articleId, isPreview = false }: NewsDetailProps) => {
   const navigate = useNavigate();
-  const id = articleId || params.id;
   
   // In a real app, fetch the article from an API
   const [article, setArticle] = useState<NewsArticle>(SAMPLE_ARTICLE);

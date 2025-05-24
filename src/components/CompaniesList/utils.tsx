@@ -1,5 +1,4 @@
-import { Company, FilterOptions } from './types';
-
+// Remove unused imports - this file only exports types
 // Calculate years since founding
 export const yearsActive = (foundedYear: string): string => {
   const foundedDate = new Date(foundedYear);

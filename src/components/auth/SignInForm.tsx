@@ -23,7 +23,7 @@ export default function SignInForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data, error: signInError } = await signIn(email, password);
+      const { data: _data, error: signInError } = await signIn(email, password);
       
       if (signInError) {
         throw signInError;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Member } from './types';
 import FormImageUpload from '../ui/Form/FormImageUpload';
-import { uploadProfileImage, uploadCoverImage, getCurrentUser } from '../../lib/supabase';
+import { uploadProfileImage, getCurrentUser } from '../../lib/supabase';
 
 interface EditProfileModalProps {
   member: Member;
@@ -18,16 +18,14 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
     bio: member.bio,
     location: member.location,
     image: member.image,
-    coverImage: member.coverImage || '',
     website: member.website || '',
-    skills: member.skills.join(', '),
+    skills: member.skills?.join(', ') || '',
     employmentStatus: member.employmentStatus,
     openToVolunteering: member.openToVolunteering
   });
   
   // State for file uploads
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -52,19 +50,10 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
         if (url) profileImageUrl = url;
       }
       
-      // Upload cover image if a new one was selected
-      let coverImageUrl = formData.coverImage;
-      if (coverImageFile) {
-        const { url, error } = await uploadCoverImage(coverImageFile, user.id);
-        if (error) throw error;
-        if (url) coverImageUrl = url;
-      }
-      
       // Save the updated profile data
       onSave({
         ...formData,
         image: profileImageUrl,
-        coverImage: coverImageUrl,
         skills: formData.skills.split(',').map(skill => skill.trim())
       });
       
@@ -104,27 +93,6 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
             <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Profile Images</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Cover Image */}
-              <div>
-                <FormImageUpload
-                  label="Cover Image"
-                  id="coverImage"
-                  name="coverImage"
-                  currentImage={formData.coverImage}
-                  onChange={(file) => {
-                    setCoverImageFile(file);
-                    // If user removes the image, clear the URL
-                    if (!file && formData.coverImage) {
-                      setFormData(prev => ({ ...prev, coverImage: '' }));
-                    }
-                  }}
-                  placeholder="Drag and drop your cover image, or click to select"
-                  helperText="This image will appear at the top of your profile"
-                  maxSize={10 * 1024 * 1024} // 10MB
-                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                />
-              </div>
-              
               {/* Profile Image */}
               <div>
                 <FormImageUpload

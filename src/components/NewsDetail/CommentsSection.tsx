@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageSquare, ThumbsUp } from 'lucide-react';
-import { NewsArticle, NewsComment } from './types';
+import { NewsArticle } from './types';
 
 interface CommentsSectionProps {
   article: NewsArticle;

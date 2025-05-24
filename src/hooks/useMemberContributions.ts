@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMember } from './useQueries';
-import { mapMemberToProfileMember } from '../adapters/memberAdapter';
 
 // Types for member contributions
 export interface MemberContributions {
@@ -79,7 +78,7 @@ export function useMemberContributionsByType(memberId: number, type: keyof Membe
 // Mock functions to simulate fetching member contributions from different sources
 // In a real app, these would be API calls to different endpoints
 
-async function fetchMemberGroups(memberId: number) {
+async function fetchMemberGroups(_memberId: number) {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 100));
   
@@ -106,7 +105,7 @@ async function fetchMemberGroups(memberId: number) {
   ];
 }
 
-async function fetchMemberEvents(memberId: number) {
+async function fetchMemberEvents(_memberId: number) {
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
@@ -131,7 +130,7 @@ async function fetchMemberEvents(memberId: number) {
   ];
 }
 
-async function fetchMemberResources(memberId: number) {
+async function fetchMemberResources(_memberId: number) {
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
@@ -159,7 +158,7 @@ async function fetchMemberResources(memberId: number) {
   ];
 }
 
-async function fetchMemberPosts(memberId: number) {
+async function fetchMemberPosts(_memberId: number) {
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
@@ -196,7 +195,7 @@ async function fetchMemberPosts(memberId: number) {
   ];
 }
 
-async function fetchMemberMarketplaceListings(memberId: number) {
+async function fetchMemberMarketplaceListings(_memberId: number) {
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
@@ -227,7 +226,7 @@ async function fetchMemberMarketplaceListings(memberId: number) {
   ];
 }
 
-async function fetchMemberOpportunities(memberId: number) {
+async function fetchMemberOpportunities(_memberId: number) {
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [

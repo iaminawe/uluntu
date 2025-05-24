@@ -1,7 +1,6 @@
 import React from 'react';
 import { HeroSectionProps } from './types';
 import HeroButton from './HeroButton';
-import { ArrowRight } from 'lucide-react';
 
 const HeroSection: React.FC<HeroSectionProps> = ({
   title = "Nelson Tech",

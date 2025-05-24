@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Resource, ResourceType, SAMPLE_RESOURCES } from './types';
+import { ResourceType, SAMPLE_RESOURCES } from './types';
 import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';

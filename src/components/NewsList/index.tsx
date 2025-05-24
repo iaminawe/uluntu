@@ -178,7 +178,7 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {displayedArticles.map(article => (
+          {displayedArticles.map((article: NewsArticle) => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </div>

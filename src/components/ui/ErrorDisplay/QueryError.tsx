@@ -1,5 +1,5 @@
 import React from 'react';
-import { WifiOff, RefreshCw } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 import ErrorDisplay from './ErrorDisplay';
 import { QueryErrorProps } from './types';
 
@@ -7,8 +7,8 @@ import { QueryErrorProps } from './types';
  * Specialized error component for data fetching/query errors
  */
 const QueryError: React.FC<QueryErrorProps> = ({
-  error,
-  retry,
+  error: _error,
+  retry: onRetry,
   message,
   backLink,
   className = '',
@@ -26,9 +26,9 @@ const QueryError: React.FC<QueryErrorProps> = ({
       className={className}
       icon={<WifiOff className="h-12 w-12 text-amber-500 dark:text-amber-400" />}
       actions={actions}
-      primaryAction={primaryAction || (retry ? {
+      primaryAction={primaryAction || (onRetry ? {
         text: 'Try Again',
-        onClick: retry
+        onClick: onRetry
       } : undefined)}
     />
   );

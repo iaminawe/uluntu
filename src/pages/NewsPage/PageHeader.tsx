@@ -1,5 +1,6 @@
 import React from 'react';
 import { PageHeader as SharedPageHeader } from '../../components/ui/PageLayout';
+import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const PageHeader: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const PageHeader: React.FC = () => {
       title="Tech Community News"
       subtitle="Stay up-to-date with the latest articles, insights, and developments in our tech community."
       isHero={true}
-      className="bg-gradient-to-r from-orange-500 to-red-500"
+      backgroundImage={MOUNTAIN_BACKGROUNDS.news}
     />
   );
 };

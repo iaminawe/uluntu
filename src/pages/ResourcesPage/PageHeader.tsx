@@ -1,5 +1,6 @@
 import React from 'react';
 import { PageHeader as SharedPageHeader } from '../../components/ui/PageLayout';
+import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const PageHeader: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const PageHeader: React.FC = () => {
       title="Tech Resources"
       subtitle="Helpful tools, guides, and learning materials for the tech community"
       isHero={true}
-      className="bg-gradient-to-r from-blue-500 to-indigo-500"
+      backgroundImage={MOUNTAIN_BACKGROUNDS.resources}
     />
   );
 };

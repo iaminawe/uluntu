@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Users, Heart, Briefcase, Star } from 'lucide-react';
+import { Users, Heart, Briefcase } from 'lucide-react';
 import { useMembers, useCompanies, useEvents, useNews, useGroups } from '../../hooks/useQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -20,7 +20,6 @@ export default function HomePage() {
 
   // Get featured items
   const { 
-    featuredMembers, 
     featuredCompanies, 
     featuredEvents, 
     activeGroups, 
@@ -33,14 +32,6 @@ export default function HomePage() {
     news 
   });
 
-  const hasFeaturedItems = (
-    members.some(item => item.featured) || 
-    events.some(item => item.featured) || 
-    companies.some(item => item.featured) || 
-    groups.some(item => item.featured)
-  );
-
-  // Track loading and error states
   const isLoading = false;
   const error = null;
 
@@ -54,7 +45,7 @@ export default function HomePage() {
         
         <HeroSection />
         
-        <div className="bg-slate-50 dark:bg-slate-900 py-16">
+        <div className="bg-slate-50 dark:bg-slate-900 py-20">
           <ContentContainer>
             <SkeletonGrid count={3} columns={{ sm: 1, md: 2, lg: 3 }} />
           </ContentContainer>
@@ -73,7 +64,7 @@ export default function HomePage() {
         
         <HeroSection />
         
-        <div className="bg-slate-50 dark:bg-slate-900 py-16">
+        <div className="bg-slate-50 dark:bg-slate-900 py-20">
           <ContentContainer>
             <QueryError 
               error={error} 
@@ -95,25 +86,9 @@ export default function HomePage() {
       
       <HeroSection />
       
-      <div className="bg-slate-50 dark:bg-slate-900">
-        <ContentContainer className="py-16 space-y-16">
-          {/* Featured Entities */}
-          {hasFeaturedItems && (
-            <div>
-              <div className="flex items-center mb-6">
-                <div className="mr-3 p-2 bg-orange-100 dark:bg-orange-500/20 rounded-full">
-                  <Star className="h-6 w-6 text-orange-500" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Featured</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {members.filter(m => m.featured).length > 0 && featuredMembers[0]}
-                {companies.filter(c => c.featured).length > 0 && featuredCompanies[0]}
-                {events.filter(e => e.featured).length > 0 && featuredEvents[0]}
-              </div>
-            </div>
-          )}
-          
+      {/* Callout Cards Section - Light Background */}
+      <div className="bg-slate-50 dark:bg-slate-900 py-20">
+        <ContentContainer>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <CalloutSection
               title="Join the Directory"
@@ -140,58 +115,68 @@ export default function HomePage() {
               bgColor="bg-emerald-600"
             />
           </div>
-          
-          {/* Members */}
-          {members.length > 0 && (
-            <FeaturedSection
-              title="Community Members"
-              description="Connect with tech professionals in the Kootenay region"
-              link="/directory"
-              items={featuredMembers}
-            />
-          )}
+        </ContentContainer>
+      </div>
 
-          {/* Companies */}
-          {companies.length > 0 && (
+      {/* Companies Section - Dark Background */}
+      {companies.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 py-20">
+          <ContentContainer>
             <FeaturedSection
               title="Tech Companies"
               description="Discover tech companies in our region"
               link="/companies"
               items={featuredCompanies}
             />
-          )}
+          </ContentContainer>
+        </div>
+      )}
 
-          {/* Events */}
-          {events.length > 0 && (
+      {/* Events Section - Light Background */}
+      {events.length > 0 && (
+        <div className="bg-slate-50 dark:bg-slate-900 py-20">
+          <ContentContainer>
             <FeaturedSection
               title="Upcoming Events"
               description="Join tech events and connect with the community"
               link="/events"
               items={featuredEvents}
             />
-          )}
+          </ContentContainer>
+        </div>
+      )}
 
-          {/* Groups */}
-          {groups.length > 0 && (
+      {/* Groups Section - Dark Background */}
+      {groups.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 py-20">
+          <ContentContainer>
             <FeaturedSection
               title="Active Groups"
               description="Join tech groups and connect with like-minded professionals"
               link="/groups"
               items={activeGroups}
             />
-          )}
+          </ContentContainer>
+        </div>
+      )}
 
-          {/* News */}
-          {news.length > 0 && (
+      {/* News Section - Light Background */}
+      {news.length > 0 && (
+        <div className="bg-slate-50 dark:bg-slate-900 py-20">
+          <ContentContainer>
             <FeaturedSection
               title="Latest News"
               description="Stay updated with the latest from our tech community"
               link="/news"
               items={latestNews}
             />
-          )}
+          </ContentContainer>
+        </div>
+      )}
 
-          {/* Newsletter Signup */}
+      {/* Newsletter Section - Dark Background */}
+      <div className="bg-white dark:bg-slate-800 py-20">
+        <ContentContainer>
           <NewsletterSection />
         </ContentContainer>
       </div>

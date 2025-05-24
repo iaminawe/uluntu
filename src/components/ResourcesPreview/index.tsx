@@ -14,6 +14,7 @@ const SAMPLE_RESOURCES: Resource[] = [
     type: 'guide',
     url: 'https://example.com/web-dev-guide',
     dateAdded: '2025-01-15',
+    status: 'published',
     contributor: {
       id: 1,
       name: 'Sarah Johnson'
@@ -24,23 +25,25 @@ const SAMPLE_RESOURCES: Resource[] = [
     title: 'Getting Started with React',
     description: 'Learn the fundamentals of React and component-based architecture.',
     type: 'article',
-    url: 'https://example.com/react-fundamentals',
-    dateAdded: '2025-02-20',
+    url: 'https://example.com/react-guide',
+    dateAdded: '2025-01-10',
+    status: 'published',
     contributor: {
       id: 2,
-      name: 'Michael Chen'
+      name: 'Mike Chen'
     }
   },
   {
     id: 3,
-    title: 'Accessible Web Design',
-    description: 'Best practices for creating accessible web applications for all users.',
+    title: 'Advanced JavaScript Concepts',
+    description: 'Deep dive into closures, promises, and async/await patterns.',
     type: 'video',
-    url: 'https://example.com/accessibility-video',
-    dateAdded: '2025-03-10',
+    url: 'https://example.com/js-video',
+    dateAdded: '2025-01-05',
+    status: 'published',
     contributor: {
       id: 3,
-      name: 'Emma Rodriguez'
+      name: 'Alex Rodriguez'
     }
   }
 ];

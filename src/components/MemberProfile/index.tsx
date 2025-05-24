@@ -77,6 +77,7 @@ const MemberProfile = ({ memberId }: MemberProfileProps) => {
       {showEditModal && (
         <EditProfileModal
           member={profileMember}
+          isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
           onSave={handleProfileUpdate}
         />
