@@ -8,6 +8,7 @@ export interface Member {
   company?: string;
   location?: string;
   bio?: string;
+  intro?: string;
   skills?: string[];
   joinDate: string;
   social?: {

@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import NewsArticlesList from '../../components/NewsArticlesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
+import { useNewsArticlesWithFilters } from '../../hooks/useSupabaseQueries';
 
 export default function NewsPage() {
   // State for filters

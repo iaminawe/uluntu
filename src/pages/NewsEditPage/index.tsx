@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useNewsArticle } from '../../hooks/useQueries';
+import { useNewsArticle } from '../../hooks/useSupabaseQueries';
 import FormHeader from './FormHeader';
 import TagsInput from './TagsInput';
 import FormInputs from './FormInputs';
@@ -38,7 +38,7 @@ export default function NewsEditPage() {
   const { 
     data: article, 
     isLoading: articleLoading
-  } = useNewsArticle(articleId);
+  } = useNewsArticle(articleId!);
   
   // Populate form with article data when in edit mode
   useEffect(() => {

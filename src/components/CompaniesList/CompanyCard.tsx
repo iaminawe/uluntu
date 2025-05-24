@@ -8,40 +8,55 @@ interface CompanyCardProps {
 }
 
 const CompanyCard = ({ company }: CompanyCardProps) => {
+  const defaultCoverImage = 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'; // A generic tech background
+
   return (
     <Link
       to={`/companies/${company.id}`}
-      className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
+      className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full relative group"
     >
-      <div className="p-6 flex flex-col h-full">
-        <div className="flex items-center mb-4">
-          <div className="w-16 h-16 rounded-md overflow-hidden mr-4 bg-white p-1 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+      {/* Cover Image Section */}
+      <div className="h-40 w-full relative">
+        <img
+          src={company.coverImage || defaultCoverImage}
+          alt={`${company.name} cover`}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors"></div> {/* Overlay */}
+        
+        {/* Logo - Inset and Circular */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/4 z-10">
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-white p-1 border-2 border-white dark:border-slate-700 shadow-lg flex items-center justify-center">
             <img
               src={company.logo}
-              alt={company.name}
-              className="max-w-full max-h-full object-contain"
+              alt={`${company.name} logo`}
+              className="w-full h-full object-cover rounded-full"
             />
           </div>
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors">
-              {company.name}
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{company.size}</p>
-          </div>
+        </div>
+      </div>
+
+      {/* Content Section - Adjusted for inset logo */}
+      <div className="p-6 flex flex-col h-full pt-12"> {/* Increased top padding */}
+        <div className="text-center mb-4">
+          <h3 className="font-semibold text-xl text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors">
+            {company.name}
+          </h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{company.size}</p>
         </div>
         
-        <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-2 mb-4 flex-grow">
-          {truncateDescription(company.description)}
+        <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-3 mb-4 flex-grow text-center">
+          {truncateDescription(company.description, 100)} {/* Allow slightly longer description */}
         </p>
         
         <div className="space-y-2 mb-4">
-          <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-center text-sm text-slate-500 dark:text-slate-400">
             <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
             <span>{company.location}</span>
           </div>
           
           {company.employees && (
-            <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-center text-sm text-slate-500 dark:text-slate-400">
               <Users className="h-4 w-4 mr-2 flex-shrink-0" />
               <span>{formatEmployeeCount(company.employees)}</span>
             </div>
@@ -49,7 +64,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         </div>
         
         {company.industry && company.industry.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mt-auto justify-center">
             {company.industry.slice(0, 3).map(ind => (
               <span
                 key={ind}

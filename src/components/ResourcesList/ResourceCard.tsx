@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Resource } from './types';
+import { Resource } from '../../data/mock/mockData'; // Use Resource from mockData
 import { getTypeIcon } from './utils';
 
 interface ResourceCardProps {
@@ -28,30 +28,10 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
         </div>
 
         <div className="flex items-center mb-4">
-          <img
-            src={resource.createdBy.image}
-            alt={resource.createdBy.name}
-            className="w-6 h-6 rounded-full mr-2"
-          />
           <span className="text-sm text-slate-600 dark:text-slate-300">
-            Added by {resource.createdBy.name} on {new Date(resource.createdAt).toLocaleDateString()}
+            {resource.contributor.name} - {new Date(resource.dateAdded).toLocaleDateString()} // Use contributor and dateAdded
           </span>
         </div>
-
-        {(resource.group || resource.event) && (
-          <div className="mb-4 space-y-2">
-            {resource.group && (
-              <div className="text-sm text-slate-600 dark:text-slate-300">
-                Group: {resource.group.name}
-              </div>
-            )}
-            {resource.event && (
-              <div className="text-sm text-slate-600 dark:text-slate-300">
-                Event: {resource.event.name}
-              </div>
-            )}
-          </div>
-        )}
 
         <div className="inline-flex items-center text-orange-500 hover:text-orange-600 font-medium">
           View Details

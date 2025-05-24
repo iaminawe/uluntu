@@ -1,17 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { useGroupsWithFilters } from '../../hooks/useQueries';
 import { Group, GroupsListProps } from './types';
 import GroupCard from './GroupCard';
 import JoinModal from '../JoinModal'; // Reusing the existing JoinModal component
+import Pagination from '../Pagination'; // Import Pagination
+
+const GROUPS_PER_PAGE = 8;
 
 const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Use the filter hook with search term and visibility filters
-  const { data: groups = [], isLoading, error } = useGroupsWithFilters({
+  const { data: filteredGroups = [], isLoading, error } = useGroupsWithFilters({
     search: searchTerm,
     visibility: visibilityFilter.length > 0 ? visibilityFilter : undefined
   });
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchTerm, visibilityFilter]);
+
+  // Pagination logic
+  const totalGroups = filteredGroups.length;
+  const totalPages = Math.ceil(totalGroups / GROUPS_PER_PAGE);
+  const startIndex = (currentPage - 1) * GROUPS_PER_PAGE;
+  const endIndex = startIndex + GROUPS_PER_PAGE;
+  const currentGroupsToDisplay = filteredGroups.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Optional: Scroll to top of list
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (isLoading) {
     return (
@@ -21,7 +41,7 @@ const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
             <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-64"></div>
             <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
-              {Array(4).fill(0).map((_, i) => (
+              {Array(GROUPS_PER_PAGE).fill(0).map((_, i) => (
                 <div key={i} className="bg-slate-200 dark:bg-slate-700 h-48 rounded-lg"></div>
               ))}
             </div>
@@ -44,10 +64,7 @@ const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
   return (
     <div className="max-w-7xl mx-auto py-8">
       <div className="mb-8">
-        
-        {/* Group list content */}
-        
-        {groups.length === 0 ? (
+        {currentGroupsToDisplay.length === 0 && !isLoading ? (
           <div className="bg-white dark:bg-slate-800 rounded-lg p-8 text-center shadow-md">
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No groups found</h3>
             <p className="text-slate-600 dark:text-slate-300">
@@ -58,7 +75,7 @@ const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {groups.map(group => (
+            {currentGroupsToDisplay.map(group => (
               <GroupCard 
                 key={group.id} 
                 group={group} 
@@ -68,6 +85,14 @@ const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       {selectedGroup && (
         <JoinModal

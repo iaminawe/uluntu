@@ -7,7 +7,7 @@ import './video-embed.css';
 // Function to convert YouTube or Vimeo URLs to embed URLs
 const getEmbedUrl = (url: string): string => {
   // YouTube URL patterns
-  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/;
+  const youtubeRegex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
   const youtubeMatch = url.match(youtubeRegex);
   
   if (youtubeMatch && youtubeMatch[1]) {
@@ -15,7 +15,7 @@ const getEmbedUrl = (url: string): string => {
   }
   
   // Vimeo URL patterns
-  const vimeoRegex = /(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|)(\d+)(?:|\/\?))/;
+  const vimeoRegex = /(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|)(\d+)(?:|\/?))/;
   const vimeoMatch = url.match(vimeoRegex);
   
   if (vimeoMatch && vimeoMatch[1]) {

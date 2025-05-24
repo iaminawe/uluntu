@@ -1,5 +1,6 @@
 // Types for DirectoryList component
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Member {
   id: number;
   name: string;
@@ -8,13 +9,16 @@ export interface Member {
   location: string;
   skills: string[];
   image: string;
+  intro?: string; // Short introduction sentence
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DirectoryListProps {
   initialSearch?: string;
   initialSkill?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FilterOptions {
   search: string;
   skills: string[];
@@ -29,7 +33,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     company: 'Mountain Tech Solutions',
     location: 'Nelson, BC',
     skills: ['React', 'Node.js', 'TypeScript'],
-    image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+    image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+    intro: 'Passionate about building scalable web applications and mentoring junior developers.'
   },
   {
     id: 2,
@@ -38,7 +43,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     company: 'Design Forward',
     location: 'Rossland, BC',
     skills: ['UI/UX', 'Figma', 'User Research'],
-    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+    image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    intro: 'Creating intuitive user experiences that bridge the gap between technology and human needs.'
   },
   {
     id: 3,
@@ -47,7 +53,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     company: 'Data Insights Co',
     location: 'Cranbrook, BC',
     skills: ['Python', 'Machine Learning', 'Data Analysis'],
-    image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
+    image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
+    intro: 'Turning complex data into actionable insights for sustainable business growth.'
   },
   {
     id: 4,
@@ -56,7 +63,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     company: 'Web Wizards',
     location: 'Trail, BC',
     skills: ['React', 'JavaScript', 'CSS', 'Tailwind'],
-    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
+    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+    intro: 'Crafting beautiful, responsive interfaces that deliver exceptional user experiences.'
   },
   {
     id: 5,
@@ -65,6 +73,7 @@ export const SAMPLE_MEMBERS: Member[] = [
     company: 'Server Solutions',
     location: 'Castlegar, BC',
     skills: ['Java', 'Spring', 'PostgreSQL', 'Microservices'],
-    image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
+    image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+    intro: 'Building robust backend systems that power modern applications at scale.'
   }
 ];

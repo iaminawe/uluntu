@@ -4,26 +4,28 @@ import { AlertTriangle } from 'lucide-react';
 import CompanyCard from './CompanyCard';
 import { CompaniesListProps, FilterOptions } from './types';
 import { useCompaniesWithFilters } from '../../hooks/useQueries';
+import Pagination from '../Pagination'; // Import Pagination
+
+const ITEMS_PER_PAGE = 9; // Number of companies per page
 
 const CompaniesList = ({ 
   initialSearch = '',
   initialIndustry = ''
 }: CompaniesListProps) => {
-  // State for filters
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
     industries: initialIndustry ? [initialIndustry] : []
   });
   
-  // Update filters when initialSearch changes (from ActionBar)
   useEffect(() => {
     setFilters(prev => ({
       ...prev,
       search: initialSearch
     }));
+    setCurrentPage(1); // Reset page when search term changes
   }, [initialSearch]);
   
-  // Update filters when initialIndustry changes (from ActionBar)
   useEffect(() => {
     if (initialIndustry) {
       setFilters(prev => ({
@@ -31,11 +33,12 @@ const CompaniesList = ({
         industries: [initialIndustry]
       }));
     }
+    // For initialIndustry, only reset if it's a new filter, not on initial empty load
+    if (initialIndustry) setCurrentPage(1); // Reset page when industry changes
   }, [initialIndustry]);
   
-  // Fetch companies using Tanstack Query
   const { 
-    data: companies = [], 
+    data: allCompanies = [], // Renamed to allCompanies for clarity
     isLoading, 
     error,
     refetch
@@ -44,13 +47,29 @@ const CompaniesList = ({
     industries: filters.industries.length > 0 ? filters.industries : undefined
   });
 
+  // Pagination logic
+  const totalCompanies = allCompanies.length;
+  const totalPages = Math.ceil(totalCompanies / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentCompaniesToDisplay = allCompanies.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Effect to reset page if filters change directly (e.g. clear filters button)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters.search, filters.industries]);
+
   return (
     <div className="space-y-8">
       
-      {/* Companies List */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+          {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
             <div key={i} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 animate-pulse">
               <div className="flex items-center mb-4">
                 <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-md mr-4"></div>
@@ -74,13 +93,13 @@ const CompaniesList = ({
             {error instanceof Error ? error.message : 'Please try again later.'}
           </p>
           <button
-            onClick={() => refetch()}
+            onClick={() => refetch()} // refetch will use current filters
             className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
           >
             Try Again
           </button>
         </div>
-      ) : companies.length === 0 ? (
+      ) : totalCompanies === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
           <div className="w-16 h-16 mx-auto bg-slate-100 dark:bg-slate-700 rounded-full 
                         flex items-center justify-center mb-4">
@@ -102,7 +121,10 @@ const CompaniesList = ({
           <p className="text-slate-600 dark:text-slate-400 mb-4">No companies found matching your criteria.</p>
           {(filters.search || filters.industries.length > 0) && (
             <button 
-              onClick={() => setFilters({ search: '', industries: [] })}
+              onClick={() => { 
+                setFilters({ search: '', industries: [] }); 
+                // setCurrentPage(1) will be handled by the useEffect watching filters
+              }}
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
             >
               Clear Filters
@@ -110,17 +132,25 @@ const CompaniesList = ({
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies.map(company => (
-            <CompanyCard key={company.id} company={company} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentCompaniesToDisplay.map(company => (
+              <CompanyCard key={company.id} company={company} />
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
       )}
       
-      {/* Results summary */}
-      {!isLoading && !error && companies.length > 0 && (
-        <div className="text-center text-sm text-slate-500 dark:text-slate-400">
-          Showing {companies.length} {companies.length === 1 ? 'company' : 'companies'}
+      {!isLoading && !error && totalCompanies > 0 && (
+        <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
+          Showing {currentCompaniesToDisplay.length} of {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'}
           {(filters.search || filters.industries.length > 0) && ' matching your filters'}
         </div>
       )}

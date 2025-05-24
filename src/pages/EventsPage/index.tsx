@@ -8,7 +8,7 @@ import EventsList from '../../components/EventsList';
 import EventsCalendar from '../../components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useEvents } from '../../hooks/useQueries';
+import { useEvents } from '../../hooks/useSupabaseQueries';
 
 // Using Event type from useQueries
 

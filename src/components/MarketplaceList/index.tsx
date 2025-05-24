@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from './ListingCard';
+import Pagination from '../Pagination'; // Import Pagination
 import { 
   Listing, 
   MarketplaceListProps, 
@@ -13,36 +14,35 @@ import {
 } from './utils';
 import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
 
+const LISTINGS_PER_PAGE = 9;
+
 const MarketplaceList = ({ 
   initialType = 'all', 
   initialSearch = '', 
   sellerId 
 }: MarketplaceListProps) => {
-  // Use filters from props
-  const filters: FilterOptions = {
-    search: initialSearch,
-    type: initialType,
-    condition: 'all',
-    priceRange: 'all',
-    tags: []
-  };
-  
-  // State for listings data
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Filtered listings based on current filters
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Construct filters object based on props for useMarketplaceItemsWithFilters and local filtering
+  // This `filters` object definition is moved up to be accessible by the dependency array of useEffect for resetting currentPage
+  const filters: FilterOptions = {
+    search: initialSearch,
+    type: initialType,
+    condition: 'all', // Assuming 'all' is default and ActionBar would update these if implemented for MarketplaceList
+    priceRange: 'all', // Assuming 'all' is default
+    tags: [] // Assuming empty is default
+  };
   
-  // Fetch listings data using Tanstack Query
   const { data, isLoading, error: queryError } = useMarketplaceItemsWithFilters({
     type: filters.type !== 'all' ? filters.type : undefined,
     search: filters.search || undefined,
     sellerId: sellerId
   });
   
-  // Update local state based on query results
   useEffect(() => {
     if (isLoading) {
       setLoading(true);
@@ -55,24 +55,33 @@ const MarketplaceList = ({
     }
   }, [data, isLoading, queryError]);
   
-  // Apply filters when listings or filters change
   useEffect(() => {
-    if (!listings.length) return;
+    if (!listings) return; // Guard against listings being undefined initially
     
-    // Apply filters and sort by date
-    const filtered = filterListings(listings, filters, sellerId);
-    const sorted = sortListingsByDate(filtered);
+    const localFiltered = filterListings(listings, filters, sellerId);
+    const sorted = sortListingsByDate(localFiltered);
     
     setFilteredListings(sorted);
-  }, [listings, filters, sellerId]);
+    setCurrentPage(1); // Reset page when underlying filtered data changes
+  }, [listings, filters, sellerId]); // filters object is now stable unless props change
+
+  // Pagination logic
+  const totalListings = filteredListings.length;
+  const totalPages = Math.ceil(totalListings / LISTINGS_PER_PAGE);
+  const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE;
+  const endIndex = startIndex + LISTINGS_PER_PAGE;
+  const currentListingsToDisplay = filteredListings.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   
-  // Render loading state
   if (loading) {
     return (
       <div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+          {Array(LISTINGS_PER_PAGE).fill(0).map((_, i) => (
             <div key={i} className="animate-pulse bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
               <div className="h-48 bg-slate-200 dark:bg-slate-700"></div>
               <div className="p-6">
@@ -102,7 +111,6 @@ const MarketplaceList = ({
     );
   }
   
-  // Render error state
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
@@ -116,10 +124,7 @@ const MarketplaceList = ({
   
   return (
     <div>
-      {/* Marketplace listings content */}
-      
-      {/* Results */}
-      {filteredListings.length === 0 ? (
+      {currentListingsToDisplay.length === 0 && !loading ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
           <div className="mx-auto w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full 
                         flex items-center justify-center mb-4">
@@ -131,22 +136,27 @@ const MarketplaceList = ({
           <p className="text-slate-500 dark:text-slate-400 mb-4">
             Try adjusting your filters or search terms.
           </p>
-          <p className="text-slate-500 dark:text-slate-400">
-            Try adjusting your filters in the search bar above.
-          </p>
+          {/* Removed redundant message as ActionBar is on MarketplacePage not here */}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredListings.map(listing => (
+          {currentListingsToDisplay.map(listing => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
         </div>
       )}
       
-      {/* Results count */}
-      {filteredListings.length > 0 && (
+      {totalPages > 1 && (
+         <Pagination
+           currentPage={currentPage}
+           totalPages={totalPages}
+           onPageChange={handlePageChange}
+         />
+      )}
+      
+      {filteredListings.length > 0 && !loading && (
         <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-          Showing {filteredListings.length} {filteredListings.length === 1 ? 'listing' : 'listings'}
+          Showing {currentListingsToDisplay.length} of {filteredListings.length} {filteredListings.length === 1 ? 'listing' : 'listings'}
           {(filters.search || filters.type !== 'all' || filters.condition !== 'all' || filters.priceRange !== 'all') 
             ? ' matching your filters' 
             : ''}

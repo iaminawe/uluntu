@@ -49,7 +49,7 @@ export default function ResourcesPage() {
             primaryActionUrl="/resources/create"
           />
         ) : (
-          <ResourcesList />
+          <ResourcesList resources={resources} />
         )}
       </ContentContainer>
     </>

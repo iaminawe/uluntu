@@ -69,6 +69,4 @@ export interface FormActionsProps {
   setShowDeleteConfirm: (show: boolean) => void;
 }
 
-export interface LoadingStateProps {
-  // Can include any customization props in the future
-}
+export type LoadingStateProps = Record<string, never>;

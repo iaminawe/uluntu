@@ -16,19 +16,25 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   // Determine if this is a hero-style header or standard header
   if (isHero || backgroundImage) {
-    const hasGradient = className.includes('gradient');
-    const shouldUseWhiteText = backgroundImage || hasGradient;
-    
+    const hasGradient = className.includes('gradient'); // We might not need this specific check anymore
+    const shouldUseWhiteText = backgroundImage || hasGradient; // Keep for text color
+
     return (
-      <div 
-        className={`relative py-12 mb-8 ${className}`}
-        style={backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        } : undefined}
+      <div
+        className={`relative py-12 mb-8 overflow-hidden ${className}`} // Added overflow-hidden
+        // Removed inline background style from here
       >
-        <div className="container mx-auto px-4">
+        {backgroundImage && (
+          <img
+            src={backgroundImage} // Use the prop directly as src
+            alt="Header background"
+            className="absolute inset-0 w-full h-full object-cover z-0" // Positioned as background
+          />
+        )}
+        {/* Overlay for the gradient */}
+        <div className="absolute inset-0 bg-black opacity-50 z-10"></div> {/* Simple opacity, adjust as needed */}
+
+        <div className="container mx-auto px-4 relative z-20"> {/* Content needs higher z-index */}
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex justify-center items-center mb-4">
               {icon && <div className="mr-3">{icon}</div>}

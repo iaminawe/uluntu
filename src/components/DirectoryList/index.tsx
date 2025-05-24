@@ -1,20 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import MemberCard from './MemberCard';
 import DirectoryFilters from './DirectoryFilters';
-import { DirectoryListProps, FilterOptions, SAMPLE_MEMBERS } from './types';
-import { filterMembers, extractUniqueSkills } from './utils';
-
-// Try to import the Tanstack Query hook if available
-let useMembersWithFilters: Function | null = null;
-
-try {
-  // Dynamically import from useQueries if available
-  useMembersWithFilters = require('../../hooks/useQueries').useMembersWithFilters;
-} catch (error) {
-  console.log('Using sample data for members directory');
-}
+import { DirectoryListProps, FilterOptions } from './types';
+import { extractUniqueSkills } from './utils';
+import { useMembersWithFilters } from '../../hooks/useSupabaseQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',
@@ -26,43 +17,14 @@ const DirectoryList = ({
     skills: initialSkill ? [initialSkill] : []
   });
 
-  // Local state for members when not using hooks
-  const [members, setMembers] = useState(SAMPLE_MEMBERS);
-  
-  // State to track if we're using the Tanstack Query hook
-  const usingHook = !!useMembersWithFilters;
-  
-  // Get filtered members using Tanstack Query if available
-  const queryResult = useMembersWithFilters ? 
-    useMembersWithFilters({
-      search: filters.search,
-      skills: filters.skills.length > 0 ? filters.skills : undefined
-    }) : null;
-  
-  // Extract data from hook or use local state
-  const {
-    data: displayedMembers = [],
-    isLoading = false,
-    error = null
-  } = queryResult || { 
-    data: filterMembers(members, filters),
-    isLoading: false,
-    error: null
-  };
+  const { data: displayedMembers = [], isLoading, error, refetch } = useMembersWithFilters({
+    search: filters.search,
+    skills: filters.skills.length > 0 ? filters.skills : undefined
+  });
   
   // Extract all unique skills
-  const allSkills = usingHook && queryResult?.data
-    ? extractUniqueSkills(queryResult.data)
-    : extractUniqueSkills(members);
+  const allSkills = extractUniqueSkills(displayedMembers || []);
 
-  // If we're not using the hook, filter members locally when filters change
-  useEffect(() => {
-    if (!usingHook) {
-      // In a real app, this might fetch from an API
-      const filteredResults = filterMembers(SAMPLE_MEMBERS, filters);
-      setMembers(filteredResults);
-    }
-  }, [filters, usingHook]);
 
   // Loading state
   if (isLoading) {
@@ -105,9 +67,9 @@ const DirectoryList = ({
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading Directory</h3>
         <p className="text-red-600 dark:text-red-400">{error instanceof Error ? error.message : String(error)}</p>
-        {queryResult?.refetch && (
+        {displayedMembers && displayedMembers.length === 0 && !isLoading && (
           <button
-            onClick={() => queryResult.refetch?.()}
+            onClick={() => refetch()}
             className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-300 
                      rounded-md hover:bg-red-200 dark:hover:bg-red-700/30 transition-colors"
           >

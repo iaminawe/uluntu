@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useCompany } from '../../hooks/useQueries';
+import { useCompany } from '../../hooks/useSupabaseQueries';
+import { supabase } from '../../lib/supabase'; 
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { FormData } from './types';
+import { initialFormData } from './data';
 import BasicInfoSection from './BasicInfoSection';
 import IndustrySection from './IndustrySection';
 import SocialSection from './SocialSection';
-import { FormData } from './types';
-import { initialFormData } from './data';
 
 export default function CompanyEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,9 +21,11 @@ export default function CompanyEditPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   
   const { 
-    data: company, 
+    data: company,
     isLoading: companyLoading
   } = useCompany(companyId as number);
   
@@ -43,7 +46,9 @@ export default function CompanyEditPage() {
           linkedin: company.social?.linkedin || '',
           twitter: company.social?.twitter || '',
           github: company.social?.github || ''
-        }
+        },
+        status: (company as any).status || initialFormData.status, // Assuming company might have status
+        featured: (company as any).featured !== undefined ? (company as any).featured : initialFormData.featured // Assuming company might have featured
       });
     }
   }, [isEditMode, company]);
@@ -67,6 +72,28 @@ export default function CompanyEditPage() {
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleLogoFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setLogoFile(file);
+      setFormData(prev => ({ ...prev, logo: '' })); // Clear existing URL if new file selected
+      if (errors.logo) setErrors(prev => ({ ...prev, logo: undefined }));
+    } else {
+      setLogoFile(null);
+    }
+  };
+
+  const handleCoverImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setCoverImageFile(file);
+      setFormData(prev => ({ ...prev, coverImage: '' })); // Clear existing URL
+      if (errors.coverImage) setErrors(prev => ({ ...prev, coverImage: undefined }));
+    } else {
+      setCoverImageFile(null);
     }
   };
   
@@ -103,9 +130,10 @@ export default function CompanyEditPage() {
       newErrors.description = 'Description is required';
     }
     
-    if (!formData.logo.trim()) {
-      newErrors.logo = 'Logo is required';
+    if (!formData.logo.trim() && !logoFile) { // Check for existing URL or new file
+      newErrors.logo = 'Logo is required (either URL or new upload)';
     }
+    // Note: Cover image is optional, so no validation error if not provided
     
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
@@ -137,19 +165,97 @@ export default function CompanyEditPage() {
     }
     
     setIsSubmitting(true);
-    
+    let currentFormData = { ...formData }; // Renamed to avoid confusion, will be reassigned
+
     try {
-      // In a real implementation this would make an API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 1. Upload Logo if a new file is selected
+      if (logoFile) {
+        const fileExt = logoFile.name.split('.').pop();
+        const fileName = `logo_${companyId || 'new'}_${Date.now()}.${fileExt}`;
+        const filePath = `public/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('company_logos') // Ensure this bucket exists and is public
+          .upload(filePath, logoFile, { upsert: true });
+
+        if (uploadError) {
+          throw new Error(`Logo upload failed: ${uploadError.message}`);
+        }
+        const { data: urlData } = supabase.storage.from('company_logos').getPublicUrl(filePath);
+        currentFormData = { ...currentFormData, logo: urlData.publicUrl };
+      }
+
+      // 2. Upload Cover Image if a new file is selected
+      if (coverImageFile) {
+        const fileExt = coverImageFile.name.split('.').pop();
+        const fileName = `cover_${companyId || 'new'}_${Date.now()}.${fileExt}`;
+        const filePath = `public/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('company-cover-image') // Ensure this bucket exists and is public
+          .upload(filePath, coverImageFile, { upsert: true });
+
+        if (uploadError) {
+          throw new Error(`Cover image upload failed: ${uploadError.message}`);
+        }
+        const { data: urlData } = supabase.storage.from('company-cover-image').getPublicUrl(filePath);
+        currentFormData = { ...currentFormData, coverImage: urlData.publicUrl };
+      }
+
+      // 3. Prepare data for Supabase submission
+      const dataForSupabase = {
+        name: currentFormData.name,
+        description: currentFormData.description,
+        logo: currentFormData.logo || null, // Ensure null if empty
+        cover_image_url: currentFormData.coverImage || null, // Map and ensure null if empty
+        industry: currentFormData.industry,
+        size: currentFormData.size,
+        founded: currentFormData.founded,
+        location: currentFormData.location,
+        website: currentFormData.website || null, // Ensure null if empty
+        status: currentFormData.status,
+        featured: currentFormData.featured
+      };
+
+      console.log('Submitting to Supabase:', dataForSupabase);
+
+      // 4. Perform Supabase database operation
+      let dbOperationError = null;
+      if (isEditMode && companyId) {
+        const { error } = await supabase
+          .from('companies')
+          .update(dataForSupabase)
+          .eq('id', companyId)
+          .select(); // .select() can be useful for getting back the updated row or for RLS
+        dbOperationError = error;
+      } else {
+        const { error } = await supabase
+          .from('companies')
+          .insert([dataForSupabase]) // insert expects an array of objects
+          .select();
+        dbOperationError = error;
+      }
+
+      if (dbOperationError) {
+        throw new Error(`Database operation failed: ${dbOperationError.message}`);
+      }
       
       setSubmitSuccess(true);
+      setLogoFile(null); // Clear file states on success
+      setCoverImageFile(null);
       
-      // Redirect after successful submission
       setTimeout(() => {
-        navigate(isEditMode ? `/companies/${id}` : '/companies');
+        navigate(isEditMode && companyId ? `/companies/${companyId}` : '/companies');
       }, 1000);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error submitting form:', error);
+      let errorMessage = 'Submission failed';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    setErrors(prev => ({ ...prev, form: errorMessage }));
     } finally {
       setIsSubmitting(false);
     }
@@ -217,11 +323,15 @@ export default function CompanyEditPage() {
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-8">
               <BasicInfoSection 
-                formData={formData}
-                errors={errors}
-                onChange={handleChange}
-                isSubmitting={isSubmitting}
-              />
+                  formData={formData} 
+                  errors={errors} 
+                  onChange={handleChange} 
+                  isSubmitting={isSubmitting} 
+                  logoFile={logoFile}
+                  coverImageFile={coverImageFile}
+                  onLogoFileChange={handleLogoFileChange}
+                  onCoverImageFileChange={handleCoverImageFileChange}
+                />
               
               <hr className="border-t border-slate-200 dark:border-slate-700" />
               

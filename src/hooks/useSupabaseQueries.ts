@@ -136,6 +136,19 @@ export function useUpdateCompany() {
   });
 }
 
+// Companies hooks
+export function useDeleteCompany() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteCompany?.() ?? { mutate: async () => console.warn('Mock delete company called') };
+
+  return useMutation({
+    mutationFn: companiesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
+    },
+  });
+}
+
 // Events hooks
 export function useEvents() {
   if (!USE_SUPABASE) return mockQueries.useEvents();
@@ -195,6 +208,19 @@ export function useUpdateEvent() {
   });
 }
 
+// Events hooks
+export function useDeleteEvent() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteEvent?.() ?? { mutate: async () => console.warn('Mock delete event called') };
+
+  return useMutation({
+    mutationFn: eventsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+    },
+  });
+}
+
 // Groups hooks
 export function useGroups() {
   if (!USE_SUPABASE) return mockQueries.useGroups();
@@ -250,13 +276,26 @@ export function useUpdateGroup() {
   });
 }
 
+// Groups hooks
+export function useDeleteGroup() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteGroup?.() ?? { mutate: async () => console.warn('Mock delete group called') };
+
+  return useMutation({
+    mutationFn: groupsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+    },
+  });
+}
+
 // News hooks
 export function useNewsArticlesWithFilters(filters?: { search?: string; tags?: string[] }) {
   return mockQueries.useNewsArticlesWithFilters(filters);
 }
 
-export function useNewsArticle(id: number | string) {
-  return mockQueries.useNewsArticle(typeof id === 'string' ? parseInt(id) : id);
+export function useNewsArticle(id?: number | string) {
+  return mockQueries.useNewsArticle(id !== undefined ? (typeof id === 'string' ? parseInt(id) : id) : undefined);
 }
 
 export function useRelatedNewsArticles(articleId: number | string, _limit: number = 3) {
@@ -339,6 +378,19 @@ export function useUpdateResource() {
   });
 }
 
+// Resources hooks
+export function useDeleteResource() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteResource?.() ?? { mutate: async () => console.warn('Mock delete resource called') };
+
+  return useMutation({
+    mutationFn: resourcesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resources'] });
+    },
+  });
+}
+
 // Marketplace hooks
 export function useMarketplaceItemsWithFilters(filters?: { 
   search?: string; 
@@ -414,6 +466,19 @@ export function useUpdateMarketplaceItem() {
   });
 }
 
+// Marketplace hooks
+export function useDeleteMarketplaceItem() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteMarketplaceItem?.() ?? { mutate: async () => console.warn('Mock delete marketplace item called') };
+
+  return useMutation({
+    mutationFn: marketplaceApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketplace'] });
+    },
+  });
+}
+
 // Opportunities hooks
 export function useOpportunities() {
   if (!USE_SUPABASE) return mockQueries.useOpportunities();
@@ -452,6 +517,19 @@ export function useUpdateOpportunity() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
       queryClient.invalidateQueries({ queryKey: ['opportunities', id] });
+    },
+  });
+}
+
+// Opportunities hooks
+export function useDeleteOpportunity() {
+  const queryClient = useQueryClient();
+  if (!USE_SUPABASE) return mockQueries.useDeleteOpportunity?.() ?? { mutate: async () => console.warn('Mock delete opportunity called') };
+
+  return useMutation({
+    mutationFn: opportunitiesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
     },
   });
 }

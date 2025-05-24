@@ -16,13 +16,18 @@ const MemberCard = ({ member }: MemberCardProps) => {
         <img
           src={member.image}
           alt={member.name}
-          className="w-12 h-12 rounded-full mr-4 object-cover"
+          className="w-24 h-24 rounded-full mr-4 object-cover"
         />
         <div>
           <h3 className="font-semibold text-slate-900 dark:text-white">{member.name}</h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">{member.title}</p>
         </div>
       </div>
+      {member.intro && (
+        <p className="text-sm text-slate-500 dark:text-slate-400 my-3 italic">
+          "{member.intro}"
+        </p>
+      )}
       
       {(member.company || member.location) && (
         <div className="space-y-2 mb-4">

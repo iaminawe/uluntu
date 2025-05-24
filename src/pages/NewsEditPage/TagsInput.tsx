@@ -3,7 +3,6 @@ import { TagsInputProps } from './types';
 
 const TagsInput: React.FC<TagsInputProps> = ({ 
   tags, 
-  newTag, 
   setNewTag, 
   handleAddTag,
   handleRemoveTag,
@@ -40,7 +39,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
       label="Tags"
       tags={tags}
       onChange={handleChange}
-      helperText={errors.tags ? errors.tags : "Press Enter or comma to add a tag"}
+      helperText={errors.tags ? (Array.isArray(errors.tags) ? errors.tags[0] : errors.tags) : "Press Enter or comma to add a tag"}
       placeholder="Add a tag..."
       className="mb-6"
     />

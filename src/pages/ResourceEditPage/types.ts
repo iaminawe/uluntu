@@ -15,9 +15,7 @@ export interface FormData {
   newTag: string;
 }
 
-export interface LoadingStateProps {
-  // Can include any customization props in the future
-}
+export type LoadingStateProps = Record<string, never>;
 
 export interface FormHeaderProps {
   isEditing: boolean;

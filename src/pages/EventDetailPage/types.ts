@@ -31,10 +31,12 @@ export interface EventDetailsCardProps {
   formattedTime: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LoadingStateProps {
   // Can include any customization props in the future
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ErrorStateProps {
   // Can include props like errorMessage in the future
 }

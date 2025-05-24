@@ -10,7 +10,7 @@ import {
 } from '../../components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useOpportunities } from '../../hooks/useQueries';
+import { useOpportunities } from '../../hooks/useSupabaseQueries';
 
 // Adapter function to map API opportunity data to the format expected by OpportunitiesList
 const mapToOpportunityListItem = (opportunity: Opportunity): OpportunityListItem => {

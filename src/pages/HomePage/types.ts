@@ -67,6 +67,25 @@ export interface GroupMember {
   title?: string;
 }
 
+export interface Resource {
+  id: number;
+  title: string;
+  type: string; // Simplified for now, expand as needed
+  url: string;
+}
+
+export interface GroupPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  author: {
+    name: string;
+    image: string;
+  };
+  date: string;
+  image?: string;
+}
+
 export interface Group {
   id: number;
   name: string;
@@ -82,9 +101,9 @@ export interface Group {
   lastActive: string;
   featured?: boolean;
   members: GroupMember[];
-  events?: any[];
-  resources?: any[];
-  posts?: any[];
+  events?: Event[];
+  resources?: Resource[];
+  posts?: GroupPost[];
 }
 
 export interface NewsArticle {

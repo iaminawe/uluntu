@@ -16,6 +16,7 @@ export function adaptMemberFromSupabase(member: Member): any {
     id: member.id,
     name: member.name,
     title: member.title || '',
+    intro: member.intro || '',
     bio: member.bio || '',
     location: member.location || '',
     image: member.image || '',

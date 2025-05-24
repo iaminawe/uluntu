@@ -1,12 +1,14 @@
 // Types for NewsArticlesList component
 import { EntityStatus } from '../../data/mock/mockData';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsAuthor {
   id: number;
   name: string;
   image: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsArticle {
   id: number;
   title: string;
@@ -20,11 +22,13 @@ export interface NewsArticle {
   featured: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsArticlesListProps {
   initialTag?: string;
   initialSearch?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FilterOptions {
   search: string;
   tags: string[];

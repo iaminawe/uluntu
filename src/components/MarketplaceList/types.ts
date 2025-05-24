@@ -4,12 +4,14 @@ export type ListingType = 'product' | 'service' | 'equipment';
 export type ListingCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor';
 export type ListingPriceRange = 'any' | 'under-50' | '50-100' | '100-500' | '500-2000' | 'over-2000';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Seller {
   id: number;
   name: string;
   image: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Listing {
   id: number;
   title: string;
@@ -24,12 +26,14 @@ export interface Listing {
   tags: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface MarketplaceListProps {
   initialType?: ListingType | 'all';
   initialSearch?: string;
   sellerId?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FilterOptions {
   search: string;
   type: ListingType | 'all';
