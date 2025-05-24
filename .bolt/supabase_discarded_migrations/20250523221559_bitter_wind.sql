@@ -30,11 +30,12 @@ CREATE POLICY "Superadmins can manage all user roles"
     )
   );
 
--- Users can read their own roles
-CREATE POLICY "Users can read their own roles"
-  ON user_roles
-  FOR SELECT
-  USING (auth.uid() = user_id);
+-- Users can read their own roles (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Users can read their own roles"
+--   ON user_roles
+--   FOR SELECT
+--   USING (auth.uid() = user_id);
 
 -- Create function to automatically assign 'authenticated' role to new users
 CREATE OR REPLACE FUNCTION public.handle_new_user()

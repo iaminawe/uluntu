@@ -41,3 +41,50 @@ export const getSession = async () => {
   const { data, error } = await supabase.auth.getSession();
   return { session: data.session, error };
 };
+
+// Storage helper functions
+export const uploadProfileImage = async (file: File, userId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_PROFILE_IMAGES_BUCKET || 'profile-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}/profile.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadCoverImage = async (file: File, userId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_PROFILE_IMAGES_BUCKET || 'profile-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}/cover.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading cover image:', error);
+    return { url: null, error: error as Error };
+  }
+};

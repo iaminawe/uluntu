@@ -41,11 +41,12 @@ ALTER TABLE member_skills ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for members table
 
--- Anyone can read published members
-CREATE POLICY "Anyone can read published members"
-  ON members
-  FOR SELECT
-  USING (status = 'published');
+-- Anyone can read published members (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read published members"
+--   ON members
+--   FOR SELECT
+--   USING (status = 'published');
 
 -- Users can read, update, and delete their own profiles
 CREATE POLICY "Users can read their own profiles"
@@ -69,41 +70,45 @@ CREATE POLICY "Authenticated users can create member profiles"
   FOR INSERT
   WITH CHECK (auth.uid() IS NOT NULL);
 
--- Superadmins can do anything with members
-CREATE POLICY "Superadmins can manage all members"
-  ON members
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with members (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all members"
+--   ON members
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
 -- Create policies for member_skills table
 
--- Anyone can read member skills
-CREATE POLICY "Anyone can read member skills"
-  ON member_skills
-  FOR SELECT
-  USING (true);
+-- Anyone can read member skills (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read member skills"
+--   ON member_skills
+--   FOR SELECT
+--   USING (true);
 
--- Users can manage their own skills
-CREATE POLICY "Users can manage their own skills"
-  ON member_skills
-  USING (
-    EXISTS (
-      SELECT 1 FROM members
-      WHERE members.id = member_skills.member_id
-      AND members.user_id = auth.uid()
-    )
-  );
+-- Users can manage their own skills (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Users can manage their own skills"
+--   ON member_skills
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM members
+--       WHERE members.id = member_skills.member_id
+--       AND members.user_id = auth.uid()
+--     )
+--   );
 
--- Superadmins can do anything with member skills
-CREATE POLICY "Superadmins can manage all member skills"
-  ON member_skills
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with member skills (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all member skills"
+--   ON member_skills
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );

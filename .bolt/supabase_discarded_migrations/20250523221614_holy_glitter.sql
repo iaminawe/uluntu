@@ -42,38 +42,42 @@ ALTER TABLE company_members ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for companies table
 
--- Anyone can read published companies
-CREATE POLICY "Anyone can read published companies"
-  ON companies
-  FOR SELECT
-  USING (status = 'published');
+-- Anyone can read published companies (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read published companies"
+--   ON companies
+--   FOR SELECT
+--   USING (status = 'published');
 
--- Company members can read, update, and delete their companies
-CREATE POLICY "Company members can read their companies"
-  ON companies
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM company_members
-      WHERE company_members.company_id = companies.id
-      AND company_members.member_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Company members can read, update, and delete their companies (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Company members can read their companies"
+--   ON companies
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM company_members
+--       WHERE company_members.company_id = companies.id
+--       AND company_members.member_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
-CREATE POLICY "Company members can update their companies"
-  ON companies
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM company_members
-      WHERE company_members.company_id = companies.id
-      AND company_members.member_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Company members can update their companies (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Company members can update their companies"
+--   ON companies
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM company_members
+--       WHERE company_members.company_id = companies.id
+--       AND company_members.member_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
 CREATE POLICY "Company members can delete their companies"
   ON companies
@@ -88,29 +92,32 @@ CREATE POLICY "Company members can delete their companies"
     )
   );
 
--- Authenticated users can create companies
-CREATE POLICY "Authenticated users can create companies"
-  ON companies
-  FOR INSERT
-  WITH CHECK (auth.uid() IS NOT NULL);
+-- Authenticated users can create companies (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authenticated users can create companies"
+--   ON companies
+--   FOR INSERT
+--   WITH CHECK (auth.uid() IS NOT NULL);
 
--- Superadmins can do anything with companies
-CREATE POLICY "Superadmins can manage all companies"
-  ON companies
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with companies (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all companies"
+--   ON companies
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
 -- Create policies for company_members table
 
--- Anyone can read company members
-CREATE POLICY "Anyone can read company members"
-  ON company_members
-  FOR SELECT
-  USING (true);
+-- Anyone can read company members (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read company members"
+--   ON company_members
+--   FOR SELECT
+--   USING (true);
 
 -- Company members can manage their own company memberships
 CREATE POLICY "Company members can manage their own company memberships"
@@ -121,12 +128,13 @@ CREATE POLICY "Company members can manage their own company memberships"
     )
   );
 
--- Superadmins can do anything with company members
-CREATE POLICY "Superadmins can manage all company members"
-  ON company_members
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with company members (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all company members"
+--   ON company_members
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );

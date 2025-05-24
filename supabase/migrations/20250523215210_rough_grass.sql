@@ -40,7 +40,8 @@ CREATE POLICY "Users can read their own roles"
 
 -- Insert initial superadmin (this would be replaced with your actual admin user ID in production)
 -- This is just a placeholder for demonstration
-INSERT INTO user_roles (user_id, role)
-VALUES 
-  ('00000000-0000-0000-0000-000000000000', 'superadmin')
-ON CONFLICT (user_id, role) DO NOTHING;
+-- Commented out to avoid foreign key constraint error during initial setup
+-- INSERT INTO user_roles (user_id, role)
+-- VALUES 
+--   ('00000000-0000-0000-0000-000000000000', 'superadmin')
+-- ON CONFLICT (user_id, role) DO NOTHING;
