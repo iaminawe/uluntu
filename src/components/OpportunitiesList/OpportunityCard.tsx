@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Clock, Building, ExternalLink } from 'lucide-react';
+import { 
+  MapPin, 
+  Clock, 
+  Building
+} from 'lucide-react';
 import { Opportunity } from './types';
 import { 
   formatDate, 

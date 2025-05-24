@@ -16,6 +16,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   // Determine if this is a hero-style header or standard header
   if (isHero || backgroundImage) {
+    const hasGradient = className.includes('gradient');
+    const shouldUseWhiteText = backgroundImage || hasGradient;
+    
     return (
       <div 
         className={`relative py-12 mb-8 ${className}`}
@@ -30,11 +33,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             <div className="flex justify-center items-center mb-4">
               {icon && <div className="mr-3">{icon}</div>}
             </div>
-            <h1 className={`text-3xl font-bold ${backgroundImage ? 'text-white' : 'text-slate-900 dark:text-white'} mb-2`}>
+            <h1 className={`text-3xl font-bold ${shouldUseWhiteText ? 'text-white' : 'text-slate-900 dark:text-white'} mb-2`}>
               {title}
             </h1>
             {subtitle && (
-              <p className={`text-lg ${backgroundImage ? 'text-slate-200' : 'text-slate-600 dark:text-slate-400'} mt-2 max-w-3xl mx-auto`}>
+              <p className={`text-lg ${shouldUseWhiteText ? 'text-white/90' : 'text-slate-600 dark:text-slate-400'} mt-2 max-w-3xl mx-auto`}>
                 {subtitle}
               </p>
             )}

@@ -33,7 +33,7 @@ const DirectoryList = ({
   const usingHook = !!useMembersWithFilters;
   
   // Get filtered members using Tanstack Query if available
-  const queryResult = usingHook ? 
+  const queryResult = useMembersWithFilters ? 
     useMembersWithFilters({
       search: filters.search,
       skills: filters.skills.length > 0 ? filters.skills : undefined
@@ -107,7 +107,7 @@ const DirectoryList = ({
         <p className="text-red-600 dark:text-red-400">{error instanceof Error ? error.message : String(error)}</p>
         {queryResult?.refetch && (
           <button
-            onClick={() => queryResult.refetch()}
+            onClick={() => queryResult.refetch?.()}
             className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-300 
                      rounded-md hover:bg-red-200 dark:hover:bg-red-700/30 transition-colors"
           >
@@ -162,7 +162,7 @@ const DirectoryList = ({
         <>
           {/* Members grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedMembers.map(member => (
+            {displayedMembers.map((member: any) => (
               <MemberCard key={member.id} member={member} />
             ))}
           </div>

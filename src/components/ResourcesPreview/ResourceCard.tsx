@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ResourceCardProps } from './types';
-import { FileText, Film, Tool, Book, File } from 'lucide-react';
+import { FileText, Film, Book, File } from 'lucide-react';
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
   // Function to get appropriate icon based on resource type
@@ -12,7 +12,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
       case 'video':
         return <Film className="h-5 w-5" />;
       case 'tool':
-        return <Tool className="h-5 w-5" />;
+        return <File className="h-5 w-5" />;
       case 'guide':
         return <Book className="h-5 w-5" />;
       default:

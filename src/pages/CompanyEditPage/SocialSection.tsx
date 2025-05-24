@@ -4,7 +4,7 @@ import { SocialSectionProps } from './types';
 const SocialSection = ({
   social,
   onChange,
-  errors,
+  errors: _errors,
   isSubmitting
 }: SocialSectionProps) => {
   return (

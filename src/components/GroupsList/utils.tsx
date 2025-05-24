@@ -5,11 +5,11 @@ import { GroupVisibility } from './types';
 export const getVisibilityIcon = (visibility: GroupVisibility) => {
   switch (visibility) {
     case 'open':
-      return <Globe className="h-5 w-5 text-green-500" title="Open Group" />;
+      return <Globe className="h-5 w-5 text-green-500" />;
     case 'closed':
-      return <Lock className="h-5 w-5 text-amber-500" title="Closed Group - Request Required" />;
+      return <Lock className="h-5 w-5 text-amber-500" />;
     case 'secret':
-      return <EyeOff className="h-5 w-5 text-red-500" title="Secret Group" />;
+      return <EyeOff className="h-5 w-5 text-red-500" />;
   }
 };
 

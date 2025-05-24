@@ -7,8 +7,8 @@ interface GroupDetailsProps {
   groupId: string;
 }
 
-const GroupDetails = ({ groupId }: GroupDetailsProps) => {
-  const [group, setGroup] = useState<Group>(SAMPLE_GROUP); // In a real app, fetch by ID
+const GroupDetails = ({ groupId: _groupId }: GroupDetailsProps) => {
+  const [group, _setGroup] = useState<Group>(SAMPLE_GROUP); // In a real app, fetch by ID
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

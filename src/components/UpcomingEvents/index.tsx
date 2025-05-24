@@ -20,7 +20,8 @@ const SAMPLE_EVENTS: Event[] = [
       name: 'Nelson Tech Collective',
       image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg'
     },
-    type: 'in-person'
+    type: 'in-person',
+    status: 'published'
   },
   {
     id: 2,
@@ -34,7 +35,8 @@ const SAMPLE_EVENTS: Event[] = [
       name: 'Kootenay Data Science Network',
       image: 'https://images.pexels.com/photos/3184603/pexels-photo-3184603.jpeg'
     },
-    type: 'online'
+    type: 'online',
+    status: 'published'
   }
 ];
 

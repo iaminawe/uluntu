@@ -49,7 +49,7 @@ export default function ProfileEditPage() {
           linkedin: member.social?.linkedin || '',
           twitter: member.social?.twitter || '',
           github: member.social?.github || '',
-          website: member.website || ''
+          website: member.social?.website || ''
         }
       });
     }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PageHeader as SharedPageHeader } from '../../components/ui/PageLayout';
+import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const PageHeader: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ const PageHeader: React.FC = () => {
       title="Tech Events"
       subtitle="Discover workshops, meetups, and conferences in the Kootenay tech community"
       isHero={true}
-      className="bg-gradient-to-r from-yellow-500 to-amber-500"
+      backgroundImage={MOUNTAIN_BACKGROUNDS.events}
     />
   );
 };

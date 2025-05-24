@@ -1,4 +1,4 @@
-import { OpportunityData } from './types';
+import { OpportunityData, FormData } from './types';
 
 // Sample opportunity data for edit mode
 export const SAMPLE_OPPORTUNITY: OpportunityData = {
@@ -36,10 +36,10 @@ export const SAMPLE_OPPORTUNITY: OpportunityData = {
 };
 
 // Initial form data state
-export const initialFormData = {
+export const initialFormData: FormData = {
   title: '',
   description: '',
-  type: 'job',
+  type: 'job' as const,
   organization: '',
   location: '',
   deadline: '',
