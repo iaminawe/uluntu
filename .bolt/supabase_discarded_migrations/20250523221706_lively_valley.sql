@@ -41,94 +41,103 @@ ALTER TABLE news_associations ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for news table
 
--- Anyone can read published news
-CREATE POLICY "Anyone can read published news"
-  ON news
-  FOR SELECT
-  USING (status = 'published');
+-- Anyone can read published news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read published news"
+--   ON news
+--   FOR SELECT
+--   USING (status = 'published');
 
--- Authors can read, update, and delete their own news
-CREATE POLICY "Authors can read their own news"
-  ON news
-  FOR SELECT
-  USING (
-    author_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Authors can read, update, and delete their own news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authors can read their own news"
+--   ON news
+--   FOR SELECT
+--   USING (
+--     author_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
-CREATE POLICY "Authors can update their own news"
-  ON news
-  FOR UPDATE
-  USING (
-    author_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authors can update their own news"
+--   ON news
+--   FOR UPDATE
+--   USING (
+--     author_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
-CREATE POLICY "Authors can delete their own news"
-  ON news
-  FOR DELETE
-  USING (
-    author_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authors can delete their own news"
+--   ON news
+--   FOR DELETE
+--   USING (
+--     author_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Authenticated users can create news
-CREATE POLICY "Authenticated users can create news"
-  ON news
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() IS NOT NULL AND
-    author_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Authenticated users can create news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authenticated users can create news"
+--   ON news
+--   FOR INSERT
+--   WITH CHECK (
+--     auth.uid() IS NOT NULL AND
+--     author_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Superadmins can do anything with news
-CREATE POLICY "Superadmins can manage all news"
-  ON news
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all news"
+--   ON news
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
 -- Create policies for news_associations table
 
--- Anyone can read news associations for published news
-CREATE POLICY "Anyone can read news associations for published news"
-  ON news_associations
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM news
-      WHERE news.id = news_associations.news_id
-      AND news.status = 'published'
-    )
-  );
+-- Anyone can read news associations for published news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read news associations for published news"
+--   ON news_associations
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM news
+--       WHERE news.id = news_associations.news_id
+--       AND news.status = 'published'
+--     )
+--   );
 
--- Authors can manage associations for their own news
-CREATE POLICY "Authors can manage associations for their own news"
-  ON news_associations
-  USING (
-    EXISTS (
-      SELECT 1 FROM news
-      WHERE news.id = news_associations.news_id
-      AND news.author_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Authors can manage associations for their own news (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authors can manage associations for their own news"
+--   ON news_associations
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM news
+--       WHERE news.id = news_associations.news_id
+--       AND news.author_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
--- Superadmins can do anything with news associations
-CREATE POLICY "Superadmins can manage all news associations"
-  ON news_associations
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with news associations (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all news associations"
+--   ON news_associations
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );

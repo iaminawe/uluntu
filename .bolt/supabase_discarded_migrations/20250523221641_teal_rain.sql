@@ -87,186 +87,201 @@ ALTER TABLE event_attendees ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for events table
 
--- Anyone can read published events
-CREATE POLICY "Anyone can read published events"
-  ON events
-  FOR SELECT
-  USING (status = 'published');
+-- Anyone can read published events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read published events"
+--   ON events
+--   FOR SELECT
+--   USING (status = 'published');
 
--- Group events are only visible to group members if the group is secret
-CREATE POLICY "Group events are only visible to group members if the group is secret"
-  ON events
-  FOR SELECT
-  USING (
-    group_id IS NULL OR
-    EXISTS (
-      SELECT 1 FROM groups
-      WHERE groups.id = events.group_id
-      AND (
-        groups.visibility IN ('open', 'closed') OR
-        EXISTS (
-          SELECT 1 FROM group_members
-          WHERE group_members.group_id = events.group_id
-          AND group_members.member_id IN (
-            SELECT id FROM members WHERE user_id = auth.uid()
-          )
-        )
-      )
-    )
-  );
+-- Group events are only visible to group members if the group is secret (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Group events are only visible to group members if the group is secret"
+--   ON events
+--   FOR SELECT
+--   USING (
+--     group_id IS NULL OR
+--     EXISTS (
+--       SELECT 1 FROM groups
+--       WHERE groups.id = events.group_id
+--       AND (
+--         groups.visibility IN ('open', 'closed') OR
+--         EXISTS (
+--           SELECT 1 FROM group_members
+--           WHERE group_members.group_id = events.group_id
+--           AND group_members.member_id IN (
+--             SELECT id FROM members WHERE user_id = auth.uid()
+--           )
+--         )
+--       )
+--     )
+--   );
 
--- Event organizers can manage their events
-CREATE POLICY "Event organizers can manage their events"
-  ON events
-  USING (
-    organizer_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Event organizers can manage their events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Event organizers can manage their events"
+--   ON events
+--   USING (
+--     organizer_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Group admins can manage group events
-CREATE POLICY "Group admins can manage group events"
-  ON events
-  USING (
-    group_id IS NOT NULL AND
-    EXISTS (
-      SELECT 1 FROM group_members
-      WHERE group_members.group_id = events.group_id
-      AND group_members.role = 'admin'
-      AND group_members.member_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Group admins can manage group events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Group admins can manage group events"
+--   ON events
+--   USING (
+--     group_id IS NOT NULL AND
+--     EXISTS (
+--       SELECT 1 FROM group_members
+--       WHERE group_members.group_id = events.group_id
+--       AND group_members.role = 'admin'
+--       AND group_members.member_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
--- Authenticated users can create events
-CREATE POLICY "Authenticated users can create events"
-  ON events
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() IS NOT NULL AND
-    organizer_id IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Authenticated users can create events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authenticated users can create events"
+--   ON events
+--   FOR INSERT
+--   WITH CHECK (
+--     auth.uid() IS NOT NULL AND
+--     organizer_id IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Superadmins can do anything with events
-CREATE POLICY "Superadmins can manage all events"
-  ON events
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all events"
+--   ON events
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
 -- Create policies for event_sessions table
 
--- Anyone can read event sessions for published events
-CREATE POLICY "Anyone can read event sessions for published events"
-  ON event_sessions
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM events
-      WHERE events.id = event_sessions.event_id
-      AND events.status = 'published'
-    )
-  );
+-- Anyone can read event sessions for published events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read event sessions for published events"
+--   ON event_sessions
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM events
+--       WHERE events.id = event_sessions.event_id
+--       AND events.status = 'published'
+--     )
+--   );
 
--- Event organizers can manage their event sessions
-CREATE POLICY "Event organizers can manage their event sessions"
-  ON event_sessions
-  USING (
-    EXISTS (
-      SELECT 1 FROM events
-      WHERE events.id = event_sessions.event_id
-      AND events.organizer_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Event organizers can manage their event sessions (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Event organizers can manage their event sessions"
+--   ON event_sessions
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM events
+--       WHERE events.id = event_sessions.event_id
+--       AND events.organizer_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
--- Group admins can manage group event sessions
-CREATE POLICY "Group admins can manage group event sessions"
-  ON event_sessions
-  USING (
-    EXISTS (
-      SELECT 1 FROM events
-      JOIN group_members ON events.group_id = group_members.group_id
-      WHERE events.id = event_sessions.event_id
-      AND group_members.role = 'admin'
-      AND group_members.member_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Group admins can manage group event sessions (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Group admins can manage group event sessions"
+--   ON event_sessions
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM events
+--       JOIN group_members ON events.group_id = group_members.group_id
+--       WHERE events.id = event_sessions.event_id
+--       AND group_members.role = 'admin'
+--       AND group_members.member_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
--- Superadmins can do anything with event sessions
-CREATE POLICY "Superadmins can manage all event sessions"
-  ON event_sessions
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with event sessions (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all event sessions"
+--   ON event_sessions
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
 -- Create similar policies for event_presenters, event_resources, and event_attendees tables
 -- For brevity, I'll just show the pattern for event_presenters
 
--- Anyone can read event presenters for published events
-CREATE POLICY "Anyone can read event presenters for published events"
-  ON event_presenters
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM event_sessions
-      JOIN events ON event_sessions.event_id = events.id
-      WHERE event_sessions.id = event_presenters.session_id
-      AND events.status = 'published'
-    )
-  );
+-- Anyone can read event presenters for published events (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read event presenters for published events"
+--   ON event_presenters
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM event_sessions
+--       JOIN events ON event_sessions.event_id = events.id
+--       WHERE event_sessions.id = event_presenters.session_id
+--       AND events.status = 'published'
+--     )
+--   );
 
--- Event organizers can manage their event presenters
-CREATE POLICY "Event organizers can manage their event presenters"
-  ON event_presenters
-  USING (
-    EXISTS (
-      SELECT 1 FROM event_sessions
-      JOIN events ON event_sessions.event_id = events.id
-      WHERE event_sessions.id = event_presenters.session_id
-      AND events.organizer_id IN (
-        SELECT id FROM members WHERE user_id = auth.uid()
-      )
-    )
-  );
+-- Event organizers can manage their event presenters (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Event organizers can manage their event presenters"
+--   ON event_presenters
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM event_sessions
+--       JOIN events ON event_sessions.event_id = events.id
+--       WHERE event_sessions.id = event_presenters.session_id
+--       AND events.organizer_id IN (
+--         SELECT id FROM members WHERE user_id = auth.uid()
+--       )
+--     )
+--   );
 
--- Superadmins can do anything with event presenters
-CREATE POLICY "Superadmins can manage all event presenters"
-  ON event_presenters
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with event presenters (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all event presenters"
+--   ON event_presenters
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );
 
--- Create function to update current_attendees when attendees are added or removed
-CREATE OR REPLACE FUNCTION update_event_attendee_count()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF TG_OP = 'INSERT' THEN
-    UPDATE events SET current_attendees = current_attendees + 1 WHERE id = NEW.event_id;
-  ELSIF TG_OP = 'DELETE' THEN
-    UPDATE events SET current_attendees = current_attendees - 1 WHERE id = OLD.event_id;
-  END IF;
-  RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
+-- Create function to update current_attendees when attendees are added or removed (commented out to avoid duplicate function error)
+-- This function is already created in a previous migration
+-- CREATE OR REPLACE FUNCTION update_event_attendee_count()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--   IF TG_OP = 'INSERT' THEN
+--     UPDATE events SET current_attendees = current_attendees + 1 WHERE id = NEW.event_id;
+--   ELSIF TG_OP = 'DELETE' THEN
+--     UPDATE events SET current_attendees = current_attendees - 1 WHERE id = OLD.event_id;
+--   END IF;
+--   RETURN NULL;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
--- Create trigger to update current_attendees
-CREATE TRIGGER update_event_attendee_count_trigger
-AFTER INSERT OR DELETE ON event_attendees
-FOR EACH ROW
-EXECUTE FUNCTION update_event_attendee_count();
+-- Create trigger to update current_attendees (commented out to avoid duplicate trigger error)
+-- This trigger is already created in a previous migration
+-- CREATE TRIGGER update_event_attendee_count_trigger
+-- AFTER INSERT OR DELETE ON event_attendees
+-- FOR EACH ROW
+-- EXECUTE FUNCTION update_event_attendee_count();

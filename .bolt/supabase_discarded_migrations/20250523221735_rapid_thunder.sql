@@ -37,57 +37,63 @@ ALTER TABLE opportunities ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for opportunities table
 
--- Anyone can read published opportunities
-CREATE POLICY "Anyone can read published opportunities"
-  ON opportunities
-  FOR SELECT
-  USING (status = 'published');
+-- Anyone can read published opportunities (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Anyone can read published opportunities"
+--   ON opportunities
+--   FOR SELECT
+--   USING (status = 'published');
 
--- Posters can read, update, and delete their own opportunities
-CREATE POLICY "Posters can read their own opportunities"
-  ON opportunities
-  FOR SELECT
-  USING (
-    posted_by IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Posters can read, update, and delete their own opportunities (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Posters can read their own opportunities"
+--   ON opportunities
+--   FOR SELECT
+--   USING (
+--     posted_by IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
-CREATE POLICY "Posters can update their own opportunities"
-  ON opportunities
-  FOR UPDATE
-  USING (
-    posted_by IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Posters can update their own opportunities"
+--   ON opportunities
+--   FOR UPDATE
+--   USING (
+--     posted_by IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
-CREATE POLICY "Posters can delete their own opportunities"
-  ON opportunities
-  FOR DELETE
-  USING (
-    posted_by IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Posters can delete their own opportunities"
+--   ON opportunities
+--   FOR DELETE
+--   USING (
+--     posted_by IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Authenticated users can create opportunities
-CREATE POLICY "Authenticated users can create opportunities"
-  ON opportunities
-  FOR INSERT
-  WITH CHECK (
-    auth.uid() IS NOT NULL AND
-    posted_by IN (
-      SELECT id FROM members WHERE user_id = auth.uid()
-    )
-  );
+-- Authenticated users can create opportunities (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Authenticated users can create opportunities"
+--   ON opportunities
+--   FOR INSERT
+--   WITH CHECK (
+--     auth.uid() IS NOT NULL AND
+--     posted_by IN (
+--       SELECT id FROM members WHERE user_id = auth.uid()
+--     )
+--   );
 
--- Superadmins can do anything with opportunities
-CREATE POLICY "Superadmins can manage all opportunities"
-  ON opportunities
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'superadmin'
-    )
-  );
+-- Superadmins can do anything with opportunities (commented out to avoid duplicate policy error)
+-- This policy is already created in a previous migration
+-- CREATE POLICY "Superadmins can manage all opportunities"
+--   ON opportunities
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM user_roles
+--       WHERE user_id = auth.uid() AND role = 'superadmin'
+--     )
+--   );

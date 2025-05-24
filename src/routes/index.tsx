@@ -34,6 +34,7 @@ import MarketplaceEditPage from '../pages/MarketplaceEditPage';
 import SignInPage from '../pages/SignInPage';
 import SignUpPage from '../pages/SignUpPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
+import ProfileEditPage from '../pages/ProfileEditPage';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
@@ -134,7 +135,12 @@ export const router = createBrowserRouter([
       },
       { path: 'signin', element: <SignInPage /> },
       { path: 'signup', element: <SignUpPage /> },
-      { path: 'unauthorized', element: <UnauthorizedPage /> }
+      { path: 'unauthorized', element: <UnauthorizedPage /> },
+      { path: 'profile', element: <DirectoryDetailPage /> },
+      { 
+        path: 'profile/edit', 
+        element: <ProtectedRoute><ProfileEditPage /></ProtectedRoute> 
+      }
     ]
   }
 ]);
