@@ -1,9 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { addMonths } from 'date-fns';
-import mockData, { MarketplaceItem } from '../data/mock/mockData';
+import {
+  useMarketplaceItemsWithFilters,
+  useMarketplaceItems,
+  useMarketplaceItem,
+  useRelatedMarketplaceItems,
+  useCreateMarketplaceItem,
+  useUpdateMarketplaceItem,
+  useDeleteMarketplaceItem,
+} from './useMarketplaceQueries';
+import {
+  useNewsArticlesWithFilters,
+  useNewsArticle,
+  useCreateNewsArticle,
+  useUpdateNewsArticle,
+  useDeleteNewsArticle,
+} from './useNewsQueries';
+import mockData from '../data/mock/mockData';
 
 // Extract data from mockData object
-const { members, companies, events, groups, marketplaceItems, resources, newsArticles } = mockData;
+const { members, companies, events, groups, resources } = mockData;
+
+export { mockData }; // Exporting mockData so it can be accessed via mockQueries.mockData
 
 
 
@@ -18,7 +36,8 @@ const fetchMembers = async () => {
   return simulateApiCall(members);
 };
 
-const fetchMemberById = async (id: number) => {
+const fetchMemberById = async (id: number | undefined) => {
+  if (id === undefined) return null;
   await new Promise(resolve => setTimeout(resolve, 200));
   const member = members.find(m => m.id === id);
   if (!member) throw new Error('Member not found');
@@ -50,7 +69,8 @@ const fetchEvents = async () => {
   return events;
 };
 
-const fetchEventById = async (id: number) => {
+const fetchEventById = async (id: number | undefined) => {
+  if (id === undefined) return null;
   await new Promise(resolve => setTimeout(resolve, 200));
   const event = events.find(e => e.id === id);
   if (!event) throw new Error('Event not found');
@@ -62,7 +82,9 @@ const fetchGroups = async () => {
   return groups;
 };
 
-const fetchGroupById = async (id: number) => {
+
+const fetchGroupById = async (id: number | undefined) => {
+  if (id === undefined) return null;
   await new Promise(resolve => setTimeout(resolve, 200));
   const group = groups.find(g => g.id === id);
   if (!group) throw new Error('Group not found');
@@ -104,7 +126,7 @@ export function useMembersWithFilters(filters?: { search?: string; skills?: stri
   });
 }
 
-export function useMember(id: number) {
+export function useMember(id: number | undefined) {
   return useQuery({
     queryKey: ['members', id],
     queryFn: () => fetchMemberById(id),
@@ -205,9 +227,11 @@ export function useEventsWithFilters(filters?: {
       
       // Filter by event types
       if (filters?.types && filters.types.length > 0) {
-        filteredEvents = filteredEvents.filter(event => 
-          filters.types?.includes(event.type)
-        );
+        filteredEvents = filteredEvents.filter(event => {
+          // Type assertion to handle string vs enum type mismatch
+          const eventType = event.type as 'in-person' | 'online' | 'hybrid';
+          return filters.types?.includes(eventType);
+        });
       }
       
       // Filter by date range
@@ -217,14 +241,15 @@ export function useEventsWithFilters(filters?: {
         filteredEvents = filteredEvents.filter(event => {
           const eventDate = new Date(event.date);
           
+          // Create date variables outside the switch to avoid lexical declaration errors
+          const oneMonthLater = addMonths(now, 1);
+          const threeMonthsLater = addMonths(now, 3);
           switch (filters.dateRange) {
             case 'upcoming':
               return eventDate >= now;
             case 'month':
-              const oneMonthLater = addMonths(now, 1);
               return eventDate >= now && eventDate <= oneMonthLater;
             case 'three-months':
-              const threeMonthsLater = addMonths(now, 3);
               return eventDate >= now && eventDate <= threeMonthsLater;
             default:
               return true;
@@ -242,83 +267,15 @@ export function useEventsWithFilters(filters?: {
   });
 }
 
-export function useEvent(id: number) {
+export function useEvent(id: number | undefined) {
   return useQuery({
     queryKey: ['events', id],
     queryFn: () => fetchEventById(id),
-    enabled: id > 0 // Only fetch if ID is a positive number
+    enabled: !!id && id > 0 // Only fetch if ID is defined and a positive number
   });
 }
 
-export function useNews() {
-  return useQuery({
-    queryKey: ['news'],
-    queryFn: async () => simulateApiCall(newsArticles)
-  });
-}
 
-export function useNewsArticlesWithFilters(filters?: { search?: string; tags?: string[] }) {
-  return useQuery({
-    queryKey: ['newsArticles', 'filters', filters],
-    queryFn: async () => {
-      let filteredArticles = [...newsArticles];
-      
-      if (filters?.search) {
-        const searchTerm = filters.search.toLowerCase();
-        filteredArticles = filteredArticles.filter(article => 
-          article.title.toLowerCase().includes(searchTerm) || 
-          article.excerpt.toLowerCase().includes(searchTerm) || 
-          article.content.toLowerCase().includes(searchTerm)
-        );
-      }
-      
-      if (filters?.tags && filters.tags.length > 0) {
-        filteredArticles = filteredArticles.filter(article => 
-          article.tags?.some(tag => filters.tags?.includes(tag))
-        );
-      }
-      
-      return simulateApiCall(filteredArticles);
-    }
-  });
-}
-
-export function useNewsArticle(id: number | undefined) {
-  return useQuery({
-    queryKey: ['newsArticle', id],
-    queryFn: () => id ? fetchNewsArticleById(id) : Promise.resolve(null),
-    enabled: !!id
-  });
-}
-
-export function useRelatedNewsArticles(articleId: number | undefined) {
-  return useQuery({
-    queryKey: ['newsArticles', 'related', articleId],
-    queryFn: async () => {
-      if (!articleId) return [];
-      
-      const currentArticle = newsArticles.find(a => a.id === articleId);
-      if (!currentArticle) return [];
-      
-      // Find articles with matching tags, excluding the current article
-      const relatedArticles = newsArticles
-        .filter(article => 
-          article.id !== articleId && 
-          article.tags?.some(tag => currentArticle.tags?.includes(tag))
-        )
-        .slice(0, 2); // Limit to 2 related articles
-      
-      return simulateApiCall(relatedArticles);
-    },
-    enabled: !!articleId
-  });
-}
-
-const fetchNewsArticleById = async (id: number) => {
-  const article = newsArticles.find(a => a.id === id);
-  if (!article) throw new Error('News article not found');
-  return simulateApiCall(article);
-};
 
 export function useGroups() {
   return useQuery({
@@ -342,9 +299,11 @@ export function useGroupsWithFilters(filters?: { search?: string; visibility?: (
       }
       
       if (filters?.visibility && filters.visibility.length > 0) {
-        filteredGroups = filteredGroups.filter(group => 
-          filters.visibility?.includes(group.visibility)
-        );
+        filteredGroups = filteredGroups.filter(group => {
+          // Type assertion to handle string vs enum type mismatch
+          const groupVisibility = group.visibility as 'open' | 'closed' | 'secret';
+          return filters.visibility?.includes(groupVisibility);
+        });
       }
       
       return simulateApiCall(filteredGroups);
@@ -352,7 +311,7 @@ export function useGroupsWithFilters(filters?: { search?: string; visibility?: (
   });
 }
 
-export function useGroup(id: number) {
+export function useGroup(id: number | undefined) {
   return useQuery({
     queryKey: ['groups', id],
     queryFn: () => fetchGroupById(id),
@@ -366,7 +325,8 @@ export function useGroupEvents(groupId: number | undefined) {
     queryFn: async () => {
       if (!groupId) return [];
       
-      const group = groups.find(g => g.id === groupId);
+      // Ensure type compatibility by comparing numbers
+      const group = groups.find(g => typeof g.id === 'number' && g.id === groupId);
       if (!group) return [];
       
       // Ensure we're returning an array
@@ -383,7 +343,8 @@ export function useGroupMembers(groupId: number | undefined) {
     queryFn: async () => {
       if (!groupId) return [];
       
-      const group = groups.find(g => g.id === groupId);
+      // Ensure type compatibility by comparing numbers
+      const group = groups.find(g => typeof g.id === 'number' && g.id === groupId);
       if (!group) return [];
       
       // Ensure we're returning an array
@@ -400,7 +361,8 @@ export function useGroupResources(groupId: number | undefined) {
     queryFn: async () => {
       if (!groupId) return [];
       
-      const group = groups.find(g => g.id === groupId);
+      // Ensure type compatibility by comparing numbers
+      const group = groups.find(g => typeof g.id === 'number' && g.id === groupId);
       if (!group) return [];
       
       // Ensure we're returning an array
@@ -417,7 +379,8 @@ export function useGroupPosts(groupId: number | undefined) {
     queryFn: async () => {
       if (!groupId) return [];
       
-      const group = groups.find(g => g.id === groupId);
+      // Ensure type compatibility by comparing numbers
+      const group = groups.find(g => typeof g.id === 'number' && g.id === groupId);
       if (!group) return [];
       
       // Ensure we're returning an array
@@ -428,122 +391,6 @@ export function useGroupPosts(groupId: number | undefined) {
   });
 }
 
-// Marketplace types and data fetching functions
-export function fetchMarketplaceItems() {
-  return simulateApiCall(marketplaceItems);
-}
-
-// Mapper function to convert MarketplaceItem to the expected Listing structure
-function mapMarketplaceItemToListing(item: MarketplaceItem) {
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    type: item.type as 'product' | 'service' | 'equipment',
-    price: item.price || 0, // Default to 0 if price is undefined
-    images: item.image ? [item.image] : [], // Convert single image to array
-    createdAt: item.datePosted,
-    seller: item.seller,
-    location: 'Kootenay Region, BC', // Default location
-    tags: ['technology', 'services'], // Default tags
-    condition: 'good' as 'new' | 'like-new' | 'good' | 'fair' | 'poor', // Default condition
-  };
-}
-
-export function fetchMarketplaceItemById(id: number) {
-  const item = marketplaceItems.find((item: MarketplaceItem) => item.id === id);
-  if (!item) throw new Error('Marketplace item not found');
-  return simulateApiCall(mapMarketplaceItemToListing(item));
-}
-
-export function useMarketplaceItems() {
-  return useQuery({
-    queryKey: ['marketplaceItems'],
-    queryFn: () => fetchMarketplaceItems()
-  });
-}
-
-// Unified implementation of filtered marketplace items
-export function useMarketplaceItemsWithFilters(options?: {
-  search?: string;
-  type?: string;
-  condition?: string;
-  priceRange?: string;
-  tags?: string[];
-  sellerId?: number;
-  types?: ('product' | 'service' | 'equipment' | 'event')[];
-  categories?: string[];
-}) {
-  return useQuery({
-    queryKey: ['marketplaceItems', 'filtered', options],
-    queryFn: async () => {
-      const items = await fetchMarketplaceItems();
-      
-      // Filter items based on options
-      let filtered = [...items];
-      
-      if (options?.search) {
-        const searchLower = options.search.toLowerCase();
-        filtered = filtered.filter(item => 
-          item.title.toLowerCase().includes(searchLower) || 
-          item.description.toLowerCase().includes(searchLower)
-        );
-      }
-      
-      if (options?.type && options.type !== 'all') {
-        filtered = filtered.filter(item => item.type === options.type);
-      }
-      
-      if (options?.types && options.types.length > 0) {
-        filtered = filtered.filter(item => options.types?.includes(item.type));
-      }
-      
-      if (options?.categories && options.categories.length > 0) {
-        filtered = filtered.filter(item => options.categories?.includes(item.category));
-      }
-      
-      if (options?.sellerId) {
-        filtered = filtered.filter(item => item.seller.id === options.sellerId);
-      }
-      
-      // Map to the Listing structure expected by components
-      return filtered.map(mapMarketplaceItemToListing);
-    }
-  });
-}
-
-export function useMarketplaceItem(id: number | undefined) {
-  return useQuery({
-    queryKey: ['marketplaceItems', id],
-    queryFn: () => id ? fetchMarketplaceItemById(id) : Promise.resolve(null),
-    enabled: !!id
-  });
-}
-
-export function useRelatedMarketplaceItems(itemId: number | undefined) {
-  return useQuery({
-    queryKey: ['marketplaceItems', 'related', itemId],
-    queryFn: async () => {
-      if (!itemId) return [];
-      
-      const currentItem = marketplaceItems.find((i: MarketplaceItem) => i.id === itemId);
-      if (!currentItem) return [];
-      
-      // Find items of the same type or category, excluding the current item
-      const relatedItems = marketplaceItems
-        .filter((item: MarketplaceItem) => 
-          item.id !== itemId && 
-          (item.type === currentItem.type || item.category === currentItem.category)
-        )
-        .slice(0, 3) // Limit to 3 related items
-        .map(mapMarketplaceItemToListing); // Map each item to the correct structure
-      
-      return simulateApiCall(relatedItems);
-    },
-    enabled: !!itemId
-  });
-}
-
 // Resources hooks
 const fetchResources = async () => {
   await new Promise(resolve => setTimeout(resolve, 200));
@@ -551,7 +398,6 @@ const fetchResources = async () => {
   console.log('fetchResources - Number of resources in mock data:', resources.length);
   return resources;
 };
-
 export function useResources() {
   return useQuery({
     queryKey: ['resources'],
@@ -583,14 +429,14 @@ const fetchOpportunities = async () => {
             name: 'Fallback Tech Solutions',
             logo: 'https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg'
           },
-          type: 'full-time' as 'full-time',
+          type: 'full-time',
           location: 'Nelson, BC',
           remote: true,
           description: 'This is a fallback opportunity because the mock data failed to load.',
           postedDate: '2025-04-15',
           status: 'published',
           featured: true
-        }
+        } as const
       ];
     }
     
@@ -620,7 +466,6 @@ const fetchOpportunities = async () => {
     ];
   }
 };
-
 export function useOpportunities() {
   return useQuery({
     queryKey: ['opportunities'],
@@ -628,6 +473,25 @@ export function useOpportunities() {
   });
 }
 
+// Export marketplace hooks from the dedicated file
+export {
+  useMarketplaceItemsWithFilters,
+  useMarketplaceItems,
+  useMarketplaceItem,
+  useRelatedMarketplaceItems,
+  useCreateMarketplaceItem,
+  useUpdateMarketplaceItem,
+  useDeleteMarketplaceItem,
+};
+
+// Export news hooks from the dedicated file
+export {
+  useNewsArticlesWithFilters,
+  useNewsArticle,
+  useCreateNewsArticle,
+  useUpdateNewsArticle,
+  useDeleteNewsArticle,
+};
 // Mock Delete Hooks
 export function useDeleteCompany() {
   return {
@@ -684,23 +548,6 @@ export function useDeleteResource() {
   return {
     mutateAsync: async (id: string): Promise<boolean> => {
       console.log(`Mock: Deleting Resource with id ${id}. This is a mock, no real data changed.`);
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return true;
-    },
-    status: 'idle' as const,
-    data: undefined as boolean | undefined,
-    error: null as Error | null,
-    isLoading: false,
-    isSuccess: false,
-    isError: false,
-    isIdle: true,
-  };
-}
-
-export function useDeleteMarketplaceItem() {
-  return {
-    mutateAsync: async (id: string): Promise<boolean> => {
-      console.log(`Mock: Deleting MarketplaceItem with id ${id}. This is a mock, no real data changed.`);
       await new Promise(resolve => setTimeout(resolve, 300));
       return true;
     },

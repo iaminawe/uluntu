@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MarketplaceList from '../../components/MarketplaceList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMarketplaceItemsWithFilters } from '../../hooks/useSupabaseQueries';
+import { useMarketplaceItemsWithFilters } from '../../hooks/useMarketplaceQueries';
 import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
 
 export default function MarketplacePage() {

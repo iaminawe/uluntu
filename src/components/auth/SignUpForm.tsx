@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../lib/supabase';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -37,28 +36,19 @@ export default function SignUpForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data, error: signUpError } = await signUp(email, password);
+      const { error: signUpError } = await signUp(email, password);
       
       if (signUpError) {
         throw signUpError;
       }
+
+      // No need to create a member profile anymore!
+      // The database trigger "on_auth_user_created_create_profile" will automatically
+      // create a member profile for this user as soon as they're registered.
+      console.log('User registered successfully, member profile will be created by database trigger.');
       
-      // Create member profile
-      if (data?.user) {
-        const { error: profileError } = await supabase
-          .from('members')
-          .insert([
-            {
-              name,
-              user_id: data.user.id,
-              status: 'published'
-            }
-          ]);
-          
-        if (profileError) {
-          throw profileError;
-        }
-      }
+      // Optionally, you could fetch the newly created profile to confirm it exists
+      // and update the UI accordingly, but that's not necessary for basic functionality.
       
       setSuccess(true);
       

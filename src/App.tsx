@@ -4,6 +4,7 @@ import AboutSection from './components/AboutSection';
 import VotingSection from './components/VotingSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
+import DataSourceIndicator from './components/DataSourceIndicator';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
+      <DataSourceIndicator />
     </div>
   );
 }

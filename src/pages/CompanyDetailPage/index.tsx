@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useCompany, useCompanyEmployees } from '../../hooks/useSupabaseQueries';
+import { useCompany, useCompanyEmployees } from '../../hooks/useCompanyQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';

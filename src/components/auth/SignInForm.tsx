@@ -23,11 +23,23 @@ export default function SignInForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data: _data, error: signInError } = await signIn(email, password);
+      const { data, error: signInError } = await signIn(email, password);
       
       if (signInError) {
-        throw signInError;
+        // Handle specific Supabase auth errors with more user-friendly messages
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please try again.');
+        } else if (signInError.message.includes('Email not confirmed')) {
+          throw new Error('Please verify your email address before signing in.');
+        } else if (signInError.message.includes('unexpected_failure')) {
+          throw new Error('Authentication service is temporarily unavailable. Please try again later.');
+        } else {
+          throw signInError;
+        }
       }
+      
+      // Log successful sign-in
+      console.log('Sign-in successful:', data?.user?.email);
       
       // Redirect to home page on successful sign in
       navigate('/');

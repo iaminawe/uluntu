@@ -3,10 +3,11 @@ import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { QueryError } from '../../components/ui/ErrorDisplay';
-import NewsArticlesList from '../../components/NewsArticlesList';
+import NewsList from '../../components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useNewsArticlesWithFilters } from '../../hooks/useSupabaseQueries';
+// Temporarily use mock data instead of Supabase data
+import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
 export default function NewsPage() {
   // State for filters
@@ -14,12 +15,15 @@ export default function NewsPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
-  const { data: articles = [], isLoading, error } = useNewsArticlesWithFilters({
+  const { data, isLoading, error } = useNewsArticlesWithFilters({
     search: searchTerm,
     tags: selectedTags.length > 0 ? selectedTags : undefined
   });
   
+  // Properly extract articles from the data structure
+  const articles = data?.articles || [];
   const hasArticles = articles.length > 0;
+  console.log('News articles:', articles);
   
   return (
     <>
@@ -57,7 +61,7 @@ export default function NewsPage() {
             }}
           />
         ) : (
-          <NewsArticlesList 
+          <NewsList 
             initialSearch={searchTerm}
             initialTag={selectedTags.length > 0 ? selectedTags[0] : ''}
           />

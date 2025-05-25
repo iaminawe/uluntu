@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useMember } from '../../hooks/useSupabaseQueries';
+import { useMember } from '../../hooks/useQueries';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import BasicInfoSection from './BasicInfoSection';
 import SkillsSection from './SkillsSection';

@@ -12,7 +12,7 @@ export interface ArticleContentProps {
 
 export interface AuthorInfoProps {
   author: {
-    id: number;
+    id: string;
     name: string;
     image: string;
   };

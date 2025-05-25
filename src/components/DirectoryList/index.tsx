@@ -5,7 +5,7 @@ import MemberCard from './MemberCard';
 import DirectoryFilters from './DirectoryFilters';
 import { DirectoryListProps, FilterOptions } from './types';
 import { extractUniqueSkills } from './utils';
-import { useMembersWithFilters } from '../../hooks/useSupabaseQueries';
+import { useMembersWithFilters } from '../../hooks/useQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',

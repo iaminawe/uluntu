@@ -5,7 +5,7 @@ import ArticleCard from './ArticleCard';
 import FeaturedArticleCard from './FeaturedArticleCard';
 import Pagination from '../Pagination'; // Import Pagination
 import { FilterOptions, NewsArticlesListProps } from './types';
-import { useNewsArticlesWithFilters } from '../../hooks/useSupabaseQueries';
+import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
 
 const ARTICLES_PER_PAGE = 4;
 
@@ -21,7 +21,7 @@ const NewsArticlesList = ({
   };
 
   const { 
-    data: articles = [], 
+    data, 
     isLoading, 
     error,
     refetch,
@@ -30,11 +30,14 @@ const NewsArticlesList = ({
     search: filters.search,
     tags: filters.tags.length > 0 ? filters.tags : undefined
   });
+  
+  // Extract articles from data or use empty array as fallback
+  const articles = data?.articles || [];
 
   // Reset page when articles change (due to filter changes)
   useEffect(() => {
     setCurrentPage(1);
-  }, [articles]);
+  }, [data]);  // Changed from articles to data since that's what changes when filters change
 
   const featuredArticles = articles.filter(article => article.featured);
   const regularArticles = articles.filter(article => !article.featured);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useCompany } from '../../hooks/useSupabaseQueries';
+import { useCompany } from '../../hooks/useCompanyQueries';
 import { supabase } from '../../lib/supabase'; 
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import { FormData } from './types';

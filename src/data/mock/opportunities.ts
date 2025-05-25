@@ -1,9 +1,38 @@
-import { Opportunity } from '../../types/opportunity';
+import { BaseEntity } from './types';
 
-// Sample data
+// Interface for the person/entity posting the opportunity
+export interface OpportunityPoster {
+  name: string;
+  image: string;
+  title: string;
+  bio: string;
+}
+
+// Opportunity interface, extending BaseEntity
+export interface Opportunity extends BaseEntity {
+  title: string;
+  description: string;
+  type: 'job' | 'volunteer' | 'funding' | 'community' | 'service' | 'product' | 'other';
+  organization: string;
+  location: string;
+  compensation?: string; // e.g., salary for jobs
+  commitment?: string; // e.g., hours/week for volunteer
+  fundingAmount?: string; // e.g., grant size for funding
+  deadline?: string; // ISO date string
+  contactEmail?: string;
+  website?: string;
+  image?: string;
+  postedBy?: OpportunityPoster;
+  requirements?: string[];
+  responsibilities?: string[];
+  benefits?: string[]; // Perks or benefits of the opportunity
+  // Inherited from BaseEntity: id, created_at, updated_at, status, featured
+}
+
+// Sample mock data for opportunities
 export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Senior Full Stack Developer',
     description: 'Looking for an experienced developer to join our growing team.',
     type: 'job',
@@ -14,7 +43,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     contactEmail: 'jobs@mountaintech.com',
     website: 'https://mountaintech.com',
     image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg',
-    postedAt: '2025-03-01',
+    created_at: '2025-03-01',
     featured: true,
     status: 'published',
     postedBy: {
@@ -43,7 +72,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     ]
   },
   {
-    id: 2,
+    id: '2',
     title: 'Tech Mentor for Youth Program',
     description: 'Volunteer to teach coding to local youth.',
     type: 'volunteer',
@@ -54,7 +83,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     contactEmail: 'volunteer@kootcode.org',
     website: 'https://kootcode.org',
     image: 'https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg',
-    postedAt: '2025-03-02',
+    created_at: '2025-03-02',
     featured: true,
     status: 'published',
     postedBy: {
@@ -77,7 +106,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     ]
   },
   {
-    id: 3,
+    id: '3',
     title: 'Community AI Project Funding',
     description: 'Seeking funding for an AI-powered local environmental monitoring system.',
     type: 'funding',
@@ -88,7 +117,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     contactEmail: 'grants@kii.org',
     website: 'https://kii.org',
     image: 'https://images.pexels.com/photos/3183132/pexels-photo-3183132.jpeg',
-    postedAt: '2025-03-03',
+    created_at: '2025-03-03',
     featured: false,
     status: 'published',
     postedBy: {
@@ -105,7 +134,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     ]
   },
   {
-    id: 4,
+    id: '4',
     title: 'Smart City Initiative Contributors',
     description: 'Looking for community members to participate in developing smart city solutions.',
     type: 'community',
@@ -115,7 +144,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     contactEmail: 'community@nelsontech.org',
     website: 'https://nelsontech.org',
     image: 'https://images.pexels.com/photos/3183190/pexels-photo-3183190.jpeg',
-    postedAt: '2025-03-04',
+    created_at: '2025-03-04',
     featured: false,
     status: 'published',
     postedBy: {

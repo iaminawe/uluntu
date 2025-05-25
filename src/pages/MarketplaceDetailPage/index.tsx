@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
-import { useMarketplaceItem } from '../../hooks/useSupabaseQueries';
+import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
-import { ListingType } from './types';
+import { ListingType, Listing } from './types';
 import PageHeader from './PageHeader';
 import ListingDetails from './ListingDetails';
 import SellerInfo from './SellerInfo';
@@ -17,9 +17,33 @@ export default function MarketplaceDetailPage() {
   const { id } = useParams();
   const [showContactModal, setShowContactModal] = useState(false);
   
-  // In a real application, this would use the useMarketplaceItem hook to fetch data
-  // For now, we're using a sample listing
-  const { data: listing, isLoading, error } = useMarketplaceItem(parseInt(id || '0'));
+  // Use the useMarketplaceItem hook to fetch data
+  const { data: apiListing, isLoading, error } = useMarketplaceItem(id);
+  
+  // Convert API data to the expected Listing format
+  const listing = useMemo(() => {
+    if (!apiListing) return undefined;
+    
+    return {
+      id: Number(apiListing.id),
+      title: apiListing.title || '',
+      description: apiListing.description || '',
+      type: (apiListing.type as ListingType) || 'product',
+      price: apiListing.price || 0,
+      condition: apiListing.condition as ListingCondition,
+      images: apiListing.images || ['/placeholder-image.png'],
+      createdAt: apiListing.created_at || new Date().toISOString(),
+      seller: {
+        id: apiListing.seller ? Number(apiListing.seller.id) : 1,
+        name: apiListing.seller ? apiListing.seller.name : 'Unknown Seller',
+        image: apiListing.seller ? apiListing.seller.image : '/placeholder-avatar.png',
+        title: '',
+        bio: ''
+      },
+      location: apiListing.location || 'Unknown location',
+      tags: apiListing.tags || []
+    } as Listing;
+  }, [apiListing]);
   
   const getTypeIcon = (type: ListingType) => {
     switch (type) {

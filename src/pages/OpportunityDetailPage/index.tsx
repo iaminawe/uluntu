@@ -10,6 +10,7 @@ import ApplySidebar from './ApplySidebar';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Opportunity } from './types';
+import { useOpportunity } from '../../hooks/useOpportunityQueries';
 
 // This would normally come from a hook like useOpportunity
 const SAMPLE_OPPORTUNITY: Opportunity = {

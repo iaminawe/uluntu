@@ -107,7 +107,7 @@ export interface Group {
 }
 
 export interface NewsArticle {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   content: string;
@@ -115,7 +115,7 @@ export interface NewsArticle {
   image?: string;
   featured?: boolean;
   author: {
-    id: number;
+    id: string;
     name: string;
     image: string;
   };

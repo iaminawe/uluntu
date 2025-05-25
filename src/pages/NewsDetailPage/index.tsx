@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useNewsArticle, useRelatedNewsArticles } from '../../hooks/useSupabaseQueries';
+import { useNewsArticle, useRelatedNewsArticles } from '../../hooks/useNewsQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import ArticleHeader from './ArticleHeader';
@@ -12,19 +12,19 @@ import ErrorState from './ErrorState';
 
 export default function NewsDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const articleId = id ? parseInt(id) : undefined;
+  const articleId = id;
 
   // Call hooks unconditionally at the top level
   const { 
     data: article, 
     isLoading: articleLoading, 
     error: articleError 
-  } = useNewsArticle(articleId ?? 0); // Pass 0 if articleId is undefined
+  } = useNewsArticle(articleId); // Pass 0 if articleId is undefined
   
   const { 
     data: relatedArticles = [], 
     isLoading: relatedLoading 
-  } = useRelatedNewsArticles(articleId ?? 0); // Pass 0 if articleId is undefined
+  } = useRelatedNewsArticles(articleId); // Pass 0 if articleId is undefined
 
   if (!articleId) {
     // Handle the case where articleId is not available after hooks have been called

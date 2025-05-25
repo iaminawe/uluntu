@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useOpportunity } from '../../hooks/useOpportunityQueries';
 import { Card } from '../../components/ui/Card';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import BasicInfoSection from './BasicInfoSection';
