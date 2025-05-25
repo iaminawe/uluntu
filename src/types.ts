@@ -131,20 +131,25 @@ export interface Group {
 }
 
 export interface NewsArticle {
-  id: number;
+  id: string; // Changed from number
   title: string;
+  slug: string; // Added
   excerpt: string;
   content: string;
-  date: string;
-  image?: string;
+  date: string; // Corresponds to publish_date
+  image?: string; // Corresponds to hero_image
+  hero_image_alt?: string; // Added
   featured?: boolean;
+  status: string; // Added (e.g., 'published', 'draft')
   author: {
-    id: number;
+    id: string; // Changed from number
     name: string;
     image: string;
   };
   tags?: string[];
 }
+
+export type EntityStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Resource {
   id: number;
@@ -158,6 +163,9 @@ export interface Resource {
     id: number;
     name: string;
   };
+  status: EntityStatus;
+  featured?: boolean;
+  groupId?: string;
 }
 
 export interface MarketplaceItem {

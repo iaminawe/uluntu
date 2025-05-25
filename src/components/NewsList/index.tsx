@@ -1,26 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from './ArticleCard';
-import NewsFilters from './NewsFilters';
+
 import Newsletter from './Newsletter';
-import { NewsArticle, NewsListProps, FilterOptions, SAMPLE_ARTICLES } from './types';
+import { NewsArticle, NewsListProps, FilterOptions } from './types';
 import { 
   filterArticles, 
-  sortArticlesByDate, 
-  extractUniqueTags 
+  sortArticlesByDate 
 } from './utils';
 
-// Check if we have access to the enhanced data fetching hooks
-let useNewsArticlesWithFilters: Function | null = null;
-
-try {
-  // Dynamically import the data fetching hook if it exists
-  useNewsArticlesWithFilters = require('../../hooks/useQueries').useNewsArticlesWithFilters;
-} catch (error) {
-  // Fall back to using sample data if the hook isn't available
-  console.log('Using sample data for news articles');
-}
+import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
 const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => {
   // State for filters
@@ -29,77 +19,31 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
     tag: initialTag,
   });
   
-  // State for articles data when not using hooks
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
+  const { 
+    data: newsDataArticles, // Renamed to avoid conflict if 'articles' is used later
+    isLoading: newsDataIsLoading, 
+    error: newsDataError 
+  } = useNewsArticlesWithFilters({
+    search: filters.search,
+    // Ensure 'tag' is string | undefined, not 'all'
+    tags: filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined 
+  });
+
+  // Properly extract articles from the hook's data structure, default to empty array if undefined
+  const articles = newsDataArticles?.articles || [];
   
-  // Get all unique tags from articles
-  const [allTags, setAllTags] = useState<string[]>([]);
+
   
-  // Use the enhanced data fetching hook if available
-  const hookResult = useNewsArticlesWithFilters ? 
-    useNewsArticlesWithFilters({
-      search: filters.search,
-      tag: filters.tag !== 'all' ? filters.tag : undefined
-    }) : null;
-  
-  // Extract data from hook or use local state
-  const newsData = hookResult ? {
-    articles: hookResult.data || [],
-    isLoading: hookResult.isLoading,
-    error: hookResult.error ? String(hookResult.error) : null
-  } : {
-    articles,
-    isLoading: loading,
-    error
-  };
-  
-  // Fetch articles data (simulated) - only used when hook is not available
-  useEffect(() => {
-    if (useNewsArticlesWithFilters) return; // Skip if using hook
-    
-    const fetchArticles = async () => {
-      try {
-        // In a real app, this would be an API call
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Set articles from sample data
-        setArticles(SAMPLE_ARTICLES);
-        setAllTags(extractUniqueTags(SAMPLE_ARTICLES));
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load news articles. Please try again later.');
-        setLoading(false);
-      }
-    };
-    
-    fetchArticles();
-  }, []);
-  
-  // Update tags when articles change (when using hooks)
-  useEffect(() => {
-    if (hookResult && hookResult.data) {
-      setAllTags(extractUniqueTags(hookResult.data));
-    }
-  }, [hookResult?.data]);
-  
-  // Filter and sort articles
-  const displayedArticles = !useNewsArticlesWithFilters && newsData.articles.length > 0 ? 
-    sortArticlesByDate(filterArticles(newsData.articles, filters)) : 
-    newsData.articles;
+  // Filter and sort articles based on the fetched data
+  // The hook should ideally return pre-filtered data based on search/tags,
+  // but if client-side filtering is still needed on top of that:
+  const displayedArticles = sortArticlesByDate(filterArticles(articles, filters));
   
   // Render loading state
-  if (newsData.isLoading) {
+  if (newsDataIsLoading) {
     return (
       <div>
-        <NewsFilters 
-          filters={filters} 
-          setFilters={setFilters} 
-          tags={allTags}
-        />
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="animate-pulse bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
@@ -131,26 +75,22 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
   }
   
   // Render error state
-  if (newsData.error) {
+  if (newsDataError) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
-                    rounded-lg p-6 text-center">
-        <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading News</h3>
-        <p className="text-red-600 dark:text-red-400">{newsData.error}</p>
+      <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+        <AlertTriangle className="w-16 h-16 text-red-500 mb-4" />
+        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-2">
+          Oops! Something went wrong.
+        </h2>
+        <p className="text-slate-600 dark:text-slate-400">
+          {String(newsDataError.message || 'Failed to load articles.')}
+        </p>
       </div>
     );
   }
   
   return (
     <div>
-      {/* Filters */}
-      <NewsFilters 
-        filters={filters} 
-        setFilters={setFilters} 
-        tags={allTags}
-      />
-      
       {/* Results */}
       {displayedArticles.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">

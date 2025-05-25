@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -8,7 +8,9 @@ import EventsList from '../../components/EventsList';
 import EventsCalendar from '../../components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useEvents } from '../../hooks/useSupabaseQueries';
+import { useEvents } from '../../hooks/useEventQueries';
+import { Event, EventType } from '../../components/EventsList/types';
+import { adaptEventFromSupabase } from '../../adapters/dataAdapters';
 
 // Using Event type from useQueries
 
@@ -18,8 +20,14 @@ export default function EventsPage() {
   // State for view mode (list or calendar)
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   
-  // Use the useEvents hook to fetch events data
-  const { data: events = [], isLoading, error } = useEvents();
+  // Use the useEvents hook to fetch events data from Supabase
+  const { data: supabaseEvents = [], isLoading, error } = useEvents();
+  
+  // Convert Supabase data to the expected Event format
+  const events = useMemo(() => {
+    return supabaseEvents.map(event => adaptEventFromSupabase(event));
+  }, [supabaseEvents]);
+  
   const hasEvents = events.length > 0;
   
   useEffect(() => {

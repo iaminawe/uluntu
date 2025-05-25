@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from './ListingCard';
@@ -29,13 +29,13 @@ const MarketplaceList = ({
 
   // Construct filters object based on props for useMarketplaceItemsWithFilters and local filtering
   // This `filters` object definition is moved up to be accessible by the dependency array of useEffect for resetting currentPage
-  const filters: FilterOptions = {
+  const filters: FilterOptions = useMemo(() => ({
     search: initialSearch,
     type: initialType,
     condition: 'all', // Assuming 'all' is default and ActionBar would update these if implemented for MarketplaceList
     priceRange: 'all', // Assuming 'all' is default
     tags: [] // Assuming empty is default
-  };
+  }), [initialSearch, initialType]);
   
   const { data, isLoading, error: queryError } = useMarketplaceItemsWithFilters({
     type: filters.type !== 'all' ? filters.type : undefined,

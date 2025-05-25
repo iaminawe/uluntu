@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EventType, DateRangeFilter } from './types';
-import { useEventsWithFilters } from '../../hooks/useSupabaseQueries';
+import { useEventsWithFilters } from '../../hooks/useQueries';
 import EventCard from './EventCard';
 import PastEventCard from './PastEventCard';
 import Pagination from '../Pagination'; // Import Pagination

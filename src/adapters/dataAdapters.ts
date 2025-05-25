@@ -1,6 +1,8 @@
 import { Database } from '../types/supabase';
+import { NewsArticle } from '../types';
 
 // Type aliases for easier use
+type NewsSupabase = Tables['news']['Row'];
 type Tables = Database['public']['Tables'];
 type Member = Tables['members']['Row'];
 type Company = Tables['companies']['Row'];
@@ -10,13 +12,22 @@ type Resource = Tables['resources']['Row'];
 type MarketplaceItem = Tables['marketplace_listings']['Row'];
 type Opportunity = Tables['opportunities']['Row'];
 
+// Define a more specific type for news articles fetched from Supabase, including joined author data
+// Assuming 'members' is the table name for authors and it's joined
+// and 'author_id' is the foreign key in the 'news' table.
+// Adjust 'members' if your author table or the join alias is different.
+export type NewsArticleSupabaseRow = NewsSupabase & {
+  members?: Pick<Tables['members']['Row'], 'id' | 'name' | 'image'> | null;
+  // If you select all fields from members, you can use: members?: Tables['members']['Row'] | null;
+};
+
 // Member adapters
 export function adaptMemberFromSupabase(member: Member): any {
   return {
     id: member.id,
     name: member.name,
     title: member.title || '',
-    intro: member.intro || '',
+    // intro: member.intro || '', // Removed as 'intro' does not exist on Supabase member type
     bio: member.bio || '',
     location: member.location || '',
     image: member.image || '',
@@ -82,7 +93,23 @@ export function adaptCompanyToSupabase(company: any): Tables['companies']['Inser
 }
 
 // Event adapters
-export function adaptEventFromSupabase(event: Event): any {
+export function adaptEventFromSupabase(event: Event & { members?: any; event_sessions?: any[] }): any {
+  // Create a default organizer object to prevent undefined errors
+  const defaultOrganizer = {
+    id: event.organizer_id || '',
+    name: 'Unknown Organizer',
+    image: '/placeholder-avatar.png',
+    title: ''
+  };
+
+  // Use the members data if available (from the join), otherwise use default
+  const organizer = event.members ? {
+    id: event.members.id,
+    name: event.members.name,
+    image: event.members.image || '/placeholder-avatar.png',
+    title: event.members.title || ''
+  } : defaultOrganizer;
+
   return {
     id: event.id,
     title: event.title,
@@ -97,10 +124,12 @@ export function adaptEventFromSupabase(event: Event): any {
     maxAttendees: event.max_attendees || 0,
     currentAttendees: event.current_attendees || 0,
     organizerId: event.organizer_id,
+    organizer: organizer, // Add the organizer object
     groupId: event.group_id || '',
     status: event.status,
     featured: event.featured || false,
-    createdAt: event.created_at || new Date().toISOString()
+    createdAt: event.created_at || new Date().toISOString(),
+    sessions: event.event_sessions || []
   };
 }
 
@@ -183,7 +212,21 @@ export function adaptResourceToSupabase(resource: any): Tables['resources']['Ins
 }
 
 // Marketplace item adapters
-export function adaptMarketplaceItemFromSupabase(item: MarketplaceItem): any {
+export function adaptMarketplaceItemFromSupabase(item: MarketplaceItem & { members?: any }): any {
+  // Create a default seller object to prevent undefined errors
+  const defaultSeller = {
+    id: item.seller_id ? Number(item.seller_id) : 1,
+    name: 'Unknown Seller',
+    image: '/placeholder-avatar.png'
+  };
+
+  // Use the members data if available (from the join), otherwise use default
+  const seller = item.members ? {
+    id: Number(item.members.id),
+    name: item.members.name,
+    image: item.members.image || '/placeholder-avatar.png'
+  } : defaultSeller;
+
   return {
     id: item.id,
     title: item.title,
@@ -191,10 +234,11 @@ export function adaptMarketplaceItemFromSupabase(item: MarketplaceItem): any {
     type: item.type,
     price: item.price || 0,
     condition: item.condition || '',
-    images: item.images || [],
-    location: item.location,
+    images: item.images || ['/placeholder-image.png'], // Add a default image if none exists
+    location: item.location || 'Unknown location',
     tags: item.tags || [],
     sellerId: item.seller_id,
+    seller: seller, // Add the seller object
     status: item.status,
     featured: item.featured || false,
     createdAt: item.created_at || new Date().toISOString()
@@ -261,6 +305,44 @@ export function adaptOpportunityToSupabase(opportunity: any): Tables['opportunit
     benefits: opportunity.benefits,
     status: opportunity.status,
     featured: opportunity.featured
+  };
+}
+
+// News Article adapters
+export function adaptNewsArticleFromSupabase(newsArticleRow: NewsArticleSupabaseRow): NewsArticle {
+  return {
+    id: newsArticleRow.id,
+    title: newsArticleRow.title,
+    slug: newsArticleRow.slug || '', // Provide fallback for potentially null slug
+    excerpt: newsArticleRow.excerpt || '',
+    content: newsArticleRow.content || '',
+    date: newsArticleRow.publish_date || new Date().toISOString(), // Assuming 'publish_date'
+    image: newsArticleRow.hero_image || undefined, // Assuming 'hero_image'
+    featured: newsArticleRow.featured || false,
+    status: newsArticleRow.status ?? 'draft', // Use nullish coalescing for status
+    author: {
+      id: newsArticleRow.members?.id ?? newsArticleRow.author_id ?? 'UNKNOWN_AUTHOR_ID', // Ensure id is always string
+      name: newsArticleRow.members?.name || 'Unknown Author',
+      image: newsArticleRow.members?.image || '',
+    },
+    tags: newsArticleRow.tags || [],
+  };
+}
+
+export function adaptNewsArticleToSupabase(newsArticle: NewsArticle): Omit<NewsSupabase, 'id' | 'created_at' | 'updated_at'> & { author_id: string } {
+  return {
+    title: newsArticle.title,
+    slug: newsArticle.slug,
+    excerpt: newsArticle.excerpt,
+    content: newsArticle.content,
+    publish_date: newsArticle.date,
+    hero_image: newsArticle.image === undefined ? null : newsArticle.image,
+    hero_image_alt: newsArticle.hero_image_alt === undefined ? null : newsArticle.hero_image_alt, // Added
+    featured: newsArticle.featured === undefined ? null : newsArticle.featured,
+    status: newsArticle.status,
+    author_id: newsArticle.author.id, // Ensure author object and id exist
+    tags: newsArticle.tags === undefined ? null : newsArticle.tags,
+    // id, created_at, updated_at are typically handled by Supabase
   };
 }
 

@@ -1,7 +1,41 @@
 -- Comprehensive seed file for Nelson Tech Community Platform
 
--- Note: We're not inserting any user_roles data since it depends on auth.users
--- which requires actual authentication setup
+-- Create test users and assign roles using helper functions
+DO $$ 
+DECLARE 
+  admin_user_id uuid;
+  superadmin_user_id uuid;
+  groupmember_user_id uuid;
+  basic_user_id uuid;
+BEGIN
+  -- Create test users
+  admin_user_id := private.create_test_user('admin@example.com', 'password123');
+  superadmin_user_id := private.create_test_user('superadmin@example.com', 'password123');
+  groupmember_user_id := private.create_test_user('member@example.com', 'password123');
+  basic_user_id := private.create_test_user('basic@example.com', 'password123');
+
+  -- Assign roles to admin_user
+  PERFORM private.assign_role_to_user(admin_user_id, 'authenticated');
+  PERFORM private.assign_role_to_user(admin_user_id, 'admin');
+
+  -- Assign roles to superadmin_user
+  PERFORM private.assign_role_to_user(superadmin_user_id, 'authenticated');
+  PERFORM private.assign_role_to_user(superadmin_user_id, 'superadmin');
+
+  -- Assign roles to groupmember_user
+  PERFORM private.assign_role_to_user(groupmember_user_id, 'authenticated');
+  PERFORM private.assign_role_to_user(groupmember_user_id, 'group_member');
+
+  -- Assign role to basic_user
+  PERFORM private.assign_role_to_user(basic_user_id, 'authenticated');
+
+  RAISE NOTICE 'Test users created and roles assigned.';
+END $$;
+
+-- Note: It's common for every authenticated user to at least have the 'authenticated' role.
+-- The private.create_test_user function sets the user's role in auth.users to 'authenticated',
+-- and we explicitly add 'authenticated' to our public.user_roles table for clarity and potential
+-- specific RLS policies on user_roles itself that might check this.
 
 -- Insert sample members
 INSERT INTO members (id, name, title, bio, location, image, website, employment_status, open_to_volunteering, status, featured) VALUES

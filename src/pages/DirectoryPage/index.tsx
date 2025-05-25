@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MembersList from '../../components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMembers } from '../../hooks/useSupabaseQueries';
+import { useMembers } from '../../hooks/useQueries';
 import { FilterOptions } from '../../components/MembersList/types';
 import Pagination from '../../components/Pagination'; // Import Pagination
 

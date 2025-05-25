@@ -4,7 +4,7 @@ import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
 import ContactModal from './ContactModal';
 import EditProfileModal from './EditProfileModal';
-import { useMember } from '../../hooks/useSupabaseQueries';
+import { useMember } from '../../hooks/useQueries';
 import { useMemberContributions } from '../../hooks/useMemberContributions';
 import { mapMemberToProfileMember } from '../../adapters/memberAdapter';
 

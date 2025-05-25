@@ -1,5 +1,5 @@
 // Status type for all entities
-export type EntityStatus = 'draft' | 'published' | 'archived';
+import type { EntityStatus as AppEntityStatus } from '../../types';
 
 // Member types
 export interface Member {
@@ -13,7 +13,7 @@ export interface Member {
   intro?: string;
   skills?: string[];
   joinDate: string;
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
   social?: {
     linkedin?: string;
@@ -35,7 +35,7 @@ export interface Company {
   founded: string;
   location: string;
   website?: string;
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
   social?: {
     linkedin?: string;
@@ -85,20 +85,23 @@ export interface GroupPost {
 }
 
 export interface Group {
-  id: number;
+  id: string; // Changed from number
   name: string;
   description: string;
-  longDescription?: string;
-  heroImage: string;
-  coverImage?: string;
-  visibility: 'open' | 'closed' | 'secret';
-  memberCount: number;
+  long_description: string | null; // Changed from longDescription, added null
+  hero_image: string; // Changed from heroImage
+  cover_image: string | null; // Changed from coverImage, added null
+  visibility: string; // Changed from 'open' | 'closed' | 'secret'
+  member_count: number | null; // Changed from memberCount, added null
+  status: string; // Changed from EntityStatus
+  featured: boolean | null; // Added null
+  created_at: string | null; // Added
+
+  // Fields to retain as per user request (pending Supabase schema update discussion)
   eventCount?: number;
   resourceCount?: number;
   postCount?: number;
   lastActive: string;
-  status: EntityStatus;
-  featured?: boolean;
   members: GroupMember[];
   events?: GroupEvent[];
   resources?: GroupResource[];
@@ -136,41 +139,44 @@ export interface EventPresenter {
 
 // Event types
 export interface Event {
-  id: number;
-  title: string;
+  address: string | null;
+  created_at: string | null;
+  current_attendees: number | null;
   date: string;
-  endDate?: string;
-  location: string;
   description: string;
+  end_date: string | null;
+  featured: boolean | null;
+  group_id: string | null;
+  id: string; // Changed from number
   image: string;
-  organizer: {
-    id: number;
-    name: string;
-    image: string;
-  };
-  attendees?: number;
-  type: 'in-person' | 'online' | 'hybrid';
-  url?: string;
-  status: EntityStatus;
-  featured?: boolean;
-  sessions?: EventSession[];
+  latitude: number | null;
+  location: string;
+  longitude: number | null;
+  max_attendees: number | null;
+  organizer_id: string; // Added, from organizer.id
+  status: string; // Changed from EntityStatus
+  title: string;
+  type: string; // Changed from specific literals
+  url: string | null;
+  // Removed: organizer object, attendees, sessions (sessions are likely related data)
 }
 
 // News types
 export interface NewsArticle {
-  id: number;
+  id: string; // Changed
   title: string;
+  slug: string; // Added
   excerpt: string;
   content: string;
-  date: string;
+  publishedAt: string;
   image?: string;
   author: {
-    id: number;
+    id: string; // Changed
     name: string;
     image: string;
   };
   tags?: string[];
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
 }
 
@@ -187,7 +193,7 @@ export interface Resource {
     id: number;
     name: string;
   };
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
 }
 
@@ -206,7 +212,7 @@ export interface MarketplaceItem {
     image: string;
   };
   datePosted: string;
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
 }
 
@@ -224,7 +230,7 @@ export interface Opportunity {
   description: string;
   postedDate: string;
   url: string; // Added
-  status: EntityStatus;
+  status: AppEntityStatus;
   featured?: boolean;
   skillsRequired: string[]; // Added
   experienceLevel: string; // Added
@@ -248,7 +254,7 @@ export const members: Member[] = [
     skills: ['Machine Learning', 'Python', 'TensorFlow', 'Research'],
     intro: 'Leading the charge in AI research and innovation from the heart of the Kootenays.',
     joinDate: '2023-05-15',
-    status: 'published',
+    status: 'approved',
     social: {
       linkedin: 'https://linkedin.com/in/sarahjohnson',
       twitter: 'https://twitter.com/sarahjohnson',
@@ -266,7 +272,7 @@ export const members: Member[] = [
     intro: 'Building intelligent systems that see and understand the world around us.',
     skills: ['Computer Vision', 'Python', 'NLP', 'PyTorch'],
     joinDate: '2023-06-01',
-    status: 'published',
+    status: 'approved',
     social: {
       linkedin: 'https://linkedin.com/in/michaelchen',
       github: 'https://github.com/michaelchen'
@@ -283,7 +289,7 @@ export const members: Member[] = [
     bio: 'Data scientist passionate about using data to solve real-world problems.',
     skills: ['Data Analysis', 'R', 'Python', 'Statistics'],
     joinDate: '2023-07-15',
-    status: 'published',
+    status: 'approved',
     social: {
       linkedin: 'https://linkedin.com/in/emmawilson',
       twitter: 'https://twitter.com/emmawilson'
@@ -304,7 +310,7 @@ export const members: Member[] = [
       bio: 'Frontend developer specializing in React and modern JavaScript frameworks with a passion for accessible UI design.',
       skills: ['JavaScript', 'React', 'TypeScript', 'CSS', 'Accessibility'],
       joinDate: '2023-04-15',
-      status: 'published',
+      status: 'approved',
       featured: true,
       social: {
         linkedin: 'https://linkedin.com/in/oliviamartinez',
@@ -323,7 +329,7 @@ export const members: Member[] = [
       bio: 'Backend engineer with expertise in building scalable APIs and microservices using Node.js and Go.',
       skills: ['Node.js', 'Go', 'MongoDB', 'PostgreSQL', 'Docker'],
       joinDate: '2023-05-10',
-      status: 'published',
+      status: 'approved',
       social: {
         linkedin: 'https://linkedin.com/in/noahwilson',
         github: 'https://github.com/noahwilson'
@@ -341,7 +347,7 @@ export const members: Member[] = [
     bio: 'Blockchain developer with experience in smart contract development, DeFi applications, and web3 technologies.',
     skills: ['Solidity', 'Ethereum', 'Web3.js', 'Smart Contracts', 'DeFi'],
     joinDate: '2024-01-10',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/benjaminlee',
@@ -361,7 +367,7 @@ export const members: Member[] = [
     bio: 'Detail-oriented data analyst with a passion for uncovering trends and driving data-informed decisions.',
     skills: ['SQL', 'Python', 'Tableau', 'Data Visualization', 'Excel'],
     joinDate: '2024-02-01',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/in/chloedavis',
@@ -379,7 +385,7 @@ export const members: Member[] = [
     bio: 'Experienced DevOps engineer focused on automation, scalability, and infrastructure reliability.',
     skills: ['Jenkins', 'Kubernetes', 'Docker', 'AWS', 'Terraform'],
     joinDate: '2023-11-15',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/marcuschen',
@@ -397,7 +403,7 @@ export const members: Member[] = [
     bio: 'Passionate UX researcher committed to creating intuitive and user-centered digital experiences.',
     skills: ['User Interviews', 'Surveys', 'Usability Testing', 'Persona Creation', 'Affinity Mapping'],
     joinDate: '2024-03-10',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/in/sophiamiller',
@@ -415,7 +421,7 @@ export const members: Member[] = [
     bio: 'Creative iOS developer with a strong background in building engaging mobile apps from concept to launch.',
     skills: ['Swift', 'SwiftUI', 'Objective-C', 'Xcode', 'CoreData'],
     joinDate: '2023-10-01',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/liamgarcia',
@@ -433,7 +439,7 @@ export const members: Member[] = [
     bio: 'Skilled technical writer with experience in API documentation, user guides, and knowledge base creation.',
     skills: ['Technical Writing', 'API Documentation', 'MadCap Flare', 'Markdown', 'Confluence'],
     joinDate: '2024-01-20',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/in/isabellemoreau'
@@ -450,7 +456,7 @@ export const members: Member[] = [
     bio: 'Innovative AI/ML engineer focused on building intelligent systems and advancing machine learning applications.',
     skills: ['TensorFlow', 'PyTorch', 'Scikit-learn', 'Python', 'NLP'],
     joinDate: '2023-09-05',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/jacksonreid',
@@ -468,7 +474,7 @@ export const members: Member[] = [
     bio: 'Proactive cybersecurity analyst dedicated to mitigating risks and ensuring robust security postures.',
     skills: ['Threat Detection', 'Vulnerability Assessment', 'SIEM', 'Penetration Testing', 'Incident Response'],
     joinDate: '2024-04-01',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/in/zoekim'
@@ -485,7 +491,7 @@ export const members: Member[] = [
     bio: 'Imaginative game designer with a passion for storytelling and crafting immersive player experiences.',
     skills: ['Game Design', 'Unity', 'Unreal Engine', 'Level Design', 'Narrative Design'],
     joinDate: '2023-12-10',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/ethantremblay',
@@ -503,7 +509,7 @@ export const members: Member[] = [
     bio: 'Experienced cloud architect specializing in designing and implementing robust cloud solutions for diverse business needs.',
     skills: ['AWS', 'Azure', 'GCP', 'Infrastructure as Code', 'Solution Design'],
     joinDate: '2023-08-15',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/in/mayasingh',
@@ -521,7 +527,7 @@ export const members: Member[] = [
     bio: 'Versatile full stack developer committed to building high-quality, scalable web applications.',
     skills: ['Angular', 'Spring Boot', 'Java', 'TypeScript', 'Microservices'],
     joinDate: '2024-05-01',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/davidwalker',
@@ -542,7 +548,7 @@ export const companies: Company[] = [
     founded: '2018',
     location: 'Nelson, BC',
     website: 'https://kootenaywildcrafts.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/kootenaywildcrafts',
@@ -560,7 +566,7 @@ export const companies: Company[] = [
     founded: '2015',
     location: 'Castlegar, BC',
     website: 'https://selkirksoftware.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/selkirksoftware',
@@ -579,7 +585,7 @@ export const companies: Company[] = [
     founded: '2020',
     location: 'Kimberley, BC',
     website: 'https://purcellcoffee.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/company/purcellcoffee',
@@ -597,7 +603,7 @@ export const companies: Company[] = [
     founded: '2017',
     location: 'Nakusp, BC',
     website: 'https://arrowlakesadventures.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/arrowlakesadventures',
@@ -615,7 +621,7 @@ export const companies: Company[] = [
     founded: '2012',
     location: 'Grand Forks, BC',
     website: 'https://boundarybikes.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     employees: [],
   },
@@ -630,7 +636,7 @@ export const companies: Company[] = [
     founded: '2008',
     location: 'Slocan, BC',
     website: 'https://slocanvalleyorganics.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     employees: [],
   },
@@ -645,7 +651,7 @@ export const companies: Company[] = [
     founded: '2019',
     location: 'Kaslo, BC',
     website: 'https://kaslohub.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/company/kaslohub',
@@ -663,7 +669,7 @@ export const companies: Company[] = [
     founded: '2016',
     location: 'Creston, BC',
     website: 'https://crestonmechatronics.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     social: {
       linkedin: 'https://linkedin.com/company/crestonmechatronics',
@@ -681,7 +687,7 @@ export const companies: Company[] = [
     founded: '2021',
     location: 'Revelstoke, BC',
     website: 'https://revelstokerenewables.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     employees: [],
   },
@@ -696,7 +702,7 @@ export const companies: Company[] = [
     founded: '2005',
     location: 'Golden, BC',
     website: 'https://goldentimber.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     employees: [],
   },
@@ -711,7 +717,7 @@ export const companies: Company[] = [
     founded: '2022',
     location: 'Nakusp, BC',
     website: 'https://nakuspwellness.example.com',
-    status: 'published',
+    status: 'approved',
     featured: false,
     employees: [],
   },
@@ -726,7 +732,7 @@ export const companies: Company[] = [
     founded: '2014',
     location: 'Fernie, BC',
     website: 'https://ferniecatering.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
     employees: [],
   }
@@ -738,31 +744,32 @@ const sampleGroupMembers: GroupMember[] = [
 
 export const groups: Group[] = [
   {
-    id: 1,
+    id: "1",
     name: 'Kootenay Coders Collective',
     description: 'A group for developers of all skill levels in the Kootenays. Share projects, ask questions, and collaborate.',
-    longDescription: 'The Kootenay Coders Collective is dedicated to fostering a vibrant and supportive community for software developers, programmers, and tech enthusiasts across the Kootenay region. Whether you\'re a seasoned professional, a student just starting out, or someone curious about coding, you\'re welcome here. We host regular meetups (both online and in-person when possible), workshops, and collaborative coding sessions. Our goal is to learn from each other, build cool things, and help grow the local tech ecosystem.',
-    heroImage: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg',
-    coverImage: 'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg',
+    long_description: 'The Kootenay Coders Collective is dedicated to fostering a vibrant and supportive community for software developers, programmers, and tech enthusiasts across the Kootenay region. Whether you\'re a seasoned professional, a student just starting out, or someone curious about coding, you\'re welcome here. We host regular meetups (both online and in-person when possible), workshops, and collaborative coding sessions. Our goal is to learn from each other, build cool things, and help grow the local tech ecosystem.',
+    hero_image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg',
+    cover_image: 'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg',
     visibility: 'open',
-    memberCount: 125,
+    member_count: 125,
     eventCount: 2,
     resourceCount: 10,
     postCount: 30,
     lastActive: '2025-05-20',
-    status: 'published',
+    status: 'approved',
     featured: true,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: sampleGroupMembers,
     events: [
       {
-        id: 1,
+        id: 1, // Assuming GroupEvent ID remains number for now, or needs separate refactoring
         title: 'Kootenay Tech Conference 2025',
         date: '2025-09-15',
         description: 'Join us for the annual Kootenay Tech Conference, featuring talks, workshops, and networking opportunities with tech leaders and innovators from across the region and beyond. Explore the latest trends in software development, AI, cybersecurity, and digital marketing.',
         image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg'
       },
       {
-        id: 5,
+        id: 5, // Assuming GroupEvent ID remains number
         title: 'Community Coding Night - Open Source Contributions',
         date: '2025-06-20',
         description: 'Join fellow developers for an evening of contributing to open source projects. All skill levels welcome. Bring your laptop and ideas!',
@@ -773,24 +780,25 @@ export const groups: Group[] = [
     posts: []
   },
   {
-    id: 2,
+    id: "2",
     name: 'Nelson Digital Nomads',
     description: 'Connect with fellow remote workers and digital nomads in the Nelson area. Share tips, co-work, and explore.',
-    longDescription: 'Are you working remotely in or around Nelson, BC? The Nelson Digital Nomads group is your hub for connecting with like-minded individuals. We organize casual co-working sessions, social events, and outdoor adventures. Share your favorite coffee shops with good Wi-Fi, discuss the challenges and rewards of remote work, and build your local network. Whether you\'re new to town or a long-time resident embracing the remote lifestyle, join us!',
-    heroImage: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-    coverImage: 'https://images.pexels.com/photos/374710/pexels-photo-374710.jpeg',
+    long_description: 'Are you working remotely in or around Nelson, BC? The Nelson Digital Nomads group is your hub for connecting with like-minded individuals. We organize casual co-working sessions, social events, and outdoor adventures. Share your favorite coffee shops with good Wi-Fi, discuss the challenges and rewards of remote work, and build your local network. Whether you\'re new to town or a long-time resident embracing the remote lifestyle, join us!',
+    hero_image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
+    cover_image: 'https://images.pexels.com/photos/374710/pexels-photo-374710.jpeg',
     visibility: 'open',
-    memberCount: 78,
+    member_count: 78,
     eventCount: 1,
     resourceCount: 3,
     postCount: 15,
     lastActive: '2025-05-22',
-    status: 'published',
+    status: 'approved',
     featured: false,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [sampleGroupMembers[1]],
     events: [
       {
-        id: 2,
+        id: 2, // Assuming GroupEvent ID remains number
         title: 'Nelson Farmers Market - Summer Season Opening',
         date: '2025-06-01',
         description: 'Celebrate the start of the summer market season! Fresh local produce, artisan crafts, live music, and food trucks. A great day out for the whole family.',
@@ -801,40 +809,44 @@ export const groups: Group[] = [
     posts: []
   },
   {
-    id: 3,
+    id: "3",
     name: 'Kootenay AI Innovators (Secret)',
     description: 'A private group for professionals and researchers working on AI/ML projects in the region.',
-    longDescription: 'This is a closed, invite-only group for individuals actively involved in Artificial Intelligence and Machine Learning research, development, or application within the Kootenay tech community. The purpose is to facilitate high-level discussions, share breakthroughs, and explore collaborative opportunities in a confidential setting. Membership is curated to ensure a focused and productive environment.',
-    heroImage: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
+    long_description: 'This is a closed, invite-only group for individuals actively involved in Artificial Intelligence and Machine Learning research, development, or application within the Kootenay tech community. The purpose is to facilitate high-level discussions, share breakthroughs, and explore collaborative opportunities in a confidential setting. Membership is curated to ensure a focused and productive environment.',
+    hero_image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
+    cover_image: null, // Added as it's in the interface
     visibility: 'secret',
-    memberCount: 23,
+    member_count: 23,
+    // eventCount, resourceCount, postCount are optional and not present here
     lastActive: '2025-05-18',
-    status: 'published',
+    status: 'approved',
     featured: false,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [], 
     events: [],
     resources: [],
     posts: []
   },
   {
-    id: 4,
+    id: "4",
     name: 'Kootenay Hikers & Adventurers',
     description: 'For all who love to explore the Kootenay mountains and trails. Share trail conditions, photos, and plan group hikes.',
-    longDescription: 'From casual strolls to challenging peaks, the Kootenay Hikers & Adventurers group is for everyone who enjoys the great outdoors. We encourage sharing of trail information, safety tips, and beautiful photography. Join us for regular group hikes and backpacking trips. All skill levels welcome.',
-    heroImage: 'https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg',
-    coverImage: 'https://images.pexels.com/photos/772803/pexels-photo-772803.jpeg',
+    long_description: 'From casual strolls to challenging peaks, the Kootenay Hikers & Adventurers group is for everyone who enjoys the great outdoors. We encourage sharing of trail information, safety tips, and beautiful photography. Join us for regular group hikes and backpacking trips. All skill levels welcome.',
+    hero_image: 'https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg',
+    cover_image: 'https://images.pexels.com/photos/772803/pexels-photo-772803.jpeg',
     visibility: 'open',
-    memberCount: 215,
+    member_count: 215,
     eventCount: 1,
     resourceCount: 8,
     postCount: 55,
     lastActive: '2025-05-23',
-    status: 'published',
+    status: 'approved',
     featured: true,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [sampleGroupMembers[0], sampleGroupMembers[1]],
     events: [
       {
-        id: 7,
+        id: 7, // Assuming GroupEvent ID remains number
         title: 'Rossland Mountain Film Festival',
         date: '2025-11-14',
         description: 'A celebration of mountain culture, adventure sports, and environmental filmmaking. Featuring local and international films, guest speakers, and workshops.',
@@ -843,22 +855,24 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 5,
+    id: "5",
     name: 'West Kootenay Arts Council',
     description: 'Supporting and promoting artists and arts initiatives throughout the West Kootenays.',
-    longDescription: 'The West Kootenay Arts Council is a non-profit organization dedicated to fostering a vibrant arts community. We provide resources for artists, organize exhibitions, workshops, and advocate for arts funding. Connect with fellow artists, discover local talent, and get involved in creative projects.',
-    heroImage: 'https://images.pexels.com/photos/102127/pexels-photo-102127.jpeg',
-    coverImage: 'https://images.pexels.com/photos/19680/pexels-photo.jpg',
+    long_description: 'The West Kootenay Arts Council is a non-profit organization dedicated to fostering a vibrant arts community. We provide resources for artists, organize exhibitions, workshops, and advocate for arts funding. Connect with fellow artists, discover local talent, and get involved in creative projects.',
+    hero_image: 'https://images.pexels.com/photos/102127/pexels-photo-102127.jpeg',
+    cover_image: 'https://images.pexels.com/photos/19680/pexels-photo.jpg',
     visibility: 'open',
-    memberCount: 95,
+    member_count: 95,
     eventCount: 1,
+    // resourceCount, postCount are optional
     lastActive: '2025-05-21',
-    status: 'published',
+    status: 'approved',
     featured: false,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [sampleGroupMembers[0]],
     events: [
       {
-        id: 4,
+        id: 4, // Assuming GroupEvent ID remains number
         title: 'Kaslo Jazz Etc. Festival 2025',
         date: '2025-08-02',
         description: 'Experience world-class jazz, blues, and world music on a floating stage in the beautiful setting of Kaslo Bay. A unique and unforgettable festival.',
@@ -867,35 +881,41 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 6,
+    id: "6",
     name: 'Kootenay Lake Sailing Club (Closed)',
     description: 'A closed group for members of the Kootenay Lake Sailing Club. Discuss races, boat maintenance, and social events.',
-    longDescription: 'This group is exclusively for registered members of the Kootenay Lake Sailing Club. Share your sailing adventures, get advice on boat repairs, organize crewing opportunities, and stay updated on club news and regattas.',
-    heroImage: 'https://images.pexels.com/photos/912422/pexels-photo-912422.jpeg',
+    long_description: 'This group is exclusively for registered members of the Kootenay Lake Sailing Club. Share your sailing adventures, get advice on boat repairs, organize crewing opportunities, and stay updated on club news and regattas.',
+    hero_image: 'https://images.pexels.com/photos/912422/pexels-photo-912422.jpeg',
+    cover_image: null, // Added as it's in the interface
     visibility: 'closed',
-    memberCount: 62,
+    member_count: 62,
+    // eventCount, resourceCount, postCount are optional
     lastActive: '2025-05-19',
-    status: 'published',
+    status: 'approved',
     featured: false,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [],
     events: [], resources: [], posts: []
   },
   {
-    id: 7,
+    id: "7",
     name: 'Slocan Valley Growers Market',
     description: 'Connecting local farmers, artisans, and consumers in the Slocan Valley. Find fresh produce, handmade goods, and support local.',
-    longDescription: 'The Slocan Valley Growers Market group is your online portal to the best of local agriculture and crafts. Farmers can post their available produce, artisans can showcase their creations, and consumers can find out what\'s fresh and in season. Let\'s build a stronger local food system together!',
-    heroImage: 'https://images.pexels.com/photos/2252584/pexels-photo-2252584.jpeg',
+    long_description: 'The Slocan Valley Growers Market group is your online portal to the best of local agriculture and crafts. Farmers can post their available produce, artisans can showcase their creations, and consumers can find out what\'s fresh and in season. Let\'s build a stronger local food system together!',
+    hero_image: 'https://images.pexels.com/photos/2252584/pexels-photo-2252584.jpeg',
+    cover_image: null, // Added as it's in the interface
     visibility: 'open',
-    memberCount: 150,
+    member_count: 150,
     eventCount: 1,
+    // resourceCount, postCount are optional
     lastActive: '2025-05-22',
-    status: 'published',
+    status: 'approved',
     featured: true,
+    created_at: '2023-01-01T00:00:00.000Z',
     members: [sampleGroupMembers[1]],
     events: [
       {
-        id: 2,
+        id: 2, // Assuming GroupEvent ID remains number
         title: 'Nelson Farmers Market - Summer Season Opening',
         date: '2025-06-01',
         description: 'Celebrate the start of the summer market season! Fresh local produce, artisan crafts, live music, and food trucks. A great day out for the whole family.',
@@ -904,16 +924,18 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 8,
+    id: "8",
     name: 'Kootenay Game Developers Meetup',
     description: 'A community for indie game developers, designers, and artists in the Kootenays. Share projects, get feedback, and collaborate.',
-    longDescription: 'Whether you\'re a hobbyist or a professional, the Kootenay Game Developers Meetup is the place to connect with others passionate about game creation. We host show-and-tell sessions, game jams, and discussions on tools and techniques. All platforms and genres welcome.',
-    heroImage: 'https://images.pexels.com/photos/7238759/pexels-photo-7238759.jpeg',
+    long_description: 'Whether you\'re a hobbyist or a professional, the Kootenay Game Developers Meetup is the place to connect with others passionate about game creation. We host show-and-tell sessions, game jams, and discussions on tools and techniques. All platforms and genres welcome.',
+    hero_image: 'https://images.pexels.com/photos/7238759/pexels-photo-7238759.jpeg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'open',
-    memberCount: 45,
+    member_count: 45,
     eventCount: 1,
     lastActive: '2025-05-17',
-    status: 'published',
+    status: 'approved',
     featured: false,
     members: [],
     events: [
@@ -927,30 +949,34 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 9,
+    id: "9",
     name: 'Boundary Country History Buffs (Secret)',
     description: 'A private research group for local historians and genealogists focusing on the Boundary region.',
-    longDescription: 'This secret group is for dedicated researchers exploring the rich history of the Boundary Country. Share findings, discuss historical records, and collaborate on projects related to local families, industries, and events. Membership by referral.',
-    heroImage: 'https://images.pexels.com/photos/769155/pexels-photo-769155.jpeg',
+    long_description: 'This secret group is for dedicated researchers exploring the rich history of the Boundary Country. Share findings, discuss historical records, and collaborate on projects related to local families, industries, and events. Membership by referral.',
+    hero_image: 'https://images.pexels.com/photos/769155/pexels-photo-769155.jpeg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'secret',
-    memberCount: 18,
+    member_count: 18,
     lastActive: '2025-05-15',
-    status: 'published',
+    status: 'approved',
     featured: false,
     members: [],
     events: [], resources: [], posts: []
   },
   {
-    id: 10,
+    id: "10",
     name: 'East Kootenay Climbers Coalition',
     description: 'Advocacy, access, and community for rock climbers in the East Kootenays.',
-    longDescription: 'The EKCC works to preserve climbing access, promote safety and stewardship, and build a strong climbing community in the East Kootenays. Join us for crag cleanups, route development discussions, and social events.',
-    heroImage: 'https://images.pexels.com/photos/1261731/pexels-photo-1261731.jpeg',
+    long_description: 'The EKCC works to preserve climbing access, promote safety and stewardship, and build a strong climbing community in the East Kootenays. Join us for crag cleanups, route development discussions, and social events.',
+    hero_image: 'https://images.pexels.com/photos/1261731/pexels-photo-1261731.jpeg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'open',
-    memberCount: 110,
+    member_count: 110,
     eventCount: 1,
     lastActive: '2025-05-20',
-    status: 'published',
+    status: 'approved',
     featured: true,
     members: [sampleGroupMembers[0]],
     events: [
@@ -964,16 +990,18 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 11,
+    id: "11",
     name: 'Nelson Book Club',
     description: 'A friendly group for book lovers in Nelson. We meet monthly to discuss a chosen book.',
-    longDescription: 'Join the Nelson Book Club for lively discussions about a wide range of genres. We vote on a book each month and meet in a relaxed setting to share our thoughts. New members are always welcome!',
-    heroImage: 'https://images.pexels.com/photos/34075/pexels-photo.jpg',
+    long_description: 'Join the Nelson Book Club for lively discussions about a wide range of genres. We vote on a book each month and meet in a relaxed setting to share our thoughts. New members are always welcome!',
+    hero_image: 'https://images.pexels.com/photos/34075/pexels-photo.jpg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'open',
-    memberCount: 55,
+    member_count: 55,
     eventCount: 1,
     lastActive: '2025-05-10',
-    status: 'published',
+    status: 'approved',
     featured: false,
     members: [sampleGroupMembers[1]],
     events: [
@@ -987,16 +1015,18 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 12,
+    id: "12",
     name: 'Kootenay Permaculture Guild',
     description: 'Sharing knowledge and resources for sustainable living and permaculture design in the Kootenays.',
-    longDescription: 'The Kootenay Permaculture Guild connects individuals interested in ecological design, regenerative agriculture, and sustainable living. We organize workshops, site visits, and seed exchanges. Learn how to apply permaculture principles to your home, garden, or community.',
-    heroImage: 'https://images.pexels.com/photos/2933243/pexels-photo-2933243.jpeg',
+    long_description: 'The Kootenay Permaculture Guild connects individuals interested in ecological design, regenerative agriculture, and sustainable living. We organize workshops, site visits, and seed exchanges. Learn how to apply permaculture principles to your home, garden, or community.',
+    hero_image: 'https://images.pexels.com/photos/2933243/pexels-photo-2933243.jpeg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'open',
-    memberCount: 88,
+    member_count: 88,
     eventCount: 1,
     lastActive: '2025-05-18',
-    status: 'published',
+    status: 'approved',
     featured: true,
     members: [],
     events: [
@@ -1010,908 +1040,302 @@ export const groups: Group[] = [
     ], resources: [], posts: []
   },
   {
-    id: 13,
+    id: "13",
     name: 'Arrow Lakes Photography Club (Closed)',
     description: 'A closed group for photography enthusiasts in the Arrow Lakes region to share work and techniques.',
-    longDescription: 'This group is for photographers of all levels in the Arrow Lakes area. Share your latest shots, discuss gear and techniques, critique work constructively, and plan photo outings. Membership is for local residents.',
-    heroImage: 'https://images.pexels.com/photos/368893/pexels-photo-368893.jpeg',
+    long_description: 'This group is for photographers of all levels in the Arrow Lakes area. Share your latest shots, discuss gear and techniques, critique work constructively, and plan photo outings. Membership is for local residents.',
+    hero_image: 'https://images.pexels.com/photos/368893/pexels-photo-368893.jpeg',
+    cover_image: null,
+    created_at: '2023-01-01T00:00:00.000Z',
     visibility: 'closed',
-    memberCount: 35,
+    member_count: 35,
     lastActive: '2025-05-16',
-    status: 'published',
+    status: 'approved',
     featured: false,
     members: [sampleGroupMembers[0], sampleGroupMembers[1]],
     events: [], resources: [], posts: []
   }
 ];
+
 export const events: Event[] = [
+  // NOTE: Mock data updated to align with new Event interface
+  // Existing fields adjusted, new fields added with placeholder/null values.
   {
-    id: 1,
+    id: "1",
     title: 'Kootenay Tech Conference 2025',
     date: '2025-09-15',
-    endDate: '2025-09-17',
+    end_date: '2025-09-17',
     location: 'Nelson Innovation Centre, Nelson, BC',
     description: 'Join us for the annual Kootenay Tech Conference, featuring talks, workshops, and networking opportunities with tech leaders and innovators from across the region and beyond. Explore the latest trends in software development, AI, cybersecurity, and digital marketing.',
     image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-    organizer: { id: 1, name: 'Kootenay Association for Technology', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg' },
-    attendees: 250,
+    organizer_id: "1",
     type: 'hybrid',
     url: 'https://kootenaytechconf.example.com',
-    status: 'published',
+    status: 'approved',
     featured: true,
-    sessions: [
-      {
-        id: 1,
-        title: 'Keynote: The Future of AI in Rural Economies',
-        description: 'Exploring how artificial intelligence can drive innovation and growth in non-urban settings.',
-        startTime: '2025-09-15T09:00:00',
-        endTime: '2025-09-15T10:00:00',
-        presenters: [{ id: 1, name: 'Dr. Evelyn Reed', image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg', title: 'Chief AI Strategist', company: 'Innovate BC' }]
-      },
-      {
-        id: 2,
-        title: 'Workshop: Mastering Modern JavaScript Frameworks',
-        description: 'A hands-on workshop for intermediate developers looking to deepen their understanding of React, Vue, and Svelte.',
-        startTime: '2025-09-15T10:30:00',
-        endTime: '2025-09-15T12:30:00',
-        presenters: [{ id: 2, name: 'John Code', image: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg', title: 'Senior Frontend Developer', company: 'Tech Solutions Inc.' }]
-      }
-    ]
+    address: 'Nelson Innovation Centre, Nelson, BC',
+    created_at: '2025-01-01T00:00:00.000Z',
+    current_attendees: 250,
+    group_id: null,
+    latitude: 49.4944,
+    longitude: -117.2929,
+    max_attendees: 500
   },
   {
-    id: 2,
+    id: "2",
     title: 'Nelson Farmers Market - Summer Season Opening',
     date: '2025-06-01',
+    end_date: null,
     location: 'Cottonwood Falls Park, Nelson, BC',
     description: 'Celebrate the start of the summer market season! Fresh local produce, artisan crafts, live music, and food trucks. A great day out for the whole family.',
     image: 'https://images.pexels.com/photos/2252584/pexels-photo-2252584.jpeg',
-    organizer: { id: 2, name: 'Nelson Farmers Market Association', image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg' },
-    attendees: 500,
+    organizer_id: "2",
     type: 'in-person',
-    status: 'published',
-    featured: true
+    url: null,
+    status: 'approved',
+    featured: true,
+    address: 'Cottonwood Falls Park, Nelson, BC',
+    created_at: '2025-01-02T00:00:00.000Z',
+    current_attendees: 500,
+    group_id: null,
+    latitude: 49.4922,
+    longitude: -117.2875,
+    max_attendees: 1000
   },
   {
-    id: 3,
+    id: "3",
     title: 'Online Workshop: Introduction to Cybersecurity for Small Businesses',
     date: '2025-07-10',
+    end_date: null,
     location: 'Online via Zoom',
     description: 'Learn the fundamentals of cybersecurity to protect your small business from common online threats. Topics include password management, phishing awareness, data backup, and secure network practices.',
     image: 'https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg',
-    organizer: { id: 3, name: 'SecureTech Kootenays', image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg' },
-    attendees: 75,
+    organizer_id: "3",
     type: 'online',
     url: 'https://securetechkootenays.example.com/workshop',
-    status: 'published',
-    featured: false
+    status: 'approved',
+    featured: false,
+    address: null,
+    created_at: '2025-01-03T00:00:00.000Z',
+    current_attendees: 75,
+    group_id: null,
+    latitude: null,
+    longitude: null,
+    max_attendees: 150
   },
   {
-    id: 4,
+    id: "4",
     title: 'Kaslo Jazz Etc. Festival 2025',
     date: '2025-08-02',
-    endDate: '2025-08-04',
+    end_date: '2025-08-04',
     location: 'Kaslo Bay Park, Kaslo, BC',
     description: 'Experience world-class jazz, blues, and world music on a floating stage in the beautiful setting of Kaslo Bay. A unique and unforgettable festival.',
     image: 'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg',
-    organizer: { id: 4, name: 'Kaslo Jazz Etc. Society', image: 'https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg' },
-    attendees: 3000,
+    organizer_id: "4",
     type: 'in-person',
     url: 'https://kaslojazzfest.com',
-    status: 'published',
-    featured: true
+    status: 'approved',
+    featured: true,
+    address: 'Kaslo Bay Park, Kaslo, BC',
+    created_at: '2025-01-04T00:00:00.000Z',
+    current_attendees: 3000,
+    group_id: null,
+    latitude: 49.9085,
+    longitude: -116.9007,
+    max_attendees: 6000
   },
   {
-    id: 5,
+    id: "5",
     title: 'Community Coding Night - Open Source Contributions',
     date: '2025-06-20',
+    end_date: null,
     location: 'Nelson Innovation Centre, Nelson, BC',
     description: 'Join fellow developers for an evening of contributing to open source projects. All skill levels welcome. Bring your laptop and ideas!',
     image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg',
-    organizer: { id: 1, name: 'Kootenay Coders Collective', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg' },
-    attendees: 30,
+    organizer_id: "1",
     type: 'in-person',
-    status: 'published',
-    featured: false
+    url: null,
+    status: 'approved',
+    featured: false,
+    address: 'Nelson Innovation Centre, Nelson, BC',
+    created_at: '2025-01-05T00:00:00.000Z',
+    current_attendees: 30,
+    group_id: null,
+    latitude: 49.4944,
+    longitude: -117.2929,
+    max_attendees: 60
   },
   {
-    id: 6,
+    id: "6",
     title: 'Digital Marketing Trends for 2026 - Webinar',
     date: '2025-11-05',
+    end_date: null,
     location: 'Online',
     description: 'Stay ahead of the curve with this insightful webinar on upcoming digital marketing trends. Learn about new strategies in SEO, content marketing, social media, and AI-driven advertising.',
     image: 'https://images.pexels.com/photos/6476254/pexels-photo-6476254.jpeg',
-    organizer: { id: 5, name: 'Marketing Masters Inc.', image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg' },
-    attendees: 150,
+    organizer_id: "5",
     type: 'online',
     url: 'https://marketingmasters.example.com/webinar/trends2026',
-    status: 'published',
-    featured: true
+    status: 'approved',
+    featured: true,
+    address: null,
+    created_at: '2025-01-06T00:00:00.000Z',
+    current_attendees: 150,
+    group_id: null,
+    latitude: null,
+    longitude: null,
+    max_attendees: 300
   },
   {
-    id: 7,
+    id: "7",
     title: 'Rossland Mountain Film Festival',
     date: '2025-11-14',
-    endDate: '2025-11-16',
+    end_date: '2025-11-16',
     location: 'Miners Hall, Rossland, BC',
     description: 'A celebration of mountain culture, adventure sports, and environmental filmmaking. Featuring local and international films, guest speakers, and workshops.',
     image: 'https://images.pexels.com/photos/269839/pexels-photo-269839.jpeg',
-    organizer: { id: 6, name: 'Rossland Council for Arts and Culture', image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg' },
-    attendees: 400,
+    organizer_id: "6",
     type: 'in-person',
     url: 'https://rosslandfilmfest.example.com',
-    status: 'published',
-    featured: false
+    status: 'approved',
+    featured: false,
+    address: 'Miners Hall, Rossland, BC',
+    created_at: '2025-01-07T00:00:00.000Z',
+    current_attendees: 400,
+    group_id: null,
+    latitude: 49.0773,
+    longitude: -117.8029,
+    max_attendees: 800
   },
   {
-    id: 8,
+    id: "8",
     title: 'Past Event: Kootenay Virtual Reality Showcase 2024',
-    date: '2024-10-20',
-    endDate: '2024-10-21',
+    date: '2024-10-20T09:00:00.000Z',
+    end_date: '2024-10-21T17:00:00.000Z',
     location: 'Online & Nelson Innovation Centre',
     description: 'An exploration of VR/AR technologies and their applications in various industries. Featured demos from local developers and panel discussions with experts.',
     image: 'https://images.pexels.com/photos/7238759/pexels-photo-7238759.jpeg',
-    organizer: { id: 1, name: 'Kootenay Association for Technology', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg' },
-    attendees: 120,
+    organizer_id: "1",
     type: 'hybrid',
     url: 'https://kootenayvr2024.example.com',
-    status: 'archived',
+    status: 'rejected',
     featured: false,
-    sessions: [
-      {
-        id: 1,
-        title: 'Keynote: The Metaverse in the Kootenays - Opportunities & Challenges',
-        description: 'Discussing the potential impact of metaverse technologies on local businesses and communities.',
-        startTime: '2024-10-20T09:00:00',
-        endTime: '2024-10-20T10:00:00',
-        presenters: [{ id: 3, name: 'Alex Virtual', image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg', title: 'Lead VR Researcher', company: 'Future Realities Lab' }],
-        videoUrl: 'https://vimeo.com/123456789',
-        resources: [
-          {
-            id: 1,
-            title: 'Metaverse in the Kootenays Slides',
-            url: 'https://slideshare.net/alexvirtual/metaverse-kootenays',
-            type: 'slides'
-          }
-        ]
-      },
-      {
-        id: 2,
-        title: 'Workshop: Introduction to Unity for VR Development',
-        description: 'A beginner-friendly workshop on creating simple VR experiences using Unity.',
-        startTime: '2024-10-20T10:30:00',
-        endTime: '2024-10-20T12:30:00',
-        presenters: [{ id: 4, name: 'Dev Guru', image: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg', title: 'Senior Unity Developer', company: 'Kootenay Game Studios' }]
-      }
-    ]
+    address: '601 Front St, Nelson, BC',
+    created_at: '2024-01-15T00:00:00.000Z',
+    current_attendees: 120,
+    group_id: null,
+    latitude: 49.4944,
+    longitude: -117.2929,
+    max_attendees: 200
   },
   {
-    id: 9,
+    id: "9",
     title: 'Past Workshop: Advanced Git & GitHub for Teams 2024',
-    date: '2024-11-15',
+    date: '2024-11-15T14:00:00.000Z',
+    end_date: null,
     location: 'Online',
     description: 'Deep dive into advanced Git techniques, branching strategies, and collaborative workflows using GitHub for development teams.',
     image: 'https://images.pexels.com/photos/4974914/pexels-photo-4974914.jpeg',
-    organizer: { id: 1, name: 'Kootenay Coders Collective', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg' },
-    attendees: 45,
+    organizer_id: "1",
     type: 'online',
     url: 'https://kootenaycoders.example.com/git-advanced-2024',
-    status: 'archived',
+    status: 'rejected',
     featured: false,
-    sessions: [
-      {
-        id: 1,
-        title: 'Mastering Git Rebase and Merge Conflicts',
-        description: 'Strategies for handling complex merge scenarios and maintaining a clean commit history.',
-        startTime: '2024-11-15T09:00:00',
-        endTime: '2024-11-15T11:00:00',
-        presenters: [{ id: 2, name: 'John Code', image: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg', title: 'Senior Software Engineer', company: 'GitGood Inc.' }],
-        videoUrl: 'https://youtube.com/watch?v=abcdef12345',
-        resources: [
-          {
-            id: 1,
-            title: 'Git Rebase and Merge Slides',
-            url: 'https://example.com/slides/git-rebase-merge.pdf',
-            type: 'slides'
-          }
-        ]
-      }
-    ]
+    address: null,
+    created_at: '2024-02-10T00:00:00.000Z',
+    current_attendees: 45,
+    group_id: null,
+    latitude: null,
+    longitude: null,
+    max_attendees: 100
   },
   {
-    id: 10,
+    id: "10",
     title: 'Past Conference: Kootenay Agri-Tech Forum 2024',
-    date: '2024-09-05',
-    endDate: '2024-09-06',
+    date: '2024-09-05T09:00:00.000Z',
+    end_date: '2024-09-06T17:00:00.000Z',
     location: 'Creston Community Complex, Creston, BC',
     description: 'Exploring innovations in agricultural technology, sustainable farming practices, and food security in the Kootenay region.',
     image: 'https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg',
-    organizer: { id: 7, name: 'Kootenay Agricultural Society', image: 'https://images.pexels.com/photos/3184328/pexels-photo-3184328.jpeg' },
-    attendees: 180,
+    organizer_id: "7",
     type: 'in-person',
-    status: 'archived',
-    featured: true
+    url: null,
+    status: 'rejected',
+    featured: true,
+    address: 'Creston Community Complex, Creston, BC',
+    created_at: '2024-03-10T00:00:00.000Z',
+    current_attendees: 180,
+    group_id: null,
+    latitude: 49.0973,
+    longitude: -116.5139,
+    max_attendees: 300
   },
   {
-    id: 11,
+    id: "11",
     title: 'Past Webinar: SEO Strategies for Local Businesses 2024',
-    date: '2024-07-22',
+    date: '2024-07-22T14:00:00.000Z',
+    end_date: null,
     location: 'Online',
     description: 'Effective SEO tactics to help Kootenay-based small businesses improve their online visibility and attract local customers.',
     image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg',
-    organizer: { id: 5, name: 'Marketing Masters Inc.', image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg' },
-    attendees: 90,
+    organizer_id: "5",
     type: 'online',
     url: 'https://marketingmasters.example.com/webinar/seo-local-2024',
-    status: 'archived',
+    status: 'rejected',
     featured: false,
-    sessions: [
-      {
-        id: 1,
-        title: 'Google My Business Optimization for Maximum Impact',
-        description: 'A step-by-step guide to optimizing your GMB listing.',
-        startTime: '2024-07-22T10:00:00',
-        endTime: '2024-07-22T11:00:00',
-        presenters: [{ id: 8, name: 'Sarah Search', image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg', title: 'SEO Specialist', company: 'RankHigh Digital' }],
-        videoUrl: 'https://youtube.com/watch?v=seo-gmb-vid',
-        resources: [
-          {
-            id: 1,
-            title: 'GMB Optimization Slides',
-            url: 'https://example.com/slides/gmb-optimization.pptx',
-            type: 'slides'
-          }
-        ]
-      }
-    ]
+    address: null,
+    created_at: '2024-04-10T00:00:00.000Z',
+    current_attendees: 90,
+    group_id: null,
+    latitude: null,
+    longitude: null,
+    max_attendees: 200
   },
   {
-    id: 12,
+    id: "12",
     title: 'Past Event: Nelson Mural Festival 2024 - Closing Celebration',
-    date: '2024-08-18',
+    date: '2024-08-18T09:00:00.000Z',
+    end_date: '2024-08-18T17:00:00.000Z',
     location: 'Hall Street Plaza, Nelson, BC',
     description: 'The grand finale of the annual Nelson Mural Festival, celebrating public art with live music, artist talks, and community engagement.',
     image: 'https://images.pexels.com/photos/1616403/pexels-photo-1616403.jpeg',
-    organizer: { id: 6, name: 'Nelson District Arts Council', image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg' },
-    attendees: 600,
+    organizer_id: "6",
     type: 'in-person',
-    status: 'archived',
-    featured: true
+    url: null,
+    status: 'rejected',
+    featured: true,
+    address: 'Hall Street Plaza, Nelson, BC',
+    created_at: '2024-05-10T00:00:00.000Z',
+    current_attendees: 600,
+    group_id: null,
+    latitude: 49.4944,
+    longitude: -117.2929,
+    max_attendees: 1000
   },
   {
-    id: 13,
+    id: "13",
     title: 'Past Workshop: Intro to 3D Printing & Design 2024',
-    date: '2024-06-10',
+    date: '2024-06-10T13:00:00.000Z',
+    end_date: '2024-06-10T15:00:00.000Z',
     location: 'Selkirk College, Nelson Campus',
     description: 'A hands-on introduction to the basics of 3D printing, including CAD design fundamentals and operating a 3D printer.',
     image: 'https://images.pexels.com/photos/4099125/pexels-photo-4099125.jpeg',
-    organizer: { id: 1, name: 'Kootenay Association for Technology', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg' },
-    attendees: 25,
+    organizer_id: "1",
     type: 'in-person',
-    status: 'archived',
+    url: null,
+    status: 'rejected',
     featured: false,
-    sessions: [
-      {
-        id: 1,
-        title: 'Designing Your First 3D Model in TinkerCAD',
-        description: 'Learn the basics of 3D modeling with TinkerCAD.',
-        startTime: '2024-06-10T13:00:00',
-        endTime: '2024-06-10T15:00:00',
-        presenters: [{ id: 9, name: 'Fabian Model', image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg', title: '3D Printing Technician', company: 'Selkirk College' }],
-        resources: [
-          {
-            id: 1,
-            title: 'TinkerCAD Intro Slides',
-            url: 'https://example.com/slides/tinkercad-intro.pdf',
-            type: 'slides'
-          }
-        ]
-      }
-    ]
+    address: 'Selkirk College, Nelson Campus',
+    created_at: '2024-03-10T00:00:00.000Z',
+    current_attendees: 25,
+    group_id: null,
+    latitude: 49.4944,
+    longitude: -117.2929,
+    max_attendees: 50
   }
 ];
-export const newsArticles: NewsArticle[] = [
-  {
-    id: 1,
-    title: "The Future of AI in Rural Communities",
-    excerpt: "Exploring how artificial intelligence can bridge gaps and create opportunities in less urbanized areas like the Kootenays.",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    date: "2025-05-20",
-    image: "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg",
-    author: { id: 1, name: "Sarah Johnson", image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg" },
-    tags: ["AI", "Rural Tech", "Innovation"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "Getting Started with Machine Learning: A Kootenay Perspective",
-    excerpt: "A beginner-friendly guide to ML concepts, with a focus on resources available to aspiring techies in the Kootenay region.",
-    content: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
-    date: "2025-05-15",
-    image: "https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg",
-    author: { id: 2, name: "Michael Chen", image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg" },
-    tags: ["Machine Learning", "Education", "Kootenays"],
-    status: "published",
-    featured: false
-  },
-  {
-    id: 3,
-    title: "Data-Driven Decisions for Small Town Businesses",
-    excerpt: "How small businesses in towns like Rossland and Nelson can leverage data analytics for growth.",
-    content: "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?",
-    date: "2025-05-10",
-    image: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg",
-    author: { id: 3, name: "Emma Wilson", image: "https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg" },
-    tags: ["Data Science", "Small Business", "Analytics"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 4,
-    title: "Accessible Web Design: Why It Matters for Kootenay Websites",
-    excerpt: "Ensuring your local business website is usable by everyone, including those with disabilities.",
-    content: "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.",
-    date: "2025-05-05",
-    image: "https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg",
-    author: { id: 7, name: "Olivia Martinez", image: "https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg" },
-    tags: ["Web Design", "Accessibility", "UX"],
-    status: "published",
-    featured: false
-  },
-  {
-    id: 5,
-    title: "Building Scalable Backends for Local Tech Startups",
-    excerpt: "Challenges and solutions for developing robust backend systems for growing Kootenay tech companies.",
-    content: "Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.",
-    date: "2025-04-30",
-    image: "https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg",
-    author: { id: 8, name: "Noah Wilson", image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg" },
-    tags: ["Backend", "Startups", "Scalability"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 6,
-    title: "Blockchain Beyond Crypto: Use Cases for Regional Economies",
-    excerpt: "Exploring practical applications of blockchain technology that could benefit the Kootenay region.",
-    content: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
-    date: "2025-04-25",
-    image: "https://images.pexels.com/photos/735911/pexels-photo-735911.jpeg",
-    author: { id: 16, name: "Benjamin Lee", image: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg" },
-    tags: ["Blockchain", "Innovation", "Local Economy"],
-    status: "published",
-    featured: false
-  },
-  {
-    id: 7,
-    title: "Unlocking Insights: A Data Analyst's Journey in Nelson",
-    excerpt: "A personal story about working as a data analyst in the Kootenay tech scene.",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Accumsan lacus vel facilisis volutpat est velit egestas dui id. Porttitor massa id neque aliquam vestibulum morbi blandit cursus risus.",
-    date: "2025-04-20",
-    image: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg",
-    author: { id: 17, name: "Chloe Davis", image: "https://images.pexels.com/photos/3760263/pexels-photo-3760263.jpeg" },
-    tags: ["Data Analysis", "Career", "Nelson Tech"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 8,
-    title: "DevOps in the Mountains: CI/CD for Kootenay Tech Teams",
-    excerpt: "Implementing efficient DevOps practices for software teams based in the Kootenays.",
-    content: "Vitae congue eu consequat ac felis donec et odio. Amet justo donec enim diam vulputate ut pharetra sit. Urna condimentum mattis pellentesque id nibh tortor id aliquet lectus.",
-    date: "2025-04-15",
-    image: "https://images.pexels.com/photos/4974914/pexels-photo-4974914.jpeg",
-    author: { id: 18, name: "Marcus Chen", image: "https://images.pexels.com/photos/532220/pexels-photo-532220.jpeg" },
-    tags: ["DevOps", "CI/CD", "Software Development"],
-    status: "published",
-    featured: false
-  },
-  {
-    id: 9,
-    title: "User Research for Local Impact: A Kootenay Case Study",
-    excerpt: "How understanding local user needs shaped a recent tech project in the region.",
-    content: "Pellentesque habitant morbi tristique senectus et netus et malesuada. Arcu cursus euismod quis viverra nibh cras pulvinar mattis nunc. Ac tortor dignissim convallis aenean et tortor at risus viverra.",
-    date: "2025-04-10",
-    image: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg",
-    author: { id: 19, name: "Sophia Miller", image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg" },
-    tags: ["UX Research", "User Experience", "Case Study"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 10,
-    title: "Crafting Native iOS Experiences for the Kootenay Market",
-    excerpt: "Tips and tricks for developing iOS apps that resonate with users in the Kootenay region.",
-    content: "Nisl rhoncus mattis rhoncus urna neque viverra justo nec. Eget nullam non nisi est sit amet facilisis magna. Mattis enim ut tellus elementum sagittis vitae et leo duis.",
-    date: "2025-04-05",
-    image: "https://images.pexels.com/photos/39284/pexels-photo-39284.jpeg",
-    author: { id: 20, name: "Liam Garcia", image: "https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg" },
-    tags: ["iOS Development", "Mobile Apps", "App Design"],
-    status: "published",
-    featured: false
-  },
-  {
-    id: 11,
-    title: "The Art of Clear Technical Writing for Complex Kootenay Tech",
-    excerpt: "Making complex technology understandable through effective technical documentation.",
-    content: "Faucibus purus in massa tempor nec feugiat nisl pretium. Tellus cras adipiscing enim eu turpis egestas pretium aenean. Diam maecenas sed enim ut sem viverra aliquet eget.",
-    date: "2025-03-30",
-    image: "https://images.pexels.com/photos/261662/pexels-photo-261662.jpeg",
-    author: { id: 21, name: "Isabelle Moreau", image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg" },
-    tags: ["Technical Writing", "Documentation", "Communication"],
-    status: "published",
-    featured: true
-  },
-  {
-    id: 12,
-    title: "AI/ML Innovations Brewing in Rossland's Tech Scene",
-    excerpt: "A look at exciting AI and Machine Learning projects emerging from Rossland, BC.",
-    content: "Elementum curabitur vitae nunc sed velit dignissim sodales ut. Eu sem integer vitae justo eget magna fermentum iaculis eu. Blandit aliquam etiam erat velit scelerisque in dictum non consectetur.",
-    date: "2025-03-25",
-    image: "https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg",
-    author: { id: 22, name: "Jackson Reid", image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg" },
-    tags: ["AI", "Machine Learning", "Rossland Tech"],
-    status: "published",
-    featured: false
-  }
-];
-export const resources: Resource[] = [
-  {
-    id: 1,
-    title: 'Ultimate Guide to React Hooks',
-    description: 'A comprehensive guide covering all React hooks with examples and best practices.',
-    type: 'guide',
-    url: 'https://example.com/react-hooks-guide',
-    image: 'https://images.pexels.com/photos/4164418/pexels-photo-4164418.jpeg',
-    dateAdded: '2025-04-10',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Tanstack Query Deep Dive',
-    description: 'Video series exploring advanced concepts and patterns in Tanstack Query (React Query).',
-    type: 'video',
-    url: 'https://youtube.com/playlist?list=PL123ABCDEF',
-    image: 'https://images.pexels.com/photos/5775854/pexels-photo-5775854.jpeg',
-    dateAdded: '2025-03-20',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Tailwind CSS Best Practices for Large Applications',
-    description: 'An article discussing strategies for managing Tailwind CSS in large-scale projects, including configuration, component design, and maintainability.',
-    type: 'article',
-    url: 'https://example.com/tailwind-best-practices',
-    image: 'https://images.pexels.com/photos/39284/macbook-apple-imac-computer-39284.jpeg',
-    dateAdded: '2025-05-01',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 4,
-    title: 'Figma for Developers Toolkit',
-    description: 'A collection of Figma plugins and tips specifically for developers to improve collaboration with designers.',
-    type: 'tool',
-    url: 'https://example.com/figma-dev-toolkit',
-    image: 'https://images.pexels.com/photos/326503/pexels-photo-326503.jpeg',
-    dateAdded: '2025-04-25',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 5,
-    title: 'Accessibility Checklist for Web Apps',
-    description: 'A comprehensive checklist to ensure your web applications meet WCAG 2.1 AA standards.',
-    type: 'document',
-    url: 'https://example.com/accessibility-checklist.pdf',
-    image: 'https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg',
-    dateAdded: '2025-05-15',
-    contributor: { id: 4, name: 'Emily Carter' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 6,
-    title: 'Introduction to TypeScript for JavaScript Developers',
-    description: 'A beginner-friendly guide to understanding TypeScript and how it enhances JavaScript development.',
-    type: 'guide',
-    url: 'https://example.com/typescript-for-js-devs',
-    image: 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg',
-    dateAdded: '2025-05-20',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 7,
-    title: 'State Management in React: Context vs. Redux vs. Zustand',
-    description: 'An article comparing popular state management solutions for React applications, helping you choose the right one for your project.',
-    type: 'article',
-    url: 'https://example.com/react-state-management-comparison',
-    image: 'https://images.pexels.com/photos/4974914/pexels-photo-4974914.jpeg',
-    dateAdded: '2025-05-18',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 8,
-    title: 'Building a REST API with Node.js and Express',
-    description: 'A step-by-step video tutorial on creating a robust REST API using Node.js and the Express framework.',
-    type: 'video',
-    url: 'https://youtube.com/playlist?list=PLXYZ123456',
-    image: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg',
-    dateAdded: '2025-05-12',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 9,
-    title: 'Git & GitHub for Beginners: A Practical Guide',
-    description: 'Learn the fundamentals of version control with Git and how to collaborate effectively using GitHub.',
-    type: 'guide',
-    url: 'https://example.com/git-github-beginners',
-    image: 'https://images.pexels.com/photos/693859/pexels-photo-693859.jpeg',
-    dateAdded: '2025-05-08',
-    contributor: { id: 4, name: 'Emily Carter' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 10,
-    title: 'Docker Essentials for Developers',
-    description: 'A document outlining the core concepts of Docker and how to use it for containerizing applications.',
-    type: 'document',
-    url: 'https://example.com/docker-essentials.pdf',
-    image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg',
-    dateAdded: '2025-05-02',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 11,
-    title: 'Responsive Web Design with Flexbox and Grid',
-    description: 'Master modern CSS layout techniques using Flexbox and CSS Grid to build responsive websites.',
-    type: 'guide',
-    url: 'https://example.com/responsive-design-flexbox-grid',
-    image: 'https://images.pexels.com/photos/38544/imac-apple-mockup-app-38544.jpeg',
-    dateAdded: '2025-04-28',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 12,
-    title: 'SEO Basics for Small Businesses',
-    description: 'An introductory article on Search Engine Optimization (SEO) tailored for small business owners looking to improve their online visibility.',
-    type: 'article',
-    url: 'https://example.com/seo-small-business',
-    image: 'https://images.pexels.com/photos/6476254/pexels-photo-6476254.jpeg',
-    dateAdded: '2025-04-22',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 13,
-    title: 'Cybersecurity Fundamentals for Remote Workers',
-    description: 'A video guide covering essential cybersecurity practices for individuals working remotely to protect sensitive data.',
-    type: 'video',
-    url: 'https://youtube.com/playlist?list=PLSECURE789',
-    image: 'https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg',
-    dateAdded: '2025-04-15',
-    contributor: { id: 4, name: 'Emily Carter' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 14,
-    title: 'Project Management Tools Comparison: Asana vs. Trello vs. Jira',
-    description: 'A detailed comparison of popular project management tools to help teams choose the best fit for their workflow.',
-    type: 'tool',
-    url: 'https://example.com/project-management-tools-comparison',
-    image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg',
-    dateAdded: '2025-04-08',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 15,
-    title: 'The Art of Effective Communication in Tech Teams',
-    description: 'A document outlining strategies and best practices for clear and effective communication within technology teams.',
-    type: 'document',
-    url: 'https://example.com/tech-team-communication.pdf',
-    image: 'https://images.pexels.com/photos/3184431/pexels-photo-3184431.jpeg',
-    dateAdded: '2025-04-01',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 16,
-    title: 'DevOps Culture and Practices Handbook',
-    description: 'A comprehensive document outlining best practices for fostering a strong DevOps culture and implementing efficient CI/CD pipelines.',
-    type: 'document',
-    url: 'https://example.com/devops-culture-handbook.pdf',
-    image: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg',
-    dateAdded: '2025-05-20',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 17,
-    title: 'AI-Powered Code Generation Tools Review',
-    description: 'A review of the top AI tools that assist in code generation, debugging, and testing, such as GitHub Copilot and Tabnine.',
-    type: 'tool',
-    url: 'https://example.com/ai-code-gen-tools-review',
-    image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
-    dateAdded: '2025-05-19',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 18,
-    title: 'Mastering Microservices Communication Patterns',
-    description: 'Video series covering synchronous and asynchronous communication patterns in microservices architectures, including REST, gRPC, and message queues.',
-    type: 'video',
-    url: 'https://youtube.com/playlist?list=PLMICROCOMM789',
-    image: 'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg',
-    dateAdded: '2025-05-18',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 19,
-    title: 'Ethical Hacking and Penetration Testing Fundamentals',
-    description: 'An introductory guide to the principles and methodologies of ethical hacking and penetration testing for securing systems.',
-    type: 'guide',
-    url: 'https://example.com/ethical-hacking-fundamentals',
-    image: 'https://images.pexels.com/photos/5380603/pexels-photo-5380603.jpeg',
-    dateAdded: '2025-05-17',
-    contributor: { id: 4, name: 'Emily Carter' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 20,
-    title: 'The Future of Quantum Computing and Its Impact on Tech',
-    description: 'An article exploring the potential of quantum computing and its implications for various technology sectors.',
-    type: 'article',
-    url: 'https://example.com/future-quantum-computing',
-    image: 'https://images.pexels.com/photos/11035471/pexels-photo-11035471.jpeg',
-    dateAdded: '2025-05-16',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 21,
-    title: 'Kubernetes Monitoring and Observability Tools',
-    description: 'A curated list of tools and best practices for monitoring Kubernetes clusters and ensuring observability.',
-    type: 'tool',
-    url: 'https://example.com/kubernetes-monitoring-tools',
-    image: 'https://images.pexels.com/photos/614117/pexels-photo-614117.jpeg',
-    dateAdded: '2025-05-15',
-    contributor: { id: 2, name: 'Michael Chen' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 22,
-    title: 'Progressive Web Apps (PWAs): The Definitive Guide',
-    description: 'A comprehensive guide to building and deploying Progressive Web Apps, covering service workers, manifests, and offline capabilities.',
-    type: 'guide',
-    url: 'https://example.com/pwa-definitive-guide',
-    image: 'https://images.pexels.com/photos/169573/pexels-photo-169573.jpeg',
-    dateAdded: '2025-05-14',
-    contributor: { id: 3, name: 'Alex Rodriguez' },
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 23,
-    title: 'Data Structures and Algorithms in Python - Full Course',
-    description: 'A complete video course covering essential data structures and algorithms implemented in Python.',
-    type: 'video',
-    url: 'https://youtube.com/playlist?list=PLPYTHONALGOS101',
-    image: 'https://images.pexels.com/photos/5775854/pexels-photo-5775854.jpeg',
-    dateAdded: '2025-05-13',
-    contributor: { id: 4, name: 'Emily Carter' },
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 24,
-    title: 'Open Source Contribution Guide for Beginners',
-    description: 'A document to help newcomers understand how to start contributing to open-source projects effectively.',
-    type: 'document',
-    url: 'https://example.com/opensource-contribution-guide.pdf',
-    image: 'https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg',
-    dateAdded: '2025-05-12',
-    contributor: { id: 1, name: 'Sarah Johnson' },
-    status: 'published',
-    featured: true
-  }
-];
-export const marketplaceItems: MarketplaceItem[] = [
-  {
-    id: 1,
-    title: 'Handmade Ceramic Mug Set (4)',
-    description: 'Beautiful, locally crafted ceramic mugs. Perfect for your morning coffee or tea. Set of 4, unique glaze on each.',
-    price: 85.00,
-    type: 'product',
-    category: 'Home Goods',
-    image: 'https://images.pexels.com/photos/1300367/pexels-photo-1300367.jpeg',
-    seller: { id: 5, name: 'Kootenay Pottery Co.', image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg' },
-    datePosted: '2025-05-05',
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Freelance Web Development Services',
-    description: 'Experienced web developer offering services for custom websites, e-commerce solutions, and web application development. Specializing in React, Node.js, and Shopify.',
-    type: 'service',
-    category: 'Professional Services',
-    image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg',
-    seller: { id: 6, name: 'DevWorks Solutions', image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg' },
-    datePosted: '2025-04-15',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Vintage Mountain Bike - Norco Sasquatch 1998',
-    description: 'Classic Norco Sasquatch mountain bike from 1998. In good condition for its age, perfect for a collector or retro enthusiast. Needs a tune-up.',
-    price: 350.00,
-    type: 'equipment',
-    category: 'Sporting Goods',
-    image: 'https://images.pexels.com/photos/276517/pexels-photo-276517.jpeg',
-    seller: { id: 7, name: 'BikeHoarder Nelson', image: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg' },
-    datePosted: '2025-05-10',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 4,
-    title: 'Workshop: Introduction to Local Beekeeping',
-    description: 'Join us for a hands-on workshop covering the basics of beekeeping in the Kootenay region. Learn about hive management, honey extraction, and supporting local pollinators. All materials provided.',
-    price: 75.00,
-    type: 'event',
-    category: 'Workshops & Classes',
-    image: 'https://images.pexels.com/photos/796607/pexels-photo-796607.jpeg',
-    seller: { id: 8, name: 'Kootenay Bee Collective', image: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg' },
-    datePosted: '2025-04-20',
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 5,
-    title: 'Organic Sourdough Bread - Weekly Subscription',
-    description: 'Freshly baked organic sourdough bread, delivered weekly to your door (Nelson area only). Various loaf types available.',
-    price: 12.00, // Price per loaf, subscription model implied
-    type: 'product',
-    category: 'Food & Beverage',
-    image: 'https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg',
-    seller: { id: 9, name: 'The Kootenay Loaf', image: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg' },
-    datePosted: '2025-03-30',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 6,
-    title: 'Graphic Design Services for Startups',
-    description: 'Branding, logo design, and marketing materials for new businesses. Affordable packages available.',
-    type: 'service',
-    category: 'Design & Creative',
-    image: 'https://images.pexels.com/photos/326502/pexels-photo-326502.jpeg',
-    seller: { id: 10, name: 'Kootenay Creative Co.', image: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg' },
-    datePosted: '2025-05-22',
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 7,
-    title: 'Used Office Desk - Excellent Condition',
-    description: 'Large L-shaped office desk with drawers. Minor wear and tear, perfect for a home office setup. Must pick up.',
-    price: 150.00,
-    type: 'equipment',
-    category: 'Furniture',
-    image: 'https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg',
-    seller: { id: 11, name: 'Sarah B.', image: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg' },
-    datePosted: '2025-05-20',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 8,
-    title: 'Tickets: Kootenay Craft Beer Festival (2)',
-    description: 'Two tickets to the annual Kootenay Craft Beer Festival. Saturday pass. Unable to attend.',
-    price: 90.00,
-    type: 'event',
-    category: 'Tickets & Events',
-    image: 'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg',
-    seller: { id: 12, name: 'Mike R.', image: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg' },
-    datePosted: '2025-05-19',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 9,
-    title: 'Locally Roasted Coffee Beans - Dark Roast (1lb)',
-    description: 'Artisan dark roast coffee beans, roasted weekly in Nelson. Whole beans or ground to order.',
-    price: 22.00,
-    type: 'product',
-    category: 'Food & Beverage',
-    image: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg',
-    seller: { id: 13, name: 'Nelson Bean Co.', image: 'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg' },
-    datePosted: '2025-05-15',
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 10,
-    title: 'Online Yoga Classes - Drop-in or Monthly Pass',
-    description: 'Live-streamed yoga classes for all levels. Vinyasa, Hatha, and Restorative styles. Experienced instructor.',
-    type: 'service',
-    category: 'Health & Wellness',
-    image: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg',
-    seller: { id: 14, name: 'ZenFlow Yoga', image: 'https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg' },
-    datePosted: '2025-05-12',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 11,
-    title: 'Professional Photography Drone - DJI Mavic 3',
-    description: 'Lightly used DJI Mavic 3 drone with Fly More Combo. Excellent for aerial photography and videography. Original packaging included.',
-    price: 2200.00,
-    type: 'equipment',
-    category: 'Electronics',
-    image: 'https://images.pexels.com/photos/7249183/pexels-photo-7249183.jpeg',
-    seller: { id: 15, name: 'AerialVisions Kootenay', image: 'https://images.pexels.com/photos/1181676/pexels-photo-1181676.jpeg' },
-    datePosted: '2025-05-08',
-    status: 'published',
-    featured: true
-  },
-  {
-    id: 12,
-    title: 'Guided Fly Fishing Trip - Kootenay River',
-    description: 'Full-day guided fly fishing trip on the Kootenay River. All gear provided. Experienced local guide. Catch and release.',
-    price: 450.00,
-    type: 'event',
-    category: 'Experiences & Tours',
-    image: 'https://images.pexels.com/photos/951318/pexels-photo-951318.jpeg',
-    seller: { id: 16, name: 'Kootenay Anglers', image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg' },
-    datePosted: '2025-05-01',
-    status: 'published',
-    featured: false
-  },
-  {
-    id: 13,
-    title: 'Hand-knitted Wool Sweaters',
-    description: 'Cozy and warm hand-knitted wool sweaters. Various sizes and colors available. Made with locally sourced wool.',
-    price: 120.00,
-    type: 'product',
-    category: 'Apparel & Accessories',
-    image: 'https://images.pexels.com/photos/7109019/pexels-photo-7109019.jpeg',
-    seller: { id: 17, name: 'Kootenay Knitters', image: 'https://images.pexels.com/photos/1080213/pexels-photo-1080213.jpeg' },
-    datePosted: '2025-04-25',
-    status: 'published',
-    featured: true
-  },
+
+export const sampleMarketplaceItems: MarketplaceItem[] = [
   {
     id: 14,
     title: 'Social Media Marketing Consultation',
@@ -1921,7 +1345,7 @@ export const marketplaceItems: MarketplaceItem[] = [
     image: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg',
     seller: { id: 18, name: 'Boost Social Kootenays', image: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg' },
     datePosted: '2025-04-18',
-    status: 'published',
+    status: 'approved',
     featured: false
   },
   {
@@ -1934,7 +1358,7 @@ export const marketplaceItems: MarketplaceItem[] = [
     image: 'https://images.pexels.com/photos/374678/pexels-photo-374678.jpeg',
     seller: { id: 19, name: 'Retro Grooves Nelson', image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg' },
     datePosted: '2025-04-10',
-    status: 'published',
+    status: 'approved',
     featured: true
   }
 ];
@@ -1952,7 +1376,7 @@ export const opportunities: Opportunity[] = [
     description: 'Join our dynamic team to build next-generation web applications using React, TypeScript, and modern frontend technologies. Lead complex projects and mentor junior developers.',
     postedDate: '2025-05-20',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['React', 'TypeScript', 'JavaScript', 'HTML', 'CSS', 'GraphQL'],
     experienceLevel: 'Senior',
@@ -1972,7 +1396,7 @@ export const opportunities: Opportunity[] = [
     description: 'Support our marketing initiatives, manage social media channels, create engaging content, and assist with campaign execution. Excellent communication skills required.',
     postedDate: '2025-05-18',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['Social Media Marketing', 'Content Creation', 'SEO Basics', 'Mailchimp'],
     experienceLevel: 'Entry',
@@ -1991,7 +1415,7 @@ export const opportunities: Opportunity[] = [
     description: 'Develop and maintain web applications using Node.js for the backend and Vue.js for the frontend. Experience with databases and cloud platforms is a plus.',
     postedDate: '2025-05-15',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['Node.js', 'Vue.js', 'MongoDB', 'AWS', 'REST APIs'],
     experienceLevel: 'Mid',
@@ -2011,7 +1435,7 @@ export const opportunities: Opportunity[] = [
     description: 'Gain hands-on experience in UX/UI design. Work on real projects, create wireframes, mockups, and prototypes. Portfolio required.',
     postedDate: '2025-05-22',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['Figma', 'Adobe XD', 'User Research', 'Prototyping'],
     experienceLevel: 'Entry',
@@ -2030,7 +1454,7 @@ export const opportunities: Opportunity[] = [
     description: 'Build and engage our tech community. Organize events, manage online forums, and foster a collaborative environment for tech enthusiasts and professionals in Nelson.',
     postedDate: '2025-05-10',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['Community Management', 'Event Planning', 'Communication', 'Social Media'],
     experienceLevel: 'Mid',
@@ -2049,7 +1473,7 @@ export const opportunities: Opportunity[] = [
     description: 'Design, develop, and maintain robust backend systems using Python and Django. Work with APIs, databases, and ensure scalability and performance.',
     postedDate: '2025-05-05',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['Python', 'Django', 'PostgreSQL', 'REST APIs', 'Docker'],
     experienceLevel: 'Mid',
@@ -2069,7 +1493,7 @@ export const opportunities: Opportunity[] = [
     description: 'Create clear, concise, and comprehensive technical documentation for our software products. Target audience includes developers and end-users.',
     postedDate: '2025-04-28',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['Technical Writing', 'Software Documentation', 'API Documentation', 'Markdown'],
     experienceLevel: 'Mid',
@@ -2088,7 +1512,7 @@ export const opportunities: Opportunity[] = [
     description: 'Manage and improve our CI/CD pipelines, cloud infrastructure (AWS), and deployment processes. Focus on automation, reliability, and security.',
     postedDate: '2025-04-25',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['AWS', 'Kubernetes', 'Docker', 'Terraform', 'CI/CD'],
     experienceLevel: 'Senior',
@@ -2108,7 +1532,7 @@ export const opportunities: Opportunity[] = [
     description: 'Assist the design team with creating visual assets for web, print, and social media. A keen eye for detail and creativity is essential.',
     postedDate: '2025-05-19',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['Adobe Creative Suite', 'Graphic Design', 'Typography', 'Illustration Basics'],
     experienceLevel: 'Entry',
@@ -2127,7 +1551,7 @@ export const opportunities: Opportunity[] = [
     description: 'Analyze complex datasets to provide actionable insights. Develop dashboards, reports, and support data-driven decision-making across the company.',
     postedDate: '2025-05-01',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: false,
     skillsRequired: ['SQL', 'Python (Pandas, NumPy)', 'Tableau', 'Data Visualization', 'Statistics'],
     experienceLevel: 'Mid',
@@ -2147,7 +1571,7 @@ export const opportunities: Opportunity[] = [
     description: 'Help a local non-profit organization improve their web presence. Flexible hours. Opportunity to contribute to a meaningful cause.',
     postedDate: '2025-04-15',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['HTML', 'CSS', 'JavaScript', 'WordPress (Optional)'],
     experienceLevel: 'Entry',
@@ -2166,7 +1590,7 @@ export const opportunities: Opportunity[] = [
     description: 'Lead the development of our flagship mobile application using React Native. Architect solutions, guide the mobile team, and ensure high-quality delivery.',
     postedDate: '2025-05-12',
     url: '#',
-    status: 'published',
+    status: 'approved',
     featured: true,
     skillsRequired: ['React Native', 'iOS Development', 'Android Development', 'Mobile Architecture', 'TypeScript'],
     experienceLevel: 'Lead',
@@ -2174,6 +1598,9 @@ export const opportunities: Opportunity[] = [
     remoteStatus: 'Hybrid'
   }
 ];
+
+export const sampleNewsArticles: NewsArticle[] = [];
+export const sampleResources: Resource[] = [];
 
 // Combine original members with additional members
 const allMembers = [...members, ...additionalMembers];
@@ -2184,9 +1611,9 @@ export const mockData = {
   companies,
   groups,
   events,
-  newsArticles,
-  resources,
-  marketplaceItems,
+  newsArticles: sampleNewsArticles,
+  resources: sampleResources,
+  marketplaceItems: sampleMarketplaceItems,
   opportunities
 };
 

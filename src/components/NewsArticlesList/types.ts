@@ -3,23 +3,23 @@ import { EntityStatus } from '../../data/mock/mockData';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsAuthor {
-  id: number;
+  id: string | number;
   name: string;
   image: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsArticle {
-  id: number;
+  id: string | number;
   title: string;
   excerpt: string;
   content: string;
-  image: string;
+  image?: string;
   date: string;
   author: NewsAuthor;
-  tags: string[];
-  status: EntityStatus;
-  featured: boolean;
+  tags?: string[];
+  status: EntityStatus | string;
+  featured?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

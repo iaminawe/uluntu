@@ -1,6 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { Users, Heart, Briefcase } from 'lucide-react';
-import { useMembers, useCompanies, useEvents, useNews, useGroups } from '../../hooks/useSupabaseQueries';
+import { useMembers } from '../../hooks/useMemberQueries';
+import { useCompanies } from '../../hooks/useCompanyQueries';
+import { useEvents } from '../../hooks/useEventQueries';
+import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
+import { useGroups } from '../../hooks/useGroupQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { QueryError } from '../../components/ui/ErrorDisplay';
@@ -15,7 +19,8 @@ export default function HomePage() {
   const { data: members = [] } = useMembers();
   const { data: companies = [] } = useCompanies();
   const { data: events = [] } = useEvents();
-  const { data: news = [] } = useNews();
+  const { data: newsData } = useNewsArticlesWithFilters();
+  const news = newsData?.articles || [];
   const { data: groups = [] } = useGroups();
 
   // Get featured items

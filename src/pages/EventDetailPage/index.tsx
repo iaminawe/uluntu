@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useEvent } from '../../hooks/useSupabaseQueries';
+import { useEvent } from '../../hooks/useQueries';
 import { format, parseISO } from 'date-fns';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';

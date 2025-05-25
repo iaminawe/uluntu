@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { PlusCircle, Tag, X } from 'lucide-react';
 import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { useNewsArticlesWithFilters } from '../../hooks/useSupabaseQueries';
+import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
 import { extractTags } from '../../components/NewsArticlesList/utils';
 
 interface ActionBarProps {

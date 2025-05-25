@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
+import { useOpportunitiesWithFilters } from '../../hooks/useOpportunityQueries';
 import OpportunityCard from './OpportunityCard';
 import Pagination from '../Pagination'; // Import Pagination
 import { 

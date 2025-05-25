@@ -6,53 +6,59 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import OpportunitiesList from '../../components/OpportunitiesList';
 import { 
   Opportunity as OpportunityListItem,
-  OpportunityType
+  OpportunityType,
+  OpportunityCategory,
+  ExperienceLevel
 } from '../../components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useOpportunities } from '../../hooks/useSupabaseQueries';
+import { useOpportunities, Opportunity as SupabaseOpportunity } from '../../hooks/useOpportunityQueries';
 
 // Adapter function to map API opportunity data to the format expected by OpportunitiesList
-const mapToOpportunityListItem = (opportunity: Opportunity): OpportunityListItem => {
+const mapToOpportunityListItem = (opportunity: SupabaseOpportunity): OpportunityListItem => {
   // Ensure the type is one of the valid OpportunityType values
   let opportunityType: OpportunityType;
   
   // Map the opportunity type to a valid OpportunityType
-  switch(opportunity.type) {
+  switch(opportunity.type as string) {
     case 'full-time':
     case 'part-time':
     case 'contract':
     case 'volunteer':
     case 'internship':
-      opportunityType = opportunity.type;
+      opportunityType = opportunity.type as OpportunityType;
       break;
     default:
-      // Default to full-time if the type is not recognized
-      console.warn(`Unknown opportunity type: ${opportunity.type}, defaulting to full-time`);
-      opportunityType = 'full-time';
+      opportunityType = 'full-time'; // Default fallback
   }
+
+  // Create a category (required by OpportunityListItem but not in Supabase Opportunity)
+  const category: OpportunityCategory = 'other';
+  
+  // Create an experience level (required by OpportunityListItem but not in Supabase Opportunity)
+  const experienceLevel: ExperienceLevel = 'mid';
   
   return {
-    id: opportunity.id,
-    title: opportunity.title,
+    id: Number(opportunity.id), // Convert string ID to number
+    title: opportunity.title || '',
     company: {
-      id: opportunity.company.id,
-      name: opportunity.company.name,
-      logo: opportunity.company.logo,
-      location: ''
+      id: 1, // Default ID
+      name: opportunity.organization || 'Unknown Company',
+      logo: opportunity.image || '/placeholder-logo.png',
     },
     type: opportunityType,
-    category: 'engineering', // Default category
-    experienceLevel: 'mid', // Default experience level
-    location: opportunity.location,
-    remote: opportunity.remote,
-    description: opportunity.description,
-    responsibilities: [],
-    requirements: [],
-    salary: opportunity.salary,
-    postedDate: opportunity.postedDate,
-    deadline: opportunity.deadline,
-    featured: opportunity.featured || false
+    category: category,
+    experienceLevel: experienceLevel,
+    location: opportunity.location || 'Remote',
+    remote: opportunity.remote || false,
+    description: opportunity.description || '',
+    responsibilities: opportunity.responsibilities || [],
+    requirements: opportunity.requirements || [],
+    salary: opportunity.compensation || 'Competitive',
+    postedDate: opportunity.created_at || new Date().toISOString(),
+    deadline: opportunity.deadline || '',
+    applyUrl: opportunity.website || '',
+    featured: opportunity.featured || false,
   };
 };
 
@@ -141,8 +147,32 @@ export default function OpportunitiesPage() {
   console.log('OpportunitiesPage - Raw opportunities from useOpportunities:', fetchedOpportunities);
   console.log('OpportunitiesPage - Number of opportunities:', fetchedOpportunities.length);
   
+  // Convert fallback opportunities to the Supabase Opportunity type
+  const fallbackOpportunitiesConverted: SupabaseOpportunity[] = FALLBACK_OPPORTUNITIES.map(fallback => ({
+    id: String(fallback.id),
+    created_at: fallback.postedDate,
+    updated_at: fallback.postedDate,
+    title: fallback.title,
+    description: fallback.description,
+    organization: fallback.company.name,
+    deadline: fallback.deadline || null,
+    location: fallback.location,
+    type: fallback.type,
+    featured: fallback.featured || false,
+    benefits: [],
+    compensation: fallback.salary,
+    contact_email: null,
+    image: fallback.company.logo,
+    requirements: [],
+    responsibilities: [],
+    posted_by: String(fallback.company.id),
+    remote: fallback.remote,
+    status: fallback.status || 'open',
+    website: null
+  }));
+
   // Use fallback data if no opportunities are fetched
-  const opportunities = fetchedOpportunities.length > 0 ? fetchedOpportunities : FALLBACK_OPPORTUNITIES;
+  const opportunities = fetchedOpportunities.length > 0 ? fetchedOpportunities : fallbackOpportunitiesConverted;
   const hasOpportunities = opportunities.length > 0;
   console.log('OpportunitiesPage - Using fallback data:', fetchedOpportunities.length === 0);
   console.log('OpportunitiesPage - hasOpportunities:', hasOpportunities);

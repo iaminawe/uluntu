@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useMember } from '../../hooks/useSupabaseQueries';
+import { useMember } from '../../hooks/useQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
