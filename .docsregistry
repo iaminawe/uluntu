@@ -77,6 +77,12 @@
       "description": "Test plan detailing test cases mapping to AI Verifiable End Results from `PRDMasterPlan.md`, incorporating London School TDD and recursive testing strategies, and ensuring every test case within the plan has an AI verifiable completion criterion. The test plan covers all aspects of the authentication module, including user registration, login, logout, profile management, role-based access control, password reset, and security hardening.",
       "type": "test plan",
       "timestamp": "2025-05-27T08:59:55.000Z"
+    },
+    {
+      "file_path": "docs/redux_architecture.md",
+      "description": "Redux architecture document detailing the state management system design, including core Redux store, Redux slices for different features, asynchronous actions, selectors, middleware, integration with Supabase authentication, and alignment with PRDMasterPlan.md and high-level acceptance tests.",
+      "type": "architecture",
+      "timestamp": "2025-05-27T10:10:01.000Z"
     }
   ]
 }

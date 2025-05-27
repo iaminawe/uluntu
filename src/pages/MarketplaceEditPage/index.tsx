@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useMarketplaceListingByIdRedux, useMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
 import TagsSection from './TagsSection';
@@ -8,6 +9,7 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import FormHeader from './FormHeader';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
+import ErrorState from './ErrorState';
 import { FormData } from './types';
 
 export default function MarketplaceEditPage() {
@@ -29,47 +31,86 @@ export default function MarketplaceEditPage() {
     newTag: ''
   });
   
+  // Redux hooks for marketplace listings
+  const { 
+    listing, 
+    isLoading: fetchLoading, 
+    isError: fetchError,
+    fetchListing, 
+    updateListing,
+    deleteListing 
+  } = useMarketplaceListingByIdRedux(id || '');
+  
+  const { 
+    createListing 
+  } = useMarketplaceListingsRedux();
+  
   // State for delete confirmation modal
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isLoading, setIsLoading] = useState(isEditing);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [isError] = useState(false); // Removed unused isError state
   
-  // Mock data loading for editing
+  // Fetch listing data if editing
   useEffect(() => {
-    if (isEditing) {
-      setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        setFormData({
-          title: 'Sample Marketplace Item',
-          description: 'This is a sample marketplace item description.',
-          price: '99.99',
-          condition: 'good', // Using valid ListingCondition
-          location: 'San Francisco, CA',
-          type: 'product', // Using valid ListingType
-          status: 'published',
-          featured: true,
-          tags: ['electronics', 'gadget', 'used'],
-          newTag: ''
-        });
-        setIsLoading(false);
-      }, 1000);
-    } else {
-      setIsLoading(false); // Ensure loading is false if not editing
+    if (isEditing && id) {
+      fetchListing();
     }
-  }, [isEditing]);
+  }, [isEditing, id, fetchListing]);
+  
+  // Update form data when listing is loaded
+  useEffect(() => {
+    if (listing && isEditing) {
+      setFormData({
+        title: listing.title || '',
+        description: listing.description || '',
+        price: typeof listing.price === 'number' ? String(listing.price) : '0',
+        condition: listing.condition || 'new',
+        location: listing.location || '',
+        type: listing.type || 'product',
+        status: listing.status || 'draft',
+        featured: listing.featured || false,
+        tags: listing.tags || [],
+        newTag: ''
+      });
+    }
+  }, [listing, isEditing]);
   
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Convert form data to API input format
+      const listingData = {
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        condition: formData.condition,
+        location: formData.location,
+        type: formData.type,
+        status: formData.status,
+        featured: formData.featured,
+        tags: formData.tags,
+        // For a new listing, we'd need to set the seller ID
+        // In a real app, this would come from the authenticated user
+        sellerId: isEditing ? '' : '1' 
+      };
+      
+      if (isEditing && id) {
+        // Update existing listing
+        await updateListing(listingData);
+      } else {
+        // Create new listing
+        await createListing(listingData);
+      }
+      
+      // Navigate back to marketplace on success
       navigate('/marketplace');
-    }, 1500);
+    } catch (error) {
+      console.error('Error saving marketplace listing:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Handle basic info changes
@@ -107,19 +148,29 @@ export default function MarketplaceEditPage() {
   };
   
   // Handle delete
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!id) return;
+    
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await deleteListing();
       navigate('/marketplace');
-    }, 1500);
+    } catch (error) {
+      console.error('Error deleting marketplace listing:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Loading state
-  if (isLoading) {
+  if (fetchLoading) {
     return <LoadingState />;
+  }
+  
+  // Error state
+  if (fetchError && isEditing) {
+    return <ErrorState message="Failed to load marketplace listing" />;
   }
   
   // Error state handling can be added here if actual error fetching logic is implemented

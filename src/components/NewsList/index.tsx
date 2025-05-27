@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from './ArticleCard';
@@ -11,18 +11,28 @@ import {
 } from './utils';
 import { NewsArticle as MainNewsArticle } from '../../types';
 
+import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
 import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
-const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => {
+const NewsList = ({ initialTag = 'all', initialSearch = '', useRedux = false }: NewsListProps & { useRedux?: boolean }) => {
   // State for filters
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
     tag: initialTag,
   });
   
-  // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
+  // Redux implementation
   const { 
-    data: newsDataArticles, // Renamed to avoid conflict if 'articles' is used later
+    articles: reduxArticles,
+    updateFilters: updateReduxFilters,
+    isLoading: reduxIsLoading,
+    isError: reduxIsError,
+    error: reduxError
+  } = useFilteredNewsArticlesRedux();
+
+  // Traditional React Query implementation
+  const { 
+    data: newsDataArticles,
     isLoading: newsDataIsLoading, 
     error: newsDataError 
   } = useNewsArticlesWithFilters({
@@ -31,11 +41,29 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
     tag: filters.tag && filters.tag !== 'all' ? filters.tag : undefined 
   });
 
-  // Properly extract articles from the hook's data structure, default to empty array if undefined
-  const mainArticles = (newsDataArticles || []) as MainNewsArticle[];
+  // Update Redux filters when component filters change (if using Redux)
+  useEffect(() => {
+    if (useRedux) {
+      updateReduxFilters({
+        search: filters.search,
+        tags: filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined
+      });
+    }
+  }, [useRedux, filters, updateReduxFilters]);
+
+  // Choose which data source to use
+  const mainArticles = useRedux 
+    ? reduxArticles as MainNewsArticle[]
+    : (newsDataArticles || []) as MainNewsArticle[];
   
   // Convert main NewsArticle type to local NewsArticle type using adapter function
   const articles = mainArticles.map(adaptMainNewsArticleToLocal);
+  
+  // Set loading and error states based on the chosen data source
+  const isLoading = useRedux ? reduxIsLoading : newsDataIsLoading;
+  const error = useRedux 
+    ? (reduxError ? new Error(String(reduxError)) : (reduxIsError ? new Error('Error loading articles') : null)) 
+    : newsDataError;
   
   // Filter and sort articles based on the fetched data
   // The hook should ideally return pre-filtered data based on search/tags,
@@ -43,7 +71,7 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
   const displayedArticles = sortArticlesByDate(filterArticles(articles, filters));
   
   // Render loading state
-  if (newsDataIsLoading) {
+  if (isLoading) {
     return (
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -77,7 +105,7 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
   }
   
   // Render error state
-  if (newsDataError) {
+  if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-slate-800 rounded-lg shadow-md">
         <AlertTriangle className="w-16 h-16 text-red-500 mb-4" />
@@ -85,7 +113,7 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
           Oops! Something went wrong.
         </h2>
         <p className="text-slate-600 dark:text-slate-400">
-          {String(newsDataError.message || 'Failed to load articles.')}
+          {String(error?.message || 'Failed to load articles.')}
         </p>
       </div>
     );

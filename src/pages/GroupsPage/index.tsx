@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import GroupsList from '../../components/GroupsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useGroups } from '../../hooks/useGroupQueries';
+import { useGroupsRedux } from '../../hooks/useGroupsRedux';
 import { GroupVisibility } from '../../components/GroupsList/types';
 
 export default function GroupsPage() {
@@ -16,9 +16,14 @@ export default function GroupsPage() {
 
   // Filter state is managed by the ActionBar component
 
-  // Use the useGroups hook to fetch groups data
-  const { data: groups = [], isLoading, error } = useGroups();
+  // Use the Redux hook to fetch groups data
+  const { groups, loadGroups, isLoading, isError, error } = useGroupsRedux();
   const hasGroups = groups.length > 0;
+  
+  // Load groups on component mount
+  useEffect(() => {
+    loadGroups();
+  }, []);
 
   return (
     <>
@@ -41,10 +46,10 @@ export default function GroupsPage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying groups query')} 
+            error={error ? new Error(error) : new Error('Failed to load groups')} 
+            retry={() => loadGroups()} 
             message="We couldn't load the groups. Please try again."
           />
         ) : !hasGroups ? (
@@ -60,7 +65,8 @@ export default function GroupsPage() {
         ) : (
           <GroupsList 
             searchTerm={searchTerm} 
-            visibilityFilter={visibilityFilter} 
+            visibilityFilter={visibilityFilter}
+            useRedux={true} 
           />
         )}
       </ContentContainer>

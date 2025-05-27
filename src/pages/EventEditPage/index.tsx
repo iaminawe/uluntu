@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEvent } from '../../hooks/useQueries';
+import { useEventRedux } from '../../hooks/useEventsRedux';
 import { format } from 'date-fns';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';
@@ -37,10 +37,20 @@ export default function EventEditPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   
+  // Use Redux-based hook for a single event
   const { 
-    data: event, 
-    isLoading: eventLoading
-  } = useEvent(isEditMode ? eventIdString : ''); // Only fetch if in edit mode
+    event, 
+    isLoading: eventLoading,
+    getEvent,
+    updateEventData
+  } = useEventRedux(isEditMode ? eventIdString : undefined); // Only provide ID if in edit mode
+  
+  // Fetch event when in edit mode and component mounts
+  useEffect(() => {
+    if (isEditMode) {
+      getEvent();
+    }
+  }, [isEditMode, getEvent]);
   
   // Populate form with event data when in edit mode
   useEffect(() => {
@@ -113,8 +123,24 @@ export default function EventEditPage() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (isEditMode && id) {
+        // Update existing event using Redux action
+        await updateEventData({
+          title: formData.title,
+          description: formData.description,
+          date: formData.date,
+          end_date: formData.endDate,
+          location: formData.location,
+          image: formData.image,
+          type: formData.type,
+          url: formData.url || null,
+          organizer_id: formData.organizerId
+        });
+      } else {
+        // For creating a new event, we'll need to enhance the eventsRedux hooks later
+        // Temporarily simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       
       setSubmitSuccess(true);
       
