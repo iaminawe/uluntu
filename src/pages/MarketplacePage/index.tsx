@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MarketplaceList from '../../components/MarketplaceList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMarketplaceItemsWithFilters } from '../../hooks/useMarketplaceQueries';
+import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
 import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
 
 export default function MarketplacePage() {
@@ -15,12 +15,23 @@ export default function MarketplacePage() {
   const [selectedType, setSelectedType] = useState<ListingType | 'all'>('all');
   const [selectedCondition, setSelectedCondition] = useState<ListingCondition | 'all'>('all');
   
-  // Use the useMarketplaceItemsWithFilters hook to fetch filtered marketplace data
-  const { data: marketplaceItems = [], isLoading, error } = useMarketplaceItemsWithFilters({
-    search: searchTerm,
-    types: selectedType !== 'all' ? [selectedType] : undefined,
-    condition: selectedCondition !== 'all' ? selectedCondition : undefined
-  });
+  // Use the Redux hook to fetch filtered marketplace data
+  const { 
+    filteredListings: marketplaceItems = [], 
+    isLoading, 
+    isError,
+    error,
+    updateFilters 
+  } = useFilteredMarketplaceListingsRedux();
+  
+  // Update filters when search term or filter selections change
+  useEffect(() => {
+    updateFilters({
+      search: searchTerm,
+      types: selectedType !== 'all' ? [selectedType] : undefined,
+      condition: selectedCondition !== 'all' ? selectedCondition : undefined
+    });
+  }, [searchTerm, selectedType, selectedCondition, updateFilters]);
   
   const hasItems = marketplaceItems.length > 0;
   
@@ -45,7 +56,7 @@ export default function MarketplacePage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
             error={error} 
             retry={() => console.log('Retrying query')} 
@@ -65,6 +76,7 @@ export default function MarketplacePage() {
           <MarketplaceList 
             initialSearch={searchTerm}
             initialType={selectedType}
+            useRedux={true}
           />
         )}
       </ContentContainer>

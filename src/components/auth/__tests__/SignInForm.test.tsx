@@ -80,11 +80,36 @@ describe('SignInForm Component', () => {
     const submitButton = screen.getByRole('button', { name: /Sign in/i });
     await userEvent.click(submitButton);
     
-    // Verify signIn was called with correct data
-    expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123');
+    // Verify signIn was called with correct data (rememberMe defaults to false)
+    expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123', false);
     
     // Verify no error is shown
     expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
+  });
+  
+  it('should pass rememberMe value to signIn when checked', async () => {
+    // Mock successful signin
+    mockSignIn.mockResolvedValue({
+      data: { user: { id: 'test-user-id' } },
+      error: null,
+    });
+    
+    render(<SignInForm />);
+    
+    // Fill in the form with valid data
+    await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
+    await userEvent.type(screen.getByLabelText(/Password/i), 'password123');
+    
+    // Check the remember me checkbox
+    const rememberMeCheckbox = screen.getByLabelText(/Remember me/i);
+    await userEvent.click(rememberMeCheckbox);
+    
+    // Submit the form
+    const submitButton = screen.getByRole('button', { name: /Sign in/i });
+    await userEvent.click(submitButton);
+    
+    // Verify signIn was called with correct data and rememberMe=true
+    expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123', true);
   });
 
   it('should show loading state during submission', async () => {

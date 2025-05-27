@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { EventType, DateRangeFilter, adaptMainEventToLocal } from './types';
-import { useEventsWithFilters } from '../../hooks/useQueries';
+import { useFilteredEventsRedux } from '../../hooks/useEventsRedux';
 import EventCard from './EventCard';
 import PastEventCard from './PastEventCard';
 import Pagination from '../Pagination'; // Import Pagination
@@ -26,11 +26,23 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
   const [currentPageUpcoming, setCurrentPageUpcoming] = useState(1);
   const [currentPagePast, setCurrentPagePast] = useState(1);
   
-  const { data: mainEvents = [], isLoading, error } = useEventsWithFilters({
-    search: initialSearch,
-    types: selectedTypes.length > 0 ? selectedTypes : undefined,
-    dateRange: dateRange
-  });
+  // Use Redux-based hook for filtered events
+  const { 
+    events: mainEvents = [], 
+    isLoading, 
+    error, 
+    applyFilters, 
+    clearAllFilters 
+  } = useFilteredEventsRedux();
+  
+  // Apply filters when they change
+  useEffect(() => {
+    applyFilters({
+      search: initialSearch,
+      types: selectedTypes.length > 0 ? selectedTypes : undefined,
+      dateRange: dateRange
+    });
+  }, [initialSearch, selectedTypes, dateRange, applyFilters]);
 
   useEffect(() => {
     // Reset pages when filters change
@@ -41,6 +53,7 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
   const clearFilters = () => {
     setSelectedTypes([]);
     setDateRange('all');
+    clearAllFilters();
     // Page reset will be handled by the useEffect above
   };
 

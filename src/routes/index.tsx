@@ -33,6 +33,8 @@ import MarketplaceEditPage from '../pages/MarketplaceEditPage';
 // Auth pages
 import SignInPage from '../pages/SignInPage';
 import SignUpPage from '../pages/SignUpPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProfileEditPage from '../pages/ProfileEditPage';
 
@@ -135,6 +137,8 @@ export const router = createBrowserRouter([
       },
       { path: 'signin', element: <SignInPage /> },
       { path: 'signup', element: <SignUpPage /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
       { path: 'profile', element: <DirectoryDetailPage /> },
       { 

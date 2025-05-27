@@ -4,14 +4,15 @@ import { AlertTriangle } from 'lucide-react';
 import MemberCard from './MemberCard';
 import { Member, MembersListProps, FilterOptions } from './types';
 import { filterMembers, sortMembersByName } from './utils';
+import { useFilteredMembersRedux } from '../../hooks/useMembersRedux';
 
 const MembersList = ({ 
   initialSearch = '', 
   initialSkills,
   companyId, 
   members: parentMembers = [],
-  loading: parentLoading = false,
-  error: parentError = null
+  loading: parentLoading,
+  error: parentError
 }: MembersListProps) => {
   // State for search and filters
   const [filters, setFilters] = useState<FilterOptions>({
@@ -19,40 +20,49 @@ const MembersList = ({
     skills: initialSkills
   });
   
-  // State for debounced search input
-  const [debouncedFilters, setDebouncedFilters] = useState<FilterOptions>(filters);
+  // Use Redux for filtered members if no parent members are provided
+  const { 
+    members: reduxMembers = [], 
+    isLoading: reduxLoading, 
+    error: reduxError,
+    applyFilters,
+    clearAllFilters
+  } = useFilteredMembersRedux();
   
-  // Console log to debug members list
+  // Determine if we should use parent props or Redux state
+  const useParentData = parentMembers.length > 0 || parentLoading !== undefined;
+  
+  // Combined state values
+  const members = useParentData ? parentMembers : reduxMembers;
+  const loading = useParentData ? parentLoading : reduxLoading;
+  const error = useParentData ? parentError : reduxError;
+  
+  // Filtered members based on current filters (for parent members mode)
+  const [localFilteredMembers, setLocalFilteredMembers] = useState<Member[]>([]);
+  
+  // Apply Redux filters when they change
   useEffect(() => {
-    console.log('MembersList - Parent Members:', parentMembers);
-    console.log('MembersList - Parent Loading:', parentLoading);
-    console.log('MembersList - Parent Error:', parentError);
-  }, [parentMembers, parentLoading, parentError]);
+    if (!useParentData) {
+      applyFilters({
+        search: filters.search,
+        skills: filters.skills
+      });
+    }
+  }, [filters, applyFilters, useParentData]);
   
-  // Filtered members based on current filters
-  const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
-  
-  // Debounce filter changes
+  // Apply local filters when parent members or filters change
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedFilters(filters);
-    }, 300);
-    
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [filters]);
+    if (useParentData && parentMembers.length) {
+      // Apply filters and sort by name
+      const filtered = filterMembers(parentMembers, filters, companyId);
+      const sorted = sortMembersByName(filtered);
+      
+      setLocalFilteredMembers(sorted);
+    }
+  }, [parentMembers, filters, companyId, useParentData]);
   
-  // Apply filters when parentMembers or debounced filters change
-  useEffect(() => {
-    if (!parentMembers.length) return;
-    
-    // Apply filters and sort by name
-    const filtered = filterMembers(parentMembers, debouncedFilters, companyId);
-    const sorted = sortMembersByName(filtered);
-    
-    setFilteredMembers(sorted);
-  }, [parentMembers, debouncedFilters, companyId]);
+  // Determine which filtered members to use
+  const filteredMembers = useParentData ? localFilteredMembers : reduxMembers;
   
   // Reset all filters
   const clearFilters = () => {
@@ -60,6 +70,11 @@ const MembersList = ({
       search: '',
       skills: undefined
     });
+    
+    // If using Redux, also clear filters there
+    if (!useParentData) {
+      clearAllFilters();
+    }
   };
   
   // Render loading state

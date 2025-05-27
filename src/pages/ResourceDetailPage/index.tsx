@@ -10,6 +10,7 @@ import RelatedResources from './RelatedResources';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Resource } from '../../types';
+import { useResourceRedux } from '../../hooks/useResourcesRedux';
 
 // This would normally come from a hook like useResource
 const SAMPLE_RESOURCE: Resource = {
@@ -60,10 +61,8 @@ const RELATED_RESOURCES: Resource[] = [
 export default function ResourceDetailPage() {
   const { id } = useParams<{ id: string }>();
   
-  // This would normally come from a hook like useResource(id)
-  const resource = SAMPLE_RESOURCE;
-  const isLoading = false;
-  const error = null;
+  // Use the Redux hook to fetch resource data
+  const { resource, isLoading, isError, error } = useResourceRedux(id);
   
   const getTypeIcon = (type: Resource['type']) => {
     switch (type) {
@@ -86,7 +85,7 @@ export default function ResourceDetailPage() {
     return <LoadingState />;
   }
 
-  if (error || !resource) {
+  if (isError || !resource) {
     return <ErrorState />;
   }
 

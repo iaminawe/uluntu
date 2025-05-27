@@ -6,31 +6,38 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MembersList from '../../components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMembers, Member as HookMember } from '../../hooks/useMemberQueries';
+import { useMembersRedux } from '../../hooks/useMembersRedux';
+import { Member as ReduxMember } from '../../redux/slices/membersSlice';
 import { FilterOptions } from '../../components/MembersList/types';
 import { Member as UITypeMember } from '../../types';
 import Pagination from '../../components/Pagination'; // Import Pagination
 
-// We need to adapt between the Member type from useMemberQueries and the one in types.ts
-const adaptMemberForUI = (hookMember: HookMember): UITypeMember => {
+// We need to adapt between the Member type from Redux and the one in types.ts
+const adaptMemberForUI = (reduxMember: ReduxMember): UITypeMember => {
   return {
-    id: hookMember.id,
-    name: hookMember.name,
-    title: hookMember.role || '', // Map role to title if role exists, otherwise empty string
-    image: hookMember.image || '',
-    bio: hookMember.bio,
-    skills: hookMember.skills,
-    joinDate: hookMember.joinDate || hookMember.joinedDate || hookMember.created_at || new Date().toISOString(),
-    status: hookMember.status || 'published',
-    featured: hookMember.featured
+    id: reduxMember.id,
+    name: reduxMember.name,
+    title: reduxMember.title || reduxMember.role || '', // Map title or role to title field
+    image: reduxMember.image || '',
+    bio: reduxMember.bio,
+    skills: reduxMember.skills,
+    joinDate: reduxMember.joinDate || reduxMember.joinedDate || reduxMember.created_at || new Date().toISOString(),
+    status: reduxMember.status || 'published',
+    featured: reduxMember.featured,
+    company: reduxMember.company
   };
 };
 
 const ITEMS_PER_PAGE = 12; // Adjust as needed for the main directory
 
 export default function DirectoryPage() {
-  // Use the useMembers hook to fetch members data
-  const { data: allMembers = [], isLoading, error } = useMembers();
+  // Use the Redux-based hook to fetch members data
+  const { members: allMembers = [], isLoading, error, getAllMembers } = useMembersRedux();
+  
+  // Fetch members when component mounts
+  useEffect(() => {
+    getAllMembers();
+  }, [getAllMembers]);
   
   // State for search and filters that will be passed to ActionBar
   const [filters, setFilters] = useState<FilterOptions>({
@@ -86,8 +93,8 @@ export default function DirectoryPage() {
           <SkeletonGrid count={ITEMS_PER_PAGE} columns={{ sm: 1, md: 2, lg: 4 }} />
         ) : error ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying members query')} // Consider re-fetching or a specific retry mechanism
+            error={error || 'Error loading members'} 
+            retry={() => getAllMembers()} 
             message="We couldn't load the directory. Please try again."
           />
         ) : !hasMembers && !isLoading ? (

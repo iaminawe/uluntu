@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useEvent } from '../../hooks/useQueries';
+import { useEventRedux } from '../../hooks/useEventsRedux';
 import { format, parseISO } from 'date-fns';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
@@ -20,7 +20,13 @@ export default function EventDetailPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
-  const { data: event, isLoading, error } = useEvent(eventIdString);
+  // Use Redux-based hook for a single event
+  const { event, isLoading, error, getEvent } = useEventRedux(eventIdString);
+  
+  // Fetch event when component mounts or ID changes
+  useEffect(() => {
+    getEvent();
+  }, [getEvent, eventIdString]);
   
   const handleRegister = () => {
     setIsRegistering(true);

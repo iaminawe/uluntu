@@ -12,6 +12,7 @@ import {
   sortListingsByDate
 } from './utils';
 import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
+import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
 import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
 
 const LISTINGS_PER_PAGE = 9;
@@ -19,8 +20,9 @@ const LISTINGS_PER_PAGE = 9;
 const MarketplaceList = ({ 
   initialType = 'all', 
   initialSearch = '', 
-  sellerId 
-}: MarketplaceListProps) => {
+  sellerId,
+  useRedux = false
+}: MarketplaceListProps & { useRedux?: boolean }) => {
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,21 +39,54 @@ const MarketplaceList = ({
     tags: [] // Assuming empty is default
   }), [initialSearch, initialType]);
   
-  const { data, isLoading, error: queryError } = useMarketplaceItemsWithFilters({
+  // Redux implementation
+  const { 
+    filteredListings: reduxListings,
+    updateFilters: updateReduxFilters,
+    isLoading: reduxIsLoading,
+    isError: reduxIsError,
+    error: reduxError
+  } = useFilteredMarketplaceListingsRedux();
+  
+  // Traditional React Query implementation
+  const { 
+    data, 
+    isLoading: queryIsLoading, 
+    error: queryError 
+  } = useMarketplaceItemsWithFilters({
     types: filters.type !== 'all' ? [filters.type] : undefined, // Use 'types' array instead of 'type' to match MarketplaceItemsQueryOptions
     search: filters.search || undefined,
     seller_id: sellerId || undefined // Use seller_id to match MarketplaceItemsQueryOptions
   });
   
+  // Update Redux filters when component filters change (if using Redux)
+  useEffect(() => {
+    if (useRedux) {
+      updateReduxFilters({
+        search: filters.search || undefined,
+        types: filters.type !== 'all' ? [filters.type] : undefined,
+        seller_id: sellerId || undefined
+      });
+    }
+  }, [useRedux, filters, sellerId, updateReduxFilters]);
+  
+  // Choose which loading and error states to use
+  const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
+  const queryErrorMessage = queryError ? 'Failed to load marketplace listings. Please try again later.' : null;
+  const reduxErrorMessage = reduxError ? String(reduxError) : (reduxIsError ? 'Failed to load marketplace listings' : null);
+  
   useEffect(() => {
     if (isLoading) {
       setLoading(true);
-    } else if (queryError) {
-      setError('Failed to load marketplace listings. Please try again later.');
+    } else if (useRedux ? reduxErrorMessage : queryErrorMessage) {
+      setError(useRedux ? reduxErrorMessage : queryErrorMessage);
       setLoading(false);
-    } else if (data) {
+    } else if (useRedux ? reduxListings : data) {
+      // Choose which data source to use
+      const sourceData = useRedux ? reduxListings : data;
+      
       // Convert from API MarketplaceListing to local MarketplaceListing format if needed
-      const formattedListings = data.map(item => ({
+      const formattedListings = sourceData.map(item => ({
         id: String(item.id),
         title: item.title || '',
         description: item.description || '',
