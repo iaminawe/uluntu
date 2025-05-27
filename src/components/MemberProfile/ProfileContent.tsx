@@ -15,7 +15,32 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
   const resources = contributions?.resources || member.resources || [];
   const events = contributions?.events || member.events || [];
   const posts = contributions?.posts || member.posts || [];
-  const marketplaceListings = contributions?.marketplaceListings || member.marketplaceListings || [];
+  // Create specific types to handle marketplace listings
+  type BaseListing = { id: string; title: string; type: string; price: number; image: string; };
+  type ListingWithCreatedAt = BaseListing & { createdAt: string; };
+  type ListingWithDateAdded = BaseListing & { dateAdded: string; };
+  type MixedListing = BaseListing & Partial<{ createdAt: string; dateAdded: string; }>;
+
+  // Create a type guard for checking if a listing has createdAt property
+  const hasCreatedAt = (listing: MixedListing): listing is ListingWithCreatedAt => {
+    return typeof listing === 'object' && listing !== null && 'createdAt' in listing && typeof listing.createdAt === 'string';
+  };
+
+  // Create a type guard for checking if a listing has dateAdded property
+  const hasDateAdded = (listing: MixedListing): listing is ListingWithDateAdded => {
+    return typeof listing === 'object' && listing !== null && 'dateAdded' in listing && typeof listing.dateAdded === 'string';
+  };
+
+  // Adapt marketplace listings to match the expected structure with dateAdded
+  const marketplaceListings = (contributions?.marketplaceListings || member.marketplaceListings || []).map(listing => ({
+    ...listing,
+    // Map createdAt to dateAdded if needed
+    dateAdded: hasDateAdded(listing) ? listing.dateAdded : 
+               hasCreatedAt(listing) ? listing.createdAt : 
+               new Date().toISOString(),
+    // Ensure type is one of the expected values
+    type: (listing.type as string) || 'service'
+  }));
   const opportunities = contributions?.opportunities || member.opportunities || [];
   const achievements = member.achievements || [];
   return (
@@ -224,14 +249,27 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       {listing.title}
                     </h3>
                     <div className="p-1.5 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">
-                      {getTypeIcon(listing.type)}
+                      {getTypeIcon(listing.type as 'service' | 'product' | 'equipment')}
                     </div>
                   </div>
                   <p className="text-orange-600 dark:text-orange-400 font-medium">
                     ${listing.price}{listing.type === 'service' && '/hr'}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                    Listed {new Date(listing.createdAt).toLocaleDateString()}
+                    Listed {(() => {
+                      // Get the date string using a safer approach
+                      let dateStr = '';
+                      
+                      if ('dateAdded' in listing && typeof listing.dateAdded === 'string') {
+                        dateStr = listing.dateAdded;
+                      } else if ('createdAt' in listing && typeof listing.createdAt === 'string') {
+                        dateStr = (listing as any).createdAt;
+                      } else {
+                        dateStr = new Date().toISOString();
+                      }
+                      
+                      return new Date(dateStr).toLocaleDateString();
+                    })()}
                   </p>
                 </div>
               </Link>

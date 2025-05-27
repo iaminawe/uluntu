@@ -8,9 +8,10 @@ import MemberProfile from '../../components/MemberProfile';
 
 export default function DirectoryDetailPage() {
   const { id } = useParams();
-  const memberId = id ? parseInt(id) : 0;
+  // Store the original ID string - useMember expects a string ID
+  const memberIdString = id || '';
   
-  const { data: member, isLoading, error } = useMember(memberId);
+  const { data: member, isLoading, error } = useMember(memberIdString);
   
   if (isLoading) {
     return <LoadingState />;

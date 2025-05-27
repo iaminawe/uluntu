@@ -3,7 +3,7 @@ import { FormSelect } from '../../components/ui/Form';
 
 const OrganizerSelect: React.FC<OrganizerSelectProps> = ({ organizer, onOrganizerChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = parseInt(e.target.value);
+    const id = e.target.value; // Keep as string - no need to parse to number
     onOrganizerChange({ 
       id,
       name: getOrganizerName(id),
@@ -11,11 +11,11 @@ const OrganizerSelect: React.FC<OrganizerSelectProps> = ({ organizer, onOrganize
     });
   };
 
-  const getOrganizerName = (id: number): string => {
+  const getOrganizerName = (id: string): string => {
     const organizers = [
-      { id: 1, name: 'Sarah Johnson' },
-      { id: 2, name: 'Michael Chen' },
-      { id: 3, name: 'Emma Wilson' }
+      { id: '1', name: 'Sarah Johnson' },
+      { id: '2', name: 'Michael Chen' },
+      { id: '3', name: 'Emma Wilson' }
     ];
     return organizers.find(o => o.id === id)?.name || '';
   };

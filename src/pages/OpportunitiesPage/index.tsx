@@ -12,7 +12,31 @@ import {
 } from '../../components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useOpportunities, Opportunity as SupabaseOpportunity } from '../../hooks/useOpportunityQueries';
+import { useOpportunities } from '../../hooks/useOpportunityQueries';
+
+// Define the SupabaseOpportunity type based on the Supabase schema
+type SupabaseOpportunity = {
+  id: string;
+  title: string;
+  description: string | null;
+  organization: string | null;
+  location: string | null;
+  type: string | null;
+  remote: boolean | null;
+  image: string | null;
+  compensation: string | null;
+  deadline: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  featured: boolean | null;
+  status: string | null;
+  posted_by: string | null;
+  website: string | null;
+  contact_email: string | null;
+  benefits: string[] | null;
+  requirements: string[] | null;
+  responsibilities: string[] | null;
+};
 
 // Adapter function to map API opportunity data to the format expected by OpportunitiesList
 const mapToOpportunityListItem = (opportunity: SupabaseOpportunity): OpportunityListItem => {
@@ -62,25 +86,7 @@ const mapToOpportunityListItem = (opportunity: SupabaseOpportunity): Opportunity
   };
 };
 
-// Define Opportunity type based on migration plan
-interface Opportunity {
-  id: number;
-  title: string;
-  company: {
-    id: number;
-    name: string;
-    logo: string;
-  };
-  type: string; // Allow any string type from mock data
-  location: string;
-  remote: boolean;
-  description: string;
-  salary?: string;
-  postedDate: string;
-  deadline?: string;
-  status: string;
-  featured?: boolean;
-}
+// Note: We're using the SupabaseOpportunity type imported from '../../types'
 
 export default function OpportunitiesPage() {
   // State for filters from ActionBar
@@ -159,15 +165,15 @@ export default function OpportunitiesPage() {
     location: fallback.location,
     type: fallback.type,
     featured: fallback.featured || false,
-    benefits: [],
-    compensation: fallback.salary,
+    benefits: [] as string[] | null,
+    compensation: fallback.salary || null,
     contact_email: null,
     image: fallback.company.logo,
-    requirements: [],
-    responsibilities: [],
+    requirements: [] as string[] | null,
+    responsibilities: [] as string[] | null,
     posted_by: String(fallback.company.id),
     remote: fallback.remote,
-    status: fallback.status || 'open',
+    status: fallback.status || null,
     website: null
   }));
 
@@ -180,7 +186,9 @@ export default function OpportunitiesPage() {
   // Map API opportunities to the format expected by OpportunitiesList
   const mappedOpportunities = opportunities.map(opportunity => {
     console.log('OpportunitiesPage - Mapping opportunity:', opportunity);
-    const mapped = mapToOpportunityListItem(opportunity);
+    // Ensure opportunity is treated as SupabaseOpportunity
+    const supabaseOpportunity = opportunity as SupabaseOpportunity;
+    const mapped = mapToOpportunityListItem(supabaseOpportunity);
     console.log('OpportunitiesPage - Mapped opportunity:', mapped);
     return mapped;
   });

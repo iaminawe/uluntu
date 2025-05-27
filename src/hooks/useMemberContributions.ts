@@ -3,18 +3,57 @@ import { useMember } from './useQueries';
 
 // Types for member contributions
 export interface MemberContributions {
-  groups: any[];
-  events: any[];
-  resources: any[];
-  posts: any[];
-  marketplaceListings: any[];
-  opportunities: any[];
+  groups: {
+    id: string;
+    name: string;
+    role: string;
+    joinedDate: string;
+  }[];
+  events: {
+    id: string;
+    title: string;
+    date: string;
+    presentation: string;
+  }[];
+  resources: {
+    id: string;
+    title: string;
+    type: string;
+    date: string;
+    url: string;
+  }[];
+  posts: {
+    id: string;
+    title: string;
+    excerpt?: string;
+    group: {
+      id: string;
+      name: string;
+    };
+    date: string;
+  }[];
+  marketplaceListings: {
+    id: string;
+    title: string;
+    type: string;
+    price: number;
+    image: string;
+    createdAt: string;
+  }[];
+  opportunities: {
+    id: string;
+    title: string;
+    type: string;
+    location: string;
+    remote?: boolean;
+    description: string;
+  }[];
 }
 
 /**
  * Hook to fetch all contributions for a member
  */
-export function useMemberContributions(memberId: number) {
+export function useMemberContributions(memberId: string) {
   // First fetch the member data
   const { data: member } = useMember(memberId);
 
@@ -29,23 +68,23 @@ export function useMemberContributions(memberId: number) {
       // In a real application, we would make API calls to fetch related content from different endpoints
       // For now, we'll simulate this by fetching from various sources
       
-      // Get member groups
-      const groups = await fetchMemberGroups(memberId);
+      // Get member groups - ignoring memberId in mock implementation
+      const groups = await fetchMemberGroups();
       
-      // Get member events
-      const events = await fetchMemberEvents(memberId);
+      // Get member events - ignoring memberId in mock implementation
+      const events = await fetchMemberEvents();
       
-      // Get member resources
-      const resources = await fetchMemberResources(memberId);
+      // Get member resources - ignoring memberId in mock implementation
+      const resources = await fetchMemberResources();
       
-      // Get member posts
-      const posts = await fetchMemberPosts(memberId);
+      // Get member posts - ignoring memberId in mock implementation
+      const posts = await fetchMemberPosts();
       
-      // Get member marketplace listings
-      const marketplaceListings = await fetchMemberMarketplaceListings(memberId);
+      // Get member marketplace listings - ignoring memberId in mock implementation
+      const marketplaceListings = await fetchMemberMarketplaceListings();
       
-      // Get member opportunities
-      const opportunities = await fetchMemberOpportunities(memberId);
+      // Get member opportunities - ignoring memberId in mock implementation
+      const opportunities = await fetchMemberOpportunities();
       
       const contributions: MemberContributions = {
         groups,
@@ -65,7 +104,7 @@ export function useMemberContributions(memberId: number) {
 /**
  * Hook to fetch a specific type of contribution for a member
  */
-export function useMemberContributionsByType(memberId: number, type: keyof MemberContributions) {
+export function useMemberContributionsByType(memberId: string, type: keyof MemberContributions) {
   const { data: contributions, isLoading, error } = useMemberContributions(memberId);
   
   return {
@@ -78,26 +117,30 @@ export function useMemberContributionsByType(memberId: number, type: keyof Membe
 // Mock functions to simulate fetching member contributions from different sources
 // In a real app, these would be API calls to different endpoints
 
-async function fetchMemberGroups(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the groups for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberGroups() {
+  // In a real implementation, memberId would be used to filter groups
+  // For this mock implementation, we've removed the parameter as it's not being used
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 100));
   
   // Return mock data
   return [
     {
-      id: 1,
+      id: '1',
       name: 'AI Enthusiasts Kootenay',
       role: 'admin',
       joinedDate: '2024-01-15'
     },
     {
-      id: 2,
+      id: '2',
       name: 'Kootenay Tech Organizers',
       role: 'member',
       joinedDate: '2024-02-01'
     },
     {
-      id: 3,
+      id: '3',
       name: 'Nelson Web Developers',
       role: 'member',
       joinedDate: '2024-03-10'
@@ -105,24 +148,28 @@ async function fetchMemberGroups(_memberId: number) {
   ];
 }
 
-async function fetchMemberEvents(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the events for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberEvents() {
+  // In a real implementation, memberId would be used to filter events
+  // For this mock implementation, we've removed the parameter as it's not being used
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
     {
-      id: 1,
+      id: '1',
       title: 'AI Ethics Workshop',
       date: '2024-02-15',
       presentation: 'Ethics in Healthcare AI'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Machine Learning Study Group',
       date: '2024-03-01',
       presentation: 'Introduction to Neural Networks'
     },
     {
-      id: 3,
+      id: '3',
       title: 'Kootenay Tech Meetup',
       date: '2024-04-10',
       presentation: 'Building Community Tech Ecosystems'
@@ -130,26 +177,30 @@ async function fetchMemberEvents(_memberId: number) {
   ];
 }
 
-async function fetchMemberResources(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the resources for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberResources() {
+  // In a real implementation, memberId would be used to filter resources
+  // For this mock implementation, we've removed the parameter as it's not being used
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
     {
-      id: 1,
+      id: '1',
       title: 'Getting Started with AI',
       type: 'document',
       date: '2024-02-01',
       url: 'https://example.com/ai-guide.pdf'
     },
     {
-      id: 2,
+      id: '2',
       title: 'ML Workshop Slides',
       type: 'presentation',
       date: '2024-03-01',
       url: 'https://example.com/ml-slides.pptx'
     },
     {
-      id: 3,
+      id: '3',
       title: 'Web Development Best Practices',
       type: 'article',
       date: '2024-03-15',
@@ -158,36 +209,40 @@ async function fetchMemberResources(_memberId: number) {
   ];
 }
 
-async function fetchMemberPosts(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the posts for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberPosts() {
+  // In a real implementation, memberId would be used to filter posts
+  // For this mock implementation, we've removed the parameter as it's not being used
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
     {
-      id: 1,
+      id: '1',
       title: 'Recap: February AI Ethics Workshop',
       excerpt: 'A summary of our recent workshop on AI ethics and its implications for healthcare applications.',
       group: {
-        id: 1,
+        id: '1',
         name: 'AI Enthusiasts Kootenay'
       },
       date: '2024-02-16'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Announcing the Kootenay Tech Conference',
       excerpt: 'We are excited to announce our first annual tech conference happening this summer in Nelson!',
       group: {
-        id: 2,
+        id: '2',
         name: 'Kootenay Tech Organizers'
       },
       date: '2024-03-05'
     },
     {
-      id: 3,
+      id: '3',
       title: 'Web Accessibility Guidelines for 2024',
       excerpt: 'Updated guidelines for making your web applications accessible to all users.',
       group: {
-        id: 3,
+        id: '3',
         name: 'Nelson Web Developers'
       },
       date: '2024-03-20'
@@ -195,12 +250,16 @@ async function fetchMemberPosts(_memberId: number) {
   ];
 }
 
-async function fetchMemberMarketplaceListings(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the marketplace listings for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberMarketplaceListings() {
+  // In a real implementation, memberId would be used to filter listings
+  // For this mock implementation, we've removed the parameter as it's not being used
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
     {
-      id: 1,
+      id: '1',
       title: 'Web Development Services',
       type: 'service',
       price: 75,
@@ -208,7 +267,7 @@ async function fetchMemberMarketplaceListings(_memberId: number) {
       createdAt: '2025-03-14'
     },
     {
-      id: 2,
+      id: '2',
       title: 'MacBook Pro 16" M1 Pro',
       type: 'equipment',
       price: 2000,
@@ -216,7 +275,7 @@ async function fetchMemberMarketplaceListings(_memberId: number) {
       createdAt: '2025-03-15'
     },
     {
-      id: 3,
+      id: '3',
       title: 'AI Development Workshop',
       type: 'event',
       price: 50,
@@ -226,12 +285,16 @@ async function fetchMemberMarketplaceListings(_memberId: number) {
   ];
 }
 
-async function fetchMemberOpportunities(_memberId: number) {
+// In a real implementation, we would use memberId to fetch only the opportunities for this member
+// The memberId parameter has been removed in this mock implementation
+async function fetchMemberOpportunities() {
+  // In a real implementation, memberId would be used to filter opportunities
+  // For this mock implementation, we've removed the parameter as it's not being used
   await new Promise(resolve => setTimeout(resolve, 100));
   
   return [
     {
-      id: 1,
+      id: '1',
       title: 'Frontend Developer Needed',
       type: 'contract',
       location: 'Nelson, BC',
@@ -239,7 +302,7 @@ async function fetchMemberOpportunities(_memberId: number) {
       description: 'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Tech Mentor for Youth Program',
       type: 'volunteer',
       location: 'Kootenay Region',

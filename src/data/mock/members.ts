@@ -1,4 +1,4 @@
-import { BaseEntity, SocialLinks } from './types';
+import { BaseEntity, SocialLinks, ContentStatus } from './types';
 
 // Member interface
 export interface Member extends BaseEntity {
@@ -12,12 +12,14 @@ export interface Member extends BaseEntity {
   skills?: string[];
   joinDate: string;
   social?: SocialLinks;
+  status: ContentStatus;
+  featured?: boolean;
 }
 
 // Members data
 export const members: Member[] = [
   {
-    id: 1,
+    id: '1',
     name: 'Sarah Johnson',
     title: 'AI Research Lead',
     company: 'Mountain Tech Solutions',
@@ -27,15 +29,16 @@ export const members: Member[] = [
     skills: ['Machine Learning', 'Python', 'TensorFlow', 'Research'],
     intro: 'Leading the charge in AI research and innovation from the heart of the Kootenays.',
     joinDate: '2023-05-15',
-    status: 'approved',
+    status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/sarahjohnson',
       twitter: 'https://twitter.com/sarahjohnson',
       github: 'https://github.com/sarahjohnson'
-    }
+    },
+    featured: true,
   },
   {
-    id: 2,
+    id: '2',
     name: 'Michael Chen',
     title: 'ML Engineer',
     company: 'Kootenay AI Solutions',
@@ -45,14 +48,15 @@ export const members: Member[] = [
     skills: ['Computer Vision', 'NLP', 'PyTorch', 'AWS'],
     intro: 'Building intelligent systems that solve real-world problems in the Kootenays.',
     joinDate: '2023-06-02',
-    status: 'approved',
+    status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/michaelchen',
       github: 'https://github.com/michaelchen'
-    }
+    },
+    featured: false,
   },
   {
-    id: 3,
+    id: '3',
     name: 'Emma Wilson',
     title: 'Data Scientist',
     company: 'Kootenay Data Insights',
@@ -62,14 +66,15 @@ export const members: Member[] = [
     skills: ['Data Analysis', 'R', 'Python', 'Statistical Modeling'],
     intro: 'Using data to drive environmental conservation efforts in the Kootenays.',
     joinDate: '2023-07-10',
-    status: 'approved',
+    status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/emmawilson',
       twitter: 'https://twitter.com/emmawilson'
-    }
+    },
+    featured: true,
   },
   {
-    id: 4,
+    id: '4',
     name: 'David Park',
     title: 'Frontend Developer',
     company: 'Mountain Web Works',
@@ -79,15 +84,16 @@ export const members: Member[] = [
     skills: ['React', 'TypeScript', 'CSS', 'Accessibility'],
     intro: 'Crafting digital experiences that are both beautiful and inclusive.',
     joinDate: '2023-08-15',
-    status: 'approved',
+    status: 'published' as ContentStatus,
     social: {
       linkedin: 'https://linkedin.com/in/davidpark',
       github: 'https://github.com/davidpark',
       website: 'https://davidpark.dev'
-    }
+    },
+    featured: false,
   },
   {
-    id: 5,
+    id: '5',
     name: 'Olivia Martinez',
     title: 'UX/UI Designer',
     company: 'Kootenay Creative',
@@ -97,7 +103,7 @@ export const members: Member[] = [
     skills: ['UX Research', 'UI Design', 'Figma', 'User Testing'],
     intro: 'Creating intuitive and delightful user experiences for digital products.',
     joinDate: '2023-09-05',
-    status: 'approved',
+    status: 'published' as ContentStatus,
     featured: true,
     social: {
       linkedin: 'https://linkedin.com/in/oliviamartinez',

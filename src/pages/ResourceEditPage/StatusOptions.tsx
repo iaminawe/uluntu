@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import { FormSelect, FormCheckbox } from '../../components/ui/Form';
 import { StatusOptionsProps } from './types';
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../data/mock/types';
 
 const StatusOptions: React.FC<StatusOptionsProps> = ({ 
   formData, 
@@ -9,7 +9,7 @@ const StatusOptions: React.FC<StatusOptionsProps> = ({
 }) => {
   // Create a custom handler for the status change
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, status: e.target.value as EntityStatus }));
+    setFormData(prev => ({ ...prev, status: e.target.value as ContentStatus }));
   };
   
   // We're using our custom handlers, so we can remove the handleChange parameter from the props
@@ -23,7 +23,7 @@ const StatusOptions: React.FC<StatusOptionsProps> = ({
     { value: 'draft', label: 'Draft' },
     { value: 'published', label: 'Published' },
     { value: 'archived', label: 'Archived' }
-  ] as { value: EntityStatus, label: string }[];
+  ] as { value: ContentStatus, label: string }[];
   
   return (
     <div className="space-y-4 border-t border-slate-200 dark:border-slate-700 pt-4">

@@ -1,20 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ResourceCardProps } from './types';
-import { FileText, Film, Book, File } from 'lucide-react';
+import { FileText, Film, File, BookOpen, Wrench, BookOpen as ArticleIcon } from 'lucide-react';
+import { Resource } from '../../types';
+
+interface ResourceCardProps {
+  resource: Resource;
+}
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
   // Function to get appropriate icon based on resource type
   const getResourceIcon = () => {
     switch (resource.type) {
-      case 'article':
+      case 'document':
         return <FileText className="h-5 w-5" />;
       case 'video':
         return <Film className="h-5 w-5" />;
       case 'tool':
-        return <File className="h-5 w-5" />;
+        return <Wrench className="h-5 w-5" />;
       case 'guide':
-        return <Book className="h-5 w-5" />;
+        return <BookOpen className="h-5 w-5" />;
+      case 'article':
+        return <ArticleIcon className="h-5 w-5" />;
       default:
         return <File className="h-5 w-5" />;
     }
@@ -44,8 +50,13 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
         </p>
         
         <div className="flex items-center justify-between mt-auto text-xs text-slate-500 dark:text-slate-400">
-          <span>Added by {resource.contributor.name}</span>
-          <span>{new Date(resource.dateAdded).toLocaleDateString()}</span>
+          <span>Added by {resource.contributor?.name || 'Unknown'}</span>
+          <span>
+            {resource.dateAdded ? 
+              new Date(resource.dateAdded).toLocaleDateString() : 
+              'Unknown date'
+            }
+          </span>
         </div>
       </div>
     </Link>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Group, SAMPLE_GROUP } from './types';
+// Main type not needed since we're using the local Group type
+import { SAMPLE_GROUP, Group } from './types';
 import GroupHeader from './GroupHeader';
 import GroupContent from './GroupContent';
 
@@ -8,7 +9,9 @@ interface GroupDetailsProps {
 }
 
 const GroupDetails = ({ groupId: _groupId }: GroupDetailsProps) => {
-  const [group, _setGroup] = useState<Group>(SAMPLE_GROUP); // In a real app, fetch by ID
+  // Use the local Group type instead of the main Group type
+  // Prefix variables with underscore to indicate they are intentionally unused
+  const [group, _setGroup] = useState<Group>(SAMPLE_GROUP); // In a real app, fetch by ID and adapt
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { ResourceType } from './types';
+import { Resource } from '../../types';
+
+// Create a type alias for the Resource type property
+type ResourceTypeAlias = Resource['type'];
 
 interface ResourceModalProps {
   onClose: () => void;
@@ -10,7 +13,7 @@ const ResourceModal = ({ onClose }: ResourceModalProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'document' as ResourceType,
+    type: 'document' as ResourceTypeAlias,
     url: '',
     groupId: '',
     eventId: ''
@@ -87,9 +90,9 @@ const ResourceModal = ({ onClose }: ResourceModalProps) => {
               >
                 <option value="document">Document</option>
                 <option value="video">Video</option>
-                <option value="image">Image</option>
-                <option value="link">Link</option>
-                <option value="presentation">Presentation</option>
+                <option value="guide">Guide</option>
+                <option value="tool">Tool</option>
+                <option value="article">Article</option>
               </select>
             </div>
             <div>

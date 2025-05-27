@@ -1,9 +1,14 @@
 // Types for Opportunities components
+import { Opportunity as MainOpportunity } from '../../types';
+import { ContentStatus } from '../../types/common';
+import { nullToUndefined } from './opportunityUtils';
 
+// Define types specific to the OpportunitiesList component
 export type OpportunityType = 'full-time' | 'part-time' | 'contract' | 'volunteer' | 'internship';
 export type OpportunityCategory = 'engineering' | 'design' | 'management' | 'marketing' | 'sales' | 'support' | 'other';
 export type ExperienceLevel = 'entry' | 'mid' | 'senior' | 'lead' | 'executive';
 
+// Define a local Company interface for the component
 export interface Company {
   id: number;
   name: string;
@@ -11,6 +16,7 @@ export interface Company {
   location?: string;
 }
 
+// Define a local Opportunity interface that extends the main application's Opportunity type
 export interface Opportunity {
   id: number;
   title: string;
@@ -28,7 +34,52 @@ export interface Opportunity {
   deadline?: string;
   applyUrl?: string;
   featured?: boolean;
+  status?: ContentStatus;
 }
+
+// Adapter function to convert from main Opportunity type to local Opportunity type
+export const adaptMainOpportunityToLocal = (opportunity: MainOpportunity): Partial<Opportunity> => {
+  return {
+    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : opportunity.id as number,
+    title: opportunity.title,
+    company: {
+      id: typeof opportunity.company.id === 'string' ? parseInt(opportunity.company.id) : opportunity.company.id as number,
+      name: opportunity.company.name,
+      logo: opportunity.company.logo
+    },
+    type: opportunity.type as OpportunityType,
+    location: opportunity.location,
+    remote: opportunity.remote,
+    description: opportunity.description,
+    salary: opportunity.salary,
+    postedDate: opportunity.postedDate,
+    deadline: opportunity.deadline,
+    featured: nullToUndefined(opportunity.featured),
+    status: opportunity.status
+  };
+};
+
+// Adapter function to convert from local Opportunity type to main Opportunity type
+export const adaptLocalOpportunityToMain = (opportunity: Opportunity): Partial<MainOpportunity> => {
+  return {
+    id: opportunity.id.toString(),
+    title: opportunity.title,
+    company: {
+      id: opportunity.company.id.toString(),
+      name: opportunity.company.name,
+      logo: opportunity.company.logo
+    },
+    type: opportunity.type as MainOpportunity['type'],
+    location: opportunity.location,
+    remote: opportunity.remote,
+    description: opportunity.description,
+    salary: opportunity.salary,
+    postedDate: opportunity.postedDate,
+    deadline: opportunity.deadline,
+    featured: nullToUndefined(opportunity.featured),
+    status: opportunity.status
+  };
+};
 
 export interface OpportunitiesListProps {
   initialCategory?: OpportunityCategory;

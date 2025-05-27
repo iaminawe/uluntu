@@ -1,5 +1,8 @@
 // Types for UpcomingEvents component
-import { Event } from '../../data/mock/mockData';
+import { Event as MainEvent } from '../../types';
+
+// Use the main application's Event type
+export type Event = MainEvent;
 
 export interface UpcomingEventsProps {
   title?: string;

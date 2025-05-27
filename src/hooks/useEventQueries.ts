@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from '@tanstack/react-query';
 import { eventsApi, EventInput as EventsApiEventInput } from '../api/eventsApi';
 import { Database } from '../types/supabase';
-import mockData from '../data/mock/mockData';
+import { Event as FrontendEvent } from '../types'; // Renamed to avoid conflict with mock Event
+import { events as mockEvents, Event as MockEvent } from '../data/mock/events';
 
 // Event specific types
 export interface EventFilters {
@@ -11,54 +12,74 @@ export interface EventFilters {
 }
 
 // Events hooks
-export function useEvents(): UseQueryResult<Database['public']['Tables']['events']['Row'][], Error> {
+export function useEvents(): UseQueryResult<FrontendEvent[], Error> {
   const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
-  return useQuery<Database['public']['Tables']['events']['Row'][], Error>({
+  return useQuery<FrontendEvent[], Error>({
     queryKey: ['events', 'all', useSupabase ? 'supabase' : 'mock'],
-    queryFn: () => {
+    queryFn: async () => {
       if (useSupabase) {
-        return eventsApi.getAll();
+        // Use non-null assertion as we know the API will always return an array (even if empty)
+        const events = await eventsApi.getAll();
+        return events as FrontendEvent[];
       } else {
-        return Promise.resolve(mockData.events || []);
+        // Ensure we have a valid array, even if mockEvents is undefined
+        return Promise.resolve((mockEvents || []) as FrontendEvent[]);
       }
     },
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<Database['public']['Tables']['events']['Row'][], Error> {
+export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<FrontendEvent[], Error> {
   const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
-  return useQuery<Database['public']['Tables']['events']['Row'][], Error>({
+  return useQuery<FrontendEvent[], Error>({
     queryKey: ['events', 'filters', filters, useSupabase ? 'supabase' : 'mock'],
-    queryFn: () => {
+    queryFn: async () => {
       if (useSupabase) {
-        return eventsApi.getAll(filters);
+        const events = await eventsApi.getAll(filters);
+        return events as FrontendEvent[];
       } else {
-        let filteredEvents = mockData.events || [];
+        // Ensure we have a valid array, even if mockEvents is undefined
+        let filteredEvents = mockEvents || [];
+        
+        // Apply search filter
         if (filters?.search) {
-          filteredEvents = filteredEvents.filter((e: Database['public']['Tables']['events']['Row']) => 
-            e.title.toLowerCase().includes(filters.search!.toLowerCase())
+          const searchTerm = filters.search.toLowerCase();
+          filteredEvents = filteredEvents.filter((e: MockEvent) =>
+            (e.title || '').toLowerCase().includes(searchTerm)
           );
         }
+        
+        // Apply types filter
         if (filters?.types && filters.types.length > 0) {
-          filteredEvents = filteredEvents.filter((e: Database['public']['Tables']['events']['Row']) => 
-            filters.types!.includes(e.type as 'in-person' | 'online' | 'hybrid')
-          );
+          filteredEvents = filteredEvents.filter((e: MockEvent) => {
+            // Safely handle type field with validation
+            const eventType = e.type || '';
+            // Check if the event type is included in the filter types
+            // Use optional chaining and nullish coalescing to safely access filters.types
+            return filters.types?.some(type => type === eventType) ?? false;
+          });
         }
+        
+        // Apply date range filter
         if (filters?.dateRange === 'upcoming') {
           const now = new Date().toISOString();
-          filteredEvents = filteredEvents.filter((e: Database['public']['Tables']['events']['Row']) => e.date >= now);
+          filteredEvents = filteredEvents.filter((e: MockEvent) => 
+            // Safely handle date comparison
+            e.date && e.date >= now
+          );
         }
-        return Promise.resolve(filteredEvents);
+        
+        return Promise.resolve(filteredEvents as FrontendEvent[]);
       }
     },
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useEvent(id?: string): UseQueryResult<Database['public']['Tables']['events']['Row'] | undefined, Error> {
+export function useEvent(id?: string): UseQueryResult<FrontendEvent | undefined, Error> {
   const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
-  return useQuery<Database['public']['Tables']['events']['Row'] | undefined, Error>({
+  return useQuery<FrontendEvent | undefined, Error>({
     queryKey: ['events', id, useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!id) {
@@ -66,10 +87,18 @@ export function useEvent(id?: string): UseQueryResult<Database['public']['Tables
       }
 
       if (useSupabase) {
-        return eventsApi.getById(id);
+        try {
+          const event = await eventsApi.getById(id);
+          return event || undefined;
+        } catch (error) {
+          console.error(`Error fetching event with ID ${id}:`, error);
+          throw error;
+        }
       } else {
-        const event = mockData.events?.find((e: Database['public']['Tables']['events']['Row']) => e.id.toString() === id) || null; // Ensure ID types match if mock ID is number
-        return Promise.resolve(event as Database['public']['Tables']['events']['Row'] | null);
+        // Safely find event in mock data
+        const events = mockEvents || [];
+        const event = events.find((e: MockEvent) => String(e.id) === id);
+        return event ? (event as FrontendEvent) : undefined;
       }
     },
     enabled: !!id,
@@ -78,15 +107,15 @@ export function useEvent(id?: string): UseQueryResult<Database['public']['Tables
 }
 
 export function useCreateEvent(): UseMutationResult<
-  Database['public']['Tables']['events']['Row'] | null,
+  FrontendEvent | null,
   Error,
-  Database['public']['Tables']['events']['Insert'],
+  Database['public']['Tables']['events']['Insert'], // Input to mutationFn is still Supabase Insert type
   unknown
 > {
   const queryClient = useQueryClient();
   const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
 
-  return useMutation<Database['public']['Tables']['events']['Row'] | null, Error, Database['public']['Tables']['events']['Insert']>({
+  return useMutation<FrontendEvent | null, Error, Database['public']['Tables']['events']['Insert']>({
     mutationFn: (eventData: Database['public']['Tables']['events']['Insert']) => {
       if (useSupabase) {
         const apiEventData: EventsApiEventInput = {
@@ -108,19 +137,32 @@ export function useCreateEvent(): UseMutationResult<
         return eventsApi.create(apiEventData);
       } else {
         console.log('Mock creating event:', eventData);
-        const newMockEvent = {
-          ...eventData,
+        const newMockEvent: FrontendEvent = {
+          // Map fields from eventData (Supabase Insert type) to FrontendEvent
           id: `mock_${Math.random().toString(36).substr(2, 9)}`,
           created_at: new Date().toISOString(),
-          description: eventData.description || '',
           title: eventData.title || 'Mock Event',
           date: eventData.date || new Date().toISOString(),
+          description: eventData.description || '',
           location: eventData.location || 'Mock Location',
-          type: eventData.type || 'online',
-          organizer_id: eventData.organizer_id || 'mock_organizer_id',
-        } as Database['public']['Tables']['events']['Row'];
-        // Add to mockData.events if you want to persist mock changes in memory for the session
-        // mockData.events.push(newMockEvent);
+          image: eventData.image || '', // Assuming image is a string, adjust if needed
+          type: (eventData.type as FrontendEvent['type']) || 'online',
+          organizer: { id: eventData.organizer_id || 'mock_organizer_id', name: 'Mock Organizer', image: '' }, // Mock organizer details
+          // Optional fields - map if present in eventData or provide defaults
+          endDate: eventData.end_date === null ? undefined : eventData.end_date,
+          address: eventData.address === null ? undefined : eventData.address,
+          latitude: undefined, // Or some mock value
+          longitude: undefined, // Or some mock value
+          max_attendees: eventData.max_attendees === null ? undefined : eventData.max_attendees,
+          url: eventData.url === null ? undefined : eventData.url,
+          group_id: eventData.group_id === null ? undefined : eventData.group_id,
+          status: (eventData.status as FrontendEvent['status']) || 'published',
+          featured: eventData.featured === null ? undefined : eventData.featured,
+          // sessions and attendees would typically be empty or mocked for a new event
+          sessions: [],
+          attendees: 0,
+        };
+        // mockEvents.push(newMockEvent); // If you have a mutable mockEvents array
         return Promise.resolve(newMockEvent);
       }
     },
@@ -135,26 +177,44 @@ export function useCreateEvent(): UseMutationResult<
 }
 
 export function useUpdateEvent(): UseMutationResult<
-  Database['public']['Tables']['events']['Row'] | null,
+  FrontendEvent | null,
   Error,
-  { id: string; data: Partial<Database['public']['Tables']['events']['Update']> },
+  { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }, // Input to mutationFn is still Supabase Update type
   unknown
 > {
   const queryClient = useQueryClient();
   const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
 
-  return useMutation<Database['public']['Tables']['events']['Row'] | null, Error, { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }>({
+  return useMutation<FrontendEvent | null, Error, { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }>({
     mutationFn: ({ id, data }: { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }) => {
       if (useSupabase) {
-        return eventsApi.update(id, data);
+        return eventsApi.update(id, data as EventsApiEventInput); // Cast because eventsApi.update expects Partial<EventInput>
       } else {
         console.log('Mock updating event:', id, data);
-        // const eventIndex = mockData.events?.findIndex(e => e.id.toString() === id);
-        // if (eventIndex !== -1 && mockData.events) {
-        //   mockData.events[eventIndex] = { ...mockData.events[eventIndex], ...data } as Database['public']['Tables']['events']['Row'];
-        //   return Promise.resolve(mockData.events[eventIndex]);
-        // }
-        return Promise.resolve(null); // Or find and return the first item for simplicity if not managing state
+        const eventIndex = mockEvents?.findIndex(e => e.id.toString() === id);
+        if (eventIndex !== -1 && mockEvents && mockEvents[eventIndex]) {
+          // Create a new object for the updated event to ensure type compatibility
+          const updatedMockEvent: FrontendEvent = {
+            ...(mockEvents[eventIndex] as FrontendEvent), // Start with existing FrontendEvent fields
+            ...(data.title && { title: data.title }),
+            ...(data.description && { description: data.description }),
+            ...(data.date && { date: data.date }),
+            ...(data.end_date !== undefined && { endDate: data.end_date === null ? undefined : data.end_date }),
+            ...(data.location && { location: data.location }),
+            ...(data.address !== undefined && { address: data.address === null ? undefined : data.address }),
+            ...(data.image && { image: data.image }),
+            ...(data.type && { type: data.type as FrontendEvent['type'] }),
+            ...(data.url !== undefined && { url: data.url === null ? undefined : data.url }),
+            ...(data.organizer_id && { organizer: { ...(mockEvents[eventIndex] as FrontendEvent).organizer, id: data.organizer_id } }),
+            ...(data.group_id !== undefined && { group_id: data.group_id === null ? undefined : data.group_id }),
+            ...(data.max_attendees !== undefined && { max_attendees: data.max_attendees === null ? undefined : data.max_attendees }),
+            ...(data.status && { status: data.status as FrontendEvent['status'] }),
+            ...(data.featured !== undefined && { featured: data.featured === null ? undefined : data.featured }),
+          };
+          // mockEvents[eventIndex] = updatedMockEvent; // If mutable
+          return Promise.resolve(updatedMockEvent);
+        }
+        return Promise.resolve(null);
       }
     },
     onSuccess: (_data, variables) => {
@@ -181,9 +241,12 @@ export function useDeleteEvent(): UseMutationResult<
         // if (index > -1 && mockData.events) {
         //   mockData.events.splice(index, 1);
         // }
-        return Promise.resolve(); // Ensure void promise for mock
+        // Must return Promise<void>, not Promise<boolean>
+        return Promise.resolve();
       }
-      return eventsApi.delete(id); // This already returns Promise<void>
+      // Call the API and make sure to return void
+      await eventsApi.delete(id);
+      return Promise.resolve();
     },
     onSuccess: (_data, id) => {
       const queryPrefix = useSupabase ? 'supabase' : 'mock';

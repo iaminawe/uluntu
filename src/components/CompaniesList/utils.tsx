@@ -11,7 +11,7 @@ export const yearsActive = (foundedYear: string): string => {
 };
 
 // Format employee count
-export const formatEmployeeCount = (employees?: number[]): string => {
+export const formatEmployeeCount = (employees?: string[]): string => {
   if (!employees) return 'No team members';
   
   const count = employees.length;

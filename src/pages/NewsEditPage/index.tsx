@@ -9,7 +9,7 @@ import FormActions from './FormActions';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../types/common';
 
 const initialFormData: FormData = {
   title: '',
@@ -18,14 +18,15 @@ const initialFormData: FormData = {
   image: '',
   tags: [],
   authorId: 1, // Default author ID
-  status: 'draft' as EntityStatus, // Default status
+  status: 'draft' as ContentStatus, // Default status
   featured: false // Default not featured
 };
 
 export default function NewsEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const articleId = id ? parseInt(id) : undefined;
+  // Use string ID for consistency - hooks have been updated to handle string IDs
+  const articleId = id || undefined;
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -49,8 +50,8 @@ export default function NewsEditPage() {
         content: article.content,
         image: article.image || '',
         tags: article.tags || [],
-        authorId: article.author.id || 1,
-        status: article.status || 'draft' as EntityStatus,
+        authorId: typeof article.author.id === 'string' ? parseInt(article.author.id, 10) : (typeof article.author.id === 'number' ? article.author.id : 1),
+        status: article.status || 'draft' as ContentStatus,
         featured: article.featured || false
       });
     }

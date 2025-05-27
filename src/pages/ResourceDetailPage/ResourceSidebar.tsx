@@ -21,20 +21,21 @@ const ResourceSidebar: React.FC<ResourceSidebarProps> = ({ resource, getTypeIcon
           <div>
             <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Added On</h4>
             <p className="text-slate-600 dark:text-slate-400">
-              {format(new Date(resource.createdAt), 'MMMM d, yyyy')}
+              {format(new Date(resource.dateAdded), 'MMMM d, yyyy')}
             </p>
           </div>
           
           <div>
             <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Added By</h4>
             <div className="flex items-center">
+              {/* Using a placeholder image since contributor might not have an image */}
               <img 
-                src={resource.createdBy.image} 
-                alt={resource.createdBy.name}
+                src={`https://ui-avatars.com/api/?name=${resource.contributor.name}&background=random`} 
+                alt={resource.contributor.name}
                 className="w-6 h-6 rounded-full mr-2" 
               />
               <span className="text-slate-600 dark:text-slate-400">
-                {resource.createdBy.name}
+                {resource.contributor.name}
               </span>
             </div>
           </div>

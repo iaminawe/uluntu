@@ -3,16 +3,16 @@ import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from './ListingCard';
 import Pagination from '../Pagination'; // Import Pagination
-import { 
-  Listing, 
-  MarketplaceListProps, 
-  FilterOptions 
+import {
+  MarketplaceListProps,
+  FilterOptions
 } from './types';
-import { 
-  filterListings, 
-  sortListingsByDate 
+import {
+  filterListings,
+  sortListingsByDate
 } from './utils';
 import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
+import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
 
 const LISTINGS_PER_PAGE = 9;
 
@@ -21,10 +21,10 @@ const MarketplaceList = ({
   initialSearch = '', 
   sellerId 
 }: MarketplaceListProps) => {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<MarketplaceListing[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Construct filters object based on props for useMarketplaceItemsWithFilters and local filtering
@@ -38,9 +38,9 @@ const MarketplaceList = ({
   }), [initialSearch, initialType]);
   
   const { data, isLoading, error: queryError } = useMarketplaceItemsWithFilters({
-    type: filters.type !== 'all' ? filters.type : undefined,
+    types: filters.type !== 'all' ? [filters.type] : undefined, // Use 'types' array instead of 'type' to match MarketplaceItemsQueryOptions
     search: filters.search || undefined,
-    sellerId: sellerId
+    seller_id: sellerId || undefined // Use seller_id to match MarketplaceItemsQueryOptions
   });
   
   useEffect(() => {
@@ -50,7 +50,28 @@ const MarketplaceList = ({
       setError('Failed to load marketplace listings. Please try again later.');
       setLoading(false);
     } else if (data) {
-      setListings(data);
+      // Convert from API MarketplaceListing to local MarketplaceListing format if needed
+      const formattedListings = data.map(item => ({
+        id: String(item.id),
+        title: item.title || '',
+        description: item.description || '',
+        type: (item.type as ListingType) || 'product',
+        price: typeof item.price === 'number' ? item.price : 0,
+        condition: item.condition as ListingCondition,
+        location: item.location || '',
+        tags: Array.isArray(item.tags) ? item.tags : [],
+        images: Array.isArray(item.images) ? item.images : [],
+        createdAt: item.createdAt || new Date().toISOString(),
+        seller: {
+          id: String(item.seller?.id || '0'),
+          name: 'Seller', // You may need to fetch seller info separately
+          image: '/placeholder-avatar.png'
+        },
+        status: item.status,
+        featured: item.featured
+      }));
+      
+      setListings(formattedListings);
       setLoading(false);
     }
   }, [data, isLoading, queryError]);
@@ -141,7 +162,10 @@ const MarketplaceList = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentListingsToDisplay.map(listing => (
-            <ListingCard key={listing.id} listing={listing} />
+            <ListingCard 
+              key={listing.id} 
+              listing={listing} 
+            />
           ))}
         </div>
       )}

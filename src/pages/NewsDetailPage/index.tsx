@@ -19,12 +19,13 @@ export default function NewsDetailPage() {
     data: article, 
     isLoading: articleLoading, 
     error: articleError 
-  } = useNewsArticle(articleId); // Pass 0 if articleId is undefined
+  } = useNewsArticle(articleId);
   
+  // Then use the article's tags for related articles
   const { 
     data: relatedArticles = [], 
     isLoading: relatedLoading 
-  } = useRelatedNewsArticles(articleId); // Pass 0 if articleId is undefined
+  } = useRelatedNewsArticles(articleId, article?.tags, 3)
 
   if (!articleId) {
     // Handle the case where articleId is not available after hooks have been called

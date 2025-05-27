@@ -1,7 +1,7 @@
 // Types for HomePage components
 
 export interface Member {
-  id: number;
+  id: string;
   name: string;
   title: string;
   company?: string;
@@ -20,7 +20,7 @@ export interface Member {
 }
 
 export interface Company {
-  id: number;
+  id: string;
   name: string;
   description: string;
   logo: string;
@@ -36,11 +36,11 @@ export interface Company {
     twitter?: string;
     github?: string;
   };
-  employees?: number[];
+  employees?: string[];
 }
 
 export interface Event {
-  id: number;
+  id: string;
   title: string;
   date: string;
   endDate?: string;
@@ -48,7 +48,7 @@ export interface Event {
   description: string;
   image: string;
   organizer: {
-    id: number;
+    id: string;
     name: string;
     image: string;
   };
@@ -59,7 +59,7 @@ export interface Event {
 }
 
 export interface GroupMember {
-  id: number;
+  id: string;
   name: string;
   image: string;
   role: 'admin' | 'member';
@@ -68,14 +68,14 @@ export interface GroupMember {
 }
 
 export interface Resource {
-  id: number;
+  id: string;
   title: string;
   type: string; // Simplified for now, expand as needed
   url: string;
 }
 
 export interface GroupPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   author: {
@@ -87,7 +87,7 @@ export interface GroupPost {
 }
 
 export interface Group {
-  id: number;
+  id: string;
   name: string;
   description: string;
   longDescription?: string;
@@ -120,4 +120,6 @@ export interface NewsArticle {
     image: string;
   };
   tags?: string[];
+  slug: string;
+  hero_image_alt?: string;
 }

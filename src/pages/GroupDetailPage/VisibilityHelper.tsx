@@ -27,10 +27,7 @@ export const getVisibilityLabel = (visibility?: 'open' | 'closed' | 'secret') =>
   }
 };
 
-const VisibilityHelper: React.FC<VisibilityHelperProps> = ({ 
-  getVisibilityIcon, 
-  getVisibilityLabel 
-}) => {
+const VisibilityHelper: React.FC<VisibilityHelperProps> = () => {
   return null; // This is a utility component, it doesn't render anything
 };
 

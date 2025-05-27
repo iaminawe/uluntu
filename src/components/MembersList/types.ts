@@ -1,31 +1,16 @@
 // Types for MembersList component
+import { Member as MainMember } from '../../types';
 
-export interface Member {
-  id: number;
-  name: string;
-  title: string;
-  image: string;
-  company?: string;
-  location?: string;
-  bio?: string;
-  intro?: string;
-  skills?: string[];
-  joinDate: string;
-  social?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-    website?: string;
-  };
-}
+// Use the main application's Member type directly
+export type Member = MainMember;
 
 export interface MembersListProps {
   initialSearch?: string;
   initialSkills?: string[];
-  companyId?: number;
+  companyId?: string;
   members?: Member[];
   loading?: boolean;
-  error?: any;
+  error?: Error | null;
 }
 
 export interface FilterOptions {
@@ -56,9 +41,10 @@ export const SKILL_OPTIONS = [
 // Sample member data - in a real application this would come from an API
 export const SAMPLE_MEMBERS: Member[] = [
   {
-    id: 1,
+    id: '1',
     name: 'Sarah Johnson',
     title: 'Senior Full Stack Developer',
+    status: 'published',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     company: 'Mountain Tech Solutions',
     location: 'Nelson, BC',
@@ -72,24 +58,26 @@ export const SAMPLE_MEMBERS: Member[] = [
     }
   },
   {
-    id: 2,
+    id: '2',
     name: 'Michael Chen',
     title: 'UX/UI Designer',
+    status: 'published',
     image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-    company: 'Creative Solutions',
-    location: 'Kelowna, BC',
-    bio: 'Passionate UX/UI designer focused on creating intuitive and accessible user experiences.',
-    skills: ['UI/UX', 'Figma', 'Design Systems', 'User Research'],
-    joinDate: '2023-01-10',
+    company: 'Kootenay Digital',
+    location: 'Nelson, BC',
+    bio: 'Michael is a UX/UI designer with a passion for creating intuitive and beautiful user experiences.',
+    skills: ['UI Design', 'UX Research', 'Figma', 'Adobe XD', 'Prototyping'],
+    joinDate: '2023-02-15',
     social: {
       linkedin: 'https://linkedin.com/in/michaelchen',
       twitter: 'https://twitter.com/michaelchen'
     }
   },
   {
-    id: 3,
+    id: '3',
     name: 'Emma Wilson',
     title: 'Data Scientist',
+    status: 'published',
     image: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
     company: 'Alpine Analytics',
     location: 'Trail, BC',
@@ -102,9 +90,10 @@ export const SAMPLE_MEMBERS: Member[] = [
     }
   },
   {
-    id: 4,
+    id: '4',
     name: 'David Thompson',
     title: 'DevOps Engineer',
+    status: 'published',
     image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
     company: 'Kootenay Cloud Services',
     location: 'Rossland, BC',
@@ -117,9 +106,10 @@ export const SAMPLE_MEMBERS: Member[] = [
     }
   },
   {
-    id: 5,
+    id: '5',
     name: 'Jessica Lee',
     title: 'Product Manager',
+    status: 'published',
     image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
     company: 'Mountain Tech Solutions',
     location: 'Nelson, BC',
@@ -132,9 +122,10 @@ export const SAMPLE_MEMBERS: Member[] = [
     }
   },
   {
-    id: 6,
+    id: '6',
     name: 'Robert Clark',
     title: 'Blockchain Developer',
+    status: 'published',
     image: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
     company: 'Digital Ledger Tech',
     location: 'Kelowna, BC',

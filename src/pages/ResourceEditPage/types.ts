@@ -1,12 +1,14 @@
 // Types for ResourceEditPage components
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../data/mock/types';
+import { Resource } from '../../types';
 
-export type ResourceType = 'document' | 'video' | 'image' | 'link' | 'presentation';
+// Use the type from the main application's Resource type
+export type ResourceType = Resource['type'];
 
 export interface FormData {
   title: string;
   description: string;
-  status: EntityStatus;
+  status: ContentStatus;
   featured: boolean;
   type: ResourceType;
   url: string;
@@ -29,7 +31,9 @@ export interface ResourceDetailsProps {
 export interface TagsInputProps {
   formData: FormData;
   handleChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
+  handleAddTag?: () => void;
+  handleRemoveTag?: (tagToRemove: string) => void;
 }
 
 export interface UrlInputProps {

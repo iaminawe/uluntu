@@ -28,11 +28,11 @@ const NewsArticlesList = ({
     isRefetching
   } = useNewsArticlesWithFilters({
     search: filters.search,
-    tags: filters.tags.length > 0 ? filters.tags : undefined
+    tag: filters.tags.length > 0 ? filters.tags[0] : undefined
   });
   
   // Extract articles from data or use empty array as fallback
-  const articles = data?.articles || [];
+  const articles = data || [];
 
   // Reset page when articles change (due to filter changes)
   useEffect(() => {

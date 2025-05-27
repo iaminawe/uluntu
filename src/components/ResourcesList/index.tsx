@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Resource } from '../../data/mock/mockData'; // Use Resource from mockData
+import { Resource } from '../../types';
 import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
 
 interface ResourcesListProps {
-  resources: Resource[]; // Resource from mockData
+  resources: Resource[];
 }
 
 const ResourcesList = ({ resources }: ResourcesListProps) => {
@@ -16,8 +16,8 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
   const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
 
-  // Update types to match those in mockData.Resource
-  const types: Resource['type'][] = ['document', 'video', 'article', 'guide', 'tool'];
+  // Define resource types based on the main application's Resource type
+  const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article'];
 
     // Existing filter logic remains the same
   const filteredResources = resources.filter(resource => {

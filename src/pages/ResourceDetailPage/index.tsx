@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { FileText, Video, Image, Link as LinkIcon, Presentation } from 'lucide-react';
+import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon } from 'lucide-react';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
@@ -9,53 +9,53 @@ import ResourceSidebar from './ResourceSidebar';
 import RelatedResources from './RelatedResources';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import { Resource, ResourceType } from './types';
+import { Resource } from '../../types';
 
 // This would normally come from a hook like useResource
 const SAMPLE_RESOURCE: Resource = {
-  id: 1,
+  id: '1',
   title: 'Introduction to AI Ethics',
   description: 'A comprehensive guide to ethical considerations in AI development. This resource covers important topics like bias in AI, privacy concerns, transparency in algorithms, and ethical guidelines for AI practitioners.',
-  type: 'document' as ResourceType,
+  type: 'document',
   url: 'https://example.com/ai-ethics-guide',
-  createdAt: '2024-03-01',
-  tags: ['AI', 'Ethics', 'Technology', 'Guidelines'],
-  createdBy: {
-    id: 1,
-    name: 'Sarah Johnson',
-    image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
-    title: 'AI Researcher',
-    bio: 'Specializing in ethical AI development and implementation.'
+  dateAdded: '2024-03-01',
+  contributor: {
+    id: '1',
+    name: 'Sarah Johnson'
   },
-  group: {
-    id: 1,
-    name: 'AI Enthusiasts Kootenay'
-  },
-  relatedResources: [
+  groupId: '1',
+  image: '/images/ai-ethics.jpg'
+};
+
+// Sample related resources that would normally come from a hook like useRelatedResources
+const RELATED_RESOURCES: Resource[] = [
     {
-      id: 2,
+      id: '2',
       title: 'Machine Learning Workshop Recording',
       description: 'Recording of our February workshop on practical ML applications.',
-      type: 'video' as ResourceType,
-      createdAt: '2024-02-15',
-      createdBy: {
-        name: 'Michael Chen',
-        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
-      }
+      type: 'video',
+      url: 'https://example.com/ml-workshop',
+      dateAdded: '2024-02-15',
+      contributor: {
+        id: '2',
+        name: 'Michael Chen'
+      },
+      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
     },
     {
-      id: 3,
+      id: '3',
       title: 'AI Ethics Presentation Slides',
       description: 'Slides from the recent AI ethics presentation at Kootenay Tech Meetup.',
-      type: 'presentation' as ResourceType,
-      createdAt: '2024-02-28',
-      createdBy: {
-        name: 'Emma Wilson',
-        image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
-      }
+      type: 'document',
+      url: 'https://example.com/ai-ethics-slides',
+      dateAdded: '2024-02-28',
+      contributor: {
+        id: '3',
+        name: 'Emma Wilson'
+      },
+      image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
     }
-  ]
-};
+  ];
 
 export default function ResourceDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -65,18 +65,18 @@ export default function ResourceDetailPage() {
   const isLoading = false;
   const error = null;
   
-  const getTypeIcon = (type: ResourceType) => {
+  const getTypeIcon = (type: Resource['type']) => {
     switch (type) {
       case 'document':
         return <FileText className="h-5 w-5" />;
       case 'video':
         return <Video className="h-5 w-5" />;
-      case 'image':
-        return <Image className="h-5 w-5" />;
-      case 'link':
-        return <LinkIcon className="h-5 w-5" />;
-      case 'presentation':
-        return <Presentation className="h-5 w-5" />;
+      case 'guide':
+        return <BookOpen className="h-5 w-5" />;
+      case 'tool':
+        return <Wrench className="h-5 w-5" />;
+      case 'article':
+        return <ArticleIcon className="h-5 w-5" />;
       default:
         return <FileText className="h-5 w-5" />;
     }
@@ -111,7 +111,7 @@ export default function ResourceDetailPage() {
                 />
                 
                 <RelatedResources 
-                  relatedResources={resource.relatedResources || []} 
+                  relatedResources={RELATED_RESOURCES} 
                   getTypeIcon={getTypeIcon} 
                 />
               </div>

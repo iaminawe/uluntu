@@ -13,8 +13,9 @@ interface MemberProfileProps {
 }
 
 const MemberProfile = ({ memberId }: MemberProfileProps) => {
-  const { data: member, isLoading: isMemberLoading, error: memberError } = useMember(parseInt(memberId));
-  const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(parseInt(memberId));
+  // Use memberId as string directly without parsing to number
+  const { data: member, isLoading: isMemberLoading, error: memberError } = useMember(memberId);
+  const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(memberId);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -52,7 +53,7 @@ const MemberProfile = ({ memberId }: MemberProfileProps) => {
   }
   
   // Convert the mock data Member to the ProfileMember type
-  const profileMember = mapMemberToProfileMember(member) as Member;
+  const profileMember = mapMemberToProfileMember(member);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

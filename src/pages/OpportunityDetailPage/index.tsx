@@ -10,11 +10,11 @@ import ApplySidebar from './ApplySidebar';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Opportunity } from './types';
-import { useOpportunity } from '../../hooks/useOpportunityQueries';
+// import { useOpportunity } from '../../hooks/useOpportunityQueries'; // Will use this in the real implementation
 
 // This would normally come from a hook like useOpportunity
 const SAMPLE_OPPORTUNITY: Opportunity = {
-  id: 1,
+  id: '1',
   title: 'Senior Full Stack Developer',
   description: 'Looking for an experienced developer to join our growing team. We are a fast-paced startup working on innovative solutions for the tech industry. The ideal candidate will have a strong background in modern web technologies and a passion for creating high-quality software.',
   type: 'job',

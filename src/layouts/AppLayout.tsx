@@ -3,7 +3,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ContentManagementPanel } from '../components/ContentEditor';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function AppLayout() {
   const { loading } = useAuth();

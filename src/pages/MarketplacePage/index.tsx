@@ -18,7 +18,7 @@ export default function MarketplacePage() {
   // Use the useMarketplaceItemsWithFilters hook to fetch filtered marketplace data
   const { data: marketplaceItems = [], isLoading, error } = useMarketplaceItemsWithFilters({
     search: searchTerm,
-    type: selectedType !== 'all' ? selectedType : undefined,
+    types: selectedType !== 'all' ? [selectedType] : undefined,
     condition: selectedCondition !== 'all' ? selectedCondition : undefined
   });
   

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Resource } from '../../data/mock/mockData'; // Use Resource from mockData
+import { Resource } from '../../types';
 import { getTypeIcon } from './utils';
 
 interface ResourceCardProps {
@@ -29,7 +29,11 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
 
         <div className="flex items-center mb-4">
           <span className="text-sm text-slate-600 dark:text-slate-300">
-            {resource.contributor.name} - {new Date(resource.dateAdded).toLocaleDateString()} // Use contributor and dateAdded
+            {resource.contributor?.name || 'Unknown'} - {
+              resource.dateAdded ? 
+                new Date(resource.dateAdded).toLocaleDateString() : 
+                'Unknown date'
+            }
           </span>
         </div>
 

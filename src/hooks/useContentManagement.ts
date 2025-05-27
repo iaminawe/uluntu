@@ -3,8 +3,8 @@ import {
   ContentManagementState, 
   Language, 
   ContentEditRequest, 
-  PageContent, 
-  ContentSection 
+  PageContent
+  // ContentSection - removed unused import
 } from '../types/content';
 import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../data/defaultContent';
 import { DEFAULT_LANGUAGE } from '../constants/languages';
@@ -90,8 +90,10 @@ export const useContentManagement = () => {
           ...updatedPage[request.field],
           [request.language]: request.content
         };
-      } else {
-        (updatedPage as any)[request.field] = request.content;
+      } else if (request.field) {
+        // Ensure field is not undefined before using as an index
+        // Use a type-safe approach instead of 'any'
+        (updatedPage as Record<string, unknown>)[request.field] = request.content;
       }
       
       updatedPage.lastModified = new Date().toISOString();
@@ -187,7 +189,8 @@ export const useContentManagement = () => {
           pages: { ...prev.pages, ...content.pages },
           sections: { ...prev.sections, ...content.sections }
         }));
-      } catch (error) {
+      } catch {
+        // Catch without parameter to avoid unused variable warnings
         setState(prev => ({ ...prev, error: 'Failed to import content' }));
       }
     };

@@ -1,62 +1,156 @@
-import { Member as MockMember } from '../data/mock/mockData';
-import { Member as ProfileMember, MemberGroup, MemberEvent, MemberResource, MemberPost, MarketplaceListing, MemberOpportunity, MemberAchievement } from '../components/MemberProfile/types';
+import { Database } from '../types/supabase';
+import { Member, SocialLinks, ContentStatus } from '../types'; // Added SocialLinks and ContentStatus
 
-/**
- * Adapter to convert from the mock data Member type to the profile component Member type
- */
-export function mapMemberToProfileMember(member: MockMember): Partial<ProfileMember> {
-  // Create empty arrays for all the collections that might not exist in the mock data
-  const groups: MemberGroup[] = [];
-  const events: MemberEvent[] = [];
-  const resources: MemberResource[] = [];
-  const posts: MemberPost[] = [];
-  const marketplaceListings: MarketplaceListing[] = [];
-  const opportunities: MemberOpportunity[] = [];
-  const achievements: MemberAchievement[] = [];
-  const organizations: { id: number; name: string; role: string }[] = [];
+type SupabaseMember = Database['public']['Tables']['members']['Row'];
 
-  // Map the basic properties
+export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
   return {
-    id: member.id,
-    name: member.name,
-    title: member.title || '',
-    bio: member.bio || '',
-    location: member.location || '',
-    image: member.image,
-    skills: member.skills || [],
-    organizations,
-    groups,
-    events,
-    resources,
-    posts,
-    marketplaceListings,
-    opportunities,
-    achievements,
-    website: member.social?.website || '',
-    socialLinks: member.social ? [
-      ...(member.social.linkedin ? [{ platform: 'LinkedIn', url: member.social.linkedin }] : []),
-      ...(member.social.twitter ? [{ platform: 'Twitter', url: member.social.twitter }] : []),
-      ...(member.social.github ? [{ platform: 'GitHub', url: member.social.github }] : []),
-      ...(member.social.website ? [{ platform: 'Website', url: member.social.website }] : [])
-    ] : [],
-    employmentStatus: 'freelance', // Default value
-    openToVolunteering: false, // Default value
-    arrivedInNelson: member.joinDate // Use joinDate as a fallback
+    id: dbMember.id,
+    name: dbMember.name,
+    title: dbMember.title || '',
+    company: undefined, // This would need to be populated from employment status or company relationships
+    location: dbMember.location || undefined,
+    image: dbMember.image || '/placeholder-avatar.png',
+    bio: dbMember.bio || undefined,
+    intro: dbMember.intro || undefined,
+    skills: [], // This would need to be populated from member_skills table
+    joinDate: dbMember.created_at || new Date().toISOString(),
+    social: dbMember.website ? { website: dbMember.website } : undefined,
+    status: (['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '') ? dbMember.status as ContentStatus : 'draft'), // Validate and cast
+    featured: dbMember.featured || false,
+    created_at: dbMember.created_at || new Date().toISOString()
   };
 }
 
-/**
- * Fetch member contributions from various sources and format them for the profile
- */
-export function getMemberContributions() {
-  // In a real application, this would make API calls to fetch related content
-  // For now, we'll return empty arrays
+export function adaptMemberToDatabase(member: Partial<Member>): Partial<SupabaseMember> {
   return {
-    groups: [],
-    events: [],
-    resources: [],
-    posts: [],
-    marketplaceListings: [],
-    opportunities: []
+    name: member.name,
+    title: member.title || undefined,
+    location: member.location || undefined,
+    image: member.image || undefined,
+    bio: member.bio || undefined,
+    intro: member.intro || undefined,
+    website: member.social?.website || undefined,
+    status: member.status || 'draft',
+    featured: member.featured || undefined
   };
+}
+
+// Profile-specific adapter function
+// Define a type that includes both Member from hooks and the main Member type
+type MemberLike = {
+  id: string;
+  name: string;
+  title?: string;
+  role?: string;
+  bio?: string;
+  location?: string;
+  image?: string;
+  skills?: string[];
+  joinDate?: string;
+  social?: Record<string, string>;
+  status?: ContentStatus;
+  created_at?: string;
+};
+
+export function mapMemberToProfileMember(member: MemberLike): import('../components/MemberProfile/types').Member {
+  return {
+    id: member.id,
+    name: member.name,
+    title: member.title || member.role || 'Member', // Map title from role if title is not available
+    bio: member.bio || '',
+    location: member.location || '',
+    image: member.image || '/placeholder-avatar.png',
+    skills: member.skills || [],
+    joinDate: member.joinDate || member.created_at || new Date().toISOString(), // Pass through from MainMember with fallback
+    status: member.status || 'published' as ContentStatus,     // Pass through from MainMember with default
+    organizations: [], // TODO: Populate from relationships
+    groups: [], // TODO: Populate from relationships
+    events: [], // TODO: Populate from relationships
+    resources: [], // TODO: Populate from relationships
+    posts: [], // TODO: Populate from relationships
+    marketplaceListings: [], // TODO: Populate from relationships
+    opportunities: [], // TODO: Populate from relationships
+    achievements: [], // TODO: Populate from relationships
+    // website: member.social?.website, // Removed as ProfileMember uses socialLinks array for website
+    socialLinks: member.social ? [
+      // Ensure 'Website' is capitalized consistently if it matters for platform identification
+      { platform: 'Website', url: member.social.website || '' }
+    ].filter(link => link.url) : [],
+    employmentStatus: 'not-looking' as const, // TODO: Map from member status
+    openToVolunteering: false, // TODO: Add to member type
+    arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString()
+  };
+}
+
+// Moved from dataAdapters.ts
+export interface AdaptedMember {
+  id: string;
+  name: string;
+  title: string;
+  intro: string;
+  bio: string;
+  location: string;
+  image: string;
+  website: string;
+  employmentStatus: string;
+  openToVolunteering: boolean;
+  arrivedInNelson: string;
+  status: string; 
+  featured: boolean;
+  createdAt: string;
+  company: string;
+  skills: string[];
+  joinDate: string;
+  social: SocialLinks;
+}
+
+// This is the adaptMemberFromSupabase from dataAdapters.ts
+export function adaptMemberFromSupabase(member: SupabaseMember): AdaptedMember {
+  const adaptedMember: AdaptedMember = {
+    id: member.id,
+    name: member.name,
+    title: member.title || '',
+    intro: member.intro || '',
+    bio: member.bio || '',
+    location: member.location || '',
+    image: member.image || '',
+    website: member.website || '',
+    employmentStatus: member.employment_status || '',
+    openToVolunteering: member.open_to_volunteering || false,
+    arrivedInNelson: member.arrived_in_nelson || '',
+    status: member.status || 'published',
+    featured: member.featured || false,
+    createdAt: member.created_at || new Date().toISOString(),
+    company: '', 
+    skills: [], 
+    joinDate: member.created_at || new Date().toISOString(), 
+    social: {
+      linkedin: '', // Supabase 'members' table does not have a separate linkedin column
+      twitter: '',  // Supabase 'members' table does not have a separate twitter column
+      github: '',   // Supabase 'members' table does not have a separate github column
+      website: member.website || '' // Use the 'website' column from Supabase
+    }
+  };
+  return adaptedMember;
+}
+
+// This is the adaptMemberToSupabase from dataAdapters.ts
+export function adaptMemberToSupabase(member: AdaptedMember): Database['public']['Tables']['members']['Insert'] {
+  const adaptedMemberForDb: Database['public']['Tables']['members']['Insert'] = {
+    name: member.name,
+    title: member.title,
+    bio: member.bio,
+    location: member.location,
+    image: member.image,
+    website: member.website,
+    employment_status: member.employmentStatus,
+    open_to_volunteering: member.openToVolunteering,
+    arrived_in_nelson: member.arrivedInNelson,
+    status: member.status, 
+    featured: member.featured
+    // Supabase 'members' table does not have separate linkedin, twitter, github columns
+    // The 'website' column is already mapped from member.website above
+  };
+  return adaptedMemberForDb;
 }

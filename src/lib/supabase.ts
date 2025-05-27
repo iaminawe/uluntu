@@ -1,38 +1,64 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/supabase';
 
+// Get environment variables with proper validation
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables');
-  // Provide fallback values for development to prevent crashes
-  // These won't work for actual API calls but will allow the app to initialize
+// Validate environment variables
+if (!supabaseUrl) {
+  throw new Error('VITE_SUPABASE_URL environment variable is required');
 }
 
-// Create Supabase client with error handling
-export const supabase = createClient<Database>(
-  supabaseUrl || 'http://localhost:54321',
-  supabaseAnonKey || 'fallback-key-for-development-only'
-);
+if (!supabaseAnonKey) {
+  throw new Error('VITE_SUPABASE_ANON_KEY environment variable is required');
+}
+
+// Create Supabase client with validated environment variables
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // Check Supabase connection status
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
+    console.log('Checking Supabase connection...');
+    // Log the Supabase URL (but not the key for security reasons)
+    console.log('Using Supabase URL:', supabaseUrl);
+    
     // Simple query to check if we can connect to Supabase
     // Using 'members' table as it should exist in most Supabase instances
-    const { error } = await supabase.from('members').select('count').limit(1);
+    console.log('Attempting to query members table...');
+    const { data, error } = await supabase.from('members').select('count').limit(1);
     
     // If there's a permission error, that's still a successful connection
     // We just don't have access to the table
-    if (error && !error.message.includes('permission denied')) {
-      console.error('Supabase connection check failed:', error);
+    if (error) {
+      console.error('Supabase connection check error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
+      
+      if (error.message.includes('permission denied')) {
+        console.log('Permission denied, but connection successful');
+        return true;
+      }
+      
+      if (error.message.includes('relation "members" does not exist')) {
+        console.error('Schema error: "members" table does not exist');
+        return false;
+      }
+      
       return false;
     }
     
+    console.log('Supabase connection successful:', data);
     return true;
   } catch (err) {
-    console.error('Error checking Supabase connection:', err);
+    console.error('Exception checking Supabase connection:', err);
+    if (err instanceof Error) {
+      console.error('Error name:', err.name);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+    }
     return false;
   }
 };
@@ -48,14 +74,20 @@ export const signUp = async (email: string, password: string) => {
 
 export const signIn = async (email: string, password: string) => {
   try {
+    console.log('Starting sign-in process...');
+    
     // First check connection to avoid unexpected errors
+    console.log('Checking Supabase connection before sign-in...');
     const isConnected = await checkSupabaseConnection();
     if (!isConnected) {
+      console.error('Supabase connection check failed before sign-in');
       return {
         data: null,
         error: new Error('Unable to connect to authentication service. Please check your network connection.')
       };
     }
+    
+    console.log('Connection check passed, attempting sign-in...');
     
     // Attempt sign in
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -64,24 +96,55 @@ export const signIn = async (email: string, password: string) => {
     });
     
     // Handle specific error cases
-    if (error && error.status === 500 && error.message.includes('unexpected_failure')) {
-      console.warn('Encountered unexpected auth failure, attempting fallback authentication...');
+    if (error) {
+      console.error('Sign-in error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error status:', error.status);
       
-      // Wait a moment and try again - sometimes this helps with transient errors
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (error.status === 500 && error.message.includes('unexpected_failure')) {
+        console.warn('Encountered unexpected auth failure, attempting fallback authentication...');
+        
+        // Wait a moment and try again - sometimes this helps with transient errors
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('Attempting second sign-in...');
+        
+        // Second attempt
+        const secondAttempt = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (secondAttempt.error) {
+          console.error('Second sign-in attempt failed:', secondAttempt.error);
+        } else {
+          console.log('Second sign-in attempt succeeded');
+        }
+        
+        return secondAttempt;
+      }
+      if (error.message.includes('schema')) {
+        console.error('Database schema error during sign-in:', error);
+        // Return a user-friendly error instead of letting the schema error propagate
+        return {
+          data: null,
+          error: new Error('Authentication service encountered a configuration issue. Please try again later.')
+        };
+      }
       
-      // Second attempt
-      const secondAttempt = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      return secondAttempt;
+      return { data, error };
+    } else {
+      console.log('Sign-in successful');
+      return { data, error };
     }
-    
-    return { data, error };
   } catch (err) {
-    console.error('Unexpected error during sign in:', err);
+    console.error('Exception during sign in:', err);
+    if (err instanceof Error) {
+      console.error('Error name:', err.name);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+    }
     return {
       data: null,
       error: new Error('An unexpected error occurred during sign in. Please try again later.')

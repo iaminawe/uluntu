@@ -34,7 +34,7 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading }) => 
                     {resource.description}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-500">
-                    Added on {new Date(resource.addedDate).toLocaleDateString()}
+                    Added on {new Date(resource.dateAdded).toLocaleDateString()}
                   </p>
                 </div>
                 <a

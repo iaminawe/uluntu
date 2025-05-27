@@ -1,7 +1,9 @@
 // Group Details related types
+import { Group as MainGroup } from '../../types';
 
+// Define local types for the component's expectations
 export interface GroupMember {
-  id: number;
+  id: number; // Local component expects number IDs
   name: string;
   image: string;
   role: 'admin' | 'member';
@@ -38,6 +40,7 @@ export interface GroupPost {
   image?: string;
 }
 
+// Local Group interface
 export interface Group {
   id: number;
   name: string;
@@ -56,6 +59,59 @@ export interface Group {
   resources: GroupResource[];
   posts: GroupPost[];
 }
+
+// Utility function to convert from main Group type to local Group type
+export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
+  return {
+    id: parseInt(mainGroup.id), // Convert string ID to number
+    name: mainGroup.name,
+    description: mainGroup.description,
+    longDescription: mainGroup.longDescription,
+    heroImage: mainGroup.heroImage,
+    coverImage: mainGroup.coverImage,
+    visibility: mainGroup.visibility,
+    memberCount: mainGroup.memberCount,
+    eventCount: mainGroup.eventCount,
+    resourceCount: mainGroup.resourceCount,
+    postCount: mainGroup.postCount,
+    lastActive: mainGroup.lastActive,
+    // Convert members, events, resources, and posts as needed
+    members: mainGroup.members.map(member => ({
+      id: parseInt(member.id),
+      name: member.name,
+      image: member.image,
+      role: member.role,
+      joinedDate: member.joinedDate,
+      title: member.title
+    })),
+    events: mainGroup.events?.map(event => ({
+      id: parseInt(event.id),
+      title: event.title,
+      date: event.date,
+      description: event.description,
+      image: event.image
+    })) || [],
+    resources: mainGroup.resources?.map(resource => ({
+      id: parseInt(resource.id),
+      title: resource.title,
+      type: resource.type,
+      url: resource.url,
+      addedDate: resource.dateAdded,
+      description: resource.description
+    })) || [],
+    posts: mainGroup.posts?.map(post => ({
+      id: parseInt(post.id),
+      title: post.title,
+      excerpt: post.excerpt,
+      author: {
+        name: post.author.name,
+        image: post.author.image
+      },
+      date: post.date,
+      image: post.image
+    })) || []
+  };
+};
 
 // Sample data
 export const SAMPLE_GROUP: Group = {

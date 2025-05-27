@@ -1,4 +1,4 @@
-import { BaseEntity } from './types';
+import { BaseEntity, ContentStatus } from '../../types/common';
 
 // News article interface
 export interface NewsArticle extends BaseEntity {
@@ -8,6 +8,7 @@ export interface NewsArticle extends BaseEntity {
   content: string;
   publishedAt: string;
   image?: string;
+  hero_image_alt?: string;
   author: {
     id: string;
     name: string;
@@ -52,7 +53,7 @@ export const newsArticles: NewsArticle[] = [
       image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
     },
     tags: ['Technology', 'Economic Development', 'Startups'],
-    status: 'published',
+    status: 'published' as ContentStatus,
     featured: true
   },
   {
@@ -83,7 +84,7 @@ export const newsArticles: NewsArticle[] = [
       image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
     },
     tags: ['Artificial Intelligence', 'Funding', 'Environmental Tech'],
-    status: 'published',
+    status: 'published' as ContentStatus,
     featured: true
   },
   {
@@ -120,7 +121,7 @@ export const newsArticles: NewsArticle[] = [
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
     },
     tags: ['Events', 'Conference', 'Rural Innovation'],
-    status: 'published',
+    status: 'published' as ContentStatus,
     featured: false
   },
   {
@@ -159,7 +160,7 @@ export const newsArticles: NewsArticle[] = [
       image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
     },
     tags: ['Remote Work', 'Digital Nomads', 'Community'],
-    status: 'published',
+    status: 'published' as ContentStatus,
     featured: false
   },
   {
@@ -190,7 +191,7 @@ export const newsArticles: NewsArticle[] = [
       image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
     },
     tags: ['Mentorship', 'Education', 'Community'],
-    status: 'published',
+    status: 'published' as ContentStatus,
     featured: false
   }
 ];

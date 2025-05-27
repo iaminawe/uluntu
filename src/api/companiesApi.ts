@@ -1,31 +1,35 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
-  adaptCompanyFromSupabase,
-  adaptCompanyToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+  adaptCompanyFromDatabase,
+  adaptCompanyToSupabaseInsert,
+  adaptCompanyToSupabaseUpdate
+} from '../adapters/companyAdapter';
+import { Company } from '../types';
 
-// TODO: Consider importing specific Supabase row types for 'data' variables
-// e.g., import { Tables } from '../types/supabase';
-// type CompanyTableRow = Tables<'companies'>;
+// Helper function to adapt a list of items
+function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
+  return items.map(item => adapter(item));
+}
+
+import { ContentStatus } from '../types/common';
 
 // Define the input type for company data passed from the application
 export interface CompanyInput {
   name: string;
   description: string;
   logo: string;
-  coverImage?: string | null; // Maps to Supabase 'cover_image'
+  coverImage?: string | undefined; // Maps to Supabase 'cover_image'
   industry: string[];
   size: string;
   founded: string; // Year as string, maps to Supabase 'founded'
   location: string;
-  website?: string | null;
-  status?: string; // e.g., 'published', 'draft', maps to Supabase 'status'
-  featured?: boolean | null; // maps to Supabase 'featured'
+  website?: string | undefined;
+  status?: ContentStatus; // Using proper ContentStatus type for consistency
+  featured?: boolean; // Simplified to match Company type
 }
 
 export const companiesApi = {
-  async getAll(filters?: { search?: string; industries?: string[] }) {
+  async getAll(filters?: { search?: string; industries?: string[] }): Promise<Company[]> {
     try {
       let query = supabase
         .from('companies')
@@ -38,7 +42,10 @@ export const companiesApi = {
       }
 
       const { data, error } = await query;
-      if (error) handleSupabaseError(error);
+      if (error) {
+        handleSupabaseError(error, 'fetching companies');
+        return [];
+      }
 
       // Filter by industries if provided
       let filteredData = data || [];
@@ -50,14 +57,14 @@ export const companiesApi = {
         );
       }
 
-      return adaptListFromSupabase(filteredData, adaptCompanyFromSupabase);
+      return adaptItemsList(filteredData, adaptCompanyFromDatabase);
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      handleSupabaseError(error, 'fetching companies');
+      return [];
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<Company | null> {
     try {
       const { data, error } = await supabase
         .from('companies')
@@ -66,34 +73,42 @@ export const companiesApi = {
         .eq('status', 'published')
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptCompanyFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'fetching company by id');
+        return null;
+      }
+      
+      return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'fetching company by id');
+      return null;
     }
   },
 
-  async create(companyData: CompanyInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(companyData: CompanyInput): Promise<Company | null> {
     try {
-      const supabaseData = adaptCompanyToSupabase(companyData);
+      const supabaseData = adaptCompanyToSupabaseInsert(companyData);
       const { data, error } = await supabase
         .from('companies')
         .insert(supabaseData)
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptCompanyFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating company');
+        return null;
+      }
+      
+      return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating company');
+      return null;
     }
   },
 
-  async update(id: string, companyData: Partial<CompanyInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, companyData: Partial<CompanyInput>): Promise<Company | null> {
     try {
-      const supabaseData = adaptCompanyToSupabase(companyData);
+      const supabaseData = adaptCompanyToSupabaseUpdate(companyData);
       const { data, error } = await supabase
         .from('companies')
         .update(supabaseData)
@@ -101,25 +116,32 @@ export const companiesApi = {
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptCompanyFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'updating company');
+        return null;
+      }
+      
+      return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'updating company');
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('companies')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, 'deleting company');
+        return false;
+      }
+      return true; // Operation successful
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'deleting company');
       return false;
     }
   }

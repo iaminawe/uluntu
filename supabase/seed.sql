@@ -38,12 +38,12 @@ END $$;
 -- specific RLS policies on user_roles itself that might check this.
 
 -- Insert sample members
-INSERT INTO members (id, name, title, bio, location, image, website, employment_status, open_to_volunteering, status, featured) VALUES
-('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'Sarah Johnson', 'Full Stack Developer', 'Experienced developer with a passion for clean code', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/1.jpg', 'https://sarahjohnson.dev', 'Employed', true, 'published', true),
-('f47ac10b-58cc-4372-a567-0e02b2c3d480', 'Michael Chen', 'UX Designer', 'Creating beautiful and functional user experiences', 'Nelson, BC', 'https://randomuser.me/api/portraits/men/2.jpg', 'https://michaelchen.design', 'Freelance', true, 'published', false),
-('f47ac10b-58cc-4372-a567-0e02b2c3d481', 'Emily Rodriguez', 'Data Scientist', 'Turning data into actionable insights', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/3.jpg', 'https://emilyrodriguez.io', 'Employed', false, 'published', true),
-('f47ac10b-58cc-4372-a567-0e02b2c3d482', 'David Kim', 'DevOps Engineer', 'Automating everything for efficient workflows', 'Nelson, BC', 'https://randomuser.me/api/portraits/men/4.jpg', 'https://davidkim.tech', 'Looking for work', true, 'published', false),
-('f47ac10b-58cc-4372-a567-0e02b2c3d483', 'Lisa Patel', 'Frontend Developer', 'Creating responsive and accessible web interfaces', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/5.jpg', 'https://lisapatel.dev', 'Employed', true, 'published', true)
+INSERT INTO members (id, name, title, bio, location, image, website, employment_status, open_to_volunteering, status, featured, intro) VALUES
+('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'Sarah Johnson', 'Full Stack Developer', 'Experienced developer with a passion for clean code', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/1.jpg', 'https://sarahjohnson.dev', 'Employed', true, 'published', true, 'Experienced developer passionate about clean code.'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d480', 'Michael Chen', 'UX Designer', 'Creating beautiful and functional user experiences', 'Nelson, BC', 'https://randomuser.me/api/portraits/men/2.jpg', 'https://michaelchen.design', 'Freelance', true, 'published', false, 'Creating user experiences that are both beautiful and functional.'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d481', 'Emily Rodriguez', 'Data Scientist', 'Turning data into actionable insights', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/3.jpg', 'https://emilyrodriguez.io', 'Employed', false, 'published', true, 'Turning data into actionable insights for a better world.'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d482', 'David Kim', 'DevOps Engineer', 'Automating everything for efficient workflows', 'Nelson, BC', 'https://randomuser.me/api/portraits/men/4.jpg', 'https://davidkim.tech', 'Looking for work', true, 'published', false, 'Automating workflows and building infrastructure for the future.'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d483', 'Lisa Patel', 'Frontend Developer', 'Creating responsive and accessible web interfaces', 'Nelson, BC', 'https://randomuser.me/api/portraits/women/5.jpg', 'https://lisapatel.dev', 'Employed', true, 'published', true, 'Passionate about building accessible and engaging web experiences.')
 ON CONFLICT DO NOTHING;
 
 -- Insert sample member skills
@@ -66,7 +66,7 @@ INSERT INTO member_skills (member_id, skill) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Insert sample companies
-INSERT INTO companies (id, name, description, logo, cover_image_url, industry, size, founded, location, status, featured) VALUES
+INSERT INTO companies (id, name, description, logo, industry, size, founded, location, status, featured, cover_image_url) VALUES
 ('6ba7b810-9dad-11d1-80b4-00c04fd430c8', 'Mountain Tech Solutions', 'Innovative software development company focused on sustainable technology', 'https://placehold.co/400x400?text=MTS', 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', ARRAY['Software Development', 'Technology'], 'Small (1-10)', '2018', 'Nelson, BC', 'published', true),
 ('6ba7b811-9dad-11d1-80b4-00c04fd430c8', 'Green Valley Design', 'Creative design studio specializing in eco-friendly branding', 'https://placehold.co/400x400?text=GVD', 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', ARRAY['Design', 'Marketing'], 'Small (1-10)', '2019', 'Nelson, BC', 'published', false),
 ('6ba7b812-9dad-11d1-80b4-00c04fd430c8', 'Data Insights Co', 'Data analytics company helping businesses make better decisions', 'https://placehold.co/400x400?text=DIC', 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', ARRAY['Data Analytics', 'Consulting'], 'Medium (11-50)', '2017', 'Nelson, BC', 'published', true),

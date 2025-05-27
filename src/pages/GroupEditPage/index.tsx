@@ -24,7 +24,7 @@ const initialFormData: FormData = {
 export default function GroupEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const groupId = id ? parseInt(id) : undefined;
+  const groupId = id;
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -35,7 +35,7 @@ export default function GroupEditPage() {
   const { 
     data: group, 
     isLoading: groupLoading
-  } = useGroup(groupId as number);
+  } = useGroup(groupId);
   
   // Populate form with group data when in edit mode
   useEffect(() => {
@@ -46,7 +46,9 @@ export default function GroupEditPage() {
         longDescription: group.longDescription || '',
         heroImage: group.heroImage || '',
         coverImage: group.coverImage || '',
-        visibility: group.visibility
+        visibility: (['open', 'closed', 'secret'].includes(group.visibility as string)
+          ? (group.visibility as 'open' | 'closed' | 'secret')
+          : 'open')
       });
     }
   }, [isEditMode, group]);

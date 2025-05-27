@@ -7,20 +7,19 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ data: any; error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
   signOut: () => Promise<{ error: Error | null }>;
   userRoles: string[];
   isAdmin: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -127,8 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     user,
     loading,
-    error,
     signIn,
+    error: null,
     signUp,
     signOut,
     userRoles,
@@ -139,8 +138,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 // Development bypass for authentication
-// This allows working on the application while authentication issues are being resolved
-const DEV_BYPASS_AUTH = true; // Set to false in production
+// This should only be enabled temporarily during development when needed
+// and should never be enabled in production
+const DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && import.meta.env.DEV;
+
+// If authentication bypass is needed for development, use this mock user
 const DEV_USER = {
   id: 'dev-user-id',
   email: 'dev@example.com',
@@ -152,15 +154,28 @@ export function useAuth() {
   
   // In development mode, provide a bypass for authentication
   if (DEV_BYPASS_AUTH && import.meta.env.DEV) {
+    // Create a safe context object that handles the undefined case
+    const safeContext: AuthContextType = context || {
+      session: null,
+      user: null,
+      loading: false,
+      error: null,
+      signIn: async () => ({ data: null, error: null }),
+      signUp: async () => ({ data: null, error: null }),
+      signOut: async () => ({ error: null }),
+      userRoles: [],
+      isAdmin: false
+    };
+    
     return {
-      ...context,
+      ...safeContext,
       // Override sign-in to always succeed in development
-      signIn: async () => ({ 
+      signIn: async () => ({
         data: { session: { user: DEV_USER }, user: DEV_USER },
-        error: null 
+        error: null
       }),
       // Make sure user is always set in development
-      user: context.user || DEV_USER,
+      user: DEV_USER,
       isAdmin: true,
       userRoles: ['admin', 'user'],
       loading: false

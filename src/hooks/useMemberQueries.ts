@@ -1,157 +1,247 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
-import { Tables } from '../types/supabase';
 import { membersApi, MemberInput } from '../api/membersApi';
-import * as mockQueries from './useQueries';
+import allMockData from '../data/mock/mockData';
+import { ContentStatus } from '../types/common';
+
+// Define a Member type for consistency with our UI needs
+export type Member = {
+  id: string;
+  name: string;
+  email?: string;
+  bio?: string;
+  image?: string;
+  role?: string; // Maps to title in the API
+  skills?: string[];
+  joinDate?: string; // Standard property name for API
+  joinedDate?: string; // Used in mock data
+  created_at?: string;
+  status?: ContentStatus;
+  featured?: boolean;
+  [key: string]: unknown; // Allow for additional properties
+};
+
+// Type guard to check if a value is a string
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+// Type guard to check if a value is an array
+function isArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
+// Type guard to check if a value is a boolean
+function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+// Helper function to convert between API Member and our UI Member
+function adaptMember(data: unknown): Member {
+  // Cast to a record to safely access properties
+  const member = data as Record<string, unknown>;
+  
+  // Safe property access with type checking
+  return {
+    id: isString(member.id) ? member.id : String(member.id),
+    name: isString(member.name) ? member.name : '',
+    email: isString(member.email) ? member.email : undefined,
+    bio: isString(member.bio) ? member.bio : undefined,
+    image: isString(member.image) ? member.image : undefined,
+    role: isString(member.title) ? member.title : 
+          isString(member.role) ? member.role : undefined,
+    skills: isArray(member.skills) ? 
+            (member.skills as unknown[]).filter(isString) as string[] : [],
+    // Support both joinDate (API) and joinedDate (mock)
+    joinDate: isString(member.joinDate) ? member.joinDate :
+              isString(member.joinedDate) ? member.joinedDate :
+              isString(member.joined_date) ? member.joined_date : undefined,
+    joinedDate: isString(member.joinedDate) ? member.joinedDate :
+               isString(member.joined_date) ? member.joined_date :
+               isString(member.joinDate) ? member.joinDate : undefined,
+    created_at: isString(member.created_at) ? member.created_at : undefined,
+    status: isString(member.status) ? member.status as ContentStatus : undefined,
+    featured: isBoolean(member.featured) ? member.featured : undefined
+  };
+}
+
+// No need for a separate function since we're now using adaptMember directly
 
 // Configuration to switch between mock and real data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
 
 // Members hooks
-// Define filter types for Members, using the structure from mockQueries as a base
+// Define filter types for Members
 export type MemberFilters = {
   search?: string;
   skills?: string[];
   // Add other filter properties as needed from membersApi.getMembers if they exist
 };
 
-export function useMembers(): UseQueryResult<Tables<'members'>['Row'][], Error> {
-  const supabaseQueryResult = useQuery({
-    queryKey: ['supabase', 'members', 'all'],
-    queryFn: () => membersApi.getAll(),
-    enabled: USE_SUPABASE,
-  });
-
-  const mockQueryResult = mockQueries.useMembers();
-
-  if (!USE_SUPABASE) {
-    return mockQueryResult;
-  }
-  return supabaseQueryResult;
-}
-
-export function useMembersWithFilters(filters?: MemberFilters): UseQueryResult<Tables<'members'>['Row'][], Error> {
-  const supabaseQueryResult = useQuery({
-    queryKey: ['supabase', 'members', 'filters', filters],
-    queryFn: () => membersApi.getAll(filters),
-    enabled: USE_SUPABASE,
-  });
-
-  const mockQueryResult = mockQueries.useMembersWithFilters(filters);
-
-  if (!USE_SUPABASE) {
-    return mockQueryResult;
-  }
-  return supabaseQueryResult;
-}
-
-export function useMemberById(id?: string): UseQueryResult<Tables<'members'>['Row'] | null, Error> {
-  const supabaseQueryResult = useQuery({
-    queryKey: ['supabase', 'members', id],
-    queryFn: () => {
-      if (id === undefined) {
-        return Promise.reject(new Error('Member ID is undefined'));
+export function useMembers(): UseQueryResult<Member[], Error> {
+  return useQuery<Member[], Error>({
+    queryKey: ['members', 'all', USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      if (USE_SUPABASE) {
+        const members = await membersApi.getAll();
+        return members.map(m => adaptMember(m));
+      } else {
+        // Type assertion needed for mock data
+        return allMockData.members.map(m => adaptMember(m));
       }
-      return membersApi.getById(id);
     },
-    enabled: id !== undefined && USE_SUPABASE,
   });
+}
 
-  // mockQueries.useMember internally handles 'enabled: !!id'
-  const mockQueryResult = mockQueries.useMember(id ? parseInt(id, 10) : NaN); 
+export function useMembersWithFilters(filters?: MemberFilters): UseQueryResult<Member[], Error> {
+  return useQuery<Member[], Error>({
+    queryKey: ['members', 'filters', filters, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      if (USE_SUPABASE) {
+        const members = await membersApi.getAll(filters);
+        return members.map(m => adaptMember(m));
+      } else {
+        // Filter mock data
+        let filteredMembers = [...allMockData.members];
+        if (filters?.search) {
+          const searchTerm = filters.search.toLowerCase();
+          filteredMembers = filteredMembers.filter(member => 
+            member.name.toLowerCase().includes(searchTerm) ||
+            (member.bio && member.bio.toLowerCase().includes(searchTerm))
+          );
+        }
+        if (filters?.skills && filters.skills.length > 0) {
+          filteredMembers = filteredMembers.filter(member => 
+            member.skills && filters.skills?.some(skill => member.skills?.includes(skill))
+          );
+        }
+        return filteredMembers.map(m => adaptMember(m));
+      }
+    },
+  });
+}
 
-  if (!USE_SUPABASE) {
-    return mockQueryResult;
-  }
-  return supabaseQueryResult;
+export function useMemberById(id?: string): UseQueryResult<Member | null, Error> {
+  return useQuery<Member | null, Error>({
+    queryKey: ['members', id, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      if (!id) {
+        return null;
+      }
+      
+      if (USE_SUPABASE) {
+        try {
+          const member = await membersApi.getById(id);
+          return member ? adaptMember(member) : null;
+        } catch (error) {
+          console.error(`Error fetching member with ID ${id}:`, error);
+          throw error;
+        }
+      } else {
+        // Get from mock data
+        const member = allMockData.members.find(m => String(m.id) === id);
+        return member ? adaptMember(member) : null;
+      }
+    },
+    enabled: !!id
+  });
 }
 
 export function useCreateMember(): UseMutationResult<
-  Tables<'members'>['Row'] | null,
+  Member | null,
   Error,
   MemberInput // API expects MemberInput
 > {
   const queryClient = useQueryClient();
-
-  const supabaseMutation = useMutation<
-    Tables<'members'>['Row'] | null,
-    Error,
-    MemberInput
-  >({
-    mutationFn: (memberData: MemberInput) => membersApi.create(memberData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['supabase', 'members'] });
-      // Consider invalidating specific filtered queries if applicable
+  
+  // Create a properly typed mutation for both mock and Supabase
+  return useMutation<Member | null, Error, MemberInput>({
+    mutationFn: async (data: MemberInput): Promise<Member | null> => {
+      if (USE_SUPABASE) {
+        // Use the actual API
+        const createdMember = await membersApi.create(data);
+        return createdMember ? adaptMember(createdMember) : null;
+      } else {
+        console.log('Mock create member:', data);
+        
+        // Create a new member with the provided data
+        const newMember = {
+          id: Date.now().toString(),
+          name: data.name || '',
+          email: `${(data.name || '').toLowerCase().replace(/\s+/g, '.')}@example.com`,
+          bio: data.bio || '',
+          image: data.image || '',
+          title: data.title || '',
+          // Use title as role for UI compatibility
+          role: data.title || '',
+          skills: [],
+          joinDate: new Date().toISOString(),
+          joinedDate: new Date().toISOString(), // Keep both for compatibility
+          created_at: new Date().toISOString(),
+          status: data.status || 'published' as ContentStatus,
+          featured: data.featured || false
+        };
+        
+        // Add to mock data (this is just for simulation)
+        allMockData.members.unshift(newMember);
+        
+        return adaptMember(newMember);
+      }
     },
+    onSuccess: () => {
+      // Invalidate both mock and Supabase queries to be safe
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+    }
   });
-
-  if (!USE_SUPABASE) {
-    // Fallback to mock implementation if Supabase is not used
-    console.warn('Supabase is disabled, using mock create member.');
-    return {
-      mutate: async (data: MemberInput) => { console.log('Mock create member:', data); return mockQueries.mockData.members[0] as Tables<'members'>['Row']; },
-      mutateAsync: async (data: MemberInput) => { console.log('Mock create member async:', data); return mockQueries.mockData.members[0] as Tables<'members'>['Row']; },
-      status: 'success',
-      data: mockQueries.mockData.members[0] as Tables<'members'>['Row'] | null,
-      error: null,
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      isIdle: false,
-      reset: () => {},
-      variables: undefined,
-      isPaused: false,
-      failureCount:0,
-      failureReason: null,
-      context: undefined,
-      submittedAt:0,
-    } as unknown as UseMutationResult<Tables<'members'>['Row'] | null, Error, MemberInput, unknown>;
-  }
-  return supabaseMutation;
 }
 
 export function useUpdateMember(): UseMutationResult<
-  Tables<'members'>['Row'] | null,
+  Member | null,
   Error,
   { id: string; data: Partial<MemberInput> }
 > {
   const queryClient = useQueryClient();
 
-  const supabaseMutation = useMutation<
-    Tables<'members'>['Row'] | null,
-    Error,
-    { id: string; data: Partial<MemberInput> }
-  >({
-    mutationFn: ({ id, data }: { id: string; data: Partial<MemberInput> }) => membersApi.update(id, data),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['supabase', 'members'] });
-      queryClient.invalidateQueries({ queryKey: ['supabase', 'members', String(variables.id)] });
-      // Consider invalidating specific filtered queries if applicable
+  // Create a properly typed mutation for both mock and Supabase
+  return useMutation<Member | null, Error, { id: string; data: Partial<MemberInput> }>({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<MemberInput> }): Promise<Member | null> => {
+      if (USE_SUPABASE) {
+        // Use the actual API
+        const updatedMember = await membersApi.update(id, data);
+        return updatedMember ? adaptMember(updatedMember) : null;
+      } else {
+        console.log('Mock update member:', { id, data });
+        
+        // Find the member to update
+        const memberIndex = allMockData.members.findIndex(m => String(m.id) === id);
+        if (memberIndex === -1) {
+          console.error(`Member with id ${id} not found`);
+          return null;
+        }
+        
+        // Update the member
+        const originalMember = allMockData.members[memberIndex];
+        const updatedMember = {
+          ...originalMember,
+          name: data.name || originalMember.name,
+          bio: data.bio !== undefined ? data.bio : originalMember.bio,
+          image: data.image !== undefined ? data.image : originalMember.image,
+          title: data.title !== undefined ? data.title : originalMember.title,
+          status: data.status !== undefined ? data.status : originalMember.status,
+          featured: data.featured !== undefined ? data.featured : originalMember.featured,
+        };
+        
+        // Update in the mock data
+        allMockData.members[memberIndex] = updatedMember;
+        
+        return adaptMember(updatedMember);
+      }
     },
+    onSuccess: (_data, { id }) => {
+      // Invalidate both mock and Supabase queries to be safe
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['members', id] });
+    }
   });
-
-  if (!USE_SUPABASE) {
-    // Fallback to mock implementation if Supabase is not used
-    console.warn('Supabase is disabled, using mock update member.');
-    return {
-      mutate: async (variables: { id: string; data: Partial<MemberInput> }) => { console.log('Mock update member:', variables); return mockQueries.mockData.members[0] as Tables<'members'>['Row']; },
-      mutateAsync: async (variables: { id: string; data: Partial<MemberInput> }) => { console.log('Mock update member async:', variables); return mockQueries.mockData.members[0] as Tables<'members'>['Row']; },
-      status: 'success',
-      data: mockQueries.mockData.members[0] as Tables<'members'>['Row'] | null,
-      error: null,
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      isIdle: false,
-      reset: () => {},
-      variables: undefined,
-      isPaused: false,
-      failureCount:0,
-      failureReason: null,
-      context: undefined,
-      submittedAt:0,
-    } as unknown as UseMutationResult<Tables<'members'>['Row'] | null, Error, { id: string; data: Partial<MemberInput> }, unknown>;
-  }
-  return supabaseMutation;
 }
 
 export function useDeleteMember(): UseMutationResult<
@@ -161,36 +251,31 @@ export function useDeleteMember(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  const supabaseMutation = useMutation<boolean, Error, string>({
-    mutationFn: (id: string) => membersApi.delete(id),
-    onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({ queryKey: ['supabase', 'members'] });
-      queryClient.invalidateQueries({ queryKey: ['supabase', 'members', String(id)] });
-      // Consider invalidating specific filtered queries if applicable
+  // Create a properly typed mutation for both mock and Supabase
+  return useMutation<boolean, Error, string>({
+    mutationFn: async (id: string): Promise<boolean> => {
+      if (USE_SUPABASE) {
+        // Use the actual API
+        return await membersApi.delete(id);
+      } else {
+        console.log('Mock delete member:', id);
+        
+        // Find the member to delete
+        const memberIndex = allMockData.members.findIndex(m => String(m.id) === id);
+        if (memberIndex === -1) {
+          console.warn(`Member with id ${id} not found for deletion`);
+          return false;
+        }
+        
+        // Remove from mock data
+        allMockData.members.splice(memberIndex, 1);
+        return true;
+      }
     },
+    onSuccess: (_, id) => {
+      // Invalidate both mock and Supabase queries to be safe
+      queryClient.invalidateQueries({ queryKey: ['members'] });
+      queryClient.invalidateQueries({ queryKey: ['members', id] });
+    }
   });
-
-  if (!USE_SUPABASE) {
-    // Fallback to mock implementation if Supabase is not used
-    console.warn('Supabase is disabled, using mock delete member.');
-    return {
-      mutate: async (id: string) => { console.log('Mock delete member:', id); return true; },
-      mutateAsync: async (id: string) => { console.log('Mock delete member async:', id); return true; },
-      status: 'success',
-      data: true,
-      error: null,
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      isIdle: false,
-      reset: () => {},
-      variables: undefined,
-      isPaused: false,
-      failureCount:0,
-      failureReason: null,
-      context: undefined,
-      submittedAt:0,
-    } as unknown as UseMutationResult<boolean, Error, string, unknown>;
-  }
-  return supabaseMutation;
 }

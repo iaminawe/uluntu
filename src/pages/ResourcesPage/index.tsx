@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import ResourcesList from '../../components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useResources } from '../../hooks/useQueries';
+import { useResources } from '../../hooks/useResourceQueries';
 
 // Resource type is already defined in the types.ts file
 

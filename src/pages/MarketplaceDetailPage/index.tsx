@@ -5,7 +5,7 @@ import { Package, Briefcase, Monitor } from 'lucide-react';
 import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
-import { ListingType, Listing } from './types';
+import { ListingType, Listing, ListingCondition } from './types';
 import PageHeader from './PageHeader';
 import ListingDetails from './ListingDetails';
 import SellerInfo from './SellerInfo';
@@ -32,11 +32,11 @@ export default function MarketplaceDetailPage() {
       price: apiListing.price || 0,
       condition: apiListing.condition as ListingCondition,
       images: apiListing.images || ['/placeholder-image.png'],
-      createdAt: apiListing.created_at || new Date().toISOString(),
+      createdAt: apiListing.createdAt || new Date().toISOString(),
       seller: {
-        id: apiListing.seller ? Number(apiListing.seller.id) : 1,
-        name: apiListing.seller ? apiListing.seller.name : 'Unknown Seller',
-        image: apiListing.seller ? apiListing.seller.image : '/placeholder-avatar.png',
+        id: apiListing.seller?.id ? Number(apiListing.seller.id) : 1,
+        name: 'Unknown Seller', // We'd need to fetch seller details separately
+        image: '/placeholder-avatar.png',
         title: '',
         bio: ''
       },

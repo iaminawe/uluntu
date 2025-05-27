@@ -1,9 +1,18 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
-  adaptGroupFromSupabase,
-  adaptGroupToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+  adaptGroupFromDatabase,
+  adaptGroupToSupabaseInsert,
+  adaptGroupToSupabaseUpdate,
+  GroupInsertData,
+  GroupUpdateData,
+} from '../adapters/groupAdapter';
+import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
+import { ContentStatus } from '../types/common'; // For casting 'status'
+
+// Helper function to adapt a list of items
+function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
+  return items.map(item => adapter(item));
+}
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
@@ -22,7 +31,7 @@ export interface GroupInput {
 }
 
 export const groupsApi = {
-  async getAll(filters?: { search?: string; visibility?: string[] }) {
+  async getAll(filters?: { search?: string; visibility?: string[] }): Promise<FrontendGroup[]> {
     try {
       let query = supabase
         .from('groups')
@@ -39,18 +48,21 @@ export const groupsApi = {
       }
 
       const { data, error } = await query;
-      if (error) handleSupabaseError(error);
-      return adaptListFromSupabase(data || [], adaptGroupFromSupabase);
+      if (error) {
+        handleSupabaseError(error, 'fetching groups');
+        return [];
+      }
+      
+      // Use our helper function instead of adaptListFromSupabase
+      return adaptItemsList(data || [], adaptGroupFromDatabase);
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      handleSupabaseError(error, 'fetching groups');
+      return [];
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<FrontendGroup | null> {
     try {
-      console.log('Fetching group with ID:', id);
-      
       // First, get the basic group data without any joins
       const { data: groupData, error: groupError } = await supabase
         .from('groups')
@@ -59,53 +71,40 @@ export const groupsApi = {
         .single();
 
       if (groupError) {
-        console.error('Error fetching group:', groupError);
-        handleSupabaseError(groupError);
+        handleSupabaseError(groupError, `fetching group with id ${id}`);
         return null;
       }
       
-      // Then get related events in a separate query
-      const { data: eventsData, error: eventsError } = await supabase
-        .from('events')
-        .select('id, title, date, description, image')
-        .eq('group_id', id)
-        .eq('status', 'published');
-        
-      if (eventsError) {
-        console.error('Error fetching group events:', eventsError);
-        // Don't throw error, just log it
-      }
-      
-      // Then get related resources in a separate query
-      const { data: resourcesData, error: resourcesError } = await supabase
-        .from('resources')
-        .select('id, title, type, url, created_at, description')
-        .eq('group_id', id);
-        
-      if (resourcesError) {
-        console.error('Error fetching group resources:', resourcesError);
-        // Don't throw error, just log it
-      }
-      
-      // Combine the data
-      const combinedData = {
-        ...groupData,
-        events: eventsData || [],
-        resources: resourcesData || []
-      };
-      
-      console.log('Group data combined:', combinedData);
-      return adaptGroupFromSupabase(combinedData);
+      // Adapt only the core group data. The adaptGroupFromDatabase function initializes
+      // events, resources, etc., to empty arrays as per FrontendGroup definition.
+      return groupData ? adaptGroupFromDatabase(groupData) : null;
     } catch (error) {
-      console.error('Exception in getById:', error);
-      handleSupabaseError(error);
+      handleSupabaseError(error, `fetching group with id ${id}`);
       return null;
     }
   },
 
-  async update(id: string, groupData: Partial<GroupInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, groupData: Partial<GroupInput>): Promise<FrontendGroup | null> {
     try {
-      const supabaseData = adaptGroupToSupabase(groupData);
+      // Prepare data for the adapter, ensuring type compatibility
+      const preparedDataForAdapter: Partial<Omit<GroupUpdateData, 'id'>> = {};
+      if (groupData.name !== undefined) preparedDataForAdapter.name = groupData.name;
+      if (groupData.description !== undefined) preparedDataForAdapter.description = groupData.description;
+      // Convert null to undefined for properties that expect string | undefined or boolean | undefined
+      if (groupData.longDescription !== undefined) preparedDataForAdapter.longDescription = groupData.longDescription === null ? undefined : groupData.longDescription;
+      if (groupData.heroImage !== undefined) preparedDataForAdapter.heroImage = groupData.heroImage;
+      if (groupData.visibility !== undefined) preparedDataForAdapter.visibility = groupData.visibility as FrontendGroup['visibility'];
+      if (groupData.status !== undefined) preparedDataForAdapter.status = groupData.status as ContentStatus;
+      if (groupData.featured !== undefined) preparedDataForAdapter.featured = groupData.featured === null ? undefined : groupData.featured;
+      // coverImage and created_at are not in GroupInput, will be undefined if not set, handled by adapter
+
+      // GroupUpdateData requires 'id'
+      const updatePayload: GroupUpdateData = {
+        ...preparedDataForAdapter,
+        id: id,
+      };
+
+      const supabaseData = adaptGroupToSupabaseUpdate(updatePayload);
       const { data, error } = await supabase
         .from('groups')
         .update(supabaseData)
@@ -113,43 +112,66 @@ export const groupsApi = {
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptGroupFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, `updating group with id ${id}`);
+        return null;
+      }
+      
+      return data ? adaptGroupFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, `updating group with id ${id}`);
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('groups')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, `deleting group with id ${id}`);
+        return false;
+      }
+      return true; // Return true if no error, false otherwise
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, `deleting group with id ${id}`);
       return false;
     }
   },
 
-  async create(groupData: GroupInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(groupData: GroupInput): Promise<FrontendGroup | null> {
     try {
-      const supabaseData = adaptGroupToSupabase(groupData);
+      // Prepare data for the adapter, ensuring type compatibility
+      const preparedData: GroupInsertData = {
+        name: groupData.name,
+        description: groupData.description,
+        heroImage: groupData.heroImage,
+        visibility: groupData.visibility as FrontendGroup['visibility'],
+        // Optional fields from GroupInput
+        ...(groupData.longDescription && { longDescription: groupData.longDescription }),
+        ...(groupData.status && { status: groupData.status as ContentStatus }),
+        ...(groupData.featured !== undefined && { featured: groupData.featured }),
+        // coverImage and created_at are not in GroupInput, will be undefined if not set, handled by adapter
+      };
+      const supabaseData = adaptGroupToSupabaseInsert(preparedData);
       const { data, error } = await supabase
         .from('groups')
         .insert(supabaseData)
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptGroupFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating group');
+        return null;
+      }
+      
+      return data ? adaptGroupFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating group');
+      return null;
     }
   }
 };

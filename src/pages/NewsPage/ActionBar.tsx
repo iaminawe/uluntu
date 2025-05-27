@@ -24,7 +24,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   // Fetch articles to extract available tags
   const { data: articles = [] } = useNewsArticlesWithFilters({
     search: '',
-    tags: undefined
+    tag: undefined
   });
   
   // Extract available tags from articles

@@ -4,11 +4,11 @@ import { Member, FilterOptions } from './types';
 export const filterMembers = (
   members: Member[],
   filterOptions: FilterOptions,
-  companyId?: number
+  companyId?: string
 ): Member[] => {
   return members.filter(member => {
     // Filter by company if companyId is provided
-    if (companyId && member.company && !member.company.includes(`${companyId}`)) {
+    if (companyId && member.company && member.company !== companyId) {
       return false;
     }
     

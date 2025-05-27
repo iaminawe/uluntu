@@ -1,8 +1,31 @@
 import React, { useState } from 'react';
 import { PlusCircle, FileType2, Tag } from 'lucide-react';
 import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { ResourceType } from '../../components/ResourcesList/types';
-import { getResourceTypeLabel } from '../../components/ResourcesList/utils';
+import { Resource } from '../../types';
+// Create a type alias for the Resource type property
+type ResourceType = Resource['type'];
+
+// Helper function to get a display label for each resource type
+const getResourceTypeLabel = (type: ResourceType): string => {
+  switch (type) {
+    case 'document':
+      return 'Document';
+    case 'video':
+      return 'Video';
+    case 'guide':
+      return 'Guide';
+    case 'tool':
+      return 'Tool';
+    case 'article':
+      return 'Article';
+    default: {
+      // This should never happen since we've covered all possible ResourceType values
+      // But TypeScript needs this for type safety
+      const unknownType = type as string;
+      return unknownType.charAt(0).toUpperCase() + unknownType.slice(1);
+    }
+  }
+};
 
 const ActionBar: React.FC = () => {
   // State for filters
@@ -10,8 +33,8 @@ const ActionBar: React.FC = () => {
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
   
-  // Resource types from the ResourcesList component
-  const resourceTypes: ResourceType[] = ['document', 'video', 'image', 'link', 'presentation'];
+  // Resource types from the main application's Resource type
+  const resourceTypes: ResourceType[] = ['document', 'video', 'guide', 'tool', 'article'];
   
   // Sample categories - would come from API in real implementation
   const categories = ['Guides', 'Tutorials', 'Research', 'Tools', 'Templates'];

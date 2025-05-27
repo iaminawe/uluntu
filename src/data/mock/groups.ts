@@ -1,8 +1,8 @@
-import { BaseEntity } from './types';
+import { BaseEntity, ContentStatus } from '../../types/common';
 
 // Group member interface
 export interface GroupMember {
-  id: number;
+  id: string;
   name: string;
   image: string;
   role: 'admin' | 'member';
@@ -12,7 +12,7 @@ export interface GroupMember {
 
 // Group event interface
 export interface GroupEvent {
-  id: number;
+  id: string;
   title: string;
   date: string;
   description: string;
@@ -21,7 +21,7 @@ export interface GroupEvent {
 
 // Group resource interface
 export interface GroupResource {
-  id: number;
+  id: string;
   title: string;
   type: string;
   url: string;
@@ -31,7 +31,7 @@ export interface GroupResource {
 
 // Group post interface
 export interface GroupPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   author: {
@@ -46,11 +46,11 @@ export interface GroupPost {
 export interface Group extends BaseEntity {
   name: string;
   description: string;
-  long_description: string | null;
-  hero_image: string;
-  cover_image: string | null;
-  visibility: string;
-  member_count: number | null;
+  longDescription?: string;
+  heroImage: string;
+  coverImage?: string;
+  visibility: 'open' | 'closed' | 'secret';
+  memberCount: number;
   eventCount?: number;
   resourceCount?: number;
   postCount?: number;
@@ -67,12 +67,12 @@ export const groups: Group[] = [
     id: '1',
     name: 'Kootenay Coders Collective',
     description: 'A community of developers, designers, and tech enthusiasts in the Kootenay region.',
-    long_description: 'The Kootenay Coders Collective brings together developers, designers, and tech enthusiasts from across the Kootenay region to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
-    hero_image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
-    cover_image: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg',
+    longDescription: 'The Kootenay Coders Collective brings together developers, designers, and tech enthusiasts from across the Kootenay region to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
+    heroImage: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
+    coverImage: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg',
     visibility: 'open',
-    member_count: 45,
-    status: 'active',
+    memberCount: 45,
+    status: 'published' as ContentStatus,
     featured: true,
     created_at: '2023-01-15',
     eventCount: 2,
@@ -81,7 +81,7 @@ export const groups: Group[] = [
     lastActive: '2025-03-10',
     members: [
       {
-        id: 1,
+        id: '1',
         name: 'Sarah Johnson',
         image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
         role: 'admin',
@@ -89,7 +89,7 @@ export const groups: Group[] = [
         title: 'AI Research Lead'
       },
       {
-        id: 2,
+        id: '2',
         name: 'Michael Chen',
         image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
         role: 'member',
@@ -97,7 +97,7 @@ export const groups: Group[] = [
         title: 'ML Engineer'
       },
       {
-        id: 4,
+        id: '4',
         name: 'David Park',
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'member',
@@ -107,14 +107,14 @@ export const groups: Group[] = [
     ],
     events: [
       {
-        id: 1,
+        id: '1',
         title: 'Kootenay Tech Conference 2025',
         date: '2025-06-15',
         description: 'Annual tech conference bringing together the Kootenay tech community.',
         image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg'
       },
       {
-        id: 5,
+        id: '5',
         title: 'Community Coding Night - Open Source Contributions',
         date: '2025-04-20',
         description: 'Join us for a night of collaborative coding and contributing to open source projects.',
@@ -123,7 +123,7 @@ export const groups: Group[] = [
     ],
     resources: [
       {
-        id: 1,
+        id: '1',
         title: 'Getting Started with AI in the Kootenays',
         type: 'guide',
         url: 'https://example.com/guides/ai-kootenays',
@@ -131,7 +131,7 @@ export const groups: Group[] = [
         description: 'A comprehensive guide to AI resources and opportunities in the Kootenay region.'
       },
       {
-        id: 2,
+        id: '2',
         title: 'Local Development Environment Setup',
         type: 'tutorial',
         url: 'https://example.com/tutorials/local-dev-setup',
@@ -141,7 +141,7 @@ export const groups: Group[] = [
     ],
     posts: [
       {
-        id: 1,
+        id: '1',
         title: 'Reflecting on Our First Year as a Tech Community',
         excerpt: 'Looking back at the growth and achievements of the Kootenay Coders Collective in its first year.',
         author: {
@@ -152,7 +152,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg'
       },
       {
-        id: 2,
+        id: '2',
         title: 'Building a Tech Ecosystem in Rural BC',
         excerpt: 'Challenges and opportunities in developing a thriving tech community in the Kootenays.',
         author: {
@@ -167,12 +167,12 @@ export const groups: Group[] = [
     id: '2',
     name: 'Nelson Digital Nomads',
     description: 'A community for remote workers and digital nomads living in or visiting the Nelson area.',
-    long_description: 'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Kootenay lifestyle.',
-    hero_image: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
-    cover_image: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
+    longDescription: 'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Kootenay lifestyle.',
+    heroImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
+    coverImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
     visibility: 'open',
-    member_count: 32,
-    status: 'active',
+    memberCount: 32,
+    status: 'published' as ContentStatus,
     featured: false,
     created_at: '2023-03-10',
     eventCount: 1,
@@ -181,7 +181,7 @@ export const groups: Group[] = [
     lastActive: '2025-03-05',
     members: [
       {
-        id: 4,
+        id: '4',
         name: 'David Park',
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'admin',
@@ -189,7 +189,7 @@ export const groups: Group[] = [
         title: 'Frontend Developer'
       },
       {
-        id: 5,
+        id: '5',
         name: 'Olivia Martinez',
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'member',
@@ -199,7 +199,7 @@ export const groups: Group[] = [
     ],
     events: [
       {
-        id: 2,
+        id: '2',
         title: 'Nelson Farmers Market - Summer Season Opening',
         date: '2025-05-01',
         description: 'Join us for the opening day of the Nelson Farmers Market.',
@@ -211,12 +211,12 @@ export const groups: Group[] = [
     id: '3',
     name: 'Kootenay Tech Mentorship',
     description: 'Connecting experienced tech professionals with newcomers and students in the Kootenay region.',
-    long_description: 'Kootenay Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Kootenays.',
-    hero_image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
-    cover_image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
+    longDescription: 'Kootenay Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Kootenays.',
+    heroImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
+    coverImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
     visibility: 'closed',
-    member_count: 28,
-    status: 'active',
+    memberCount: 28,
+    status: 'published' as ContentStatus,
     featured: false,
     created_at: '2023-05-20',
     eventCount: 0,
@@ -225,7 +225,7 @@ export const groups: Group[] = [
     lastActive: '2025-02-28',
     members: [
       {
-        id: 1,
+        id: '1',
         name: 'Sarah Johnson',
         image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
         role: 'admin',
@@ -233,7 +233,7 @@ export const groups: Group[] = [
         title: 'AI Research Lead'
       },
       {
-        id: 3,
+        id: '3',
         name: 'Emma Wilson',
         image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
         role: 'member',
@@ -246,12 +246,12 @@ export const groups: Group[] = [
     id: '4',
     name: 'Kootenay Hikers & Adventurers',
     description: 'A group for tech professionals who love exploring the outdoors in the Kootenay region.',
-    long_description: 'Kootenay Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Kootenay landscape.',
-    hero_image: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
-    cover_image: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
+    longDescription: 'Kootenay Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Kootenay landscape.',
+    heroImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
+    coverImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
     visibility: 'open',
-    member_count: 40,
-    status: 'active',
+    memberCount: 40,
+    status: 'published' as ContentStatus,
     featured: true,
     created_at: '2023-06-15',
     eventCount: 1,
@@ -260,7 +260,7 @@ export const groups: Group[] = [
     lastActive: '2025-03-12',
     members: [
       {
-        id: 3,
+        id: '3',
         name: 'Emma Wilson',
         image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
         role: 'admin',
@@ -268,7 +268,7 @@ export const groups: Group[] = [
         title: 'Data Scientist'
       },
       {
-        id: 2,
+        id: '2',
         name: 'Michael Chen',
         image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
         role: 'member',
@@ -276,7 +276,7 @@ export const groups: Group[] = [
         title: 'ML Engineer'
       },
       {
-        id: 5,
+        id: '5',
         name: 'Olivia Martinez',
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'member',
@@ -286,7 +286,7 @@ export const groups: Group[] = [
     ],
     events: [
       {
-        id: 7,
+        id: '7',
         title: 'Rossland Mountain Film Festival',
         date: '2025-04-30',
         description: 'Annual film festival celebrating mountain culture and outdoor adventure.',
@@ -298,12 +298,12 @@ export const groups: Group[] = [
     id: '5',
     name: 'West Kootenay Arts Council',
     description: 'Supporting the intersection of art and technology in the West Kootenay region.',
-    long_description: 'The West Kootenay Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
-    hero_image: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
-    cover_image: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
+    longDescription: 'The West Kootenay Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
+    heroImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
+    coverImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
     visibility: 'open',
-    member_count: 35,
-    status: 'active',
+    memberCount: 35,
+    status: 'published' as ContentStatus,
     featured: false,
     created_at: '2023-08-10',
     eventCount: 1,
@@ -312,7 +312,7 @@ export const groups: Group[] = [
     lastActive: '2025-03-08',
     members: [
       {
-        id: 5,
+        id: '5',
         name: 'Olivia Martinez',
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'admin',
@@ -320,7 +320,7 @@ export const groups: Group[] = [
         title: 'UX/UI Designer'
       },
       {
-        id: 4,
+        id: '4',
         name: 'David Park',
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'member',
@@ -330,7 +330,7 @@ export const groups: Group[] = [
     ],
     events: [
       {
-        id: 4,
+        id: '4',
         title: 'Kaslo Jazz Etc. Festival 2025',
         date: '2025-07-30',
         description: 'Annual music festival featuring jazz, blues, and more on the shores of Kootenay Lake.',

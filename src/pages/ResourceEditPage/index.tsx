@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../data/mock/types';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import FormHeader from './FormHeader';
@@ -18,17 +18,17 @@ import { FormData, ResourceType } from './types';
 
 // This would normally come from a hook like useResource
 const SAMPLE_RESOURCE = {
-  id: 1,
+  id: '1', // Use string ID for consistency across the application
   title: 'Introduction to AI Ethics',
   description: 'A comprehensive guide to ethical considerations in AI development.',
   type: 'document' as ResourceType,
   url: 'https://example.com/ai-ethics-guide',
   tags: ['AI', 'Ethics', 'Technology', 'Guidelines'],
   group: {
-    id: 1,
+    id: '1', // Use string ID for consistency across the application
     name: 'AI Enthusiasts Kootenay'
   },
-  status: 'published' as EntityStatus,
+  status: 'published' as ContentStatus,
   featured: true // Example resource is featured
 };
 
@@ -40,7 +40,7 @@ export default function ResourceEditPage() {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
-    status: 'draft' as EntityStatus,
+    status: 'draft' as ContentStatus,
     featured: false, // Default not featured
     type: 'document' as ResourceType,
     url: '',
