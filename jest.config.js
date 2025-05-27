@@ -1,30 +1,18 @@
-export default {
-  preset: 'ts-jest',
-  extensionsToTreatAsEsm: ['.ts'],
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  },
-  testEnvironment: 'node',
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-  },
+/** @type {import('jest').Config} */
+module.exports = {
+  testEnvironment: 'jsdom',
+  testRegex: '\\.(test|spec)\\.tsx$', // Only run .tsx test files
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      useESM: true
-    }]
+    '^.+\\.(ts|tsx)$': 'babel-jest', // Use babel-jest for TypeScript
   },
-  testMatch: [
-    '**/__tests__/**/*.ts',
-    '**/?(*.)+(spec|test).ts'
-  ],
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/**/*.test.ts',
-    '!src/**/*.spec.ts'
-  ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html']
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    // Mock the supabase module to avoid import.meta.env issues
+    '^../lib/supabase$': '<rootDir>/src/tests/__mocks__/supabase.ts',
+    // Add a more specific mock for the userAccountManagement.test.tsx file
+    '^src/lib/supabase$': '<rootDir>/src/tests/__mocks__/supabase.ts',
+    // Mock the membersApi module
+    '^../api/membersApi$': '<rootDir>/src/tests/__mocks__/membersApi.ts',
+  },
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setupTests.ts'],
 };

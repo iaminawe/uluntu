@@ -111,7 +111,7 @@ function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): Mark
 
 
 // Configuration for using Supabase or mock data
-const USE_SUPABASE = process.env.REACT_APP_USE_SUPABASE === 'true' || import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
 
 // Define input types based on Database schema
 export type MarketplaceListingInput = {
