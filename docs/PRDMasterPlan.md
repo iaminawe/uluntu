@@ -13,79 +13,81 @@
 
 ## 2. Development Phases
 
-### Phase 1: Foundation & User Authentication
-**Phase AI Verifiable End Goal:** Users can register, log in, log out, and manage their profiles with appropriate role-based permissions. All user authentication acceptance tests (UAM-001 through UAM-007) pass successfully.
+### Phase 1: Foundation & User Authentication with Template Integration
+**Phase AI Verifiable End Goal:** Users can register, log in, log out, and manage their profiles with appropriate role-based permissions using the integrated mmvergara/react-supabase-auth-template. All user authentication acceptance tests (UAM-001 through UAM-007) pass successfully.
 
 #### Micro-tasks:
 
-##### 1.1 Setup Project Infrastructure
-- **AI Verifiable Deliverable:** Project builds successfully with `npm install && npm run build` without errors
-- **Completion Criteria:** 
-  - Package.json dependencies installed
+##### 1.1 Integrate Template Infrastructure
+- **AI Verifiable Deliverable:** Project builds successfully with the integrated template using `npm install && npm run build` without errors
+- **Completion Criteria:**
+  - Template files correctly integrated into project structure
+  - Package.json dependencies merged and installed
   - Build process completes with exit code 0
   - Development server starts with `npm run dev`
-- **References:** Technical foundation for all subsequent development
+- **References:** Technical foundation for all subsequent development, Template Integration Guide
 
-##### 1.2 Configure Supabase Authentication
-- **AI Verifiable Deliverable:** Supabase client connection established and authentication service configured
+##### 1.2 Configure Supabase Authentication with Template Components
+- **AI Verifiable Deliverable:** Supabase client connection established and template authentication service configured
 - **Completion Criteria:**
-  - Supabase client initializes without errors
-  - Authentication service responds to connection test
-  - Environment variables properly configured
-- **References:** [`src/lib/supabase.ts`](../src/lib/supabase.ts), Blueprint Section 11
+  - Template's Supabase client initializes without errors
+  - Template's authentication context provider properly integrated
+  - Environment variables properly configured according to template requirements
+  - Session context from template accessible throughout the application
+- **References:** [`src/lib/supabase.ts`](../src/lib/supabase.ts), [`src/context/SessionContext.tsx`](../src/context/SessionContext.tsx), Template Integration Guide
 
-##### 1.3 Implement User Registration
-- **AI Verifiable Deliverable:** New users can register with email and password, creating database records
+##### 1.3 Implement User Registration with Template Components
+- **AI Verifiable Deliverable:** New users can register with email and password using template components, creating database records
 - **Completion Criteria:**
-  - Registration form accepts valid email/password combinations
-  - User record created in Supabase users table
-  - Registration success redirects to home page
+  - Template registration form accepts valid email/password combinations
+  - User record created in Supabase users table with correct schema
+  - Registration success redirects to home page using template routing
   - Test UAM-001 passes: `expect(registrationResult.success).toBe(true)`
-- **References:** UAM-001, AC-UAM-REGISTER, Blueprint Section 3
+- **References:** UAM-001, AC-UAM-REGISTER, Template Integration Guide
 
-##### 1.4 Implement User Login
-- **AI Verifiable Deliverable:** Registered users can authenticate with valid credentials
+##### 1.4 Implement User Login with Template Components
+- **AI Verifiable Deliverable:** Registered users can authenticate with valid credentials using template components
 - **Completion Criteria:**
-  - Login form validates credentials against database
-  - Successful login establishes user session
-  - User redirected to profile or home page
+  - Template login form validates credentials against database
+  - Successful login establishes user session using template session context
+  - User redirected to profile or home page using template routing
   - Test UAM-002 passes: `expect(loginResult.success).toBe(true)`
-- **References:** UAM-002, AC-UAM-LOGIN
+- **References:** UAM-002, AC-UAM-LOGIN, Template Integration Guide
 
-##### 1.5 Implement User Logout
-- **AI Verifiable Deliverable:** Users can securely end their session
+##### 1.5 Implement User Logout with Template Components
+- **AI Verifiable Deliverable:** Users can securely end their session using template components
 - **Completion Criteria:**
-  - Logout action clears user session
-  - User redirected to login page or home as guest
+  - Template logout action clears user session
+  - User redirected to login page or home as guest using template routing
   - Test UAM-003 passes: `expect(logoutResult.success).toBe(true)`
-- **References:** UAM-003, AC-UAM-LOGOUT
+- **References:** UAM-003, AC-UAM-LOGOUT, Template Integration Guide
 
-##### 1.6 Implement User Profile Management
-- **AI Verifiable Deliverable:** Users can view and edit their profile information
+##### 1.6 Extend Template for User Profile Management
+- **AI Verifiable Deliverable:** Users can view and edit their profile information beyond template's basic functionality
 - **Completion Criteria:**
-  - Profile page displays user information
+  - Profile page displays user information using extended template components
   - Profile edit form updates database records
   - Changes persist and display correctly
   - Tests UAM-004 and UAM-005 pass
-- **References:** UAM-004, UAM-005, Blueprint Section 3
+- **References:** UAM-004, UAM-005, Template Integration Guide
 
-##### 1.7 Implement Role-Based Access Control
-- **AI Verifiable Deliverable:** User roles and permissions system functional
+##### 1.7 Extend Template for Role-Based Access Control
+- **AI Verifiable Deliverable:** Template's authentication system extended to support role-based permissions
 - **Completion Criteria:**
-  - User roles (Guest, Registered, Moderator, Admin, Company Rep) enforced
+  - User roles (Guest, Registered, Moderator, Admin, Company Rep) enforced using extended template components
   - Permission checks prevent unauthorized actions
   - Admin can modify user roles
   - Test UAM-006 passes: role updates reflected in database
-- **References:** UAM-006, Blueprint Section 7
+- **References:** UAM-006, Template Integration Guide
 
-##### 1.8 Implement Password Reset
-- **AI Verifiable Deliverable:** Users can reset forgotten passwords via email
+##### 1.8 Extend Template for Password Reset
+- **AI Verifiable Deliverable:** Users can reset forgotten passwords via email using extended template functionality
 - **Completion Criteria:**
-  - Password reset request triggers email notification
+  - Password reset request triggers email notification using Supabase functionality
   - Reset link allows password change
   - New password enables successful login
   - Test UAM-007 passes: `expect(newPasswordResult.success).toBe(true)`
-- **References:** UAM-007
+- **References:** UAM-007, Template Integration Guide
 
 ### Phase 2: Event Management System
 **Phase AI Verifiable End Goal:** Users can create, discover, register for, and manage events. All event management acceptance tests (EVT-001 through EVT-007) pass successfully.
@@ -471,20 +473,26 @@
 
 Each micro-task includes specific, measurable completion criteria that can be programmatically verified:
 
-- **Database State Verification:** Check for presence and correctness of database records
-- **Function Return Value Testing:** Verify API and function responses match expected values
-- **UI State Verification:** Confirm correct page navigation and content display
-- **Integration Testing:** Validate cross-module functionality and data flow
-- **Performance Metrics:** Measure and verify system performance benchmarks
-- **Security Compliance:** Automated security scanning and validation
+- **Database State Verification:** Check for presence and correctness of database records in Supabase tables (e.g., verify a new user record exists after registration with expected fields populated according to template schema)
+- **Function Return Value Testing:** Verify API and function responses match expected values (e.g., confirm adaptCompanyFromDatabase returns correctly formatted company object)
+- **UI State Verification:** Confirm correct page navigation and content display (e.g., verify redirect to profile page after successful login using template routing, confirm error messages display when validation fails)
+- **Integration Testing:** Validate cross-module functionality and data flow (e.g., verify that creating a company profile correctly associates with posted opportunities)
+- **Adapter Transformation Testing:** Verify data transformations between frontend and backend formats work correctly (e.g., test that adaptMemberFromDatabase correctly handles null values)
+- **Performance Metrics:** Measure and verify system performance benchmarks (e.g., confirm page load times under 3 seconds, API response times under 500ms)
+- **Security Compliance:** Automated security scanning and validation (e.g., verify that template's authentication checks prevent unauthorized access to protected routes)
+- **Role-Based Access Control:** Verify that permissions are correctly enforced based on user roles (e.g., confirm that only administrators can access admin-only features using the extended template's permission system)
+- **Template Component Integration:** Verify that template components are correctly integrated and extended (e.g., confirm that SessionContext is accessible throughout the application, verify that protected routes correctly restrict access based on authentication state)
 
 ## 4. Dependencies and Prerequisites
 
-- **Technical Stack:** JavaScript/TypeScript, React, Supabase, Node.js
+- **Technical Stack:** JavaScript/TypeScript, React 18, Supabase, Node.js, Vite, Tailwind CSS
 - **Development Environment:** Node.js runtime, npm package manager
-- **External Services:** Supabase backend-as-a-service
-- **Testing Framework:** Jest for automated testing
+- **External Services:** Supabase backend-as-a-service (Authentication, Database, Storage)
+- **Testing Framework:** Jest for automated testing with co-located test files
+- **State Management:** React Query for server state, React Context for application state (leveraging template's SessionContext)
+- **Routing:** React Router v6 (integrated with template's protected routes)
 - **Version Control:** Git repository with proper branching strategy
+- **Template Integration:** mmvergara/react-supabase-auth-template providing authentication foundation, session management, and protected routes
 
 ## 5. Risk Mitigation
 
@@ -498,6 +506,9 @@ Each micro-task includes specific, measurable completion criteria that can be pr
 
 - **Functional Completeness:** 100% of acceptance tests pass
 - **Performance Standards:** Page load times < 3 seconds, API response times < 500ms
+- **Code Quality:** No TypeScript errors, consistent adapter patterns, proper error handling
+- **Test Coverage:** All critical paths and edge cases covered by automated tests
+- **Security:** All inputs properly validated and sanitized, authentication and authorization secure
 - **User Experience:** Intuitive navigation, responsive design, accessibility compliance
 - **Security Standards:** No critical vulnerabilities, secure data handling
 - **Deployment Success:** Zero-downtime deployment, environment parity

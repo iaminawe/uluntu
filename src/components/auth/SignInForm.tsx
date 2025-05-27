@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -72,7 +72,7 @@ export default function SignInForm() {
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="email">
             Email
           </label>
           <div className="relative">
@@ -85,19 +85,17 @@ export default function SignInForm() {
               type="email"
               autoComplete="email"
               required
+              className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md  bg-white dark:bg-slate-700 text-slate-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md 
-                       bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
-                       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              placeholder="you@example.com"
               disabled={isLoading}
             />
           </div>
         </div>
         
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="password">
             Password
           </label>
           <div className="relative">
@@ -110,12 +108,10 @@ export default function SignInForm() {
               type="password"
               autoComplete="current-password"
               required
+              className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md  bg-white dark:bg-slate-700 text-slate-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md 
-                       bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
-                       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              placeholder="••••••••"
               disabled={isLoading}
             />
           </div>
@@ -144,10 +140,8 @@ export default function SignInForm() {
         <div>
           <button
             type="submit"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium 
-                     text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 
-                     focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
@@ -157,9 +151,7 @@ export default function SignInForm() {
       <div className="mt-6 text-center">
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-medium text-orange-500 hover:text-orange-600">
-            Sign up
-          </Link>
+          <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>

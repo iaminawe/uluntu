@@ -1,40 +1,82 @@
 {
   "documentation_registry": [
     {
-      "file_path": "docs/PRD.md",
-      "description": "Project Requirements Document referenced during initial context gathering",
-      "type": "requirements document",
-      "timestamp": "2025-05-25T08:33:55.000Z"
-    },
-    {
-      "file_path": "docs/blueprint.md",
-      "description": "Project blueprint document referenced during initial context gathering",
-      "type": "blueprint document",
-      "timestamp": "2025-05-25T08:33:55.000Z"
+      "file_path": "docs/PRDMasterPlan.md",
+      "description": "Product Requirements Document detailing the overall project goal, development phases, AI verification framework, dependencies, and risk mitigation for the Hyperlocal Community Platform.",
+      "type": "requirements",
+      "timestamp": "2025-05-27T07:04:02.000Z"
     },
     {
       "file_path": "docs/acceptance_test_plan.md",
-      "description": "Master acceptance test plan document detailing the testing strategy for the hyperlocal community platform",
-      "type": "test plan document",
-      "timestamp": "2025-05-25T08:33:55.000Z"
+      "description": "Master Acceptance Test Plan outlining testing phases, test cases, and AI verifiable completion criteria for the Hyperlocal Community Platform.",
+      "type": "test plan",
+      "timestamp": "2025-05-27T07:11:32.000Z"
     },
     {
-      "file_path": "docs/PRDMasterPlan.md",
-      "description": "Detailed, phased approach to building the system with AI verifiable micro-tasks",
-      "type": "project plan document",
-      "timestamp": "2025-05-25T08:33:55.000Z"
+      "file_path": "docs/template_integration_guide.md",
+      "description": "Guide for integrating the mmvergara/react-supabase-auth-template, including original structure, intended use, alignment with project requirements, and required changes.",
+      "type": "integration guide",
+      "timestamp": "2025-05-27T07:11:32.000Z"
+    },
+    {
+      "file_path": "docs/framework_scaffold_report.md",
+      "description": "Report summarizing the scaffolding activities performed, tools used, and the initial project structure created for the Hyperlocal Community Platform.",
+      "type": "scaffold report",
+      "timestamp": "2025-05-27T07:39:24.000Z"
+    },
+    {
+      "file_path": "codereport/code_comprehension_report.md",
+      "description": "Comprehensive report detailing the project structure, core functionality, data flow, and testing strategy of the codebase, including identification of potential issues such as adapter inconsistencies and limited test coverage.",
+      "type": "code analysis report",
+      "timestamp": "2025-05-27T07:56:21.000Z"
+    },
+    {
+      "file_path": "docs/PRDMasterPlan_updated.md",
+      "description": "Updated Product Requirements Document detailing the project goal, development phases, AI verification framework, dependencies, and risk mitigation for the Hyperlocal Community Platform, reflecting the current state of the codebase and addressing discrepancies identified in the code comprehension report.",
+      "type": "requirements",
+      "timestamp": "2025-05-27T08:06:50.000Z"
+    },
+    {
+      "file_path": "docs/acceptance_test_plan_updated.md",
+      "description": "Updated Master Acceptance Test Plan outlining testing phases, test cases, and AI verifiable completion criteria for the Hyperlocal Community Platform, aligned with the updated PRDMasterPlan.md and the current state of the codebase.",
+      "type": "test plan",
+      "timestamp": "2025-05-27T08:06:50.000Z"
+    },
+    {
+      "file_path": "docs/PRDMasterPlan_updated_v2.md",
+      "description": "Updated Product Requirements Document with micro-tasks for integrating the template files, configuring Supabase authentication, implementing user registration, login, and logout, extending the template with user profile management and role-based access control, implementing password reset, hardening security, integrating with the existing UI, and securing the development bypass.",
+      "type": "requirements",
+      "timestamp": "2025-05-27T08:19:22.905Z"
+    },
+    {
+      "file_path": "docs/acceptance_test_plan_updated_v2.md",
+      "description": "Updated Master Acceptance Test Plan reflecting the template integration, ensuring all components are properly tested according to London School TDD principles, with the User Account Management section (3.1) updated to reference the template integration and include tests for the new functionality.",
+      "type": "test plan",
+      "timestamp": "2025-05-27T08:19:22.905Z"
+    },
+    {
+      "file_path": "docs/research/github_template_research_report.md",
+      "description": "Research report on the mmvergara/react-supabase-auth-template GitHub template, providing analysis and recommendations for integration with the project.",
+      "type": "research report",
+      "timestamp": "2025-05-27T08:19:22.905Z"
+    },
+    {
+      "file_path": "docs/framework_scaffold_report_auth.md",
+      "description": "Report summarizing the scaffolding activities performed, tools used, and the initial project structure created for the authentication module, including the integration of mmvergara/react-supabase-auth-template, directory structure, and test harness setup.",
+      "type": "scaffold report",
+      "timestamp": "2025-05-27T08:28:05.000Z"
     },
     {
       "file_path": "docs/architecture.md",
-      "description": "High-level architecture document for the hyperlocal community platform",
-      "type": "architecture document",
-      "timestamp": "2025-05-25T08:36:00.000Z"
+      "description": "Architecture document for the Hyperlocal Community Platform.",
+      "type": "architecture",
+      "timestamp": "2025-05-27T08:38:46.000Z"
     },
     {
-      "file_path": "docs/companyAdapter.md",
-      "description": "Documentation for the company adapter functions, updated to reflect code changes and improved validation for handling null values",
-      "type": "technical documentation",
-      "timestamp": "2025-05-26T06:21:24.000Z"
+      "file_path": "docs/auth_test_plan.md",
+      "description": "Test plan detailing test cases mapping to AI Verifiable End Results from `PRDMasterPlan.md`, incorporating London School TDD and recursive testing strategies, and ensuring every test case within the plan has an AI verifiable completion criterion. The test plan covers all aspects of the authentication module, including user registration, login, logout, profile management, role-based access control, password reset, and security hardening.",
+      "type": "test plan",
+      "timestamp": "2025-05-27T08:59:55.000Z"
     }
   ]
 }
