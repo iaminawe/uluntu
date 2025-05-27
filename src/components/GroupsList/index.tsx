@@ -1,24 +1,56 @@
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { useGroupsWithFilters } from '../../hooks/useQueries';
 import { Group, GroupsListProps } from './types';
 import GroupCard from './GroupCard';
 import JoinModal from '../JoinModal'; // Reusing the existing JoinModal component
 import Pagination from '../Pagination'; // Import Pagination
+import { useFilteredGroupsRedux } from '../../hooks/useGroupsRedux';
+import { GroupFilters } from '../../redux/slices/groupsSlice';
 
 const GROUPS_PER_PAGE = 8;
 
-const GroupsList = ({ searchTerm, visibilityFilter }: GroupsListProps) => {
+const GroupsList = ({ searchTerm, visibilityFilter, useRedux = false }: GroupsListProps & { useRedux?: boolean }) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: filteredGroups = [], isLoading, error } = useGroupsWithFilters({
+  // Connect to Redux if useRedux is true
+  const {
+    groups: reduxGroups,
+    filters,
+    updateFilters,
+    isLoading: reduxLoading,
+    error: reduxError
+  } = useFilteredGroupsRedux();
+
+  // Traditional React Query approach if not using Redux
+  const { data: queryFilteredGroups = [], isLoading: queryLoading, error: queryError } = useGroupsWithFilters({
     search: searchTerm,
     visibility: visibilityFilter.length > 0 ? visibilityFilter : undefined
   });
+  
+  // Choose which data source to use
+  const filteredGroups = useRedux ? reduxGroups : queryFilteredGroups;
+  const isLoading = useRedux ? reduxLoading : queryLoading;
+  const error = useRedux ? reduxError : queryError;
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchTerm, visibilityFilter]);
+    
+    // Update Redux filters if using Redux
+    if (useRedux) {
+      const reduxFilters: GroupFilters = {};
+      
+      if (searchTerm) {
+        reduxFilters.search = searchTerm;
+      }
+      
+      if (visibilityFilter.length > 0) {
+        reduxFilters.visibility = visibilityFilter;
+      }
+      
+      updateFilters(reduxFilters);
+    }
+  }, [searchTerm, visibilityFilter, useRedux]);
 
   // Pagination logic
   const totalGroups = filteredGroups.length;

@@ -1,14 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
+import { useMarketplaceListingByIdRedux, useRelatedMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import { ListingType, Listing, ListingCondition } from './types';
 import PageHeader from './PageHeader';
 import ListingDetails from './ListingDetails';
 import SellerInfo from './SellerInfo';
+import RelatedListings from './RelatedListings';
 import ContactModal from './ContactModal';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
@@ -17,33 +19,57 @@ export default function MarketplaceDetailPage() {
   const { id } = useParams();
   const [showContactModal, setShowContactModal] = useState(false);
   
-  // Use the useMarketplaceItem hook to fetch data
-  const { data: apiListing, isLoading, error } = useMarketplaceItem(id);
+  // Use both Redux and React Query hooks to support both implementations
+  const useRedux = true; // Set to true to use Redux, false to use React Query
+  
+  // Redux implementation
+  const { 
+    listing: reduxListing, 
+    isLoading: reduxIsLoading, 
+    isError: reduxIsError,
+    error: reduxError,
+    fetchListing: fetchReduxListing
+  } = useMarketplaceListingByIdRedux(id || '');
+  
+  // React Query implementation
+  const { data: apiListing, isLoading: queryIsLoading, error: queryError } = useMarketplaceItem(id);
+  
+  // Fetch listing data when component mounts (Redux)
+  useEffect(() => {
+    if (useRedux && id) {
+      fetchReduxListing();
+    }
+  }, [id, useRedux, fetchReduxListing]);
+  
+  // Determine which data source to use
+  const sourceData = useRedux ? reduxListing : apiListing;
+  const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
+  const error = useRedux ? reduxError : queryError;
   
   // Convert API data to the expected Listing format
   const listing = useMemo(() => {
-    if (!apiListing) return undefined;
+    if (!sourceData) return undefined;
     
     return {
-      id: Number(apiListing.id),
-      title: apiListing.title || '',
-      description: apiListing.description || '',
-      type: (apiListing.type as ListingType) || 'product',
-      price: apiListing.price || 0,
-      condition: apiListing.condition as ListingCondition,
-      images: apiListing.images || ['/placeholder-image.png'],
-      createdAt: apiListing.createdAt || new Date().toISOString(),
+      id: Number(sourceData.id),
+      title: sourceData.title || '',
+      description: sourceData.description || '',
+      type: (sourceData.type as ListingType) || 'product',
+      price: sourceData.price || 0,
+      condition: sourceData.condition as ListingCondition,
+      images: sourceData.images || ['/placeholder-image.png'],
+      createdAt: sourceData.createdAt || new Date().toISOString(),
       seller: {
-        id: apiListing.seller?.id ? Number(apiListing.seller.id) : 1,
-        name: 'Unknown Seller', // We'd need to fetch seller details separately
-        image: '/placeholder-avatar.png',
+        id: sourceData.seller?.id ? Number(sourceData.seller.id) : 1,
+        name: sourceData.seller?.name || 'Unknown Seller',
+        image: sourceData.seller?.image || '/placeholder-avatar.png',
         title: '',
         bio: ''
       },
-      location: apiListing.location || 'Unknown location',
-      tags: apiListing.tags || []
+      location: sourceData.location || 'Unknown location',
+      tags: sourceData.tags || []
     } as Listing;
-  }, [apiListing]);
+  }, [sourceData]);
   
   const getTypeIcon = (type: ListingType) => {
     switch (type) {
@@ -91,12 +117,12 @@ export default function MarketplaceDetailPage() {
             </Card>
           </div>
           
-          {/* This would typically be a sidebar with related listings */}
+          {/* Sidebar with related listings */}
           <div>
             <Card>
               <div className="p-6">
                 <h3 className="text-lg font-medium mb-4">Related Listings</h3>
-                <p className="text-slate-500 dark:text-slate-400">No related listings available.</p>
+                <RelatedListings id={id || ''} useRedux={useRedux} />
               </div>
             </Card>
           </div>

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useMember } from '../../hooks/useQueries';
+import { useMemberRedux } from '../../hooks/useMembersRedux';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
@@ -8,10 +9,16 @@ import MemberProfile from '../../components/MemberProfile';
 
 export default function DirectoryDetailPage() {
   const { id } = useParams();
-  // Store the original ID string - useMember expects a string ID
+  // Store the original ID string - useMemberRedux expects a string ID
   const memberIdString = id || '';
   
-  const { data: member, isLoading, error } = useMember(memberIdString);
+  // Use Redux-based hook for a single member
+  const { member, isLoading, error, getMember } = useMemberRedux(memberIdString);
+  
+  // Fetch member when component mounts or ID changes
+  useEffect(() => {
+    getMember();
+  }, [getMember, memberIdString]);
   
   if (isLoading) {
     return <LoadingState />;

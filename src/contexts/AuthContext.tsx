@@ -1,15 +1,17 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase, signIn, signUp, signOut, checkSupabaseConnection } from '../lib/supabase';
+import { Session, User, AuthError } from '@supabase/supabase-js';
+import { supabase, signIn, signUp, signOut, checkSupabaseConnection, forgotPassword, resetPassword } from '../lib/supabase';
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
   signOut: () => Promise<{ error: Error | null }>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
+  resetPassword: (newPassword: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
   userRoles: string[];
   isAdmin: boolean;
 }
@@ -130,6 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error: null,
     signUp,
     signOut,
+    forgotPassword,
+    resetPassword,
     userRoles,
     isAdmin
   };
@@ -170,10 +174,13 @@ export function useAuth() {
     return {
       ...safeContext,
       // Override sign-in to always succeed in development
-      signIn: async () => ({
+      signIn: async (_email, _password, _rememberMe) => ({
         data: { session: { user: DEV_USER }, user: DEV_USER },
         error: null
       }),
+      // Add mock implementations for password reset functions
+      forgotPassword: async () => ({ success: true, error: null }),
+      resetPassword: async () => ({ success: true, error: null }),
       // Make sure user is always set in development
       user: DEV_USER,
       isAdmin: true,

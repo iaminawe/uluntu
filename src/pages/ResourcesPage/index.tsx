@@ -6,14 +6,19 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import ResourcesList from '../../components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useResources } from '../../hooks/useResourceQueries';
+import { useResourcesRedux } from '../../hooks/useResourcesRedux';
 
 // Resource type is already defined in the types.ts file
 
 export default function ResourcesPage() {
-  // Use the useResources hook to fetch resources data
-  const { data: resources = [], isLoading, error } = useResources();
+  // Use the Redux-based hook to fetch resources data
+  const { resources, loadResources, isLoading, isError, error } = useResourcesRedux();
   const hasResources = resources.length > 0;
+  
+  // Load resources on component mount
+  useEffect(() => {
+    loadResources();
+  }, []);
   
   useEffect(() => {
     console.log('ResourcesPage - Resources:', resources);
@@ -35,10 +40,10 @@ export default function ResourcesPage() {
         
         {isLoading ? (
           <SkeletonGrid count={9} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying resources query')} 
+            error={error ? new Error(error) : new Error('Failed to load resources')} 
+            retry={() => loadResources()} 
             message="We couldn't load the resources. Please try again."
           />
         ) : !hasResources ? (
@@ -49,7 +54,7 @@ export default function ResourcesPage() {
             primaryActionUrl="/resources/create"
           />
         ) : (
-          <ResourcesList resources={resources} />
+          <ResourcesList resources={resources} useRedux={true} />
         )}
       </ContentContainer>
     </>

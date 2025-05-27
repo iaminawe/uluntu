@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useCompany, useCompanyEmployees } from '../../hooks/useCompanyQueries';
+import { useCompanyRedux } from '../../hooks/useCompaniesRedux';
+import { useCompanyEmployees } from '../../hooks/useCompanyQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import PageHeader from './PageHeader';
@@ -13,9 +14,8 @@ import { Company, Member } from '../../types';
 
 export default function CompanyDetailPage() {
   const { id } = useParams();
-  // Use string ID directly as useCompany expects a string
-  
-  const { data: supabaseCompany, isLoading: companyLoading, error: companyError } = useCompany(id);
+  // Use the Redux-based hook to fetch company data
+  const { company, isLoading: companyLoading, isError, error: companyError } = useCompanyRedux(id);
   // We're fetching employees data for completeness, but will handle the type issue by using a fixed empty array
   const { isLoading: employeesLoading } = useCompanyEmployees(id);
   
@@ -23,12 +23,11 @@ export default function CompanyDetailPage() {
     return <LoadingState />;
   }
 
-  if (companyError || !supabaseCompany) {
+  if (isError || !company) {
     return <ErrorState />;
   }
   
-  // Use the company data as is, since it's already the correct type
-  const company: Company = supabaseCompany;
+  // Company data is already available from the Redux hook
   
   // There's a type mismatch between what useCompanyEmployees returns (Company[]) and what EmployeesSection expects (Member[])
   // This is an API implementation issue that needs to be fixed, but for now we'll use an empty array
