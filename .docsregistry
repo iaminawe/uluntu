@@ -1,0 +1,40 @@
+{
+  "documentation_registry": [
+    {
+      "file_path": "docs/PRD.md",
+      "description": "Project Requirements Document referenced during initial context gathering",
+      "type": "requirements document",
+      "timestamp": "2025-05-25T08:33:55.000Z"
+    },
+    {
+      "file_path": "docs/blueprint.md",
+      "description": "Project blueprint document referenced during initial context gathering",
+      "type": "blueprint document",
+      "timestamp": "2025-05-25T08:33:55.000Z"
+    },
+    {
+      "file_path": "docs/acceptance_test_plan.md",
+      "description": "Master acceptance test plan document detailing the testing strategy for the hyperlocal community platform",
+      "type": "test plan document",
+      "timestamp": "2025-05-25T08:33:55.000Z"
+    },
+    {
+      "file_path": "docs/PRDMasterPlan.md",
+      "description": "Detailed, phased approach to building the system with AI verifiable micro-tasks",
+      "type": "project plan document",
+      "timestamp": "2025-05-25T08:33:55.000Z"
+    },
+    {
+      "file_path": "docs/architecture.md",
+      "description": "High-level architecture document for the hyperlocal community platform",
+      "type": "architecture document",
+      "timestamp": "2025-05-25T08:36:00.000Z"
+    },
+    {
+      "file_path": "docs/companyAdapter.md",
+      "description": "Documentation for the company adapter functions, updated to reflect code changes and improved validation for handling null values",
+      "type": "technical documentation",
+      "timestamp": "2025-05-26T06:21:24.000Z"
+    }
+  ]
+}
