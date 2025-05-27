@@ -97,7 +97,7 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events, isLoading, erro
         defaultView={Views.MONTH}
         onSelectEvent={handleEventClick}
         components={{
-          toolbar: CalendarToolbar,
+          toolbar: CalendarToolbar as any,
         }}
         className="calendar-container"
       />

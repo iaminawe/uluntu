@@ -1,6 +1,10 @@
 // Types for OpportunityDetailPage components
+import { Opportunity as MainOpportunity } from '../../types';
+import { ContentStatus } from '../../types/common';
+
+// Define a local Opportunity interface for the OpportunityDetailPage component
 export interface Opportunity {
-  id: number;
+  id: string;
   title: string;
   description: string;
   type: 'job' | 'volunteer' | 'funding' | 'community';
@@ -21,6 +25,40 @@ export interface Opportunity {
   requirements: string[];
   responsibilities: string[];
   benefits: string[];
+  status?: ContentStatus;
+}
+
+// Adapter function to convert from main Opportunity type to local Opportunity type
+export const adaptMainOpportunityToDetailPage = (opportunity: MainOpportunity): Partial<Opportunity> => {
+  return {
+    id: typeof opportunity.id === 'string' ? opportunity.id : String(opportunity.id),
+    title: opportunity.title,
+    description: opportunity.description,
+    // Map the main type to the local type
+    type: mapMainTypeToLocalType(opportunity.type),
+    organization: opportunity.company.name,
+    location: opportunity.location,
+    compensation: opportunity.salary,
+    deadline: opportunity.deadline,
+    // These fields don't exist in the main type, so they would need to be added separately
+    contactEmail: '',
+    website: '',
+    image: '',
+    postedAt: opportunity.postedDate,
+    status: opportunity.status
+  };
+};
+
+// Helper function to map main Opportunity type to local type
+function mapMainTypeToLocalType(mainType: MainOpportunity['type']): Opportunity['type'] {
+  const typeMap: Record<MainOpportunity['type'], Opportunity['type']> = {
+    'full-time': 'job',
+    'part-time': 'job',
+    'contract': 'job',
+    'volunteer': 'volunteer'
+  };
+  
+  return typeMap[mainType] || 'job';
 }
 
 export interface PageHeaderProps {

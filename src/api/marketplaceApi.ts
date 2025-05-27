@@ -2,58 +2,89 @@ import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
   adaptMarketplaceItemFromSupabase,
   adaptMarketplaceItemToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+  MarketplaceItemsQueryOptions
+} from '../adapters/marketplaceAdapters';
+import { MarketplaceItem } from '../types';
+import { ContentStatus } from '../types/common';
 
-// TODO: Consider importing specific Supabase row types for 'data' variables
-// e.g., import { Tables } from '../types/supabase';
-// type MarketplaceTableRow = Tables<'marketplace_listings'>;
+// Helper function to adapt a list of items
+function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
+  return items.map(item => adapter(item));
+}
 
 // Define the input type for marketplace item data passed from the application
+// Make compatible with MarketplaceItemFormInput from adapters
 export interface MarketplaceItemInput {
   title: string;
-  description?: string | null;
-  type: 'product' | 'service' | 'equipment' | 'event' | string; // maps to Supabase 'type'
-  price?: number | null; // maps to Supabase 'price'
-  condition?: 'new' | 'used_like_new' | 'used_good' | 'used_fair' | string | null; // maps to Supabase 'condition'
-  images?: string[] | null; // Array of image URLs, maps to Supabase 'images'
-  location?: string | null; // maps to Supabase 'location'
-  tags?: string[] | null; // Array of tags, maps to Supabase 'tags'
-  sellerId: string; // ID of the member selling, maps to Supabase 'seller_id'
-  status?: string; // e.g., 'published', 'draft', 'sold', maps to Supabase 'status'
-  featured?: boolean | null; // maps to Supabase 'featured'
+  description?: string;
+  type: 'product' | 'service' | 'equipment' | 'event' | string;
+  price?: number;
+  condition?: 'new' | 'used_like_new' | 'used_good' | 'used_fair' | string;
+  images?: string[];
+  location?: string;
+  tags?: string[];
+  sellerId: string; // ID of the member selling
+  status?: ContentStatus;
+  featured?: boolean;
 }
 
 export const marketplaceApi = {
-  async getAll(filters?: { search?: string; types?: string[] }) {
+  async getAll(filters?: MarketplaceItemsQueryOptions): Promise<MarketplaceItem[]> {
     try {
       let query = supabase
         .from('marketplace_listings')
         .select(`
           *,
-          members!marketplace_listings_seller_id_fkey(id, name, image)
-        `)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false });
+          members (*)
+        `);
 
-      if (filters?.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-      }
+      // Apply filters if provided
+      if (filters) {
+        // Add search filter if provided
+        if (filters.search) {
+          query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        }
 
-      if (filters?.types && filters.types.length > 0) {
-        query = query.in('type', filters.types);
+        // Add type filter if provided
+        if (filters.type && filters.type !== 'all') {
+          query = query.eq('type', filters.type);
+        }
+
+        // Add condition filter if provided
+        if (filters.condition && filters.condition !== 'all') {
+          query = query.eq('condition', filters.condition);
+        }
+
+        // Add seller filter if provided
+        if (filters.sellerId) {
+          query = query.eq('seller_id', filters.sellerId);
+        }
+
+        // Add tags filter if provided
+        if (filters.tags && filters.tags.length > 0) {
+          // This assumes the tags column is an array type in Supabase
+          // For each tag in the filters.tags array, check if it's contained in the tags column
+          filters.tags.forEach(tag => {
+            query = query.contains('tags', [tag]);
+          });
+        }
       }
 
       const { data, error } = await query;
-      if (error) handleSupabaseError(error);
-      return adaptListFromSupabase(data || [], adaptMarketplaceItemFromSupabase);
+
+      if (error) {
+        throw handleSupabaseError(error);
+      }
+
+      // Use our helper function with type assertion to avoid compatibility issues
+      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      console.error('Error fetching marketplace items:', error);
+      throw error;
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<MarketplaceItem | null> {
     try {
       console.log('Fetching marketplace item with ID:', id);
       const { data, error } = await supabase
@@ -67,20 +98,21 @@ export const marketplaceApi = {
 
       if (error) {
         console.error('Error fetching marketplace item:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'fetching marketplace item by id');
         return null;
       }
       
       console.log('Marketplace item data:', data);
-      return data ? adaptMarketplaceItemFromSupabase(data) : null;
+      // Use type assertion to avoid type compatibility issues
+      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
     } catch (error) {
       console.error('Exception in getById:', error);
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'fetching marketplace item by id');
       return null;
     }
   },
 
-  async getRelated(itemId: string, limit: number = 3) {
+  async getRelated(itemId: string, limit: number = 3): Promise<MarketplaceItem[]> {
     try {
       // Get current item details
       const { data: currentItem } = await supabase
@@ -104,15 +136,20 @@ export const marketplaceApi = {
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (error) handleSupabaseError(error);
-      return adaptListFromSupabase(data || [], adaptMarketplaceItemFromSupabase);
+      if (error) {
+        handleSupabaseError(error, 'fetching marketplace items by seller');
+        return [];
+      }
+      
+      // Use our helper function instead of adaptListFromSupabase
+      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      handleSupabaseError(error, 'fetching marketplace items by seller');
+      return []; // Return empty array on error
     }
   },
 
-  async create(itemData: MarketplaceItemInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(itemData: MarketplaceItemInput): Promise<MarketplaceItem | null> {
     try {
       const supabaseData = adaptMarketplaceItemToSupabase(itemData);
       const { data, error } = await supabase
@@ -121,15 +158,19 @@ export const marketplaceApi = {
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptMarketplaceItemFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating marketplace item');
+        return null;
+      }
+      
+      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating marketplace item');
+      return null;
     }
   },
 
-  async update(id: string, itemData: Partial<MarketplaceItemInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, itemData: Partial<MarketplaceItemInput>): Promise<MarketplaceItem | null> {
     try {
       const supabaseData = adaptMarketplaceItemToSupabase(itemData);
       const { data, error } = await supabase
@@ -139,25 +180,32 @@ export const marketplaceApi = {
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptMarketplaceItemFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'updating marketplace item');
+        return null;
+      }
+      
+      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'updating marketplace item');
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('marketplace_listings')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, 'deleting marketplace item');
+        return false;
+      }
+      return true; // Operation was successful
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'deleting marketplace item');
       return false;
     }
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShoppingBag, Briefcase, Monitor } from 'lucide-react';
-import { ListingType, ListingCondition, FilterOptions, Listing } from './types';
+import { ListingType, ListingCondition, FilterOptions, MarketplaceListing } from '../../types/marketplace';
 
 // Get icon for listing type
 export const getTypeIcon = (type: ListingType): React.ReactNode => {
@@ -25,11 +25,12 @@ export const getTypeDisplayName = (type: ListingType): string => {
       return 'Service';
     case 'equipment':
       return 'Equipment';
-    default:
+    default: {
       // This is a type guard to ensure we handle the case properly
       // In reality, this should never happen as we've covered all ListingType values
       const unknownType = type as string;
       return unknownType.charAt(0).toUpperCase() + unknownType.slice(1);
+    }
   }
 };
 
@@ -46,23 +47,24 @@ export const getConditionDisplayName = (condition: ListingCondition): string => 
       return 'Fair';
     case 'poor':
       return 'Poor';
-    default:
+    default: {
       // This is a type guard to ensure we handle the case properly
       // In reality, this should never happen as we've covered all ListingCondition values
       const unknownCondition = condition as string;
       return unknownCondition.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
   }
 };
 
 // Filter listings based on filter options
 export const filterListings = (
-  listings: Listing[], 
+  listings: MarketplaceListing[],
   filters: FilterOptions,
-  sellerId?: number
-): Listing[] => {
+  sellerId?: string
+): MarketplaceListing[] => {
   return listings.filter(listing => {
     // Filter by seller if specified
-    if (sellerId && listing.seller.id !== sellerId) {
+    if (sellerId && listing.seller?.id !== sellerId) {
       return false;
     }
     
@@ -82,12 +84,12 @@ export const filterListings = (
     }
     
     // Filter by price range
-    if (filters.priceRange !== 'all' && !matchesPriceRange(listing.price, filters.priceRange)) {
+    if (filters.priceRange !== 'all' && listing.price !== null && !matchesPriceRange(listing.price, filters.priceRange)) {
       return false;
     }
     
     // Filter by tags
-    if (filters.tags.length > 0 && !hasAnyTag(listing.tags, filters.tags)) {
+    if (filters.tags.length > 0 && listing.tags && !hasAnyTag(listing.tags, filters.tags)) {
       return false;
     }
     
@@ -96,20 +98,20 @@ export const filterListings = (
 };
 
 // Sort listings by date (newest first)
-export const sortListingsByDate = (listings: Listing[]): Listing[] => {
+export const sortListingsByDate = (listings: MarketplaceListing[]): MarketplaceListing[] => {
   return [...listings].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    return new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime();
   });
 };
 
 // Helper function to check if listing matches search term
-const matchesSearch = (listing: Listing, search: string): boolean => {
+const matchesSearch = (listing: MarketplaceListing, search: string): boolean => {
   const searchLower = search.toLowerCase();
   return (
-    listing.title.toLowerCase().includes(searchLower) ||
-    listing.description.toLowerCase().includes(searchLower) ||
-    listing.location.toLowerCase().includes(searchLower) ||
-    listing.tags.some(tag => tag.toLowerCase().includes(searchLower))
+    (listing.title || '').toLowerCase().includes(searchLower) ||
+    (listing.description || '').toLowerCase().includes(searchLower) ||
+    (listing.location || '').toLowerCase().includes(searchLower) ||
+    (Array.isArray(listing.tags) ? listing.tags : []).some((tag: string) => tag.toLowerCase().includes(searchLower))
   );
 };
 

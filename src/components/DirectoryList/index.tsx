@@ -3,9 +3,10 @@ import { AlertTriangle } from 'lucide-react';
 
 import MemberCard from './MemberCard';
 import DirectoryFilters from './DirectoryFilters';
-import { DirectoryListProps, FilterOptions } from './types';
+import { DirectoryListProps, FilterOptions, Member as DirectoryMember } from './types';
 import { extractUniqueSkills } from './utils';
 import { useMembersWithFilters } from '../../hooks/useQueries';
+import { Member as QueryMember } from '../../hooks/useMemberQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',
@@ -17,10 +18,37 @@ const DirectoryList = ({
     skills: initialSkill ? [initialSkill] : []
   });
 
-  const { data: displayedMembers = [], isLoading, error, refetch } = useMembersWithFilters({
+  const { data: apiMembers = [], isLoading, error, refetch } = useMembersWithFilters({
     search: filters.search,
     skills: filters.skills.length > 0 ? filters.skills : undefined
   });
+  
+  // Adapt members from API format to DirectoryList format
+  const adaptMemberForDirectory = (member: QueryMember): DirectoryMember => ({
+    id: member.id,
+    name: member.name,
+    title: member.role || 'Member', // Use role as title with fallback
+    company: typeof member.company === 'string' ? member.company : undefined,
+    location: typeof member.location === 'string' ? member.location : undefined,
+    skills: Array.isArray(member.skills) ? member.skills : [],
+    image: typeof member.image === 'string' ? member.image : '/placeholder-avatar.png',
+    intro: typeof member.intro === 'string' ? member.intro : undefined,
+    bio: typeof member.bio === 'string' ? member.bio : undefined,
+    joinDate: typeof member.joinDate === 'string' ? member.joinDate : 
+              typeof member.joinedDate === 'string' ? member.joinedDate : 
+              typeof member.created_at === 'string' ? member.created_at : 
+              new Date().toISOString(),
+    // Handle social properties directly
+    social: typeof member.social === 'object' && member.social ? {
+      linkedin: typeof (member.social as Record<string, unknown>).linkedin === 'string' ? (member.social as Record<string, unknown>).linkedin as string : undefined,
+      twitter: typeof (member.social as Record<string, unknown>).twitter === 'string' ? (member.social as Record<string, unknown>).twitter as string : undefined,
+      github: typeof (member.social as Record<string, unknown>).github === 'string' ? (member.social as Record<string, unknown>).github as string : undefined,
+      website: typeof (member.social as Record<string, unknown>).website === 'string' ? (member.social as Record<string, unknown>).website as string : undefined
+    } : undefined
+  });
+  
+  // Convert all members
+  const displayedMembers = apiMembers.map(adaptMemberForDirectory);
   
   // Extract all unique skills
   const allSkills = extractUniqueSkills(displayedMembers || []);
@@ -124,7 +152,7 @@ const DirectoryList = ({
         <>
           {/* Members grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedMembers.map((member: any) => (
+            {displayedMembers.map((member) => (
               <MemberCard key={member.id} member={member} />
             ))}
           </div>

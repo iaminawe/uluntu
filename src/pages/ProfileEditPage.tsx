@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useMember } from "../hooks/useQueries";
 import { ContentContainer } from '../components/ui/PageLayout';
 import BasicInfoSection from './DirectoryEditPage/BasicInfoSection';
@@ -18,7 +18,7 @@ export default function ProfileEditPage() {
   
   // In a real app, this would fetch the member data for the logged-in user
   // For now, we're just using the ID from the authentication
-  const { data: member, isLoading } = useMember(userId ? parseInt(userId) : 0);
+  const { data: member, isLoading } = useMember(userId || '');
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newSkill, setNewSkill] = useState('');
@@ -36,21 +36,24 @@ export default function ProfileEditPage() {
   // Populate form with member data when it loads
   useEffect(() => {
     if (member) {
+      // Cast social to a Record to safely access properties
+      const socialData = member.social as Record<string, any> || {};
+      
       setFormData({
         name: member.name || '',
-        title: member.title || '',
-        company: member.company || '',
-        location: member.location || '',
+        title: typeof member.title === 'string' ? member.title : '',
+        company: typeof member.company === 'string' ? member.company : '',
+        location: typeof member.location === 'string' ? member.location : '',
         image: member.image || '',
         bio: member.bio || '',
-        intro: member.intro || '',
+        intro: typeof member.intro === 'string' ? member.intro : '',
         skills: Array.isArray(member.skills) ? member.skills : [],
         joinDate: member.joinDate || new Date().toISOString().split('T')[0],
         social: {
-          linkedin: member.social?.linkedin || '',
-          twitter: member.social?.twitter || '',
-          github: member.social?.github || '',
-          website: member.social?.website || ''
+          linkedin: socialData.linkedin || '',
+          twitter: socialData.twitter || '',
+          github: socialData.github || '',
+          website: socialData.website || ''
         }
       });
     }

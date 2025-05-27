@@ -1,19 +1,22 @@
-import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
-import { Database } from '../types/supabase';
+import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 
-// Define Tables type to correctly access the Row property
-type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T];
+// Mock data service
+import * as mockQueries from '../hooks/useQueries';
+import { Company } from '../types';
+
+// Supabase API services
 import { companiesApi, CompanyInput } from '../api/companiesApi';
-import * as mockQueries from './useQueries';
 
-// Configuration to switch between mock and real data
+// Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
 
-// Type for filters, mirroring companiesApi.getAll
-export interface CompanyFilters {
+// Type for filters to keep compatibility with the API
+interface CompanyFilters {
   search?: string;
   industries?: string[];
 }
+
+// We're using the CompanyInput from companiesApi.ts
 
 /**
  * Custom hook to fetch a list of all companies.
@@ -21,14 +24,12 @@ export interface CompanyFilters {
  *
  * @returns A UseQueryResult object from Tanstack Query containing the list of companies or an error.
  */
-export function useCompanies(): UseQueryResult<Tables<'companies'>['Row'][], Error> {
-  // Use a consistent approach to avoid conditional hook calls
-  return useQuery<Tables<'companies'>['Row'][], Error>({
+export function useCompanies(): UseQueryResult<Company[], Error> {
+  return useQuery<Company[], Error>({
     queryKey: ['companies', 'all', USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!USE_SUPABASE) {
-        // Cast to unknown first to avoid type mismatch errors
-        return mockQueries.useCompanies().data as unknown as Tables<'companies'>['Row'][];
+        return mockQueries.useCompanies().data || [];
       }
       return companiesApi.getAll();
     },
@@ -43,22 +44,14 @@ export function useCompanies(): UseQueryResult<Tables<'companies'>['Row'][], Err
  * @param filters - Optional filters (e.g., search term, industries) to apply to the company list.
  * @returns A UseQueryResult object from Tanstack Query containing the filtered list of companies or an error.
  */
-export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResult<Tables<'companies'>['Row'][], Error> {
-  // Use a consistent approach to avoid conditional hook calls
-  return useQuery<Tables<'companies'>['Row'][], Error>({
+export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResult<Company[], Error> {
+  return useQuery<Company[], Error>({
     queryKey: ['companies', 'filters', filters, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!USE_SUPABASE) {
-        // Cast to unknown first to avoid type mismatch errors
-        return mockQueries.useCompaniesWithFilters(filters).data as unknown as Tables<'companies'>['Row'][];
+        return mockQueries.useCompaniesWithFilters(filters).data || [];
       }
-      // If filters is undefined, call getAll without arguments, similar to useCompanies hook.
-      // Otherwise, pass the filters object.
-      if (filters) {
-        return companiesApi.getAll(filters);
-      } else {
-        return companiesApi.getAll();
-      }
+      return companiesApi.getAll(filters);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -72,31 +65,27 @@ export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResul
  * @param id - The ID of the company to fetch. Can be a string.
  * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
  */
-export function useCompany(id?: string): UseQueryResult<Tables<'companies'>['Row'] | null, Error> {
-  // Use a consistent approach to avoid conditional hook calls
-  return useQuery<Tables<'companies'>['Row'] | null, Error>({
+export function useCompany(id?: string): UseQueryResult<Company | null, Error> {
+  return useQuery<Company | null, Error>({
     queryKey: ['companies', id, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
-      if (id === undefined) {
-        return Promise.reject(new Error('Company ID is undefined'));
+      if (!id) {
+        return null;
       }
-      
+
       if (!USE_SUPABASE) {
-        const numericId = parseInt(id, 10);
-        if (isNaN(numericId)) {
-          // If the original id string cannot be parsed into a valid number,
-          // and assuming mockQueries.useCompany expects a numeric ID or a numeric string,
-          // it's safer to return null or handle as an error for non-numeric string IDs.
-          // For now, returning null if id is not a parseable number string.
-          return null;
-        }
-        const mockResult = mockQueries.useCompany(numericId).data;
-        return mockResult as unknown as Tables<'companies'>['Row'] | null;
+        // For mock data, convert any null to undefined for proper type compatibility
+        const result = mockQueries.useCompany(id).data;
+        return result || null;
       }
-      
-      // id is guaranteed to be a string here due to the 'enabled' option and the undefined check.
-      // Assuming companiesApi.getById expects a string ID based on the new lint error.
-      return companiesApi.getById(id);
+
+      try {
+        const company = await companiesApi.getById(id);
+        return company;
+      } catch (error) {
+        console.error(`Error fetching company with ID ${id}:`, error);
+        return null;
+      }
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
@@ -110,33 +99,39 @@ export function useCompany(id?: string): UseQueryResult<Tables<'companies'>['Row
  *
  * @returns A UseMutationResult object from Tanstack Query for the create company operation.
  */
-export function useCreateCompany(): UseMutationResult<
-  Tables<'companies'>['Row'] | null,
-  Error,
-  CompanyInput
-> {
+export function useCreateCompany(): UseMutationResult<Company | null, Error, CompanyInput> {
   const queryClient = useQueryClient();
-  
-  // Always call useMutation to avoid conditional hook calls
-  return useMutation<
-    Tables<'companies'>['Row'] | null,
-    Error,
-    CompanyInput
-  >({
-    mutationFn: (companyData: CompanyInput) => {
+  return useMutation<Company | null, Error, CompanyInput>({
+    mutationFn: async (companyData: CompanyInput) => {
       if (!USE_SUPABASE) {
-        console.warn('Supabase is disabled, using mock create company.');
-        console.log('Mock create company:', companyData);
-        // Cast to unknown first to avoid type mismatch errors
-        return Promise.resolve((mockQueries.mockData?.companies?.[0] || null) as unknown as Tables<'companies'>['Row'] | null);
+        // Create a mock company with the data provided
+        const newCompany: Company = {
+          id: Date.now().toString(),
+          name: companyData.name,
+          description: companyData.description,
+          logo: companyData.logo || '',
+          industry: companyData.industry || [],
+          size: companyData.size,
+          founded: companyData.founded,
+          location: companyData.location || '',
+          website: companyData.website || undefined, // Convert null to undefined for type compatibility
+          featured: companyData.featured || false,
+          created_at: new Date().toISOString(),
+        };
+
+        return Promise.resolve(newCompany);
       }
-      
-      return companiesApi.create(companyData);
+
+      try {
+        const company = await companiesApi.create(companyData);
+        return company;
+      } catch (error) {
+        console.error('Error creating company:', error);
+        return null;
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'] 
-      });
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
     },
   });
 }
@@ -148,33 +143,45 @@ export function useCreateCompany(): UseMutationResult<
  *
  * @returns A UseMutationResult object from Tanstack Query for the update company operation.
  */
-export function useUpdateCompany(): UseMutationResult<
-  Tables<'companies'>['Row'] | null,
-  Error,
-  { id: string; data: Partial<CompanyInput> }
-> {
+export function useUpdateCompany(): UseMutationResult<Company | null, Error, { id: string; data: Partial<CompanyInput> }> {
   const queryClient = useQueryClient();
-  
-  // Always call useMutation to avoid conditional hook calls
-  return useMutation<
-    Tables<'companies'>['Row'] | null,
-    Error,
-    { id: string; data: Partial<CompanyInput> }
-  >({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CompanyInput> }) => {
+  return useMutation<Company | null, Error, { id: string; data: Partial<CompanyInput> }>({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<CompanyInput> }) => {
       if (!USE_SUPABASE) {
-        console.warn('Supabase is disabled, using mock update company.');
-        console.log('Mock update company:', { id, data });
-        // Cast to unknown first to avoid type mismatch errors
-        return Promise.resolve((mockQueries.mockData?.companies?.[0] || null) as unknown as Tables<'companies'>['Row'] | null);
+        const result = mockQueries.useCompany(id);
+        const currentCompany = result.data;
+
+        if (!currentCompany) {
+          return null;
+        }
+
+        // Create an updated version of the company with the new data
+        const updatedCompany: Company = {
+          ...currentCompany,
+          name: data.name || currentCompany.name,
+          description: data.description || currentCompany.description,
+          founded: data.founded || currentCompany.founded,
+          industry: data.industry || currentCompany.industry,
+          size: data.size || currentCompany.size,
+          logo: data.logo !== undefined ? data.logo : currentCompany.logo,
+          website: data.website !== undefined ? data.website : (currentCompany.website || undefined), // Convert null to undefined
+          featured: data.featured !== undefined ? data.featured : currentCompany.featured,
+          location: data.location !== undefined ? data.location : currentCompany.location,
+        };
+
+        return Promise.resolve(updatedCompany);
       }
-      
-      return companiesApi.update(id, data);
+
+      try {
+        const company = await companiesApi.update(id, data);
+        return company;
+      } catch (error) {
+        console.error(`Error updating company with ID ${id}:`, error);
+        return null;
+      }
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'] 
-      });
+      queryClient.invalidateQueries({ queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'] });
       if (variables.id) {
         queryClient.invalidateQueries({ 
           queryKey: ['companies', variables.id, USE_SUPABASE ? 'supabase' : 'mock'] 
@@ -198,12 +205,9 @@ export function useDeleteCompany(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  // Always call useMutation to avoid conditional hook calls
   return useMutation<boolean, Error, string>({
     mutationFn: (id: string) => {
       if (!USE_SUPABASE) {
-        console.warn('Supabase is disabled, using mock delete company.');
-        console.log('Mock delete company:', id);
         return Promise.resolve(true);
       }
       
@@ -226,30 +230,33 @@ export function useDeleteCompany(): UseMutationResult<
  * @param companyId - The ID of the company whose employees are to be fetched.
  * @returns A UseQueryResult object from Tanstack Query containing the list of company employees or an error.
  */
-export function useCompanyEmployees(companyId?: string): UseQueryResult<Tables<'members'>['Row'][], Error> {
-  // Always call useQuery to avoid conditional hook calls
-  return useQuery<Tables<'members'>['Row'][], Error>({
-    queryKey: ['companies', companyId, 'employees', USE_SUPABASE ? 'supabase' : 'mock'],
+export function useCompanyEmployees(companyId?: string): UseQueryResult<Company[], Error> {
+  return useQuery<Company[], Error>({
+    queryKey: ['company', companyId, 'employees', USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!companyId) {
-        return [] as Tables<'members'>['Row'][];
+        return [];
       }
-      
-      if (!USE_SUPABASE) {
-        // Parse the string ID to a number if it exists
-        const numericId = parseInt(companyId, 10);
-        // Check if numericId is a valid number before passing it to the mock function
-        const validNumericId = !isNaN(numericId) ? numericId : undefined;
-        // Get the mock data result
-        const result = mockQueries.useCompanyEmployees(validNumericId);
-        // Cast to unknown first to avoid type mismatch errors
-        return result.data as unknown as Tables<'members'>['Row'][];
+
+      if (USE_SUPABASE) {
+        try {
+          // This would need to be implemented in a real API
+          console.warn('Supabase API for company employees not implemented');
+          return [];
+        } catch (error) {
+          console.error(`Error fetching employees for company ID ${companyId}:`, error);
+          return [];
+        }
       }
-      
-      // Supabase implementation (currently returns empty array)
-      console.warn(`Supabase function for useCompanyEmployees with companyId: ${companyId} is not implemented. Returning empty array.`);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return [] as Tables<'members'>['Row'][];
+
+      try {
+        // Use string ID consistently throughout the application
+        const result = mockQueries.useCompanyEmployees(companyId);
+        return result?.data || [];
+      } catch (error) {
+        console.error(`Error fetching employees for company ID ${companyId}:`, error);
+        return [];
+      }
     },
     enabled: !!companyId,
     staleTime: 5 * 60 * 1000,

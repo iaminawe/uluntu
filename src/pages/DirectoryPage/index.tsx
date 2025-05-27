@@ -6,11 +6,25 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import MembersList from '../../components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMembers } from '../../hooks/useQueries';
+import { useMembers, Member as HookMember } from '../../hooks/useMemberQueries';
 import { FilterOptions } from '../../components/MembersList/types';
+import { Member as UITypeMember } from '../../types';
 import Pagination from '../../components/Pagination'; // Import Pagination
 
-// Member type is already defined in the types.ts file
+// We need to adapt between the Member type from useMemberQueries and the one in types.ts
+const adaptMemberForUI = (hookMember: HookMember): UITypeMember => {
+  return {
+    id: hookMember.id,
+    name: hookMember.name,
+    title: hookMember.role || '', // Map role to title if role exists, otherwise empty string
+    image: hookMember.image || '',
+    bio: hookMember.bio,
+    skills: hookMember.skills,
+    joinDate: hookMember.joinDate || hookMember.joinedDate || hookMember.created_at || new Date().toISOString(),
+    status: hookMember.status || 'published',
+    featured: hookMember.featured
+  };
+};
 
 const ITEMS_PER_PAGE = 12; // Adjust as needed for the main directory
 
@@ -25,11 +39,14 @@ export default function DirectoryPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Convert all members to the UI type expected by MembersList
+  const adaptedMembers = allMembers.map(adaptMemberForUI);
+  
   // TODO: Implement filtering logic here if ActionBar doesn't handle it before pagination
-  // For now, we assume 'allMembers' is the list to be paginated.
+  // For now, we assume 'adaptedMembers' is the list to be paginated.
   // If MembersList applies filters internally and returns a filtered list, that would be better.
-  // Or, filters from ActionBar should be applied here to 'allMembers' before pagination.
-  const filteredMembers = allMembers; // Placeholder for actual filtering if needed
+  // Or, filters from ActionBar should be applied here to 'adaptedMembers' before pagination.
+  const filteredMembers = adaptedMembers; // Placeholder for actual filtering if needed
 
   const totalMembers = filteredMembers.length;
   const hasMembers = totalMembers > 0;
@@ -84,7 +101,7 @@ export default function DirectoryPage() {
         ) : (
           <div className="mt-6">
             <MembersList 
-              members={currentMembersToDisplay} // Pass paginated members
+              members={currentMembersToDisplay} // Pass paginated members with the correct type
               loading={isLoading} // This might be redundant if skeleton handles it
               error={error} // This might be redundant if QueryError handles it
               initialSearch={filters.search} // These props might be for internal MembersList filtering

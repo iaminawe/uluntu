@@ -1,16 +1,21 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
 import type { Database } from '@/types/supabase';
+import { Opportunity as FrontendOpportunity } from '@/types';
 
 // Define Tables type to correctly access the Row property
 type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T];
 
 // Base Types from Supabase schema
-export type Opportunity = Tables<'opportunities'>['Row'];
+export type SupabaseOpportunity = Tables<'opportunities'>['Row'];
 export type OpportunityInput = Database['public']['Tables']['opportunities']['Insert'];
 export type OpportunityUpdateInput = Database['public']['Tables']['opportunities']['Update'];
 
-// Define a type for the mock opportunity data structure
-interface MockOpportunity {
+// Define valid opportunity types and statuses for type checking
+export type OpportunityType = 'full-time' | 'part-time' | 'contract' | 'volunteer';
+export type OpportunityStatus = 'draft' | 'published' | 'archived';
+
+// Define a type for the mock data structure
+type MockOpportunityType = {
   id: string | number;
   title: string;
   description: string;
@@ -29,7 +34,11 @@ interface MockOpportunity {
     name: string;
     logo: string;
   };
-}
+};
+
+type MockDataType = {
+  opportunities: MockOpportunityType[];
+};
 
 export type OpportunityFilters = {
   status?: string;
@@ -37,12 +46,12 @@ export type OpportunityFilters = {
 };
 
 // API clients
-// import { opportunitiesApi } from '../api/opportunitiesApi'; // File not found, commenting out
+import { opportunitiesApi } from '../api/opportunitiesApi';
 
 // Mock data and types
 import mockData from '../data/mock/mockData';
 
-const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true' || true; // Default to true if not set
+const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true'; // Use strict equality check
 
 /**
  * Custom hook to fetch a list of opportunities.
@@ -52,51 +61,78 @@ const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true' || true; // Def
  * @param filters - Optional filters to apply to the opportunity list (e.g., status).
  * @returns A UseQueryResult object from Tanstack Query containing the list of opportunities or an error.
  */
-export function useOpportunities(filters?: OpportunityFilters): UseQueryResult<Opportunity[], Error> {
-  return useQuery<Opportunity[], Error>({
+export function useOpportunities(filters?: OpportunityFilters): UseQueryResult<FrontendOpportunity[], Error> {
+  return useQuery<FrontendOpportunity[], Error>({
     queryKey: ['opportunities', filters, useSupabase ? 'supabase' : 'mock'],
-    queryFn: async (): Promise<Opportunity[]> => {
+    queryFn: async (): Promise<FrontendOpportunity[]> => {
       if (!useSupabase) {
         console.log('Mock: Returning opportunities from mockData');
-        const mockOpportunities = mockData.opportunities.map((opp_raw: MockOpportunity) => {
-          // opp_raw is now correctly inferred from the structure in mockData.ts
-          // Its properties like .postedDate, .company.name, .remoteStatus will be recognized.
-          return {
-            // Ensure these fields match the Supabase 'Opportunity' type
-            id: String(opp_raw.id),
-            created_at: opp_raw.postedDate, // from mockData.ts
-            updated_at: opp_raw.postedDate, // using postedDate for both for mock data
-            title: opp_raw.title,
-            description: opp_raw.description,
-            organization: opp_raw.company.name, // map company.name to organization
-            deadline: opp_raw.deadline ?? null, // mockData.ts might not have deadline for all items
-            location: opp_raw.location,
-            type: opp_raw.type, // ensure this type aligns with Supabase enum if any
-            featured: opp_raw.featured ?? false,
-            benefits: [], // Default to empty array as 'benefits' is not in mockData.ts opportunity structure
-            compensation: opp_raw.salaryRange ?? null, // mockData.ts items have .salaryRange
-            contact_email: null, // Default to null as 'contactEmail' is not in mockData.ts opportunity structure
-            image: opp_raw.company.logo, // mockData.ts items have .company.logo
-            requirements: opp_raw.skillsRequired ?? [], // mockData.ts items have .skillsRequired
-            responsibilities: [], // Default to empty array as 'responsibilities' is not in mockData.ts opportunity structure
-            posted_by: String(opp_raw.company.id), // use company.id as poster_id
-            remote: opp_raw.remoteStatus === 'Remote' || opp_raw.remoteStatus === 'Hybrid',
-            // Map status from mockData.ts (e.g., 'approved') to Supabase status (e.g., 'open')
-            status: opp_raw.status === 'approved' ? 'open' : (opp_raw.status ?? 'draft'),
-            website: opp_raw.url ?? null // mockData.ts items have .url
+        // Type cast mockData with proper type checking
+        const typedMockData = mockData as unknown as MockDataType;
+        
+        // Ensure opportunities array exists
+        const opportunities = typedMockData.opportunities || [];
+        
+        const mockOpportunities = opportunities.map((opp_raw) => {
+          // Helper function to validate opportunity type
+          const validateOpportunityType = (type?: string | null): OpportunityType => {
+            if (!type) return 'full-time';
+            const validTypes: OpportunityType[] = ['full-time', 'part-time', 'contract', 'volunteer'];
+            return validTypes.includes(type as OpportunityType) ? (type as OpportunityType) : 'full-time';
           };
-        }) as Opportunity[];
+          
+          // Helper function to validate opportunity status
+          const validateOpportunityStatus = (status?: string | null): OpportunityStatus => {
+            if (!status) return 'draft';
+            const validStatuses: OpportunityStatus[] = ['draft', 'published', 'archived'];
+            return validStatuses.includes(status as OpportunityStatus) ? (status as OpportunityStatus) : 'draft';
+          };
+          
+          // Map mock data to frontend opportunity format with proper type handling
+          return {
+            id: String(opp_raw.id),
+            title: opp_raw.title,
+            company: {
+              id: String(opp_raw.company?.id || ''),
+              name: opp_raw.company?.name || '',
+              logo: opp_raw.company?.logo || ''
+            },
+            type: validateOpportunityType(opp_raw.type),
+            location: opp_raw.location || '',
+            remote: opp_raw.remoteStatus === 'Remote' || opp_raw.remoteStatus === 'Hybrid',
+            description: opp_raw.description || '',
+            salary: opp_raw.salaryRange,
+            postedDate: opp_raw.postedDate || new Date().toISOString(),
+            deadline: opp_raw.deadline,
+            status: opp_raw.status === 'approved' ? 'published' : validateOpportunityStatus(opp_raw.status),
+            featured: Boolean(opp_raw.featured),
+            created_at: opp_raw.postedDate || new Date().toISOString()
+          };
+        });
         
         // Apply filters if provided
         if (filters?.status) {
-          return mockOpportunities.filter(opp => opp.status === filters.status);
+          // Safely filter by status with null check
+          return mockOpportunities.filter(opp => opp?.status === filters.status);
         }
         
         return mockOpportunities;
       }
       
-      console.warn('Supabase call for useOpportunities not implemented as opportunitiesApi is unavailable.');
-      throw new Error("Supabase fetch opportunities not implemented");
+      try {
+        // Convert filters to the format expected by opportunitiesApi.getAll
+        const apiFilters: Record<string, unknown> = {};
+        if (filters?.status) {
+          // Add status filter if needed - currently not directly supported in the API
+          apiFilters.status = filters.status;
+        }
+        
+        // Call the real API
+        return await opportunitiesApi.getAll(apiFilters);
+      } catch (error) {
+        console.error('Error fetching opportunities:', error);
+        throw error;
+      }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -109,93 +145,132 @@ export function useOpportunities(filters?: OpportunityFilters): UseQueryResult<O
  * @param id - The ID of the opportunity to fetch (can be number or string).
  * @returns A UseQueryResult object from Tanstack Query containing the opportunity data or null if not found, or an error.
  */
-export function useOpportunity(id: number | string): UseQueryResult<Opportunity | null, Error> {
-  return useQuery<Opportunity | null, Error>({
+export function useOpportunity(id: string): UseQueryResult<FrontendOpportunity | null, Error> {
+  return useQuery<FrontendOpportunity | null, Error>({
     queryKey: ['opportunity', id, useSupabase ? 'supabase' : 'mock'],
-    queryFn: async (): Promise<Opportunity | null> => {
+    queryFn: async (): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
         console.log(`Mock: Fetching opportunity with id: ${id}`);
-        // Find the opportunity in the mock data
-        const mockOpp = mockData.opportunities.find(opp => String(opp.id) === String(id));
+        const typedMockData = mockData as unknown as MockDataType;
+        const mockOpp = typedMockData.opportunities.find(opp => String(opp.id) === id);
         
         if (!mockOpp) {
           console.warn(`Mock: Opportunity with id ${id} not found`);
           return null;
         }
         
-        // Map the mock opportunity to the Supabase Opportunity type
         return {
           id: String(mockOpp.id),
-          created_at: mockOpp.postedDate,
-          updated_at: mockOpp.postedDate,
           title: mockOpp.title,
-          description: mockOpp.description,
-          organization: mockOpp.company.name,
-          deadline: mockOpp.deadline ?? null,
+          company: {
+            id: String(mockOpp.company.id),
+            name: mockOpp.company.name,
+            logo: mockOpp.company.logo
+          },
+          type: mockOpp.type as 'full-time' | 'part-time' | 'contract' | 'volunteer',
           location: mockOpp.location,
-          type: mockOpp.type,
-          featured: mockOpp.featured ?? false,
-          benefits: [],
-          compensation: mockOpp.salaryRange ?? null,
-          contact_email: null,
-          image: mockOpp.company.logo,
-          requirements: mockOpp.skillsRequired ?? [],
-          responsibilities: [],
-          posted_by: String(mockOpp.company.id),
           remote: mockOpp.remoteStatus === 'Remote' || mockOpp.remoteStatus === 'Hybrid',
-          status: mockOpp.status === 'approved' ? 'open' : (mockOpp.status ?? 'draft'),
-          website: mockOpp.url ?? null
+          description: mockOpp.description,
+          salary: mockOpp.salaryRange,
+          postedDate: mockOpp.postedDate,
+          deadline: mockOpp.deadline,
+          status: mockOpp.status === 'approved' ? 'published' : ((mockOpp.status || 'draft') as 'draft' | 'published' | 'archived'),
+          featured: mockOpp.featured ?? false,
+          created_at: mockOpp.postedDate
         };
       }
-      console.warn(`Supabase call for useOpportunity (id: ${id}) not implemented as opportunitiesApi is unavailable.`);
-      throw new Error("Supabase fetch opportunity not implemented");
+      
+      try {
+        // Call the real API to get a single opportunity by ID
+        return await opportunitiesApi.getById(id);
+      } catch (error) {
+        console.error(`Error fetching opportunity with id ${id}:`, error);
+        throw error;
+      }
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useCreateOpportunity(): UseMutationResult<Opportunity | null, Error, OpportunityInput> {
+export function useCreateOpportunity(): UseMutationResult<FrontendOpportunity | null, Error, OpportunityInput> {
   const queryClient = useQueryClient();
 
-  return useMutation<Opportunity | null, Error, OpportunityInput>({
-    mutationFn: async (data: OpportunityInput): Promise<Opportunity | null> => {
+  return useMutation<FrontendOpportunity | null, Error, OpportunityInput>({
+    mutationFn: async (data: OpportunityInput): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
-        console.log('Mock: Creating opportunity', data);
+        console.log('Mock: Creating opportunity:', data);
+        // Create a unique ID for the mock opportunity
+        const mockId = `mock-${Date.now()}`;
         
-        // Generate a random ID for the mock opportunity
-        const mockId = `mock_${Math.random().toString(36).substring(2, 11)}`;
-        
-        // Create a new opportunity with the provided data
-        const newOpportunity: Opportunity = {
-          id: mockId,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          title: data.title,
-          description: data.description,
-          organization: data.organization,
-          deadline: data.deadline,
-          location: data.location,
-          type: data.type,
-          featured: data.featured ?? false,
-          benefits: data.benefits ?? [],
-          compensation: data.compensation,
-          contact_email: data.contact_email,
-          image: data.image,
-          requirements: data.requirements ?? [],
-          responsibilities: data.responsibilities ?? [],
-          posted_by: data.posted_by,
-          remote: data.remote ?? false,
-          status: data.status ?? 'open',
-          website: data.website
+        // Helper function to validate opportunity type
+        const validateOpportunityType = (type?: string): 'full-time' | 'part-time' | 'contract' | 'volunteer' => {
+          if (!type) return 'full-time';
+          const validTypes = ['full-time', 'part-time', 'contract', 'volunteer'];
+          return validTypes.includes(type) 
+            ? type as 'full-time' | 'part-time' | 'contract' | 'volunteer' 
+            : 'full-time';
         };
         
-        // In a real implementation, we would add this to mockData.opportunities
-        console.log('Mock: Successfully created opportunity', newOpportunity);
-        return newOpportunity;
+        // Helper function to validate opportunity status
+        const validateOpportunityStatus = (status?: string): 'draft' | 'published' | 'archived' => {
+          if (!status) return 'draft';
+          const validStatuses = ['draft', 'published', 'archived'];
+          return validStatuses.includes(status) 
+            ? status as 'draft' | 'published' | 'archived' 
+            : 'draft';
+        };
+        
+        // Create a new opportunity based on the input data with proper type handling
+        const mockOpp: FrontendOpportunity = {
+          id: mockId,
+          title: data.title || 'New Opportunity',
+          company: {
+            id: data.posted_by || '1',
+            name: data.organization ?? 'Company Name', // Use nullish coalescing
+            logo: data.image ?? '/placeholder-logo.png' // Use nullish coalescing
+          },
+          type: validateOpportunityType(data.type === null ? undefined : data.type),
+          location: data.location || 'Remote',
+          remote: Boolean(data.remote),
+          description: data.description || 'No description provided',
+          salary: data.compensation === null ? undefined : data.compensation,
+          postedDate: new Date().toISOString(),
+          deadline: data.deadline === null ? undefined : data.deadline,
+          status: validateOpportunityStatus(data.status === null ? undefined : data.status),
+          featured: Boolean(data.featured),
+          created_at: new Date().toISOString()
+        };
+        
+        // In a real implementation, we would push to mockData.opportunities
+        return Promise.resolve(mockOpp);
       }
-      console.warn('Supabase call for useCreateOpportunity not implemented as opportunitiesApi is unavailable.');
-      throw new Error("Supabase create opportunity not implemented");
+      
+      try {
+        // Convert from Supabase OpportunityInput to our API's OpportunityInput format
+        const opportunityData: import('../api/opportunitiesApi').OpportunityInput = {
+          title: data.title,
+          description: data.description === undefined ? null : data.description,
+          type: data.type === undefined ? null : data.type as 'full-time' | 'part-time' | 'contract' | 'volunteer',
+          location: data.location === undefined ? null : data.location,
+          remote: data.remote === undefined ? null : data.remote,
+          salary: data.compensation === undefined ? null : data.compensation,
+          deadline: data.deadline === undefined ? null : data.deadline,
+          company: {
+            id: data.posted_by || '1',
+            name: data.organization || 'Unknown Company',
+            logo: data.image || '/placeholder-company.png'
+          },
+          status: data.status === undefined ? null : data.status as 'draft' | 'published' | 'archived',
+          featured: data.featured === undefined ? null : data.featured
+        };
+        
+        // Call the real API
+        return await opportunitiesApi.create(opportunityData);
+      } catch (error) {
+        console.error('Error creating opportunity:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
@@ -203,53 +278,105 @@ export function useCreateOpportunity(): UseMutationResult<Opportunity | null, Er
   });
 }
 
-export function useUpdateOpportunity(): UseMutationResult<Opportunity | null, Error, { id: string; data: OpportunityUpdateInput }> {
+export function useUpdateOpportunity(): UseMutationResult<FrontendOpportunity | null, Error, { id: string; data: OpportunityUpdateInput }> {
   const queryClient = useQueryClient();
 
-  return useMutation<Opportunity | null, Error, { id: string; data: OpportunityUpdateInput }>({
-    mutationFn: async ({ id, data }: { id: string; data: OpportunityUpdateInput }): Promise<Opportunity | null> => {
+  return useMutation<FrontendOpportunity | null, Error, { id: string; data: OpportunityUpdateInput }>({
+    mutationFn: async ({ id, data }: { id: string; data: OpportunityUpdateInput }): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
         console.log(`Mock: Updating opportunity with id: ${id}`, data);
-        const mockOppIndex = mockData.opportunities.findIndex(opp => String(opp.id) === id);
+        const typedMockData = mockData as unknown as MockDataType;
+        
+        // Ensure opportunities array exists
+        const opportunities = typedMockData.opportunities || [];
+        const mockOppIndex = opportunities.findIndex(opp => String(opp.id) === id);
         
         if (mockOppIndex === -1) {
           console.warn(`Mock: Opportunity with id ${id} not found for update`);
-          return null;
+          return Promise.resolve(null);
         }
         
-        // Create updated opportunity
-        const mockOpp = mockData.opportunities[mockOppIndex] as MockOpportunity;
-        const updatedOpp: Opportunity = {
-          id: String(mockOpp.id),
-          created_at: mockOpp.postedDate,
-          updated_at: new Date().toISOString(),
-          title: data.title ?? mockOpp.title,
-          description: data.description ?? mockOpp.description,
-          organization: data.organization ?? mockOpp.company.name,
-          deadline: data.deadline ?? mockOpp.deadline ?? null,
-          location: data.location ?? mockOpp.location,
-          type: data.type ?? mockOpp.type,
-          featured: data.featured ?? mockOpp.featured ?? false,
-          benefits: data.benefits ?? [],
-          compensation: data.compensation ?? null,
-          contact_email: data.contact_email ?? null,
-          image: data.image ?? mockOpp.company.logo,
-          requirements: data.requirements ?? [],
-          responsibilities: data.responsibilities ?? [],
-          posted_by: data.posted_by ?? String(mockOpp.company.id),
-          // Handle remote status properly with type safety
+        const mockOpp = opportunities[mockOppIndex];
+        
+        // Helper function to validate opportunity type
+        const validateOpportunityType = (type?: string): 'full-time' | 'part-time' | 'contract' | 'volunteer' => {
+          if (!type) return 'full-time';
+          const validTypes = ['full-time', 'part-time', 'contract', 'volunteer'];
+          return validTypes.includes(type) 
+            ? type as 'full-time' | 'part-time' | 'contract' | 'volunteer' 
+            : 'full-time';
+        };
+        
+        // Helper function to validate opportunity status
+        const validateOpportunityStatus = (status?: string): 'draft' | 'published' | 'archived' => {
+          if (!status) return 'draft';
+          const validStatuses = ['draft', 'published', 'archived'];
+          return validStatuses.includes(status) 
+            ? status as 'draft' | 'published' | 'archived' 
+            : 'draft';
+        };
+        
+        // Update the opportunity with new data, keeping existing values where not provided
+        const updatedOpp: FrontendOpportunity = {
+          id: id,
+          title: data.title ?? mockOpp.title ?? '',
+          company: {
+            id: data.posted_by ?? String(mockOpp.company?.id || '1'),
+            name: data.organization ?? mockOpp.company?.name ?? 'Unknown Company',
+            logo: data.image ?? mockOpp.company?.logo ?? '/placeholder-logo.png'
+          },
+          type: validateOpportunityType(data.type || mockOpp.type),
+          location: data.location ?? mockOpp.location ?? '',
           remote: data.remote ?? (mockOpp.remoteStatus === 'Remote' || mockOpp.remoteStatus === 'Hybrid'),
-          status: data.status ?? 'open',
-          website: data.website ?? null
+          description: data.description ?? mockOpp.description ?? '',
+          salary: data.compensation ?? mockOpp.salaryRange,
+          postedDate: mockOpp.postedDate || new Date().toISOString(),
+          deadline: data.deadline ?? mockOpp.deadline,
+          status: validateOpportunityStatus(data.status || mockOpp.status),
+          featured: Boolean(data.featured ?? mockOpp.featured),
+          created_at: mockOpp.postedDate || new Date().toISOString()
         };
         
         // In a real implementation, we would update mockData.opportunities[mockOppIndex]
         return updatedOpp;
       }
-      console.warn(`Supabase call for useUpdateOpportunity (id: ${id}) not implemented as opportunitiesApi is unavailable.`);
-      throw new Error("Supabase update opportunity not implemented");
+      
+      try {
+        // Convert from Supabase OpportunityUpdateInput to our API's OpportunityInput format
+        const opportunityData: Partial<import('../api/opportunitiesApi').OpportunityInput> = {};
+        
+        // Only include defined properties to avoid overwriting with null/undefined
+        if (data.title !== undefined) opportunityData.title = data.title;
+        if (data.description !== undefined) opportunityData.description = data.description;
+        if (data.type !== undefined) opportunityData.type = data.type as OpportunityType;
+        if (data.location !== undefined) opportunityData.location = data.location;
+        if (data.remote !== undefined) opportunityData.remote = data.remote;
+        if (data.compensation !== undefined) opportunityData.salary = data.compensation;
+        if (data.deadline !== undefined) opportunityData.deadline = data.deadline;
+        // Handle company information: only include if posted_by (company_id) is present
+        if (data.posted_by !== undefined && data.posted_by !== null) {
+          opportunityData.company = {
+            id: String(data.posted_by), // Ensure ID is a string
+            name: data.organization === null ? '' : (data.organization || ''), // Ensure it's always a string
+            logo: data.image === null ? '' : (data.image || '') // Ensure it's always a string
+          };
+        } else if (data.organization !== undefined || data.image !== undefined) {
+          // If there's a name or logo but no ID, this might be an issue or a new company scenario not handled here.
+          // For now, we won't pass a partial company object without an ID to avoid potential errors.
+          // Consider logging a warning if this case is important.
+          console.warn('Opportunity update: Company name/logo provided without a company ID (posted_by). Company data will not be updated.');
+        }
+        if (data.status !== undefined) opportunityData.status = data.status as OpportunityStatus;
+        if (data.featured !== undefined) opportunityData.featured = data.featured;
+        
+        // Call the real API
+        return await opportunitiesApi.update(id, opportunityData);
+      } catch (error) {
+        console.error(`Error updating opportunity with id ${id}:`, error);
+        throw error;
+      }
     },
-    onSuccess: (_data: Opportunity | null, variables: { id: string; data: OpportunityUpdateInput }) => {
+    onSuccess: (_data: FrontendOpportunity | null, variables: { id: string; data: OpportunityUpdateInput }) => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
       queryClient.invalidateQueries({ queryKey: ['opportunity', variables.id] });
     },
@@ -263,7 +390,8 @@ export function useDeleteOpportunity(): UseMutationResult<void, Error, string> {
     mutationFn: async (id: string): Promise<void> => {
       if (!useSupabase) {
         console.log(`Mock: Deleting opportunity with id: ${id}`);
-        const opportunityIndex = mockData.opportunities.findIndex(opp => String(opp.id) === id);
+        const typedMockData = mockData as unknown as MockDataType;
+        const opportunityIndex = typedMockData.opportunities.findIndex(opp => String(opp.id) === id);
         
         if (opportunityIndex === -1) {
           console.warn(`Mock: Opportunity with id ${id} not found for deletion`);
@@ -275,8 +403,18 @@ export function useDeleteOpportunity(): UseMutationResult<void, Error, string> {
         console.log(`Mock: Successfully deleted opportunity with id: ${id}`);
         return;
       }
-      console.warn(`Supabase call for useDeleteOpportunity (id: ${id}) not implemented as opportunitiesApi is unavailable.`);
-      throw new Error("Supabase delete opportunity not implemented");
+      
+      try {
+        // Call the real API
+        const success = await opportunitiesApi.delete(id);
+        if (!success) {
+          throw new Error(`Failed to delete opportunity with id ${id}`);
+        }
+        return;
+      } catch (error) {
+        console.error(`Error deleting opportunity with id ${id}:`, error);
+        throw error;
+      }
     },
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });

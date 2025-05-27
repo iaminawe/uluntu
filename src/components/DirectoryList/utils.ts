@@ -9,7 +9,7 @@ export const filterMembers = (members: Member[], filters: FilterOptions): Member
     }
     
     // Filter by skills
-    if (filters.skills.length > 0 && !hasAnySkill(member.skills, filters.skills)) {
+    if (filters.skills.length > 0 && !hasAnySkill(member.skills || [], filters.skills)) {
       return false;
     }
     
@@ -22,7 +22,7 @@ export const extractUniqueSkills = (members: Member[]): string[] => {
   const skillsSet = new Set<string>();
   
   members.forEach(member => {
-    member.skills.forEach(skill => {
+    member.skills?.forEach(skill => {
       skillsSet.add(skill);
     });
   });
@@ -55,9 +55,9 @@ const matchesSearch = (member: Member, search: string): boolean => {
   return (
     member.name.toLowerCase().includes(searchLower) ||
     member.title.toLowerCase().includes(searchLower) ||
-    member.company.toLowerCase().includes(searchLower) ||
-    member.location.toLowerCase().includes(searchLower) ||
-    member.skills.some(skill => skill.toLowerCase().includes(searchLower))
+    (member.company?.toLowerCase().includes(searchLower) ?? false) ||
+    (member.location?.toLowerCase().includes(searchLower) ?? false) ||
+    (member.skills?.some(skill => skill.toLowerCase().includes(searchLower)) ?? false)
   );
 };
 

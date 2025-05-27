@@ -1,15 +1,16 @@
-// Common types for the application
+// Core application types
+import { BaseEntity, ContentStatus, SocialLinks, Location } from './types/common';
 
 // Session and Presenter types for events
 export interface EventSessionResource {
-  id: number;
+  id: string;
   title: string;
   url: string;
   type: 'slides' | 'document' | 'code' | 'website' | 'other';
 }
 
 export interface EventSession {
-  id: number;
+  id: string;
   title: string;
   description: string;
   startTime: string;
@@ -20,16 +21,16 @@ export interface EventSession {
 }
 
 export interface EventPresenter {
-  id: number;
+  id: string;
   name: string;
   image: string;
   bio?: string;
   title?: string;
   company?: string;
+  website?: string;
 }
 
-export interface Member {
-  id: number;
+export interface Member extends BaseEntity {
   name: string;
   title: string;
   company?: string;
@@ -39,17 +40,11 @@ export interface Member {
   intro?: string; // Short introduction sentence
   skills?: string[];
   joinDate: string;
-  featured?: boolean;
-  social?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-    website?: string;
-  };
+  social?: SocialLinks;
+  status: ContentStatus; // Override the optional status from BaseEntity
 }
 
-export interface Company {
-  id: number;
+export interface Company extends BaseEntity {
   name: string;
   description: string;
   logo: string;
@@ -58,39 +53,37 @@ export interface Company {
   size: string;
   founded: string;
   location: string;
-  featured?: boolean;
   website?: string;
-  social?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-  };
-  employees?: number[];
+  social?: SocialLinks;
+  employees?: string[];
 }
 
-export interface Event {
-  id: number;
+export interface Event extends BaseEntity {
   title: string;
   date: string;
   endDate?: string;
   location: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
   description: string;
   image: string;
   organizer: {
-    id: number;
+    id: string;
     name: string;
     image: string;
   };
   attendees?: number;
+  max_attendees?: number | null;
+  current_attendees?: number | null;
   type: 'in-person' | 'online' | 'hybrid';
-  featured?: boolean;
   url?: string;
-  status: 'draft' | 'published' | 'archived';
+  group_id?: string;
   sessions?: EventSession[];
 }
 
 export interface GroupMember {
-  id: number;
+  id: string;
   name: string;
   image: string;
   role: 'admin' | 'member';
@@ -99,7 +92,7 @@ export interface GroupMember {
 }
 
 export interface GroupPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   author: {
@@ -110,8 +103,7 @@ export interface GroupPost {
   image?: string;
 }
 
-export interface Group {
-  id: number;
+export interface Group extends BaseEntity {
   name: string;
   description: string;
   longDescription?: string;
@@ -123,53 +115,47 @@ export interface Group {
   resourceCount?: number;
   postCount?: number;
   lastActive: string;
-  featured?: boolean;
   members: GroupMember[];
   events?: Event[];
   resources?: Resource[];
   posts?: GroupPost[];
 }
 
-export interface NewsArticle {
-  id: string; // Changed from number
+export interface NewsArticle extends BaseEntity {
   title: string;
-  slug: string; // Added
+  slug: string;
   excerpt: string;
   content: string;
   date: string; // Corresponds to publish_date
-  image?: string; // Corresponds to hero_image
-  hero_image_alt?: string; // Added
-  featured?: boolean;
-  status: string; // Added (e.g., 'published', 'draft')
+  image?: string;
+  hero_image_alt?: string; // Corresponds to hero_image
   author: {
-    id: string; // Changed from number
+    id: string;
     name: string;
     image: string;
   };
   tags?: string[];
 }
 
-export type EntityStatus = 'pending' | 'approved' | 'rejected';
+// Re-export common types for backward compatibility
+export type { ContentStatus, BaseEntity, SocialLinks, Location };
 
-export interface Resource {
-  id: number;
+export interface Resource extends BaseEntity {
   title: string;
   description: string;
-  type: 'guide' | 'tool' | 'article' | 'video' | 'document';
+  type: 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link'; // Added 'link' for broader compatibility
   url: string;
   image?: string;
-  dateAdded: string;
-  contributor: {
-    id: number;
+  dateAdded: string; // Ensure this is always provided when creating a Resource
+  contributor: { // Ensure this is always provided
+    id: string;
     name: string;
   };
-  status: EntityStatus;
-  featured?: boolean;
   groupId?: string;
+  tags?: string[]; // Added to align with ExtendedFrontendResource and common usage
 }
 
-export interface MarketplaceItem {
-  id: number;
+export interface MarketplaceItem extends BaseEntity {
   title: string;
   description: string;
   price?: number;
@@ -177,18 +163,17 @@ export interface MarketplaceItem {
   category: string;
   image?: string;
   seller: {
-    id: number;
+    id: string;
     name: string;
     image: string;
   };
   datePosted: string;
 }
 
-export interface Opportunity {
-  id: number;
+export interface Opportunity extends BaseEntity {
   title: string;
   company: {
-    id: number;
+    id: string;
     name: string;
     logo: string;
   };
@@ -200,3 +185,9 @@ export interface Opportunity {
   postedDate: string;
   deadline?: string;
 }
+
+// Export types from subdirectories
+export * from './types/content';
+
+// Consolidated opportunity types from opportunity.ts
+export type OpportunityType = 'job' | 'volunteer' | 'funding' | 'community' | 'full-time' | 'part-time' | 'contract';

@@ -21,7 +21,7 @@ export const filterArticles = (
     }
     
     // Filter by tag
-    if (filters.tag !== 'all' && !article.tags.includes(filters.tag)) {
+    if (filters.tag !== 'all' && !article.tags?.includes(filters.tag)) {
       return false;
     }
     
@@ -39,7 +39,7 @@ export const sortArticlesByDate = (articles: NewsArticle[]): NewsArticle[] => {
 // Extract unique tags from articles
 export const extractUniqueTags = (articles: NewsArticle[]): string[] => {
   return Array.from(
-    new Set(articles.flatMap(article => article.tags))
+    new Set(articles.flatMap(article => article.tags || []))
   ).sort();
 };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft } from 'lucide-react';
@@ -8,20 +8,31 @@ import ArticleContent from './ArticleContent';
 import CommentsSection from './CommentsSection';
 import CommentModal from './CommentModal';
 import ShareModal from './ShareModal';
-import { NewsArticle, SAMPLE_ARTICLE, NewsComment } from './types';
+import { NewsArticle, SAMPLE_ARTICLE, NewsComment, adaptMainNewsArticleToLocal } from './types';
+import { useNewsArticle } from '../../hooks/useQueries';
 
 interface NewsDetailProps {
   articleId?: string;
   isPreview?: boolean;
 }
 
-const NewsDetail = ({ articleId: _articleId, isPreview = false }: NewsDetailProps) => {
+const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
   const navigate = useNavigate();
   
-  // In a real app, fetch the article from an API
+  // If in preview mode or no articleId, use sample data, otherwise fetch from API
+  const { data: fetchedArticle } = useNewsArticle(articleId || '');
+  
+  // Convert fetched article to local format or use sample data if in preview/no data
   const [article, setArticle] = useState<NewsArticle>(SAMPLE_ARTICLE);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  
+  // Update article state when fetched data changes
+  useEffect(() => {
+    if (fetchedArticle && !isPreview) {
+      setArticle(adaptMainNewsArticleToLocal(fetchedArticle));
+    }
+  }, [fetchedArticle, isPreview]);
 
   // Handle adding a new comment
   const handleAddComment = (content: string) => {
@@ -54,6 +65,8 @@ const NewsDetail = ({ articleId: _articleId, isPreview = false }: NewsDetailProp
         <title>{article.title} | Kootenay Tech Directory</title>
         <meta name="description" content={article.content.substring(0, 155)} />
       </Helmet>
+      
+      {/* We could show loading state here if needed */}
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {!isPreview && (

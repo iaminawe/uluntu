@@ -1,9 +1,10 @@
 import { supabase } from '../lib/supabase';
 
 // Error handling utility
-function handleSupabaseError(error: any): never {
-  console.error('Supabase API Error:', error);
-  throw new Error(error.message || 'An error occurred while fetching data');
+function handleSupabaseError(error: any, context?: string): never {
+  const contextMessage = context ? ` while ${context}` : '';
+  console.error(`Supabase API Error${contextMessage}:`, error);
+  throw new Error(error.message || `An error occurred${contextMessage}`);
 }
 
 export { supabase, handleSupabaseError };

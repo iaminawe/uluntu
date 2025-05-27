@@ -1,19 +1,7 @@
 // NewsDetail types
+import { NewsArticle as MainNewsArticle } from '../../types';
 
-export interface NewsAuthor {
-  id: number;
-  name: string;
-  image: string;
-  title?: string;
-  bio?: string;
-}
-
-export interface NewsAssociation {
-  type: 'company' | 'group' | 'event' | 'member';
-  id: number;
-  name: string;
-}
-
+// We'll keep the local NewsComment type since it's not in the main types
 export interface NewsComment {
   id: number;
   content: string;
@@ -25,22 +13,84 @@ export interface NewsComment {
   };
 }
 
-export interface NewsArticle {
+// We'll keep the local NewsAssociation type since it's not in the main types
+export interface NewsAssociation {
+  type: 'company' | 'group' | 'event' | 'member';
   id: number;
-  title: string;
-  content: string;
-  image?: string;
-  publishedAt: string;
-  author: NewsAuthor;
+  name: string;
+}
+
+// Define a local NewsArticle type that extends the main one with additional properties
+export interface NewsArticle extends Omit<MainNewsArticle, 'id' | 'author'> {
+  id: number; // Local component expects number IDs
+  publishedAt: string; // Maps to 'date' in the main type
+  author: {
+    id: number; // Local component expects number IDs
+    name: string;
+    image: string;
+    title?: string;
+    bio?: string;
+  };
   associations?: NewsAssociation[];
-  tags: string[];
   comments: NewsComment[];
 }
+
+// Utility function to convert from main NewsArticle type to local NewsArticle type
+export const adaptMainNewsArticleToLocal = (mainArticle: MainNewsArticle): NewsArticle => {
+  // Handle potential parsing errors by using a safe conversion function
+  const safeParseInt = (strId: string): number => {
+    const parsed = parseInt(strId, 10);
+    return isNaN(parsed) ? 0 : parsed; // Fallback to 0 if parsing fails
+  };
+
+  return {
+    id: safeParseInt(mainArticle.id),
+    title: mainArticle.title,
+    slug: mainArticle.slug || '',
+    excerpt: mainArticle.excerpt || '',
+    content: mainArticle.content,
+    image: mainArticle.image || '',
+    publishedAt: mainArticle.date,
+    date: mainArticle.date, // Keep the original date field for compatibility
+    tags: mainArticle.tags || [],
+    author: {
+      id: mainArticle.author.id ? safeParseInt(mainArticle.author.id) : 0,
+      name: mainArticle.author.name,
+      image: mainArticle.author.image,
+      title: '',
+      bio: ''
+    },
+    associations: [], // Default empty associations
+    comments: [] // Default empty comments
+  };
+};
+
+// Utility function to convert from local NewsArticle type to main NewsArticle type
+export const adaptLocalNewsArticleToMain = (localArticle: NewsArticle): MainNewsArticle => {
+  return {
+    id: localArticle.id.toString(),
+    title: localArticle.title,
+    slug: localArticle.slug,
+    excerpt: localArticle.excerpt,
+    content: localArticle.content,
+    image: localArticle.image,
+    date: localArticle.publishedAt,
+    tags: localArticle.tags,
+    author: {
+      id: localArticle.author.id.toString(),
+      name: localArticle.author.name,
+      image: localArticle.author.image
+    },
+    hero_image_alt: ''
+  };
+};
 
 // Sample data
 export const SAMPLE_ARTICLE: NewsArticle = {
   id: 1,
   title: 'Kootenay Tech Scene Continues to Grow',
+  slug: 'kootenay-tech-scene-continues-to-grow',
+  excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
   content: `The Kootenay region's technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.
 
 This trend is driven by several factors, including:
@@ -57,6 +107,7 @@ The impact on the local economy has been significant, with new job opportunities
 Looking ahead, community leaders are focused on sustainable growth that maintains the region's unique character while fostering innovation and technological advancement.`,
   image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
   publishedAt: '2025-03-15',
+  date: '2025-03-15', // Added to match the main NewsArticle type
   author: {
     id: 1,
     name: 'Sarah Johnson',

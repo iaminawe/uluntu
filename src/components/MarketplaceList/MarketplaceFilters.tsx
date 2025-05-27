@@ -24,13 +24,13 @@ const MarketplaceFilters = ({
   // Available options for filters
   const types: ListingType[] = ['product', 'service', 'equipment'];
   const conditions: ListingCondition[] = ['new', 'like-new', 'good', 'fair', 'poor'];
-  const priceRanges: { value: ListingPriceRange; label: string }[] = [
-    { value: 'any', label: 'Any Price' },
+  const priceRanges: { value: ListingPriceRange | 'all'; label: string }[] = [
+    { value: 'all', label: 'Any Price' },
     { value: 'under-50', label: 'Under $50' },
     { value: '50-100', label: '$50 - $100' },
-    { value: '100-500', label: '$100 - $500' },
-    { value: '500-2000', label: '$500 - $2000' },
-    { value: 'over-2000', label: 'Over $2000' }
+    { value: '100-250', label: '$100 - $250' },
+    { value: '250-500', label: '$250 - $500' },
+    { value: '500-plus', label: 'Over $500' }
   ];
   
   // Toggle listing type filter

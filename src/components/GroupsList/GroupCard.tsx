@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Users, Calendar, BookOpen, Newspaper } from 'lucide-react';
-import { Group } from './types';
+import { Users } from 'lucide-react';
+import { type Group } from './types'; // Fix the import path
 import { getVisibilityLabel } from './utils';
 
 interface GroupCardProps {
@@ -9,12 +9,22 @@ interface GroupCardProps {
 }
 
 const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
+  // Safely extract values from the group object with defaults
+  // This prevents TypeScript errors when accessing potentially undefined properties
+  const safeId = group?.id ?? ''; 
+  const safeName = group?.name ?? 'Unnamed Group';
+  const safeHeroImage = group?.heroImage ?? '/placeholder-image.jpg';
+  const safeDescription = group?.description ?? 'No description available';
+  const safeVisibility = group?.visibility ?? 'open';
+  const safeMemberCount = group?.memberCount ?? 0;
+  const safeLastActive = group?.lastActive ?? '';
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
       <div className="h-48 overflow-hidden">
-        <img 
-          src={group.heroImage} 
-          alt={group.name} 
+        <img
+          src={safeHeroImage}
+          alt={safeName}
           className="w-full h-full object-cover"
         />
       </div>
@@ -23,25 +33,25 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
           <div>
             <div className="flex items-center mb-1">
               <Link
-                to={`/groups/${group.id}`}
+                to={`/groups/${safeId}`}
                 className="text-xl font-semibold text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
-                {group.name}
+                {safeName}
               </Link>
               <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-300">
-                {getVisibilityLabel(group.visibility)}
+                {getVisibilityLabel(safeVisibility)}
               </span>
             </div>
             <p className="text-slate-600 dark:text-slate-300 mt-2">
-              {group.description}
+              {safeDescription}
             </p>
           </div>
-          {group.visibility !== 'secret' && (
+          {safeVisibility !== 'secret' && (
             <button
               onClick={() => onJoinClick(group)}
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors whitespace-nowrap"
             >
-              {group.visibility === 'closed' ? 'Request to Join' : 'Join Group'}
+              {safeVisibility === 'closed' ? 'Request to Join' : 'Join Group'}
             </button>
           )}
         </div>
@@ -49,46 +59,13 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="flex items-center text-slate-600 dark:text-slate-300">
             <Users className="h-5 w-5 mr-2" />
-            <span>{group.memberCount}</span>
+            <span>{safeMemberCount} {safeMemberCount === 1 ? 'member' : 'members'}</span>
           </div>
-          {group.eventCount !== undefined && (
+          {safeLastActive && (
             <div className="flex items-center text-slate-600 dark:text-slate-300">
-              <Calendar className="h-5 w-5 mr-2" />
-              <span>{group.eventCount}</span>
+              <span className="text-xs">Active: {safeLastActive}</span>
             </div>
           )}
-          {group.resourceCount !== undefined && (
-            <div className="flex items-center text-slate-600 dark:text-slate-300">
-              <BookOpen className="h-5 w-5 mr-2" />
-              <span>{group.resourceCount}</span>
-            </div>
-          )}
-          {group.postCount !== undefined && (
-            <div className="flex items-center text-slate-600 dark:text-slate-300">
-              <Newspaper className="h-5 w-5 mr-2" />
-              <span>{group.postCount}</span>
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Recent Members</h4>
-          <div className="flex -space-x-2">
-            {Array.isArray(group.members) && group.members.slice(0, 5).map(member => (
-              <img
-                key={member.id}
-                src={member.image}
-                alt={member.name}
-                className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800"
-                title={`${member.name} (${member.role})`}
-              />
-            ))}
-            {group.memberCount && group.memberCount > 5 && (
-              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-sm font-medium text-slate-600 dark:text-slate-300 border-2 border-white dark:border-slate-800">
-                +{group.memberCount - 5}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

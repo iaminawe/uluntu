@@ -1,4 +1,4 @@
-import { NewsArticle } from '../../data/mock/mockData';
+import { NewsArticle } from '../../types';
 
 // Format date to a readable format
 export const formatDate = (dateString: string): string => {

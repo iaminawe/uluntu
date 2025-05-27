@@ -14,19 +14,7 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ resource, getTypeIcon }) =>
         </h1>
       </div>
       
-      {resource.tags && resource.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {resource.tags.map(tag => (
-            <span 
-              key={tag}
-              className="inline-block px-3 py-1 bg-slate-100 dark:bg-slate-700 
-                        text-slate-700 dark:text-slate-300 rounded-full text-sm"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Tags would go here if the Resource type had them */}
       
       <p className="text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
         {resource.description}
@@ -35,18 +23,18 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ resource, getTypeIcon }) =>
       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-6">
         <div className="flex items-center">
           <Calendar className="h-4 w-4 mr-1 text-slate-500 dark:text-slate-500" />
-          Added {format(new Date(resource.createdAt), 'MMM d, yyyy')}
+          Added {format(new Date(resource.dateAdded), 'MMM d, yyyy')}
         </div>
         
         <div className="flex items-center">
           <User className="h-4 w-4 mr-1 text-slate-500 dark:text-slate-500" />
-          By {resource.createdBy.name}
+          By {resource.contributor.name}
         </div>
         
-        {resource.group && (
+        {resource.groupId && (
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1 text-slate-500 dark:text-slate-500" />
-            In {resource.group.name}
+            Group ID: {resource.groupId}
           </div>
         )}
       </div>
@@ -57,22 +45,19 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ resource, getTypeIcon }) =>
         </h2>
         <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-6">
           <div className="flex items-center">
+            {/* Using a placeholder image since contributor doesn't have an image property */}
             <img 
-              src={resource.createdBy.image} 
-              alt={resource.createdBy.name}
+              src={`https://ui-avatars.com/api/?name=${resource.contributor.name}&background=random`} 
+              alt={resource.contributor.name}
               className="h-16 w-16 rounded-full mr-6 object-cover" 
             />
             <div>
               <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
-                {resource.createdBy.name}
+                {resource.contributor.name}
               </h3>
-              {resource.createdBy.title && (
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                  {resource.createdBy.title}
-                </p>
-              )}
-              <p className="text-slate-700 dark:text-slate-300">
-                {resource.createdBy.bio}
+              {/* Contributor ID */}
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                ID: {resource.contributor.id}
               </p>
             </div>
           </div>

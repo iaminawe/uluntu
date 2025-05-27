@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToolbarProps, NavigateAction } from 'react-big-calendar';
+import { ToolbarProps, NavigateAction, View } from 'react-big-calendar';
 
 export const CalendarToolbar: React.FC<ToolbarProps> = (props) => {
   const { onNavigate, onView, label, view } = props;
@@ -8,7 +8,7 @@ export const CalendarToolbar: React.FC<ToolbarProps> = (props) => {
     onNavigate(action);
   };
 
-  const viewNames = {
+  const viewNames: Record<string, string> = {
     month: 'Month',
     week: 'Week',
     day: 'Day',
@@ -51,7 +51,7 @@ export const CalendarToolbar: React.FC<ToolbarProps> = (props) => {
           <button
             key={key}
             type="button"
-            onClick={() => onView(key)}
+            onClick={() => onView(key as View)}
             className={`px-3 py-1 text-sm ${
               view === key 
                 ? 'bg-orange-500 text-white' 

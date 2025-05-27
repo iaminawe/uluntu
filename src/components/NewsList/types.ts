@@ -1,21 +1,27 @@
 // Types for NewsList component
+import { NewsArticle as MainNewsArticle } from '../../types';
 
-export interface NewsAuthor {
-  id?: string;
-  name: string;
-  image: string;
+// Define a local NewsArticle type that extends the main one with different property names
+export interface NewsArticle extends Omit<MainNewsArticle, 'date'> {
+  publishedAt: string; // Maps to 'date' in the main type
 }
 
-export interface NewsArticle {
-  id: string;
-  title: string;
-  excerpt: string;
-  content?: string;
-  image?: string;
-  publishedAt: string;
-  author: NewsAuthor;
-  tags?: string[];
-}
+// Utility function to convert from main NewsArticle type to local NewsArticle type
+export const adaptMainNewsArticleToLocal = (mainArticle: MainNewsArticle): NewsArticle => {
+  return {
+    ...mainArticle,
+    publishedAt: mainArticle.date
+  };
+};
+
+// Utility function to convert from local NewsArticle type to main NewsArticle type
+export const adaptLocalNewsArticleToMain = (localArticle: NewsArticle): MainNewsArticle => {
+  const { publishedAt, ...rest } = localArticle;
+  return {
+    ...rest,
+    date: publishedAt
+  };
+};
 
 export interface NewsListProps {
   initialTag?: string;
@@ -32,6 +38,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "1",
     title: 'Kootenay Tech Scene Continues to Grow',
+    slug: 'kootenay-tech-scene-continues-to-grow',
     excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
     content: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base. This trend is driven by several factors, including the rise of remote work, high quality of life in the Kootenays, growing tech community and support networks, and affordable housing compared to major tech hubs.',
     image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
@@ -46,6 +53,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "2",
     title: 'Local AI Startup Secures Major Funding',
+    slug: 'local-ai-startup-secures-major-funding',
     excerpt: 'A Nelson-based artificial intelligence startup has secured $2.5 million in seed funding to develop innovative solutions for environmental monitoring.',
     content: 'A Nelson-based artificial intelligence startup has secured $2.5 million in seed funding to develop innovative solutions for environmental monitoring. The company, founded by former environmental scientists, uses machine learning algorithms to analyze satellite imagery and sensor data to track environmental changes and predict potential issues before they become critical.',
     image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
@@ -60,6 +68,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "3",
     title: 'Tech Community Hosts Successful Developer Conference',
+    slug: 'tech-community-hosts-successful-developer-conference',
     excerpt: 'The annual Kootenay Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region.',
     content: 'The annual Kootenay Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region. The two-day event featured workshops, keynote speeches, and networking opportunities for developers, designers, and tech entrepreneurs from across British Columbia and beyond.',
     image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg',
@@ -74,6 +83,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "4",
     title: 'New Co-Working Space Opens in Rossland',
+    slug: 'new-co-working-space-opens-in-rossland',
     excerpt: 'A new tech-focused co-working space has opened in Rossland, providing flexible working options for remote workers and local startups.',
     content: 'A new tech-focused co-working space has opened in Rossland, providing flexible working options for remote workers and local startups. The facility offers high-speed internet, private meeting rooms, and a collaborative environment designed to foster innovation and community connections.',
     image: 'https://images.pexels.com/photos/7070/space-desk-workspace-coworking.jpg',
@@ -88,6 +98,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "5",
     title: 'Kootenay Tech Companies Commit to Sustainability Goals',
+    slug: 'kootenay-tech-companies-commit-to-sustainability-goals',
     excerpt: 'A consortium of local tech companies has pledged to achieve carbon neutrality by 2030, setting an example for sustainable business practices.',
     content: 'A consortium of local tech companies has pledged to achieve carbon neutrality by 2030, setting an example for sustainable business practices. The initiative includes transitioning to renewable energy sources, implementing green office policies, and developing eco-friendly products and services.',
     image: 'https://images.pexels.com/photos/3943716/pexels-photo-3943716.jpeg',

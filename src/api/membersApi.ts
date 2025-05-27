@@ -1,36 +1,32 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
-  adaptMemberFromSupabase,
-  adaptMemberToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+  adaptMemberFromDatabase,
+  adaptMemberToDatabase
+} from '../adapters/memberAdapter';
+import { Member, ContentStatus } from '../types';
 
-// TODO: Consider importing specific Supabase row types for 'data' variables
-// e.g., import { Tables } from '../types/supabase';
-// type MemberTableRow = Tables<'members'>;
+// Helper function to adapt a list of items
+function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
+  return items.map(item => adapter(item));
+}
 
 // Define the input type for member data passed from the application
 export interface MemberInput {
-  name: string; // Required for creation, maps to Supabase 'name'
-  title?: string | null; // maps to Supabase 'title'
-  bio?: string | null; // maps to Supabase 'bio'
-  location?: string | null; // maps to Supabase 'location'
-  image?: string | null; // maps to Supabase 'image'
-  website?: string | null; // maps to Supabase 'website'
-  employmentStatus?: string | null; // maps to Supabase 'employment_status'
-  openToVolunteering?: boolean | null; // maps to Supabase 'open_to_volunteering'
-  arrivedInNelson?: string | null; // maps to Supabase 'arrived_in_nelson'
-  status?: string; // maps to Supabase 'status', e.g., 'draft', 'published'
-  featured?: boolean | null; // maps to Supabase 'featured'
-  // Note: 'id', 'user_id', 'created_at' are typically handled by Supabase or not part of this input structure.
-  // 'intro' is not currently mapped by adaptMemberToSupabase.
+  name: string;
+  title?: string;
+  bio?: string;
+  location?: string;
+  image?: string;
+  social?: { website?: string };
+  intro?: string;
+  status?: ContentStatus;
+  featured?: boolean;
+  // Removed nullable (null) types to match what adaptMemberToDatabase expects
 }
 
 export const membersApi = {
-  async getAll(filters?: { search?: string; skills?: string[] }) {
+  async getAll(filters?: { search?: string; skills?: string[] }): Promise<Member[]> {
     try {
-      console.log('Fetching all members with filters:', filters);
-      
       // First, get the basic member data without the problematic joins
       let query = supabase
         .from('members')
@@ -47,8 +43,7 @@ export const membersApi = {
 
       const { data, error } = await query;
       if (error) {
-        console.error('Error fetching members:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'fetching members');
         return [];
       }
 
@@ -68,17 +63,16 @@ export const membersApi = {
         );
       }
 
-      return adaptListFromSupabase(filteredData, adaptMemberFromSupabase);
+      // Use our helper function instead of adaptListFromSupabase
+      return adaptItemsList(filteredData, adaptMemberFromDatabase);
     } catch (error) {
-      handleSupabaseError(error);
-      // return []; // Or rethrow, depending on desired error handling for callers
+      handleSupabaseError(error, 'fetching members');
+      return [];
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<Member | null> {
     try {
-      console.log('Fetching member with ID:', id);
-      
       // First, get the basic member data without the problematic joins
       const { data: memberData, error: memberError } = await supabase
         .from('members')
@@ -91,8 +85,7 @@ export const membersApi = {
         .single();
 
       if (memberError) {
-        console.error('Error fetching member:', memberError);
-        handleSupabaseError(memberError);
+        handleSupabaseError(memberError, 'fetching member by id');
         return null;
       }
       
@@ -102,25 +95,17 @@ export const membersApi = {
         .from('company_members')
         .select('company_id')
         .eq('member_id', id);
-        
-      if (companyMembersError) {
-        console.error('Error fetching company members:', companyMembersError);
-        // Don't throw error, just log it
-      }
       
       // If we have company IDs, fetch the company details
-      let companiesData = [];
-      if (companyMembersData && companyMembersData.length > 0) {
+      let companiesData: { id: string; name: string; logo: string }[] = [];
+      if (!companyMembersError && companyMembersData && companyMembersData.length > 0) {
         const companyIds = companyMembersData.map(cm => cm.company_id);
         const { data: companies, error: companiesError } = await supabase
           .from('companies')
           .select('id, name, logo')
           .in('id', companyIds);
-          
-        if (companiesError) {
-          console.error('Error fetching companies:', companiesError);
-          // Don't throw error, just log it
-        } else {
+        
+        if (!companiesError) {
           companiesData = companies || [];
         }
       }
@@ -133,61 +118,124 @@ export const membersApi = {
         }))
       };
       
-      console.log('Member data combined:', combinedData);
-      return adaptMemberFromSupabase(combinedData);
+      return adaptMemberFromDatabase(combinedData);
     } catch (error) {
-      console.error('Exception in getById:', error);
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'fetching member by id');
       return null;
     }
   },
 
-  async create(memberData: MemberInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(memberData: MemberInput): Promise<Member | null> {
     try {
-      const supabaseData = adaptMemberToSupabase(memberData);
+      // Map MemberInput to what adaptMemberToDatabase expects
+      const memberWithCorrectFormat: Partial<Member> = {
+        name: memberData.name,
+        title: memberData.title,
+        bio: memberData.bio,
+        location: memberData.location,
+        image: memberData.image,
+        social: memberData.social,
+        intro: memberData.intro,
+        status: memberData.status,
+        featured: memberData.featured
+      };
+      
+      // Convert to the appropriate format for Supabase
+      const supabaseData = adaptMemberToDatabase(memberWithCorrectFormat);
+      
+      // Create object with correct structure for Supabase insert
+      const insertData = {
+        name: supabaseData.name || memberData.name, // name is required
+        title: supabaseData.title,
+        bio: supabaseData.bio,
+        location: supabaseData.location,
+        image: supabaseData.image,
+        website: supabaseData.website,
+        intro: supabaseData.intro,
+        status: supabaseData.status || 'draft',
+        featured: supabaseData.featured
+      };
+      
       const { data, error } = await supabase
         .from('members')
-        .insert(supabaseData)
+        .insert(insertData)
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptMemberFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating member');
+        return null;
+      }
+      
+      return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating member');
+      return null;
     }
   },
 
-  async update(id: string, memberData: Partial<MemberInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, memberData: Partial<MemberInput>): Promise<Member | null> {
     try {
-      const supabaseData = adaptMemberToSupabase(memberData);
+      // Map Partial<MemberInput> to what adaptMemberToDatabase expects
+      const memberWithCorrectFormat: Partial<Member> = {};
+      if (memberData.name !== undefined) memberWithCorrectFormat.name = memberData.name;
+      if (memberData.title !== undefined) memberWithCorrectFormat.title = memberData.title;
+      if (memberData.bio !== undefined) memberWithCorrectFormat.bio = memberData.bio;
+      if (memberData.location !== undefined) memberWithCorrectFormat.location = memberData.location;
+      if (memberData.image !== undefined) memberWithCorrectFormat.image = memberData.image;
+      if (memberData.social !== undefined) memberWithCorrectFormat.social = memberData.social;
+      if (memberData.intro !== undefined) memberWithCorrectFormat.intro = memberData.intro;
+      if (memberData.status !== undefined) memberWithCorrectFormat.status = memberData.status;
+      if (memberData.featured !== undefined) memberWithCorrectFormat.featured = memberData.featured;
+      
+      // Convert to the appropriate format for Supabase
+      const supabaseData = adaptMemberToDatabase(memberWithCorrectFormat);
+      
+      // Create object with correct structure for Supabase update
+      const updateData: Record<string, string | boolean | null | undefined> = {};
+      if (supabaseData.name !== undefined) updateData.name = supabaseData.name;
+      if (supabaseData.title !== undefined) updateData.title = supabaseData.title;
+      if (supabaseData.bio !== undefined) updateData.bio = supabaseData.bio;
+      if (supabaseData.location !== undefined) updateData.location = supabaseData.location;
+      if (supabaseData.image !== undefined) updateData.image = supabaseData.image;
+      if (supabaseData.website !== undefined) updateData.website = supabaseData.website;
+      if (supabaseData.intro !== undefined) updateData.intro = supabaseData.intro;
+      if (supabaseData.status !== undefined) updateData.status = supabaseData.status;
+      if (supabaseData.featured !== undefined) updateData.featured = supabaseData.featured;
+      
       const { data, error } = await supabase
         .from('members')
-        .update(supabaseData)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptMemberFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'updating member');
+        return null;
+      }
+      
+      return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'updating member');
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('members')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, 'deleting member');
+        return false;
+      }
+      return true;
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'deleting member');
       return false;
     }
   }

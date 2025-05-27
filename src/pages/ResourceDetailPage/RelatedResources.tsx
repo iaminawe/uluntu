@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
-import { RelatedResourcesProps } from './types';
+import { Resource } from '../../types';
+
+interface RelatedResourcesProps {
+  relatedResources: Resource[];
+  getTypeIcon: (type: Resource['type']) => JSX.Element;
+}
 
 const RelatedResources: React.FC<RelatedResourcesProps> = ({ 
   relatedResources, 
@@ -37,10 +42,10 @@ const RelatedResources: React.FC<RelatedResourcesProps> = ({
               </p>
               <div className="flex items-center text-xs text-slate-500 dark:text-slate-500">
                 <Calendar className="h-3 w-3 mr-1" />
-                {format(new Date(relatedResource.createdAt), 'MMM d, yyyy')}
+                {format(new Date(relatedResource.dateAdded), 'MMM d, yyyy')}
                 <span className="mx-2">•</span>
                 <User className="h-3 w-3 mr-1" />
-                {relatedResource.createdBy.name}
+                {relatedResource.contributor.name}
               </div>
             </div>
           </Link>

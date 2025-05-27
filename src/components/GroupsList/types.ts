@@ -1,33 +1,14 @@
 // GroupsList types
-import { EntityStatus } from '../../data/mock/mockData';
+import { Group as MainGroup, GroupMember as MainGroupMember } from '../../types';
 
+// Re-export the visibility type from the main Group type
 export type GroupVisibility = 'open' | 'closed' | 'secret';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GroupMember {
-  id: number;
-  name: string;
-  image: string;
-  role: 'admin' | 'member';
-  joinedDate: string;
-  title?: string;
-}
+// Use the main Group type directly
+export type Group = MainGroup;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Group {
-  id: number;
-  name: string;
-  description: string;
-  heroImage: string;
-  visibility: GroupVisibility;
-  memberCount: number;
-  eventCount?: number;
-  resourceCount?: number;
-  postCount?: number;
-  lastActive: string;
-  members: GroupMember[];
-  status: EntityStatus;
-}
+// Use the main GroupMember type directly
+export type GroupMember = MainGroupMember;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GroupFilters {

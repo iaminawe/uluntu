@@ -1,26 +1,8 @@
 // Types for NewsArticlesList component
-import { EntityStatus } from '../../data/mock/mockData';
+import { NewsArticle as MainNewsArticle } from '../../types';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NewsAuthor {
-  id: string | number;
-  name: string;
-  image: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface NewsArticle {
-  id: string | number;
-  title: string;
-  excerpt: string;
-  content: string;
-  image?: string;
-  date: string;
-  author: NewsAuthor;
-  tags?: string[];
-  status: EntityStatus | string;
-  featured?: boolean;
-}
+// Use the main application's NewsArticle type directly
+export type NewsArticle = MainNewsArticle;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface NewsArticlesListProps {

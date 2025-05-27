@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
-
-import { useOpportunitiesWithFilters } from '../../hooks/useOpportunityQueries';
 import OpportunityCard from './OpportunityCard';
 import Pagination from '../Pagination'; // Import Pagination
 import { 
@@ -56,7 +54,8 @@ const OpportunitiesList = ({
           setOpportunities(SAMPLE_OPPORTUNITIES);
         }
         setLoading(false);
-      } catch (err) {
+      } catch (err: unknown) {
+        console.error('Error loading opportunities:', err);
         setError('Failed to load opportunities. Please try again later.');
         setLoading(false);
       }

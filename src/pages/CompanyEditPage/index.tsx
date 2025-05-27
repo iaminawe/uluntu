@@ -9,11 +9,43 @@ import { initialFormData } from './data';
 import BasicInfoSection from './BasicInfoSection';
 import IndustrySection from './IndustrySection';
 import SocialSection from './SocialSection';
+import { convertFormDataToInsert, convertFormDataToUpdate } from './adapters';
+// Import ContentStatus for proper typing
+import { ContentStatus } from '../../types/common';
+
+// Define an extended company type that includes the optional fields we need
+interface ExtendedCompany {
+  name: string;
+  description: string;
+  logo?: string | null;
+  coverImage?: string | null;
+  industry?: string[];
+  size: string;
+  founded: string;
+  location: string;
+  website?: string | null;
+  social?: {
+    linkedin?: string;
+    twitter?: string;
+    github?: string;
+  };
+  status?: string;
+  featured?: boolean;
+}
+
+// Helper function to validate ContentStatus values
+const validateContentStatus = (status: string | null | undefined): ContentStatus | undefined => {
+  const validStatuses: ContentStatus[] = ['draft', 'published', 'archived', 'pending'];
+  return status && validStatuses.includes(status as ContentStatus)
+    ? status as ContentStatus
+    : undefined;
+};
 
 export default function CompanyEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const companyId = id ? parseInt(id) : undefined;
+  // Use string ID consistently instead of converting to number
+  const companyId = id || undefined;
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -27,28 +59,51 @@ export default function CompanyEditPage() {
   const { 
     data: company,
     isLoading: companyLoading
-  } = useCompany(companyId as number);
+  } = useCompany(id);
   
   // Populate form with company data when in edit mode
   useEffect(() => {
     if (isEditMode && company) {
-      setFormData({
+      // Create a properly typed object from the DB response
+      const typedCompany: ExtendedCompany = {
         name: company.name,
         description: company.description,
-        logo: company.logo || '',
-        coverImage: company.coverImage || '',
+        logo: company.logo || null,
+        coverImage: company.coverImage || null,
         industry: company.industry || [],
         size: company.size,
         founded: company.founded,
         location: company.location,
-        website: company.website || '',
+        website: company.website || null,
+        // Social is not directly on the company object from DB
         social: {
-          linkedin: company.social?.linkedin || '',
-          twitter: company.social?.twitter || '',
-          github: company.social?.github || ''
+          linkedin: '',
+          twitter: '',
+          github: ''
         },
-        status: (company as any).status || initialFormData.status, // Assuming company might have status
-        featured: (company as any).featured !== undefined ? (company as any).featured : initialFormData.featured // Assuming company might have featured
+        // Validate status is a valid ContentStatus value
+        status: validateContentStatus(company.status) || initialFormData.status,
+        featured: company.featured !== null ? company.featured : initialFormData.featured
+      };
+      
+      setFormData({
+        name: typedCompany.name,
+        description: typedCompany.description,
+        logo: typedCompany.logo || '',
+        coverImage: typedCompany.coverImage || '',
+        industry: typedCompany.industry || [],
+        size: typedCompany.size,
+        founded: typedCompany.founded,
+        location: typedCompany.location,
+        website: typedCompany.website || '',
+        social: {
+          linkedin: typedCompany.social?.linkedin || '',
+          twitter: typedCompany.social?.twitter || '',
+          github: typedCompany.social?.github || ''
+        },
+        // Ensure proper ContentStatus typing
+        status: typedCompany.status as ContentStatus || initialFormData.status,
+        featured: typedCompany.featured !== undefined ? typedCompany.featured : initialFormData.featured
       });
     }
   }, [isEditMode, company]);
@@ -71,45 +126,51 @@ export default function CompanyEditPage() {
     
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name as keyof typeof errors];
+        return newErrors;
+      });
     }
   };
-
+  
   const handleLogoFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setLogoFile(file);
-      setFormData(prev => ({ ...prev, logo: '' })); // Clear existing URL if new file selected
-      if (errors.logo) setErrors(prev => ({ ...prev, logo: undefined }));
-    } else {
-      setLogoFile(null);
+    if (event.target.files && event.target.files.length > 0) {
+      setLogoFile(event.target.files[0]);
+      // Preview the image
+      setFormData(prev => ({ ...prev, logo: URL.createObjectURL(event.target.files![0]) }));
     }
   };
-
+  
   const handleCoverImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setCoverImageFile(file);
-      setFormData(prev => ({ ...prev, coverImage: '' })); // Clear existing URL
-      if (errors.coverImage) setErrors(prev => ({ ...prev, coverImage: undefined }));
-    } else {
-      setCoverImageFile(null);
+    if (event.target.files && event.target.files.length > 0) {
+      setCoverImageFile(event.target.files[0]);
+      // Preview the image
+      setFormData(prev => ({ ...prev, coverImage: URL.createObjectURL(event.target.files![0]) }));
     }
   };
   
   const handleAddIndustry = () => {
-    if (newIndustry.trim() && !formData.industry.includes(newIndustry.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        industry: [...prev.industry, newIndustry.trim()]
-      }));
-      setNewIndustry('');
-      
-      // Clear industry error if it exists
-      if (errors.industry) {
-        setErrors(prev => ({ ...prev, industry: undefined }));
-      }
+    if (!newIndustry.trim()) {
+      setErrors(prev => ({ ...prev, industry: 'Industry cannot be empty' }));
+      return;
     }
+    
+    if (formData.industry.includes(newIndustry.trim())) {
+      setErrors(prev => ({ ...prev, industry: 'Industry already exists' }));
+      return;
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      industry: [...prev.industry, newIndustry.trim()]
+    }));
+    setNewIndustry('');
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.industry;
+      return newErrors;
+    });
   };
   
   const handleRemoveIndustry = (industryToRemove: string) => {
@@ -122,6 +183,7 @@ export default function CompanyEditPage() {
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData | 'social', string>> = {};
     
+    // Required fields
     if (!formData.name.trim()) {
       newErrors.name = 'Company name is required';
     }
@@ -130,27 +192,21 @@ export default function CompanyEditPage() {
       newErrors.description = 'Description is required';
     }
     
-    if (!formData.logo.trim() && !logoFile) { // Check for existing URL or new file
-      newErrors.logo = 'Logo is required (either URL or new upload)';
-    }
-    // Note: Cover image is optional, so no validation error if not provided
-    
-    if (!formData.location.trim()) {
-      newErrors.location = 'Location is required';
-    }
-    
-    if (!formData.industry.length) {
-      newErrors.industry = 'At least one industry tag is required';
-    }
-    
-    if (!formData.size) {
+    if (!formData.size.trim()) {
       newErrors.size = 'Company size is required';
     }
     
     if (!formData.founded.trim()) {
       newErrors.founded = 'Founded year is required';
-    } else if (!/^\d{4}$/.test(formData.founded)) {
-      newErrors.founded = 'Please enter a valid year (e.g., 2023)';
+    }
+    
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required';
+    }
+    
+    // Industry validation
+    if (formData.industry.length === 0) {
+      newErrors.industry = 'At least one industry is required';
     }
     
     setErrors(newErrors);
@@ -202,60 +258,49 @@ export default function CompanyEditPage() {
         currentFormData = { ...currentFormData, coverImage: urlData.publicUrl };
       }
 
-      // 3. Prepare data for Supabase submission
-      const dataForSupabase = {
-        name: currentFormData.name,
-        description: currentFormData.description,
-        logo: currentFormData.logo || null, // Ensure null if empty
-        cover_image_url: currentFormData.coverImage || null, // Map and ensure null if empty
-        industry: currentFormData.industry,
-        size: currentFormData.size,
-        founded: currentFormData.founded,
-        location: currentFormData.location,
-        website: currentFormData.website || null, // Ensure null if empty
-        status: currentFormData.status,
-        featured: currentFormData.featured
-      };
-
-      console.log('Submitting to Supabase:', dataForSupabase);
-
-      // 4. Perform Supabase database operation
+      // 3. Perform database operation using our adapter functions
       let dbOperationError = null;
-      if (isEditMode && companyId) {
+      
+      if (isEditMode && id) {
+        // Use adapter function for update operations
+        const updateData = convertFormDataToUpdate(currentFormData);
+        
         const { error } = await supabase
           .from('companies')
-          .update(dataForSupabase)
-          .eq('id', companyId)
-          .select(); // .select() can be useful for getting back the updated row or for RLS
+          .update(updateData)
+          .eq('id', id)
+          .select();
+          
         dbOperationError = error;
       } else {
+        // Use adapter function for insert operations
+        const insertData = convertFormDataToInsert(currentFormData);
+        
         const { error } = await supabase
           .from('companies')
-          .insert([dataForSupabase]) // insert expects an array of objects
+          .insert(insertData)
           .select();
+          
         dbOperationError = error;
       }
 
       if (dbOperationError) {
         throw new Error(`Database operation failed: ${dbOperationError.message}`);
       }
-      
+
+      // 4. Success handling
       setSubmitSuccess(true);
-      setLogoFile(null); // Clear file states on success
-      setCoverImageFile(null);
       
+      // Redirect after a short delay
       setTimeout(() => {
-        navigate(isEditMode && companyId ? `/companies/${companyId}` : '/companies');
-      }, 1000);
-    } catch (error: unknown) {
-      console.error('Error submitting form:', error);
-      let errorMessage = 'Submission failed';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    }
-    setErrors(prev => ({ ...prev, form: errorMessage }));
+        navigate('/companies');
+      }, 2000);
+    } catch (error) {
+      console.error('Error submitting company:', error);
+      setErrors(prev => ({ 
+        ...prev, 
+        form: error instanceof Error ? error.message : 'An unknown error occurred' 
+      }));
     } finally {
       setIsSubmitting(false);
     }
@@ -264,36 +309,32 @@ export default function CompanyEditPage() {
   return (
     <>
       <Helmet>
-        <title>{isEditMode ? 'Edit Company' : 'Add Company'}</title>
-        <meta name="description" content={isEditMode ? 'Edit company information' : 'Add a new company to the directory'} />
+        <title>{isEditMode ? 'Edit Company' : 'Add Company'} | Nelson Tech Community</title>
       </Helmet>
       
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
-        <div className="mb-6">
-          <Link
-            to="/companies"
-            className="inline-flex items-center text-sm font-medium text-orange-600 hover:text-orange-500"
-          >
-            <ArrowLeft className="h-5 w-5 mr-1" />
-            Back to Companies
-          </Link>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
+        <div className="max-w-3xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
+          <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
+            <Link 
+              to="/companies" 
+              className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+            </Link>
+            <h1 className="text-xl font-semibold text-slate-800 dark:text-white">
+              {isEditMode ? 'Edit Company' : 'Add New Company'}
+            </h1>
+          </div>
           
-          <h1 className="mt-4 text-3xl font-bold text-slate-900 dark:text-white">
-            {isEditMode ? 'Edit Company' : 'Add Company'}
-          </h1>
-          
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            {isEditMode 
-              ? 'Update company information in the directory'
-              : 'Add a new company to the community directory'}
-          </p>
-        </div>
-        
-        <div className="bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-          {companyLoading ? (
-            <div className="p-8 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-500 border-r-transparent"></div>
-              <p className="mt-4 text-slate-600 dark:text-slate-400">Loading company information...</p>
+          {companyLoading && isEditMode ? (
+            <div className="p-8">
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+              </div>
             </div>
           ) : submitSuccess ? (
             <div className="p-8 text-center">

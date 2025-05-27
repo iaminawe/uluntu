@@ -17,11 +17,11 @@ export default function NewsPage() {
   // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
   const { data, isLoading, error } = useNewsArticlesWithFilters({
     search: searchTerm,
-    tags: selectedTags.length > 0 ? selectedTags : undefined
+    tag: selectedTags.length > 0 ? selectedTags[0] : undefined
   });
   
   // Properly extract articles from the data structure
-  const articles = data?.articles || [];
+  const articles = data || [];
   const hasArticles = articles.length > 0;
   console.log('News articles:', articles);
   

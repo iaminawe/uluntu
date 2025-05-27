@@ -1,9 +1,38 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
-  adaptResourceFromSupabase,
-  adaptResourceToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+  adaptResourceFromDatabase,
+  adaptResourceToDatabase,
+} from '../adapters/resourceAdapter';
+import { Resource, ContentStatus } from '../types'; // Ensure Resource type is imported
+import { Database } from '../types/supabase'; // Ensure Database type is imported
+
+// Define a type for the data structure returned by Supabase queries in this API
+type SupabaseResourceWithJoins = Database['public']['Tables']['resources']['Row'] & {
+  members?: { id: string; name: string; image?: string | null } | null;
+  groups?: { id: string; name: string } | null;
+  resource_tags?: Array<{ tag: string }>;
+};
+
+// Local wrapper to handle joined data after base adaptation
+const mapFullResourceFromApi = (apiResource: SupabaseResourceWithJoins): Resource => {
+  // Adapt the base resource fields first
+  const resource = adaptResourceFromDatabase(apiResource);
+
+  // Populate contributor name from the joined members table
+  if (apiResource.members) {
+    resource.contributor = {
+      id: apiResource.contributor_id,
+      name: apiResource.members.name || 'Unknown Contributor',
+      // image: apiResource.members.image || undefined, // If Resource type needs contributor image
+    };
+  }
+
+  // groupId is already mapped by adaptResourceFromDatabase if present in the base row.
+  // If full group object or tags are needed on the Resource type, 
+  // the Resource type in types.ts should be updated first, or handled differently by the caller.
+
+  return resource;
+};
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
@@ -26,7 +55,7 @@ export interface ResourceInput {
 }
 
 export const resourcesApi = {
-  async getAll(filters?: { search?: string; types?: string[]; tags?: string[] }) {
+  async getAll(filters?: { search?: string; types?: string[]; tags?: string[] }): Promise<Resource[]> {
     try {
       let query = supabase
         .from('resources')
@@ -48,7 +77,10 @@ export const resourcesApi = {
       }
 
       const { data, error } = await query;
-      if (error) handleSupabaseError(error);
+      if (error) {
+        handleSupabaseError(error, 'fetching resources');
+        return [];
+      }
 
       // Filter by tags if provided
       let filteredData = data || [];
@@ -60,14 +92,15 @@ export const resourcesApi = {
         );
       }
 
-      return adaptListFromSupabase(filteredData, adaptResourceFromSupabase);
+      // Use map directly instead of adaptListFromSupabase
+      return filteredData.map(item => mapFullResourceFromApi(item as SupabaseResourceWithJoins));
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      handleSupabaseError(error, 'fetching resources');
+      return [];
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<Resource | null> {
     try {
       const { data, error } = await supabase
         .from('resources')
@@ -81,34 +114,78 @@ export const resourcesApi = {
         .eq('status', 'published')
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptResourceFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'fetching resource by id');
+        return null;
+      }
+      
+      return data ? mapFullResourceFromApi(data as SupabaseResourceWithJoins) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'fetching resource by id');
+      return null;
     }
   },
 
-  async create(resourceData: ResourceInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(resourceData: ResourceInput): Promise<Resource | null> {
     try {
-      const supabaseData = adaptResourceToSupabase(resourceData);
+      // Convert ResourceInput to a partial Resource for the adapter
+      const resourceForAdapter: Partial<Resource> = {
+        title: resourceData.title,
+        description: resourceData.description,
+        type: resourceData.type as 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link',
+        url: resourceData.url,
+        image: resourceData.image ?? undefined,
+        status: (resourceData.status || 'draft') as ContentStatus,
+        featured: resourceData.featured ?? false,
+        contributor: {
+          id: resourceData.contributorId,
+          name: '' // Will be populated on retrieval
+        },
+        groupId: resourceData.groupId ?? undefined
+      };
+
+      // Get data ready for Supabase using our adapter
+      const supabaseData = adaptResourceToDatabase(resourceForAdapter);
+      
       const { data, error } = await supabase
         .from('resources')
         .insert(supabaseData)
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptResourceFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating resource');
+        return null;
+      }
+      
+      return data ? mapFullResourceFromApi(data as SupabaseResourceWithJoins) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating resource');
+      return null;
     }
   },
 
-  async update(id: string, resourceData: Partial<ResourceInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, resourceData: Partial<ResourceInput>): Promise<Resource | null> {
     try {
-      const supabaseData = adaptResourceToSupabase(resourceData);
+      // Convert ResourceInput to a partial Resource for the adapter
+      const resourceForAdapter: Partial<Resource> = {};
+      
+      if (resourceData.title !== undefined) resourceForAdapter.title = resourceData.title;
+      if (resourceData.description !== undefined) resourceForAdapter.description = resourceData.description;
+      if (resourceData.type !== undefined) resourceForAdapter.type = resourceData.type as 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link';
+      if (resourceData.url !== undefined) resourceForAdapter.url = resourceData.url;
+      if (resourceData.image !== undefined) resourceForAdapter.image = resourceData.image ?? undefined;
+      if (resourceData.status !== undefined) resourceForAdapter.status = resourceData.status as ContentStatus;
+      if (resourceData.featured !== undefined) resourceForAdapter.featured = resourceData.featured ?? false;
+      if (resourceData.contributorId !== undefined) {
+        resourceForAdapter.contributor = {
+          id: resourceData.contributorId,
+          name: '' // Will be populated on retrieval
+        };
+      }
+      if (resourceData.groupId !== undefined) resourceForAdapter.groupId = resourceData.groupId ?? undefined;
+      
+      const supabaseData = adaptResourceToDatabase(resourceForAdapter);
       const { data, error } = await supabase
         .from('resources')
         .update(supabaseData)
@@ -116,25 +193,32 @@ export const resourcesApi = {
         .select()
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptResourceFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'updating resource');
+        return null;
+      }
+      
+      return data ? mapFullResourceFromApi(data as SupabaseResourceWithJoins) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'updating resource');
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('resources')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, 'deleting resource');
+        return false;
+      }
+      return true; // Operation successful
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'deleting resource');
       return false;
     }
   }

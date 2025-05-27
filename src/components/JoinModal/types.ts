@@ -1,5 +1,5 @@
 // Types for JoinModal component
-import { Group } from '../../data/mock/mockData';
+import { Group } from '../../types';
 
 export interface JoinModalProps {
   group: Group;

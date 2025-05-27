@@ -1,18 +1,19 @@
 // EventsList types
+import { Event as MainEvent } from '../../types';
 
-export type EventType = 'in-person' | 'online' | 'hybrid';
+export type EventType = MainEvent['type'];
 export type DateRangeFilter = 'upcoming' | 'month' | 'three-months' | 'all';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// Local EventOrganizer interface that matches the main Event's organizer structure
 export interface EventOrganizer {
-  id: number;
+  id: string;
   name: string;
   image: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// Local Event interface for the EventsList component
 export interface Event {
-  id: number;
+  id: string;
   title: string;
   date: string;
   endDate?: string;
@@ -24,6 +25,48 @@ export interface Event {
   type: EventType;
   url?: string;
 }
+
+// Adapter function to convert from main Event type to local Event type
+export const adaptMainEventToLocal = (event: MainEvent): Event => {
+  return {
+    id: event.id,
+    title: event.title,
+    date: event.date,
+    endDate: event.endDate,
+    location: event.location,
+    description: event.description,
+    image: event.image,
+    organizer: {
+      id: event.organizer.id,
+      name: event.organizer.name,
+      image: event.organizer.image
+    },
+    attendees: event.attendees,
+    type: event.type,
+    url: event.url
+  };
+};
+
+// Adapter function to convert from local Event type to main Event type
+export const adaptLocalToMainEvent = (event: Event): Partial<MainEvent> => {
+  return {
+    id: event.id,
+    title: event.title,
+    date: event.date,
+    endDate: event.endDate,
+    location: event.location,
+    description: event.description,
+    image: event.image,
+    organizer: {
+      id: event.organizer.id,
+      name: event.organizer.name,
+      image: event.organizer.image
+    },
+    attendees: event.attendees,
+    type: event.type,
+    url: event.url
+  };
+};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface EventFilters {

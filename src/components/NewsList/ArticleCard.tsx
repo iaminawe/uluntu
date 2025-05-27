@@ -21,7 +21,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
       </div>
       <div className="p-6 flex-1 flex flex-col">
         <div className="flex flex-wrap gap-2 mb-3">
-          {article.tags.map(tag => (
+          {article.tags?.map(tag => (
             <span
               key={tag}
               className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-xs"

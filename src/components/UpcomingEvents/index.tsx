@@ -9,14 +9,14 @@ import { Event } from '../../data/mock/mockData';
 // Sample events data for local development
 const SAMPLE_EVENTS: Event[] = [
   {
-    id: 1,
+    id: '1',
     title: 'AI in Healthcare Workshop',
     date: '2025-06-15T18:00:00',
     location: 'Nelson Innovation Centre',
     image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg',
     description: 'Join us for an interactive workshop exploring AI applications in healthcare.',
     organizer: {
-      id: 1,
+      id: '1',
       name: 'Nelson Tech Collective',
       image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg'
     },
@@ -24,14 +24,14 @@ const SAMPLE_EVENTS: Event[] = [
     status: 'published'
   },
   {
-    id: 2,
+    id: '2',
     title: 'Machine Learning Study Group',
     date: '2025-06-20T19:00:00',
     location: 'Virtual',
     image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
     description: 'Weekly study group for machine learning enthusiasts.',
     organizer: {
-      id: 2,
+      id: '2',
       name: 'Kootenay Data Science Network',
       image: 'https://images.pexels.com/photos/3184603/pexels-photo-3184603.jpeg'
     },

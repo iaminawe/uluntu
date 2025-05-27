@@ -1,4 +1,5 @@
 // Company Profile related types
+import { Company as MainCompany } from '../../types';
 
 export interface CompanyMember {
   id: number;
@@ -35,15 +36,17 @@ export interface CompanyOpportunity {
   date: string;
 }
 
+// Define a local Company type that includes properties needed by the component
 export interface Company {
-  id: number;
+  id: number; // Local component expects number IDs
   name: string;
   description: string;
-  industry: string;
+  logo?: string; // Keep for compatibility with main type
+  image: string; // Used in this component
+  industry: string; // Local component expects string, main type expects string[]
   size: string;
   founded: string;
   location: string;
-  image: string;
   website: string;
   socialLinks: {
     platform: string;
@@ -56,6 +59,36 @@ export interface Company {
   posts: CompanyPost[];
   opportunities: CompanyOpportunity[];
 }
+
+// Utility function to convert from main Company type to local Company type
+export const adaptMainCompanyToLocal = (mainCompany: MainCompany): Partial<Company> => {
+  return {
+    id: typeof mainCompany.id === 'string' ? parseInt(mainCompany.id) : mainCompany.id as number,
+    name: mainCompany.name,
+    description: mainCompany.description,
+    logo: mainCompany.logo,
+    image: mainCompany.logo, // Use logo as image
+    industry: Array.isArray(mainCompany.industry) ? mainCompany.industry.join(', ') : mainCompany.industry as string,
+    size: mainCompany.size,
+    founded: mainCompany.founded,
+    location: mainCompany.location,
+    website: mainCompany.website || '',
+    // Map social from main type to socialLinks in local type
+    socialLinks: mainCompany.social ? [
+      ...Object.entries(mainCompany.social).map(([platform, url]) => ({
+        platform,
+        url: url || ''
+      }))
+    ] : [],
+    // These properties don't exist in the main type, so they would need to be added separately
+    technologies: [],
+    members: [],
+    events: [],
+    resources: [],
+    posts: [],
+    opportunities: []
+  };
+};
 
 // Sample data
 export const SAMPLE_COMPANY: Company = {

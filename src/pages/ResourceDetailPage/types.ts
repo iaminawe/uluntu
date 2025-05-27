@@ -1,13 +1,17 @@
 // Types for ResourceDetailPage components
-export type ResourceType = 'document' | 'video' | 'image' | 'link' | 'presentation';
+import { Resource } from '../../types';
 
-export interface Resource {
+// Use the type from the main application's Resource type
+export type ResourceType = Resource['type'];
+
+// Renamed to avoid conflict with imported Resource type
+export interface DetailPageResource {
   id: number;
   title: string;
   description: string;
   type: ResourceType;
   url: string;
-  createdAt: string;
+  dateAdded: string; // Using dateAdded to match the main Resource type
   tags: string[];
   createdBy: {
     id: number;
@@ -28,7 +32,7 @@ export interface RelatedResource {
   title: string;
   description: string;
   type: ResourceType;
-  createdAt: string;
+  dateAdded: string; // Using dateAdded to match the main Resource type
   createdBy: {
     name: string;
     image: string;

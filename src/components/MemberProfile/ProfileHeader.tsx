@@ -53,16 +53,16 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
               <span>{member.location}</span>
             </div>
             
-            {member.website && (
+            {member.social?.website && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Globe className="h-5 w-5 mr-2 text-orange-500" />
                 <a
-                  href={member.website}
+                  href={member.social.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-orange-500 dark:hover:text-orange-400"
                 >
-                  {member.website.replace(/^https?:\/\//, '')}
+                  {member.social.website.replace(/^https?:\/\//, '')}
                 </a>
               </div>
             )}
@@ -116,7 +116,7 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
               Skills
             </h2>
             <div className="flex flex-wrap gap-2">
-              {member.skills.map(skill => (
+              {(member.skills || []).map(skill => (
                 <span
                   key={skill}
                   className="px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-400 rounded-full text-sm"

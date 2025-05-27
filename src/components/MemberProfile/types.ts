@@ -1,21 +1,22 @@
 // Member Profile related types
+import { Member as MainMember } from '../../types';
 
 export interface MemberGroup {
-  id: number;
+  id: string;
   name: string;
   role: 'admin' | 'member';
   joinedDate: string;
 }
 
 export interface MemberEvent {
-  id: number;
+  id: string;
   title: string;
   date: string;
   presentation: string;
 }
 
 export interface MemberResource {
-  id: number;
+  id: string;
   title: string;
   type: string;
   date: string;
@@ -23,33 +24,33 @@ export interface MemberResource {
 }
 
 export interface MemberPost {
-  id: number;
+  id: string;
   title: string;
   excerpt?: string;
   group: {
-    id: number;
+    id: string;
     name: string;
   };
   date: string;
 }
 
 export interface Organization {
-  id: number;
+  id: string;
   name: string;
   role: string;
 }
 
 export interface MarketplaceListing {
-  id: number;
+  id: string;
   title: string;
   type: 'product' | 'service' | 'equipment';
   price: number;
   image: string;
-  createdAt: string;
+  dateAdded: string; // Changed from createdAt to match naming convention
 }
 
 export interface MemberOpportunity {
-  id: number;
+  id: string;
   title: string;
   type: string;
   location: string;
@@ -63,14 +64,8 @@ export interface MemberAchievement {
   date: string;
 }
 
-export interface Member {
-  id: number;
-  name: string;
-  title: string;
-  bio: string;
-  location: string;
-  image: string;
-  skills: string[];
+// Define a local Member type that extends the main application's Member type with additional properties
+export interface Member extends MainMember {
   organizations: Organization[];
   groups: MemberGroup[];
   events: MemberEvent[];
@@ -79,7 +74,6 @@ export interface Member {
   marketplaceListings: MarketplaceListing[];
   opportunities?: MemberOpportunity[];
   achievements?: MemberAchievement[];
-  website?: string;
   socialLinks?: {
     platform: string;
     url: string;
@@ -89,9 +83,33 @@ export interface Member {
   arrivedInNelson: string;
 }
 
+// Utility function to convert from main Member type to local Member type
+export const adaptMainMemberToLocal = (mainMember: MainMember): Partial<Member> => {
+  return {
+    ...mainMember,
+    // Map social from main type to socialLinks in local type
+    socialLinks: mainMember.social ? [
+      ...Object.entries(mainMember.social).map(([platform, url]) => ({
+        platform,
+        url
+      }))
+    ] : undefined,
+    // These properties don't exist in the main type, so they would need to be added separately
+    organizations: [],
+    groups: [],
+    events: [],
+    resources: [],
+    posts: [],
+    marketplaceListings: [],
+    employmentStatus: 'not-looking',
+    openToVolunteering: false,
+    arrivedInNelson: ''
+  };
+};
+
 // Sample data
 export const SAMPLE_MEMBER: Member = {
-  id: 1,
+  id: '1',
   name: 'Sarah Johnson',
   title: 'Full Stack Developer',
   bio: `Sarah is a passionate developer with over 8 years of experience in web development and AI. 
@@ -101,7 +119,11 @@ export const SAMPLE_MEMBER: Member = {
   location: 'Nelson, BC',
   image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
   skills: ['React', 'Node.js', 'TypeScript', 'AI/ML', 'Python'],
-  website: 'https://sarahjohnson.dev',
+  status: 'published',
+  joinDate: '2023-01-15',
+  social: {
+    website: 'https://sarahjohnson.dev'
+  },
   socialLinks: [
     { platform: 'GitHub', url: 'https://github.com/sarahjohnson' },
     { platform: 'LinkedIn', url: 'https://linkedin.com/in/sarahjohnson' },
@@ -112,25 +134,25 @@ export const SAMPLE_MEMBER: Member = {
   arrivedInNelson: '2023-06-15',
   organizations: [
     {
-      id: 1,
+      id: '1',
       name: 'Mountain Tech Solutions',
       role: 'Senior Developer'
     },
     {
-      id: 2,
+      id: '2',
       name: 'Kootenay Code Club',
       role: 'Mentor'
     }
   ],
   groups: [
     {
-      id: 1,
+      id: '1',
       name: 'AI Enthusiasts Kootenay',
       role: 'admin',
       joinedDate: '2024-01-15'
     },
     {
-      id: 2,
+      id: '2',
       name: 'Kootenay Tech Organizers',
       role: 'member',
       joinedDate: '2024-02-01'
@@ -138,13 +160,13 @@ export const SAMPLE_MEMBER: Member = {
   ],
   events: [
     {
-      id: 1,
+      id: '1',
       title: 'AI Ethics Workshop',
       date: '2024-02-15',
       presentation: 'Ethics in Healthcare AI'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Machine Learning Study Group',
       date: '2024-03-01',
       presentation: 'Introduction to Neural Networks'
@@ -152,14 +174,14 @@ export const SAMPLE_MEMBER: Member = {
   ],
   resources: [
     {
-      id: 1,
+      id: '1',
       title: 'Getting Started with AI',
       type: 'document',
       date: '2024-02-01',
       url: 'https://example.com/ai-guide.pdf'
     },
     {
-      id: 2,
+      id: '2',
       title: 'ML Workshop Slides',
       type: 'presentation',
       date: '2024-03-01',
@@ -168,10 +190,10 @@ export const SAMPLE_MEMBER: Member = {
   ],
   posts: [
     {
-      id: 1,
+      id: '1',
       title: 'Recap: February AI Ethics Workshop',
       group: {
-        id: 1,
+        id: '1',
         name: 'AI Enthusiasts Kootenay'
       },
       date: '2024-02-16'
@@ -179,25 +201,25 @@ export const SAMPLE_MEMBER: Member = {
   ],
   marketplaceListings: [
     {
-      id: 1,
+      id: '1',
       title: 'Web Development Services',
       type: 'service',
       price: 75,
       image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-      createdAt: '2025-03-14'
+      dateAdded: '2025-03-14'
     },
     {
-      id: 2,
+      id: '2',
       title: 'MacBook Pro 16" M1 Pro',
       type: 'equipment',
       price: 2000,
       image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-      createdAt: '2025-03-15'
+      dateAdded: '2025-03-15'
     }
   ],
   opportunities: [
     {
-      id: 1,
+      id: '1',
       title: 'Frontend Developer Needed',
       type: 'contract',
       location: 'Nelson, BC',
@@ -205,7 +227,7 @@ export const SAMPLE_MEMBER: Member = {
       description: 'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Tech Mentor for Youth Program',
       type: 'volunteer',
       location: 'Kootenay Region',

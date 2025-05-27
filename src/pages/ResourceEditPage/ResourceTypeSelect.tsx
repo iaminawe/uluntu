@@ -1,4 +1,4 @@
-import { FileText, Video, Image, Link as LinkIcon, Presentation } from 'lucide-react';
+import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon } from 'lucide-react';
 import { ResourceTypeSelectProps } from './types';
 import { FormRadioCardGroup } from '../../components/ui/Form';
 
@@ -17,21 +17,21 @@ const ResourceTypeSelect: React.FC<ResourceTypeSelectProps> = ({ formData, handl
       iconColor: 'text-red-500'
     },
     {
-      value: 'image',
-      label: 'Image',
-      icon: <Image className="h-6 w-6" />,
+      value: 'guide',
+      label: 'Guide',
+      icon: <BookOpen className="h-6 w-6" />,
       iconColor: 'text-green-500'
     },
     {
-      value: 'link',
-      label: 'Link',
-      icon: <LinkIcon className="h-6 w-6" />,
+      value: 'tool',
+      label: 'Tool',
+      icon: <Wrench className="h-6 w-6" />,
       iconColor: 'text-purple-500'
     },
     {
-      value: 'presentation',
-      label: 'Presentation',
-      icon: <Presentation className="h-6 w-6" />,
+      value: 'article',
+      label: 'Article',
+      icon: <ArticleIcon className="h-6 w-6" />,
       iconColor: 'text-amber-500'
     }
   ];

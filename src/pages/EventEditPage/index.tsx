@@ -21,14 +21,15 @@ const initialFormData: FormData = {
   image: '',
   type: 'in-person',
   url: '',
-  organizerId: 1,
+  organizerId: '1', // Use string ID to match expected type
   sessions: []
 };
 
 export default function EventEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const eventId = id ? parseInt(id) : 0; // Using 0 instead of undefined to avoid type issues
+  // Use the original string ID which is what useEvent expects
+  const eventIdString = id || '';
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -39,12 +40,12 @@ export default function EventEditPage() {
   const { 
     data: event, 
     isLoading: eventLoading
-  } = useEvent(isEditMode ? eventId : 0); // Only fetch if in edit mode
+  } = useEvent(isEditMode ? eventIdString : ''); // Only fetch if in edit mode
   
   // Populate form with event data when in edit mode
   useEffect(() => {
     // Debug logging
-    console.log('EventEditPage - Event ID:', eventId);
+    console.log('EventEditPage - Event ID:', eventIdString);
     console.log('EventEditPage - Event data:', event);
     console.log('EventEditPage - Event loading:', eventLoading);
     
@@ -59,11 +60,11 @@ export default function EventEditPage() {
         image: event.image || '',
         type: event.type,
         url: event.url || '',
-        organizerId: event.organizer.id,
+        organizerId: String(event.organizer.id), // Ensure organizerId is a string
         sessions: event.sessions || []
       });
     }
-  }, [isEditMode, event, eventId, eventLoading]);
+  }, [isEditMode, event, eventIdString, eventLoading]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

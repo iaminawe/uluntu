@@ -1,20 +1,20 @@
 // Types for CompanyDetailPage components
-import { Company, Member } from '../../types';
+import { Company as MainCompany, Member } from '../../types';
 
 export interface PageHeaderProps {
   id: string;
 }
 
 export interface CompanyInfoSectionProps {
-  company: Company;
+  company: MainCompany;
 }
 
 export interface SocialLinksSidebarProps {
-  company: Company;
+  company: MainCompany;
 }
 
 export interface CompanyDetailsProps {
-  company: Company;
+  company: MainCompany;
 }
 
 export interface EmployeesSectionProps {

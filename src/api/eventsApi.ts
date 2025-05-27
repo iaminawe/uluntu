@@ -1,9 +1,11 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
-import {
-  adaptEventFromSupabase,
-  adaptEventToSupabase,
-  adaptListFromSupabase
-} from '../adapters/dataAdapters';
+import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '../adapters/eventAdapter';
+import { Event as FrontendEvent } from '../types'; // For typing
+
+// Helper function to adapt a list of items
+function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
+  return items.map(item => adapter(item));
+}
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
@@ -30,7 +32,7 @@ export interface EventInput {
 }
 
 export const eventsApi = {
-  async getAll(filters?: { search?: string; types?: string[]; dateRange?: string }) {
+  async getAll(filters?: { search?: string; types?: string[]; dateRange?: string }): Promise<FrontendEvent[]> {
     try {
       console.log('Fetching all events with filters:', filters);
       
@@ -76,15 +78,20 @@ export const eventsApi = {
       }
 
       const { data, error } = await query;
-      if (error) handleSupabaseError(error);
-      return adaptListFromSupabase(data || [], adaptEventFromSupabase);
+      if (error) {
+        handleSupabaseError(error, 'fetching events');
+        return [];
+      }
+      
+      // Use our helper function instead of adaptListFromSupabase
+      return adaptItemsList(data || [], adaptEventFromDatabase);
     } catch (error) {
-      handleSupabaseError(error);
-      // return [];
+      handleSupabaseError(error, 'fetching events');
+      return [];
     }
   },
 
-  async getById(id: string) {
+  async getById(id: string): Promise<FrontendEvent | null> {
     try {
       const { data, error } = await supabase
         .from('events')
@@ -100,60 +107,110 @@ export const eventsApi = {
         .eq('status', 'published')
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptEventFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'fetching event by id');
+        return null;
+      }
+      
+      return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'fetching event by id');
+      return null;
     }
   },
 
-  async create(eventData: EventInput) { // Input is App-specific, adapted to Supabase Insert type
+  async create(eventData: EventInput): Promise<FrontendEvent | null> {
     try {
-      const supabaseData = adaptEventToSupabase(eventData);
+      const preparedEventData: Parameters<typeof adaptEventToSupabaseInsert>[0] = {
+        title: eventData.title,
+        description: eventData.description,
+        date: eventData.date,
+        endDate: eventData.endDate === null ? undefined : eventData.endDate,
+        location: eventData.location,
+        address: eventData.address === null ? undefined : eventData.address,
+        image: eventData.image,
+        type: eventData.type as FrontendEvent['type'], // Cast because EventInput['type'] is wider
+        url: eventData.url === null ? undefined : eventData.url,
+        organizer_id: eventData.organizerId,
+        group_id: eventData.groupId === null ? undefined : eventData.groupId,
+        max_attendees: eventData.maxAttendees === null ? undefined : eventData.maxAttendees,
+        status: eventData.status as FrontendEvent['status'], // Cast if status types differ
+        featured: eventData.featured === null ? undefined : eventData.featured,
+        // current_attendees is not part of EventInput, managed by backend or specific logic
+      };
+      const supabaseData = adaptEventToSupabaseInsert(preparedEventData);
       const { data, error } = await supabase
         .from('events')
         .insert(supabaseData)
-        .select()
+        .select('*, event_sessions(*), members!events_organizer_id_fkey(id, name, image, title)')
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptEventFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'creating event');
+        return null;
+      }
+      
+      return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'creating event');
+      return null;
     }
   },
 
-  async update(id: string, eventData: Partial<EventInput>) { // Input is App-specific, adapted to Supabase Update type
+  async update(id: string, eventData: Partial<EventInput>): Promise<FrontendEvent | null> {
     try {
-      const supabaseData = adaptEventToSupabase(eventData);
+      // Map Partial<EventInput> to Partial<FrontendEvent> & { organizer_id?: string }
+      const preparedEventData: Parameters<typeof adaptEventToSupabaseUpdate>[0] = {
+        ...(eventData.title && { title: eventData.title }),
+        ...(eventData.description && { description: eventData.description }),
+        ...(eventData.date && { date: eventData.date }),
+        ...(eventData.endDate !== undefined && { endDate: eventData.endDate === null ? undefined : eventData.endDate }),
+        ...(eventData.location && { location: eventData.location }),
+        ...(eventData.address !== undefined && { address: eventData.address === null ? undefined : eventData.address }),
+        ...(eventData.image && { image: eventData.image }),
+        ...(eventData.type && { type: eventData.type as FrontendEvent['type'] }),
+        ...(eventData.url !== undefined && { url: eventData.url === null ? undefined : eventData.url }),
+        ...(eventData.organizerId && { organizer_id: eventData.organizerId }),
+        ...(eventData.groupId !== undefined && { group_id: eventData.groupId === null ? undefined : eventData.groupId }),
+        ...(eventData.maxAttendees !== undefined && { max_attendees: eventData.maxAttendees === null ? undefined : eventData.maxAttendees }),
+        ...(eventData.status && { status: eventData.status as FrontendEvent['status'] }),
+        ...(eventData.featured !== undefined && { featured: eventData.featured === null ? undefined : eventData.featured }),
+      };
+
+      const supabaseData = adaptEventToSupabaseUpdate(preparedEventData);
       const { data, error } = await supabase
         .from('events')
         .update(supabaseData)
         .eq('id', id)
-        .select()
+        .select('*, event_sessions(*), members!events_organizer_id_fkey(id, name, image, title)')
         .single();
 
-      if (error) handleSupabaseError(error);
-      return data ? adaptEventFromSupabase(data) : null;
+      if (error) {
+        handleSupabaseError(error, 'updating event');
+        return null;
+      }
+      
+      return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error);
-      // return null;
+      handleSupabaseError(error, 'updating event');
+      return null;
     }
   },
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from('events')
         .delete()
         .eq('id', id);
 
-      if (error) handleSupabaseError(error);
-      return !error; // Return true if no error, false otherwise
+      if (error) {
+        handleSupabaseError(error, 'deleting event');
+        return false;
+      }
+      return true; // Operation successful
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'deleting event');
       return false;
     }
   }

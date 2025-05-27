@@ -4,11 +4,12 @@ import { AlertTriangle } from 'lucide-react';
 import ArticleCard from './ArticleCard';
 
 import Newsletter from './Newsletter';
-import { NewsArticle, NewsListProps, FilterOptions } from './types';
+import { NewsArticle, NewsListProps, FilterOptions, adaptMainNewsArticleToLocal } from './types';
 import { 
   filterArticles, 
   sortArticlesByDate 
 } from './utils';
+import { NewsArticle as MainNewsArticle } from '../../types';
 
 import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
@@ -27,13 +28,14 @@ const NewsList = ({ initialTag = 'all', initialSearch = '' }: NewsListProps) => 
   } = useNewsArticlesWithFilters({
     search: filters.search,
     // Ensure 'tag' is string | undefined, not 'all'
-    tags: filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined 
+    tag: filters.tag && filters.tag !== 'all' ? filters.tag : undefined 
   });
 
   // Properly extract articles from the hook's data structure, default to empty array if undefined
-  const articles = newsDataArticles?.articles || [];
+  const mainArticles = (newsDataArticles || []) as MainNewsArticle[];
   
-
+  // Convert main NewsArticle type to local NewsArticle type using adapter function
+  const articles = mainArticles.map(adaptMainNewsArticleToLocal);
   
   // Filter and sort articles based on the fetched data
   // The hook should ideally return pre-filtered data based on search/tags,

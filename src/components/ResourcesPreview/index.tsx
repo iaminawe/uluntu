@@ -1,50 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ResourcesPreviewProps } from './types';
 import ResourceCard from './ResourceCard';
 import { ArrowRight } from 'lucide-react';
-import { Resource } from '../../data/mock/mockData';
+import { Resource } from '../../types';
+
+// Define interface for component props
+interface ResourcesPreviewProps {
+  title?: string;
+  resources?: Resource[];
+  maxResources?: number;
+}
 
 // Sample resources data
 const SAMPLE_RESOURCES: Resource[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Introduction to Web Development',
     description: 'A comprehensive guide to modern web development practices and technologies.',
     type: 'guide',
     url: 'https://example.com/web-dev-guide',
     dateAdded: '2025-01-15',
-    status: 'published',
     contributor: {
-      id: 1,
+      id: '1',
       name: 'Sarah Johnson'
-    }
+    },
+    image: 'https://example.com/images/web-dev.jpg'
   },
   {
-    id: 2,
+    id: '2',
     title: 'Getting Started with React',
     description: 'Learn the fundamentals of React and component-based architecture.',
     type: 'article',
     url: 'https://example.com/react-guide',
     dateAdded: '2025-01-10',
-    status: 'published',
     contributor: {
-      id: 2,
+      id: '2',
       name: 'Mike Chen'
-    }
+    },
+    image: 'https://example.com/images/react.jpg'
   },
   {
-    id: 3,
+    id: '3',
     title: 'Advanced JavaScript Concepts',
     description: 'Deep dive into closures, promises, and async/await patterns.',
     type: 'video',
     url: 'https://example.com/js-video',
     dateAdded: '2025-01-05',
-    status: 'published',
     contributor: {
-      id: 3,
+      id: '3',
       name: 'Alex Rodriguez'
-    }
+    },
+    image: 'https://example.com/images/js-advanced.jpg'
   }
 ];
 

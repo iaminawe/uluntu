@@ -1,7 +1,7 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { useEffect } from 'react';
-import { RichTextEditorProps } from './types';
+import { RichTextEditorProps, HeadingOption } from './types';
 import { addCKEditorStyles } from './utils';
 
 // Default toolbar configuration
@@ -15,7 +15,7 @@ const DEFAULT_TOOLBAR = [
 ];
 
 // Default heading options
-const DEFAULT_HEADING_OPTIONS = [
+const DEFAULT_HEADING_OPTIONS: HeadingOption[] = [
   { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
   { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
   { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },

@@ -1,4 +1,4 @@
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../types/common';
 
 export interface FormData {
   title: string;
@@ -7,7 +7,7 @@ export interface FormData {
   image: string;
   tags: string[];
   authorId: number;
-  status: EntityStatus;
+  status: ContentStatus;
   featured: boolean;
 }
 

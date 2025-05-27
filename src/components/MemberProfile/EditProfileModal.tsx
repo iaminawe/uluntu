@@ -18,7 +18,7 @@ const EditProfileModal = ({ member, onClose, onSave }: EditProfileModalProps) =>
     bio: member.bio,
     location: member.location,
     image: member.image,
-    website: member.website || '',
+    website: member.social?.website || '',
     skills: member.skills?.join(', ') || '',
     employmentStatus: member.employmentStatus,
     openToVolunteering: member.openToVolunteering

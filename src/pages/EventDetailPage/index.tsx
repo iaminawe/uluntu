@@ -15,11 +15,12 @@ import ErrorState from './ErrorState';
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const eventId = id ? parseInt(id) : 0;
+  // Use the original string ID as useEvent expects a string
+  const eventIdString = id || '';
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
-  const { data: event, isLoading, error } = useEvent(eventId);
+  const { data: event, isLoading, error } = useEvent(eventIdString);
   
   const handleRegister = () => {
     setIsRegistering(true);

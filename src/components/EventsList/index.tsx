@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { EventType, DateRangeFilter } from './types';
+import { EventType, DateRangeFilter, adaptMainEventToLocal } from './types';
 import { useEventsWithFilters } from '../../hooks/useQueries';
 import EventCard from './EventCard';
 import PastEventCard from './PastEventCard';
@@ -26,7 +26,7 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
   const [currentPageUpcoming, setCurrentPageUpcoming] = useState(1);
   const [currentPagePast, setCurrentPagePast] = useState(1);
   
-  const { data: allEvents = [], isLoading, error } = useEventsWithFilters({
+  const { data: mainEvents = [], isLoading, error } = useEventsWithFilters({
     search: initialSearch,
     types: selectedTypes.length > 0 ? selectedTypes : undefined,
     dateRange: dateRange
@@ -45,6 +45,9 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
   };
 
   const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'all' || initialSearch !== '';
+  
+  // Convert mainEvents to the local Event type using the adapter function
+  const allEvents = mainEvents.map(adaptMainEventToLocal);
   
   const upcomingEventsRaw = allEvents.filter(event => !isPastEvent(event.date));
   const pastEventsRaw = allEvents.filter(event => isPastEvent(event.date));
@@ -93,7 +96,7 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
         </div>
       )}
       
-      {!isLoading && !error && allEvents.length === 0 && (
+      {!isLoading && !error && mainEvents.length === 0 && (
         <div className="text-center py-8 bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
           <p className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No events found</p>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
@@ -148,7 +151,7 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
         </div>
       )}
       
-      {!isLoading && !error && allEvents.length > 0 && (
+      {!isLoading && !error && mainEvents.length > 0 && (
         <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           {/* Simplified summary, or could be more detailed if needed */}
           Showing {currentUpcomingEventsToDisplay.length > 0 ? currentUpcomingEventsToDisplay.length : 0} upcoming and {currentPastEventsToDisplay.length > 0 ? currentPastEventsToDisplay.length : 0} past events on this page.

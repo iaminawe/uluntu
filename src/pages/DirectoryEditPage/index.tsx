@@ -12,7 +12,8 @@ import { initialFormData } from './data';
 export default function DirectoryEditPage() {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
-  const memberId = id ? parseInt(id) : undefined;
+  // Use the original string ID which is what useMember expects
+  const memberIdString = id || '';
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -24,25 +25,34 @@ export default function DirectoryEditPage() {
   const { 
     data: member, 
     isLoading: memberLoading
-  } = useMember(memberId as number);
+  } = useMember(memberIdString);
   
   // Populate form with member data when in edit mode
   useEffect(() => {
     if (isEditMode && member) {
+      // Ensure we have string values for all text fields
+      // Explicitly type the social object to include all expected properties
+      const memberSocial: {
+        linkedin?: string;
+        twitter?: string;
+        github?: string;
+        website?: string;
+      } = member.social || {};
+      
       setFormData({
-        name: member.name,
-        title: member.title || '',
-        company: member.company || '',
-        location: member.location || '',
-        image: member.image || '',
-        bio: member.bio || '',
-        skills: member.skills || [],
-        joinDate: member.joinDate,
+        name: member.name || '',
+        title: typeof member.title === 'string' ? member.title : '',
+        company: typeof member.company === 'string' ? member.company : '',
+        location: typeof member.location === 'string' ? member.location : '',
+        image: typeof member.image === 'string' ? member.image : '',
+        bio: typeof member.bio === 'string' ? member.bio : '',
+        skills: Array.isArray(member.skills) ? member.skills : [],
+        joinDate: member.joinDate || '',
         social: {
-          linkedin: member.social?.linkedin || '',
-          twitter: member.social?.twitter || '',
-          github: member.social?.github || '',
-          website: member.social?.website || ''
+          linkedin: typeof memberSocial.linkedin === 'string' ? memberSocial.linkedin : '',
+          twitter: typeof memberSocial.twitter === 'string' ? memberSocial.twitter : '',
+          github: typeof memberSocial.github === 'string' ? memberSocial.github : '',
+          website: typeof memberSocial.website === 'string' ? memberSocial.website : ''
         }
       });
     }

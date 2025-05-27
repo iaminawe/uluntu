@@ -49,7 +49,7 @@ const MemberCard = ({ member }: MemberCardProps) => {
         </div>
         
         <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 justify-center">
-          {member.skills.map(skill => (
+          {member.skills?.map(skill => (
             <span
               key={skill}
               className={`px-2 py-1 rounded-md text-sm ${getSkillColor(skill)}`}

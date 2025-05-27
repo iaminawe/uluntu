@@ -1,7 +1,7 @@
 import RichTextEditor from '../../components/RichTextEditor';
 import { FormInput, FormSelect, FormCheckbox, FormTextarea } from '../../components/ui/Form';
 import { FormInputsProps } from './types';
-import { EntityStatus } from '../../data/mock/mockData';
+import { ContentStatus } from '../../types/common';
 
 const FormInputs: React.FC<FormInputsProps> = ({ 
   formData, 
@@ -67,7 +67,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
         name="status"
         label="Status"
         value={formData.status}
-        onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as EntityStatus }))}
+        onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as ContentStatus }))}
         options={[
           { value: 'draft', label: 'Draft' },
           { value: 'published', label: 'Published' },

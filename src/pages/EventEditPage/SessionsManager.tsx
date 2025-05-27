@@ -7,8 +7,8 @@ interface SessionsManagerProps {
   onSessionsChange: (sessions: EventSession[]) => void;
 }
 
-const emptyPresenter: EventPresenter = {
-  id: 0, // Will be replaced with a proper ID when saved
+const defaultPresenter: EventPresenter = {
+  id: '0', // Will be replaced with a proper ID when saved
   name: '',
   image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg', // Default image
   bio: '',
@@ -16,15 +16,15 @@ const emptyPresenter: EventPresenter = {
   company: ''
 };
 
-const emptyResource: EventSessionResource = {
-  id: 0, // Will be replaced with a proper ID when saved
+const defaultResource: EventSessionResource = {
+  id: '0', // Will be replaced with a proper ID when saved
   title: '',
   url: '',
   type: 'slides'
 };
 
-const emptySession: EventSession = {
-  id: 0, // Will be replaced with a proper ID when saved
+const defaultSession: EventSession = {
+  id: '0', // Will be replaced with a proper ID when saved
   title: '',
   description: '',
   startTime: '',
@@ -35,14 +35,14 @@ const emptySession: EventSession = {
 };
 
 const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsChange }) => {
-  const [expandedSessionId, setExpandedSessionId] = useState<number | null>(null);
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [expandedPresenterIndex, setExpandedPresenterIndex] = useState<{ sessionIndex: number, presenterIndex: number } | null>(null);
   const [expandedResourceIndex, setExpandedResourceIndex] = useState<{ sessionIndex: number, resourceIndex: number } | null>(null);
 
   const addSession = () => {
     const newSession = {
-      ...emptySession,
-      id: Date.now(), // Use timestamp as temporary ID
+      ...defaultSession,
+      id: Date.now().toString(), // Use timestamp as temporary ID
       startTime: new Date().toISOString(),
       endTime: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // 1 hour later
     };
@@ -66,8 +66,8 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
   const addPresenter = (sessionIndex: number) => {
     const session = sessions[sessionIndex];
     const newPresenter = {
-      ...emptyPresenter,
-      id: Date.now(), // Use timestamp as temporary ID
+      ...defaultPresenter,
+      id: Date.now().toString(), // Use timestamp as temporary ID
     };
     
     const updatedSession = {
@@ -112,8 +112,8 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
   const addResource = (sessionIndex: number) => {
     const session = sessions[sessionIndex];
     const newResource = {
-      ...emptyResource,
-      id: Date.now(), // Use timestamp as temporary ID
+      ...defaultResource,
+      id: Date.now().toString(), // Use timestamp as temporary ID
     };
     
     const updatedSession = {
