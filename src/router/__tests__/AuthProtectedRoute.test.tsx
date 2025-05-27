@@ -51,7 +51,8 @@ const SignInPage = () => <div data-testid="sign-in">Sign In Page</div>
 const renderWithRouter = (
   initialEntries = ['/protected']
 ) => {
-  return render(
+  // Return JSX element rather than render result
+  return (
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
         <Route element={<AuthProtectedRoute />}>
