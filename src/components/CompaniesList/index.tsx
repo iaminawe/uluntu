@@ -3,7 +3,7 @@ import { AlertTriangle } from 'lucide-react';
 
 import CompanyCard from './CompanyCard';
 import { CompaniesListProps, FilterOptions } from './types';
-import { useCompaniesWithFilters } from '../../hooks/useQueries';
+import { useFilteredCompaniesRedux } from '../../hooks/useCompaniesRedux';
 import Pagination from '../Pagination'; // Import Pagination
 
 const ITEMS_PER_PAGE = 9; // Number of companies per page
@@ -13,39 +13,34 @@ const CompaniesList = ({
   initialIndustry = ''
 }: CompaniesListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<FilterOptions>({
+  // Initialize the Redux filtered companies hook with initial filters
+  const initialReduxFilters = {
     search: initialSearch,
     industries: initialIndustry ? [initialIndustry] : []
-  });
+  };
   
+  const { 
+    companies: allCompanies, 
+    isLoading, 
+    isError, 
+    error,
+    updateFilters,
+    setSearchTerm,
+    setIndustries
+  } = useFilteredCompaniesRedux(initialReduxFilters);
+  
+  // Update filters when props change
   useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      search: initialSearch
-    }));
+    setSearchTerm(initialSearch);
     setCurrentPage(1); // Reset page when search term changes
   }, [initialSearch]);
   
   useEffect(() => {
     if (initialIndustry) {
-      setFilters(prev => ({
-        ...prev,
-        industries: [initialIndustry]
-      }));
+      setIndustries(initialIndustry ? [initialIndustry] : []);
+      setCurrentPage(1); // Reset page when industry changes
     }
-    // For initialIndustry, only reset if it's a new filter, not on initial empty load
-    if (initialIndustry) setCurrentPage(1); // Reset page when industry changes
   }, [initialIndustry]);
-  
-  const { 
-    data: allCompanies = [], // Renamed to allCompanies for clarity
-    isLoading, 
-    error,
-    refetch
-  } = useCompaniesWithFilters({
-    search: filters.search,
-    industries: filters.industries.length > 0 ? filters.industries : undefined
-  });
 
   // Pagination logic
   const totalCompanies = allCompanies.length;
@@ -85,15 +80,15 @@ const CompaniesList = ({
             </div>
           ))}
         </div>
-      ) : error ? (
+      ) : isError ? (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-center">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <p className="text-red-500 font-medium mb-2">Error loading companies</p>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            {error instanceof Error ? error.message : 'Please try again later.'}
+            {error || 'Please try again later.'}
           </p>
           <button
-            onClick={() => refetch()} // refetch will use current filters
+            onClick={() => updateFilters(initialReduxFilters)} // Retry with initial filters
             className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
           >
             Try Again
@@ -119,11 +114,12 @@ const CompaniesList = ({
             </svg>
           </div>
           <p className="text-slate-600 dark:text-slate-400 mb-4">No companies found matching your criteria.</p>
-          {(filters.search || filters.industries.length > 0) && (
+          {(initialSearch || (initialIndustry && initialIndustry.length > 0)) && (
             <button 
               onClick={() => { 
-                setFilters({ search: '', industries: [] }); 
-                // setCurrentPage(1) will be handled by the useEffect watching filters
+                setSearchTerm('');
+                setIndustries([]);
+                setCurrentPage(1);
               }}
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
             >
@@ -148,10 +144,10 @@ const CompaniesList = ({
         </>
       )}
       
-      {!isLoading && !error && totalCompanies > 0 && (
+      {!isLoading && !isError && totalCompanies > 0 && (
         <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
           Showing {currentCompaniesToDisplay.length} of {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'}
-          {(filters.search || filters.industries.length > 0) && ' matching your filters'}
+          {(initialSearch || (initialIndustry && initialIndustry.length > 0)) && ' matching your filters'}
         </div>
       )}
     </div>

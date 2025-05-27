@@ -8,15 +8,19 @@ import EventsList from '../../components/EventsList';
 import EventsCalendar from '../../components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useEvents } from '../../hooks/useEventQueries';
+import { useEventsRedux } from '../../hooks/useEventsRedux';
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Use the useEvents hook to fetch events data. 
-  // It already returns data in the frontend Event[] format.
-  const { data: events = [], isLoading, error } = useEvents();
+  // Use the Redux-based useEventsRedux hook to fetch events data.
+  const { events = [], isLoading, error, getAllEvents } = useEventsRedux();
+  
+  // Fetch events when component mounts
+  useEffect(() => {
+    getAllEvents();
+  }, [getAllEvents]);
   
   const hasEvents = events.length > 0;
   
@@ -46,8 +50,8 @@ export default function EventsPage() {
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
         ) : error ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying events query')} 
+            error={error || 'Error loading events'} 
+            retry={() => getAllEvents()} 
             message="We couldn't load the events. Please try again."
           />
         ) : !hasEvents ? (

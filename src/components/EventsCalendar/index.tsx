@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { Event } from '../../types';
+import { useEventsRedux } from '../../hooks/useEventsRedux';
 import { CalendarToolbar } from './CalendarToolbar';
 import { EventPopover } from './EventPopover';
 import { SubscribeModal } from './SubscribeModal';
@@ -12,16 +13,32 @@ import './calendar-styles.css';
 const localizer = momentLocalizer(moment);
 
 interface EventsCalendarProps {
-  events: Event[];
-  isLoading: boolean;
-  error: any;
+  // These props are optional since we can also get events from Redux
+  events?: Event[];
+  isLoading?: boolean;
+  error?: any;
 }
 
-const EventsCalendar: React.FC<EventsCalendarProps> = ({ events, isLoading, error }) => {
+const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isLoading: propIsLoading, error: propError }) => {
+  // Use Redux for events data if not provided via props
+  const { events: reduxEvents, isLoading: reduxIsLoading, error: reduxError, getAllEvents } = useEventsRedux();
+  
+  // Use props if provided, otherwise use Redux state
+  const events = propEvents || reduxEvents;
+  const isLoading = propIsLoading !== undefined ? propIsLoading : reduxIsLoading;
+  const error = propError || reduxError;
+
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+
+  // Fetch events when component mounts if using Redux
+  useEffect(() => {
+    if (!propEvents) {
+      getAllEvents();
+    }
+  }, [propEvents, getAllEvents]);
 
   // Convert our events to the format expected by react-big-calendar
   const calendarEvents = events.map(event => ({

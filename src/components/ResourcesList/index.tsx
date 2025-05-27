@@ -1,36 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Resource } from '../../types';
 import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
+import { useFilteredResourcesRedux } from '../../hooks/useResourcesRedux';
+import { ResourceFilters } from '../../redux/slices/resourcesSlice';
 
 interface ResourcesListProps {
-  resources: Resource[];
+  resources?: Resource[];
+  useRedux?: boolean;
+  initialFilters?: ResourceFilters;
 }
 
-const ResourcesList = ({ resources }: ResourcesListProps) => {
+const ResourcesList = ({ resources: propResources, useRedux = false, initialFilters }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const searchQuery = '';
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Connect to Redux if useRedux is true
+  const {
+    resources: reduxResources,
+    filters,
+    updateFilters,
+    getPaginatedResources,
+    totalResources,
+    isLoading
+  } = useFilteredResourcesRedux(initialFilters);
+  
+  // Determine which resources to use - props or redux
+  const resources = useRedux ? reduxResources : propResources || [];
   // Use Resource['type'] for selectedType state and update available types
-  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>('all');
+  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>(initialFilters?.types?.[0] || 'all');
   const [showModal, setShowModal] = useState(false);
 
   // Define resource types based on the main application's Resource type
   const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article'];
 
-    // Existing filter logic remains the same
-  const filteredResources = resources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  // Apply client-side filtering if not using Redux
+  const filteredResources = useRedux ? resources : resources.filter(resource => {
+    const matchesSearch = !searchQuery || 
+                         resource.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          resource.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = selectedType === 'all' || resource.type === selectedType;
     return matchesSearch && matchesType;
   });
 
-  const totalPages = Math.ceil(filteredResources.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedResources = filteredResources.slice(startIndex, endIndex);
+  // Get pagination details
+  const totalItems = useRedux ? totalResources : filteredResources.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  
+  // Get paginated resources (either from Redux hook or locally)
+  const paginatedResources = useRedux 
+    ? getPaginatedResources(currentPage, itemsPerPage) 
+    : filteredResources.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -39,12 +61,39 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
+  
+  // Update Redux filters when local state changes (if using Redux)
+  useEffect(() => {
+    if (useRedux) {
+      const newFilters: ResourceFilters = {};
+      
+      if (searchQuery) {
+        newFilters.search = searchQuery;
+      }
+      
+      if (selectedType !== 'all') {
+        newFilters.types = [selectedType];
+      }
+      
+      updateFilters(newFilters);
+    }
+  }, [useRedux, searchQuery, selectedType]);
 
   return (
     <div>
       {/* Resource filters */}
 
       <div className="mb-6 space-y-4">
+        {/* Search input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search resources..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
 
         <div className="flex flex-wrap gap-2">
           <button

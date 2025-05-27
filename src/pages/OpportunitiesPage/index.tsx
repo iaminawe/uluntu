@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -12,7 +12,7 @@ import {
 } from '../../components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useOpportunities } from '../../hooks/useOpportunityQueries';
+import { useOpportunitiesRedux } from '../../hooks/useOpportunitiesRedux';
 
 // Define the SupabaseOpportunity type based on the Supabase schema
 type SupabaseOpportunity = {
@@ -148,8 +148,13 @@ export default function OpportunitiesPage() {
     }
   ];
 
-  // Use the useOpportunities hook to fetch opportunities data
-  const { data: fetchedOpportunities = [], isLoading, error } = useOpportunities();
+  // Use the Redux-based hook to fetch opportunities data
+  const { opportunities: fetchedOpportunities, loadOpportunities, isLoading, isError, error } = useOpportunitiesRedux();
+  
+  // Load opportunities on component mount
+  useEffect(() => {
+    loadOpportunities();
+  }, []);
   console.log('OpportunitiesPage - Raw opportunities from useOpportunities:', fetchedOpportunities);
   console.log('OpportunitiesPage - Number of opportunities:', fetchedOpportunities.length);
   
@@ -216,10 +221,10 @@ export default function OpportunitiesPage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying opportunities query')} 
+            error={error ? new Error(error) : new Error('Failed to load opportunities')} 
+            retry={() => loadOpportunities()} 
             message="We couldn't load the opportunities. Please try again."
           />
         ) : !hasOpportunities ? (

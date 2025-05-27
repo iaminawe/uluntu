@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -6,22 +6,31 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import NewsList from '../../components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-// Temporarily use mock data instead of Supabase data
-import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
+import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { NewsFilters } from '../../types/news';
 
 export default function NewsPage() {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Fetch news articles with the current filters using Redux
+  const { 
+    filteredArticles: articles = [], 
+    isLoading, 
+    isError, 
+    error,
+    updateFilters 
+  } = useFilteredNewsArticlesRedux();
+
+  // Update filters when search term or tags change
+  useEffect(() => {
+    updateFilters({
+      search: searchTerm,
+      tags: selectedTags
+    });
+  }, [searchTerm, selectedTags, updateFilters]);
   
-  // Use the useNewsArticlesWithFilters hook to fetch filtered news articles
-  const { data, isLoading, error } = useNewsArticlesWithFilters({
-    search: searchTerm,
-    tag: selectedTags.length > 0 ? selectedTags[0] : undefined
-  });
-  
-  // Properly extract articles from the data structure
-  const articles = data || [];
   const hasArticles = articles.length > 0;
   console.log('News articles:', articles);
   
@@ -44,10 +53,13 @@ export default function NewsPage() {
         
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying news query')} 
+            error={error ? new Error(String(error)) : new Error('Failed to load news articles')} 
+            retry={() => updateFilters({
+              search: searchTerm,
+              tags: selectedTags
+            })} 
             message="We couldn't load the news articles. Please try again."
           />
         ) : !hasArticles ? (
@@ -64,6 +76,7 @@ export default function NewsPage() {
           <NewsList 
             initialSearch={searchTerm}
             initialTag={selectedTags.length > 0 ? selectedTags[0] : ''}
+            useRedux={true}
           />
         )}
       </ContentContainer>

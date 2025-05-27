@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { useGroup, useGroupEvents, useGroupMembers } from '../../hooks/useGroupQueries';
+import { useGroupRedux } from '../../hooks/useGroupsRedux';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
 import JoinModal from '../../components/JoinModal';
@@ -96,9 +96,14 @@ export default function GroupDetailPage() {
   const [selectedTab, setSelectedTab] = useState<TabType>('about');
   const [showJoinModal, setShowJoinModal] = useState(false);
   
-  const { data: groupData, isLoading: groupLoading, error: groupError } = useGroup(groupIdString);
-  const { data: groupEvents = [], isLoading: eventsLoading } = useGroupEvents(groupIdString);
-  const { data: groupMembersData = [], isLoading: membersLoading } = useGroupMembers(groupIdString);
+  // Use the Redux hook to fetch group data, which includes events and members
+  const { group: groupData, isLoading: groupLoading, isError: groupIsError, error: groupError } = useGroupRedux(groupIdString);
+  
+  // Extract events and members from the enriched group data
+  const groupEvents = groupData?.events || [];
+  const groupMembersData = groupData?.members || [];
+  const eventsLoading = groupLoading;
+  const membersLoading = groupLoading;
   // Local implementation of useGroupResources hook
   const useGroupResources = (groupIdParam: string): UseQueryResult<DBResource[]> => {
     return useQuery({
@@ -201,17 +206,12 @@ export default function GroupDetailPage() {
     return <LoadingState />;
   }
 
-  if (groupError || !groupData) {
+  if (groupIsError || !groupData) {
     return <ErrorState />;
   }
 
-  // Create a type-compatible group object
-  const group: Group = {
-    ...groupData,
-    events: groupData.events?.map(adaptGroupEventToEvent),
-    resources: groupResources.map(convertDBToFrontendResource),
-    members: groupMembers
-  };
+  // The group data from Redux is already properly structured
+  const group: Group = groupData as Group;
 
   return (
     <>

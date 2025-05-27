@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function SignInForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data, error: signInError } = await signIn(email, password);
+      const { data, error: signInError } = await signIn(email, password, rememberMe);
       
       if (signInError) {
         // Handle specific Supabase auth errors with more user-friendly messages
@@ -124,6 +125,8 @@ export default function SignInForm() {
               name="remember-me"
               type="checkbox"
               className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-slate-300 rounded"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
               Remember me
@@ -131,9 +134,9 @@ export default function SignInForm() {
           </div>
           
           <div className="text-sm">
-            <a href="#" className="font-medium text-orange-500 hover:text-orange-600">
+            <Link to="/forgot-password" className="font-medium text-orange-500 hover:text-orange-600">
               Forgot your password?
-            </a>
+            </Link>
           </div>
         </div>
         

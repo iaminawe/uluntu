@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
@@ -6,7 +6,7 @@ import { QueryError } from '../../components/ui/ErrorDisplay';
 import CompaniesList from '../../components/CompaniesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useCompanies } from '../../hooks/useCompanyQueries';
+import { useCompaniesRedux } from '../../hooks/useCompaniesRedux';
 
 
 export default function CompaniesPage() {
@@ -14,8 +14,13 @@ export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   
-  // Use the useCompanies hook to fetch companies data
-  const { data: companies = [], isLoading, error } = useCompanies();
+  // Use the Redux-based hook to fetch companies data
+  const { companies, loadCompanies, isLoading, isError, error } = useCompaniesRedux();
+  
+  // Load companies on component mount
+  useEffect(() => {
+    loadCompanies();
+  }, []);
   const hasCompanies = companies.length > 0;
   
   return (
@@ -37,10 +42,10 @@ export default function CompaniesPage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying companies query')} 
+            error={error ? new Error(error) : new Error('Failed to load companies')} 
+            retry={() => loadCompanies()} 
             message="We couldn't load the companies. Please try again."
           />
         ) : !hasCompanies ? (

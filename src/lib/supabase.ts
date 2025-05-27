@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/supabase';
+import { AuthError } from '@supabase/supabase-js';
 
 // Get environment variables with proper validation
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -72,7 +73,7 @@ export const signUp = async (email: string, password: string) => {
   return { data, error };
 };
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
   try {
     console.log('Starting sign-in process...');
     
@@ -93,6 +94,12 @@ export const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: {
+        // Set session persistence based on rememberMe
+        // 'local' (default) keeps the session until explicitly signed out
+        // 'none' clears the session when the browser is closed
+        persistSession: rememberMe
+      }
     });
     
     // Handle specific error cases
@@ -211,5 +218,91 @@ export const uploadCoverImage = async (file: File, userId: string): Promise<{ ur
   } catch (error) {
     console.error('Error uploading cover image:', error);
     return { url: null, error: error as Error };
+  }
+};
+
+/**
+ * Sends a password reset email to the specified email address
+ * @param email The email address to send the password reset link to
+ * @returns Object containing success status and any error
+ */
+export const forgotPassword = async (email: string): Promise<{ 
+  success: boolean; 
+  error: Error | AuthError | null 
+}> => {
+  try {
+    console.log('Initiating password reset for:', email);
+    
+    // First check connection to avoid unexpected errors
+    const isConnected = await checkSupabaseConnection();
+    if (!isConnected) {
+      console.error('Supabase connection check failed before password reset');
+      return {
+        success: false,
+        error: new Error('Unable to connect to authentication service. Please check your network connection.')
+      };
+    }
+    
+    // Send password reset email
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    
+    if (error) {
+      console.error('Password reset error:', error);
+      return { success: false, error };
+    }
+    
+    console.log('Password reset email sent successfully');
+    return { success: true, error: null };
+  } catch (err) {
+    console.error('Exception during password reset:', err);
+    return {
+      success: false,
+      error: err instanceof Error ? err : new Error('An unexpected error occurred')
+    };
+  }
+};
+
+/**
+ * Resets the user's password with the new password
+ * @param newPassword The new password to set
+ * @returns Object containing success status and any error
+ */
+export const resetPassword = async (newPassword: string): Promise<{ 
+  success: boolean; 
+  error: Error | AuthError | null 
+}> => {
+  try {
+    console.log('Attempting to update password');
+    
+    // First check connection to avoid unexpected errors
+    const isConnected = await checkSupabaseConnection();
+    if (!isConnected) {
+      console.error('Supabase connection check failed before password update');
+      return {
+        success: false,
+        error: new Error('Unable to connect to authentication service. Please check your network connection.')
+      };
+    }
+    
+    // Update the user's password
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    
+    if (error) {
+      console.error('Password update error:', error);
+      return { success: false, error };
+    }
+    
+    console.log('Password updated successfully');
+    return { success: true, error: null };
+  } catch (err) {
+    console.error('Exception during password update:', err);
+    return {
+      success: false,
+      error: err instanceof Error ? err : new Error('An unexpected error occurred')
+    };
   }
 };
