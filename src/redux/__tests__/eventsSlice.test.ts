@@ -27,13 +27,18 @@ jest.mock('../../api/eventsApi', () => ({
 const originalEnv = process.env;
 beforeEach(() => {
   jest.resetModules();
-  process.env = { ...originalEnv, VITE_USE_SUPABASE: 'false' };
+  process.env = { ...originalEnv, VITE_USE_SUPABASE: 'true' }; // Set to true to use the API path
+  
+  // Reset all mocks before each test
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
   process.env = originalEnv;
-  jest.clearAllMocks();
 });
+
+// Get the mocked API module
+const eventsApiMock = require('../../api/eventsApi').eventsApi;
 
 // Create a mock store for testing
 const createTestStore = () => {
@@ -93,14 +98,14 @@ describe('Events Slice', () => {
 
     test('should handle setFilters', () => {
       const store = createTestStore();
-      const filters = { search: 'test', types: ['in-person'], dateRange: 'upcoming' };
+      const filters = { search: 'test', types: ['in-person' as 'in-person'], dateRange: 'upcoming' as 'upcoming' };
       store.dispatch(setFilters(filters));
       expect(store.getState().events.filters).toEqual(filters);
     });
 
     test('should handle clearFilters', () => {
       const store = createTestStore();
-      const filters = { search: 'test', types: ['in-person'], dateRange: 'upcoming' };
+      const filters = { search: 'test', types: ['in-person' as 'in-person'], dateRange: 'upcoming' as 'upcoming' };
       store.dispatch(setFilters(filters));
       store.dispatch(clearFilters());
       expect(store.getState().events.filters).toEqual({});
@@ -128,7 +133,7 @@ describe('Events Slice', () => {
       const store = createTestStore();
       
       // Mock implementation for fetchEvents
-      require('../../api/eventsApi').eventsApi.getAll.mockResolvedValue(mockEvents);
+      eventsApiMock.getAll.mockResolvedValueOnce(mockEvents);
       
       await store.dispatch(fetchEvents());
       
@@ -141,7 +146,7 @@ describe('Events Slice', () => {
       const store = createTestStore();
       
       // Mock implementation for fetchEventById
-      require('../../api/eventsApi').eventsApi.getById.mockResolvedValue(mockEvent);
+      eventsApiMock.getById.mockResolvedValueOnce(mockEvent);
       
       await store.dispatch(fetchEventById('1'));
       
@@ -152,10 +157,10 @@ describe('Events Slice', () => {
 
     test('fetchFilteredEvents should update state correctly on success', async () => {
       const store = createTestStore();
-      const filters = { search: 'Test', types: ['in-person'] };
+      const filters = { search: 'Test', types: ['in-person' as 'in-person'] };
       
       // Mock implementation for fetchFilteredEvents
-      require('../../api/eventsApi').eventsApi.getAll.mockResolvedValue([mockEvent]);
+      eventsApiMock.getAll.mockResolvedValueOnce([mockEvent]);
       
       await store.dispatch(fetchFilteredEvents(filters));
       
@@ -175,8 +180,7 @@ describe('Events Slice', () => {
         organizer_id: '101'
       };
       
-      // Mock implementation for createEvent
-      require('../../api/eventsApi').eventsApi.create.mockResolvedValue({
+      const createdEvent = {
         id: '3',
         ...newEventData,
         organizer: {
@@ -184,7 +188,10 @@ describe('Events Slice', () => {
           name: 'Test Organizer',
           image: 'organizer-image.jpg'
         }
-      });
+      };
+      
+      // Mock implementation for createEvent
+      eventsApiMock.create.mockResolvedValueOnce(createdEvent);
       
       await store.dispatch(createEvent(newEventData as any));
       
@@ -207,11 +214,13 @@ describe('Events Slice', () => {
         description: 'Updated Description'
       };
       
-      // Mock implementation for updateEvent
-      require('../../api/eventsApi').eventsApi.update.mockResolvedValue({
+      const updatedEvent = {
         ...mockEvent,
         ...updateData
-      });
+      };
+      
+      // Mock implementation for updateEvent
+      eventsApiMock.update.mockResolvedValueOnce(updatedEvent);
       
       await store.dispatch(updateEvent({ id: '1', data: updateData }));
       
@@ -231,7 +240,7 @@ describe('Events Slice', () => {
       expect(store.getState().events.events).toHaveLength(2);
       
       // Mock implementation for deleteEvent
-      require('../../api/eventsApi').eventsApi.delete.mockResolvedValue(true);
+      eventsApiMock.delete.mockResolvedValueOnce(true);
       
       await store.dispatch(deleteEvent('1'));
       

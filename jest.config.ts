@@ -2,7 +2,7 @@
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts', '<rootDir>/jest.setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   modulePaths: ['<rootDir>'],
   moduleNameMapper: {
@@ -13,19 +13,18 @@ const config = {
       'ts-jest',
       {
         isolatedModules: true,
+        astTransformers: {
+          before: [
+            {
+              path: './jest-ts-import-meta-env-transformer.js', // path to your transformer
+              options: {},
+            },
+          ],
+        },
       },
     ],
   },
-  // Mock environment variables
-  globals: {
-    'import.meta': {
-      env: {
-        VITE_SUPABASE_URL: 'https://example.supabase.co',
-        VITE_SUPABASE_KEY: 'mock-supabase-key',
-        NODE_ENV: 'test',
-      },
-    },
-  },
+
   // Ignore transformations for node_modules except for specific packages
   transformIgnorePatterns: [
     '/node_modules/(?!(@supabase|@testing-library)/)',
