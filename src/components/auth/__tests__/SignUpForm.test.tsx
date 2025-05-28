@@ -2,10 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SignUpForm from '../SignUpForm';
 import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '../../../redux/slices/authSlice';
+import * as useAuthModule from '../../../hooks/useAuth';
 
 // Mock the useAuth hook
-jest.mock('../../../contexts/AuthContext', () => ({
+jest.mock('../../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
@@ -21,17 +24,29 @@ jest.mock('react-router-dom', () => ({
 describe('SignUpForm Component', () => {
   const mockSignUp = jest.fn();
   
+  // Create a Redux store for testing
+  const store = configureStore({
+    reducer: { auth: authReducer }
+  });
+  
+  // Create a wrapper with the Redux provider
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <Provider store={store}>
+      {children}
+    </Provider>
+  );
+  
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Setup the mock implementation of useAuth
-    (useAuth as jest.Mock).mockReturnValue({
+    (useAuthModule.useAuth as jest.Mock).mockReturnValue({
       signUp: mockSignUp,
     });
   });
 
   it('should validate required fields', async () => {
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Submit the form without filling any fields
     const submitButton = screen.getByRole('button', { name: /Sign up/i });
@@ -49,7 +64,7 @@ describe('SignUpForm Component', () => {
   });
 
   it('should validate password match', async () => {
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Fill in the form with mismatched passwords
     await userEvent.type(screen.getByLabelText(/Full Name/i), 'Test User');
@@ -69,7 +84,7 @@ describe('SignUpForm Component', () => {
   });
 
   it('should validate password length', async () => {
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Fill in the form with a short password
     await userEvent.type(screen.getByLabelText(/Full Name/i), 'Test User');
@@ -92,7 +107,7 @@ describe('SignUpForm Component', () => {
     // Mock successful signup
     mockSignUp.mockResolvedValue({ error: null });
     
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Full Name/i), 'Test User');
@@ -123,7 +138,7 @@ describe('SignUpForm Component', () => {
       });
     });
     
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Full Name/i), 'Test User');
@@ -151,7 +166,7 @@ describe('SignUpForm Component', () => {
       error: { message: 'Email already registered' } 
     });
     
-    render(<SignUpForm />);
+    render(<SignUpForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Full Name/i), 'Test User');

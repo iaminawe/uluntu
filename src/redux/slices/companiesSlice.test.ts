@@ -1,17 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
-import companiesReducer, {
-  CompaniesState,
-  fetchCompanies,
-  fetchCompanyById,
-  fetchFilteredCompanies,
-  createCompany,
-  updateCompany,
-  deleteCompany,
-  setFilters,
-  clearFilters
-} from './companiesSlice';
-
-// Mock data
+// First, define the mock data
 const mockCompanies = [
   {
     id: '1',
@@ -45,37 +32,52 @@ const mockCompanies = [
   }
 ];
 
-// Mock API functions
-jest.mock('../../api/companiesApi', () => ({
-  companiesApi: {
-    getAll: jest.fn().mockResolvedValue(mockCompanies),
-    getById: jest.fn().mockImplementation((id) => {
-      const company = mockCompanies.find(c => c.id === id);
-      return Promise.resolve(company || null);
-    }),
-    create: jest.fn().mockImplementation((data) => {
-      return Promise.resolve({
-        id: '3',
-        ...data,
-        status: data.status || 'published',
-        featured: data.featured || false,
-        createdAt: '2023-08-01T00:00:00Z',
-        updatedAt: '2023-08-01T00:00:00Z'
-      });
-    }),
-    update: jest.fn().mockImplementation((id, data) => {
-      const company = mockCompanies.find(c => c.id === id);
-      if (!company) return Promise.resolve(null);
-      return Promise.resolve({
-        ...company,
-        ...data,
-        updatedAt: '2023-08-15T00:00:00Z'
-      });
-    }),
-    delete: jest.fn().mockResolvedValue(true)
-  },
-  CompanyInput: {}
-}));
+// Mock the API module
+jest.mock('../../api/companiesApi', () => {
+  return {
+    companiesApi: {
+      getAll: jest.fn().mockResolvedValue(mockCompanies),
+      getById: jest.fn().mockImplementation((id) => {
+        const company = mockCompanies.find(c => c.id === id);
+        return Promise.resolve(company || null);
+      }),
+      create: jest.fn().mockImplementation((data) => {
+        return Promise.resolve({
+          id: '3',
+          ...data,
+          status: data.status || 'published',
+          featured: data.featured || false,
+          createdAt: '2023-08-01T00:00:00Z',
+          updatedAt: '2023-08-01T00:00:00Z'
+        });
+      }),
+      update: jest.fn().mockImplementation((id, data) => {
+        const company = mockCompanies.find(c => c.id === id);
+        if (!company) return Promise.resolve(null);
+        return Promise.resolve({
+          ...company,
+          ...data,
+          updatedAt: '2023-08-15T00:00:00Z'
+        });
+      }),
+      delete: jest.fn().mockResolvedValue(true)
+    },
+    CompanyInput: {}
+  };
+});
+
+// Now import the slice after the mock is set up
+import { configureStore } from '@reduxjs/toolkit';
+import companiesReducer, {
+  fetchCompanies,
+  fetchCompanyById,
+  fetchFilteredCompanies,
+  createCompany,
+  updateCompany,
+  deleteCompany,
+  setFilters,
+  clearFilters
+} from './companiesSlice';
 
 // Mock environment variable
 const originalEnv = process.env;

@@ -2,10 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SignInForm from '../SignInForm';
 import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '../../../redux/slices/authSlice';
+import * as useAuthModule from '../../../hooks/useAuth';
 
 // Mock the useAuth hook
-jest.mock('../../../contexts/AuthContext', () => ({
+jest.mock('../../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
@@ -24,13 +27,23 @@ const originalConsoleLog = console.log;
 
 describe('SignInForm Component', () => {
   const mockSignIn = jest.fn();
-  // We'll use useNavigate mock from react-router-dom
+  // Create a Redux store for testing
+  const store = configureStore({
+    reducer: { auth: authReducer }
+  });
+  
+  // Create a wrapper with the Redux provider
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <Provider store={store}>
+      {children}
+    </Provider>
+  );
   
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Setup the mock implementation of useAuth
-    (useAuth as jest.Mock).mockReturnValue({
+    (useAuthModule.useAuth as jest.Mock).mockReturnValue({
       signIn: mockSignIn,
     });
 
@@ -46,7 +59,7 @@ describe('SignInForm Component', () => {
   });
 
   it('should validate required fields', async () => {
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Submit the form without filling any fields
     const submitButton = screen.getByRole('button', { name: /Sign in/i });
@@ -70,7 +83,7 @@ describe('SignInForm Component', () => {
       error: null,
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
@@ -94,7 +107,7 @@ describe('SignInForm Component', () => {
       error: null,
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
@@ -125,7 +138,7 @@ describe('SignInForm Component', () => {
       });
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form with valid data
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
@@ -152,7 +165,7 @@ describe('SignInForm Component', () => {
       error: { message: 'Invalid login credentials' },
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form with invalid data
     await userEvent.type(screen.getByLabelText(/Email/i), 'wrong@example.com');
@@ -175,7 +188,7 @@ describe('SignInForm Component', () => {
       error: { message: 'Email not confirmed' },
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form
     await userEvent.type(screen.getByLabelText(/Email/i), 'unconfirmed@example.com');
@@ -198,7 +211,7 @@ describe('SignInForm Component', () => {
       error: { message: 'unexpected_failure' },
     });
     
-    render(<SignInForm />);
+    render(<SignInForm />, { wrapper });
     
     // Fill in the form
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
