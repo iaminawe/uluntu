@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { Session, User, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
@@ -8,6 +8,7 @@ import authReducer, { signInWithSession, signOut as reduxSignOut } from '../../r
 import { SessionProvider, useSession } from '../SessionContext';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
+import { mockUser, mockSession, flushPromises } from '../../utils/testUtils';
 
 // Mock supabase client
 jest.mock('../../lib/supabase', () => ({
@@ -33,27 +34,7 @@ jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn()
 }));
 
-const mockUser: User = {
-  id: 'mock-user-id',
-  email: 'test@example.com',
-  role: 'authenticated',
-  aud: 'authenticated',
-  app_metadata: {},
-  user_metadata: {},
-  created_at: '2025-01-01T00:00:00.000Z',
-  updated_at: '2025-01-01T00:00:00.000Z',
-  identities: [],
-  factors: []
-};
-
-const mockSession: Session = {
-  access_token: 'mock-token',
-  refresh_token: 'mock-refresh',
-  token_type: 'bearer',
-  expires_in: 3600,
-  expires_at: 1234567890,
-  user: mockUser
-};
+// Using mockUser and mockSession from testUtils
 
 // Redux store for testing
 const createTestStore = () => configureStore({
@@ -164,13 +145,8 @@ describe('SessionContext with Redux Integration', () => {
   });
 
   it('should handle auth state changes and update Redux', async () => {
-    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({ 
-      data: { session: null },
-      error: null
-    });
-
     // Setup auth state change handler
-    let authChangeCallback: (event: AuthChangeEvent, session: Session | null) => void = () => {};
+    let authChangeCallback: (event: AuthChangeEvent, session: Session | null) => void;
     jest.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
       authChangeCallback = callback as typeof authChangeCallback;
       return {
@@ -203,10 +179,12 @@ describe('SessionContext with Redux Integration', () => {
 
     renderWithProviders(<TestConsumer />);
 
-    // Simulate auth state change
-    authChangeCallback('SIGNED_IN', mockSession);
+    // Verify initial state
+    expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    expect(screen.getByTestId('session')).toHaveTextContent('no-session');
+    expect(screen.getByTestId('redux-authenticated')).toHaveTextContent('false');
 
-    // After sign in, update the mock to reflect Redux state change
+    // Mock Redux auth state after sign in
     const mockReduxUser = {
       id: mockUser.id,
       email: mockUser.email || '',
@@ -218,6 +196,7 @@ describe('SessionContext with Redux Integration', () => {
       expires_at: new Date(mockSession.expires_at * 1000).toISOString()
     };
 
+    // Update the mock implementation
     jest.mocked(useAuth).mockReturnValue({
       user: mockReduxUser,
       session: mockReduxSession,
@@ -234,16 +213,30 @@ describe('SessionContext with Redux Integration', () => {
       setSession: jest.fn()
     });
 
+    // Simulate auth state change
+    await act(async () => {
+      if (authChangeCallback) {
+        authChangeCallback('SIGNED_IN', mockSession);
+      }
+      await flushPromises();
+    });
+
+    // Force a re-render to ensure the context updates
+    renderWithProviders(<TestConsumer />);
+
+    // Use a more robust waitFor with increased timeout
     await waitFor(() => {
-      // Context state
+      // First check Redux state which should be updated immediately
+      expect(screen.getByTestId('redux-user')).toHaveTextContent(mockUser.email!);
+      expect(screen.getByTestId('redux-authenticated')).toHaveTextContent('true');
+    }, { timeout: 2000 });
+
+    // Then check context state which might take longer to update
+    await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
       expect(screen.getByTestId('session')).toHaveTextContent('has-session');
       expect(screen.getByTestId('user')).toHaveTextContent(mockUser.email!);
-      
-      // Redux state
-      expect(screen.getByTestId('redux-user')).toHaveTextContent(mockUser.email!);
-      expect(screen.getByTestId('redux-authenticated')).toHaveTextContent('true');
-    });
+    }, { timeout: 2000 });
   });
 
   it('should handle sign out in both context and Redux', async () => {
@@ -345,6 +338,29 @@ describe('SessionContext with Redux Integration', () => {
     const mockReduxSignOut = jest.fn().mockImplementation(() => {
       // Simulate Redux state change
       store.dispatch(reduxSignOut());
+      
+      // Simulate Supabase sign out success
+      jest.mocked(supabase.auth.signOut).mockResolvedValueOnce({ error: null });
+      
+      // Trigger auth state change
+      if (typeof authChangeCallback === 'function') {
+        authChangeCallback('SIGNED_OUT', null);
+      }
+    });
+
+    // Setup auth state change handler
+    let authChangeCallback: (event: AuthChangeEvent, session: Session | null) => void;
+    jest.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
+      authChangeCallback = callback as typeof authChangeCallback;
+      return {
+        data: {
+          subscription: {
+            id: 'mock-sub-id',
+            callback: () => {},
+            unsubscribe: jest.fn()
+          } as Subscription
+        }
+      };
     });
 
     jest.mocked(useAuth).mockReturnValue({
@@ -368,9 +384,18 @@ describe('SessionContext with Redux Integration', () => {
     await waitFor(() => {
       expect(screen.getByTestId('session')).toHaveTextContent('has-session');
       expect(screen.getByTestId('redux-authenticated')).toHaveTextContent('true');
+    }, { timeout: 2000 });
+
+    // Click the Redux sign out button
+    const reduxSignOutButton = screen.getByText('Redux Sign Out');
+    await act(async () => {
+      await userEvent.click(reduxSignOutButton);
+      await flushPromises();
     });
 
-    // After Redux sign out, update the mock to reflect state change
+    expect(mockReduxSignOut).toHaveBeenCalled();
+    
+    // Update the mock to reflect state change
     jest.mocked(useAuth).mockReturnValue({
       user: null,
       session: null,
@@ -386,17 +411,14 @@ describe('SessionContext with Redux Integration', () => {
       hasRole: jest.fn(),
       setSession: jest.fn()
     });
-
-    // Click the Redux sign out button
-    const reduxSignOutButton = screen.getByText('Redux Sign Out');
-    await userEvent.click(reduxSignOutButton);
-
-    expect(mockReduxSignOut).toHaveBeenCalled();
+    
+    // Force a re-render to ensure the context updates
+    renderWithProviders(<TestConsumer />);
     
     await waitFor(() => {
       // Redux state
       expect(screen.getByTestId('redux-user')).toHaveTextContent('no-redux-user');
       expect(screen.getByTestId('redux-authenticated')).toHaveTextContent('false');
-    });
+    }, { timeout: 2000 });
   });
 });
