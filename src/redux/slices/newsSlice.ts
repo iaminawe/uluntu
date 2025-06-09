@@ -39,6 +39,7 @@ export interface NewsState {
   featuredArticles: NewsArticle[];
   filters: NewsFilters;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  filteredStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
@@ -51,6 +52,7 @@ const initialState: NewsState = {
   featuredArticles: [],
   filters: {},
   status: 'idle',
+  filteredStatus: 'idle',
   error: null
 };
 
@@ -111,7 +113,8 @@ export const fetchFilteredNewsArticles = createAsyncThunk(
   async (filters: NewsFilters, { rejectWithValue }) => {
     try {
       if (USE_SUPABASE) {
-        return await newsApi.getAll(filters);
+        const articles = await newsApi.getAll(filters);
+        return articles;
       } else {
         const queryResult = mockQueries.useNewsArticlesWithFilters({
           search: filters.search,
@@ -119,7 +122,8 @@ export const fetchFilteredNewsArticles = createAsyncThunk(
           featured: filters.featured,
           status: filters.status
         });
-        return queryResult.data || [];
+        const articles = queryResult.data || [];
+        return articles;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch filtered news articles');
@@ -226,6 +230,9 @@ const newsSlice = createSlice({
     setFilters(state, action: PayloadAction<NewsFilters>) {
       state.filters = action.payload;
     },
+    mergeFilters(state, action: PayloadAction<Partial<NewsFilters>>) {
+      state.filters = { ...state.filters, ...action.payload };
+    },
     clearFilters(state) {
       state.filters = {};
     },
@@ -236,6 +243,7 @@ const newsSlice = createSlice({
       state.featuredArticles = [];
       state.currentArticle = null;
       state.status = 'idle';
+      state.filteredStatus = 'idle';
     }
   },
   extraReducers: (builder) => {
@@ -284,15 +292,15 @@ const newsSlice = createSlice({
       
       // Handle fetchFilteredNewsArticles
       .addCase(fetchFilteredNewsArticles.pending, (state) => {
-        state.status = 'loading';
+        state.filteredStatus = 'loading';
       })
       .addCase(fetchFilteredNewsArticles.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.filteredStatus = 'succeeded';
         state.filteredArticles = action.payload;
         state.error = null;
       })
       .addCase(fetchFilteredNewsArticles.rejected, (state, action) => {
-        state.status = 'failed';
+        state.filteredStatus = 'failed';
         state.error = action.payload as string;
       })
       
@@ -384,7 +392,7 @@ const newsSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { setFilters, clearFilters, clearNews } = newsSlice.actions;
+export const { setFilters, mergeFilters, clearFilters, clearNews } = newsSlice.actions;
 export default newsSlice.reducer;
 
 // Selectors
@@ -394,5 +402,6 @@ export const selectFilteredNewsArticles = (state: RootState) => state.news.filte
 export const selectRelatedNewsArticles = (state: RootState) => state.news.relatedArticles;
 export const selectFeaturedNewsArticles = (state: RootState) => state.news.featuredArticles;
 export const selectNewsStatus = (state: RootState) => state.news.status;
+export const selectFilteredNewsStatus = (state: RootState) => state.news.filteredStatus;
 export const selectNewsError = (state: RootState) => state.news.error;
 export const selectNewsFilters = (state: RootState) => state.news.filters;

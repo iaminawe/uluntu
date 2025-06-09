@@ -10,14 +10,15 @@ export type Group = MainGroup;
 // Use the main GroupMember type directly
 export type GroupMember = MainGroupMember;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface GroupFilters {
   search?: string;
   visibility?: GroupVisibility[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface GroupsListProps {
   searchTerm: string;
   visibilityFilter: GroupVisibility[];
+  groups?: Group[]; // Optional groups prop to pass data directly
 }

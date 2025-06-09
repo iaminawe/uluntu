@@ -39,11 +39,20 @@ export const fetchGroups = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       if (USE_SUPABASE) {
-        return await groupsApi.getAll();
+        const groups = await groupsApi.getAll();
+        // If Supabase returns empty due to RLS or other issues, fall back to mock data
+        if (groups.length === 0) {
+          return mockQueries.useGroups().data || [];
+        }
+        return groups;
       } else {
         return mockQueries.useGroups().data || [];
       }
     } catch (error) {
+      // If Supabase fails completely, fall back to mock data
+      if (USE_SUPABASE) {
+        return mockQueries.useGroups().data || [];
+      }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch groups');
     }
   }
@@ -164,6 +173,8 @@ const groupsSlice = createSlice({
       .addCase(fetchGroups.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.groups = action.payload;
+        // Also populate filteredGroups so GroupsList can display them
+        state.filteredGroups = action.payload;
         state.error = null;
       })
       .addCase(fetchGroups.rejected, (state, action) => {

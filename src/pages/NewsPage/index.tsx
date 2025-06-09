@@ -32,7 +32,6 @@ export default function NewsPage() {
   }, [searchTerm, selectedTags, updateFilters]);
   
   const hasArticles = articles.length > 0;
-  console.log('News articles:', articles);
   
   return (
     <>
@@ -75,7 +74,8 @@ export default function NewsPage() {
         ) : (
           <NewsList 
             initialSearch={searchTerm}
-            initialTag={selectedTags.length > 0 ? selectedTags[0] : ''}
+            initialTag={selectedTags.length > 0 ? selectedTags[0] : 'all'}
+            articles={articles}
             useRedux={true}
           />
         )}
