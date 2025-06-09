@@ -30,15 +30,14 @@ export function useGroupsRedux() {
   const status = useAppSelector(selectGroupsStatus);
   const error = useAppSelector(selectGroupsError);
   
-  const isLoading = status === 'loading';
+  // If we have groups, don't show loading even if status is loading
+  const isLoading = status === 'loading' && groups.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Load groups if needed
+  // Load groups
   const loadGroups = () => {
-    if (status === 'idle') {
-      dispatch(fetchGroups());
-    }
+    dispatch(fetchGroups());
   };
 
   return {
@@ -75,10 +74,11 @@ export function useGroupRedux(id?: string) {
 
   // Load group if we have an ID
   useEffect(() => {
-    if (id && status === 'idle') {
+    if (id) {
+      // Always fetch the group data when the ID changes
       dispatch(fetchGroupById(id));
     }
-  }, [id, status, dispatch]);
+  }, [id, dispatch]);
 
   // Combine group data with related events and members
   const enrichedGroup = useMemo(() => {
@@ -116,7 +116,8 @@ export function useFilteredGroupsRedux(initialFilters?: GroupFilters) {
   const status = useAppSelector(selectGroupsStatus);
   const error = useAppSelector(selectGroupsError);
   
-  const isLoading = status === 'loading';
+  // If we have groups, don't show loading even if status is loading
+  const isLoading = status === 'loading' && groups.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
@@ -125,12 +126,15 @@ export function useFilteredGroupsRedux(initialFilters?: GroupFilters) {
     if (initialFilters) {
       dispatch(setFilters(initialFilters));
     }
-  }, []);
+  }, [dispatch, initialFilters]);
 
   // Apply filters when they change
   useEffect(() => {
-    dispatch(fetchFilteredGroups(currentFilters));
-  }, [dispatch, JSON.stringify(currentFilters)]);
+    // Only dispatch if we have filters to apply
+    if (Object.keys(currentFilters).length > 0) {
+      dispatch(fetchFilteredGroups(currentFilters));
+    }
+  }, [dispatch, currentFilters]);
 
   // Helper for updating just certain filters without affecting others
   const updateFilters = (newFilters: Partial<GroupFilters>) => {

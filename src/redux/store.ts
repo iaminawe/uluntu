@@ -36,9 +36,7 @@ export const store = configureStore({
     // Other reducers will be added as they are implemented
   },
   middleware: (getDefaultMiddleware) => 
-    process.env.NODE_ENV === 'development' 
-      ? getDefaultMiddleware().concat(logger)
-      : getDefaultMiddleware(),
+    getDefaultMiddleware(),
   devTools: {
     // Only enable in non-production environments
     enabled: process.env.NODE_ENV !== 'production',

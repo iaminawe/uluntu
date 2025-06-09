@@ -26,6 +26,7 @@ export const adaptLocalNewsArticleToMain = (localArticle: NewsArticle): MainNews
 export interface NewsListProps {
   initialTag?: string;
   initialSearch?: string;
+  articles?: MainNewsArticle[]; // Allow articles to be passed in
 }
 
 export interface FilterOptions {
