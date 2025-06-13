@@ -1,0 +1,36 @@
+{
+  "name": "Nelson Tech Community Platform",
+  "version": "1.0.0",
+  "description": "A comprehensive platform connecting tech professionals in the Nelson/Kootenay region",
+  "type": "web-application",
+  "stack": {
+    "frontend": ["React 18", "TypeScript", "Vite", "Tailwind CSS"],
+    "state": ["Redux Toolkit", "React Query"],
+    "testing": ["Jest", "React Testing Library"],
+    "backend": ["Supabase"],
+    "deployment": ["Vercel", "Netlify"]
+  },
+  "architecture": "feature-based",
+  "features": [
+    "authentication",
+    "companies",
+    "directory",
+    "events", 
+    "groups",
+    "marketplace",
+    "news",
+    "onboarding",
+    "opportunities",
+    "resources"
+  ],
+  "testCoverage": {
+    "percentage": 100,
+    "totalTests": 461,
+    "passingTests": 461
+  },
+  "development": {
+    "methodology": "SPARC",
+    "aiAssisted": true,
+    "tool": "claude-flow"
+  }
+}
