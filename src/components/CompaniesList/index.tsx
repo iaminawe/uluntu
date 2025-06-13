@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import CompanyCard from './CompanyCard';
-import { CompaniesListProps, FilterOptions } from './types';
+import { CompaniesListProps } from './types';
 import { useFilteredCompaniesRedux } from '../../hooks/useCompaniesRedux';
 import Pagination from '../Pagination'; // Import Pagination
 
@@ -57,7 +57,7 @@ const CompaniesList = ({
   // Effect to reset page if filters change directly (e.g. clear filters button)
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters.search, filters.industries]);
+  }, [initialSearch, initialIndustry]);
 
   return (
     <div className="space-y-8">
