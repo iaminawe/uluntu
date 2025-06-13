@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { X, Building } from 'lucide-react';
-import { FilterOptions, INDUSTRY_OPTIONS } from './types';
+import { FilterOptions, INDUSTRY_OPTIONS } from '@/features/companies/components/CompaniesList/types';
 
 interface CompaniesFiltersProps {
   filters: FilterOptions;

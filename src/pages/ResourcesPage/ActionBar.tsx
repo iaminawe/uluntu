@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PlusCircle, FileType2, Tag } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
 import { Resource } from '../../types';
 // Create a type alias for the Resource type property
 type ResourceType = Resource['type'];

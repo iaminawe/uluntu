@@ -5,7 +5,7 @@ import * as mockQueries from '../hooks/useQueries';
 import { Company, CompanyEmployee } from '../types';
 
 // Supabase API services
-import { companiesApi, CompanyInput } from '../api/companiesApi';
+import { companiesApi, CompanyInput } from '@/features/companies/api/companiesApi';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';

@@ -1,6 +1,6 @@
 import { Globe, Lock, EyeOff } from 'lucide-react';
 import { VisibilitySelectProps } from './types';
-import { FormRadioCardGroup } from '../../components/ui/Form';
+import { FormRadioCardGroup } from '@/shared/components/ui/Form';
 
 const VisibilitySelect: React.FC<VisibilitySelectProps> = ({ formData, handleChange }) => {
   const visibilityOptions = [

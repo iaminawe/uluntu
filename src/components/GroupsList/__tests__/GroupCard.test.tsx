@@ -2,9 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { format } from 'date-fns';
-import GroupCard from '../GroupCard';
+import GroupCard from '@/features/groups/components/GroupsList/GroupCard';
 import { Group } from '../../../types';
-import { GroupVisibility } from '../types';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 // Mock group data
 const mockGroup: Group = {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { NewsArticle } from './types';
-import { formatDate } from './utils';
+import { NewsArticle } from '@/features/news/components/NewsList/types';
+import { formatDate } from '@/features/news/components/NewsList/utils';
 
 interface ArticleCardProps {
   article: NewsArticle;

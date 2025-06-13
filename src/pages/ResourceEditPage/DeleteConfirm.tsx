@@ -1,5 +1,5 @@
 import { DeleteConfirmProps } from './types';
-import { ConfirmDialog } from '../../components/ui/Dialog';
+import { ConfirmDialog } from '@/shared/components/ui/Dialog';
 
 const DeleteConfirm: React.FC<DeleteConfirmProps> = ({
   show,

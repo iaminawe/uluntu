@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import OpportunityCard from './OpportunityCard';
-import Pagination from '../Pagination'; // Import Pagination
+import OpportunityCard from '@/features/opportunities/components/OpportunitiesList/OpportunityCard';
+import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
 import { 
   Opportunity, 
   OpportunitiesListProps, 
   FilterOptions, 
   SAMPLE_OPPORTUNITIES 
-} from './types';
+} from '@/features/opportunities/components/OpportunitiesList/types';
 import { 
   filterOpportunities, 
   sortOpportunitiesByDate 
-} from './utils';
+} from '@/features/opportunities/components/OpportunitiesList/utils';
 
 const OPPORTUNITIES_PER_PAGE = 6;
 

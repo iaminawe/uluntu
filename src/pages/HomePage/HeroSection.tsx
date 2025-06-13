@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EditableText } from '../../components/ContentEditor';
-import { useContent } from '../../contexts/ContentContext';
+import { EditableText } from '@/shared/components/ContentEditor';
+import { useContent } from '@/shared/contexts/ContentContext';
 import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const HeroSection: React.FC = () => {

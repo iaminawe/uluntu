@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { ContentManagementPanel } from '../components/ContentEditor';
-import { useAuth } from '../contexts/AuthContext';
+import Header from '@/shared/components/layout/Header';
+import Footer from '@/shared/components/layout/Footer';
+import { ContentManagementPanel } from '@/shared/components/ContentEditor';
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 export default function AppLayout() {
   const { loading } = useAuth();

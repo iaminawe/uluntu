@@ -11,7 +11,7 @@ import marketplaceReducer, {
   deleteMarketplaceListing,
   setFilters,
   clearFilters
-} from './marketplaceSlice';
+} from '@/features/marketplace/store/marketplaceSlice';
 
 // Mock data
 const mockMarketplaceListings = [

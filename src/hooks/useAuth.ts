@@ -8,9 +8,9 @@ import {
   AuthState,
   User,
   Session
-} from '../redux/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import supabaseClient, { sessionCache } from '../lib/supabaseClient';
+} from '@/features/auth/store/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import supabaseClient, { sessionCache } from '@/shared/lib/supabaseClient';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {

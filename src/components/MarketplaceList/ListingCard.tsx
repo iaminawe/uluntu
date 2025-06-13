@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
-import { getTypeIcon, getConditionDisplayName, formatPrice } from './utils';
+import { getTypeIcon, getConditionDisplayName, formatPrice } from '@/features/marketplace/components/MarketplaceList/utils';
 
 interface ListingCardProps {
   listing: MarketplaceListing;

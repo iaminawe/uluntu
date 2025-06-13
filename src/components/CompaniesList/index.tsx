@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import CompanyCard from './CompanyCard';
-import { CompaniesListProps } from './types';
-import { useFilteredCompaniesRedux } from '../../hooks/useCompaniesRedux';
-import Pagination from '../Pagination'; // Import Pagination
+import CompanyCard from '@/features/companies/components/CompaniesList/CompanyCard';
+import { CompaniesListProps } from '@/features/companies/components/CompaniesList/types';
+import { useFilteredCompaniesRedux } from '@/features/companies/hooks/useCompaniesRedux';
+import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
 
 const ITEMS_PER_PAGE = 9; // Number of companies per page
 

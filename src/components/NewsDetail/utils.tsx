@@ -1,5 +1,5 @@
 import { Building, Users, Calendar } from 'lucide-react';
-import { NewsAssociation } from './types';
+import { NewsAssociation } from '@/features/news/components/NewsDetail/types';
 
 // Returns the appropriate icon for a news association type
 export const getAssociationIcon = (type: NewsAssociation['type']) => {

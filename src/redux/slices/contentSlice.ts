@@ -8,7 +8,7 @@ import {
 } from '../../types/content';
 import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../../data/defaultContent';
 import { DEFAULT_LANGUAGE } from '../../constants/languages';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 
 // Storage key for localStorage
 const STORAGE_KEY = 'nelson-tech-content';

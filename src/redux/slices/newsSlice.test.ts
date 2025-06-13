@@ -12,7 +12,7 @@ import newsReducer, {
   deleteNewsArticle,
   setFilters,
   clearFilters
-} from './newsSlice';
+} from '@/features/news/store/newsSlice';
 
 // Mock data
 const mockNewsArticles = [

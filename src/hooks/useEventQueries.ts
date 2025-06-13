@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from '@tanstack/react-query';
-import { eventsApi, EventInput as EventsApiEventInput } from '../api/eventsApi';
+import { eventsApi, EventInput as EventsApiEventInput } from '@/features/events/api/eventsApi';
 import { Database } from '../types/supabase';
 import { Event as FrontendEvent } from '../types'; // Renamed to avoid conflict with mock Event
 import { events as mockEvents, Event as MockEvent } from '../data/mock/events';

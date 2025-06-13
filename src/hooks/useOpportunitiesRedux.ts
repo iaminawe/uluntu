@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchOpportunities,
   fetchOpportunityById,
@@ -20,8 +20,8 @@ import {
   selectOpportunitiesError,
   selectOpportunitiesFilters,
   OpportunityFilters
-} from '../redux/slices/opportunitiesSlice';
-import { OpportunityInput } from '../api/opportunitiesApi';
+} from '@/features/opportunities/store/opportunitiesSlice';
+import { OpportunityInput } from '@/features/opportunities/api/opportunitiesApi';
 
 /**
  * Custom hook for accessing and manipulating the opportunities collection

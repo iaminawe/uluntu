@@ -1,6 +1,6 @@
-export { default as Card } from './Card';
-export { default as CardHeader } from './CardHeader';
-export { default as CardContent } from './CardContent';
-export { default as CardFooter } from './CardFooter';
-export { default as CardGrid } from './CardGrid';
-export * from './types';
+export { default as Card } from '@/shared/components/ui/Card/Card';
+export { default as CardHeader } from '@/shared/components/ui/Card/CardHeader';
+export { default as CardContent } from '@/shared/components/ui/Card/CardContent';
+export { default as CardFooter } from '@/shared/components/ui/Card/CardFooter';
+export { default as CardGrid } from '@/shared/components/ui/Card/CardGrid';
+export * from '@/shared/components/ui/Card/types';

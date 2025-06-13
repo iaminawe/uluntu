@@ -10,7 +10,7 @@ import resourcesReducer, {
   deleteResource,
   setFilters,
   clearFilters
-} from './resourcesSlice';
+} from '@/features/resources/store/resourcesSlice';
 
 // Mock data
 const mockResources = [

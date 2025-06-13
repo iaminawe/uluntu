@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Building } from 'lucide-react';
-import { Member } from './types';
-import { getSkillColor } from './utils';
+import { Member } from '@/features/directory/components/DirectoryList/types';
+import { getSkillColor } from '@/features/directory/components/DirectoryList/utils';
 
 interface MemberCardProps {
   member: Member;

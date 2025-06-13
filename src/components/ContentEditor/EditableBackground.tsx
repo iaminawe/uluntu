@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Image, Palette, Check, X } from 'lucide-react';
-import { useContent } from '../../contexts/ContentContext';
+import { useContent } from '@/shared/contexts/ContentContext';
 
 interface EditableBackgroundProps {
   pageId: string;

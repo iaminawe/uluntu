@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { QueryError } from '../../components/ui/ErrorDisplay';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import { Company } from '../../types';
-import { companiesApi } from '../../api/companiesApi';
+import { companiesApi } from '@/features/companies/api/companiesApi';
 
 // Check if we should use Supabase or mock data
 const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';

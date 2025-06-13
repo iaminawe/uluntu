@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react';
-import { EventType, DateRangeFilter } from './types';
+import { EventType, DateRangeFilter } from '@/features/events/components/EventsList/types';
 
 interface EventsFiltersProps {
   search: string;

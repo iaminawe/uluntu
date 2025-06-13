@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Mail } from 'lucide-react';
-import { Listing, SAMPLE_LISTING, adaptMainMarketplaceItemToDetail } from './types';
-import { getTypeIcon } from './utils';
-import ContactModal from './ContactModal';
-import { marketplaceApi } from '../../api/marketplaceApi';
-import { QueryError } from '../ui/ErrorDisplay';
-import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
-import SkeletonText from '../ui/Skeleton/SkeletonText';
-import SkeletonImage from '../ui/Skeleton/SkeletonImage';
+import { Listing, SAMPLE_LISTING, adaptMainMarketplaceItemToDetail } from '@/features/marketplace/components/MarketplaceItemDetail/types';
+import { getTypeIcon } from '@/features/marketplace/components/MarketplaceItemDetail/utils';
+import ContactModal from '@/features/marketplace/components/MarketplaceItemDetail/ContactModal';
+import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import { useMarketplaceItem } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import SkeletonText from '@/shared/components/ui/Skeleton/SkeletonText';
+import SkeletonImage from '@/shared/components/ui/Skeleton/SkeletonImage';
 import { MarketplaceItem } from '../../types';
 
 interface MarketplaceItemDetailProps {

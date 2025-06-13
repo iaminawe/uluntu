@@ -1,7 +1,7 @@
 import React from 'react';
-import { FooterProps } from './types';
-import FooterColumn from './FooterColumn';
-import SocialLinks from './SocialLinks';
+import { FooterProps } from '@/shared/components/layout/Footer/types';
+import FooterColumn from '@/shared/components/layout/Footer/FooterColumn';
+import SocialLinks from '@/shared/components/layout/Footer/SocialLinks';
 import { Github, Linkedin, Twitter } from 'lucide-react';
 
 const Footer: React.FC<FooterProps> = ({

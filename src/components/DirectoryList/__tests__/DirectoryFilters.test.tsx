@@ -1,7 +1,7 @@
 // Testing imports
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import DirectoryFilters from '../DirectoryFilters';
-import { FilterOptions } from '../types';
+import DirectoryFilters from '@/features/directory/components/DirectoryList/DirectoryFilters';
+import { FilterOptions } from '@/features/directory/components/DirectoryList/types';
 
 // Mock the utils module
 jest.mock('../utils', () => ({

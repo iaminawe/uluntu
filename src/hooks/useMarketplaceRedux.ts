@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectAllMarketplaceListings,
   selectMarketplaceListingById,
@@ -19,9 +19,9 @@ import {
   deleteMarketplaceListing,
   setFilters,
   clearFilters
-} from '../redux/slices/marketplaceSlice';
+} from '@/features/marketplace/store/marketplaceSlice';
 import { MarketplaceItemsQueryOptions } from '../types/marketplace';
-import { MarketplaceItemInput } from '../api/marketplaceApi';
+import { MarketplaceItemInput } from '@/features/marketplace/api/marketplaceApi';
 
 /**
  * Custom hook for working with marketplace listings in Redux store

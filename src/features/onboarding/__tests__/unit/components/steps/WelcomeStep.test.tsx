@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { WelcomeStep } from '../../../../components/steps/WelcomeStep';
-import { uploadProfilePhoto } from '../../../../../../api/membersApi';
+import { uploadProfilePhoto } from '@/features/directory/api/membersApi';
 
 // Mock API
 jest.mock('../../../../../../api/membersApi');

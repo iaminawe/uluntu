@@ -1,5 +1,5 @@
-import { filterMembers, extractUniqueSkills, getSkillColor } from '../utils';
-import { Member, FilterOptions } from '../types';
+import { filterMembers, extractUniqueSkills, getSkillColor } from '@/features/directory/components/DirectoryList/utils';
+import { Member, FilterOptions } from '@/features/directory/components/DirectoryList/types';
 
 describe('DirectoryList Utils', () => {
   const testMembers: Member[] = [

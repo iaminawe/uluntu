@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormSectionProps } from './types';
+import { FormSectionProps } from '@/shared/components/ui/Form/types';
 
 /**
  * Reusable form section component

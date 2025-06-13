@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import GroupsList from '../../components/GroupsList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import GroupsList from '@/features/groups/components/GroupsList';
 import TestGroups from './TestGroups';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useGroupsRedux } from '../../hooks/useGroupsRedux';
-import { GroupVisibility } from '../../components/GroupsList/types';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 export default function GroupsPage() {
   // State for filters

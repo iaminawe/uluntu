@@ -1,7 +1,7 @@
 // No need to import React with modern JSX transform
 import { render, screen, fireEvent } from '@testing-library/react';
-import CompaniesFilters from '../CompaniesFilters';
-import { FilterOptions } from '../types';
+import CompaniesFilters from '@/features/companies/components/CompaniesList/CompaniesFilters';
+import { FilterOptions } from '@/features/companies/components/CompaniesList/types';
 
 describe('CompaniesFilters Component', () => {
   // Mock filter options and setter function

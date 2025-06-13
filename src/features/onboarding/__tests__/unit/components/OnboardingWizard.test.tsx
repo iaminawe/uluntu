@@ -6,7 +6,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
 import { OnboardingWizard } from '../../../components/OnboardingWizard';
 import { onboardingService } from '../../../services/onboardingService';
-import { getUserProfile } from '../../../../../api/membersApi';
+import { getUserProfile } from '@/features/directory/api/membersApi';
 
 // Mock dependencies
 jest.mock('../../../services/onboardingService');

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
-import { marketplaceApi, MarketplaceItemInput } from '../api/marketplaceApi';
+import { marketplaceApi, MarketplaceItemInput } from '@/features/marketplace/api/marketplaceApi';
 import mockData from '../data/mock/mockData';
 import { ContentStatus } from '../types/common';
 import { MarketplaceItem } from '../types';

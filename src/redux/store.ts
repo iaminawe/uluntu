@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createLogger } from 'redux-logger';
-import authReducer from './slices/authSlice';
-import eventsReducer from './slices/eventsSlice';
-import membersReducer from './slices/membersSlice';
-import companiesReducer from './slices/companiesSlice';
-import opportunitiesReducer from './slices/opportunitiesSlice';
-import resourcesReducer from './slices/resourcesSlice';
-import groupsReducer from './slices/groupsSlice';
-import newsReducer from './slices/newsSlice';
-import marketplaceReducer from './slices/marketplaceSlice';
+import authReducer from '@/features/auth/store/authSlice';
+import eventsReducer from '@/features/events/store/eventsSlice';
+import membersReducer from '@/features/directory/store/membersSlice';
+import companiesReducer from '@/features/companies/store/companiesSlice';
+import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
+import resourcesReducer from '@/features/resources/store/resourcesSlice';
+import groupsReducer from '@/features/groups/store/groupsSlice';
+import newsReducer from '@/features/news/store/newsSlice';
+import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
 import contentReducer from './slices/contentSlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';

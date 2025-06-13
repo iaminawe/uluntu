@@ -7,4 +7,4 @@
  */
 
 // Re-export everything from the new file
-export * from './useCompanyQueries';
+export * from '@/features/companies/hooks/useCompanyQueries';

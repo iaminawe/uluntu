@@ -9,7 +9,7 @@ import eventsReducer, {
   setFilters,
   clearFilters,
   clearEvents
-} from '../slices/eventsSlice';
+} from '@/features/events/store/eventsSlice';
 import { Event } from '../../types';
 
 // Mock the API calls

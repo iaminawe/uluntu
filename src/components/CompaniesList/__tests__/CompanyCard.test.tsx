@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import CompanyCard from '../CompanyCard';
-import { Company } from '../types';
+import CompanyCard from '@/features/companies/components/CompaniesList/CompanyCard';
+import { Company } from '@/features/companies/components/CompaniesList/types';
 
 // Mock company data
 const mockCompany: Company = {

@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { CompanyAssociationStep } from '../../../../components/steps/CompanyAssociationStep';
-import { searchCompanies, createCompany, joinCompany } from '../../../../../../api/companiesApi';
+import { searchCompanies, createCompany, joinCompany } from '@/features/companies/api/companiesApi';
 
 // Mock API
 jest.mock('../../../../../../api/companiesApi');

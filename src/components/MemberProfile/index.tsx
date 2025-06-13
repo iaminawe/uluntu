@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Member } from './types';
-import ProfileHeader from './ProfileHeader';
-import ProfileContent from './ProfileContent';
-import ContactModal from './ContactModal';
-import EditProfileModal from './EditProfileModal';
+import { Member } from '@/features/directory/components/MemberProfile/types';
+import ProfileHeader from '@/features/directory/components/MemberProfile/ProfileHeader';
+import ProfileContent from '@/features/directory/components/MemberProfile/ProfileContent';
+import ContactModal from '@/features/directory/components/MemberProfile/ContactModal';
+import EditProfileModal from '@/features/directory/components/MemberProfile/EditProfileModal';
 import { useMember } from '../../hooks/useQueries';
 import { useMemberContributions } from '../../hooks/useMemberContributions';
 import { mapMemberToProfileMember } from '../../adapters/memberAdapter';

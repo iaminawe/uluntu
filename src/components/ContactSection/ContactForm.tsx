@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ContactFormProps, FormData, VolunteerType } from './types';
+import { ContactFormProps, FormData, VolunteerType } from '@/shared/components/layout/ContactSection/types';
 
 const ContactForm: React.FC<ContactFormProps> = ({ 
   volunteerOptions, 

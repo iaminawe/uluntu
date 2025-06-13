@@ -1,5 +1,5 @@
 import { ErrorStateProps } from './types';
-import { NotFoundError } from '../../components/ui/ErrorDisplay';
+import { NotFoundError } from '@/shared/components/ui/ErrorDisplay';
 
 const ErrorState: React.FC<ErrorStateProps> = () => {
   return (

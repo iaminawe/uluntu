@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentContainerProps } from './types';
+import { ContentContainerProps } from '@/shared/components/ui/PageLayout/types';
 
 /**
  * Reusable content container component

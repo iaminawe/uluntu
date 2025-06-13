@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlusCircle, Building2, ChevronDown, X } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { INDUSTRY_OPTIONS } from '../../components/CompaniesList/types';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { INDUSTRY_OPTIONS } from '@/features/companies/components/CompaniesList/types';
 
 interface ActionBarProps {
   searchTerm?: string;

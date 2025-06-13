@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { marketplaceApi } from '../../../api/marketplaceApi';
-import { supabase } from '../../../lib/supabaseClient';
+import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
+import { supabase } from '@/shared/lib/supabaseClient';
 import type { MarketplaceListing, MarketplaceFilters } from '../../../types';
 
 // Mock Supabase client

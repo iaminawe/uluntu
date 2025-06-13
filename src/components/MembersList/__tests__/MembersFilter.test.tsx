@@ -1,7 +1,7 @@
 // Testing imports
 import { render, screen, fireEvent } from '@testing-library/react';
-import MembersFilter from '../MembersFilter';
-import { FilterOptions, SKILL_OPTIONS } from '../types';
+import MembersFilter from '@/features/directory/components/MembersList/MembersFilter';
+import { FilterOptions, SKILL_OPTIONS } from '@/features/directory/components/MembersList/types';
 
 describe('MembersFilter Component', () => {
   const mockSetFilters = jest.fn();

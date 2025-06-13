@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileSearch } from 'lucide-react';
-import ErrorDisplay from './ErrorDisplay';
-import { NotFoundErrorProps } from './types';
+import ErrorDisplay from '@/shared/components/ui/ErrorDisplay/ErrorDisplay';
+import { NotFoundErrorProps } from '@/shared/components/ui/ErrorDisplay/types';
 
 /**
  * Specialized error component for 404/Not Found errors

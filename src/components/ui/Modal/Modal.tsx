@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { ModalProps } from './types';
+import { ModalProps } from '@/shared/components/ui/Modal/types';
 
 /**
  * Base modal component

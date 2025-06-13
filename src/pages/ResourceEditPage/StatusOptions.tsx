@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react';
-import { FormSelect, FormCheckbox } from '../../components/ui/Form';
+import { FormSelect, FormCheckbox } from '@/shared/components/ui/Form';
 import { StatusOptionsProps } from './types';
 import { ContentStatus } from '../../data/mock/types';
 

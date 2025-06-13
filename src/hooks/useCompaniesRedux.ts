@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchCompanies,
   fetchCompanyById,
@@ -16,8 +16,8 @@ import {
   selectCompaniesError,
   selectCompaniesFilters,
   CompanyFilters
-} from '../redux/slices/companiesSlice';
-import { CompanyInput } from '../api/companiesApi';
+} from '@/features/companies/store/companiesSlice';
+import { CompanyInput } from '@/features/companies/api/companiesApi';
 
 /**
  * Custom hook for accessing and manipulating the companies collection

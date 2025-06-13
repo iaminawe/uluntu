@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Search, X, Tag } from 'lucide-react';
-import { FilterOptions } from './types';
-import { getSkillColor } from './utils';
+import { FilterOptions } from '@/features/directory/components/DirectoryList/types';
+import { getSkillColor } from '@/features/directory/components/DirectoryList/utils';
 
 interface DirectoryFiltersProps {
   filters: FilterOptions;

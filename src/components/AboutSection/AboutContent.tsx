@@ -1,6 +1,6 @@
 import React from 'react';
-import FeatureItem from './FeatureItem';
-import { FeatureItem as FeatureItemType } from './types';
+import FeatureItem from '@/shared/components/layout/AboutSection/FeatureItem';
+import { FeatureItem as FeatureItemType } from '@/shared/components/layout/AboutSection/types';
 
 interface AboutContentProps {
   features?: FeatureItemType[];

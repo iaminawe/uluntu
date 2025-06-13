@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ForgotPasswordForm from '../ForgotPasswordForm';
+import ForgotPasswordForm from '@/features/auth/components/ForgotPasswordForm';
 import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 // Mock the useAuth hook
 jest.mock('../../../contexts/AuthContext', () => ({

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import SignUpForm from '../SignUpForm';
+import SignUpForm from '@/features/auth/components/SignUpForm';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../../redux/slices/authSlice';
-import * as useAuthModule from '../../../hooks/useAuth';
+import authReducer from '@/features/auth/store/authSlice';
+import * as useAuthModule from '@/features/auth/hooks/useAuth';
 
 // Mock the useAuth hook
 jest.mock('../../../hooks/useAuth', () => ({

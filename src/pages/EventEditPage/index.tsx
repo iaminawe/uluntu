@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEventRedux } from '../../hooks/useEventsRedux';
+import { useEventRedux } from '@/features/events/hooks/useEventsRedux';
 import { format } from 'date-fns';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';

@@ -1,5 +1,5 @@
 import { UrlInputProps } from './types';
-import { FormInput } from '../../components/ui/Form';
+import { FormInput } from '@/shared/components/ui/Form';
 
 const UrlInput: React.FC<UrlInputProps> = ({ formData, handleChange }) => {
   return (

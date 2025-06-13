@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { User, Session } from '../../redux/slices/authSlice';
+import authReducer, { User, Session } from '@/features/auth/store/authSlice';
 import { mockSupabaseClient } from '../../__mocks__/supabaseClient';
 
 // Mock the actual Supabase client module before importing useAuth
@@ -11,7 +11,7 @@ jest.mock('@supabase/supabase-js', () => ({
 }));
 
 // Import useAuth after mocking Supabase
-import { useAuth } from '../useAuth';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 // Setup test environment for React 18
 import { createRoot } from 'react-dom/client';

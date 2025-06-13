@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, ExternalLink } from 'lucide-react';
-import { Member } from './types';
-import { getTypeIcon } from './utils';
+import { Member } from '@/features/directory/components/MemberProfile/types';
+import { getTypeIcon } from '@/features/directory/components/MemberProfile/utils';
 import { MemberContributions } from '../../hooks/useMemberContributions';
 
 interface ProfileContentProps {

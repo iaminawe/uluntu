@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import MemberCard from './MemberCard';
-import { Member, MembersListProps, FilterOptions } from './types';
-import { filterMembers, sortMembersByName } from './utils';
+import MemberCard from '@/features/directory/components/MembersList/MemberCard';
+import { Member, MembersListProps, FilterOptions } from '@/features/directory/components/MembersList/types';
+import { filterMembers, sortMembersByName } from '@/features/directory/components/MembersList/utils';
 import { useFilteredMembersRedux } from '../../hooks/useMembersRedux';
 
 const MembersList = ({ 

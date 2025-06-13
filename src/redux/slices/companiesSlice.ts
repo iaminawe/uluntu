@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 import { Company } from '../../types';
-import { companiesApi, CompanyInput } from '../../api/companiesApi';
+import { companiesApi, CompanyInput } from '@/features/companies/api/companiesApi';
 import * as mockQueries from '../../hooks/useQueries';
 import { IS_SUPABASE_ENABLED } from '../../config/env';
 

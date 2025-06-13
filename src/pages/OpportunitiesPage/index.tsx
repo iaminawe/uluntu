@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import OpportunitiesList from '../../components/OpportunitiesList';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import OpportunitiesList from '@/features/opportunities/components/OpportunitiesList';
 import { 
   Opportunity as OpportunityListItem,
   OpportunityType,
   OpportunityCategory,
   ExperienceLevel
-} from '../../components/OpportunitiesList/types';
+} from '@/features/opportunities/components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useOpportunitiesRedux } from '../../hooks/useOpportunitiesRedux';

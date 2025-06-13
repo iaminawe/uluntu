@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkeletonImageProps } from './types';
+import { SkeletonImageProps } from '@/shared/components/ui/Skeleton/types';
 
 /**
  * Skeleton component for image placeholders

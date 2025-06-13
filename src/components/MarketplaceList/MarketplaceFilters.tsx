@@ -5,8 +5,8 @@ import {
   ListingCondition, 
   ListingPriceRange,
   FilterOptions 
-} from './types';
-import { getTypeIcon, getTypeDisplayName, getConditionDisplayName } from './utils';
+} from '@/features/marketplace/components/MarketplaceList/types';
+import { getTypeIcon, getTypeDisplayName, getConditionDisplayName } from '@/features/marketplace/components/MarketplaceList/utils';
 
 interface MarketplaceFiltersProps {
   filters: FilterOptions;

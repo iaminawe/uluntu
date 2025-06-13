@@ -2,10 +2,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
-import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
-import { useMarketplaceListingByIdRedux } from '../../hooks/useMarketplaceRedux';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
+import { useMarketplaceItem } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import { useMarketplaceListingByIdRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
 import { ListingType, Listing, ListingCondition } from './types';
 import PageHeader from './PageHeader';
 

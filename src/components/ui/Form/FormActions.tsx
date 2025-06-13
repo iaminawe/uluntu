@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
-import { FormActionsProps } from './types';
+import { FormActionsProps } from '@/shared/components/ui/Form/types';
 
 /**
  * Reusable form actions component

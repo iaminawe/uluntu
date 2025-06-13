@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageHeader as SharedPageHeader } from '../../components/ui/PageLayout';
+import { PageHeader as SharedPageHeader } from '@/shared/components/ui/PageLayout';
 import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const PageHeader: React.FC = () => {

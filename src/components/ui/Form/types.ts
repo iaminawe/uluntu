@@ -2,13 +2,13 @@
  * Type definitions for Form components
  */
 import { ReactNode } from 'react';
-export type { FormInputProps } from './FormInput';
-export type { FormTextareaProps } from './FormTextarea';
-export type { FormSelectProps } from './FormSelect';
-export type { FormCheckboxProps } from './FormCheckbox';
-export type { FormRadioCardGroupProps, RadioOption } from './FormRadioCardGroup';
-export type { FormImageUploadProps } from './FormImageUpload';
-export type { FormDatePickerProps } from './FormDatePicker';
+export type { FormInputProps } from '@/shared/components/ui/Form/FormInput';
+export type { FormTextareaProps } from '@/shared/components/ui/Form/FormTextarea';
+export type { FormSelectProps } from '@/shared/components/ui/Form/FormSelect';
+export type { FormCheckboxProps } from '@/shared/components/ui/Form/FormCheckbox';
+export type { FormRadioCardGroupProps, RadioOption } from '@/shared/components/ui/Form/FormRadioCardGroup';
+export type { FormImageUploadProps } from '@/shared/components/ui/Form/FormImageUpload';
+export type { FormDatePickerProps } from '@/shared/components/ui/Form/FormDatePicker';
 
 export interface FormHeaderProps {
   /**
@@ -103,7 +103,7 @@ export interface FormActionsProps {
   align?: 'left' | 'center' | 'right' | 'between';
 }
 
-// FormImageUploadProps is now imported from './FormImageUpload'
+// FormImageUploadProps is now imported from '@/shared/components/ui/Form/FormImageUpload'
 
 export interface TagsInputProps {
   /**
