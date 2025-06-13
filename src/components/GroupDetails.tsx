@@ -1,17 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Users, Calendar, BookOpen, Newspaper, Globe, Lock, EyeOff, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Globe, Lock, EyeOff, ArrowRight } from 'lucide-react';
 
-interface GroupMember {
-  id: number;
-  name: string;
-  image: string;
-  role: 'admin' | 'member';
-  joinedDate: string;
-  title?: string;
-}
 
 interface GroupEvent {
   id: number;

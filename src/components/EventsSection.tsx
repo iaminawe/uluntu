@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { pastEvents } from '../data/sampleData';
+import { events } from '../data/mock/events';
 
 const EventsSection: React.FC = () => {
   const [filterYear, setFilterYear] = useState<string>('all');
-  const [filterTopic, setFilterTopic] = useState<string>('all');
   
-  // Get unique years and topics for filter chips
-  const years = [...new Set(pastEvents.map(event => new Date(event.date).getFullYear().toString()))];
-  const topics = [...new Set(pastEvents.map(event => event.topic))];
+  // Get unique years for filter chips
+  const years = [...new Set(events.map(event => new Date(event.date).getFullYear().toString()))];
   
-  // Filter events based on selected filters
-  const filteredEvents = pastEvents.filter(event => {
+  // Filter events based on selected year filter
+  const filteredEvents = events.filter(event => {
     const eventYear = new Date(event.date).getFullYear().toString();
-    return (filterYear === 'all' || eventYear === filterYear) &&
-           (filterTopic === 'all' || event.topic === filterTopic);
+    return (filterYear === 'all' || eventYear === filterYear);
   });
 
   return (
@@ -58,35 +55,6 @@ const EventsSection: React.FC = () => {
                 ))}
               </div>
             </div>
-            
-            <div>
-              <h3 className="text-sm font-medium text-slate-700 mb-2">Filter by Topic:</h3>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={`px-3 py-1 text-sm rounded-full ${
-                    filterTopic === 'all' 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                  onClick={() => setFilterTopic('all')}
-                >
-                  All Topics
-                </button>
-                {topics.map(topic => (
-                  <button
-                    key={topic}
-                    className={`px-3 py-1 text-sm rounded-full ${
-                      filterTopic === topic
-                        ? 'bg-indigo-600 text-white' 
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                    onClick={() => setFilterTopic(topic)}
-                  >
-                    {topic}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
         
@@ -123,31 +91,21 @@ const EventsSection: React.FC = () => {
                         </p>
                       </div>
                       <span className="inline-block px-3 py-1 mt-2 md:mt-0 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">
-                        {event.topic}
+                        {event.type}
                       </span>
                     </div>
                     <p className="text-slate-600 mb-4">
-                      {event.summary}
+                      {event.description}
                     </p>
                     <div className="flex flex-wrap gap-3">
-                      {event.videoUrl && (
+                      {event.url && (
                         <a 
-                          href={event.videoUrl} 
+                          href={event.url} 
                           className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 rounded-md hover:bg-indigo-100"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Watch Video
-                        </a>
-                      )}
-                      {event.slidesUrl && (
-                        <a 
-                          href={event.slidesUrl} 
-                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-teal-700 bg-teal-50 rounded-md hover:bg-teal-100"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Slides
+                          Event Details
                         </a>
                       )}
                     </div>
