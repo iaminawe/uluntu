@@ -16,8 +16,8 @@ export default function CompanyDetailPage() {
   const { id } = useParams();
   // Use the Redux-based hook to fetch company data
   const { company, isLoading: companyLoading, isError, error: companyError } = useCompanyRedux(id);
-  // We're fetching employees data for completeness, but will handle the type issue by using a fixed empty array
-  const { isLoading: employeesLoading } = useCompanyEmployees(id);
+  // Fetch employees data with the correct type
+  const { data: employees = [], isLoading: employeesLoading } = useCompanyEmployees(id);
   
   if (companyLoading) {
     return <LoadingState />;
@@ -28,11 +28,6 @@ export default function CompanyDetailPage() {
   }
   
   // Company data is already available from the Redux hook
-  
-  // There's a type mismatch between what useCompanyEmployees returns (Company[]) and what EmployeesSection expects (Member[])
-  // This is an API implementation issue that needs to be fixed, but for now we'll use an empty array
-  // In a real implementation, we would fetch the actual member data and convert it to the Member type
-  const employees: Member[] = [];
 
   return (
     <>

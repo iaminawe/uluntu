@@ -2,10 +2,11 @@ import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClien
 
 // Mock data service
 import * as mockQueries from '../hooks/useQueries';
-import { Company } from '../types';
+import { Company, Member } from '../types';
 
 // Supabase API services
 import { companiesApi, CompanyInput } from '../api/companiesApi';
+import { membersApi } from '../api/membersApi';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
@@ -230,8 +231,8 @@ export function useDeleteCompany(): UseMutationResult<
  * @param companyId - The ID of the company whose employees are to be fetched.
  * @returns A UseQueryResult object from Tanstack Query containing the list of company employees or an error.
  */
-export function useCompanyEmployees(companyId?: string): UseQueryResult<Company[], Error> {
-  return useQuery<Company[], Error>({
+export function useCompanyEmployees(companyId?: string): UseQueryResult<Member[], Error> {
+  return useQuery<Member[], Error>({
     queryKey: ['company', companyId, 'employees', USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!companyId) {
@@ -240,9 +241,8 @@ export function useCompanyEmployees(companyId?: string): UseQueryResult<Company[
 
       if (USE_SUPABASE) {
         try {
-          // This would need to be implemented in a real API
-          console.warn('Supabase API for company employees not implemented');
-          return [];
+          // Use the proper Supabase API for company employees
+          return await membersApi.getByCompany(companyId);
         } catch (error) {
           console.error(`Error fetching employees for company ID ${companyId}:`, error);
           return [];
