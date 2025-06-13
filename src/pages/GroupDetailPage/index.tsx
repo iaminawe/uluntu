@@ -224,6 +224,22 @@ export default function GroupDetailPage() {
       <PageHeader group={group} setShowJoinModal={setShowJoinModal} />
       
       <ContentContainer>
+        {/* Announcements Section */}
+        <AnnouncementsSection announcements={announcements} isLoading={false} />
+        
+        {/* Admin announcement button */}
+        {isAdmin && (
+          <div className="mb-6">
+            <button
+              onClick={() => setShowAnnouncementModal(true)}
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
+            >
+              <Megaphone className="h-4 w-4" />
+              Create Announcement
+            </button>
+          </div>
+        )}
+        
         <Card className="overflow-hidden">
             {/* Tabs Section */}
             <Tabs 
@@ -236,8 +252,8 @@ export default function GroupDetailPage() {
             <div className="p-6">
               {selectedTab === 'about' && <AboutTab group={group} />}
               {selectedTab === 'events' && <EventsTab events={events} isLoading={eventsLoading} />}
-              {selectedTab === 'members' && <MembersTab members={groupMembers} isLoading={membersLoading} />}
-              {selectedTab === 'resources' && <ResourcesTab resources={resources} isLoading={resourcesLoading} />}
+              {selectedTab === 'members' && <MembersTab members={groupMembers} isLoading={membersLoading} groupId={group.id} />}
+              {selectedTab === 'resources' && <ResourcesTab resources={resources} isLoading={resourcesLoading} groupId={group.id} />}
               {selectedTab === 'posts' && <PostsTab posts={posts} isLoading={postsLoading} />}
             </div>
         </Card>
@@ -248,6 +264,19 @@ export default function GroupDetailPage() {
         <JoinModal
           group={group} // group is guaranteed to be defined here due to the conditional rendering above
           onClose={() => setShowJoinModal(false)}
+        />
+      )}
+      
+      {/* Create Announcement Modal */}
+      {showAnnouncementModal && (
+        <CreateAnnouncementModal
+          isOpen={showAnnouncementModal}
+          onClose={() => setShowAnnouncementModal(false)}
+          groupId={id!}
+          onSuccess={() => {
+            refetchAnnouncements();
+            setShowAnnouncementModal(false);
+          }}
         />
       )}
     </>

@@ -367,5 +367,181 @@ export const groupsApi = {
       handleSupabaseError(error, `fetching member role for group ${groupId}`);
       return null;
     }
+  },
+
+  async updateMemberRole(groupId: string, memberId: string, role: 'admin' | 'member'): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('group_members')
+        .update({ role })
+        .eq('group_id', groupId)
+        .eq('member_id', memberId);
+
+      if (error) {
+        handleSupabaseError(error, `updating member role in group ${groupId}`);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, `updating member role in group ${groupId}`);
+      return false;
+    }
+  },
+
+  async removeMember(groupId: string, memberId: string): Promise<boolean> {
+    try {
+      // Check if member is not the last admin
+      const { data: admins } = await supabase
+        .from('group_members')
+        .select('id')
+        .eq('group_id', groupId)
+        .eq('role', 'admin');
+
+      if (admins && admins.length <= 1) {
+        const { data: memberRole } = await supabase
+          .from('group_members')
+          .select('role')
+          .eq('group_id', groupId)
+          .eq('member_id', memberId)
+          .single();
+
+        if (memberRole?.role === 'admin') {
+          console.error('Cannot remove the last admin from the group');
+          return false;
+        }
+      }
+
+      const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('member_id', memberId);
+
+      if (error) {
+        handleSupabaseError(error, `removing member from group ${groupId}`);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, `removing member from group ${groupId}`);
+      return false;
+    }
+  },
+
+  // Activities methods
+  async getActivities(groupId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('group_activities')
+        .select(`
+          *,
+          creator:members!created_by(*)
+        `)
+        .eq('group_id', groupId)
+        .gte('activity_date', new Date().toISOString())
+        .order('activity_date', { ascending: true });
+
+      if (error) {
+        handleSupabaseError(error, `fetching activities for group ${groupId}`);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, `fetching activities for group ${groupId}`);
+      return [];
+    }
+  },
+
+  async createActivity(groupId: string, activityData: {
+    title: string;
+    description: string;
+    activity_date: string;
+    location?: string;
+    created_by: string;
+  }): Promise<any | null> {
+    try {
+      const { data, error } = await supabase
+        .from('group_activities')
+        .insert({
+          group_id: groupId,
+          ...activityData
+        })
+        .select(`
+          *,
+          creator:members!created_by(*)
+        `)
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, 'creating activity');
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, 'creating activity');
+      return null;
+    }
+  },
+
+  // Announcements methods
+  async getAnnouncements(groupId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('group_announcements')
+        .select(`
+          *,
+          creator:members!created_by(*)
+        `)
+        .eq('group_id', groupId)
+        .or('expires_at.is.null,expires_at.gte.' + new Date().toISOString())
+        .order('priority', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        handleSupabaseError(error, `fetching announcements for group ${groupId}`);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, `fetching announcements for group ${groupId}`);
+      return [];
+    }
+  },
+
+  async createAnnouncement(groupId: string, announcementData: {
+    title: string;
+    content: string;
+    priority: 'normal' | 'high' | 'urgent';
+    created_by: string;
+    expires_at?: string;
+  }): Promise<any | null> {
+    try {
+      const { data, error } = await supabase
+        .from('group_announcements')
+        .insert({
+          group_id: groupId,
+          ...announcementData
+        })
+        .select(`
+          *,
+          creator:members!created_by(*)
+        `)
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, 'creating announcement');
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, 'creating announcement');
+      return null;
+    }
   }
 };
