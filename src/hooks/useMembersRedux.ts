@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { 
   fetchMembers, 
   fetchMemberById, 
@@ -11,8 +11,8 @@ import {
   clearFilters,
   MemberFilters,
   Member
-} from '../redux/slices/membersSlice';
-import { MemberInput } from '../api/membersApi';
+} from '@/features/directory/store/membersSlice';
+import { MemberInput } from '@/features/directory/api/membersApi';
 
 export const useMembersRedux = () => {
   const dispatch = useAppDispatch();

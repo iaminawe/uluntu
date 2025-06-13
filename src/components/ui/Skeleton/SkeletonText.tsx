@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkeletonTextProps } from './types';
+import { SkeletonTextProps } from '@/shared/components/ui/Skeleton/types';
 
 /**
  * Skeleton component for text placeholders

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -36,10 +36,11 @@ export default function SignUpForm() {
       setIsLoading(true);
       setError(null);
       
-      const { error: signUpError } = await signUp(email, password);
+      const result = await signUp(email, password);
       
-      if (signUpError) {
-        throw signUpError;
+      // Check if the result contains an error
+      if (result?.error) {
+        throw result.error;
       }
 
       // No need to create a member profile anymore!

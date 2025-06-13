@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import ArticleCard from './ArticleCard';
+import ArticleCard from '@/features/news/components/NewsList/ArticleCard';
 
-import Newsletter from './Newsletter';
-import { NewsArticle, NewsListProps, FilterOptions, adaptMainNewsArticleToLocal } from './types';
+import Newsletter from '@/features/news/components/NewsList/Newsletter';
+import { NewsArticle, NewsListProps, FilterOptions, adaptMainNewsArticleToLocal } from '@/features/news/components/NewsList/types';
 import { 
   filterArticles, 
   sortArticlesByDate 
-} from './utils';
+} from '@/features/news/components/NewsList/utils';
 import { NewsArticle as MainNewsArticle } from '../../types';
 
 import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
 import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
 
-const NewsList = ({ initialTag = 'all', initialSearch = '', useRedux = false }: NewsListProps & { useRedux?: boolean }) => {
+const NewsList = ({ initialTag = 'all', initialSearch = '', articles: passedArticles, useRedux = false }: NewsListProps & { useRedux?: boolean }) => {
   // State for filters
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
@@ -52,23 +52,25 @@ const NewsList = ({ initialTag = 'all', initialSearch = '', useRedux = false }: 
   }, [useRedux, filters, updateReduxFilters]);
 
   // Choose which data source to use
-  const mainArticles = useRedux 
+  const mainArticles = passedArticles || (useRedux 
     ? reduxArticles as MainNewsArticle[]
-    : (newsDataArticles || []) as MainNewsArticle[];
+    : (newsDataArticles || []) as MainNewsArticle[]);
+  
   
   // Convert main NewsArticle type to local NewsArticle type using adapter function
   const articles = mainArticles.map(adaptMainNewsArticleToLocal);
   
   // Set loading and error states based on the chosen data source
-  const isLoading = useRedux ? reduxIsLoading : newsDataIsLoading;
+  const isLoading = passedArticles ? false : (useRedux ? reduxIsLoading : newsDataIsLoading);
   const error = useRedux 
     ? (reduxError ? new Error(String(reduxError)) : (reduxIsError ? new Error('Error loading articles') : null)) 
     : newsDataError;
-  
+    
   // Filter and sort articles based on the fetched data
   // The hook should ideally return pre-filtered data based on search/tags,
   // but if client-side filtering is still needed on top of that:
   const displayedArticles = sortArticlesByDate(filterArticles(articles, filters));
+  
   
   // Render loading state
   if (isLoading) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardGridProps } from './types';
+import { CardGridProps } from '@/shared/components/ui/Card/types';
 
 /**
  * Card grid component

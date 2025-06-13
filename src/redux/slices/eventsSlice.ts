@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   PayloadAction
 } from '@reduxjs/toolkit';
-import { eventsApi, EventInput as EventsApiEventInput } from '../../api/eventsApi';
+import { eventsApi, EventInput as EventsApiEventInput } from '@/features/events/api/eventsApi';
 import { events as mockEvents } from '../../data/mock/events';
 import { Event as FrontendEvent } from '../../types';
 import { Database } from '../../types/supabase';

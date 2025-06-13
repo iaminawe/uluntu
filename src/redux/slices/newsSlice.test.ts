@@ -12,7 +12,7 @@ import newsReducer, {
   deleteNewsArticle,
   setFilters,
   clearFilters
-} from './newsSlice';
+} from '@/features/news/store/newsSlice';
 
 // Mock data
 const mockNewsArticles = [
@@ -165,6 +165,7 @@ describe('news slice', () => {
       featuredArticles: [],
       filters: {},
       status: 'idle',
+      filteredStatus: 'idle',
       error: null
     });
   });
@@ -189,19 +190,19 @@ describe('news slice', () => {
 
   it('should handle fetchFilteredNewsArticles with search', async () => {
     await store.dispatch(fetchFilteredNewsArticles({ search: 'coworking' }));
-    expect(store.getState().news.status).toBe('succeeded');
+    expect(store.getState().news.filteredStatus).toBe('succeeded');
     expect(store.getState().news.filteredArticles).toEqual([mockNewsArticles[1]]);
   });
 
   it('should handle fetchFilteredNewsArticles with tags', async () => {
     await store.dispatch(fetchFilteredNewsArticles({ tags: ['event'] }));
-    expect(store.getState().news.status).toBe('succeeded');
+    expect(store.getState().news.filteredStatus).toBe('succeeded');
     expect(store.getState().news.filteredArticles).toEqual([mockNewsArticles[0]]);
   });
 
   it('should handle fetchFilteredNewsArticles with featured', async () => {
     await store.dispatch(fetchFilteredNewsArticles({ featured: true }));
-    expect(store.getState().news.status).toBe('succeeded');
+    expect(store.getState().news.filteredStatus).toBe('succeeded');
     expect(store.getState().news.filteredArticles).toEqual([mockNewsArticles[0]]);
   });
 

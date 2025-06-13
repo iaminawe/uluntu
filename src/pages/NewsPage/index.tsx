@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import NewsList from '../../components/NewsList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import NewsList from '@/features/news/components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
@@ -32,7 +32,6 @@ export default function NewsPage() {
   }, [searchTerm, selectedTags, updateFilters]);
   
   const hasArticles = articles.length > 0;
-  console.log('News articles:', articles);
   
   return (
     <>
@@ -75,7 +74,8 @@ export default function NewsPage() {
         ) : (
           <NewsList 
             initialSearch={searchTerm}
-            initialTag={selectedTags.length > 0 ? selectedTags[0] : ''}
+            initialTag={selectedTags.length > 0 ? selectedTags[0] : 'all'}
+            articles={articles}
             useRedux={true}
           />
         )}

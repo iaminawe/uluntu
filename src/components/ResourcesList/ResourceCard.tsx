@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Resource } from '../../types';
-import { getTypeIcon } from './utils';
+import { getTypeIcon } from '@/features/resources/components/ResourcesList/utils';
 
 interface ResourceCardProps {
   resource: Resource;

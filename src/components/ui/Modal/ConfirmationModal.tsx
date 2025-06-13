@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
-import Modal from './Modal';
-import { ConfirmationModalProps } from './types';
+import Modal from '@/shared/components/ui/Modal/Modal';
+import { ConfirmationModalProps } from '@/shared/components/ui/Modal/types';
 
 /**
  * Confirmation modal component

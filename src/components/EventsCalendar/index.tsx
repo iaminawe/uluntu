@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { Event } from '../../types';
-import { useEventsRedux } from '../../hooks/useEventsRedux';
-import { CalendarToolbar } from './CalendarToolbar';
-import { EventPopover } from './EventPopover';
-import { SubscribeModal } from './SubscribeModal';
+import { useEventsRedux } from '@/features/events/hooks/useEventsRedux';
+import { CalendarToolbar } from '@/features/events/components/EventsCalendar/CalendarToolbar';
+import { EventPopover } from '@/features/events/components/EventsCalendar/EventPopover';
+import { SubscribeModal } from '@/features/events/components/EventsCalendar/SubscribeModal';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-styles.css';
 

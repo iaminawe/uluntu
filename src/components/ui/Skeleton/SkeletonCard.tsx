@@ -1,7 +1,7 @@
 import React from 'react';
-import { SkeletonCardProps } from './types';
-import SkeletonImage from './SkeletonImage';
-import SkeletonText from './SkeletonText';
+import { SkeletonCardProps } from '@/shared/components/ui/Skeleton/types';
+import SkeletonImage from '@/shared/components/ui/Skeleton/SkeletonImage';
+import SkeletonText from '@/shared/components/ui/Skeleton/SkeletonText';
 
 /**
  * Skeleton component for card placeholders

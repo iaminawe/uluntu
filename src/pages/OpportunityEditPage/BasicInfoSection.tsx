@@ -1,6 +1,6 @@
 import { MapPin, Calendar, Building, Globe, Mail, DollarSign } from 'lucide-react';
-import RichTextEditor from '../../components/RichTextEditor';
-import CustomSelect from '../../components/CustomSelect';
+import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import CustomSelect from '@/shared/components/ui/CustomSelect';
 import { FormSectionProps } from './types';
 
 const OpportunityTypeOptions = [

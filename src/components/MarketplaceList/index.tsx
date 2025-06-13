@@ -1,19 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import ListingCard from './ListingCard';
-import Pagination from '../Pagination'; // Import Pagination
-import {
-  MarketplaceListProps,
-  FilterOptions
-} from './types';
-import {
-  filterListings,
-  sortListingsByDate
-} from './utils';
-import { useMarketplaceItemsWithFilters } from '../../hooks/useQueries';
-import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
-import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
+import ListingCard from '@/features/marketplace/components/MarketplaceList/ListingCard';
+import Pagination from '@/shared/components/ui/Pagination';
+import { MarketplaceListProps } from '@/features/marketplace/components/MarketplaceList/types';
+import { useMarketplaceItemsWithFilters } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { MarketplaceListing } from '../../types/marketplace';
 
 const LISTINGS_PER_PAGE = 9;
 
@@ -23,119 +16,141 @@ const MarketplaceList = ({
   sellerId,
   useRedux = false
 }: MarketplaceListProps & { useRedux?: boolean }) => {
-  const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filteredListings, setFilteredListings] = useState<MarketplaceListing[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Construct filters object based on props for useMarketplaceItemsWithFilters and local filtering
-  // This `filters` object definition is moved up to be accessible by the dependency array of useEffect for resetting currentPage
-  const filters: FilterOptions = useMemo(() => ({
-    search: initialSearch,
-    type: initialType,
-    condition: 'all', // Assuming 'all' is default and ActionBar would update these if implemented for MarketplaceList
-    priceRange: 'all', // Assuming 'all' is default
-    tags: [] // Assuming empty is default
-  }), [initialSearch, initialType]);
   
-  // Redux implementation
+  // Query options for API
+  const queryOptions = useMemo(() => ({
+    types: initialType !== 'all' ? [initialType] : undefined,
+    search: initialSearch || undefined,
+    seller_id: sellerId || undefined
+  }), [initialType, initialSearch, sellerId]);
+  
+  // Get data from either Redux or direct API
   const { 
-    filteredListings: reduxListings,
+    filteredListings: reduxListings = [],
     updateFilters: updateReduxFilters,
     isLoading: reduxIsLoading,
     isError: reduxIsError,
     error: reduxError
   } = useFilteredMarketplaceListingsRedux();
   
-  // Traditional React Query implementation
   const { 
-    data, 
+    data = [], 
     isLoading: queryIsLoading, 
     error: queryError 
-  } = useMarketplaceItemsWithFilters({
-    types: filters.type !== 'all' ? [filters.type] : undefined, // Use 'types' array instead of 'type' to match MarketplaceItemsQueryOptions
-    search: filters.search || undefined,
-    seller_id: sellerId || undefined // Use seller_id to match MarketplaceItemsQueryOptions
-  });
+  } = useMarketplaceItemsWithFilters(queryOptions);
   
-  // Update Redux filters when component filters change (if using Redux)
+  // Update Redux filters when component mounts or filters change
   useEffect(() => {
     if (useRedux) {
-      updateReduxFilters({
-        search: filters.search || undefined,
-        types: filters.type !== 'all' ? [filters.type] : undefined,
-        seller_id: sellerId || undefined
-      });
+      updateReduxFilters(queryOptions);
     }
-  }, [useRedux, filters, sellerId, updateReduxFilters]);
+  }, [useRedux, queryOptions, updateReduxFilters]);
   
-  // Choose which loading and error states to use
-  const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
-  const queryErrorMessage = queryError ? 'Failed to load marketplace listings. Please try again later.' : null;
-  const reduxErrorMessage = reduxError ? String(reduxError) : (reduxIsError ? 'Failed to load marketplace listings' : null);
-  
+  // Update loading and error states
   useEffect(() => {
-    if (isLoading) {
-      setLoading(true);
-    } else if (useRedux ? reduxErrorMessage : queryErrorMessage) {
-      setError(useRedux ? reduxErrorMessage : queryErrorMessage);
-      setLoading(false);
-    } else if (useRedux ? reduxListings : data) {
-      // Choose which data source to use
-      const sourceData = useRedux ? reduxListings : data;
+    setLoading(useRedux ? reduxIsLoading : queryIsLoading);
+    
+    if (useRedux && reduxIsError) {
+      setError(reduxError ? String(reduxError) : 'Failed to load marketplace listings');
+    } else if (!useRedux && queryError) {
+      setError('Failed to load marketplace listings. Please try again later.');
+    } else {
+      setError(null);
+    }
+  }, [useRedux, reduxIsLoading, reduxIsError, reduxError, queryIsLoading, queryError]);
+  
+  // Get the raw database listings
+  const rawListings = useRedux ? reduxListings : data;
+  
+  // Log the raw listings for debugging
+
+  // Convert database listings to the format expected by ListingCard
+  const formattedListings = useMemo(() => {
+    // Safely handle potentially missing data
+    if (!rawListings || !Array.isArray(rawListings) || rawListings.length === 0) {
+      return [];
+    }
+    
+    interface RawListing {
+      id?: string | number;
+      title?: string;
+      description?: string;
+      type?: string;
+      price?: number | null;
+      condition?: string | null;
+      images?: string[];
+      image?: string;
+      createdAt?: string;
+      created_at?: string;
+      seller?: { id: string; name: string; image?: string };
+      seller_id?: string | number;
+      location?: string;
+      tags?: string[] | string;
+      status?: string;
+      featured?: boolean;
+    }
+    
+    const formatted = rawListings.map((item: RawListing) => {
+      // Make sure we have an item to work with
+      if (!item || typeof item !== 'object') {
+        return null;
+      }
       
-      // Convert from API MarketplaceListing to local MarketplaceListing format if needed
-      const formattedListings = sourceData.map(item => ({
-        id: String(item.id),
-        title: item.title || '',
-        description: item.description || '',
-        type: (item.type as ListingType) || 'product',
-        price: typeof item.price === 'number' ? item.price : 0,
-        condition: item.condition as ListingCondition,
-        location: item.location || '',
-        tags: Array.isArray(item.tags) ? item.tags : [],
-        images: Array.isArray(item.images) ? item.images : [],
-        createdAt: item.createdAt || new Date().toISOString(),
-        seller: {
-          id: String(item.seller?.id || '0'),
-          name: 'Seller', // You may need to fetch seller info separately
+      
+      const listing = {
+        id: String(item.id || ''),
+        title: String(item.title || ''),
+        description: String(item.description || ''),
+        type: String(item.type || 'product'),
+        price: typeof item.price === 'number' ? item.price : null,
+        condition: item.condition || null,
+        // Handle images in various formats
+        images: Array.isArray(item.images) ? item.images : 
+                (item.image ? [item.image] : []),
+        // Convert created_at to createdAt format
+        createdAt: item.createdAt || item.created_at || new Date().toISOString(),
+        // Create a seller object from seller_id
+        seller: item.seller || { 
+          id: String(item.seller_id || '0'),
+          name: 'Seller',
           image: '/placeholder-avatar.png'
         },
-        status: item.status,
-        featured: item.featured
-      }));
+        location: String(item.location || ''),
+        // Ensure tags are in array format
+        tags: Array.isArray(item.tags) ? item.tags : 
+              (typeof item.tags === 'string' ? [item.tags] : []),
+        status: String(item.status || 'published'),
+        featured: Boolean(item.featured)
+      } as MarketplaceListing;
       
-      setListings(formattedListings);
-      setLoading(false);
-    }
-  }, [data, isLoading, queryError]);
+      return listing;
+    }).filter(Boolean) as MarketplaceListing[]; // Remove any null items
+    
+    return formatted;
+  }, [rawListings]);
   
-  useEffect(() => {
-    if (!listings) return; // Guard against listings being undefined initially
-    
-    const localFiltered = filterListings(listings, filters, sellerId);
-    const sorted = sortListingsByDate(localFiltered);
-    
-    setFilteredListings(sorted);
-    setCurrentPage(1); // Reset page when underlying filtered data changes
-  }, [listings, filters, sellerId]); // filters object is now stable unless props change
-
-  // Pagination logic
-  const totalListings = filteredListings.length;
-  const totalPages = Math.ceil(totalListings / LISTINGS_PER_PAGE);
-  const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE;
-  const endIndex = startIndex + LISTINGS_PER_PAGE;
-  const currentListingsToDisplay = filteredListings.slice(startIndex, endIndex);
-
+  // Calculate pagination values
+  const itemsPerPage = LISTINGS_PER_PAGE;
+  const totalPages = Math.max(1, Math.ceil(formattedListings.length / itemsPerPage));
+  
+  // Get current page listings
+  const currentListingsToDisplay = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return formattedListings.slice(startIndex, startIndex + itemsPerPage);
+  }, [formattedListings, currentPage, itemsPerPage]);
+  
+  // Handler for pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
+  // Render loading skeleton
   if (loading) {
     return (
-      <div>
+      <div className="animate-fade-in">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array(LISTINGS_PER_PAGE).fill(0).map((_, i) => (
             <div key={i} className="animate-pulse bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
@@ -167,6 +182,7 @@ const MarketplaceList = ({
     );
   }
   
+  // Render error state
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
@@ -178,47 +194,49 @@ const MarketplaceList = ({
     );
   }
   
+  // Render empty state if no listings
+  if (!formattedListings.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
+        <div className="mx-auto w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full 
+                      flex items-center justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No listings found</h3>
+        <p className="text-slate-500 dark:text-slate-400 mb-4">
+          Try adjusting your filters or search terms.
+        </p>
+      </div>
+    );
+  }
+  
+  // Log the first item to help with debugging
+  
+  // Render listings
   return (
     <div>
-      {currentListingsToDisplay.length === 0 && !loading ? (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
-          <div className="mx-auto w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full 
-                        flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No listings found</h3>
-          <p className="text-slate-500 dark:text-slate-400 mb-4">
-            Try adjusting your filters or search terms.
-          </p>
-          {/* Removed redundant message as ActionBar is on MarketplacePage not here */}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentListingsToDisplay.map(listing => (
-            <ListingCard 
-              key={listing.id} 
-              listing={listing} 
-            />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {currentListingsToDisplay.map(listing => (
+          <ListingCard 
+            key={listing.id} 
+            listing={listing} 
+          />
+        ))}
+      </div>
       
       {totalPages > 1 && (
-         <Pagination
-           currentPage={currentPage}
-           totalPages={totalPages}
-           onPageChange={handlePageChange}
-         />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
       
-      {filteredListings.length > 0 && !loading && (
+      {formattedListings.length > 0 && (
         <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-          Showing {currentListingsToDisplay.length} of {filteredListings.length} {filteredListings.length === 1 ? 'listing' : 'listings'}
-          {(filters.search || filters.type !== 'all' || filters.condition !== 'all' || filters.priceRange !== 'all') 
-            ? ' matching your filters' 
-            : ''}
+          Showing {currentListingsToDisplay.length} of {formattedListings.length} {formattedListings.length === 1 ? 'listing' : 'listings'}
         </div>
       )}
     </div>

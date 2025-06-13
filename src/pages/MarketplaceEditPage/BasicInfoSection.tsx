@@ -1,6 +1,6 @@
 import { DollarSign, MapPin } from 'lucide-react';
-import RichTextEditor from '../../components/RichTextEditor';
-import { FormInput, FormSelect, FormCheckbox } from '../../components/ui/Form';
+import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import { FormInput, FormSelect, FormCheckbox } from '@/shared/components/ui/Form';
 import { BasicInfoSectionProps, ListingType } from './types';
 
 const typeOptions = [

@@ -4,9 +4,9 @@ import {
   SkeletonText,
   SkeletonImage,
   SkeletonCard
-} from '../../components/ui/Skeleton';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
+} from '@/shared/components/ui/Skeleton';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {
   return (

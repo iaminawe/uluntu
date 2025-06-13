@@ -9,7 +9,7 @@ import groupsReducer, {
   deleteGroup,
   setFilters,
   clearFilters
-} from './groupsSlice';
+} from '@/features/groups/store/groupsSlice';
 
 // Mock data
 const mockGroups = [

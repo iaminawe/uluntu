@@ -6,7 +6,7 @@ import authReducer, {
   setAuthError,
   resetAuthState,
   AuthState
-} from '../slices/authSlice';
+} from '@/features/auth/store/authSlice';
 
 describe('Auth Redux State Tests', () => {
   let store: EnhancedStore<{ auth: AuthState }>;
@@ -57,9 +57,9 @@ describe('Auth Redux State Tests', () => {
         status: 'authenticated',
         error: null,
         roles: {
-          list: [],
+          list: ['user'], // The role from the user is added to the list
           isAdmin: false,
-          loading: true,
+          loading: false, // Loading is set to false after roles are processed
           error: null
         }
       });

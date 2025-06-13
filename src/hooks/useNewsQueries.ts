@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { newsArticles } from '../data/mock/mockData';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/shared/lib/supabase';
 import type { Database } from '../types/supabase';
 import { NewsArticle, ContentStatus } from '../types';
 import {

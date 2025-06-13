@@ -1,5 +1,5 @@
 import { Globe, Lock, EyeOff } from 'lucide-react';
-import { GroupVisibility } from './types';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 // Get the appropriate icon for a group's visibility level
 export const getVisibilityIcon = (visibility: GroupVisibility) => {

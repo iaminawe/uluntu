@@ -1,8 +1,8 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { useEffect } from 'react';
-import { RichTextEditorProps, HeadingOption } from './types';
-import { addCKEditorStyles } from './utils';
+import { RichTextEditorProps, HeadingOption } from '@/shared/components/ui/RichTextEditor/types';
+import { addCKEditorStyles } from '@/shared/components/ui/RichTextEditor/utils';
 
 // Default toolbar configuration
 const DEFAULT_TOOLBAR = [

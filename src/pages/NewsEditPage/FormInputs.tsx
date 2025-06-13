@@ -1,5 +1,5 @@
-import RichTextEditor from '../../components/RichTextEditor';
-import { FormInput, FormSelect, FormCheckbox, FormTextarea } from '../../components/ui/Form';
+import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import { FormInput, FormSelect, FormCheckbox, FormTextarea } from '@/shared/components/ui/Form';
 import { FormInputsProps } from './types';
 import { ContentStatus } from '../../types/common';
 

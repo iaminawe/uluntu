@@ -1,6 +1,6 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
-import { TagsInputProps } from './types';
+import { TagsInputProps } from '@/shared/components/ui/Form/types';
 
 /**
  * Reusable tags input component

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Search, X, Tag } from 'lucide-react';
-import { FilterOptions } from './types';
+import { FilterOptions } from '@/features/news/components/NewsArticlesList/types';
 
 interface NewsArticlesFiltersProps {
   filters: FilterOptions;

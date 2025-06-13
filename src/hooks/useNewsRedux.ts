@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useEffect, useMemo, useCallback } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchNewsArticles,
   fetchNewsArticleById,
@@ -11,6 +11,7 @@ import {
   updateNewsArticle,
   deleteNewsArticle,
   setFilters,
+  mergeFilters,
   clearFilters,
   selectAllNewsArticles,
   selectCurrentNewsArticle,
@@ -18,11 +19,12 @@ import {
   selectRelatedNewsArticles,
   selectFeaturedNewsArticles,
   selectNewsStatus,
+  selectFilteredNewsStatus,
   selectNewsError,
   selectNewsFilters,
   NewsFilters,
   NewsArticleInput
-} from '../redux/slices/newsSlice';
+} from '@/features/news/store/newsSlice';
 
 /**
  * Custom hook for accessing and manipulating the news articles collection
@@ -135,29 +137,23 @@ export function useFilteredNewsArticlesRedux(initialFilters?: NewsFilters) {
   const dispatch = useAppDispatch();
   const articles = useAppSelector(selectFilteredNewsArticles);
   const currentFilters = useAppSelector(selectNewsFilters);
-  const status = useAppSelector(selectNewsStatus);
+  const status = useAppSelector(selectFilteredNewsStatus);
   const error = useAppSelector(selectNewsError);
   
-  const isLoading = status === 'loading';
+  // If we have articles, don't show loading even if status is loading
+  const isLoading = status === 'loading' && articles.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Set initial filters if provided
+  // Load articles once on mount
   useEffect(() => {
-    if (initialFilters) {
-      dispatch(setFilters(initialFilters));
-    }
-  }, []);
-
-  // Apply filters when they change
-  useEffect(() => {
-    dispatch(fetchFilteredNewsArticles(currentFilters));
-  }, [dispatch, JSON.stringify(currentFilters)]);
+    dispatch(fetchFilteredNewsArticles({}));
+  }, []); // Only run once on mount
 
   // Helper for updating just certain filters without affecting others
-  const updateFilters = (newFilters: Partial<NewsFilters>) => {
-    dispatch(setFilters({ ...currentFilters, ...newFilters }));
-  };
+  const updateFilters = useCallback((newFilters: Partial<NewsFilters>) => {
+    dispatch(mergeFilters(newFilters));
+  }, [dispatch]);
 
   // Pagination logic
   const getPaginatedArticles = useMemo(() => {
@@ -170,16 +166,17 @@ export function useFilteredNewsArticlesRedux(initialFilters?: NewsFilters) {
 
   return {
     articles,
+    filteredArticles: articles, // Add this alias for consistency
     filters: currentFilters,
     isLoading,
     isSuccess,
     isError,
     error,
     updateFilters,
-    setSearchTerm: (search?: string) => updateFilters({ search }),
-    setTags: (tags?: string[]) => updateFilters({ tags }),
-    setFeatured: (featured?: boolean) => updateFilters({ featured }),
-    setStatus: (status?: 'published' | 'draft' | 'archived') => updateFilters({ status }),
+    setSearchTerm: useCallback((search?: string) => updateFilters({ search }), [updateFilters]),
+    setTags: useCallback((tags?: string[]) => updateFilters({ tags }), [updateFilters]),
+    setFeatured: useCallback((featured?: boolean) => updateFilters({ featured }), [updateFilters]),
+    setStatus: useCallback((status?: 'published' | 'draft' | 'archived') => updateFilters({ status }), [updateFilters]),
     clearAllFilters: () => dispatch(clearFilters()),
     getPaginatedArticles,
     totalArticles: articles.length

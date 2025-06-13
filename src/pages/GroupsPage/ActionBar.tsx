@@ -1,8 +1,8 @@
 import React from 'react';
 import { PlusCircle, ChevronDown, X, Eye, EyeOff, Lock } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { GroupVisibility } from '../../components/GroupsList/types';
-import { getVisibilityIcon } from '../../components/GroupsList/utils';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
+import { getVisibilityIcon } from '@/features/groups/components/GroupsList/utils';
 
 interface ActionBarProps {
   searchTerm: string;

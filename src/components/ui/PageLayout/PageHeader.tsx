@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageHeaderProps } from './types';
+import { PageHeaderProps } from '@/shared/components/ui/PageLayout/types';
 
 /**
  * Reusable page header component

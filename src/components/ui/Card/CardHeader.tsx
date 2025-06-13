@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardHeaderProps } from './types';
+import { CardHeaderProps } from '@/shared/components/ui/Card/types';
 
 /**
  * Card header component

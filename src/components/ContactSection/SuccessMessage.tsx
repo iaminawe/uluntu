@@ -1,5 +1,5 @@
 import React from 'react';
-import { SuccessMessageProps } from './types';
+import { SuccessMessageProps } from '@/shared/components/layout/ContactSection/types';
 import { CheckCircle } from 'lucide-react';
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ onReset }) => {

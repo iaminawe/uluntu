@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 import { Company } from '../../types';
-import { companiesApi, CompanyInput } from '../../api/companiesApi';
+import { companiesApi, CompanyInput } from '@/features/companies/api/companiesApi';
 import * as mockQueries from '../../hooks/useQueries';
+import { IS_SUPABASE_ENABLED } from '../../config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define type for company filters to match the API interface
 export interface CompanyFilters {
@@ -38,12 +39,19 @@ export const fetchCompanies = createAsyncThunk(
   'companies/fetchCompanies',
   async (_, { rejectWithValue }) => {
     try {
+      console.log('Redux thunk: fetchCompanies started');
       if (USE_SUPABASE) {
-        return await companiesApi.getAll();
+        console.log('Using Supabase for companies data');
+        const companies = await companiesApi.getAll();
+        console.log('Companies fetched in thunk:', companies.length);
+        return companies;
       } else {
+        console.log('Using mock data for companies');
         return mockQueries.useCompanies().data || [];
       }
     } catch (error) {
+      console.error('Error in fetchCompanies thunk:', error);
+      // Properly reject with error message to allow error handling
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch companies');
     }
   }
@@ -103,8 +111,8 @@ export const createCompany = createAsyncThunk(
           website: companyData.website || '',
           status: companyData.status || 'published',
           featured: companyData.featured || false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
         return newCompany;
       }
@@ -142,7 +150,7 @@ export const updateCompany = createAsyncThunk(
           featured: data.featured !== undefined ? data.featured : currentCompany.featured,
           location: data.location !== undefined ? data.location : currentCompany.location,
           coverImage: data.coverImage !== undefined ? data.coverImage : currentCompany.coverImage,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         };
         return updatedCompany;
       }

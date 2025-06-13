@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import OpportunitiesList from '../../components/OpportunitiesList';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import OpportunitiesList from '@/features/opportunities/components/OpportunitiesList';
 import { 
   Opportunity as OpportunityListItem,
   OpportunityType,
   OpportunityCategory,
   ExperienceLevel
-} from '../../components/OpportunitiesList/types';
+} from '@/features/opportunities/components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useOpportunitiesRedux } from '../../hooks/useOpportunitiesRedux';
@@ -155,8 +155,6 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     loadOpportunities();
   }, []);
-  console.log('OpportunitiesPage - Raw opportunities from useOpportunities:', fetchedOpportunities);
-  console.log('OpportunitiesPage - Number of opportunities:', fetchedOpportunities.length);
   
   // Convert fallback opportunities to the Supabase Opportunity type
   const fallbackOpportunitiesConverted: SupabaseOpportunity[] = FALLBACK_OPPORTUNITIES.map(fallback => ({
@@ -185,20 +183,15 @@ export default function OpportunitiesPage() {
   // Use fallback data if no opportunities are fetched
   const opportunities = fetchedOpportunities.length > 0 ? fetchedOpportunities : fallbackOpportunitiesConverted;
   const hasOpportunities = opportunities.length > 0;
-  console.log('OpportunitiesPage - Using fallback data:', fetchedOpportunities.length === 0);
-  console.log('OpportunitiesPage - hasOpportunities:', hasOpportunities);
   
   // Map API opportunities to the format expected by OpportunitiesList
   const mappedOpportunities = opportunities.map(opportunity => {
-    console.log('OpportunitiesPage - Mapping opportunity:', opportunity);
     // Ensure opportunity is treated as SupabaseOpportunity
     const supabaseOpportunity = opportunity as SupabaseOpportunity;
     const mapped = mapToOpportunityListItem(supabaseOpportunity);
-    console.log('OpportunitiesPage - Mapped opportunity:', mapped);
     return mapped;
   });
   
-  console.log('OpportunitiesPage - Final mappedOpportunities length:', mappedOpportunities.length);
   
   return (
     <>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Group } from './types';
-import { getVisibilityIcon } from './utils';
+import { Group } from '@/features/groups/components/GroupDetails/types';
+import { getVisibilityIcon } from '@/features/groups/components/GroupDetails/utils';
 
 interface GroupHeaderProps {
   group: Group;

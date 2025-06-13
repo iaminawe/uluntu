@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 import { Resource } from '../../types';
-import { resourcesApi, ResourceInput } from '../../api/resourcesApi';
+import { resourcesApi, ResourceInput } from '@/features/resources/api/resourcesApi';
 import * as mockQueries from '../../hooks/useQueries';
 
 // Toggle between Supabase and mock data
@@ -191,6 +191,8 @@ const resourcesSlice = createSlice({
       .addCase(fetchResources.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.resources = action.payload;
+        // Also populate filteredResources so ResourcesList can display them
+        state.filteredResources = action.payload;
         state.error = null;
       })
       .addCase(fetchResources.rejected, (state, action) => {

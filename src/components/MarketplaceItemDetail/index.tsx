@@ -1,22 +1,105 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Mail } from 'lucide-react';
-import { Listing, SAMPLE_LISTING } from './types';
-import { getTypeIcon } from './utils';
-import ContactModal from './ContactModal';
+import { Listing, SAMPLE_LISTING, adaptMainMarketplaceItemToDetail } from '@/features/marketplace/components/MarketplaceItemDetail/types';
+import { getTypeIcon } from '@/features/marketplace/components/MarketplaceItemDetail/utils';
+import ContactModal from '@/features/marketplace/components/MarketplaceItemDetail/ContactModal';
+import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import { useMarketplaceItem } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import SkeletonText from '@/shared/components/ui/Skeleton/SkeletonText';
+import SkeletonImage from '@/shared/components/ui/Skeleton/SkeletonImage';
+import { MarketplaceItem } from '../../types';
 
 interface MarketplaceItemDetailProps {
   itemId: string;
 }
 
 const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
-  // In a real app, we would fetch the listing using itemId from an API
-  // For now, we'll log the ID to demonstrate it's being used
   console.log(`Displaying marketplace item with ID: ${itemId}`);
-  const [listing] = useState<Listing>(SAMPLE_LISTING);
   const [showContactModal, setShowContactModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Use the React Query hook for fetching the item
+  const {
+    data: item,
+    isLoading: queryIsLoading,
+    error: queryError,
+    refetch
+  } = useMarketplaceItem(itemId);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+          // If item is already loaded from React Query
+          if (item) {
+            console.log('Using React Query data for marketplace item:', item);
+            // Convert the item to the expected format
+            const adaptedItem = adaptMainMarketplaceItemToDetail(item as unknown as MarketplaceItem) as Listing;
+            setListing(adaptedItem);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Fallback to direct API call if React Query hasn't loaded yet
+          console.log('Fetching marketplace item directly from API');
+          const result = await marketplaceApi.getById(itemId);
+          if (result) {
+            const adaptedItem = adaptMainMarketplaceItemToDetail(result) as Listing;
+            setListing(adaptedItem);
+          } else {
+            setError('Item not found');
+          }
+        } else {
+          // Use sample data when not using Supabase
+          console.log('Using sample data for marketplace item');
+          setListing(SAMPLE_LISTING);
+        }
+      } catch (err) {
+        console.error('Error fetching marketplace item:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load marketplace item');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [itemId, item]);
 
+  // Handle loading and error states
+  if (isLoading || queryIsLoading) {
+    return <MarketplaceItemSkeleton />;
+  }
+  
+  if (error || queryError) {
+    return (
+      <QueryError
+        error={error || (queryError as Error)}
+        retry={() => refetch()}
+        message="We couldn't load this marketplace item. Please try again."
+      />
+    );
+  }
+  
+  if (!listing) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Item Not Found</h2>
+        <p className="mb-6">The marketplace item you're looking for doesn't exist or has been removed.</p>
+        <Link to="/marketplace" className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+          Back to Marketplace
+        </Link>
+      </div>
+    );
+  }
+  
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -150,6 +233,78 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
           onClose={() => setShowContactModal(false)}
         />
       )}
+    </div>
+  );
+};
+
+// Skeleton component for marketplace item detail loading state
+const MarketplaceItemSkeleton = () => {
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Left column - Image gallery skeleton */}
+        <div>
+          <div className="mb-4 overflow-hidden rounded-lg">
+            <SkeletonImage height="h-96" width="w-full" rounded="rounded-lg" />
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {[1, 2, 3].map((index) => (
+              <div key={index} className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden">
+                <SkeletonImage height="h-full" width="w-full" rounded="rounded-md" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right column - Listing details skeleton */}
+        <div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-3 w-full">
+                <SkeletonText height="h-8" width="w-3/4" />
+                <SkeletonText height="h-6" width="w-1/3" />
+              </div>
+              <div className="p-2 bg-slate-200 dark:bg-slate-700 w-10 h-10 rounded-lg"></div>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center">
+                <div className="h-5 w-5 mr-2 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+                <SkeletonText height="h-5" width="w-1/3" />
+              </div>
+              <div className="flex items-center">
+                <div className="h-5 w-5 mr-2 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
+                <SkeletonText height="h-5" width="w-1/2" />
+              </div>
+              <SkeletonText height="h-5" width="w-1/3" />
+            </div>
+
+            <div className="mb-6">
+              <SkeletonText lines={5} varyWidth />
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[1, 2, 3].map((index) => (
+                <div key={index} className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 w-20"></div>
+              ))}
+            </div>
+
+            <div className="w-full px-6 py-3 bg-slate-200 dark:bg-slate-700 rounded-lg h-12"></div>
+
+            <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
+              <SkeletonText height="h-6" width="w-1/3" className="mb-4" />
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                <div className="space-y-2">
+                  <SkeletonText height="h-5" width="w-40" />
+                  <SkeletonText height="h-4" width="w-32" />
+                  <SkeletonText height="h-4" width="w-64" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

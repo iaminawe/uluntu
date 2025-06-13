@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { FormHeaderProps } from './types';
+import { FormHeaderProps } from '@/shared/components/ui/Form/types';
 
 /**
  * Reusable form header component with back navigation

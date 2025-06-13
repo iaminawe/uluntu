@@ -1,4 +1,4 @@
-import { TagsInput } from '../../components/ui/Form';
+import { TagsInput } from '@/shared/components/ui/Form';
 import { TagsSectionProps } from './types';
 
 const TagsSection = ({

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card } from '../../components/ui/Card';
-import { ContentContainer } from '../../components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import BasicInfoSection from './BasicInfoSection';
 import ListSection from './ListSection';
 import DeleteConfirmModal from './DeleteConfirmModal';

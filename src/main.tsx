@@ -5,10 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
-import { AuthProvider } from "./contexts/AuthContextWithRedux";
-import { ContentProvider } from "./contexts/ContentContext";
-import { SessionProvider } from "./context/SessionContextWithRedux";
-import { store } from './redux/store';
+import { AuthProvider } from '@/shared/contexts/AuthContextWithRedux';
+import { ContentProvider } from '@/shared/contexts/ContentContext';
+import { SessionProvider } from '@/shared/contexts/SessionContextWithRedux';
+import { store } from '@/store/index';
 import { router } from './routes';
 import './index.css';
 

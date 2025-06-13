@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import MemberCard from './MemberCard';
-import DirectoryFilters from './DirectoryFilters';
-import { DirectoryListProps, FilterOptions, Member as DirectoryMember } from './types';
-import { extractUniqueSkills } from './utils';
+import MemberCard from '@/features/directory/components/DirectoryList/MemberCard';
+import DirectoryFilters from '@/features/directory/components/DirectoryList/DirectoryFilters';
+import { DirectoryListProps, FilterOptions, Member as DirectoryMember } from '@/features/directory/components/DirectoryList/types';
+import { extractUniqueSkills } from '@/features/directory/components/DirectoryList/utils';
 import { useMembersWithFilters } from '../../hooks/useQueries';
-import { Member as QueryMember } from '../../hooks/useMemberQueries';
+import { Member as QueryMember } from '@/features/directory/hooks/useMemberQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',

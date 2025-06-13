@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useEventRedux } from '../../hooks/useEventsRedux';
+import { useEventRedux } from '@/features/events/hooks/useEventsRedux';
 import { format, parseISO } from 'date-fns';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
 import PageHeader from './PageHeader';
 import EventHero from './EventHero';
 import EventInfo from './EventInfo';

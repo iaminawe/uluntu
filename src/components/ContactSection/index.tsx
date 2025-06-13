@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ContactSectionProps, FormData, VolunteerType } from './types';
-import ContactForm from './ContactForm';
-import SuccessMessage from './SuccessMessage';
+import { ContactSectionProps, FormData, VolunteerType } from '@/shared/components/layout/ContactSection/types';
+import ContactForm from '@/shared/components/layout/ContactSection/ContactForm';
+import SuccessMessage from '@/shared/components/layout/ContactSection/SuccessMessage';
 
 // Default volunteer options
 const DEFAULT_VOLUNTEER_OPTIONS = [

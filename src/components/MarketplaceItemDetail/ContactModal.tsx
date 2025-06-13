@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { Listing } from './types';
+import { Listing } from '@/features/marketplace/components/MarketplaceItemDetail/types';
 
 interface ContactModalProps {
   listing: Listing;

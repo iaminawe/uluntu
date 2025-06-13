@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
-import { ErrorDisplayProps } from './types';
+import { ErrorDisplayProps } from '@/shared/components/ui/ErrorDisplay/types';
 
 /**
  * General-purpose error display component

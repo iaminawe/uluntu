@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import GroupsList from '../../components/GroupsList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import GroupsList from '@/features/groups/components/GroupsList';
+import TestGroups from './TestGroups';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useGroupsRedux } from '../../hooks/useGroupsRedux';
-import { GroupVisibility } from '../../components/GroupsList/types';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 export default function GroupsPage() {
   // State for filters
@@ -18,6 +19,7 @@ export default function GroupsPage() {
 
   // Use the Redux hook to fetch groups data
   const { groups, loadGroups, isLoading, isError, error } = useGroupsRedux();
+  
   const hasGroups = groups.length > 0;
   
   // Load groups on component mount
@@ -47,11 +49,9 @@ export default function GroupsPage() {
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
-          <QueryError 
-            error={error ? new Error(error) : new Error('Failed to load groups')} 
-            retry={() => loadGroups()} 
-            message="We couldn't load the groups. Please try again."
-          />
+          <div className="bg-red-100 p-4 rounded border">
+            <strong>Error:</strong> {error || 'Failed to load groups'}
+          </div>
         ) : !hasGroups ? (
           <EmptyState
             title="No Groups Found"
@@ -63,11 +63,16 @@ export default function GroupsPage() {
             }}
           />
         ) : (
-          <GroupsList 
-            searchTerm={searchTerm} 
-            visibilityFilter={visibilityFilter}
-            useRedux={true} 
-          />
+          <>
+            <TestGroups />
+            <div className="mt-8">
+              <GroupsList 
+                searchTerm={searchTerm} 
+                visibilityFilter={visibilityFilter}
+                useRedux={true} 
+              />
+            </div>
+          </>
         )}
       </ContentContainer>
     </>

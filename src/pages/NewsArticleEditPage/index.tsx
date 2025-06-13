@@ -6,14 +6,14 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
-import { ContentContainer, PageHeader } from '../../components/ui/PageLayout';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Label } from '../../components/ui/Label';
-import { Textarea } from '../../components/ui/Textarea';
-import { Switch } from '../../components/ui/Switch';
-import { TagsInput } from '../../components/ui/TagsInput';
-import { Card } from '../../components/ui/Card';
+import { ContentContainer, PageHeader } from '@/shared/components/ui/PageLayout';
+import { Button } from '@/shared/components/ui/Button';
+import { Input } from '@/shared/components/ui/Input';
+import { Label } from '@/shared/components/ui/Label';
+import { Textarea } from '@/shared/components/ui/Textarea';
+import { Switch } from '@/shared/components/ui/Switch';
+import { TagsInput } from '@/shared/components/ui/TagsInput';
+import { Card } from '@/shared/components/ui/Card';
 import { NewsArticleInput } from '../../types/news';
 import { useNewsArticleByIdRedux, useNewsArticlesRedux } from '../../hooks/useNewsRedux';
 

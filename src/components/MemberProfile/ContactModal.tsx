@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Send, X } from 'lucide-react';
-import { Member } from './types';
+import { Member } from '@/features/directory/components/MemberProfile/types';
 
 interface ContactModalProps {
   member: Member;

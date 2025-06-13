@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   PayloadAction
 } from '@reduxjs/toolkit';
-import { membersApi, MemberInput } from '../../api/membersApi';
+import { membersApi, MemberInput } from '@/features/directory/api/membersApi';
 import allMockData from '../../data/mock/mockData';
 import { ContentStatus } from '../../types/common';
 

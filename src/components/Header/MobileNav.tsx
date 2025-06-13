@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NavLinkItem } from './types';
+import { NavLinkItem } from '@/shared/components/layout/Header/types';
 
 interface MobileNavProps {
   isOpen: boolean;

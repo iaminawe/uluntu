@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { JoinModalProps } from './types';
-import JoinRequestForm from './JoinRequestForm';
-import SuccessMessage from './SuccessMessage';
+import { JoinModalProps } from '@/features/groups/components/JoinModal/types';
+import JoinRequestForm from '@/features/groups/components/JoinModal/JoinRequestForm';
+import SuccessMessage from '@/features/groups/components/JoinModal/SuccessMessage';
 
 const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
   const [_joining, setJoining] = useState(false);

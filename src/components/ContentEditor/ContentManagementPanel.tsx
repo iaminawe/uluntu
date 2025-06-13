@@ -10,8 +10,8 @@ import {
   FileText,
   X
 } from 'lucide-react';
-import { useContent } from '../../contexts/ContentContext';
-import { LanguageSelector } from './LanguageSelector';
+import { useContent } from '@/shared/contexts/ContentContext';
+import { LanguageSelector } from '@/shared/components/ContentEditor/LanguageSelector';
 
 export const ContentManagementPanel: React.FC = () => {
   const { 

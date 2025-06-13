@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlusCircle, Calendar, Clock, MapPin, Video, List } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { EventType, DateRangeFilter } from '../../components/EventsList/types';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { EventType, DateRangeFilter } from '@/features/events/components/EventsList/types';
 
 interface ActionBarProps {
   onSearch?: (value: string) => void;

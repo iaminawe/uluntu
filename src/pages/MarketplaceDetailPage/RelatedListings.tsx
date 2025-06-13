@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import { useRelatedMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
-import { useRelatedMarketplaceItems } from '../../hooks/useMarketplaceQueries';
+import { useRelatedMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { useRelatedMarketplaceItems } from '@/features/marketplace/hooks/useMarketplaceQueries';
 
 interface RelatedListingsProps {
   id: string;

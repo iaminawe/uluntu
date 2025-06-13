@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Users } from 'lucide-react';
-import { type Group } from './types'; // Fix the import path
-import { getVisibilityLabel } from './utils';
+import { type Group } from '@/features/groups/components/GroupsList/types'; // Fix the import path
+import { getVisibilityLabel } from '@/features/groups/components/GroupsList/utils';
 
 interface GroupCardProps {
   group: Group;

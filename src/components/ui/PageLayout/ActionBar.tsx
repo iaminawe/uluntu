@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, PlusCircle, X } from 'lucide-react';
-import { ActionBarProps } from './types';
+import { ActionBarProps } from '@/shared/components/ui/PageLayout/types';
 
 /**
  * Reusable action bar component

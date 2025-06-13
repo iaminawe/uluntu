@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { marketplaceApi, MarketplaceItemInput } from '../../api/marketplaceApi';
+import { marketplaceApi, MarketplaceItemInput } from '@/features/marketplace/api/marketplaceApi';
 import mockData from '../../data/mock/mockData';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 import { MarketplaceListing, MarketplaceItemsQueryOptions, MockMarketplaceListing } from '../../types/marketplace';
 
 // Define an interface for the marketplace state

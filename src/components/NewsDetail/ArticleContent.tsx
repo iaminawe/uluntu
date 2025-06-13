@@ -1,4 +1,4 @@
-import { NewsArticle } from './types';
+import { NewsArticle } from '@/features/news/components/NewsDetail/types';
 
 interface ArticleContentProps {
   article: NewsArticle;

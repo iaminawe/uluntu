@@ -1,5 +1,5 @@
 import { ImageUploadProps } from './types';
-import { FormInput } from '../../components/ui/Form';
+import { FormInput } from '@/shared/components/ui/Form';
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ 
   formData, 

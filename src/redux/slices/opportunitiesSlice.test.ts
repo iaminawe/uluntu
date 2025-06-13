@@ -10,7 +10,7 @@ import opportunitiesReducer, {
   deleteOpportunity,
   setFilters,
   clearFilters
-} from './opportunitiesSlice';
+} from '@/features/opportunities/store/opportunitiesSlice';
 
 // Mock data
 const mockOpportunities = [

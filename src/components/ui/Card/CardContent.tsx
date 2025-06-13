@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardContentProps } from './types';
+import { CardContentProps } from '@/shared/components/ui/Card/types';
 
 /**
  * Card content component

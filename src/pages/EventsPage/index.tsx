@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import { EmptyState } from '../../components/ui/PageLayout';
-import EventsList from '../../components/EventsList';
-import EventsCalendar from '../../components/EventsCalendar';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import { EmptyState } from '@/shared/components/ui/PageLayout';
+import EventsList from '@/features/events/components/EventsList';
+import EventsCalendar from '@/features/events/components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useEventsRedux } from '../../hooks/useEventsRedux';
+import { useEventsRedux } from '@/features/events/hooks/useEventsRedux';
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
@@ -65,7 +65,12 @@ export default function EventsPage() {
             }}
           />
         ) : viewMode === 'list' ? (
-          <EventsList initialSearch={searchTerm} />
+          <EventsList 
+            initialSearch={searchTerm} 
+            parentEvents={events} 
+            parentLoading={isLoading} 
+            parentError={error}
+          />
         ) : (
           <EventsCalendar 
             events={events} 

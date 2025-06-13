@@ -186,6 +186,10 @@ export const opportunitiesApi = {
     }
   },
 
+  async remove(id: string): Promise<boolean> {
+    return this.delete(id);
+  },
+
   async getFeatured(limit: number = 3): Promise<Opportunity[]> {
     try {
       const { data, error } = await supabase

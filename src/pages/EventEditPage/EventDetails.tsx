@@ -5,7 +5,7 @@ import {
   FormTextarea,
   FormSelect,
   FormDatePicker
-} from '../../components/ui/Form';
+} from '@/shared/components/ui/Form';
 
 const EventDetails: React.FC<EventDetailsProps> = ({ 
   formData, 

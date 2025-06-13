@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
-import { groupsApi, type GroupInput } from '../api/groupsApi';
+import { groupsApi, type GroupInput } from '@/features/groups/api/groupsApi';
 import { Group as FrontendGroupType } from '../types'; // Import the main frontend Group type
-import { Group as MockGroup } from '../components/GroupsList/types';
+import { Group as MockGroup } from '@/features/groups/components/GroupsList/types';
 import { Group } from '../data/mock/groups'; // This is the mock data's Group type
 import { Event as MockEvent } from '../data/mock/events';
 

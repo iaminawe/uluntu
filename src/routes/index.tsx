@@ -29,6 +29,7 @@ import ResourceDetailPage from '../pages/ResourceDetailPage';
 import ResourceEditPage from '../pages/ResourceEditPage';
 import MarketplaceDetailPage from '../pages/MarketplaceDetailPage';
 import MarketplaceEditPage from '../pages/MarketplaceEditPage';
+import MarketplaceDebugDetailPage from '../pages/MarketplaceDebugDetailPage';
 
 // Auth pages
 import SignInPage from '../pages/SignInPage';
@@ -42,8 +43,8 @@ import ProfileEditPage from '../pages/ProfileEditPage';
 import ErrorPage from '../pages/ErrorPage';
 
 // Auth components
-import ProtectedRoute from '../components/auth/ProtectedRoute';
-import GroupGuard from '../components/auth/GroupGuard';
+import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
+import GroupGuard from '@/features/auth/components/GroupGuard';
 
 export const router = createBrowserRouter([
   {
@@ -121,6 +122,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 
       },
       { path: 'marketplace/:id', element: <MarketplaceDetailPage /> },
+      { path: 'marketplace/:id/debug', element: <MarketplaceDebugDetailPage /> },
       { 
         path: 'marketplace/:id/edit', 
         element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 

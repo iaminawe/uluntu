@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import MarketplaceList from '../../components/MarketplaceList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import MarketplaceList from '@/features/marketplace/components/MarketplaceList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
-import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
+import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { ListingType, ListingCondition } from '@/features/marketplace/components/MarketplaceList/types';
+import Debug from './Debug'; // Import the debug component
+import DirectListings from './DirectListings'; // Import the simplified component
 
 export default function MarketplacePage() {
   // State for filters
@@ -33,7 +35,7 @@ export default function MarketplacePage() {
     });
   }, [searchTerm, selectedType, selectedCondition, updateFilters]);
   
-  const hasItems = marketplaceItems.length > 0;
+  const hasItems = marketplaceItems?.length > 0;
   
   return (
     <>
@@ -54,31 +56,26 @@ export default function MarketplacePage() {
           setSelectedCondition={setSelectedCondition}
         />
         
-        {isLoading ? (
-          <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : isError ? (
-          <QueryError 
-            error={error} 
-            retry={() => console.log('Retrying query')} 
-            message="We couldn't load the marketplace items. Please try again."
-          />
-        ) : !hasItems ? (
-          <EmptyState
-            title="No Marketplace Items Found"
-            description="There are no items listed in the marketplace yet."
-            primaryActionUrl="/marketplace/create"
-            primaryAction={{
-              text: "List an Item",
-              onClick: () => console.log('Navigate to create marketplace item')
-            }}
-          />
-        ) : (
-          <MarketplaceList 
-            initialSearch={searchTerm}
-            initialType={selectedType}
-            useRedux={true}
-          />
-        )}
+        <div>
+          {/* MarketplaceList Component with Redux */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Marketplace Listings</h2>
+            <MarketplaceList 
+              initialSearch={searchTerm}
+              initialType={selectedType}
+              useRedux={true} /* Use Redux for state management */
+            />
+          </div>
+          
+          {/* Debug component and direct listings for comparison */}
+          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
+            <h2 className="text-xl font-semibold mb-4">Debug Information</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <DirectListings />
+              <Debug />
+            </div>
+          </div>
+        </div>
       </ContentContainer>
     </>
   );

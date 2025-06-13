@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormActionsProps } from './types';
-import { FormActions as SharedFormActions } from '../../components/ui/Form';
-import { ConfirmationModal } from '../../components/ui/Modal';
+import { FormActions as SharedFormActions } from '@/shared/components/ui/Form';
+import { ConfirmationModal } from '@/shared/components/ui/Modal';
 
 const FormActions: React.FC<FormActionsProps> = ({ 
   isEditMode, 

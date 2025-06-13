@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Briefcase } from 'lucide-react';
-import { Company } from './types';
+import { Company } from '@/features/companies/components/CompanyProfile/types';
 
 interface CompanyContentProps {
   company: Company;

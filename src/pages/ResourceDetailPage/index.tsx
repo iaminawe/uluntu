@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon } from 'lucide-react';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
 import PageHeader from './PageHeader';
 import ResourceInfo from './ResourceInfo';
 import ResourceSidebar from './ResourceSidebar';
@@ -10,7 +10,7 @@ import RelatedResources from './RelatedResources';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Resource } from '../../types';
-import { useResourceRedux } from '../../hooks/useResourcesRedux';
+import { useResourceRedux } from '@/features/resources/hooks/useResourcesRedux';
 
 // This would normally come from a hook like useResource
 const SAMPLE_RESOURCE: Resource = {
