@@ -7,7 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
 dist
 dist-ssr
 *.local
@@ -22,6 +25,29 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
 .env
-/.env.dev
-/.memory
+.env.dev
+.env.local
+.env.prod
+.env.test
+
+# Claude-flow
+.memory
+memory/
+
+# Archives and temporary files
+.archive/
+*.tmp
+*.temp
+temp.*
+test_output.txt
+migration-log.txt
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Claude-flow registry
+.docsregistry
