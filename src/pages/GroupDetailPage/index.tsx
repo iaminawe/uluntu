@@ -252,7 +252,7 @@ export default function GroupDetailPage() {
             <div className="p-6">
               {selectedTab === 'about' && <AboutTab group={group} />}
               {selectedTab === 'events' && <EventsTab events={events} isLoading={eventsLoading} />}
-              {selectedTab === 'members' && <MembersTab members={groupMembers} isLoading={membersLoading} groupId={group.id} />}
+              {selectedTab === 'members' && <MembersTab members={groupMembers} isLoading={membersLoading} groupId={group.id} groupName={group.name} />}
               {selectedTab === 'resources' && <ResourcesTab resources={resources} isLoading={resourcesLoading} groupId={group.id} />}
               {selectedTab === 'posts' && <PostsTab posts={posts} isLoading={postsLoading} />}
             </div>

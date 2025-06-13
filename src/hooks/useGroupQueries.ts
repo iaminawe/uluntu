@@ -429,3 +429,84 @@ export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId
     },
   });
 }
+
+// Invitation hooks
+export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupInvitations', groupId],
+    queryFn: async () => {
+      if (!groupId) return [];
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return []; // Mock returns empty array
+      }
+      return groupsApi.getInvitations(groupId);
+    },
+    enabled: !!groupId,
+  });
+}
+
+export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, { groupId: string; data: any }>({
+    mutationFn: ({ groupId, data }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Creating invitation', data);
+        return Promise.resolve(data);
+      }
+      return groupsApi.createInvitation(groupId, data);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
+    },
+  });
+}
+
+export function useCancelInvitation(): UseMutationResult<boolean, Error, string> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, string>({
+    mutationFn: (invitationId) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Canceling invitation', invitationId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.cancelInvitation(invitationId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations'] });
+    },
+  });
+}
+
+export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { token: string; memberId: string }>({
+    mutationFn: ({ token, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Accepting invitation', token);
+        return Promise.resolve(true);
+      }
+      return groupsApi.acceptInvitation(token, memberId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers'] });
+    },
+  });
+}
+
+export function useInvitationByToken(token?: string): UseQueryResult<any, Error> {
+  return useQuery<any, Error>({
+    queryKey: ['invitation', token],
+    queryFn: async () => {
+      if (!token) return null;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return null; // Mock returns null
+      }
+      return groupsApi.getInvitationByToken(token);
+    },
+    enabled: !!token,
+  });
+}
