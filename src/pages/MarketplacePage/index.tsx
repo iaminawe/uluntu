@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import MarketplaceList from '../../components/MarketplaceList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import MarketplaceList from '@/features/marketplace/components/MarketplaceList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
-import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
+import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { ListingType, ListingCondition } from '@/features/marketplace/components/MarketplaceList/types';
 import Debug from './Debug'; // Import the debug component
 import DirectListings from './DirectListings'; // Import the simplified component
 

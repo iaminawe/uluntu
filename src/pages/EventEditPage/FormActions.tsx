@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { FormActionsProps } from './types';
-import { ConfirmationModal } from '../../components/ui/Modal';
+import { ConfirmationModal } from '@/shared/components/ui/Modal';
 
 const FormActions: React.FC<FormActionsProps> = ({ 
   isEditMode, 

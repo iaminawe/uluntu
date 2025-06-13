@@ -43,8 +43,8 @@ import ProfileEditPage from '../pages/ProfileEditPage';
 import ErrorPage from '../pages/ErrorPage';
 
 // Auth components
-import ProtectedRoute from '../components/auth/ProtectedRoute';
-import GroupGuard from '../components/auth/GroupGuard';
+import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
+import GroupGuard from '@/features/auth/components/GroupGuard';
 
 export const router = createBrowserRouter([
   {

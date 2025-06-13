@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import ResourcesList from '../../components/ResourcesList';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import ResourcesList from '@/features/resources/components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useResourcesRedux } from '../../hooks/useResourcesRedux';
+import { useResourcesRedux } from '@/features/resources/hooks/useResourcesRedux';
 
 // Resource type is already defined in the types.ts file
 

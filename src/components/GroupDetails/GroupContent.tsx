@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { Group } from './types';
+import { Group } from '@/features/groups/components/GroupDetails/types';
 
 interface GroupContentProps {
   group: Group;

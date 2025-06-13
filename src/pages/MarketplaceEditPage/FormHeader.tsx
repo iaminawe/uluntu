@@ -1,4 +1,4 @@
-import { FormHeader as SharedFormHeader } from '../../components/ui/Form';
+import { FormHeader as SharedFormHeader } from '@/shared/components/ui/Form';
 import { FormHeaderProps } from './types';
 
 const FormHeader: React.FC<FormHeaderProps> = ({ isEditing }) => {

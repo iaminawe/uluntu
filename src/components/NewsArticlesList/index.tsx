@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'; // Added useEffect
 import { AlertTriangle } from 'lucide-react';
 
-import ArticleCard from './ArticleCard';
-import FeaturedArticleCard from './FeaturedArticleCard';
-import Pagination from '../Pagination'; // Import Pagination
-import { FilterOptions, NewsArticlesListProps } from './types';
-import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
+import ArticleCard from '@/features/news/components/NewsArticlesList/ArticleCard';
+import FeaturedArticleCard from '@/features/news/components/NewsArticlesList/FeaturedArticleCard';
+import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
+import { FilterOptions, NewsArticlesListProps } from '@/features/news/components/NewsArticlesList/types';
+import { useNewsArticlesWithFilters } from '@/features/news/hooks/useNewsQueries';
 
 const ARTICLES_PER_PAGE = 4;
 

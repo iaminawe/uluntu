@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
+import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import { Link } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { Company } from '../../types';
-import { companiesApi } from '../../api/companiesApi';
+import { companiesApi } from '@/features/companies/api/companiesApi';
 
 // Check if we should use Supabase or mock data
 const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';

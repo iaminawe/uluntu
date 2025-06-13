@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { PlusCircle, ShoppingBag, Briefcase, Monitor, Tag } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { ListingType, ListingCondition } from '../../components/MarketplaceList/types';
-import { getTypeDisplayName, getConditionDisplayName } from '../../components/MarketplaceList/utils';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { ListingType, ListingCondition } from '@/features/marketplace/components/MarketplaceList/types';
+import { getTypeDisplayName, getConditionDisplayName } from '@/features/marketplace/components/MarketplaceList/utils';
 
 interface ActionBarProps {
   searchTerm: string;

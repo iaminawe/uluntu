@@ -4,14 +4,14 @@ import {
   Clock, 
   Building
 } from 'lucide-react';
-import { Opportunity } from './types';
+import { Opportunity } from '@/features/opportunities/components/OpportunitiesList/types';
 import { 
   formatDate, 
   calculateDaysLeft, 
   getTypeColor, 
   getOpportunityTypeLabel,
   getExperienceLevelLabel
-} from './utils';
+} from '@/features/opportunities/components/OpportunitiesList/utils';
 
 interface OpportunityCardProps {
   opportunity: Opportunity;

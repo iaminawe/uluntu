@@ -46,7 +46,7 @@ export type OpportunityFilters = {
 };
 
 // API clients
-import { opportunitiesApi } from '../api/opportunitiesApi';
+import { opportunitiesApi } from '@/features/opportunities/api/opportunitiesApi';
 
 // Mock data and types
 import mockData from '../data/mock/mockData';

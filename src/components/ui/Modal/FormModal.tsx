@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loader } from 'lucide-react';
-import Modal from './Modal';
-import { FormModalProps } from './types';
+import Modal from '@/shared/components/ui/Modal/Modal';
+import { FormModalProps } from '@/shared/components/ui/Modal/types';
 
 /**
  * Form modal component

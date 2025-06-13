@@ -6,8 +6,8 @@ import {
   useAddCompanyEmployee,
   useUpdateCompanyEmployee,
   useRemoveCompanyEmployee
-} from '../../hooks/useCompanyQueries';
-import { companiesApi } from '../../api/companiesApi';
+} from '@/features/companies/hooks/useCompanyQueries';
+import { companiesApi } from '@/features/companies/api/companiesApi';
 import { CompanyEmployee } from '../../types';
 
 // Mock the API

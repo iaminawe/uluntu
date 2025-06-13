@@ -1,7 +1,7 @@
 import React from 'react';
 import { WifiOff } from 'lucide-react';
-import ErrorDisplay from './ErrorDisplay';
-import { QueryErrorProps } from './types';
+import ErrorDisplay from '@/shared/components/ui/ErrorDisplay/ErrorDisplay';
+import { QueryErrorProps } from '@/shared/components/ui/ErrorDisplay/types';
 
 /**
  * Specialized error component for data fetching/query errors

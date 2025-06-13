@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Building, MapPin } from 'lucide-react';
-import { Member } from './types';
+import { Member } from '@/features/directory/components/MembersList/types';
 
 interface MemberCardProps {
   member: Member;

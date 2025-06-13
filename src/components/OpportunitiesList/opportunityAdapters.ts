@@ -1,5 +1,5 @@
 import { Opportunity as MainOpportunity } from '../../types';
-import { Opportunity, OpportunityType } from './types';
+import { Opportunity, OpportunityType } from '@/features/opportunities/components/OpportunitiesList/types';
 
 /**
  * Helper function to convert null values to undefined for optional boolean properties

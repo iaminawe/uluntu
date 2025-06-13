@@ -1,7 +1,7 @@
 import React from 'react';
-import { AboutSectionProps } from './types';
-import AboutContent from './AboutContent';
-import LocationInfo from './LocationInfo';
+import { AboutSectionProps } from '@/shared/components/layout/AboutSection/types';
+import AboutContent from '@/shared/components/layout/AboutSection/AboutContent';
+import LocationInfo from '@/shared/components/layout/AboutSection/LocationInfo';
 
 const AboutSection: React.FC<AboutSectionProps> = ({ 
   title = "About the Collective",

@@ -11,9 +11,9 @@ import companiesReducer, {
   clearCompanies,
   CompaniesState,
   CompanyFilters,
-} from '../companiesSlice'; // Assuming initialState is exported if needed, or manage locally
+} from '@/features/companies/store/companiesSlice'; // Assuming initialState is exported if needed, or manage locally
 import { Company, CompanyInput } from '../../../types';
-import * as companiesApi from '../../../api/companiesApi';
+import * as companiesApi from '@/features/companies/api/companiesApi';
 import * as mockQueries from '../../../hooks/useQueries';
 import * as envConfig from '../../../config/env';
 

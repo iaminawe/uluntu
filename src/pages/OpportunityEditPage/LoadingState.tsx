@@ -1,4 +1,4 @@
-import { FormSkeleton } from '../../components/ui/Skeleton';
+import { FormSkeleton } from '@/shared/components/ui/Skeleton';
 
 export interface LoadingStateProps {
   /**

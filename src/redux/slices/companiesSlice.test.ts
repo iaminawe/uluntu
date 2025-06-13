@@ -77,7 +77,7 @@ import companiesReducer, {
   deleteCompany,
   setFilters,
   clearFilters
-} from './companiesSlice';
+} from '@/features/companies/store/companiesSlice';
 
 // Mock environment variable
 const originalEnv = process.env;

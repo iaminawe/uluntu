@@ -1,4 +1,4 @@
-import { Member, FilterOptions } from './types';
+import { Member, FilterOptions } from '@/features/directory/components/MembersList/types';
 
 // Filter members based on search term and selected skills
 export const filterMembers = (

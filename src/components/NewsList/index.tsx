@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-import ArticleCard from './ArticleCard';
+import ArticleCard from '@/features/news/components/NewsList/ArticleCard';
 
-import Newsletter from './Newsletter';
-import { NewsArticle, NewsListProps, FilterOptions, adaptMainNewsArticleToLocal } from './types';
+import Newsletter from '@/features/news/components/NewsList/Newsletter';
+import { NewsArticle, NewsListProps, FilterOptions, adaptMainNewsArticleToLocal } from '@/features/news/components/NewsList/types';
 import { 
   filterArticles, 
   sortArticlesByDate 
-} from './utils';
+} from '@/features/news/components/NewsList/utils';
 import { NewsArticle as MainNewsArticle } from '../../types';
 
 import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';

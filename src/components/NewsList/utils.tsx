@@ -1,4 +1,4 @@
-import { NewsArticle, FilterOptions } from './types';
+import { NewsArticle, FilterOptions } from '@/features/news/components/NewsList/types';
 
 // Filter articles based on search term and selected tag
 export const filterArticles = (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FooterColumn as FooterColumnType } from './types';
+import { FooterColumn as FooterColumnType } from '@/shared/components/layout/Footer/types';
 
 interface FooterColumnProps {
   column: FooterColumnType;

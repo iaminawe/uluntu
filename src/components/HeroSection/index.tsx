@@ -1,6 +1,6 @@
 import React from 'react';
-import { HeroSectionProps } from './types';
-import HeroButton from './HeroButton';
+import { HeroSectionProps } from '@/shared/components/layout/HeroSection/types';
+import HeroButton from '@/shared/components/layout/HeroSection/HeroButton';
 
 const HeroSection: React.FC<HeroSectionProps> = ({
   title = "Nelson Tech",

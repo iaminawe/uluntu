@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListProps } from './types';
-import { useFilteredEventsRedux } from '../../hooks/useEventsRedux';
-import EventCard from './EventCard';
-import PastEventCard from './PastEventCard';
-import Pagination from '../Pagination';
+import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListProps } from '@/features/events/components/EventsList/types';
+import { useFilteredEventsRedux } from '@/features/events/hooks/useEventsRedux';
+import EventCard from '@/features/events/components/EventsList/EventCard';
+import PastEventCard from '@/features/events/components/EventsList/PastEventCard';
+import Pagination from '@/shared/components/ui/Pagination';
 
 const UPCOMING_EVENTS_PER_PAGE = 5;
 const PAST_EVENTS_PER_PAGE = 9;

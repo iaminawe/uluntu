@@ -1,5 +1,5 @@
 import { GroupSelectProps } from './types';
-import { FormSelect } from '../../components/ui/Form';
+import { FormSelect } from '@/shared/components/ui/Form';
 
 const GroupSelect: React.FC<GroupSelectProps> = ({ formData, handleChange }) => {
   // This would normally be fetched from API or context

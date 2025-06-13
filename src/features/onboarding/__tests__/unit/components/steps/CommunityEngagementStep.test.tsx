@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { CommunityEngagementStep } from '../../../../components/steps/CommunityEngagementStep';
-import { getSuggestedGroups, joinGroup } from '../../../../../../api/groupsApi';
+import { getSuggestedGroups, joinGroup } from '@/features/groups/api/groupsApi';
 
 // Mock API
 jest.mock('../../../../../../api/groupsApi');

@@ -9,7 +9,7 @@ import membersReducer, {
   setFilters,
   clearFilters,
   clearMembers
-} from '../slices/membersSlice';
+} from '@/features/directory/store/membersSlice';
 import { ContentStatus } from '../../types/common';
 
 // Mock the API calls

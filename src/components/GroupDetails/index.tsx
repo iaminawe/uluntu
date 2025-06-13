@@ -1,8 +1,8 @@
 import { useState } from 'react';
 // Main type not needed since we're using the local Group type
-import { SAMPLE_GROUP, Group } from './types';
-import GroupHeader from './GroupHeader';
-import GroupContent from './GroupContent';
+import { SAMPLE_GROUP, Group } from '@/features/groups/components/GroupDetails/types';
+import GroupHeader from '@/features/groups/components/GroupDetails/GroupHeader';
+import GroupContent from '@/features/groups/components/GroupDetails/GroupContent';
 
 interface GroupDetailsProps {
   groupId: string;

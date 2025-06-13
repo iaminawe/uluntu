@@ -1,4 +1,4 @@
-import { FormImageUpload } from '../../components/ui/Form';
+import { FormImageUpload } from '@/shared/components/ui/Form';
 import { ImagesGallerySectionProps } from './types';
 
 const ImagesGallerySection = ({

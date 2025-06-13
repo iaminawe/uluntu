@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EmptyStateProps } from './types';
+import { EmptyStateProps } from '@/shared/components/ui/PageLayout/types';
 
 /**
  * Reusable empty state component

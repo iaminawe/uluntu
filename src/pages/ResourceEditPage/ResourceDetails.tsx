@@ -1,5 +1,5 @@
 import { ResourceDetailsProps } from './types';
-import { FormInput, FormTextarea } from '../../components/ui/Form';
+import { FormInput, FormTextarea } from '@/shared/components/ui/Form';
 
 const ResourceDetails: React.FC<ResourceDetailsProps> = ({ formData, handleChange }) => {
   return (

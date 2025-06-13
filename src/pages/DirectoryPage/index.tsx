@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { SkeletonGrid } from '../../components/ui/Skeleton';
-import { QueryError } from '../../components/ui/ErrorDisplay';
-import MembersList from '../../components/MembersList';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
+import { QueryError } from '@/shared/components/ui/ErrorDisplay';
+import MembersList from '@/features/directory/components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useMembersRedux } from '../../hooks/useMembersRedux';
-import { Member as ReduxMember } from '../../redux/slices/membersSlice';
-import { FilterOptions } from '../../components/MembersList/types';
+import { Member as ReduxMember } from '@/features/directory/store/membersSlice';
+import { FilterOptions } from '@/features/directory/components/MembersList/types';
 import { Member as UITypeMember } from '../../types';
-import Pagination from '../../components/Pagination'; // Import Pagination
+import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
 
 // We need to adapt between the Member type from Redux and the one in types.ts
 const adaptMemberForUI = (reduxMember: ReduxMember): UITypeMember => {

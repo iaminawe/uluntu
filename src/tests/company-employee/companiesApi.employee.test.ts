@@ -1,4 +1,4 @@
-import { companiesApi } from '../../api/companiesApi';
+import { companiesApi } from '@/features/companies/api/companiesApi';
 import { CompanyEmployee } from '../../types';
 import { supabase } from '../../api/supabaseUtils';
 

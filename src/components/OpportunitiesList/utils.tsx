@@ -3,7 +3,7 @@ import {
   OpportunityType, 
   ExperienceLevel,
   FilterOptions 
-} from './types';
+} from '@/features/opportunities/components/OpportunitiesList/types';
 
 // Format date string to a readable format (e.g., "May 10, 2025")
 export const formatDate = (dateString: string): string => {

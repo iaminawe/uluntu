@@ -1,5 +1,5 @@
 import { OrganizerSelectProps } from './types';
-import { FormSelect } from '../../components/ui/Form';
+import { FormSelect } from '@/shared/components/ui/Form';
 
 const OrganizerSelect: React.FC<OrganizerSelectProps> = ({ organizer, onOrganizerChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

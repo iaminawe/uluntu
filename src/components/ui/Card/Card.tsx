@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardProps } from './types';
+import { CardProps } from '@/shared/components/ui/Card/types';
 
 /**
  * Base card component

@@ -1,9 +1,9 @@
 import { createContext, useContext, ReactNode, useEffect } from 'react';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import { useAuth as useReduxAuth } from '../hooks/useAuth';
-import { supabase } from '../lib/supabase';
+import { RootState } from '@/store/index';
+import { useAuth as useReduxAuth } from '@/features/auth/hooks/useAuth';
+import { supabase } from '@/shared/lib/supabase';
 
 interface AuthContextType {
   session: Session | null;

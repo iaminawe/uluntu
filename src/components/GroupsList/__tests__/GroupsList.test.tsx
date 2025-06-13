@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
-import GroupsList from '../index';
+import GroupsList from '@/features/groups/components/GroupsList/index';
 import { Group } from '../../../types';
-import { GroupVisibility } from '../types';
+import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 // Mock the JoinModal component
 jest.mock('../../JoinModal', () => ({

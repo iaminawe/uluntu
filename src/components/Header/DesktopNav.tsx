@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NavLinkItem } from './types';
-import ThemeToggle from './ThemeToggle';
+import { NavLinkItem } from '@/shared/components/layout/Header/types';
+import ThemeToggle from '@/shared/components/layout/Header/ThemeToggle';
 
 interface DesktopNavProps {
   navLinks: NavLinkItem[];

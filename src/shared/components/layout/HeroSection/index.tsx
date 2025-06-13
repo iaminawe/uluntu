@@ -1,0 +1,48 @@
+import React from 'react';
+import { HeroSectionProps } from './types';
+import HeroButton from './HeroButton';
+
+const HeroSection: React.FC<HeroSectionProps> = ({
+  title = "Nelson Tech",
+  description = "Connecting and empowering the Kootenay region's thriving tech community through collaboration, innovation, and knowledge sharing.",
+  backgroundImage = "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg",
+  buttons = [
+    {
+      text: "Join the Community",
+      href: "/directory",
+      isPrimary: true
+    },
+    {
+      text: "Upcoming Events",
+      href: "/events",
+      isPrimary: false
+    }
+  ]
+}) => {
+  return (
+    <section className="relative bg-gradient-to-r from-slate-900 to-slate-800 text-white py-24">
+      <div className="absolute inset-0 overflow-hidden">
+        <img 
+          src={backgroundImage}
+          alt="Nelson Tech Community"
+          className="w-full h-full object-cover opacity-20"
+        />
+      </div>
+      <div className="container mx-auto px-4 relative">
+        <div className="max-w-3xl">
+          <h1 className="text-5xl font-bold mb-6">{title}</h1>
+          <p className="text-xl text-slate-300 mb-8">
+            {description}
+          </p>
+          <div className="flex flex-wrap gap-4">
+            {buttons.map((button, index) => (
+              <HeroButton key={index} button={button} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default HeroSection;

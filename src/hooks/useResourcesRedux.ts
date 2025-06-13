@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchResources,
   fetchResourceById,
@@ -18,8 +18,8 @@ import {
   selectResourcesError,
   selectResourcesFilters,
   ResourceFilters
-} from '../redux/slices/resourcesSlice';
-import { ResourceInput } from '../api/resourcesApi';
+} from '@/features/resources/store/resourcesSlice';
+import { ResourceInput } from '@/features/resources/api/resourcesApi';
 
 /**
  * Custom hook for accessing and manipulating the resources collection

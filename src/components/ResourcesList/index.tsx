@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Resource } from '../../types';
-import { getTypeIcon } from './utils';
-import ResourceCard from './ResourceCard';
-import ResourceModal from './ResourceModal';
-import { useFilteredResourcesRedux } from '../../hooks/useResourcesRedux';
-import { ResourceFilters } from '../../redux/slices/resourcesSlice';
+import { getTypeIcon } from '@/features/resources/components/ResourcesList/utils';
+import ResourceCard from '@/features/resources/components/ResourcesList/ResourceCard';
+import ResourceModal from '@/features/resources/components/ResourcesList/ResourceModal';
+import { useFilteredResourcesRedux } from '@/features/resources/hooks/useResourcesRedux';
+import { ResourceFilters } from '@/features/resources/store/resourcesSlice';
 
 interface ResourcesListProps {
   resources?: Resource[];

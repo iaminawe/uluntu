@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ResourceCard from './ResourceCard';
+import ResourceCard from '@/features/resources/components/ResourcesPreview/ResourceCard';
 import { ArrowRight } from 'lucide-react';
 import { Resource } from '../../types';
 

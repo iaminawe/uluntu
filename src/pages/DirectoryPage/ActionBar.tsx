@@ -1,7 +1,7 @@
 import React, { useState, Dispatch, SetStateAction } from 'react';
 import { PlusCircle, Tag, X } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { FilterOptions, SKILL_OPTIONS } from '../../components/MembersList/types';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { FilterOptions, SKILL_OPTIONS } from '@/features/directory/components/MembersList/types';
 
 interface ActionBarProps {
   filters: FilterOptions;

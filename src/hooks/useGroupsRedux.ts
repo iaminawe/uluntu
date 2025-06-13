@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchGroups,
   fetchGroupById,
@@ -16,9 +16,9 @@ import {
   selectGroupsError,
   selectGroupsFilters,
   GroupFilters
-} from '../redux/slices/groupsSlice';
-import { GroupInput } from '../api/groupsApi';
-import { useGroupEvents, useGroupMembers } from './useGroupQueries';
+} from '@/features/groups/store/groupsSlice';
+import { GroupInput } from '@/features/groups/api/groupsApi';
+import { useGroupEvents, useGroupMembers } from '@/features/groups/hooks/useGroupQueries';
 
 /**
  * Custom hook for accessing and manipulating the groups collection

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import MemberCard from '../MemberCard';
-import { Member } from '../types';
+import MemberCard from '@/features/directory/components/MembersList/MemberCard';
+import { Member } from '@/features/directory/components/MembersList/types';
 
 // Mock member data
 const mockMember: Member = {

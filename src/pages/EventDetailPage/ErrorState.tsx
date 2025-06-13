@@ -1,6 +1,6 @@
 import { ErrorStateProps } from './types';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { NotFoundError } from '../../components/ui/ErrorDisplay';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { NotFoundError } from '@/shared/components/ui/ErrorDisplay';
 
 const ErrorState: React.FC<ErrorStateProps> = () => {
   return (

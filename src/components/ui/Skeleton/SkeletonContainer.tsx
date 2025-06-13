@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkeletonContainerProps } from './types';
+import { SkeletonContainerProps } from '@/shared/components/ui/Skeleton/types';
 
 /**
  * Container component that applies pulse animation to skeleton elements

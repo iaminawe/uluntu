@@ -30,9 +30,9 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../redux/slices/authSlice';
-import { SessionProvider } from '../../context/SessionContextWithRedux';
-import { useAuth } from '../useAuth';
+import authReducer from '@/features/auth/store/authSlice';
+import { SessionProvider } from '@/shared/contexts/SessionContextWithRedux';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 describe('useAuth Hook with SessionContext and Redux', () => {
   // Create a wrapper with both Redux and SessionContext

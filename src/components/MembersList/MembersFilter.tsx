@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Search, X } from 'lucide-react';
-import { FilterOptions, SKILL_OPTIONS } from './types';
+import { FilterOptions, SKILL_OPTIONS } from '@/features/directory/components/MembersList/types';
 
 interface MembersFilterProps {
   filters: FilterOptions;

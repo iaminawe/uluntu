@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
-import EventCard from '../EventCard';
-import { Event } from '../types';
+import EventCard from '@/features/events/components/EventsList/EventCard';
+import { Event } from '@/features/events/components/EventsList/types';
 
 // Mock event data
 const mockEvent: Event = {

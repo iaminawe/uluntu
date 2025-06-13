@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Users } from 'lucide-react';
-import { Company } from './types';
-import { truncateDescription, formatEmployeeCount } from './utils';
+import { Company } from '@/features/companies/components/CompaniesList/types';
+import { truncateDescription, formatEmployeeCount } from '@/features/companies/components/CompaniesList/utils';
 
 interface CompanyCardProps {
   company: Company;

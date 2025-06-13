@@ -33,7 +33,7 @@ type MockData = {
 };
 
 // API clients
-import { resourcesApi } from '../api/resourcesApi';
+import { resourcesApi } from '@/features/resources/api/resourcesApi';
 
 // Mock data
 import mockDataImport from '../data/mock/mockData';

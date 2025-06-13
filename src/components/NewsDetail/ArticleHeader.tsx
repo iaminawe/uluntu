@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Edit, Share, Clock } from 'lucide-react';
-import { NewsArticle } from './types';
-import { getAssociationIcon } from './utils';
+import { NewsArticle } from '@/features/news/components/NewsDetail/types';
+import { getAssociationIcon } from '@/features/news/components/NewsDetail/utils';
 
 interface ArticleHeaderProps {
   article: NewsArticle;

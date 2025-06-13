@@ -1,4 +1,4 @@
-import SharedTagsInput from '../../components/ui/Form/TagsInput';
+import SharedTagsInput from '@/shared/components/ui/Form/TagsInput';
 import { TagsInputProps } from './types';
 
 const TagsInput: React.FC<TagsInputProps> = ({ 

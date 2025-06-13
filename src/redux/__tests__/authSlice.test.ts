@@ -6,7 +6,7 @@ import authReducer, {
   setAuthError,
   resetAuthState,
   AuthState
-} from '../slices/authSlice';
+} from '@/features/auth/store/authSlice';
 
 describe('Auth Redux State Tests', () => {
   let store: EnhancedStore<{ auth: AuthState }>;

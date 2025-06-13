@@ -1,5 +1,5 @@
 import { Package, Briefcase, Monitor } from 'lucide-react';
-import { ListingType } from './types';
+import { ListingType } from '@/features/marketplace/components/MarketplaceItemDetail/types';
 
 // Helper function to get the appropriate icon for a listing type
 export const getTypeIcon = (type: ListingType) => {
