@@ -27,6 +27,7 @@ export interface MembersTabProps {
   members: GroupMember[];
   isLoading: boolean;
   groupId?: string;
+  groupName?: string;
 }
 
 export interface ResourcesTabProps {

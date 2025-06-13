@@ -543,5 +543,197 @@ export const groupsApi = {
       handleSupabaseError(error, 'creating announcement');
       return null;
     }
+  },
+
+  // Invitation methods
+  async getInvitations(groupId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('group_invitations')
+        .select(`
+          *,
+          inviter:members!invited_by(*),
+          group:groups!group_id(*)
+        `)
+        .eq('group_id', groupId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        handleSupabaseError(error, `fetching invitations for group ${groupId}`);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, `fetching invitations for group ${groupId}`);
+      return [];
+    }
+  },
+
+  async createInvitation(groupId: string, invitationData: {
+    email: string;
+    invited_by: string;
+    message?: string;
+  }): Promise<any | null> {
+    try {
+      // Check if user is already a member
+      const { data: existingMember } = await supabase
+        .from('members')
+        .select('id')
+        .eq('email', invitationData.email)
+        .single();
+
+      if (existingMember) {
+        const { data: membership } = await supabase
+          .from('group_members')
+          .select('id')
+          .eq('group_id', groupId)
+          .eq('member_id', existingMember.id)
+          .single();
+
+        if (membership) {
+          throw new Error('User is already a member of this group');
+        }
+      }
+
+      // Check for existing pending invitation
+      const { data: existingInvite } = await supabase
+        .from('group_invitations')
+        .select('id')
+        .eq('group_id', groupId)
+        .eq('email', invitationData.email)
+        .eq('status', 'pending')
+        .single();
+
+      if (existingInvite) {
+        throw new Error('An invitation has already been sent to this email');
+      }
+
+      const { data, error } = await supabase
+        .from('group_invitations')
+        .insert({
+          group_id: groupId,
+          ...invitationData
+        })
+        .select(`
+          *,
+          inviter:members!invited_by(*),
+          group:groups!group_id(*)
+        `)
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, 'creating invitation');
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, 'creating invitation');
+      return null;
+    }
+  },
+
+  async cancelInvitation(invitationId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('group_invitations')
+        .update({ status: 'expired' })
+        .eq('id', invitationId)
+        .eq('status', 'pending');
+
+      if (error) {
+        handleSupabaseError(error, 'canceling invitation');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'canceling invitation');
+      return false;
+    }
+  },
+
+  async acceptInvitation(token: string, memberId: string): Promise<boolean> {
+    try {
+      // Get invitation details
+      const { data: invitation, error: inviteError } = await supabase
+        .from('group_invitations')
+        .select('*')
+        .eq('token', token)
+        .eq('status', 'pending')
+        .single();
+
+      if (inviteError || !invitation) {
+        console.error('Invalid or expired invitation');
+        return false;
+      }
+
+      // Check if invitation is expired
+      if (new Date(invitation.expires_at) < new Date()) {
+        await supabase
+          .from('group_invitations')
+          .update({ status: 'expired' })
+          .eq('id', invitation.id);
+        return false;
+      }
+
+      // Add member to group
+      const { error: joinError } = await supabase
+        .from('group_members')
+        .insert({
+          group_id: invitation.group_id,
+          member_id: memberId,
+          role: 'member'
+        });
+
+      if (joinError) {
+        handleSupabaseError(joinError, 'joining group via invitation');
+        return false;
+      }
+
+      // Update invitation status
+      const { error: updateError } = await supabase
+        .from('group_invitations')
+        .update({ 
+          status: 'accepted',
+          accepted_at: new Date().toISOString()
+        })
+        .eq('id', invitation.id);
+
+      if (updateError) {
+        handleSupabaseError(updateError, 'updating invitation status');
+        // Still return true since the member was added
+      }
+
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'accepting invitation');
+      return false;
+    }
+  },
+
+  async getInvitationByToken(token: string): Promise<any | null> {
+    try {
+      const { data, error } = await supabase
+        .from('group_invitations')
+        .select(`
+          *,
+          inviter:members!invited_by(*),
+          group:groups!group_id(*)
+        `)
+        .eq('token', token)
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, 'fetching invitation by token');
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, 'fetching invitation by token');
+      return null;
+    }
   }
 };

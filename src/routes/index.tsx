@@ -37,6 +37,13 @@ import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import ProfileEditPage from '../pages/ProfileEditPage';
+import AcceptInvitationPage from '../pages/AcceptInvitationPage';
+
+// Admin pages
+import AdminLayout from '../pages/admin/AdminLayout';
+import AdminDashboard from '../pages/admin/Dashboard';
+import UsersPage from '../pages/admin/UsersPage';
+import SettingsPage from '../pages/admin/SettingsPage';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
@@ -140,11 +147,22 @@ export const router = createBrowserRouter([
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
+      { path: 'invite/:token', element: <AcceptInvitationPage /> },
       { path: 'profile', element: <DirectoryDetailPage /> },
       { 
         path: 'profile/edit', 
         element: <ProtectedRoute><ProfileEditPage /></ProtectedRoute> 
       }
+    ]
+  },
+  {
+    path: '/admin',
+    element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: 'users', element: <UsersPage /> },
+      { path: 'settings', element: <SettingsPage /> }
     ]
   }
 ]);

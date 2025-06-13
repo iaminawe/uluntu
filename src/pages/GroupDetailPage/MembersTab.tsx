@@ -2,22 +2,28 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MembersTabProps } from './types';
 import Pagination from '../../components/Pagination';
-import { Shield, UserX, ChevronDown, ChevronUp } from 'lucide-react';
-import { useGroupMemberRole, useUpdateMemberRole, useRemoveMember } from '../../hooks/useGroupQueries';
+import { Shield, UserX, ChevronDown, ChevronUp, UserPlus, Users } from 'lucide-react';
+import { useGroupMemberRole, useUpdateMemberRole, useRemoveMember, useGroupInvitations } from '../../hooks/useGroupQueries';
 import { useCurrentMember } from '../../hooks/useCurrentMember';
+import InviteMembersModal from './InviteMembersModal';
+import InvitationsSection from './InvitationsSection';
 
 const ITEMS_PER_PAGE = 8;
 
-const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading, groupId }) => {
+const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading, groupId, groupName }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showInvitations, setShowInvitations] = useState(false);
   
   const { data: currentMember } = useCurrentMember();
   const { data: currentUserRole } = useGroupMemberRole(groupId, currentMember?.id);
+  const { data: invitations = [], refetch: refetchInvitations } = useGroupInvitations(groupId);
   const updateMemberRole = useUpdateMemberRole();
   const removeMember = useRemoveMember();
   
   const isAdmin = currentUserRole === 'admin';
+  const pendingInvitations = invitations.filter((inv: any) => inv.status === 'pending');
 
   // Separate admins and regular members
   const admins = members.filter(member => member.role === 'admin');
@@ -38,7 +44,39 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading, groupId }) 
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Group Members</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Group Members</h2>
+        {isAdmin && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowInvitations(!showInvitations)}
+              className="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Invitations {pendingInvitations.length > 0 && `(${pendingInvitations.length})`}
+            </button>
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
+            >
+              <UserPlus className="h-4 w-4" />
+              Invite Members
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {/* Invitations Section */}
+      {isAdmin && showInvitations && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Pending Invitations</h3>
+          <InvitationsSection 
+            invitations={invitations} 
+            isLoading={false} 
+            onRefresh={refetchInvitations}
+          />
+        </div>
+      )}
       
       {isLoading ? (
         <div className="animate-pulse">
@@ -190,6 +228,19 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading, groupId }) 
              </div>
           )}
         </div>
+      )}
+      
+      {/* Invite Modal */}
+      {showInviteModal && groupId && groupName && (
+        <InviteMembersModal
+          isOpen={showInviteModal}
+          onClose={() => {
+            setShowInviteModal(false);
+            refetchInvitations();
+          }}
+          groupId={groupId}
+          groupName={groupName}
+        />
       )}
     </div>
   );
