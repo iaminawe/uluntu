@@ -26,11 +26,13 @@ export interface EventsTabProps {
 export interface MembersTabProps {
   members: GroupMember[];
   isLoading: boolean;
+  groupId?: string;
 }
 
 export interface ResourcesTabProps {
   resources: GroupResource[];
   isLoading: boolean;
+  groupId?: string;
 }
 
 export interface PostsTabProps {

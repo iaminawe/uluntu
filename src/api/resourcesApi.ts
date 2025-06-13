@@ -221,5 +221,66 @@ export const resourcesApi = {
       handleSupabaseError(error, 'deleting resource');
       return false;
     }
+  },
+
+  async getByGroupId(groupId: string): Promise<Resource[]> {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select(`
+          *,
+          members!resources_contributor_id_fkey(id, name),
+          resource_tags(tag)
+        `)
+        .eq('group_id', groupId)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        handleSupabaseError(error, `fetching resources for group ${groupId}`);
+        return [];
+      }
+
+      return (data || []).map(item => mapFullResourceFromApi(item as SupabaseResourceWithJoins));
+    } catch (error) {
+      handleSupabaseError(error, `fetching resources for group ${groupId}`);
+      return [];
+    }
+  },
+
+  async shareWithGroup(resourceId: string, groupId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('resources')
+        .update({ group_id: groupId })
+        .eq('id', resourceId);
+
+      if (error) {
+        handleSupabaseError(error, 'sharing resource with group');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'sharing resource with group');
+      return false;
+    }
+  },
+
+  async unshareFromGroup(resourceId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('resources')
+        .update({ group_id: null })
+        .eq('id', resourceId);
+
+      if (error) {
+        handleSupabaseError(error, 'unsharing resource from group');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'unsharing resource from group');
+      return false;
+    }
   }
 };
