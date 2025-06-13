@@ -1,244 +1,314 @@
-# Claude Code Configuration - SPARC Development Environment
+# Claude Code Configuration - Nelson Tech Community Platform
 
 ## Project Overview
-This project uses the SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology for systematic Test-Driven Development with AI assistance through Claude-Flow orchestration.
+The Nelson Tech Community Platform is built using a **feature-based architecture** with the SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology for systematic Test-Driven Development.
 
-## SPARC Development Commands
+## Project Structure
 
-### Core SPARC Commands
-- `npx claude-flow sparc modes`: List all available SPARC development modes
-- `npx claude-flow sparc run <mode> "<task>"`: Execute specific SPARC mode for a task
-- `npx claude-flow sparc tdd "<feature>"`: Run complete TDD workflow using SPARC methodology
-- `npx claude-flow sparc info <mode>`: Get detailed information about a specific mode
+```
+src/
+├── features/           # Feature modules
+│   ├── auth/          # Authentication & authorization
+│   ├── companies/     # Company profiles & management
+│   ├── directory/     # Member directory & profiles
+│   ├── events/        # Events & calendar
+│   ├── groups/        # Groups & communities
+│   ├── marketplace/   # Buy/sell marketplace
+│   ├── news/          # News & articles
+│   ├── onboarding/    # User onboarding flow
+│   ├── opportunities/ # Job & volunteer opportunities
+│   └── resources/     # Educational resources
+├── shared/            # Shared code
+│   ├── components/    # Reusable UI components
+│   ├── contexts/      # Global React contexts
+│   ├── hooks/         # Shared custom hooks
+│   ├── lib/           # External library configs
+│   ├── types/         # Shared TypeScript types
+│   └── utils/         # Shared utilities
+├── pages/             # Route pages (thin layers)
+├── store/             # Redux store configuration
+└── tests/             # Integration & E2E tests
+```
 
-### Standard Build Commands
-- `npm run build`: Build the project
-- `npm run test`: Run the test suite
-- `npm run lint`: Run linter and format checks
-- `npm run typecheck`: Run TypeScript type checking
+### Feature Module Structure
+Each feature contains:
+- `components/` - Feature-specific React components
+- `hooks/` - Custom React hooks
+- `api/` - API calls and data fetching
+- `store/` - Redux slices and state management
+- `types/` - TypeScript type definitions
+- `utils/` - Helper functions and utilities
+- `__tests__/` - Feature tests
+
+## Development Commands
+
+### Standard Commands
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run test         # Run test suite (100% passing)
+npm run lint         # Run linter and format checks
+npm run typecheck    # Run TypeScript type checking
+```
+
+### SPARC Development Commands
+```bash
+# List available SPARC modes
+npx claude-flow sparc modes
+
+# Run specific SPARC mode
+npx claude-flow sparc run <mode> "<task>"
+
+# Execute TDD workflow
+npx claude-flow sparc tdd "<feature>"
+
+# Get mode information
+npx claude-flow sparc info <mode>
+```
 
 ## SPARC Methodology Workflow
 
 ### 1. Specification Phase
 ```bash
-# Create detailed specifications and requirements
-npx claude-flow sparc run spec-pseudocode "Define user authentication requirements"
+npx claude-flow sparc run spec-pseudocode "Define feature requirements"
 ```
-- Define clear functional requirements
-- Document edge cases and constraints
-- Create user stories and acceptance criteria
-- Establish non-functional requirements
 
-### 2. Pseudocode Phase
+### 2. Architecture Phase
 ```bash
-# Develop algorithmic logic and data flows
-npx claude-flow sparc run spec-pseudocode "Create authentication flow pseudocode"
+npx claude-flow sparc run architect "Design feature architecture"
 ```
-- Break down complex logic into steps
-- Define data structures and interfaces
-- Plan error handling and edge cases
-- Create modular, testable components
 
-### 3. Architecture Phase
+### 3. TDD Implementation Phase
 ```bash
-# Design system architecture and component structure
-npx claude-flow sparc run architect "Design authentication service architecture"
+npx claude-flow sparc tdd "implement feature with tests"
 ```
-- Create system diagrams and component relationships
-- Define API contracts and interfaces
-- Plan database schemas and data flows
-- Establish security and scalability patterns
 
-### 4. Refinement Phase (TDD Implementation)
+### 4. Integration Phase
 ```bash
-# Execute Test-Driven Development cycle
-npx claude-flow sparc tdd "implement user authentication system"
+npx claude-flow sparc run integration "integrate feature components"
 ```
 
-**TDD Cycle:**
-1. **Red**: Write failing tests first
-2. **Green**: Implement minimal code to pass tests
-3. **Refactor**: Optimize and clean up code
-4. **Repeat**: Continue until feature is complete
-
-### 5. Completion Phase
+### 5. Documentation Phase
 ```bash
-# Integration, documentation, and validation
-npx claude-flow sparc run integration "integrate authentication with user management"
+npx claude-flow sparc run docs-writer "create feature documentation"
 ```
-- Integrate all components
-- Perform end-to-end testing
-- Create comprehensive documentation
-- Validate against original requirements
 
-## SPARC Mode Reference
+## Import Conventions
 
-### Development Modes
-- **`architect`**: System design and architecture planning
-- **`code`**: Clean, modular code implementation
-- **`tdd`**: Test-driven development and testing
-- **`spec-pseudocode`**: Requirements and algorithmic planning
-- **`integration`**: System integration and coordination
+Use absolute imports with the @ alias:
+```typescript
+// Feature imports
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { CompaniesList } from '@/features/companies/components/CompaniesList';
 
-### Quality Assurance Modes
-- **`debug`**: Troubleshooting and bug resolution
-- **`security-review`**: Security analysis and vulnerability assessment
-- **`refinement-optimization-mode`**: Performance optimization and refactoring
+// Shared imports
+import { Button } from '@/shared/components/ui/Button';
+import { useDebounce } from '@/shared/hooks/useDebounce';
+import { formatDate } from '@/shared/utils/dateUtils';
 
-### Support Modes
-- **`docs-writer`**: Documentation creation and maintenance
-- **`devops`**: Deployment and infrastructure management
-- **`mcp`**: External service integration
+// Store imports
+import { store } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+```
 
-## Code Style and Best Practices
+## Code Style Guidelines
 
-### SPARC Development Principles
-- **Modular Design**: Keep files under 500 lines, break into logical components
-- **Environment Safety**: Never hardcode secrets or environment-specific values
-- **Test-First**: Always write tests before implementation (Red-Green-Refactor)
-- **Clean Architecture**: Separate concerns, use dependency injection
-- **Documentation**: Maintain clear, up-to-date documentation
+### Feature Development
+1. **Keep features self-contained** - All code for a feature stays within its directory
+2. **Use barrel exports** - Each feature has an index.ts exporting its public API
+3. **Co-locate tests** - Tests live next to the code they test
+4. **Minimize cross-feature dependencies** - Features should be as independent as possible
 
-### Coding Standards
-- Use TypeScript for type safety and better tooling
-- Follow consistent naming conventions (camelCase for variables, PascalCase for classes)
-- Implement proper error handling and logging
-- Use async/await for asynchronous operations
-- Prefer composition over inheritance
+### Best Practices
+- **TypeScript Required** - All new code must be TypeScript
+- **Test Coverage** - Maintain 100% test coverage (currently 461/461 tests passing)
+- **Component Size** - Keep components under 200 lines
+- **File Size** - Keep files under 500 lines
+- **Function Size** - Keep functions under 50 lines
 
-### Memory and State Management
-- Use claude-flow memory system for persistent state across sessions
-- Store progress and findings using namespaced keys
-- Query previous work before starting new tasks
-- Export/import memory for backup and sharing
+### Naming Conventions
+- **Components**: PascalCase (e.g., `UserProfile.tsx`)
+- **Hooks**: camelCase with 'use' prefix (e.g., `useAuth.ts`)
+- **Utils**: camelCase (e.g., `formatDate.ts`)
+- **Types**: PascalCase with descriptive suffixes (e.g., `UserProfileProps`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `API_ENDPOINTS`)
 
-## SPARC Memory Integration
+## Current Features
 
-### Memory Commands for SPARC Development
+### 🔐 Auth (`/features/auth`)
+- User authentication (sign in/up/out)
+- Password reset functionality
+- Protected routes and role-based access
+- Session management
+
+### 🏢 Companies (`/features/companies`)
+- Company profiles and listings
+- Employee management
+- Company search and filtering
+
+### 👥 Directory (`/features/directory`)
+- Member profiles and search
+- Professional networking
+- Contact management
+
+### 📅 Events (`/features/events`)
+- Event creation and management
+- Calendar integration
+- RSVP functionality
+
+### 👫 Groups (`/features/groups`)
+- Community groups
+- Membership management
+- Group discussions
+
+### 🛍️ Marketplace (`/features/marketplace`)
+- Buy/sell listings
+- Product/service categories
+- Contact sellers
+
+### 📰 News (`/features/news`)
+- News articles and updates
+- Categories and tags
+- Newsletter subscriptions
+
+### 🎯 Onboarding (`/features/onboarding`)
+- 5-step wizard
+- Profile completion
+- Privacy settings
+- Company association
+
+### 💼 Opportunities (`/features/opportunities`)
+- Job postings
+- Volunteer opportunities
+- Application tracking
+
+### 📚 Resources (`/features/resources`)
+- Educational content
+- Resource categories
+- Bookmarking
+
+## Redux Store Structure
+
+```typescript
+{
+  auth: AuthState,
+  companies: CompaniesState,
+  members: MembersState,
+  events: EventsState,
+  groups: GroupsState,
+  marketplace: MarketplaceState,
+  news: NewsState,
+  opportunities: OpportunitiesState,
+  resources: ResourcesState,
+  content: ContentState
+}
+```
+
+## Testing Strategy
+
+### Test Organization
+- **Unit Tests**: Co-located with components in `__tests__` folders
+- **Integration Tests**: In `/src/tests/integration/`
+- **E2E Tests**: In `/src/tests/e2e/`
+
+### Running Tests
 ```bash
-# Store project specifications
-npx claude-flow memory store spec_auth "User authentication requirements and constraints"
+# Run all tests
+npm test
 
-# Store architectural decisions
-npx claude-flow memory store arch_decisions "Database schema and API design choices"
+# Run tests in watch mode
+npm test -- --watch
 
-# Store test results and coverage
-npx claude-flow memory store test_coverage "Authentication module: 95% coverage, all tests passing"
+# Run tests with coverage
+npm test -- --coverage
 
-# Query previous work
-npx claude-flow memory query auth_implementation
-
-# Export project memory
-npx claude-flow memory export project_backup.json
+# Run specific feature tests
+npm test features/auth
 ```
 
-### Memory Namespaces
-- **`spec`**: Requirements and specifications
-- **`arch`**: Architecture and design decisions
-- **`impl`**: Implementation notes and code patterns
-- **`test`**: Test results and coverage reports
-- **`debug`**: Bug reports and resolution notes
+## Environment Configuration
 
-## Workflow Examples
-
-### Feature Development Workflow
+### Required Environment Variables
 ```bash
-# 1. Start with specification
-npx claude-flow sparc run spec-pseudocode "User profile management feature"
+# Supabase Configuration
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# 2. Design architecture
-npx claude-flow sparc run architect "Profile service architecture with data validation"
-
-# 3. Implement with TDD
-npx claude-flow sparc tdd "user profile CRUD operations"
-
-# 4. Security review
-npx claude-flow sparc run security-review "profile data access and validation"
-
-# 5. Integration testing
-npx claude-flow sparc run integration "profile service with authentication system"
-
-# 6. Documentation
-npx claude-flow sparc run docs-writer "profile service API documentation"
+# Feature Flags
+VITE_USE_SUPABASE=true
+VITE_USE_MOCK_DATA=false
 ```
 
-### Bug Fix Workflow
-```bash
-# 1. Debug and analyze
-npx claude-flow sparc run debug "authentication token expiration issue"
+## Git Workflow
 
-# 2. Write regression tests
-npx claude-flow sparc run tdd "token refresh mechanism tests"
+### Branch Naming
+- `feature/<feature-name>` - New features
+- `fix/<issue-description>` - Bug fixes
+- `refactor/<component-name>` - Code refactoring
+- `docs/<doc-name>` - Documentation updates
 
-# 3. Implement fix
-npx claude-flow sparc run code "fix token refresh in authentication service"
-
-# 4. Security review
-npx claude-flow sparc run security-review "token handling security implications"
-```
-
-## Configuration Files
-
-### SPARC Configuration
-- **`.roomodes`**: SPARC mode definitions and configurations
-- **`.roo/`**: Templates, workflows, and mode-specific rules
-
-### Claude-Flow Configuration
-- **`memory/`**: Persistent memory and session data
-- **`coordination/`**: Multi-agent coordination settings
-
-## Git Workflow Integration
-
-### Commit Strategy with SPARC
-- **Specification commits**: After completing requirements analysis
-- **Architecture commits**: After design phase completion
-- **TDD commits**: After each Red-Green-Refactor cycle
-- **Integration commits**: After successful component integration
-- **Documentation commits**: After completing documentation updates
-
-### Branch Strategy
-- **`feature/sparc-<feature-name>`**: Feature development with SPARC methodology
-- **`hotfix/sparc-<issue>`**: Bug fixes using SPARC debugging workflow
-- **`refactor/sparc-<component>`**: Refactoring using optimization mode
+### Commit Messages
+Follow conventional commits:
+- `feat: Add user profile editing`
+- `fix: Resolve authentication token refresh`
+- `refactor: Simplify marketplace filtering logic`
+- `docs: Update API documentation`
+- `test: Add company profile tests`
 
 ## Troubleshooting
 
-### Common SPARC Issues
-- **Mode not found**: Check `.roomodes` file exists and is valid JSON
-- **Memory persistence**: Ensure `memory/` directory has write permissions
-- **Tool access**: Verify required tools are available for the selected mode
-- **Namespace conflicts**: Use unique memory namespaces for different features
+### Common Issues
 
-### Debug Commands
+1. **Import Errors**
+   - Ensure you're using @ alias imports
+   - Check that the file exists in the new location
+   - Run `npx tsc --noEmit` to check for type errors
+
+2. **Test Failures**
+   - Clear test cache: `npm test -- --clearCache`
+   - Check for mock updates needed
+   - Ensure test imports are updated
+
+3. **Build Errors**
+   - Clear node_modules: `rm -rf node_modules && npm install`
+   - Check for circular dependencies
+   - Verify environment variables are set
+
+## Project Maintenance
+
+### Regular Tasks
+1. **Weekly**: Run full test suite
+2. **Before PR**: Run lint, typecheck, and tests
+3. **Monthly**: Check for dependency updates
+4. **Quarterly**: Review and update documentation
+
+### Code Quality Checks
 ```bash
-# Check SPARC configuration
-npx claude-flow sparc modes
+# Run all checks
+npm run lint && npm run typecheck && npm test
 
-# Verify memory system
-npx claude-flow memory stats
+# Check for circular dependencies
+npx madge --circular src/
 
-# Check system status
-npx claude-flow status
-
-# View detailed mode information
-npx claude-flow sparc info <mode-name>
+# Check bundle size
+npm run build && npm run analyze
 ```
 
-## Project Architecture
+## Resources
 
-This SPARC-enabled project follows a systematic development approach:
-- **Clear separation of concerns** through modular design
-- **Test-driven development** ensuring reliability and maintainability
-- **Iterative refinement** for continuous improvement
-- **Comprehensive documentation** for team collaboration
-- **AI-assisted development** through specialized SPARC modes
+- **Project Documentation**: `/docs/README.md`
+- **API Documentation**: `/docs/api/`
+- **Component Storybook**: Run `npm run storybook`
+- **SPARC Methodology**: [Claude-Flow Docs](https://github.com/ruvnet/claude-code-flow/docs/sparc.md)
 
 ## Important Notes
 
-- Always run tests before committing (`npm run test`)
-- Use SPARC memory system to maintain context across sessions
-- Follow the Red-Green-Refactor cycle during TDD phases
-- Document architectural decisions in memory for future reference
-- Regular security reviews for any authentication or data handling code
+- Always maintain 100% test coverage
+- Document architectural decisions
+- Keep features independent and self-contained
+- Use TypeScript for all new code
+- Follow the established patterns and conventions
 
-For more information about SPARC methodology, see: https://github.com/ruvnet/claude-code-flow/docs/sparc.md
+---
+
+For questions or issues, please refer to the project documentation or create an issue in the repository.
