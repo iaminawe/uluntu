@@ -30,6 +30,28 @@ export function adaptEventFromDatabase(
     event_sessions?: SupabaseEventSession[]; // Joined event_sessions
   }
 ): FrontendEvent {
+  // First, ensure dbEvent is valid
+  if (!dbEvent) {
+    console.error('Invalid dbEvent passed to adaptEventFromDatabase:', dbEvent);
+    // Return a minimal valid event to prevent crashes
+    return {
+      id: 'error-event-id',
+      title: 'Error Loading Event',
+      description: 'There was an error loading this event.',
+      date: new Date().toISOString(),
+      location: 'Unknown',
+      image: '/placeholder-event.jpg',
+      organizer: {
+        id: 'error-organizer-id',
+        name: 'Unknown Organizer',
+        image: '/placeholder-avatar.png'
+      },
+      type: 'in-person',
+      status: 'draft',
+      featured: false,
+      created_at: new Date().toISOString(),
+    } as FrontendEvent;
+  }
   
   const defaultOrganizer = {
     id: dbEvent.organizer_id || 'default-organizer-id', // Fallback if organizer_id is null
@@ -39,19 +61,25 @@ export function adaptEventFromDatabase(
 
   let organizer: FrontendEvent['organizer'] = defaultOrganizer;
 
-  if (dbEvent.members) { // if members data is joined (for organizer)
-    organizer = {
-      id: dbEvent.members.id || dbEvent.organizer_id || 'member-organizer-id', // Prefer member.id, fallback to organizer_id
-      name: dbEvent.members.name || 'Organizer Name',
-      image: dbEvent.members.image || '/placeholder-avatar.png',
-    };
-  } else if (dbEvent.organizer_id) {
-    // If only organizer_id is present, we can't fill name/image without another query
-    organizer = {
-      id: dbEvent.organizer_id,
-      name: 'Organizer (Details Pending)', // Indicate that full details aren't loaded
-      image: '/placeholder-avatar.png',
-    };
+  // Handle organizer data more robustly
+  try {
+    if (dbEvent.members) { // if members data is joined (for organizer)
+      organizer = {
+        id: dbEvent.members.id || dbEvent.organizer_id || 'member-organizer-id', // Prefer member.id, fallback to organizer_id
+        name: dbEvent.members.name || 'Organizer Name',
+        image: dbEvent.members.image || '/placeholder-avatar.png',
+      };
+    } else if (dbEvent.organizer_id) {
+      // If only organizer_id is present, we can't fill name/image without another query
+      organizer = {
+        id: dbEvent.organizer_id,
+        name: 'Organizer (Details Pending)', // Indicate that full details aren't loaded
+        image: '/placeholder-avatar.png',
+      };
+    }
+  } catch (error) {
+    console.error('Error processing organizer data:', error);
+    // Keep the default organizer if there's an error
   }
 
   return {

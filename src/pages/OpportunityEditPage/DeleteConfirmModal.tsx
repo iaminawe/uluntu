@@ -1,5 +1,5 @@
 import { DeleteConfirmProps } from './types';
-import { ConfirmationModal } from '../../components/ui/Modal';
+import { ConfirmationModal } from '@/shared/components/ui/Modal';
 
 const DeleteConfirmModal = ({ isOpen, onClose, onConfirm }: DeleteConfirmProps) => {
   return (

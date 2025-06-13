@@ -1,5 +1,5 @@
 import { AlertTriangle } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
+import { Button } from '@/shared/components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 
 interface ErrorStateProps {

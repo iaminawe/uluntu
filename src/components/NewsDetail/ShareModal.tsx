@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { NewsArticle } from './types';
+import { NewsArticle } from '@/features/news/components/NewsDetail/types';
 
 interface ShareModalProps {
   article: NewsArticle;

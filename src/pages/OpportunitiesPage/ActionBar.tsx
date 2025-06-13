@@ -1,8 +1,8 @@
 import React from 'react';
 import { PlusCircle, MapPin, Briefcase, Clock, Users, Handshake } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { OpportunityType } from '../../components/OpportunitiesList/types';
-import { getOpportunityTypeLabel } from '../../components/OpportunitiesList/utils';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { OpportunityType } from '@/features/opportunities/components/OpportunitiesList/types';
+import { getOpportunityTypeLabel } from '@/features/opportunities/components/OpportunitiesList/utils';
 
 interface ActionBarProps {
   searchTerm: string;

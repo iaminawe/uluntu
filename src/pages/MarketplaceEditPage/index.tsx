@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMarketplaceListingByIdRedux, useMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
+import { useMarketplaceListingByIdRedux, useMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
 import TagsSection from './TagsSection';

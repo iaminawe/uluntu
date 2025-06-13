@@ -4,7 +4,7 @@ import {
   ListingCondition,
   ListingPriceRange,
   FilterOptions 
-} from './types';
+} from '@/features/marketplace/components/MarketplaceList/types';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 
 // Get appropriate icon for listing type

@@ -1,32 +1,35 @@
-import { NewsArticle, FilterOptions } from './types';
+import { NewsArticle, FilterOptions } from '@/features/news/components/NewsList/types';
 
 // Filter articles based on search term and selected tag
 export const filterArticles = (
   articles: NewsArticle[],
   filters: FilterOptions
 ): NewsArticle[] => {
-  return articles.filter(article => {
-    // Filter by search term
-    if (filters.search) {
+  
+  const filtered = articles.filter(article => {
+    // Filter by search term (only if search is not empty)
+    if (filters.search && filters.search.trim() !== '') {
       const searchLower = filters.search.toLowerCase();
-      const titleMatches = article.title.toLowerCase().includes(searchLower);
-      const excerptMatches = article.excerpt.toLowerCase().includes(searchLower);
-      const contentMatches = article.content 
-        ? article.content.toLowerCase().includes(searchLower) 
-        : false;
+      const titleMatches = article.title?.toLowerCase().includes(searchLower) || false;
+      const excerptMatches = article.excerpt?.toLowerCase().includes(searchLower) || false;
+      const contentMatches = article.content?.toLowerCase().includes(searchLower) || false;
       
       if (!titleMatches && !excerptMatches && !contentMatches) {
         return false;
       }
     }
     
-    // Filter by tag
-    if (filters.tag !== 'all' && !article.tags?.includes(filters.tag)) {
-      return false;
+    // Filter by tag (only if tag is not 'all' and not empty)
+    if (filters.tag && filters.tag !== 'all' && filters.tag.trim() !== '') {
+      if (!article.tags?.includes(filters.tag)) {
+        return false;
+      }
     }
     
     return true;
   });
+  
+  return filtered;
 };
 
 // Sort articles by published date (newest first)

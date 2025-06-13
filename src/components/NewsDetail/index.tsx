@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft } from 'lucide-react';
 
-import ArticleHeader from './ArticleHeader';
-import ArticleContent from './ArticleContent';
-import CommentsSection from './CommentsSection';
-import CommentModal from './CommentModal';
-import ShareModal from './ShareModal';
-import { NewsArticle, SAMPLE_ARTICLE, NewsComment, adaptMainNewsArticleToLocal } from './types';
+import ArticleHeader from '@/features/news/components/NewsDetail/ArticleHeader';
+import ArticleContent from '@/features/news/components/NewsDetail/ArticleContent';
+import CommentsSection from '@/features/news/components/NewsDetail/CommentsSection';
+import CommentModal from '@/features/news/components/NewsDetail/CommentModal';
+import ShareModal from '@/features/news/components/NewsDetail/ShareModal';
+import { NewsArticle, SAMPLE_ARTICLE, NewsComment, adaptMainNewsArticleToLocal } from '@/features/news/components/NewsDetail/types';
 import { useNewsArticle } from '../../hooks/useQueries';
 
 interface NewsDetailProps {

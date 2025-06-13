@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
-import { Member } from './types';
+import { Member } from '@/features/directory/components/MemberProfile/types';
 
 interface ProfileHeaderProps {
   member: Member;

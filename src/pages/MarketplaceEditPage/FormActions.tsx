@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { FormActions as SharedFormActions } from '../../components/ui/Form';
+import { FormActions as SharedFormActions } from '@/shared/components/ui/Form';
 import { FormActionsProps } from './types';
 
 const FormActions: React.FC<FormActionsProps> = ({

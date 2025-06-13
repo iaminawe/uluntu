@@ -1,4 +1,4 @@
-export { EditableText } from './EditableText';
-export { EditableBackground } from './EditableBackground';
-export { LanguageSelector } from './LanguageSelector';
-export { ContentManagementPanel } from './ContentManagementPanel';
+export { EditableText } from '@/shared/components/ContentEditor/EditableText';
+export { EditableBackground } from '@/shared/components/ContentEditor/EditableBackground';
+export { LanguageSelector } from '@/shared/components/ContentEditor/LanguageSelector';
+export { ContentManagementPanel } from '@/shared/components/ContentEditor/ContentManagementPanel';

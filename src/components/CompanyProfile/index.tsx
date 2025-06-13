@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Company, SAMPLE_COMPANY } from './types';
-import CompanyHeader from './CompanyHeader';
-import CompanyContent from './CompanyContent';
-import ContactModal from './ContactModal';
+import { Company, SAMPLE_COMPANY } from '@/features/companies/components/CompanyProfile/types';
+import CompanyHeader from '@/features/companies/components/CompanyProfile/CompanyHeader';
+import CompanyContent from '@/features/companies/components/CompanyProfile/CompanyContent';
+import ContactModal from '@/features/companies/components/CompanyProfile/ContactModal';
 
 interface CompanyProfileProps {
   companyId: string;

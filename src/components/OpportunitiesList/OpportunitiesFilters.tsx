@@ -9,11 +9,11 @@ import {
   OpportunityType, 
   ExperienceLevel,
   FilterOptions 
-} from './types';
+} from '@/features/opportunities/components/OpportunitiesList/types';
 import { 
   getOpportunityTypeLabel,
   getExperienceLevelLabel
-} from './utils';
+} from '@/features/opportunities/components/OpportunitiesList/utils';
 
 interface OpportunitiesFiltersProps {
   filters: FilterOptions;

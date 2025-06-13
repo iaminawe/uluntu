@@ -1,4 +1,4 @@
-import { FormSkeleton } from '../../components/ui/Skeleton';
+import { FormSkeleton } from '@/shared/components/ui/Skeleton';
 import { LoadingStateProps } from './types';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {

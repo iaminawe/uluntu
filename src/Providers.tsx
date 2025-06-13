@@ -1,4 +1,4 @@
-import { SessionProvider } from "./context/SessionContext"
+import { SessionProvider } from '@/shared/contexts/SessionContext'
 import { Outlet } from "react-router-dom"
 
 const Providers = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SuccessMessageProps } from './types';
+import { SuccessMessageProps } from '@/features/groups/components/JoinModal/types';
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ group, isOpenGroup }) => {
   return (

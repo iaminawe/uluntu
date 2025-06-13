@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Event } from '../../types';
-import { generateICalendar, generateGoogleCalendarUrl, generateOutlookCalendarUrl } from './calendarUtils';
+import { generateICalendar, generateGoogleCalendarUrl, generateOutlookCalendarUrl } from '@/features/events/components/EventsCalendar/calendarUtils';
 
 interface SubscribeModalProps {
   events: Event[];

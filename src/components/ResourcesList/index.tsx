@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Resource } from '../../types';
-import { getTypeIcon } from './utils';
-import ResourceCard from './ResourceCard';
-import ResourceModal from './ResourceModal';
-import { useFilteredResourcesRedux } from '../../hooks/useResourcesRedux';
-import { ResourceFilters } from '../../redux/slices/resourcesSlice';
+import { getTypeIcon } from '@/features/resources/components/ResourcesList/utils';
+import ResourceCard from '@/features/resources/components/ResourcesList/ResourceCard';
+import ResourceModal from '@/features/resources/components/ResourcesList/ResourceModal';
+import { useFilteredResourcesRedux } from '@/features/resources/hooks/useResourcesRedux';
+import { ResourceFilters } from '@/features/resources/store/resourcesSlice';
 
 interface ResourcesListProps {
   resources?: Resource[];
@@ -20,21 +20,19 @@ const ResourcesList = ({ resources: propResources, useRedux = false, initialFilt
   // Connect to Redux if useRedux is true
   const {
     resources: reduxResources,
-    filters,
     updateFilters,
     getPaginatedResources,
-    totalResources,
-    isLoading
+    totalResources
   } = useFilteredResourcesRedux(initialFilters);
   
   // Determine which resources to use - props or redux
   const resources = useRedux ? reduxResources : propResources || [];
   // Use Resource['type'] for selectedType state and update available types
-  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>(initialFilters?.types?.[0] || 'all');
+  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>((initialFilters?.types?.[0] as Resource['type']) || 'all');
   const [showModal, setShowModal] = useState(false);
 
   // Define resource types based on the main application's Resource type
-  const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article'];
+  const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article', 'link'];
 
   // Apply client-side filtering if not using Redux
   const filteredResources = useRedux ? resources : resources.filter(resource => {
@@ -109,7 +107,7 @@ const ResourcesList = ({ resources: propResources, useRedux = false, initialFilt
           {types.map(type => (
             <button
               key={type}
-              onClick={() => setSelectedType(type)}
+              onClick={() => setSelectedType(type as Resource['type'])}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors flex items-center
                 ${selectedType === type
                   ? 'bg-orange-500 text-white'

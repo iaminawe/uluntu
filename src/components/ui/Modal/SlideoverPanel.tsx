@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { SlideoverPanelProps } from './types';
+import { SlideoverPanelProps } from '@/shared/components/ui/Modal/types';
 
 /**
  * Slideover panel component

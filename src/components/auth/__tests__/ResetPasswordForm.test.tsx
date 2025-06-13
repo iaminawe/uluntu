@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import ResetPasswordForm from '../ResetPasswordForm';
-import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import ResetPasswordForm from '@/features/auth/components/ResetPasswordForm';
+
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 // Mock the useAuth hook
 jest.mock('../../../contexts/AuthContext', () => ({
@@ -31,7 +31,7 @@ const originalConsoleLog = console.log;
 
 describe('ResetPasswordForm Component', () => {
   const mockResetPassword = jest.fn();
-  const mockNavigate = jest.fn();
+  const _mockNavigate = jest.fn();
   
   beforeEach(() => {
     jest.clearAllMocks();

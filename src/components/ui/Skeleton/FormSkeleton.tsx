@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkeletonProps } from './types';
+import { SkeletonProps } from '@/shared/components/ui/Skeleton/types';
 
 export interface FormSkeletonProps extends SkeletonProps {
   /**

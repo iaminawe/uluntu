@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ButtonLink } from './types';
+import { ButtonLink } from '@/shared/components/layout/HeroSection/types';
 
 interface HeroButtonProps {
   button: ButtonLink;

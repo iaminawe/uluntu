@@ -1,5 +1,5 @@
 import React from 'react';
-import { SocialLink } from './types';
+import { SocialLink } from '@/shared/components/layout/Footer/types';
 
 interface SocialLinksProps {
   socialLinks: SocialLink[];

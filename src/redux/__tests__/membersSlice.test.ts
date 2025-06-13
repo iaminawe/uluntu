@@ -9,7 +9,7 @@ import membersReducer, {
   setFilters,
   clearFilters,
   clearMembers
-} from '../slices/membersSlice';
+} from '@/features/directory/store/membersSlice';
 import { ContentStatus } from '../../types/common';
 
 // Mock the API calls
@@ -27,13 +27,18 @@ jest.mock('../../api/membersApi', () => ({
 const originalEnv = process.env;
 beforeEach(() => {
   jest.resetModules();
-  process.env = { ...originalEnv, VITE_USE_SUPABASE: 'false' };
+  process.env = { ...originalEnv, VITE_USE_SUPABASE: 'true' }; // Set to true to use the API path
+  
+  // Reset all mocks before each test
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
   process.env = originalEnv;
-  jest.clearAllMocks();
 });
+
+// Get the mocked API module
+const membersApiMock = require('../../api/membersApi').membersApi;
 
 // Create a mock store for testing
 const createTestStore = () => {
@@ -44,19 +49,22 @@ const createTestStore = () => {
   });
 };
 
-// Sample member data
+// Sample member data - structured to match the expected output after adaptMember is applied
 const mockMember = {
   id: '1',
   name: 'John Doe',
   email: 'john.doe@example.com',
   bio: 'Software developer with 5 years of experience',
   image: 'john-doe.jpg',
-  role: 'Developer',
+  role: 'Senior Developer', // role matches title after adaptation
   title: 'Senior Developer',
   skills: ['JavaScript', 'React', 'Node.js'],
   joinDate: '2023-01-01T00:00:00.000Z',
+  joinedDate: '2023-01-01T00:00:00.000Z', // Added to match adapter output
   status: 'published' as ContentStatus,
-  featured: true
+  featured: true,
+  company: undefined, // Added to match adapter output
+  created_at: undefined // Added to match adapter output
 };
 
 const mockMembers = [
@@ -65,7 +73,7 @@ const mockMembers = [
     ...mockMember,
     id: '2',
     name: 'Jane Smith',
-    role: 'Designer',
+    role: 'UI/UX Designer', // role matches title after adaptation
     title: 'UI/UX Designer',
     skills: ['UI/UX', 'Figma', 'Sketch']
   }
@@ -122,7 +130,7 @@ describe('Members Slice', () => {
       const store = createTestStore();
       
       // Mock implementation for fetchMembers
-      require('../../api/membersApi').membersApi.getAll.mockResolvedValue(mockMembers);
+      membersApiMock.getAll.mockResolvedValueOnce(mockMembers);
       
       await store.dispatch(fetchMembers());
       
@@ -135,7 +143,7 @@ describe('Members Slice', () => {
       const store = createTestStore();
       
       // Mock implementation for fetchMemberById
-      require('../../api/membersApi').membersApi.getById.mockResolvedValue(mockMember);
+      membersApiMock.getById.mockResolvedValueOnce(mockMember);
       
       await store.dispatch(fetchMemberById('1'));
       
@@ -149,7 +157,7 @@ describe('Members Slice', () => {
       const filters = { search: 'John', skills: ['JavaScript'] };
       
       // Mock implementation for fetchFilteredMembers
-      require('../../api/membersApi').membersApi.getAll.mockResolvedValue([mockMember]);
+      membersApiMock.getAll.mockResolvedValueOnce([mockMember]);
       
       await store.dispatch(fetchFilteredMembers(filters));
       
@@ -167,15 +175,21 @@ describe('Members Slice', () => {
         status: 'published' as ContentStatus
       };
       
-      // Mock implementation for createMember
-      require('../../api/membersApi').membersApi.create.mockResolvedValue({
+      const createdMember = {
         id: '3',
         ...newMemberData,
         email: 'new.member@example.com',
         image: '',
         skills: [],
-        joinDate: new Date().toISOString()
-      });
+        joinDate: new Date().toISOString(),
+        role: 'New Role', // Ensure role matches title for adapter
+        joinedDate: new Date().toISOString(), // Add for adapter
+        company: undefined,
+        created_at: undefined
+      };
+      
+      // Mock implementation for createMember
+      membersApiMock.create.mockResolvedValueOnce(createdMember);
       
       await store.dispatch(createMember(newMemberData as any));
       
@@ -198,11 +212,13 @@ describe('Members Slice', () => {
         bio: 'Updated Bio'
       };
       
-      // Mock implementation for updateMember
-      require('../../api/membersApi').membersApi.update.mockResolvedValue({
+      const updatedMember = {
         ...mockMember,
         ...updateData
-      });
+      };
+      
+      // Mock implementation for updateMember
+      membersApiMock.update.mockResolvedValueOnce(updatedMember);
       
       await store.dispatch(updateMember({ id: '1', data: updateData }));
       
@@ -222,7 +238,7 @@ describe('Members Slice', () => {
       expect(store.getState().members.members).toHaveLength(2);
       
       // Mock implementation for deleteMember
-      require('../../api/membersApi').membersApi.delete.mockResolvedValue(true);
+      membersApiMock.delete.mockResolvedValueOnce(true);
       
       await store.dispatch(deleteMember('1'));
       

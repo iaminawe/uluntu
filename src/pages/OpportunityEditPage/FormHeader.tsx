@@ -1,4 +1,4 @@
-import { FormHeader as SharedFormHeader } from '../../components/ui/Form';
+import { FormHeader as SharedFormHeader } from '@/shared/components/ui/Form';
 
 export interface FormHeaderProps {
   /**

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { HeaderProps } from "./types";
-import DesktopNav from "./DesktopNav";
-import MobileNav from "./MobileNav";
-import ThemeToggle from "./ThemeToggle";
-import UserMenu from "./UserMenu";
+import { HeaderProps } from '@/shared/components/layout/Header/types';
+import DesktopNav from '@/shared/components/layout/Header/DesktopNav';
+import MobileNav from '@/shared/components/layout/Header/MobileNav';
+import ThemeToggle from '@/shared/components/layout/Header/ThemeToggle';
+import UserMenu from '@/shared/components/layout/Header/UserMenu';
 
 const Header: React.FC<HeaderProps> = ({
   logo = "Nelson Tech",

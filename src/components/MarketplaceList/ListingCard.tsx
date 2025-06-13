@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
-import { getTypeIcon, getConditionDisplayName, formatPrice } from './utils';
+import { getTypeIcon, getConditionDisplayName, formatPrice } from '@/features/marketplace/components/MarketplaceList/utils';
 
 interface ListingCardProps {
   listing: MarketplaceListing;
@@ -9,11 +9,25 @@ interface ListingCardProps {
 const ListingCard = ({ listing }: ListingCardProps) => {
   const defaultImage = '/api/placeholder/400/300';
   
+  // Add debug link and ID display to help troubleshoot the detail page issue
+  console.log('ListingCard receiving listing with ID:', listing.id, typeof listing.id);
+  
   return (
-    <Link
-      to={`/marketplace/${listing.id}`}
-      className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-    >
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="absolute top-2 right-2 z-10 flex gap-2">
+        <Link 
+          to={`/marketplace/${listing.id}/debug`}
+          className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-2 py-1 rounded"
+          onClick={(e) => e.stopPropagation()}
+        >
+          Debug
+        </Link>
+      </div>
+      
+      <Link
+        to={`/marketplace/${listing.id}`}
+        className="block"
+      >
       <div className="h-48 overflow-hidden">
         <img
           src={listing.images?.[0] || defaultImage}
@@ -84,6 +98,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         </div>
       </div>
     </Link>
+    </div>
   );
 };
 

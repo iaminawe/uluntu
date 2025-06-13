@@ -1,6 +1,6 @@
 // Types for DirectoryList component
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface Member {
   id: string;
   name: string;
@@ -20,13 +20,13 @@ export interface Member {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface DirectoryListProps {
   initialSearch?: string;
   initialSkill?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface FilterOptions {
   search: string;
   skills: string[];

@@ -16,8 +16,9 @@ type NewsTableInsert = Database['public']['Tables']['news']['Insert'];
 type NewsTableUpdate = Database['public']['Tables']['news']['Update'];
 
 export const newsApi = {
-  async getAll(filters: { search?: string; tags?: string[] } = {}): Promise<NewsArticle[]> {
+  async getAll(filters: { search?: string; tags?: string[]; featured?: boolean; status?: string } = {}): Promise<NewsArticle[]> {
     try {
+      
       let query = supabase.from('news').select(`
         *,
         members!author_id (*)
@@ -29,6 +30,17 @@ export const newsApi = {
       if (filters.tags && filters.tags.length > 0) {
         query = query.overlaps('tags', filters.tags);
       }
+      
+      if (filters.featured !== undefined) {
+        query = query.eq('featured', filters.featured);
+      }
+      
+      if (filters.status) {
+        query = query.eq('status', filters.status);
+      } else {
+        // Default to only published articles if no status filter specified
+        query = query.eq('status', 'published');
+      }
 
       const { data, error } = await query.order('publish_date', { ascending: false });
 
@@ -37,8 +49,10 @@ export const newsApi = {
         return [];
       }
       
+      
       // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], (item: SupabaseNewsArticleWithAuthor) => adaptNewsArticleFromDatabase(item));
+      const adaptedArticles = adaptItemsList(data || [], (item: SupabaseNewsArticleWithAuthor) => adaptNewsArticleFromDatabase(item));
+      return adaptedArticles;
     } catch (error) {
       handleSupabaseError(error, 'fetching news articles');
       return [];

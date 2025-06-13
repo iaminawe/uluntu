@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
-import { marketplaceApi, MarketplaceItemInput } from '../api/marketplaceApi';
+import { marketplaceApi, MarketplaceItemInput } from '@/features/marketplace/api/marketplaceApi';
 import mockData from '../data/mock/mockData';
 import { ContentStatus } from '../types/common';
 import { MarketplaceItem } from '../types';
@@ -140,48 +140,52 @@ const mockMarketplaceItems = (mockData.marketplaceListings || []) as unknown as 
 // Hooks
 
 export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOptions): UseQueryResult<MarketplaceListing[], Error> {
+  console.log('useMarketplaceItemsWithFilters: Starting query with filters:', filters);
   const queryKey: MarketplaceItemsQueryKey = ['marketplaceListings', 'filters', filters];
+  
   return useQuery<MarketplaceListing[], Error>({
     queryKey: queryKey,
     queryFn: async (): Promise<MarketplaceListing[]> => {
-      // Update filters to use the seller_id if provided
+      // Use Supabase or mock data based on environment variable
       if (USE_SUPABASE) {
         try {
+          console.log('Fetching marketplace listings from Supabase with filters:', filters);
           let fetchedItems;
           if (filters) {
-            // Make sure we're using the correct filter property names
-            // Since getAll accepts filters parameter, we can just pass it directly
+            // If filters are provided, pass them to the API
             fetchedItems = await marketplaceApi.getAll(filters);
           } else {
+            // Otherwise get all items
             fetchedItems = await marketplaceApi.getAll();
           }
+          // Convert to the expected format
           const marketplaceListings = (fetchedItems || []).map(adaptMarketplaceItemToListing);
-          console.log('Fetched marketplace listings with filters:', marketplaceListings);
+          console.log('Fetched marketplace listings from Supabase:', marketplaceListings.length);
           return marketplaceListings;
         } catch (error) {
-          console.error('Error fetching marketplace listings with filters:', error);
+          console.error('Error fetching marketplace listings from Supabase:', error);
           throw error;
         }
       } else {
         // Use mock data with filtering
-        let listings: MarketplaceListing[] = mockMarketplaceItems.map(mapMockMarketplaceItemToListing);
+        let mockListings = mockMarketplaceItems.map(mapMockMarketplaceItemToListing);
         
         // Apply filters if provided
         if (filters?.search) {
           const searchTerm = filters.search.toLowerCase();
-          listings = listings.filter(
+          mockListings = mockListings.filter(
             (listing) => (listing.title.toLowerCase().includes(searchTerm) || 
-                         (listing.description && listing.description.toLowerCase().includes(searchTerm)))
+                        (listing.description && listing.description.toLowerCase().includes(searchTerm)))
           );
         }
         if (filters?.types && filters.types.length > 0) {
-          listings = listings.filter((listing) => listing.type && filters.types?.includes(listing.type));
+          mockListings = mockListings.filter((listing) => listing.type && filters.types?.includes(listing.type));
         }
         if (filters?.condition && filters.condition !== 'all') {
-          listings = listings.filter((listing) => listing.condition === filters.condition);
+          mockListings = mockListings.filter((listing) => listing.condition === filters.condition);
         }
         if (filters && filters.seller_id) {
-          listings = listings.filter(item => {
+          mockListings = mockListings.filter(item => {
             // Get seller id from internal property or the standard seller object
             const itemSellerId = 'seller_id' in item ? 
               (item as unknown as { seller_id: string }).seller_id : 
@@ -190,23 +194,23 @@ export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOp
           });
         }
         if (filters?.featured !== undefined) {
-          listings = listings.filter((listing) => listing.featured === filters.featured);
+          mockListings = mockListings.filter((listing) => listing.featured === filters.featured);
         }
         
-        return listings;
+        return mockListings;
       }
-    },
+    }
   });
 }
 
 export function useMarketplaceItems(): UseQueryResult<MarketplaceListing[], Error> {
   return useQuery<MarketplaceListing[], Error>({
-    queryKey: ['marketplaceItems', USE_SUPABASE ? 'supabase' : 'mock'],
+    queryKey: ['marketplaceItems'],
     queryFn: async (): Promise<MarketplaceListing[]> => {
       if (USE_SUPABASE) {
         try {
-          const items = await marketplaceApi.getAll();
-          return items.map(item => adaptMarketplaceItemToListing(item));
+          const fetchedItems = await marketplaceApi.getAll();
+          return (fetchedItems || []).map(adaptMarketplaceItemToListing);
         } catch (error) {
           console.error('Error fetching marketplace items:', error);
           throw error;
@@ -214,177 +218,141 @@ export function useMarketplaceItems(): UseQueryResult<MarketplaceListing[], Erro
       } else {
         return mockMarketplaceItems.map(mapMockMarketplaceItemToListing);
       }
-    },
+    }
   });
 }
 
 export function useMarketplaceItem(id: string | undefined): UseQueryResult<MarketplaceListing | null, Error> {
-  const stringId = id ? String(id) : undefined;
-  
   return useQuery<MarketplaceListing | null, Error>({
-    queryKey: ['marketplaceItem', stringId, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryKey: ['marketplaceItem', id],
+    enabled: !!id, // Only run if id is provided
     queryFn: async (): Promise<MarketplaceListing | null> => {
-      if (!stringId) return null;
-      
+      if (!id) return null;
       if (USE_SUPABASE) {
         try {
-          const item = await marketplaceApi.getById(stringId);
-          return item ? adaptMarketplaceItemToListing(item) : null;
+          const fetchedItem = await marketplaceApi.getById(id);
+          return fetchedItem ? adaptMarketplaceItemToListing(fetchedItem) : null;
         } catch (error) {
-          console.error(`Error fetching marketplace item with ID ${stringId}:`, error);
+          console.error(`Error fetching marketplace item with id ${id}:`, error);
           throw error;
         }
       } else {
-        const item = mockMarketplaceItems.find((item) => String(item.id) === stringId);
-        return item ? mapMockMarketplaceItemToListing(item) : null;
+        const mockItem = mockMarketplaceItems.find(item => String(item.id) === id);
+        return mockItem ? mapMockMarketplaceItemToListing(mockItem) : null;
       }
-    },
-    enabled: !!stringId,
+    }
   });
 }
 
 export function useRelatedMarketplaceItems(itemId?: string, limit: number = 3): UseQueryResult<MarketplaceListing[], Error> {
-  const stringId = itemId ? String(itemId) : undefined;
-  
   return useQuery<MarketplaceListing[], Error>({
-    queryKey: ['relatedMarketplaceItems', stringId, limit, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryKey: ['relatedMarketplaceItems', itemId, limit],
+    enabled: !!itemId, // Only run if itemId is provided
     queryFn: async (): Promise<MarketplaceListing[]> => {
-      if (!stringId) return [];
-
+      if (!itemId) return [];
       if (USE_SUPABASE) {
         try {
-          const items = await marketplaceApi.getRelated(stringId, limit);
-          return items.map(item => adaptMarketplaceItemToListing(item));
+          const relatedItems = await marketplaceApi.getRelated(itemId, limit);
+          return (relatedItems || []).map(adaptMarketplaceItemToListing);
         } catch (error) {
-          console.error(`Error fetching related marketplace items for ID ${stringId}:`, error);
+          console.error(`Error fetching related marketplace items for item ${itemId}:`, error);
           throw error;
         }
       } else {
-        // Find the item's type for related filtering
-        const originalItem = mockMarketplaceItems.find((item) => String(item.id) === stringId);
-        if (!originalItem) return [];
-
-        // Get items of the same type, excluding the current item
-        let relatedItems = mockMarketplaceItems
-          .filter((item) => String(item.id) !== stringId && item.type === originalItem.type)
+        // For mock data, we'll try to match by category/type
+        const currentItem = mockMarketplaceItems.find(item => String(item.id) === itemId);
+        if (!currentItem) return [];
+        
+        // Get items of the same type/category, excluding the current item
+        const relatedItems = mockMarketplaceItems
+          .filter(item => 
+            String(item.id) !== itemId && 
+            item.type === currentItem.type
+          )
           .slice(0, limit);
-
-        // If we don't have enough items, add some random items up to the limit
-        if (relatedItems.length < limit) {
-          const randomItems = mockMarketplaceItems
-            .filter((item) => String(item.id) !== stringId && !relatedItems.some((r) => String(r.id) === String(item.id)))
-            .slice(0, limit - relatedItems.length);
-          relatedItems = [...relatedItems, ...randomItems];
-        }
-
+        
         return relatedItems.map(mapMockMarketplaceItemToListing);
       }
-    },
-    enabled: !!stringId,
+    }
   });
 }
 
 export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing | null, Error, MarketplaceListingInput> {
   const queryClient = useQueryClient();
-  
   return useMutation<MarketplaceListing | null, Error, MarketplaceListingInput>({
     mutationFn: async (itemData: MarketplaceListingInput): Promise<MarketplaceListing | null> => {
       if (USE_SUPABASE) {
         try {
-          const apiItemData: MarketplaceItemInput = {
-            title: itemData.title || '',
-            description: itemData.description === null ? undefined : (itemData.description || ''),
-            // Ensure type is correctly formatted
-            type: itemData.type ? itemData.type : 'product',
-            // Handle optional fields with proper null/undefined handling
-            price: itemData.price === null ? undefined : itemData.price,
-            condition: itemData.condition === null ? undefined : itemData.condition,
-            sellerId: itemData.seller_id || '',
-            status: (itemData.status || 'published') as ContentStatus,
-            featured: itemData.featured === undefined ? false : itemData.featured,
-            // Ensure images is always an array
-            images: Array.isArray(itemData.images) ? itemData.images : [],
-            // Ensure tags is always an array of strings
-            tags: Array.isArray(itemData.tags) ? 
-              itemData.tags.map(tag => typeof tag === 'string' ? tag : String((tag as {value?: string}).value || '')) : 
-              [],
-            location: itemData.location === null ? undefined : itemData.location
-          };
-          
-          const newItem = await marketplaceApi.create(apiItemData);
+          const newItem = await marketplaceApi.create(itemData);
           return newItem ? adaptMarketplaceItemToListing(newItem) : null;
         } catch (error) {
           console.error('Error creating marketplace item:', error);
           throw error;
         }
       } else {
-        // Prepare a new mock item with required format
-        const newItem: MockMarketplaceListing = {
-          id: crypto.randomUUID(),
+        // Create mock data
+        const newId = String(mockMarketplaceItems.length + 1);
+        const now = new Date().toISOString();
+        
+        const newMockItem: MockMarketplaceListing = {
+          id: newId,
           title: itemData.title,
           description: itemData.description || '',
           type: itemData.type || 'product',
           price: itemData.price !== undefined ? itemData.price : null,
-          status: itemData.status || 'published',
+          condition: itemData.condition || null,
           images: itemData.images || [],
+          seller_id: itemData.seller_id || '1',
+          status: itemData.status || 'published',
+          created_at: now,
+          updated_at: now,
           featured: itemData.featured || false,
-          seller_id: itemData.seller_id || '1', // Default seller ID
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          location: itemData.location || undefined,
           tags: itemData.tags || [],
-          condition: itemData.condition || undefined
+          location: itemData.location || ''
         };
-        // Add to mock data collection
-        mockMarketplaceItems.push(newItem);
-        // Map the mock item to the expected format
-        const createdListing = mapMockMarketplaceItemToListing(newItem);
-        console.log('Mock created marketplace item:', createdListing);
-        return createdListing;
+        
+        // Add to mock data
+        mockMarketplaceItems.push(newMockItem);
+        return mapMockMarketplaceItemToListing(newMockItem);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] });
       queryClient.invalidateQueries({ queryKey: ['marketplaceItems'] });
-    },
+    }
   });
 }
 
 export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing | null, Error, { id: string; data: Partial<MarketplaceListingUpdateInput> }> {
   const queryClient = useQueryClient();
+  
+  // For update mutations, we'll need a helper function to avoid type errors with undefined/null
+  function handleNullValue<T>(value: T | null | undefined): T | undefined {
+    return value === null ? undefined : value;
+  }
+  
+  // Safe conversion for number values
+  function handleNumberValue(value: number | null | undefined): number | undefined {
+    return value === null ? undefined : value;
+  }
+  
+  // Safe conversion for string values
+  function handleStringValue(value: string | null | undefined): string | undefined {
+    return value === null ? undefined : value;
+  }
+  
   return useMutation<MarketplaceListing | null, Error, { id: string; data: Partial<MarketplaceListingUpdateInput> }>({
     mutationFn: async ({ id, data }): Promise<MarketplaceListing | null> => {
       if (USE_SUPABASE) {
-        // Adapt Partial<MarketplaceListingUpdateInput> (DB schema) to Partial<MarketplaceItemInput> (API schema)
+        // Create an API-compatible update data object
         const apiUpdateData: Partial<MarketplaceItemInput> = {};
+        
+        // Handle all possible fields that might be updated
         if (data.title !== undefined) apiUpdateData.title = data.title;
-        if (data.description !== undefined) apiUpdateData.description = data.description === null ? undefined : data.description;
-        if (data.type !== undefined) apiUpdateData.type = data.type as MarketplaceItemInput['type'];
-        // For update mutations, we'll need a helper function to avoid type errors with undefined/null
-        const handleNullValue = <T>(value: T | null | undefined): T | undefined => {
-          if (value === null || value === undefined) return undefined;
-          return value as T;
-        };
-        
-        // Safe conversion for number values
-        const handleNumberValue = (value: number | null | undefined): number | undefined => {
-          if (value === null || value === undefined) return undefined;
-          return value;
-        };
-        
-        // Safe conversion for string values
-        const handleStringValue = (value: string | null | undefined): string | undefined => {
-          if (value === null || value === undefined) return undefined;
-          return value;
-        };
-        
-        // Handle price: convert null to undefined for API compatibility
+        if (data.description !== undefined) apiUpdateData.description = handleStringValue(data.description);
+        if (data.type !== undefined) apiUpdateData.type = handleStringValue(data.type);
         if (data.price !== undefined) apiUpdateData.price = handleNumberValue(data.price);
-        
-        // Handle condition: convert null to undefined for API compatibility
         if (data.condition !== undefined) apiUpdateData.condition = handleStringValue(data.condition);
-        
-        // Handle arrays and strings with null checking
         if (data.images !== undefined) apiUpdateData.images = data.images === null ? [] : data.images;
         if (data.location !== undefined) apiUpdateData.location = data.location === null ? undefined : data.location;
         if (data.tags !== undefined) apiUpdateData.tags = data.tags === null ? [] : data.tags;

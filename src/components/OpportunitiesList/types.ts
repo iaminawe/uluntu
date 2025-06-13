@@ -1,7 +1,7 @@
 // Types for Opportunities components
 import { Opportunity as MainOpportunity } from '../../types';
 import { ContentStatus } from '../../types/common';
-import { nullToUndefined } from './opportunityUtils';
+import { nullToUndefined } from '@/features/opportunities/components/OpportunitiesList/opportunityUtils';
 
 // Define types specific to the OpportunitiesList component
 export type OpportunityType = 'full-time' | 'part-time' | 'contract' | 'volunteer' | 'internship';

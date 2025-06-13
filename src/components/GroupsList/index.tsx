@@ -1,56 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useGroupsWithFilters } from '../../hooks/useQueries';
-import { Group, GroupsListProps } from './types';
-import GroupCard from './GroupCard';
-import JoinModal from '../JoinModal'; // Reusing the existing JoinModal component
-import Pagination from '../Pagination'; // Import Pagination
+import { Group, GroupsListProps } from '@/features/groups/components/GroupsList/types';
+import GroupCard from '@/features/groups/components/GroupsList/GroupCard';
+import JoinModal from '@/features/groups/components/JoinModal'; // Reusing the existing JoinModal component
+import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
 import { useFilteredGroupsRedux } from '../../hooks/useGroupsRedux';
-import { GroupFilters } from '../../redux/slices/groupsSlice';
+import { GroupFilters } from '@/features/groups/store/groupsSlice';
 
 const GROUPS_PER_PAGE = 8;
 
-const GroupsList = ({ searchTerm, visibilityFilter, useRedux = false }: GroupsListProps & { useRedux?: boolean }) => {
+const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRedux = false }: GroupsListProps & { useRedux?: boolean }) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Memoize the filter values to prevent unnecessary re-renders
+  const queryFilters = useMemo(() => ({
+    search: searchTerm,
+    visibility: visibilityFilter.length > 0 ? visibilityFilter : undefined
+  }), [searchTerm, visibilityFilter]);
+  
+  // Memoize Redux filters
+  const reduxFilters = useMemo(() => {
+    const filters: GroupFilters = {};
+    if (searchTerm) filters.search = searchTerm;
+    if (visibilityFilter.length > 0) filters.visibility = visibilityFilter;
+    return filters;
+  }, [searchTerm, visibilityFilter]);
 
   // Connect to Redux if useRedux is true
   const {
     groups: reduxGroups,
-    filters,
-    updateFilters,
     isLoading: reduxLoading,
     error: reduxError
-  } = useFilteredGroupsRedux();
+  } = useFilteredGroupsRedux(useRedux ? reduxFilters : undefined);
 
   // Traditional React Query approach if not using Redux
-  const { data: queryFilteredGroups = [], isLoading: queryLoading, error: queryError } = useGroupsWithFilters({
-    search: searchTerm,
-    visibility: visibilityFilter.length > 0 ? visibilityFilter : undefined
-  });
+  const { 
+    data: queryFilteredGroups = [], 
+    isLoading: queryLoading, 
+    error: queryError 
+  } = useGroupsWithFilters(queryFilters);
   
   // Choose which data source to use
-  const filteredGroups = useRedux ? reduxGroups : queryFilteredGroups;
-  const isLoading = useRedux ? reduxLoading : queryLoading;
+  const filteredGroups = passedGroups || (useRedux ? reduxGroups : queryFilteredGroups);
+  const isLoading = passedGroups ? false : (useRedux ? reduxLoading : queryLoading);
   const error = useRedux ? reduxError : queryError;
 
+  // Reset page when filters change
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-    
-    // Update Redux filters if using Redux
-    if (useRedux) {
-      const reduxFilters: GroupFilters = {};
-      
-      if (searchTerm) {
-        reduxFilters.search = searchTerm;
-      }
-      
-      if (visibilityFilter.length > 0) {
-        reduxFilters.visibility = visibilityFilter;
-      }
-      
-      updateFilters(reduxFilters);
-    }
-  }, [searchTerm, visibilityFilter, useRedux]);
+    setCurrentPage(1);
+  }, [searchTerm, visibilityFilter]);
 
   // Pagination logic
   const totalGroups = filteredGroups.length;
@@ -68,7 +67,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, useRedux = false }: GroupsLi
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-8">
-        <div className="text-center py-12">
+        <div className="text-center py-12" data-testid="groups-loading">
           <div className="animate-pulse flex flex-col items-center space-y-4">
             <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-64"></div>
             <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
@@ -87,7 +86,10 @@ const GroupsList = ({ searchTerm, visibilityFilter, useRedux = false }: GroupsLi
     return (
       <div className="max-w-7xl mx-auto py-8">
         <div className="text-center py-12 text-red-500">
-          <p>Error loading groups. Please try again later.</p>
+          <p>Error loading groups</p>
+          {error && typeof error === 'object' && 'message' in error && (
+            <p>{(error as any).message}</p>
+          )}
         </div>
       </div>
     );
@@ -101,7 +103,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, useRedux = false }: GroupsLi
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No groups found</h3>
             <p className="text-slate-600 dark:text-slate-300">
               {searchTerm || visibilityFilter.length > 0 
-                ? 'Try adjusting your search or filters'
+                ? 'No groups match your search criteria'
                 : 'There are no groups to display yet'}
             </p>
           </div>

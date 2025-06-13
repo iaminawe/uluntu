@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useNewsArticleByIdRedux, useRelatedNewsArticlesRedux } from '../../hooks/useNewsRedux';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { Card } from '../../components/ui/Card';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { Card } from '@/shared/components/ui/Card';
 import ArticleHeader from './ArticleHeader';
 import ArticleContent from './ArticleContent';
 import AuthorInfo from './AuthorInfo';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardFooterProps } from './types';
+import { CardFooterProps } from '@/shared/components/ui/Card/types';
 
 /**
  * Card footer component

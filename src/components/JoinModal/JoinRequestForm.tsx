@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { JoinRequestFormProps } from './types';
+import { JoinRequestFormProps } from '@/features/groups/components/JoinModal/types';
 
 const JoinRequestForm: React.FC<JoinRequestFormProps> = ({ 
   group, 

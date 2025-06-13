@@ -1,6 +1,6 @@
 import React from 'react';
-import CustomSelect from '../../CustomSelect';
-import { Option } from '../../CustomSelect/types';
+import CustomSelect from '@/shared/components/ui/CustomSelect';
+import { Option } from '@/shared/components/ui/CustomSelect/types';
 
 export interface FormSelectProps {
   /**

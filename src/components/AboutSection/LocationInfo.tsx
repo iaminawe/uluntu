@@ -1,5 +1,5 @@
 import React from 'react';
-import { LocationInfo as LocationInfoType } from './types';
+import { LocationInfo as LocationInfoType } from '@/shared/components/layout/AboutSection/types';
 
 interface LocationInfoProps {
   locationInfo: LocationInfoType;

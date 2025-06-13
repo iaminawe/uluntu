@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { PlusCircle, Tag, X } from 'lucide-react';
-import { ActionBar as SharedActionBar } from '../../components/ui/PageLayout';
-import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
-import { extractTags } from '../../components/NewsArticlesList/utils';
+import { ActionBar as SharedActionBar } from '@/shared/components/ui/PageLayout';
+import { useNewsArticlesWithFilters } from '@/features/news/hooks/useNewsQueries';
+import { extractTags } from '@/features/news/components/NewsArticlesList/utils';
 
 interface ActionBarProps {
   searchTerm: string;

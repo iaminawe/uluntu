@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Send, X } from 'lucide-react';
-import { Company } from './types';
+import { Company } from '@/features/companies/components/CompanyProfile/types';
 
 interface ContactModalProps {
   company: Company;

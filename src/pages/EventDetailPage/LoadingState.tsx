@@ -1,7 +1,7 @@
 import { LoadingStateProps } from './types';
-import { ContentContainer } from '../../components/ui/PageLayout';
-import { SkeletonContainer, SkeletonImage, SkeletonText } from '../../components/ui/Skeleton';
-import { Card } from '../../components/ui/Card';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
+import { SkeletonContainer, SkeletonImage, SkeletonText } from '@/shared/components/ui/Skeleton';
+import { Card } from '@/shared/components/ui/Card';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {
   return (

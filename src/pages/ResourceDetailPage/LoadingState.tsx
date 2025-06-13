@@ -3,8 +3,8 @@ import {
   SkeletonContainer,
   SkeletonText,
   SkeletonCard
-} from '../../components/ui/Skeleton';
-import { ContentContainer } from '../../components/ui/PageLayout';
+} from '@/shared/components/ui/Skeleton';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 
 const LoadingState: React.FC<LoadingStateProps> = () => {
   return (

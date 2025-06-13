@@ -8,9 +8,9 @@ import {
   AuthState,
   User,
   Session
-} from '../redux/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import supabaseClient, { sessionCache } from '../lib/supabaseClient';
+} from '@/features/auth/store/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import supabaseClient, { sessionCache } from '@/shared/lib/supabaseClient';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {
@@ -38,17 +38,45 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+      // Log which Supabase client we're using
+      console.log('Using Supabase client from:', supabaseClient);
+      
+      // Add a safety check before calling signInWithPassword
+      if (!supabaseClient || !supabaseClient.auth) {
+        console.error('Supabase client or auth is not properly initialized');
+        dispatch(setAuthError('Authentication service unavailable'));
+        return;
+      }
+      
+      // Log the auth object to check its structure
+      console.log('Auth object:', supabaseClient.auth);
+      
+      // Use a safer approach with explicit error handling
+      const response = await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
+      
+      // Log the response to see its structure
+      console.log('Sign-in response:', response);
+      
+      // Safely destructure with a check
+      if (!response) {
+        console.error('Sign-in response is undefined or null');
+        dispatch(setAuthError('Invalid response from authentication service'));
+        return;
+      }
+      
+      const { data, error } = response;
 
       if (error) {
+        console.error('Sign-in error:', error);
         dispatch(setAuthError(error.message));
         return;
       }
 
       if (data?.user && data?.session) {
+        console.log('Sign-in successful, user:', data.user.id);
         dispatch(signInWithSession({
           user: {
             id: data.user.id,
@@ -57,8 +85,12 @@ export const useAuth = () => {
           },
           session: convertSession(data.session)
         }));
+      } else {
+        console.error('Sign-in data incomplete:', data);
+        dispatch(setAuthError('Incomplete authentication data'));
       }
     } catch (err) {
+      console.error('Sign-in exception:', err);
       handleAuthError(dispatch, err);
     }
   };

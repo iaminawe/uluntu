@@ -2,10 +2,10 @@ import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useMemberRedux } from '../../hooks/useMembersRedux';
-import { ContentContainer } from '../../components/ui/PageLayout';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import MemberProfile from '../../components/MemberProfile';
+import MemberProfile from '@/features/directory/components/MemberProfile';
 
 export default function DirectoryDetailPage() {
   const { id } = useParams();

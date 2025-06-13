@@ -1,6 +1,6 @@
 import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon } from 'lucide-react';
 import { ResourceTypeSelectProps } from './types';
-import { FormRadioCardGroup } from '../../components/ui/Form';
+import { FormRadioCardGroup } from '@/shared/components/ui/Form';
 
 const ResourceTypeSelect: React.FC<ResourceTypeSelectProps> = ({ formData, handleChange }) => {
   const resourceTypeOptions = [

@@ -7,7 +7,7 @@ export type ListingCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor';
 
 // Local Listing interface for the MarketplaceDetailPage component
 export interface Listing {
-  id: number;
+  id: string | number; // Support both string UUIDs from Supabase and numeric IDs
   title: string;
   description: string;
   type: ListingType;
@@ -16,7 +16,7 @@ export interface Listing {
   images: string[];
   createdAt: string; // Note: This is datePosted in the main MarketplaceItem type
   seller: {
-    id: number;
+    id: string | number; // Support both string UUIDs from Supabase and numeric IDs
     name: string;
     image: string;
     title?: string;

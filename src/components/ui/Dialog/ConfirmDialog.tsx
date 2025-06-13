@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfirmDialogProps } from './types';
+import { ConfirmDialogProps } from '@/shared/components/ui/Dialog/types';
 
 /**
  * Reusable confirmation dialog component

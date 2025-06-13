@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { CustomSelectProps } from './types';
+import { CustomSelectProps } from '@/shared/components/ui/CustomSelect/types';
 
 const CustomSelect = ({
   id,

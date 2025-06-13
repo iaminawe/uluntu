@@ -1,7 +1,7 @@
 // No longer need lucide-react icons as they're handled by the shared component
 import { useNavigate } from 'react-router-dom';
 import { FormActionsProps } from './types';
-import { FormActions as SharedFormActions } from '../../components/ui/Form';
+import { FormActions as SharedFormActions } from '@/shared/components/ui/Form';
 
 const FormActions: React.FC<FormActionsProps> = ({
   isEditing,

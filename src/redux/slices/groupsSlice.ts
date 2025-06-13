@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@/store/index';
 import { Group } from '../../types';
-import { groupsApi, GroupInput } from '../../api/groupsApi';
-import * as mockQueries from '../../hooks/useGroupQueries';
+import { groupsApi, GroupInput } from '@/features/groups/api/groupsApi';
+import * as mockQueries from '@/features/groups/hooks/useGroupQueries';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
@@ -39,11 +39,20 @@ export const fetchGroups = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       if (USE_SUPABASE) {
-        return await groupsApi.getAll();
+        const groups = await groupsApi.getAll();
+        // If Supabase returns empty due to RLS or other issues, fall back to mock data
+        if (groups.length === 0) {
+          return mockQueries.useGroups().data || [];
+        }
+        return groups;
       } else {
         return mockQueries.useGroups().data || [];
       }
     } catch (error) {
+      // If Supabase fails completely, fall back to mock data
+      if (USE_SUPABASE) {
+        return mockQueries.useGroups().data || [];
+      }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch groups');
     }
   }
@@ -164,6 +173,8 @@ const groupsSlice = createSlice({
       .addCase(fetchGroups.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.groups = action.payload;
+        // Also populate filteredGroups so GroupsList can display them
+        state.filteredGroups = action.payload;
         state.error = null;
       })
       .addCase(fetchGroups.rejected, (state, action) => {

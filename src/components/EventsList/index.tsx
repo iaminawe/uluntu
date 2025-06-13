@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { EventType, DateRangeFilter, adaptMainEventToLocal } from './types';
-import { useFilteredEventsRedux } from '../../hooks/useEventsRedux';
-import EventCard from './EventCard';
-import PastEventCard from './PastEventCard';
-import Pagination from '../Pagination'; // Import Pagination
+import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListProps } from '@/features/events/components/EventsList/types';
+import { useFilteredEventsRedux } from '@/features/events/hooks/useEventsRedux';
+import EventCard from '@/features/events/components/EventsList/EventCard';
+import PastEventCard from '@/features/events/components/EventsList/PastEventCard';
+import Pagination from '@/shared/components/ui/Pagination';
 
 const UPCOMING_EVENTS_PER_PAGE = 5;
 const PAST_EVENTS_PER_PAGE = 9;
@@ -16,33 +16,44 @@ const isPastEvent = (date: string): boolean => {
   return eventDate < today;
 };
 
-interface EventsListProps {
-  initialSearch?: string;
-}
-
-const EventsList = ({ initialSearch = '' }: EventsListProps) => {
+const EventsList = ({ 
+  initialSearch = '', 
+  parentEvents = [],
+  parentLoading = false,
+  parentError = null
+}: EventsListProps) => {
   const [selectedTypes, setSelectedTypes] = useState<EventType[]>([]);
   const [dateRange, setDateRange] = useState<DateRangeFilter>('all');
   const [currentPageUpcoming, setCurrentPageUpcoming] = useState(1);
   const [currentPagePast, setCurrentPagePast] = useState(1);
   
-  // Use Redux-based hook for filtered events
+  // Determine if we should use parent props or Redux
+  const useParentData = parentEvents.length > 0;
+  
+  // Use Redux-based hook for filtered events if not using parent data
   const { 
-    events: mainEvents = [], 
-    isLoading, 
-    error, 
+    events: reduxEvents = [], 
+    isLoading: reduxLoading, 
+    error: reduxError, 
     applyFilters, 
     clearAllFilters 
   } = useFilteredEventsRedux();
   
-  // Apply filters when they change
+  // Combined state values
+  const mainEvents = useParentData ? parentEvents : reduxEvents;
+  const isLoading = useParentData ? parentLoading : reduxLoading;
+  const error = useParentData ? parentError : reduxError;
+  
+  // Apply filters when they change (only if using Redux)
   useEffect(() => {
-    applyFilters({
-      search: initialSearch,
-      types: selectedTypes.length > 0 ? selectedTypes : undefined,
-      dateRange: dateRange
-    });
-  }, [initialSearch, selectedTypes, dateRange, applyFilters]);
+    if (!useParentData) {
+      applyFilters({
+        search: initialSearch,
+        types: selectedTypes.length > 0 ? selectedTypes : undefined,
+        dateRange: dateRange
+      });
+    }
+  }, [initialSearch, selectedTypes, dateRange, applyFilters, useParentData]);
 
   useEffect(() => {
     // Reset pages when filters change
@@ -53,20 +64,49 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
   const clearFilters = () => {
     setSelectedTypes([]);
     setDateRange('all');
-    clearAllFilters();
+    
+    // Only clear Redux filters if not using parent data
+    if (!useParentData) {
+      clearAllFilters();
+    }
     // Page reset will be handled by the useEffect above
   };
 
   const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'all' || initialSearch !== '';
   
   // Convert mainEvents to the local Event type using the adapter function
-  const allEvents = mainEvents.map(adaptMainEventToLocal);
+  console.log('Main events before adaptation:', mainEvents);
   
+  // Safely convert events to local format
+  const allEvents: Event[] = [];
+  
+  if (Array.isArray(mainEvents) && mainEvents.length > 0) {
+    for (const event of mainEvents) {
+      if (event && event.organizer) {
+        try {
+          const adaptedEvent = adaptMainEventToLocal(event);
+          allEvents.push(adaptedEvent);
+        } catch (error) {
+          console.error('Error adapting event:', error, event);
+        }
+      } else {
+        console.error('Invalid event data:', event);
+      }
+    }
+  }
+  
+  // Filter and sort events safely
   const upcomingEventsRaw = allEvents.filter(event => !isPastEvent(event.date));
   const pastEventsRaw = allEvents.filter(event => isPastEvent(event.date));
   
-  upcomingEventsRaw.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  pastEventsRaw.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // Sort events by date
+  upcomingEventsRaw.sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+  
+  pastEventsRaw.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
   // Pagination for Upcoming Events
   const totalUpcomingEvents = upcomingEventsRaw.length;
