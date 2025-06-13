@@ -20,12 +20,6 @@ export default function ResourcesPage() {
     loadResources();
   }, []);
   
-  useEffect(() => {
-    console.log('ResourcesPage - Resources:', resources);
-    console.log('ResourcesPage - Loading:', isLoading);
-    console.log('ResourcesPage - Error:', error);
-  }, [resources, isLoading, error]);
-  
   return (
     <>
       <Helmet>

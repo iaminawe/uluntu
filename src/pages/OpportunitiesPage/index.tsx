@@ -155,8 +155,6 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     loadOpportunities();
   }, []);
-  console.log('OpportunitiesPage - Raw opportunities from useOpportunities:', fetchedOpportunities);
-  console.log('OpportunitiesPage - Number of opportunities:', fetchedOpportunities.length);
   
   // Convert fallback opportunities to the Supabase Opportunity type
   const fallbackOpportunitiesConverted: SupabaseOpportunity[] = FALLBACK_OPPORTUNITIES.map(fallback => ({
@@ -185,20 +183,15 @@ export default function OpportunitiesPage() {
   // Use fallback data if no opportunities are fetched
   const opportunities = fetchedOpportunities.length > 0 ? fetchedOpportunities : fallbackOpportunitiesConverted;
   const hasOpportunities = opportunities.length > 0;
-  console.log('OpportunitiesPage - Using fallback data:', fetchedOpportunities.length === 0);
-  console.log('OpportunitiesPage - hasOpportunities:', hasOpportunities);
   
   // Map API opportunities to the format expected by OpportunitiesList
   const mappedOpportunities = opportunities.map(opportunity => {
-    console.log('OpportunitiesPage - Mapping opportunity:', opportunity);
     // Ensure opportunity is treated as SupabaseOpportunity
     const supabaseOpportunity = opportunity as SupabaseOpportunity;
     const mapped = mapToOpportunityListItem(supabaseOpportunity);
-    console.log('OpportunitiesPage - Mapped opportunity:', mapped);
     return mapped;
   });
   
-  console.log('OpportunitiesPage - Final mappedOpportunities length:', mappedOpportunities.length);
   
   return (
     <>

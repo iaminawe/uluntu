@@ -68,9 +68,6 @@ export default function DirectoryPage() {
   };
   
   useEffect(() => {
-    console.log('DirectoryPage - All Members:', allMembers);
-    console.log('DirectoryPage - Loading:', isLoading);
-    console.log('DirectoryPage - Error:', error);
     setCurrentPage(1); // Reset to first page when filters/data change
   }, [allMembers, isLoading, error, filters]); // Consider if filters should reset page
   

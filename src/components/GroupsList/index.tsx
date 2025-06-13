@@ -31,8 +31,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
   const {
     groups: reduxGroups,
     isLoading: reduxLoading,
-    error: reduxError,
-    updateFilters
+    error: reduxError
   } = useFilteredGroupsRedux(useRedux ? reduxFilters : undefined);
 
   // Traditional React Query approach if not using Redux
@@ -68,7 +67,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-8">
-        <div className="text-center py-12">
+        <div className="text-center py-12" data-testid="groups-loading">
           <div className="animate-pulse flex flex-col items-center space-y-4">
             <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-64"></div>
             <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
@@ -87,7 +86,10 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
     return (
       <div className="max-w-7xl mx-auto py-8">
         <div className="text-center py-12 text-red-500">
-          <p>Error loading groups. Please try again later.</p>
+          <p>Error loading groups</p>
+          {error && typeof error === 'object' && 'message' in error && (
+            <p>{(error as any).message}</p>
+          )}
         </div>
       </div>
     );
@@ -101,7 +103,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No groups found</h3>
             <p className="text-slate-600 dark:text-slate-300">
               {searchTerm || visibilityFilter.length > 0 
-                ? 'Try adjusting your search or filters'
+                ? 'No groups match your search criteria'
                 : 'There are no groups to display yet'}
             </p>
           </div>

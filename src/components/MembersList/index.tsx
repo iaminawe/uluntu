@@ -23,8 +23,6 @@ const MembersList = ({
   // Use Redux for filtered members if no parent members are provided
   const { 
     members: reduxMembers = [], 
-    isLoading: reduxLoading, 
-    error: reduxError,
     applyFilters,
     clearAllFilters
   } = useFilteredMembersRedux();
@@ -32,10 +30,7 @@ const MembersList = ({
   // Determine if we should use parent props or Redux state
   const useParentData = parentMembers.length > 0 || parentLoading !== undefined;
   
-  // Combined state values
-  const members = useParentData ? parentMembers : reduxMembers;
-  const loading = useParentData ? parentLoading : reduxLoading;
-  const error = useParentData ? parentError : reduxError;
+  // State logic handled through useParentData and individual selectors
   
   // Filtered members based on current filters (for parent members mode)
   const [localFilteredMembers, setLocalFilteredMembers] = useState<Member[]>([]);
@@ -145,7 +140,7 @@ const MembersList = ({
       {filteredMembers.length > 0 && (
         <div className="text-center text-sm text-slate-500 dark:text-slate-400">
           Showing {filteredMembers.length} {filteredMembers.length === 1 ? 'member' : 'members'}
-          {(debouncedFilters.search || debouncedFilters.skills?.length) ? ' matching your filters' : ''}
+          {(filters.search || filters.skills?.length) ? ' matching your filters' : ''}
         </div>
       )}
     </div>

@@ -173,5 +173,69 @@ export const groupsApi = {
       handleSupabaseError(error, 'creating group');
       return null;
     }
+  },
+
+  async joinGroup(groupId: string, userId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('group_members')
+        .insert({
+          group_id: groupId,
+          user_id: userId,
+          role: 'member',
+          joined_date: new Date().toISOString()
+        });
+
+      if (error) {
+        handleSupabaseError(error, 'joining group');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'joining group');
+      return false;
+    }
+  },
+
+  async leaveGroup(groupId: string, userId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('user_id', userId);
+
+      if (error) {
+        handleSupabaseError(error, 'leaving group');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'leaving group');
+      return false;
+    }
+  },
+
+  async getGroupMembers(groupId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('group_members')
+        .select(`
+          *,
+          member:members(*)
+        `)
+        .eq('group_id', groupId)
+        .order('joined_date', { ascending: false });
+
+      if (error) {
+        handleSupabaseError(error, 'fetching group members');
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, 'fetching group members');
+      return [];
+    }
   }
 };

@@ -33,11 +33,10 @@ export function useCompaniesRedux() {
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Load companies if needed
+  // Load companies
   const loadCompanies = () => {
-    if (status === 'idle') {
-      dispatch(fetchCompanies());
-    }
+    // Always fetch companies when requested
+    dispatch(fetchCompanies());
   };
 
   return {
@@ -70,10 +69,11 @@ export function useCompanyRedux(id?: string) {
 
   // Load company if we have an ID
   useEffect(() => {
-    if (id && status === 'idle') {
+    if (id) {
+      // Always fetch the company data when the ID changes
       dispatch(fetchCompanyById(id));
     }
-  }, [id, status, dispatch]);
+  }, [id, dispatch]);
 
   return {
     company,
@@ -108,12 +108,15 @@ export function useFilteredCompaniesRedux(initialFilters?: CompanyFilters) {
     if (initialFilters) {
       dispatch(setFilters(initialFilters));
     }
-  }, []);
+  }, [dispatch, initialFilters]);
 
   // Apply filters when they change
   useEffect(() => {
-    dispatch(fetchFilteredCompanies(currentFilters));
-  }, [dispatch, JSON.stringify(currentFilters)]);
+    // Only dispatch if we have filters to apply
+    if (Object.keys(currentFilters).length > 0) {
+      dispatch(fetchFilteredCompanies(currentFilters));
+    }
+  }, [dispatch, currentFilters]);
 
   // Helper for updating just certain filters without affecting others
   const updateFilters = (newFilters: Partial<CompanyFilters>) => {

@@ -1,8 +1,10 @@
 // jest-ts-import-meta-env-transformer.js
-const ts = require('typescript');
+import ts from 'typescript';
 
-module.exports = {
-  factory: (cs) => {
+export const name = 'jest-ts-import-meta-env-transformer';
+export const version = 1;
+
+export function factory(cs) {
     return (ctx) => {
       const visitor = (node) => {
         if (
@@ -22,5 +24,4 @@ module.exports = {
       };
       return (sf) => ts.visitNode(sf, visitor);
     };
-  },
-};
+  }

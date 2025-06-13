@@ -170,6 +170,28 @@ export interface MarketplaceItem extends BaseEntity {
   datePosted: string;
 }
 
+export interface CompanyMember {
+  company_id: string;
+  member_id: string;
+  role?: string;
+  joined_date?: string;
+  member?: Member;
+}
+
+export interface CompanyEmployee {
+  id: string;
+  company_id: string;
+  member_id: string;
+  role?: string;
+  department?: string;
+  start_date?: string;
+  end_date?: string;
+  is_current?: boolean;
+  created_at: string;
+  updated_at?: string;
+  member?: Member;
+}
+
 export interface Opportunity extends BaseEntity {
   title: string;
   company: {

@@ -86,27 +86,55 @@ export const marketplaceApi = {
 
   async getById(id: string): Promise<MarketplaceItem | null> {
     try {
-      console.log('Fetching marketplace item with ID:', id);
+      // Enhanced debug logging
+      console.log('MarketplaceAPI: Fetching item with ID:', id, 'Type:', typeof id);
+      
+      // Check for valid ID format
+      if (!id) {
+        console.error('MarketplaceAPI: Invalid ID provided', id);
+        return null;
+      }
+      
+      // Ensure ID is properly formatted (for UUID format)
+      const formattedId = id.toString().trim();
+      
+      console.log('MarketplaceAPI: Using formatted ID:', formattedId);
+      
+      // First try a basic query to see if the item exists
+      const { data: checkData, error: checkError } = await supabase
+        .from('marketplace_listings')
+        .select('id')
+        .eq('id', formattedId)
+        .maybeSingle();
+        
+      if (checkError) {
+        console.error('MarketplaceAPI: Error checking if item exists:', checkError);
+      }
+      
+      console.log('MarketplaceAPI: Item exists check:', checkData);
+      
+      // Now perform the full query
       const { data, error } = await supabase
         .from('marketplace_listings')
         .select(`
           *,
           members!marketplace_listings_seller_id_fkey(id, name, image)
         `)
-        .eq('id', id)
+        .eq('id', formattedId)
         .single();
 
       if (error) {
-        console.error('Error fetching marketplace item:', error);
+        console.error('MarketplaceAPI: Error fetching item details:', error);
         handleSupabaseError(error, 'fetching marketplace item by id');
         return null;
       }
       
-      console.log('Marketplace item data:', data);
+      console.log('MarketplaceAPI: Successfully retrieved item data:', data);
+      
       // Use type assertion to avoid type compatibility issues
       return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
     } catch (error) {
-      console.error('Exception in getById:', error);
+      console.error('MarketplaceAPI: Exception in getById:', error);
       handleSupabaseError(error, 'fetching marketplace item by id');
       return null;
     }

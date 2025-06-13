@@ -3,8 +3,11 @@ import { Database } from '../types/supabase';
 import { AuthError } from '@supabase/supabase-js';
 
 // Get environment variables with proper validation
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// In test environment, check both import.meta.env and process.env
+const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || 
+  (typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_URL : null);
+const supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || 
+  (typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_ANON_KEY : null);
 
 // Validate environment variables
 if (!supabaseUrl) {

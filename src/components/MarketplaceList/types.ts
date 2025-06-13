@@ -7,7 +7,7 @@ import {
   FilterOptions
 } from '../../types/marketplace';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface Seller {
   id: string; // Using string ID for consistency
   name: string;
@@ -70,7 +70,7 @@ export const adaptListingToMainMarketplaceItem = (listing: Listing): Partial<Mai
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface MarketplaceListProps {
   initialType?: ListingType | 'all';
   initialSearch?: string;

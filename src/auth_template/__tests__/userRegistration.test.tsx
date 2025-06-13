@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SignUpPage from '../pages/SignUpPage';
-import React from 'react';
 
 // Mock window.alert to verify form submission
 const mockAlert = jest.fn();

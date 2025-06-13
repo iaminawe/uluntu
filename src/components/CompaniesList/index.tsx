@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import CompanyCard from './CompanyCard';
-import { CompaniesListProps, FilterOptions } from './types';
+import { CompaniesListProps } from './types';
 import { useFilteredCompaniesRedux } from '../../hooks/useCompaniesRedux';
 import Pagination from '../Pagination'; // Import Pagination
 
@@ -14,10 +14,10 @@ const CompaniesList = ({
 }: CompaniesListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   // Initialize the Redux filtered companies hook with initial filters
-  const initialReduxFilters = {
+  const initialReduxFilters = useMemo(() => ({
     search: initialSearch,
     industries: initialIndustry ? [initialIndustry] : []
-  };
+  }), [initialSearch, initialIndustry]);
   
   const { 
     companies: allCompanies, 
@@ -29,18 +29,17 @@ const CompaniesList = ({
     setIndustries
   } = useFilteredCompaniesRedux(initialReduxFilters);
   
-  // Update filters when props change
+  // Update filters when search term changes
   useEffect(() => {
     setSearchTerm(initialSearch);
     setCurrentPage(1); // Reset page when search term changes
-  }, [initialSearch]);
+  }, [initialSearch, setSearchTerm]);
   
+  // Update filters when industry changes
   useEffect(() => {
-    if (initialIndustry) {
-      setIndustries(initialIndustry ? [initialIndustry] : []);
-      setCurrentPage(1); // Reset page when industry changes
-    }
-  }, [initialIndustry]);
+    setIndustries(initialIndustry ? [initialIndustry] : []);
+    setCurrentPage(1); // Reset page when industry changes
+  }, [initialIndustry, setIndustries]);
 
   // Pagination logic
   const totalCompanies = allCompanies.length;
@@ -57,7 +56,15 @@ const CompaniesList = ({
   // Effect to reset page if filters change directly (e.g. clear filters button)
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters.search, filters.industries]);
+  }, [initialSearch, initialIndustry]);
+  
+  // Add a one-time check for empty data
+  useEffect(() => {
+    // Only run once when the component mounts
+    if (allCompanies.length === 0 && !isLoading) {
+      updateFilters(initialReduxFilters);
+    }
+  }, []);  // Empty dependency array means this only runs once
 
   return (
     <div className="space-y-8">

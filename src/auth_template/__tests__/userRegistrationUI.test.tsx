@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SignUpPageWithAPI from '../pages/SignUpPageWithAPI';
-import React from 'react';
+
 import { supabase } from '../../lib/supabase';
 
 // Mock the Supabase client

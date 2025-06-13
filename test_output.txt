@@ -1,0 +1,4 @@
+
+> kootenay-tech-community@0.1.0 test
+> jest --no-coverage --passWithNoTests
+

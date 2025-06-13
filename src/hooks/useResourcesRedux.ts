@@ -31,15 +31,14 @@ export function useResourcesRedux() {
   const status = useAppSelector(selectResourcesStatus);
   const error = useAppSelector(selectResourcesError);
   
-  const isLoading = status === 'loading';
+  // If we have resources, don't show loading even if status is loading
+  const isLoading = status === 'loading' && resources.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Load resources if needed
+  // Load resources 
   const loadResources = () => {
-    if (status === 'idle') {
-      dispatch(fetchResources());
-    }
+    dispatch(fetchResources());
   };
 
   return {
@@ -66,16 +65,16 @@ export function useResourceRedux(id?: string) {
   const status = useAppSelector(selectResourcesStatus);
   const error = useAppSelector(selectResourcesError);
   
-  const isLoading = status === 'loading';
+  const isLoading = status === 'loading' && !resource;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
 
   // Load resource if we have an ID
   useEffect(() => {
-    if (id && status === 'idle') {
+    if (id) {
       dispatch(fetchResourceById(id));
     }
-  }, [id, status, dispatch]);
+  }, [id, dispatch]);
 
   return {
     resource,
@@ -101,7 +100,8 @@ export function useFilteredResourcesRedux(initialFilters?: ResourceFilters) {
   const status = useAppSelector(selectResourcesStatus);
   const error = useAppSelector(selectResourcesError);
   
-  const isLoading = status === 'loading';
+  // If we have filtered resources, don't show loading even if status is loading
+  const isLoading = status === 'loading' && resources.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
@@ -159,7 +159,7 @@ export function useGroupResourcesRedux(groupId?: string) {
   const status = useAppSelector(selectResourcesStatus);
   const error = useAppSelector(selectResourcesError);
   
-  const isLoading = status === 'loading';
+  const isLoading = status === 'loading' && resources.length === 0;
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
 
