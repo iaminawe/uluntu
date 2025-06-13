@@ -6,6 +6,7 @@ export interface FormData {
   heroImage: string;
   coverImage: string;
   visibility: 'open' | 'closed' | 'secret';
+  interests: string[];
 }
 
 export type LoadingStateProps = Record<string, never>;

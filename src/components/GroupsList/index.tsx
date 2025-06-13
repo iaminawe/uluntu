@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGroupsWithFilters } from '../../hooks/useQueries';
 import { Group, GroupsListProps } from './types';
 import GroupCard from './GroupCard';
-import JoinModal from '../JoinModal'; // Reusing the existing JoinModal component
+import JoinModal from './JoinModal';
 import Pagination from '../Pagination'; // Import Pagination
 import { useFilteredGroupsRedux } from '../../hooks/useGroupsRedux';
 import { GroupFilters } from '../../redux/slices/groupsSlice';

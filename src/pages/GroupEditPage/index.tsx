@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGroup } from '../../hooks/useQueries';
+import { useGroup, useCreateGroup, useUpdateGroup } from '../../hooks/useGroupQueries';
 import { ContentContainer } from '../../components/ui/PageLayout';
 import { Card } from '../../components/ui/Card';
+import { TagsInput } from '../../components/TagsInput';
 import FormHeader from './FormHeader';
 import GroupInfo from './GroupInfo';
 import VisibilitySelect from './VisibilitySelect';
@@ -18,7 +19,8 @@ const initialFormData: FormData = {
   longDescription: '',
   heroImage: '',
   coverImage: '',
-  visibility: 'open'
+  visibility: 'open',
+  interests: []
 };
 
 export default function GroupEditPage() {
@@ -37,6 +39,9 @@ export default function GroupEditPage() {
     isLoading: groupLoading
   } = useGroup(groupId);
   
+  const createGroup = useCreateGroup();
+  const updateGroup = useUpdateGroup();
+  
   // Populate form with group data when in edit mode
   useEffect(() => {
     if (isEditMode && group) {
@@ -48,7 +53,8 @@ export default function GroupEditPage() {
         coverImage: group.coverImage || '',
         visibility: (['open', 'closed', 'secret'].includes(group.visibility as string)
           ? (group.visibility as 'open' | 'closed' | 'secret')
-          : 'open')
+          : 'open'),
+        interests: group.interests || []
       });
     }
   }, [isEditMode, group]);
@@ -61,6 +67,10 @@ export default function GroupEditPage() {
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
+  };
+  
+  const handleInterestsChange = (interests: string[]) => {
+    setFormData(prev => ({ ...prev, interests }));
   };
   
   const validateForm = (): boolean => {
@@ -92,8 +102,24 @@ export default function GroupEditPage() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const groupData = {
+        name: formData.name,
+        description: formData.description,
+        longDescription: formData.longDescription || null,
+        heroImage: formData.heroImage,
+        visibility: formData.visibility,
+        interests: formData.interests
+      };
+      
+      if (isEditMode && id) {
+        await updateGroup.mutateAsync({ id, data: groupData });
+        console.log('Group updated successfully!');
+      } else {
+        const result = await createGroup.mutateAsync(groupData);
+        if (result) {
+          console.log('Group created successfully!');
+        }
+      }
       
       setSubmitSuccess(true);
       
@@ -103,6 +129,7 @@ export default function GroupEditPage() {
       }, 1500);
     } catch (error) {
       console.error('Error submitting group:', error);
+      console.error(isEditMode ? 'Failed to update group' : 'Failed to create group');
     } finally {
       setIsSubmitting(false);
     }
@@ -164,6 +191,16 @@ export default function GroupEditPage() {
                   handleChange={handleChange}
                   errors={errors}
                 />
+                
+                <div>
+                  <TagsInput
+                    label="Interests, Hobbies, and Goals"
+                    value={formData.interests}
+                    onChange={handleInterestsChange}
+                    placeholder="Add interests (e.g., hiking, photography, AI)"
+                    helperText="Add tags to help people find groups based on shared interests"
+                  />
+                </div>
                 
                 <FormActions 
                   isEditMode={isEditMode}

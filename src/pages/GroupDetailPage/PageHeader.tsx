@@ -1,9 +1,55 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, LogOut } from 'lucide-react';
 import { getVisibilityIcon, getVisibilityLabel } from './VisibilityHelper';
 import { PageHeaderProps } from './types';
+import { useGroupMembership, useGroupMemberRole, useJoinGroup, useLeaveGroup } from '../../hooks/useGroupQueries';
+import { useCurrentMember } from '../../hooks/useCurrentMember';
+import { useState } from 'react';
 
 const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
+  const { data: currentMember } = useCurrentMember();
+  const { data: isMember } = useGroupMembership(group.id, currentMember?.id);
+  const { data: memberRole } = useGroupMemberRole(group.id, currentMember?.id);
+  const joinGroup = useJoinGroup();
+  const leaveGroup = useLeaveGroup();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleJoin = async () => {
+    if (!currentMember) {
+      setShowJoinModal(true);
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await joinGroup.mutateAsync({
+        groupId: group.id,
+        memberId: currentMember.id
+      });
+    } catch (error) {
+      console.error('Failed to join group:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!currentMember || !window.confirm('Are you sure you want to leave this group?')) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await leaveGroup.mutateAsync({
+        groupId: group.id,
+        memberId: currentMember.id
+      });
+    } catch (error) {
+      console.error('Failed to leave group:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   return (
     <div className="relative h-96 overflow-hidden">
       <img
@@ -39,19 +85,35 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
               </div>
               
               <div className="mt-4 md:mt-0 space-x-3 flex">
-                <button
-                  onClick={() => setShowJoinModal(true)}
-                  className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-                >
-                  Join Group
-                </button>
-                <Link
-                  to={`/groups/${group.id}/edit`}
-                  className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors border border-white/20 flex items-center"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </Link>
+                {!isMember && group.visibility !== 'secret' && (
+                  <button
+                    onClick={handleJoin}
+                    disabled={isProcessing}
+                    className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isProcessing ? 'Processing...' : (group.visibility === 'closed' ? 'Request to Join' : 'Join Group')}
+                  </button>
+                )}
+                {isMember && (
+                  <button
+                    onClick={handleLeave}
+                    disabled={isProcessing || memberRole === 'admin'}
+                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    title={memberRole === 'admin' ? 'Admins cannot leave the group' : ''}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {isProcessing ? 'Processing...' : 'Leave Group'}
+                  </button>
+                )}
+                {memberRole === 'admin' && (
+                  <Link
+                    to={`/groups/${group.id}/edit`}
+                    className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors border border-white/20 flex items-center"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Link>
+                )}
               </div>
             </div>
           </div>
