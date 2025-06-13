@@ -9,10 +9,12 @@ import EventsCalendar from '../../components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useEventsRedux } from '../../hooks/useEventsRedux';
+import { EventType, DateRangeFilter } from '../../components/EventsList/types';
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<{ type?: EventType; dateRange?: DateRangeFilter }>({});
 
   // Use the Redux-based useEventsRedux hook to fetch events data.
   const { events = [], isLoading, error, getAllEvents } = useEventsRedux();
@@ -42,6 +44,7 @@ export default function EventsPage() {
       <ContentContainer>
         <ActionBar 
           onSearch={setSearchTerm} 
+          onFiltersChange={setFilters}
           viewMode={viewMode} 
           onViewModeChange={setViewMode} 
         />
@@ -65,7 +68,13 @@ export default function EventsPage() {
             }}
           />
         ) : viewMode === 'list' ? (
-          <EventsList initialSearch={searchTerm} />
+          <EventsList 
+            initialSearch={searchTerm}
+            initialFilters={{
+              types: filters.type ? [filters.type] : undefined,
+              dateRange: filters.dateRange
+            }}
+          />
         ) : (
           <EventsCalendar 
             events={events} 

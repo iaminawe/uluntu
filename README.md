@@ -8,16 +8,20 @@ This platform connects community members, local businesses, and organizations to
 
 *   **Events Management:** Create, manage, and discover local events.
     *   **Creating Events:** Users can create events with details such as date, time, location, description, and registration information.
-    *   **Managing Events:** Event organizers can manage attendees, update event details, and communicate with participants.
-    *   **Discovering Events:** Users can easily find local events based on category, date, location, and interests.
+    *   **Event Registration:** Real-time registration system with attendee tracking and capacity management.
+    *   **Managing Events:** Event organizers can manage attendees, update event details, and view registration status.
+    *   **Discovering Events:** Advanced search and filtering by type (in-person/online/hybrid), date range, and keywords.
+    *   **Event Sessions:** Support for multi-session events with presenters, videos, and downloadable resources.
 *   **Groups Management:** Form and manage community groups.
     *   **Creating Groups:** Users can create groups based on shared interests, hobbies, or goals.
     *   **Managing Groups:** Group administrators can manage members, organize activities, and share resources.
     *   **Joining Groups:** Users can join groups to connect with like-minded individuals and participate in community activities.
 *   **Marketplace:** List and sell products and services.
     *   **Listing Items:** Users can list items for sale with details such as description, price, images, and contact information.
-    *   **Selling Items:** Sellers can manage their listings, communicate with potential buyers, and process transactions.
-    *   **Buying Items:** Buyers can browse the marketplace, contact sellers, and purchase items.
+    *   **Contact Management:** Sellers can choose how buyers contact them (email/phone/both) with privacy controls.
+    *   **Seller Profiles:** Automatic integration with member profiles for trusted transactions.
+    *   **Advanced Search:** Filter by type, condition, price range, and location.
+    *   **Form Validation:** Comprehensive validation ensures quality listings.
 *   **News:** Stay informed about local news and articles.
     *   **Publishing Articles:** Administrators and moderators can publish news articles about local events, initiatives, and announcements.
     *   **Reading Articles:** Users can read news articles to stay informed about what's happening in their community.
@@ -39,7 +43,12 @@ The project follows a modular architecture with the following key components:
 *   **UI Components:** Reusable UI components in `src/components/` provide a user-friendly interface. These components are designed to be modular and extensible, allowing for easy customization and reuse throughout the platform.
 *   **Pages:** The `src/pages/` directory contains the website pages, organizing UI components and providing navigation. Each page represents a specific section of the platform, such as the events page, groups page, or marketplace page.
 *   **Data Adapters:** Functions in `src/adapters/` ensure data consistency between the application and Supabase. These adapters handle data transformation and validation, ensuring that data is consistent and accurate across the platform.
-*   **Supabase:** Provides backend-as-a-service for data storage, authentication, and real-time updates. Supabase simplifies backend development by providing a scalable and reliable platform for data storage, user authentication, and real-time updates.
+*   **State Management:** Redux Toolkit for UI state and React Query for server state, providing optimal performance and user experience.
+*   **Supabase:** Provides backend-as-a-service for data storage, authentication, and real-time updates with Row Level Security for data protection.
+
+For detailed technical information, see:
+- [Technical Documentation](TECHNICAL_DOCUMENTATION.md) - Architecture, database schema, and implementation details
+- [API Documentation](API_DOCUMENTATION.md) - Complete API reference with examples
 
 The data flow is as follows:
 
@@ -87,9 +96,19 @@ Here are some examples of how to use the platform's features:
 *   **Listing an Item on the Marketplace:**
     1.  Log in to your account.
     2.  Navigate to the "Marketplace" page.
-    3.  Click the "List Item" button.
-    4.  Fill in the item details, such as description, price, images, and contact information.
+    3.  Click the "Create New Listing" button.
+    4.  Fill in the item details:
+        - Title, description, and price
+        - Item type and condition
+        - Location and tags
+        - Contact preferences (email/phone/both)
     5.  Click the "Save" button to list the item on the marketplace.
+*   **Registering for an Event:**
+    1.  Browse to an event you're interested in.
+    2.  Click the "Register Now" button.
+    3.  Confirm your registration.
+    4.  View your registration status and other attendees.
+    5.  Unregister if your plans change.
 
 ## Contribution Guidelines
 

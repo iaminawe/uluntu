@@ -119,6 +119,7 @@ export interface Group extends BaseEntity {
   events?: Event[];
   resources?: Resource[];
   posts?: GroupPost[];
+  interests?: string[]; // Added for interests/hobbies/goals
 }
 
 export interface NewsArticle extends BaseEntity {
@@ -168,6 +169,11 @@ export interface MarketplaceItem extends BaseEntity {
     image: string;
   };
   datePosted: string;
+  // Contact information fields
+  contactEmail?: string;
+  contactPhone?: string;
+  contactMethod?: 'email' | 'phone' | 'both';
+  showContactInfo?: boolean;
 }
 
 export interface Opportunity extends BaseEntity {

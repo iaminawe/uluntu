@@ -256,3 +256,69 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
         enabled: validNumericId !== undefined,
     });
 }
+
+export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+    mutationFn: ({ groupId, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Joining group', groupId, 'with member', memberId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.joinGroup(groupId, memberId);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+    },
+  });
+}
+
+export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+    mutationFn: ({ groupId, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Leaving group', groupId, 'with member', memberId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.leaveGroup(groupId, memberId);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+    },
+  });
+}
+
+export function useGroupMembership(groupId?: string, memberId?: string): UseQueryResult<boolean, Error> {
+  return useQuery<boolean, Error>({
+    queryKey: ['groupMembership', groupId, memberId],
+    queryFn: async () => {
+      if (!groupId || !memberId) return false;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return false; // Mock always returns false
+      }
+      return groupsApi.isMember(groupId, memberId);
+    },
+    enabled: !!groupId && !!memberId,
+  });
+}
+
+export function useGroupMemberRole(groupId?: string, memberId?: string): UseQueryResult<'admin' | 'member' | null, Error> {
+  return useQuery<'admin' | 'member' | null, Error>({
+    queryKey: ['groupMemberRole', groupId, memberId],
+    queryFn: async () => {
+      if (!groupId || !memberId) return null;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return null; // Mock always returns null
+      }
+      return groupsApi.getMemberRole(groupId, memberId);
+    },
+    enabled: !!groupId && !!memberId,
+  });
+}

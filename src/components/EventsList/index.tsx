@@ -18,11 +18,15 @@ const isPastEvent = (date: string): boolean => {
 
 interface EventsListProps {
   initialSearch?: string;
+  initialFilters?: {
+    types?: EventType[];
+    dateRange?: DateRangeFilter;
+  };
 }
 
-const EventsList = ({ initialSearch = '' }: EventsListProps) => {
-  const [selectedTypes, setSelectedTypes] = useState<EventType[]>([]);
-  const [dateRange, setDateRange] = useState<DateRangeFilter>('all');
+const EventsList = ({ initialSearch = '', initialFilters }: EventsListProps) => {
+  const [selectedTypes, setSelectedTypes] = useState<EventType[]>(initialFilters?.types || []);
+  const [dateRange, setDateRange] = useState<DateRangeFilter>(initialFilters?.dateRange || 'all');
   const [currentPageUpcoming, setCurrentPageUpcoming] = useState(1);
   const [currentPagePast, setCurrentPagePast] = useState(1);
   
@@ -49,6 +53,16 @@ const EventsList = ({ initialSearch = '' }: EventsListProps) => {
     setCurrentPageUpcoming(1);
     setCurrentPagePast(1);
   }, [initialSearch, selectedTypes, dateRange]);
+
+  // Update filters when initialFilters prop changes
+  useEffect(() => {
+    if (initialFilters?.types) {
+      setSelectedTypes(initialFilters.types);
+    }
+    if (initialFilters?.dateRange) {
+      setDateRange(initialFilters.dateRange);
+    }
+  }, [initialFilters]);
   
   const clearFilters = () => {
     setSelectedTypes([]);

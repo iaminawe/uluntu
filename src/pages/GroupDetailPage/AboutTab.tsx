@@ -13,6 +13,22 @@ const AboutTab: React.FC<AboutTabProps> = ({ group }) => {
         </div>
       </div>
       
+      {group.interests && group.interests.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-8">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Interests & Goals</h3>
+          <div className="flex flex-wrap gap-2">
+            {group.interests.map((interest) => (
+              <span
+                key={interest}
+                className="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 rounded-md text-sm font-medium"
+              >
+                {interest}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Group Details</h3>

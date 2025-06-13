@@ -240,6 +240,29 @@ export const membersApi = {
     }
   },
 
+  async getByUserId(userId: string): Promise<Member | null> {
+    try {
+      const { data, error } = await supabase
+        .from('members')
+        .select(`
+          *,
+          member_skills(skill)
+        `)
+        .eq('user_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        handleSupabaseError(error, 'fetching member by user id');
+        return null;
+      }
+      
+      return data ? adaptMemberFromDatabase(data) : null;
+    } catch (error) {
+      handleSupabaseError(error, 'fetching member by user id');
+      return null;
+    }
+  },
+
   async getByCompany(companyId: string): Promise<Member[]> {
     try {
       // Get member IDs associated with this company

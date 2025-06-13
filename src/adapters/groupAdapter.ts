@@ -10,7 +10,7 @@ export type GroupInsertData = Pick<FrontendGroup, 'name' | 'description' | 'visi
 
 export type GroupUpdateData = Partial<GroupInsertData> & Pick<FrontendGroup, 'id'>; // id is needed for update, others optional
 
-type SupabaseGroupRow = Database['public']['Tables']['groups']['Row'];
+type SupabaseGroupRow = Database['public']['Tables']['groups']['Row'] & { interests?: string[] };
 type SupabaseGroupInsert = Database['public']['Tables']['groups']['Insert'];
 type SupabaseGroupUpdate = Database['public']['Tables']['groups']['Update'];
 
@@ -45,6 +45,7 @@ export function adaptGroupFromDatabase(group: SupabaseGroupRow): FrontendGroup {
     events: [],
     resources: [],
     posts: [],
+    interests: group.interests || [],
   };
 }
 

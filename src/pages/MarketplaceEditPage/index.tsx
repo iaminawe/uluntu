@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMarketplaceListingByIdRedux, useMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
+import { useCurrentMember } from '../../hooks/useCurrentMember';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
 import TagsSection from './TagsSection';
+import ContactInfoSection from './ContactInfoSection';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import FormHeader from './FormHeader';
 import FormActions from './FormActions';
@@ -28,7 +30,12 @@ export default function MarketplaceEditPage() {
     status: 'draft',
     featured: false,
     tags: [],
-    newTag: ''
+    newTag: '',
+    // Contact information fields
+    contactEmail: '',
+    contactPhone: '',
+    contactMethod: '',
+    showContactInfo: true
   });
   
   // Redux hooks for marketplace listings
@@ -44,6 +51,9 @@ export default function MarketplaceEditPage() {
   const { 
     createListing 
   } = useMarketplaceListingsRedux();
+  
+  // Get current user's member profile
+  const { data: currentMember } = useCurrentMember();
   
   // State for delete confirmation modal
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -69,7 +79,12 @@ export default function MarketplaceEditPage() {
         status: listing.status || 'draft',
         featured: listing.featured || false,
         tags: listing.tags || [],
-        newTag: ''
+        newTag: '',
+        // Contact information fields
+        contactEmail: listing.contactEmail || '',
+        contactPhone: listing.contactPhone || '',
+        contactMethod: listing.contactMethod || '',
+        showContactInfo: listing.showContactInfo !== false
       });
     }
   }, [listing, isEditing]);
@@ -77,6 +92,46 @@ export default function MarketplaceEditPage() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic form validation
+    if (!formData.title.trim()) {
+      alert('Please enter a title for your listing');
+      return;
+    }
+    
+    if (!formData.description.trim()) {
+      alert('Please enter a description for your listing');
+      return;
+    }
+    
+    if (parseFloat(formData.price) < 0) {
+      alert('Price cannot be negative');
+      return;
+    }
+    
+    if (!formData.location.trim()) {
+      alert('Please enter a location');
+      return;
+    }
+    
+    // Validate contact info if showing
+    if (formData.showContactInfo && formData.contactMethod) {
+      if ((formData.contactMethod === 'email' || formData.contactMethod === 'both') && !formData.contactEmail) {
+        alert('Please enter a contact email');
+        return;
+      }
+      
+      if ((formData.contactMethod === 'phone' || formData.contactMethod === 'both') && !formData.contactPhone) {
+        alert('Please enter a contact phone number');
+        return;
+      }
+    }
+    
+    if (!currentMember?.id) {
+      alert('You must be logged in to create a listing');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -91,9 +146,13 @@ export default function MarketplaceEditPage() {
         status: formData.status,
         featured: formData.featured,
         tags: formData.tags,
-        // For a new listing, we'd need to set the seller ID
-        // In a real app, this would come from the authenticated user
-        sellerId: isEditing ? '' : '1' 
+        // Contact information fields
+        contactEmail: formData.contactEmail,
+        contactPhone: formData.contactPhone,
+        contactMethod: formData.contactMethod || undefined,
+        showContactInfo: formData.showContactInfo,
+        // Set the seller ID from the current member
+        sellerId: currentMember?.id || '' 
       };
       
       if (isEditing && id) {
@@ -201,6 +260,13 @@ export default function MarketplaceEditPage() {
                 <TagsSection
                   tags={formData.tags}
                   handleTagsChange={handleTagsChange}
+                  isSubmitting={isSubmitting}
+                />
+                
+                {/* Contact Info Section */}
+                <ContactInfoSection
+                  formData={formData}
+                  handleChange={handleBasicInfoChange}
                   isSubmitting={isSubmitting}
                 />
                 
