@@ -1,4 +1,4 @@
-import { Member } from '../../types';
+import { Member } from '../types';
 
 export const membersApi = {
   create: jest.fn().mockResolvedValue({ id: 'test-member-id' } as Member),
