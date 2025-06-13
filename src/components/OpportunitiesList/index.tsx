@@ -46,11 +46,9 @@ const OpportunitiesList = ({
           setFilters(prev => ({ ...prev, category: initialCategory }));
         }
         if (externalOpportunities && externalOpportunities.length > 0) {
-          console.log('OpportunitiesList - Using external opportunities data:', externalOpportunities);
           setOpportunities(externalOpportunities);
         } else {
           await new Promise(resolve => setTimeout(resolve, 500));
-          console.log('OpportunitiesList - Using sample opportunities data');
           setOpportunities(SAMPLE_OPPORTUNITIES);
         }
         setLoading(false);
@@ -65,19 +63,14 @@ const OpportunitiesList = ({
   
   useEffect(() => {
     if (!opportunities.length) {
-      console.log('OpportunitiesList - No opportunities to filter');
       // Ensure filteredOpportunities is empty if opportunities is empty
       // and reset current page
       setFilteredOpportunities([]); 
       // setCurrentPage(1); // This will be handled by the effect below
       return;
     }
-    console.log('OpportunitiesList - Filtering opportunities:', opportunities);
-    console.log('OpportunitiesList - Using filters:', filters);
     const filtered = filterOpportunities(opportunities, filters, companyId);
-    console.log('OpportunitiesList - Filtered opportunities:', filtered);
     const sorted = sortOpportunitiesByDate(filtered);
-    console.log('OpportunitiesList - Sorted opportunities:', sorted);
     setFilteredOpportunities(sorted);
   }, [opportunities, filters, companyId]);
 

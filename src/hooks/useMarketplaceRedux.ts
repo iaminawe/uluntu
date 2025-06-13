@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from './useRedux';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   selectAllMarketplaceListings,
   selectMarketplaceListingById,

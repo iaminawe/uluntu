@@ -7,15 +7,15 @@ describe('Environment Variables in Jest', () => {
     // @ts-ignore - Jest-specific global
     expect(globalThis.__JEST_IMPORT_META_ENV__).toBeDefined();
     // @ts-ignore
-    expect(globalThis.__JEST_IMPORT_META_ENV__.VITE_SUPABASE_URL).toBe('http://localhost:54321');
+    expect(globalThis.__JEST_IMPORT_META_ENV__.VITE_SUPABASE_URL).toBe('http://127.0.0.1:54321');
     // @ts-ignore
-    expect(globalThis.__JEST_IMPORT_META_ENV__.VITE_SUPABASE_ANON_KEY).toBe('your-anon-key');
+    expect(globalThis.__JEST_IMPORT_META_ENV__.VITE_SUPABASE_ANON_KEY).toBe('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0');
   });
 
   // Test that process.env variables are set correctly
   it('should have access to environment variables via process.env', () => {
-    expect(process.env.VITE_SUPABASE_URL).toBe('http://localhost:54321');
-    expect(process.env.VITE_SUPABASE_ANON_KEY).toBe('your-anon-key');
+    expect(process.env.VITE_SUPABASE_URL).toBe('http://127.0.0.1:54321');
+    expect(process.env.VITE_SUPABASE_ANON_KEY).toBe('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0');
     expect(process.env.VITE_USE_SUPABASE).toBe('true');
   });
 

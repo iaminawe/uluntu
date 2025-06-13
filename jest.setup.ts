@@ -1,3 +1,33 @@
+// Jest setup file to load test environment variables
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load test environment variables
+dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
+
+// Make the environment variables available to the test environment
+if (typeof globalThis !== 'undefined') {
+  // @ts-ignore
+  globalThis.process = globalThis.process || {};
+  // @ts-ignore
+  globalThis.process.env = globalThis.process.env || {};
+  
+  // Override environment variables for tests
+  Object.assign(globalThis.process.env, {
+    VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
+    VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE,
+    VITE_PROFILE_IMAGES_BUCKET: process.env.VITE_PROFILE_IMAGES_BUCKET,
+    NODE_ENV: 'test'
+  });
+}
+
+console.log('Test environment loaded:', {
+  SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+  USE_SUPABASE: process.env.VITE_USE_SUPABASE,
+  NODE_ENV: process.env.NODE_ENV
+});
+
 // jest.setup.ts
 
 // Define the global variable that the AST transformer will point import.meta.env to

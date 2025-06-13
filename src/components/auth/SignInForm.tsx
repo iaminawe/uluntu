@@ -10,7 +10,33 @@ export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  // Get both the signIn function and the auth state from useAuth
+  const { signIn, status, error: authError } = useAuth();
+
+  // Set local error state based on authError from Redux when it changes
+  React.useEffect(() => {
+    if (authError) {
+      // Handle specific Supabase auth errors with more user-friendly messages
+      if (authError.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (authError.includes('Email not confirmed')) {
+        setError('Please verify your email address before signing in.');
+      } else if (authError.includes('unexpected_failure')) {
+        setError('Authentication service is temporarily unavailable. Please try again later.');
+      } else {
+        setError(authError);
+      }
+    } else {
+      setError(null);
+    }
+  }, [authError]);
+
+  // Redirect to dashboard when authenticated
+  React.useEffect(() => {
+    if (status === 'authenticated') {
+      navigate('/dashboard');
+    }
+  }, [status, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,26 +50,13 @@ export default function SignInForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data, error: signInError } = await signIn(email, password, rememberMe);
+      // Call signIn without destructuring the return value
+      // The signIn function dispatches actions to Redux and doesn't return anything
+      await signIn(email, password);
       
-      if (signInError) {
-        // Handle specific Supabase auth errors with more user-friendly messages
-        if (signInError.message.includes('Invalid login credentials')) {
-          throw new Error('Invalid email or password. Please try again.');
-        } else if (signInError.message.includes('Email not confirmed')) {
-          throw new Error('Please verify your email address before signing in.');
-        } else if (signInError.message.includes('unexpected_failure')) {
-          throw new Error('Authentication service is temporarily unavailable. Please try again later.');
-        } else {
-          throw signInError;
-        }
-      }
-      
-      // Log successful sign-in
-      console.log('Sign-in successful:', data?.user?.email);
-      
-      // Redirect to home page on successful sign in
-      navigate('/');
+      // The auth state (status and error) will be updated by Redux
+      // and handled by the useEffect hooks above
+      console.log('Sign-in request completed');
     } catch (err) {
       console.error('Error signing in:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');

@@ -65,7 +65,12 @@ export default function EventsPage() {
             }}
           />
         ) : viewMode === 'list' ? (
-          <EventsList initialSearch={searchTerm} />
+          <EventsList 
+            initialSearch={searchTerm} 
+            parentEvents={events} 
+            parentLoading={isLoading} 
+            parentError={error}
+          />
         ) : (
           <EventsCalendar 
             events={events} 

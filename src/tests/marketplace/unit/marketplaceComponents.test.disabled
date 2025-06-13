@@ -1,0 +1,474 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import MarketplaceList from '../../../components/MarketplaceList';
+import MarketplaceItemDetail from '../../../components/MarketplaceItemDetail';
+import MarketplaceFilters from '../../../components/MarketplaceList/MarketplaceFilters';
+import ListingCard from '../../../components/MarketplaceList/ListingCard';
+import ContactModal from '../../../components/MarketplaceItemDetail/ContactModal';
+import marketplaceReducer from '../../../redux/slices/marketplaceSlice';
+import type { MarketplaceListing, MarketplaceFilters as IMarketplaceFilters } from '../../../types';
+
+// Mock hooks
+jest.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user', email: 'test@example.com' },
+    status: 'authenticated'
+  })
+}));
+
+// Test data
+const mockListings: MarketplaceListing[] = [
+  {
+    id: '1',
+    title: 'Handmade Wooden Birdhouse',
+    description: 'Beautiful handcrafted birdhouse',
+    price: 25,
+    type: 'product',
+    condition: 'new',
+    images: ['birdhouse.jpg'],
+    seller_id: 'seller1',
+    location: 'Downtown',
+    tags: ['handmade', 'wood'],
+    status: 'active',
+    featured: false,
+    created_at: '2024-01-01',
+    updated_at: '2024-01-01'
+  },
+  {
+    id: '2',
+    title: 'Lawn Mowing Service',
+    description: 'Professional lawn care',
+    price: 50,
+    type: 'service',
+    condition: 'new',
+    images: [],
+    seller_id: 'seller2',
+    location: 'Suburbs',
+    tags: ['lawn', 'garden'],
+    status: 'active',
+    featured: false,
+    created_at: '2024-01-02',
+    updated_at: '2024-01-02'
+  }
+];
+
+const createMockStore = (initialState = {}) => {
+  return configureStore({
+    reducer: {
+      marketplace: marketplaceReducer
+    },
+    preloadedState: {
+      marketplace: {
+        listings: mockListings,
+        filteredListings: mockListings,
+        selectedListing: null,
+        relatedListings: [],
+        sellerListings: [],
+        isLoading: false,
+        isError: false,
+        error: null,
+        filters: {
+          search: '',
+          type: '',
+          condition: '',
+          minPrice: 0,
+          maxPrice: 0,
+          seller_id: '',
+          tags: []
+        },
+        pagination: {
+          page: 1,
+          limit: 12,
+          total: 2
+        },
+        ...initialState
+      }
+    }
+  });
+};
+
+const renderWithProviders = (component: React.ReactElement, store = createMockStore()) => {
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>
+        {component}
+      </BrowserRouter>
+    </Provider>
+  );
+};
+
+describe.skip('MarketplaceList Component', () => {
+  it('should render marketplace listings', () => {
+    renderWithProviders(<MarketplaceList />);
+    
+    expect(screen.getByText('Handmade Wooden Birdhouse')).toBeInTheDocument();
+    expect(screen.getByText('Lawn Mowing Service')).toBeInTheDocument();
+  });
+
+  it('should show loading state', () => {
+    const store = createMockStore({ isLoading: true });
+    renderWithProviders(<MarketplaceList />, store);
+    
+    expect(screen.getByText(/Loading marketplace listings/i)).toBeInTheDocument();
+  });
+
+  it('should show error state', () => {
+    const store = createMockStore({ 
+      isError: true, 
+      error: 'Failed to load listings' 
+    });
+    renderWithProviders(<MarketplaceList />, store);
+    
+    expect(screen.getByText(/Failed to load listings/i)).toBeInTheDocument();
+  });
+
+  it('should show empty state when no listings', () => {
+    const store = createMockStore({ 
+      listings: [], 
+      filteredListings: [] 
+    });
+    renderWithProviders(<MarketplaceList />, store);
+    
+    expect(screen.getByText(/No listings found/i)).toBeInTheDocument();
+  });
+
+  it('should handle pagination', async () => {
+    const store = createMockStore({ 
+      pagination: { page: 1, limit: 1, total: 2 } 
+    });
+    renderWithProviders(<MarketplaceList />, store);
+    
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    fireEvent.click(nextButton);
+    
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.marketplace.pagination.page).toBe(2);
+    });
+  });
+});
+
+describe('MarketplaceFilters Component', () => {
+  const mockOnFilterChange = jest.fn();
+  const defaultFilters: IMarketplaceFilters = {
+    search: '',
+    type: '',
+    condition: '',
+    minPrice: 0,
+    maxPrice: 0,
+    seller_id: '',
+    tags: []
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render all filter inputs', () => {
+    render(
+      <MarketplaceFilters 
+        filters={defaultFilters}
+        onFilterChange={mockOnFilterChange}
+      />
+    );
+    
+    expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/type/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/condition/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/min price/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/max price/i)).toBeInTheDocument();
+  });
+
+  it('should call onFilterChange when search input changes', async () => {
+    render(
+      <MarketplaceFilters 
+        filters={defaultFilters}
+        onFilterChange={mockOnFilterChange}
+      />
+    );
+    
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    fireEvent.change(searchInput, { target: { value: 'birdhouse' } });
+    
+    await waitFor(() => {
+      expect(mockOnFilterChange).toHaveBeenCalledWith({
+        ...defaultFilters,
+        search: 'birdhouse'
+      });
+    });
+  });
+
+  it('should call onFilterChange when type filter changes', () => {
+    render(
+      <MarketplaceFilters 
+        filters={defaultFilters}
+        onFilterChange={mockOnFilterChange}
+      />
+    );
+    
+    const typeSelect = screen.getByLabelText(/type/i);
+    fireEvent.change(typeSelect, { target: { value: 'product' } });
+    
+    expect(mockOnFilterChange).toHaveBeenCalledWith({
+      ...defaultFilters,
+      type: 'product'
+    });
+  });
+
+  it('should call onFilterChange when price range changes', () => {
+    render(
+      <MarketplaceFilters 
+        filters={defaultFilters}
+        onFilterChange={mockOnFilterChange}
+      />
+    );
+    
+    const minPriceInput = screen.getByLabelText(/min price/i);
+    const maxPriceInput = screen.getByLabelText(/max price/i);
+    
+    fireEvent.change(minPriceInput, { target: { value: '10' } });
+    expect(mockOnFilterChange).toHaveBeenCalledWith({
+      ...defaultFilters,
+      minPrice: 10
+    });
+    
+    fireEvent.change(maxPriceInput, { target: { value: '100' } });
+    expect(mockOnFilterChange).toHaveBeenCalledWith({
+      ...defaultFilters,
+      maxPrice: 100
+    });
+  });
+
+  it('should clear all filters when clear button is clicked', () => {
+    const filtersWithValues: IMarketplaceFilters = {
+      search: 'test',
+      type: 'product',
+      condition: 'new',
+      minPrice: 10,
+      maxPrice: 100,
+      seller_id: '',
+      tags: ['tag1']
+    };
+    
+    render(
+      <MarketplaceFilters 
+        filters={filtersWithValues}
+        onFilterChange={mockOnFilterChange}
+      />
+    );
+    
+    const clearButton = screen.getByRole('button', { name: /clear filters/i });
+    fireEvent.click(clearButton);
+    
+    expect(mockOnFilterChange).toHaveBeenCalledWith(defaultFilters);
+  });
+});
+
+describe('ListingCard Component', () => {
+  const mockListing = mockListings[0];
+
+  it('should render listing details', () => {
+    renderWithProviders(<ListingCard listing={mockListing} />);
+    
+    expect(screen.getByText(mockListing.title)).toBeInTheDocument();
+    expect(screen.getByText(mockListing.description)).toBeInTheDocument();
+    expect(screen.getByText(`$${mockListing.price}`)).toBeInTheDocument();
+    expect(screen.getByText(mockListing.location)).toBeInTheDocument();
+  });
+
+  it('should display tags', () => {
+    renderWithProviders(<ListingCard listing={mockListing} />);
+    
+    mockListing.tags.forEach(tag => {
+      expect(screen.getByText(tag)).toBeInTheDocument();
+    });
+  });
+
+  it('should navigate to detail page when clicked', () => {
+    renderWithProviders(<ListingCard listing={mockListing} />);
+    
+    const card = screen.getByRole('article');
+    expect(card).toHaveAttribute('data-listing-id', mockListing.id);
+  });
+
+  it('should show placeholder image when no images provided', () => {
+    const listingWithoutImage = { ...mockListing, images: [] };
+    renderWithProviders(<ListingCard listing={listingWithoutImage} />);
+    
+    const image = screen.getByRole('img');
+    expect(image).toHaveAttribute('src', expect.stringContaining('placeholder'));
+  });
+});
+
+describe('MarketplaceItemDetail Component', () => {
+  const mockListing = {
+    ...mockListings[0],
+    seller: {
+      id: 'seller1',
+      full_name: 'John Doe',
+      email: 'john@example.com'
+    }
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render listing details', () => {
+    const store = createMockStore({ selectedListing: mockListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    expect(screen.getByText(mockListing.title)).toBeInTheDocument();
+    expect(screen.getByText(mockListing.description)).toBeInTheDocument();
+    expect(screen.getByText(`$${mockListing.price}`)).toBeInTheDocument();
+    expect(screen.getByText(mockListing.location)).toBeInTheDocument();
+  });
+
+  it('should render seller information', () => {
+    const store = createMockStore({ selectedListing: mockListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    expect(screen.getByText(/Listed by/i)).toBeInTheDocument();
+    expect(screen.getByText(mockListing.seller.full_name)).toBeInTheDocument();
+  });
+
+  it('should show contact seller button', () => {
+    const store = createMockStore({ selectedListing: mockListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    const contactButton = screen.getByRole('button', { name: /contact seller/i });
+    expect(contactButton).toBeInTheDocument();
+  });
+
+  it('should open contact modal when contact button clicked', async () => {
+    const store = createMockStore({ selectedListing: mockListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    const contactButton = screen.getByRole('button', { name: /contact seller/i });
+    fireEvent.click(contactButton);
+    
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(/Send message to/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should show edit/delete buttons for own listings', () => {
+    const ownListing = {
+      ...mockListing,
+      seller_id: 'test-user'
+    };
+    const store = createMockStore({ selectedListing: ownListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    expect(screen.getByRole('button', { name: /edit listing/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /delete listing/i })).toBeInTheDocument();
+  });
+
+  it('should not show edit/delete buttons for other users listings', () => {
+    const store = createMockStore({ selectedListing: mockListing });
+    renderWithProviders(<MarketplaceItemDetail />, store);
+    
+    expect(screen.queryByRole('button', { name: /edit listing/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /delete listing/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('ContactModal Component', () => {
+  const mockSeller = {
+    id: 'seller1',
+    full_name: 'John Doe',
+    email: 'john@example.com'
+  };
+  const mockListing = mockListings[0];
+  const mockOnClose = jest.fn();
+  const mockOnSend = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render contact form', () => {
+    render(
+      <ContactModal
+        isOpen={true}
+        onClose={mockOnClose}
+        seller={mockSeller}
+        listing={mockListing}
+        onSend={mockOnSend}
+      />
+    );
+    
+    expect(screen.getByText(/Send message to John Doe/i)).toBeInTheDocument();
+    expect(screen.getByText(/Regarding: Handmade Wooden Birdhouse/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/your message/i)).toBeInTheDocument();
+  });
+
+  it('should validate message before sending', async () => {
+    render(
+      <ContactModal
+        isOpen={true}
+        onClose={mockOnClose}
+        seller={mockSeller}
+        listing={mockListing}
+        onSend={mockOnSend}
+      />
+    );
+    
+    const sendButton = screen.getByRole('button', { name: /send message/i });
+    fireEvent.click(sendButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Please enter a message/i)).toBeInTheDocument();
+      expect(mockOnSend).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should send message with valid input', async () => {
+    render(
+      <ContactModal
+        isOpen={true}
+        onClose={mockOnClose}
+        seller={mockSeller}
+        listing={mockListing}
+        onSend={mockOnSend}
+      />
+    );
+    
+    const messageInput = screen.getByPlaceholderText(/your message/i);
+    fireEvent.change(messageInput, { 
+      target: { value: 'I am interested in your birdhouse' } 
+    });
+    
+    const sendButton = screen.getByRole('button', { name: /send message/i });
+    fireEvent.click(sendButton);
+    
+    await waitFor(() => {
+      expect(mockOnSend).toHaveBeenCalledWith({
+        message: 'I am interested in your birdhouse',
+        listing_id: mockListing.id,
+        seller_id: mockSeller.id
+      });
+    });
+  });
+
+  it('should close modal when cancel clicked', () => {
+    render(
+      <ContactModal
+        isOpen={true}
+        onClose={mockOnClose}
+        seller={mockSeller}
+        listing={mockListing}
+        onSend={mockOnSend}
+      />
+    );
+    
+    const cancelButton = screen.getByRole('button', { name: /cancel/i });
+    fireEvent.click(cancelButton);
+    
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+});

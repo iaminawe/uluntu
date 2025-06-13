@@ -36,10 +36,11 @@ export default function SignUpForm() {
       setIsLoading(true);
       setError(null);
       
-      const { error: signUpError } = await signUp(email, password);
+      const result = await signUp(email, password);
       
-      if (signUpError) {
-        throw signUpError;
+      // Check if the result contains an error
+      if (result?.error) {
+        throw result.error;
       }
 
       // No need to create a member profile anymore!

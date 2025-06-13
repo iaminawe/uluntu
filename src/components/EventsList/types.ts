@@ -68,9 +68,17 @@ export const adaptLocalToMainEvent = (event: Event): Partial<MainEvent> => {
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface EventFilters {
   search?: string;
   types?: EventType[];
   dateRange?: DateRangeFilter;
+}
+
+// Props for the EventsList component
+export interface EventsListProps {
+  initialSearch?: string;
+  parentEvents?: MainEvent[];
+  parentLoading?: boolean;
+  parentError?: string | null;
 }

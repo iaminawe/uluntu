@@ -3,25 +3,83 @@ import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '../../components/ui/PageLayout';
 import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { QueryError } from '../../components/ui/ErrorDisplay';
-import CompaniesList from '../../components/CompaniesList';
+import { Link } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useCompaniesRedux } from '../../hooks/useCompaniesRedux';
+import { Company } from '../../types';
+import { companiesApi } from '../../api/companiesApi';
 
+// Check if we should use Supabase or mock data
+const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
 
 export default function CompaniesPage() {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
   
-  // Use the Redux-based hook to fetch companies data
-  const { companies, loadCompanies, isLoading, isError, error } = useCompaniesRedux();
-  
-  // Load companies on component mount
+  // Load companies from Supabase or use mock data
   useEffect(() => {
+    console.log('Using Supabase:', useSupabase);
+    
+    let isMounted = true;
+    const loadCompanies = async () => {
+      try {
+        if (useSupabase) {
+          // Fetch from Supabase
+          const companiesData = await companiesApi.getAll({
+            search: searchTerm,
+            industries: selectedIndustries.length > 0 ? selectedIndustries : undefined
+          });
+          
+          if (isMounted) {
+            setCompanies(companiesData);
+            setIsLoading(false);
+          }
+        } else {
+          // Use mock data with a small delay
+          setTimeout(() => {
+            if (isMounted) {
+              setCompanies(companiesApi.getMockCompanies());
+              setIsLoading(false);
+            }
+          }, 1000);
+        }
+      } catch (err) {
+        console.error('Error loading companies:', err);
+        if (isMounted) {
+          setIsError(true);
+          setError(err instanceof Error ? err : new Error('Failed to load companies'));
+          setIsLoading(false);
+          // Fallback to mock data
+          setCompanies(companiesApi.getMockCompanies());
+        }
+      }
+    };
+    
     loadCompanies();
-  }, []);
-  const hasCompanies = companies.length > 0;
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [searchTerm, selectedIndustries]);
+  
+  // Filter companies based on search term and selected industries
+  const filteredCompanies = companies.filter(company => {
+    // Filter by search term
+    const matchesSearch = searchTerm === '' || 
+      company.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (company.description && company.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // Filter by industries
+    const matchesIndustry = selectedIndustries.length === 0 || 
+      (company.industry && selectedIndustries.some(industry => company.industry.includes(industry)));
+    
+    return matchesSearch && matchesIndustry;
+  });
   
   return (
     <>
@@ -44,11 +102,11 @@ export default function CompaniesPage() {
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
           <QueryError 
-            error={error ? new Error(error) : new Error('Failed to load companies')} 
-            retry={() => loadCompanies()} 
+            error={error || new Error('Failed to load companies')} 
+            retry={() => window.location.reload()} 
             message="We couldn't load the companies. Please try again."
           />
-        ) : !hasCompanies ? (
+        ) : companies.length === 0 ? (
           <EmptyState
             title="No Companies Listed"
             description="There are no companies in the directory yet."
@@ -59,10 +117,62 @@ export default function CompaniesPage() {
             }}
           />
         ) : (
-          <CompaniesList 
-            initialSearch={searchTerm} 
-            initialIndustry={selectedIndustries.length === 1 ? selectedIndustries[0] : ''} 
-          />
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {filteredCompanies.map(company => (
+                <Link 
+                  to={`/companies/${company.id}`} 
+                  key={company.id} 
+                  className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center mb-4">
+                    {company.logo ? (
+                      <img 
+                        src={company.logo} 
+                        alt={`${company.name} logo`} 
+                        className="w-16 h-16 object-contain rounded-md mr-4" 
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-md mr-4 flex items-center justify-center">
+                        <span className="text-slate-500 dark:text-slate-400 text-xl font-bold">
+                          {company.name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {company.name}
+                      </h3>
+                      {company.location && (
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          {company.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {company.description && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-3">
+                      {company.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {company.industry && company.industry.slice(0, 3).map((tag, index) => (
+                      <span 
+                        key={index}
+                        className="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
+              Showing {filteredCompanies.length} of {companies.length} {companies.length === 1 ? 'company' : 'companies'}
+              {(searchTerm || selectedIndustries.length > 0) && ' matching your filters'}
+            </div>
+          </div>
         )}
       </ContentContainer>
     </>

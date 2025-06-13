@@ -98,14 +98,14 @@ describe('Events Slice', () => {
 
     test('should handle setFilters', () => {
       const store = createTestStore();
-      const filters = { search: 'test', types: ['in-person' as 'in-person'], dateRange: 'upcoming' as 'upcoming' };
+      const filters = { search: 'test', types: ['in-person' as const], dateRange: 'upcoming' as const };
       store.dispatch(setFilters(filters));
       expect(store.getState().events.filters).toEqual(filters);
     });
 
     test('should handle clearFilters', () => {
       const store = createTestStore();
-      const filters = { search: 'test', types: ['in-person' as 'in-person'], dateRange: 'upcoming' as 'upcoming' };
+      const filters = { search: 'test', types: ['in-person' as const], dateRange: 'upcoming' as const };
       store.dispatch(setFilters(filters));
       store.dispatch(clearFilters());
       expect(store.getState().events.filters).toEqual({});
@@ -157,7 +157,7 @@ describe('Events Slice', () => {
 
     test('fetchFilteredEvents should update state correctly on success', async () => {
       const store = createTestStore();
-      const filters = { search: 'Test', types: ['in-person' as 'in-person'] };
+      const filters = { search: 'Test', types: ['in-person' as const] };
       
       // Mock implementation for fetchFilteredEvents
       eventsApiMock.getAll.mockResolvedValueOnce([mockEvent]);

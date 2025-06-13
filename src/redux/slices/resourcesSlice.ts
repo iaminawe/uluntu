@@ -191,6 +191,8 @@ const resourcesSlice = createSlice({
       .addCase(fetchResources.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.resources = action.payload;
+        // Also populate filteredResources so ResourcesList can display them
+        state.filteredResources = action.payload;
         state.error = null;
       })
       .addCase(fetchResources.rejected, (state, action) => {

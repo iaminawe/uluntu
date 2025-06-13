@@ -2,7 +2,7 @@
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts', '<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', '<rootDir>/src/setupTests.ts', '<rootDir>/src/tests/setupTests.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   modulePaths: ['<rootDir>'],
   moduleNameMapper: {
@@ -12,7 +12,7 @@ const config = {
     '^.+\.(ts|tsx)$': [
       'ts-jest',
       {
-        isolatedModules: true,
+        tsconfig: '<rootDir>/tsconfig.json',
         astTransformers: {
           before: [
             {

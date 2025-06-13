@@ -1,0 +1,462 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { store } from '../../../redux/store';
+import MarketplacePage from '../../../pages/MarketplacePage';
+import MarketplaceDetailPage from '../../../pages/MarketplaceDetailPage';
+import MarketplaceEditPage from '../../../pages/MarketplaceEditPage';
+import { marketplaceApi } from '../../../api/marketplaceApi';
+import { act } from 'react-dom/test-utils';
+
+// Mock API
+jest.mock('../../../api/marketplaceApi');
+const mockMarketplaceApi = marketplaceApi as jest.Mocked<typeof marketplaceApi>;
+
+// Mock router
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+  useParams: () => ({ id: '1' })
+}));
+
+// Mock auth
+jest.mock('../../../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user', email: 'test@example.com' },
+    status: 'authenticated'
+  })
+}));
+
+const renderWithProviders = (component: React.ReactElement) => {
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>
+        {component}
+      </BrowserRouter>
+    </Provider>
+  );
+};
+
+describe.skip('Marketplace Integration Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('MKT-001: Listing Creation Flow', () => {
+    it('should allow registered user to create a new listing', async () => {
+      const newListing = {
+        id: '3',
+        title: 'Test Product',
+        description: 'Test description',
+        price: 50,
+        type: 'product' as const,
+        condition: 'new' as const,
+        images: ['test.jpg'],
+        location: 'Test Location',
+        tags: ['test'],
+        seller_id: 'test-user',
+        status: 'active' as const,
+        featured: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      mockMarketplaceApi.create.mockResolvedValue(newListing);
+
+      renderWithProviders(<MarketplaceEditPage />);
+
+      // Fill in the form
+      fireEvent.change(screen.getByLabelText(/title/i), {
+        target: { value: 'Test Product' }
+      });
+      fireEvent.change(screen.getByLabelText(/description/i), {
+        target: { value: 'Test description' }
+      });
+      fireEvent.change(screen.getByLabelText(/price/i), {
+        target: { value: '50' }
+      });
+      fireEvent.change(screen.getByLabelText(/type/i), {
+        target: { value: 'product' }
+      });
+      fireEvent.change(screen.getByLabelText(/condition/i), {
+        target: { value: 'new' }
+      });
+      fireEvent.change(screen.getByLabelText(/location/i), {
+        target: { value: 'Test Location' }
+      });
+
+      // Submit form
+      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.create).toHaveBeenCalledWith({
+          title: 'Test Product',
+          description: 'Test description',
+          price: 50,
+          type: 'product',
+          condition: 'new',
+          location: 'Test Location',
+          images: [],
+          tags: []
+        });
+        expect(mockNavigate).toHaveBeenCalledWith('/marketplace/3');
+      });
+    });
+
+    it('should validate required fields before submission', async () => {
+      renderWithProviders(<MarketplaceEditPage />);
+
+      // Try to submit without filling required fields
+      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/title is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/description is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/price is required/i)).toBeInTheDocument();
+        expect(mockMarketplaceApi.create).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('MKT-002: Listing Management Flow', () => {
+    const existingListing = {
+      id: '1',
+      title: 'Existing Product',
+      description: 'Existing description',
+      price: 25,
+      type: 'product' as const,
+      condition: 'used' as const,
+      images: ['existing.jpg'],
+      location: 'Existing Location',
+      tags: ['existing'],
+      seller_id: 'test-user',
+      status: 'active' as const,
+      featured: false,
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01'
+    };
+
+    it('should allow seller to edit their listing', async () => {
+      mockMarketplaceApi.getById.mockResolvedValue(existingListing);
+      mockMarketplaceApi.update.mockResolvedValue({
+        ...existingListing,
+        title: 'Updated Product',
+        price: 30
+      });
+
+      renderWithProviders(<MarketplaceEditPage />);
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('Existing Product')).toBeInTheDocument();
+      });
+
+      // Update fields
+      fireEvent.change(screen.getByLabelText(/title/i), {
+        target: { value: 'Updated Product' }
+      });
+      fireEvent.change(screen.getByLabelText(/price/i), {
+        target: { value: '30' }
+      });
+
+      // Submit updates
+      const submitButton = screen.getByRole('button', { name: /update listing/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.update).toHaveBeenCalledWith('1', {
+          title: 'Updated Product',
+          price: 30
+        });
+        expect(mockNavigate).toHaveBeenCalledWith('/marketplace/1');
+      });
+    });
+
+    it('should allow seller to mark listing as sold', async () => {
+      mockMarketplaceApi.getById.mockResolvedValue(existingListing);
+      mockMarketplaceApi.update.mockResolvedValue({
+        ...existingListing,
+        status: 'sold'
+      });
+
+      renderWithProviders(<MarketplaceDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Existing Product')).toBeInTheDocument();
+      });
+
+      const markSoldButton = screen.getByRole('button', { name: /mark as sold/i });
+      fireEvent.click(markSoldButton);
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.update).toHaveBeenCalledWith('1', {
+          status: 'sold'
+        });
+      });
+    });
+
+    it('should allow seller to delete their listing', async () => {
+      mockMarketplaceApi.getById.mockResolvedValue(existingListing);
+      mockMarketplaceApi.delete.mockResolvedValue(undefined);
+
+      renderWithProviders(<MarketplaceDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Existing Product')).toBeInTheDocument();
+      });
+
+      const deleteButton = screen.getByRole('button', { name: /delete listing/i });
+      fireEvent.click(deleteButton);
+
+      // Confirm deletion
+      const confirmButton = screen.getByRole('button', { name: /confirm delete/i });
+      fireEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.delete).toHaveBeenCalledWith('1');
+        expect(mockNavigate).toHaveBeenCalledWith('/marketplace');
+      });
+    });
+  });
+
+  describe('MKT-003 & MKT-005: Seller Contact Flow', () => {
+    const listing = {
+      id: '1',
+      title: 'Contact Test Product',
+      description: 'Test description',
+      price: 50,
+      type: 'product' as const,
+      condition: 'new' as const,
+      images: [],
+      location: 'Test Location',
+      tags: [],
+      seller_id: 'seller-123',
+      status: 'active' as const,
+      featured: false,
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      seller: {
+        id: 'seller-123',
+        full_name: 'John Seller',
+        email: 'seller@example.com'
+      }
+    };
+
+    it('should allow buyer to contact seller about listing', async () => {
+      mockMarketplaceApi.getById.mockResolvedValue(listing);
+      const mockSendMessage = jest.fn().mockResolvedValue({ success: true });
+      
+      renderWithProviders(<MarketplaceDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Contact Test Product')).toBeInTheDocument();
+      });
+
+      // Open contact modal
+      const contactButton = screen.getByRole('button', { name: /contact seller/i });
+      fireEvent.click(contactButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Send message to John Seller/i)).toBeInTheDocument();
+      });
+
+      // Fill in message
+      const messageInput = screen.getByPlaceholderText(/your message/i);
+      fireEvent.change(messageInput, {
+        target: { value: 'I am interested in this product' }
+      });
+
+      // Send message
+      const sendButton = screen.getByRole('button', { name: /send message/i });
+      fireEvent.click(sendButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Message sent successfully/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should display seller contact information when configured', async () => {
+      const listingWithContact = {
+        ...listing,
+        contact_info: {
+          phone: '555-1234',
+          email: 'direct@seller.com',
+          preferred_method: 'email'
+        }
+      };
+
+      mockMarketplaceApi.getById.mockResolvedValue(listingWithContact);
+      
+      renderWithProviders(<MarketplaceDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Contact Information/i)).toBeInTheDocument();
+        expect(screen.getByText('direct@seller.com')).toBeInTheDocument();
+        expect(screen.getByText('555-1234')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('MKT-004: Search and Filter Flow', () => {
+    const mockListings = [
+      {
+        id: '1',
+        title: 'Wooden Table',
+        description: 'Handmade wooden table',
+        price: 150,
+        type: 'product' as const,
+        condition: 'new' as const,
+        seller_id: 'seller1',
+        location: 'Downtown',
+        tags: ['furniture', 'wood'],
+        images: [],
+        status: 'active' as const,
+        featured: false,
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01'
+      },
+      {
+        id: '2',
+        title: 'House Cleaning Service',
+        description: 'Professional cleaning',
+        price: 75,
+        type: 'service' as const,
+        condition: 'new' as const,
+        seller_id: 'seller2',
+        location: 'Suburbs',
+        tags: ['cleaning', 'home'],
+        images: [],
+        status: 'active' as const,
+        featured: false,
+        created_at: '2024-01-02',
+        updated_at: '2024-01-02'
+      }
+    ];
+
+    it('should filter listings by search term', async () => {
+      mockMarketplaceApi.getAll.mockResolvedValue(mockListings);
+      
+      renderWithProviders(<MarketplacePage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Wooden Table')).toBeInTheDocument();
+        expect(screen.getByText('House Cleaning Service')).toBeInTheDocument();
+      });
+
+      // Search for "wooden"
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'wooden' } });
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.getAll).toHaveBeenCalledWith(
+          expect.objectContaining({ search: 'wooden' })
+        );
+      });
+    });
+
+    it('should filter listings by type', async () => {
+      mockMarketplaceApi.getAll.mockResolvedValue([mockListings[1]]);
+      
+      renderWithProviders(<MarketplacePage />);
+
+      const typeSelect = screen.getByLabelText(/type/i);
+      fireEvent.change(typeSelect, { target: { value: 'service' } });
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.getAll).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'service' })
+        );
+      });
+    });
+
+    it('should filter listings by price range', async () => {
+      mockMarketplaceApi.getAll.mockResolvedValue([mockListings[1]]);
+      
+      renderWithProviders(<MarketplacePage />);
+
+      const minPriceInput = screen.getByLabelText(/min price/i);
+      const maxPriceInput = screen.getByLabelText(/max price/i);
+
+      fireEvent.change(minPriceInput, { target: { value: '50' } });
+      fireEvent.change(maxPriceInput, { target: { value: '100' } });
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.getAll).toHaveBeenCalledWith(
+          expect.objectContaining({ 
+            minPrice: 50,
+            maxPrice: 100 
+          })
+        );
+      });
+    });
+
+    it('should allow clearing all filters', async () => {
+      mockMarketplaceApi.getAll.mockResolvedValue(mockListings);
+      
+      renderWithProviders(<MarketplacePage />);
+
+      // Apply some filters first
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: 'test' } });
+
+      const typeSelect = screen.getByLabelText(/type/i);
+      fireEvent.change(typeSelect, { target: { value: 'product' } });
+
+      // Clear filters
+      const clearButton = screen.getByRole('button', { name: /clear filters/i });
+      fireEvent.click(clearButton);
+
+      await waitFor(() => {
+        expect(mockMarketplaceApi.getAll).toHaveBeenLastCalledWith({
+          search: '',
+          type: '',
+          condition: '',
+          minPrice: 0,
+          maxPrice: 0,
+          seller_id: '',
+          tags: []
+        });
+      });
+    });
+  });
+
+  describe('MKT-006: Purchase Flow (Placeholder)', () => {
+    it('should show purchase not implemented message', async () => {
+      const listing = {
+        id: '1',
+        title: 'Product for Sale',
+        description: 'Test product',
+        price: 100,
+        type: 'product' as const,
+        condition: 'new' as const,
+        images: [],
+        location: 'Test Location',
+        tags: [],
+        seller_id: 'seller-123',
+        status: 'active' as const,
+        featured: false,
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01'
+      };
+
+      mockMarketplaceApi.getById.mockResolvedValue(listing);
+      
+      renderWithProviders(<MarketplaceDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Product for Sale')).toBeInTheDocument();
+      });
+
+      // Note: Purchase functionality is marked as TBD in PRD
+      // This test verifies current behavior
+      const purchaseButton = screen.queryByRole('button', { name: /buy now/i });
+      expect(purchaseButton).not.toBeInTheDocument();
+
+      // Verify contact seller is the primary CTA
+      expect(screen.getByRole('button', { name: /contact seller/i })).toBeInTheDocument();
+    });
+  });
+});
