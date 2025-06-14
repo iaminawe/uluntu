@@ -8,7 +8,6 @@ import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
 import { ListingType, ListingCondition } from '@/features/marketplace/components/MarketplaceList/types';
-import Debug from './Debug'; // Import the debug component
 import DirectListings from './DirectListings'; // Import the simplified component
 
 export default function MarketplacePage() {
@@ -67,14 +66,6 @@ export default function MarketplacePage() {
             />
           </div>
           
-          {/* Debug component and direct listings for comparison */}
-          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-            <h2 className="text-xl font-semibold mb-4">Debug Information</h2>
-            <div className="grid grid-cols-1 gap-6">
-              <DirectListings />
-              <Debug />
-            </div>
-          </div>
         </div>
       </ContentContainer>
     </>
