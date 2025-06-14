@@ -11,6 +11,7 @@ import { SessionProvider } from '@/shared/contexts/SessionContextWithRedux';
 import { store } from '@/store/index';
 import { router } from './routes';
 import './index.css';
+import { DebugUserRoles } from './components/DebugUserRoles';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -34,6 +35,7 @@ createRoot(document.getElementById('root')!).render(
               <ContentProvider>
                 <RouterProvider router={router} />
                 <ReactQueryDevtools initialIsOpen={false} />
+                <DebugUserRoles />
               </ContentProvider>
             </QueryClientProvider>
           </AuthProvider>
