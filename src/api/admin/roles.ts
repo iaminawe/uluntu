@@ -47,5 +47,11 @@ export const adminRolesApi = {
   async getUserRoles(_userId: string) {
     console.warn('Admin user roles lookup temporarily disabled');
     return [] as Role[];
+  },
+
+  // Check permission - temporarily stub
+  async checkPermission(_userId: string, _permission: string) {
+    console.warn('Admin permission check temporarily disabled');
+    return false;
   }
 };
