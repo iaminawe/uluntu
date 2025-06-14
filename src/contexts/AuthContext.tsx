@@ -144,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // Development bypass for authentication
 // This should only be enabled temporarily during development when needed
 // and should never be enabled in production
-const DEV_BYPASS_AUTH = process.env.VITE_DEV_BYPASS_AUTH === 'true' && process.env.NODE_ENV === 'development';
+const DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && import.meta.env.DEV;
 
 // If authentication bypass is needed for development, use this mock user
 const DEV_USER = {
@@ -157,7 +157,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
   
   // In development mode, provide a bypass for authentication
-  if (DEV_BYPASS_AUTH && process.env.NODE_ENV === 'development') {
+  if (DEV_BYPASS_AUTH && import.meta.env.DEV) {
     // Create a safe context object that handles the undefined case
     const safeContext: AuthContextType = context || {
       session: null,

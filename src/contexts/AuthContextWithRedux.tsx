@@ -22,7 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>({} as AuthContextType);
 
 // Development bypass for authentication (same as in original AuthContext)
-const DEV_BYPASS_AUTH = process.env.VITE_DEV_BYPASS_AUTH === 'true' && process.env.NODE_ENV === 'development';
+const DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && import.meta.env.DEV;
 const DEV_USER = {
   id: 'dev-user-id',
   email: 'dev@example.com',
@@ -124,7 +124,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
   
   // In development mode, provide a bypass for authentication (same as original)
-  if (DEV_BYPASS_AUTH && process.env.NODE_ENV === 'development') {
+  if (DEV_BYPASS_AUTH && import.meta.env.DEV) {
     // Create a safe context object that handles the undefined case
     const safeContext: AuthContextType = context || {
       session: null,
