@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store/index';
 import { NewsArticle, ContentStatus } from '../../types';
 import { newsApi } from '@/features/news/api/newsApi';
-import * as mockQueries from '@/features/news/hooks/useNewsQueries';
+import * as mockQueries from '@/hooks/useNewsQueries';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';

@@ -2,7 +2,7 @@ import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
   adaptOpportunityFromDatabase,
   adaptOpportunityToDatabase
-} from '../adapters/opportunityAdapter';
+} from '@/adapters/opportunityAdapter';
 import { Opportunity } from '../types';
 
 // Helper function to adapt a list of items

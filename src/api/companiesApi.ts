@@ -3,7 +3,7 @@ import {
   adaptCompanyFromDatabase,
   adaptCompanyToSupabaseInsert,
   adaptCompanyToSupabaseUpdate
-} from '../adapters/companyAdapter';
+} from '@/adapters/companyAdapter';
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
 

@@ -2,7 +2,7 @@ import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
   adaptResourceFromDatabase,
   adaptResourceToDatabase,
-} from '../adapters/resourceAdapter';
+} from '@/adapters/resourceAdapter';
 import { Resource, ContentStatus } from '../types'; // Ensure Resource type is imported
 import { Database } from '../types/supabase'; // Ensure Database type is imported
 

@@ -1,5 +1,5 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
-import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '../adapters/eventAdapter';
+import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '@/adapters/eventAdapter';
 import { Event as FrontendEvent } from '../types'; // For typing
 
 // Helper function to adapt a list of items

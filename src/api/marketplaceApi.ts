@@ -3,7 +3,7 @@ import {
   adaptMarketplaceItemFromSupabase,
   adaptMarketplaceItemToSupabase,
   MarketplaceItemsQueryOptions
-} from '../adapters/marketplaceAdapters';
+} from '@/adapters/marketplaceAdapters';
 import { MarketplaceItem } from '../types';
 import { ContentStatus } from '../types/common';
 

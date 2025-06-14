@@ -2,7 +2,7 @@ import { supabase, handleSupabaseError } from './supabaseUtils';
 import {
   adaptMemberFromDatabase,
   adaptMemberToDatabase
-} from '../adapters/memberAdapter';
+} from '@/adapters/memberAdapter';
 import { Member, ContentStatus } from '../types';
 
 // Helper function to adapt a list of items
