@@ -6,7 +6,7 @@ import { act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Session, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/store/authSlice';
+import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/features/auth/store/authSlice';
 import { mockUser, mockSession, flushPromises } from '../../utils/testUtils';
 
 // Mock supabase client
