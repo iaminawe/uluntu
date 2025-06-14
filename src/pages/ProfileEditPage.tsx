@@ -4,7 +4,9 @@ import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useMember } from "../hooks/useQueries";
+import { useCurrentMember } from '../hooks/useCurrentMember';
 import { ContentContainer } from '../components/ui/PageLayout';
+import { ProfilePrivacySettings } from '../components/ProfilePrivacy';
 import BasicInfoSection from './DirectoryEditPage/BasicInfoSection';
 import SkillsSection from './DirectoryEditPage/SkillsSection';
 import SocialSection from './DirectoryEditPage/SocialSection';
@@ -16,9 +18,14 @@ export default function ProfileEditPage() {
   const { user } = useAuth();
   const userId = user?.id;
   
-  // In a real app, this would fetch the member data for the logged-in user
-  // For now, we're just using the ID from the authentication
+  // Use current member hook for better integration
+  const { data: currentMember, isLoading: isCurrentMemberLoading } = useCurrentMember();
+  // Fallback to the original member query for compatibility
   const { data: member, isLoading } = useMember(userId || '');
+
+  // Use current member if available, otherwise fallback to member query
+  const memberData = currentMember || member;
+  const isLoadingData = isCurrentMemberLoading || isLoading;
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newSkill, setNewSkill] = useState('');
@@ -35,20 +42,20 @@ export default function ProfileEditPage() {
   
   // Populate form with member data when it loads
   useEffect(() => {
-    if (member) {
+    if (memberData) {
       // Cast social to a Record to safely access properties
-      const socialData = member.social as Record<string, any> || {};
+      const socialData = memberData.social as Record<string, any> || {};
       
       setFormData({
-        name: member.name || '',
-        title: typeof member.title === 'string' ? member.title : '',
-        company: typeof member.company === 'string' ? member.company : '',
-        location: typeof member.location === 'string' ? member.location : '',
-        image: member.image || '',
-        bio: member.bio || '',
-        intro: typeof member.intro === 'string' ? member.intro : '',
-        skills: Array.isArray(member.skills) ? member.skills : [],
-        joinDate: member.joinDate || new Date().toISOString().split('T')[0],
+        name: memberData.name || '',
+        title: typeof memberData.title === 'string' ? memberData.title : '',
+        company: typeof memberData.company === 'string' ? memberData.company : '',
+        location: typeof memberData.location === 'string' ? memberData.location : '',
+        image: memberData.image || '',
+        bio: memberData.bio || '',
+        intro: typeof memberData.intro === 'string' ? memberData.intro : '',
+        skills: Array.isArray(memberData.skills) ? memberData.skills : [],
+        joinDate: memberData.joinDate || new Date().toISOString().split('T')[0],
         social: {
           linkedin: socialData.linkedin || '',
           twitter: socialData.twitter || '',
@@ -57,7 +64,7 @@ export default function ProfileEditPage() {
         }
       });
     }
-  }, [member]);
+  }, [memberData]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -157,7 +164,7 @@ export default function ProfileEditPage() {
   };
   
   // Show loading state
-  if (isLoading) {
+  if (isLoadingData) {
     return (
       <ContentContainer>
         <div className="max-w-4xl mx-auto">
@@ -256,6 +263,18 @@ export default function ProfileEditPage() {
                   errors={errors}
                   isSubmitting={isSubmitting}
                 />
+                
+                <hr className="border-t border-slate-200 dark:border-slate-700" />
+                
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-slate-900 dark:text-white">
+                    Privacy Settings
+                  </h3>
+                  <ProfilePrivacySettings 
+                    member={memberData}
+                    className="!shadow-none !border-0 !p-0 !bg-transparent"
+                  />
+                </div>
                 
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
