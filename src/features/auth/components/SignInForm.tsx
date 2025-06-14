@@ -31,10 +31,10 @@ export default function SignInForm() {
     }
   }, [authError]);
 
-  // Redirect to dashboard when authenticated
+  // Redirect to home page when authenticated
   React.useEffect(() => {
     if (status === 'authenticated') {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [status, navigate]);
 

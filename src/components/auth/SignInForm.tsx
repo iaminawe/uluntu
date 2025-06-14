@@ -34,7 +34,7 @@ export default function SignInForm() {
   // Redirect to dashboard when authenticated
   React.useEffect(() => {
     if (status === 'authenticated') {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [status, navigate]);
 
