@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { Company } from '../../types';
-import { companiesApi, CompanyInput } from '../../api/companiesApi';
-import * as mockQueries from '../../hooks/useQueries';
-import { IS_SUPABASE_ENABLED } from '../../config/env';
+import { RootState } from '@/store';
+import { Company } from '@/types';
+import { companiesApi, CompanyInput } from '../api/companiesApi';
+import * as mockQueries from '@/hooks/useQueries';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = IS_SUPABASE_ENABLED;

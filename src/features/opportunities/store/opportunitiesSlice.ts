@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { Opportunity } from '../../types';
-import { opportunitiesApi, OpportunityInput } from '../../api/opportunitiesApi';
-import * as mockQueries from '../../hooks/useQueries';
+import { RootState } from '@/store';
+import { Opportunity } from '../types';
+import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
+import * as mockQueries from '@/hooks/useQueries';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';

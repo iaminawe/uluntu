@@ -1,11 +1,11 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptGroupFromDatabase,
   adaptGroupToSupabaseInsert,
   adaptGroupToSupabaseUpdate,
   GroupInsertData,
   GroupUpdateData,
-} from '../adapters/groupAdapter';
+} from '../utils/groupAdapter';
 import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
 import { ContentStatus } from '../types/common'; // For casting 'status'
 

@@ -1,9 +1,9 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptCompanyFromDatabase,
   adaptCompanyToSupabaseInsert,
   adaptCompanyToSupabaseUpdate
-} from '../adapters/companyAdapter';
+} from '../utils/companyAdapter';
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
 

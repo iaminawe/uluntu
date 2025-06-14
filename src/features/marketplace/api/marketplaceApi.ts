@@ -1,9 +1,9 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptMarketplaceItemFromSupabase,
   adaptMarketplaceItemToSupabase,
   MarketplaceItemsQueryOptions
-} from '../adapters/marketplaceAdapters';
+} from '@/adapters/marketplaceAdapters';
 import { MarketplaceItem } from '../types';
 import { ContentStatus } from '../types/common';
 

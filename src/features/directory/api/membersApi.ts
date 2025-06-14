@@ -1,8 +1,8 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptMemberFromDatabase,
   adaptMemberToDatabase
-} from '../adapters/memberAdapter';
+} from '../utils/memberAdapter';
 import { Member, ContentStatus } from '../types';
 
 // Helper function to adapt a list of items
