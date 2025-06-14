@@ -161,7 +161,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+    element: <ProtectedRoute requiredRoles={['superadmin', 'admin']}><AdminLayout /></ProtectedRoute>,
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <AdminDashboard /> },
