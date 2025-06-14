@@ -10,7 +10,8 @@ import {
   Session
 } from '@/features/auth/store/authSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import supabaseClient, { sessionCache } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { sessionCache } from '@/lib/supabase';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {
@@ -39,20 +40,20 @@ export const useAuth = () => {
   const signIn = async (email: string, password: string) => {
     try {
       // Log which Supabase client we're using
-      console.log('Using Supabase client from:', supabaseClient);
+      console.log('Using Supabase client from:', supabase);
       
       // Add a safety check before calling signInWithPassword
-      if (!supabaseClient || !supabaseClient.auth) {
+      if (!supabase || !supabase.auth) {
         console.error('Supabase client or auth is not properly initialized');
         dispatch(setAuthError('Authentication service unavailable'));
         return;
       }
       
       // Log the auth object to check its structure
-      console.log('Auth object:', supabaseClient.auth);
+      console.log('Auth object:', supabase.auth);
       
       // Use a safer approach with explicit error handling
-      const response = await supabaseClient.auth.signInWithPassword({
+      const response = await supabase.auth.signInWithPassword({
         email,
         password
       });
@@ -97,7 +98,7 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabaseClient.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password
       });
@@ -124,7 +125,7 @@ export const useAuth = () => {
 
   const signOutUser = async () => {
     try {
-      const { error } = await supabaseClient.auth.signOut();
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         dispatch(setAuthError(error.message));
@@ -139,7 +140,7 @@ export const useAuth = () => {
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
 
       if (error) {
         dispatch(setAuthError(error.message));
@@ -152,7 +153,7 @@ export const useAuth = () => {
 
   const refreshSession = async () => {
     try {
-      const { data, error } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
 
       if (error) {
         dispatch(setAuthError(error.message));
