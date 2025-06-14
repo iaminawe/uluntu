@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useContentManagement } from '../hooks/useContentManagement';
+import { useContentManagement } from '@/hooks/useContentManagement';
 import { 
   Language, 
   ContentEditRequest, 

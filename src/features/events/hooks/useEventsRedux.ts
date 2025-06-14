@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { 
   fetchEvents, 
   fetchEventById, 
@@ -10,7 +10,7 @@ import {
   setFilters,
   clearFilters,
   EventFilters
-} from '../redux/slices/eventsSlice';
+} from '../store/eventsSlice';
 import { Event as FrontendEvent } from '../types';
 import { Database } from '../types/supabase';
 

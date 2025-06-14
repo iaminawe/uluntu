@@ -1,5 +1,5 @@
 // First set up mocks before any imports to avoid circular dependencies
-jest.mock('../../lib/supabase');
+jest.mock('@/lib/supabase');
 
 // Mock the useAuth hook from Redux
 const mockSignIn = jest.fn().mockResolvedValue({
@@ -26,7 +26,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../../redux/slices/authSlice';
 import { AuthProvider, useAuth } from '../AuthContextWithRedux';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 // Reset mock implementation before tests
 beforeEach(() => {

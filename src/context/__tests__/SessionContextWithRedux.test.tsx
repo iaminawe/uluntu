@@ -4,13 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { Session, User, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { signInWithSession, signOut as reduxSignOut } from '../../redux/slices/authSlice';
+import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/store/authSlice';
 import { SessionProvider, useSession } from '../SessionContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 
 // Mock supabase client
-jest.mock('../../lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),

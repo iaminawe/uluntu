@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { newsArticles } from '../data/mock/mockData';
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import type { Database } from '../types/supabase';
 import { NewsArticle, ContentStatus } from '../types';
 import {
   adaptNewsArticleFromDatabase as adaptNewsArticleFromSupabase, // Keep alias for minimal changes in this file
   adaptNewsArticleToDatabase as adaptNewsArticleToDatabase, // Import the to-database adapter
   type SupabaseNewsArticleWithAuthor as NewsArticleSupabaseRow // Keep alias for minimal changes
-} from '../adapters/newsAdapter';
+} from '@/adapters/newsAdapter';
 
 // Type aliases for easier use
 type Tables = Database['public']['Tables'];

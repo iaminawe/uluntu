@@ -9,7 +9,7 @@ import authReducer, {
   updateSession,
   setRoles,
   setAuthError
-} from '../../redux/slices/authSlice';
+} from '@/store/authSlice';
 
 // Mock user and session data
 const mockUser = {

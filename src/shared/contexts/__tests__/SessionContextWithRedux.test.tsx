@@ -6,11 +6,11 @@ import { act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Session, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { signInWithSession, signOut as reduxSignOut } from '../../redux/slices/authSlice';
+import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/store/authSlice';
 import { mockUser, mockSession, flushPromises } from '../../utils/testUtils';
 
 // Mock supabase client
-jest.mock('../../lib/supabase', () => {
+jest.mock('@/lib/supabase', () => {
   return {
     supabase: {
       auth: {
@@ -23,7 +23,7 @@ jest.mock('../../lib/supabase', () => {
 });
 
 // Import the mocked supabase client
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 // Redux store for testing
 function createTestStore() {

@@ -10,7 +10,7 @@ import {
   Session
 } from '@/features/auth/store/authSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import supabaseClient, { sessionCache } from '@/shared/lib/supabaseClient';
+import supabaseClient, { sessionCache } from '@/lib/supabase';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {

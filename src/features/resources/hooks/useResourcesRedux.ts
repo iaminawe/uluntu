@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchResources,
   fetchResourceById,
@@ -18,7 +18,7 @@ import {
   selectResourcesError,
   selectResourcesFilters,
   ResourceFilters
-} from '../redux/slices/resourcesSlice';
+} from '../store/resourcesSlice';
 import { ResourceInput } from '../api/resourcesApi';
 
 /**
