@@ -30,7 +30,10 @@ export interface VisibilitySelectProps {
 export interface ImageUploadProps {
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onHeroImageChange: (file: File | null) => void;
+  onCoverImageChange: (file: File | null) => void;
   errors: Partial<FormData>;
+  isSubmitting?: boolean;
 }
 
 export interface FormActionsProps {

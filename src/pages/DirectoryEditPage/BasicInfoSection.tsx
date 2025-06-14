@@ -1,10 +1,12 @@
 import { User, Briefcase, MapPin, Calendar } from 'lucide-react';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 import { BasicInfoSectionProps } from './types';
 
 const BasicInfoSection = ({
   formData,
   errors,
   onChange,
+  onImageChange,
   isSubmitting
 }: BasicInfoSectionProps) => {
   return (
@@ -120,31 +122,19 @@ const BasicInfoSection = ({
       </div>
 
       <div>
-        <label htmlFor="image" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Profile Image URL <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="url"
+        <FormImageUpload
           id="image"
           name="image"
-          value={formData.image}
-          onChange={onChange}
+          label="Profile Image"
+          currentImage={formData.image}
+          onChange={onImageChange}
           disabled={isSubmitting}
-          className={`mt-1 block w-full px-3 py-2 border ${
-            errors.image ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'
-          } rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500`}
-          placeholder="https://example.com/image.jpg"
+          helperText="Upload a profile image for the directory"
+          maxSize={5 * 1024 * 1024}
+          acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+          error={errors.image}
+          required
         />
-        {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image}</p>}
-        {formData.image && (
-          <div className="mt-2 p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
-            <img 
-              src={formData.image} 
-              alt="Profile preview" 
-              className="h-24 w-24 rounded-full object-cover mx-auto"
-            />
-          </div>
-        )}
       </div>
 
       <div>

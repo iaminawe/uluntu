@@ -1,5 +1,6 @@
 import RichTextEditor from '../../components/RichTextEditor';
 import { FormInput, FormSelect, FormCheckbox, FormTextarea } from '../../components/ui/Form';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 import { FormInputsProps } from './types';
 import { ContentStatus } from '../../types/common';
 
@@ -7,6 +8,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
   formData, 
   handleChange, 
   setFormData, 
+  onImageChange,
   errors 
 }) => {
   return (
@@ -50,15 +52,17 @@ const FormInputs: React.FC<FormInputsProps> = ({
         )}
       </div>
       
-      {/* Image URL */}
-      <FormInput
+      {/* Featured Image */}
+      <FormImageUpload
         id="image"
         name="image"
-        label="Featured Image URL"
-        value={formData.image}
-        onChange={handleChange}
-        placeholder="https://example.com/image.jpg"
-        helperText="Upload or enter a URL to your featured image"
+        label="Featured Image"
+        currentImage={formData.image}
+        onChange={onImageChange}
+        helperText="Upload a featured image for this news article"
+        maxSize={5 * 1024 * 1024}
+        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+        error={errors.image}
       />
       
       {/* Status */}

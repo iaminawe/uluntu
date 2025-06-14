@@ -66,6 +66,8 @@ export interface EventDetailsProps {
 export interface EventImageProps {
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onImageChange: (file: File | null) => void;
+  isSubmitting?: boolean;
 }
 
 export interface OrganizerSelectProps {

@@ -29,6 +29,7 @@ export interface FormSectionProps {
   errors: Partial<Record<keyof FormData, string>>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onDescriptionChange: (data: string) => void;
+  onImageChange: (file: File | null) => void;
   isSubmitting: boolean;
 }
 

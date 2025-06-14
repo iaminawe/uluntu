@@ -11,6 +11,7 @@ import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { SAMPLE_OPPORTUNITY, initialFormData } from './data';
+import { uploadOpportunityImage } from '../../lib/supabase';
 
 export default function OpportunityEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,8 @@ export default function OpportunityEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   // In a real implementation, this would use a hook like useOpportunity(opportunityId)
   useEffect(() => {
@@ -70,6 +73,22 @@ export default function OpportunityEditPage() {
       ...prev,
       description: data
     }));
+  };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        image: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        image: ''
+      }));
+    }
   };
 
   const handleAddRequirement = () => {
@@ -165,9 +184,30 @@ export default function OpportunityEditPage() {
     }
     
     setIsSubmitting(true);
+    let finalImageUrl = formData.image;
     
     try {
-      // Simulate API call
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const opportunityId = id || `temp-${Date.now()}`;
+        const { url, error } = await uploadOpportunityImage(imageFile, opportunityId);
+        
+        if (error) {
+          console.error('Error uploading image:', error);
+          setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
+          return;
+        }
+        
+        finalImageUrl = url;
+        setIsUploadingImage(false);
+      }
+      
+      // Update form data with final image URL
+      const finalFormData = { ...formData, image: finalImageUrl };
+      
+      // Simulate API call with final form data
+      console.log('Submitting opportunity with data:', finalFormData);
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setSubmitSuccess(true);
@@ -178,8 +218,10 @@ export default function OpportunityEditPage() {
       }, 2000);
     } catch (error) {
       console.error('Error submitting opportunity:', error);
+      setErrors(prev => ({ ...prev, image: 'Failed to save opportunity. Please try again.' }));
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImage(false);
     }
   };
   
@@ -240,7 +282,8 @@ export default function OpportunityEditPage() {
                     errors={errors}
                     onChange={handleChange}
                     onDescriptionChange={handleDescriptionChange}
-                    isSubmitting={isSubmitting}
+                    onImageChange={handleImageChange}
+                    isSubmitting={isSubmitting || isUploadingImage}
                   />
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,6 +1,7 @@
 import { MapPin, Calendar, Building, Globe, Mail, DollarSign } from 'lucide-react';
 import RichTextEditor from '../../components/RichTextEditor';
 import CustomSelect from '../../components/CustomSelect';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 import { FormSectionProps } from './types';
 
 const OpportunityTypeOptions = [
@@ -21,6 +22,7 @@ const BasicInfoSection = ({
   errors,
   onChange,
   onDescriptionChange,
+  onImageChange,
   isSubmitting
 }: FormSectionProps) => {
   return (
@@ -221,19 +223,18 @@ const BasicInfoSection = ({
             </div>
           </div>
 
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Image URL
-            </label>
-            <input
-              type="url"
+          <div className="md:col-span-2">
+            <FormImageUpload
               id="image"
               name="image"
-              value={formData.image}
-              onChange={onChange}
+              label="Opportunity Image"
+              currentImage={formData.image}
+              onChange={onImageChange}
               disabled={isSubmitting}
-              className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-              placeholder="https://example.com/image.jpg"
+              helperText="Upload an image to showcase this opportunity"
+              maxSize={5 * 1024 * 1024}
+              acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+              error={errors.image}
             />
           </div>
 
