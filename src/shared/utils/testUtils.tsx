@@ -6,16 +6,16 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Import your reducers
-import authReducer from '../redux/slices/authSlice';
-import contentReducer from '../redux/slices/contentSlice';
-import membersReducer from '../redux/slices/membersSlice';
-import eventsReducer from '../redux/slices/eventsSlice';
-import opportunitiesReducer from '../redux/slices/opportunitiesSlice';
-import companiesReducer from '../redux/slices/companiesSlice';
-import groupsReducer from '../redux/slices/groupsSlice';
-import marketplaceReducer from '../redux/slices/marketplaceSlice';
-import resourcesReducer from '../redux/slices/resourcesSlice';
-import newsReducer from '../redux/slices/newsSlice';
+import authReducer from '@/features/auth/store/authSlice';
+import contentReducer from '@/store/contentSlice';
+import membersReducer from '@/features/directory/store/membersSlice';
+import eventsReducer from '@/features/events/store/eventsSlice';
+import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
+import companiesReducer from '@/features/companies/store/companiesSlice';
+import groupsReducer from '@/features/groups/store/groupsSlice';
+import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
+import resourcesReducer from '@/features/resources/store/resourcesSlice';
+import newsReducer from '@/features/news/store/newsSlice';
 
 // Create a custom render function that includes Redux provider
 function render(

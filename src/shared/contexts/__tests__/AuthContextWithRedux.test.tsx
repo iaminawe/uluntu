@@ -8,7 +8,7 @@ const mockSignIn = jest.fn().mockResolvedValue({
 });
 const mockSignOut = jest.fn().mockResolvedValue({ error: null });
 
-jest.mock('../../hooks/useAuth', () => ({
+jest.mock('@/features/auth/hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue({
     signIn: mockSignIn,
     signOut: mockSignOut,
@@ -24,7 +24,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../redux/slices/authSlice';
+import authReducer from '@/features/auth/store/authSlice';
 import { AuthProvider, useAuth } from '../AuthContextWithRedux';
 import { supabase } from '@/lib/supabase';
 

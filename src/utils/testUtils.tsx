@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 // Import your reducers
 import authReducer from '@/features/auth/store/authSlice';
-import contentReducer from '../redux/slices/contentSlice';
+import contentReducer from '@/store/contentSlice';
 import membersReducer from '@/features/directory/store/membersSlice';
 import eventsReducer from '@/features/events/store/eventsSlice';
 import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';

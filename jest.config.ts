@@ -16,13 +16,14 @@ const config = {
         astTransformers: {
           before: [
             {
-              path: './jest-ts-import-meta-env-transformer.js', // path to your transformer
+              path: './jest-ts-import-meta-env-transformer.js',
               options: {},
             },
           ],
         },
       },
     ],
+    '^.+\\.(js|jsx)$': 'babel-jest',
   },
 
   // Ignore transformations for node_modules except for specific packages
