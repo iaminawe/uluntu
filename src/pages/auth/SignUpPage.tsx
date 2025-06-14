@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import SignUpForm from '../components/auth/SignUpForm';
+import SignUpForm from '@/features/auth/components/SignUpForm';
 
 export default function SignUpPage() {
   return (

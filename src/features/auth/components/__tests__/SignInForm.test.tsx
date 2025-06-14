@@ -4,11 +4,11 @@ import SignInForm from '../SignInForm';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../../store/authSlice';
-import * as useAuthModule from '../../../hooks/useAuth';
+import authReducer from '../../store/authSlice';
+import * as useAuthModule from '../../hooks/useAuth';
 
 // Mock the useAuth hook
-jest.mock('../../../hooks/useAuth', () => ({
+jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 

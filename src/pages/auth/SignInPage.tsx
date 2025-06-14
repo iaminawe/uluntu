@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import SignInForm from '../components/auth/SignInForm';
+import SignInForm from '@/features/auth/components/SignInForm';
 
 export default function SignInPage() {
   return (
