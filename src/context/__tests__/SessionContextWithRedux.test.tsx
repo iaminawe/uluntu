@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { Session, User, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/store/authSlice';
+import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/features/auth/store/authSlice';
 import { SessionProvider, useSession } from '../SessionContext';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
