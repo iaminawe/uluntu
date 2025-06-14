@@ -84,8 +84,8 @@ class NewsletterContentAPI {
   async getCuratedContentByType(
     contentType: ContentType, 
     maxItems: number = 5,
-    customCriteria?: any
-  ): Promise<any[]> {
+    customCriteria?: Record<string, unknown>
+  ): Promise<unknown[]> {
     try {
       const dateRange = this.getDefaultDateRange();
       
@@ -152,7 +152,7 @@ class NewsletterContentAPI {
   /**
    * Test content rule to see what content it would generate
    */
-  async testContentRule(rule: ContentRule): Promise<any[]> {
+  async testContentRule(rule: ContentRule): Promise<unknown[]> {
     try {
       const dateRange = this.getDefaultDateRange();
       
@@ -184,7 +184,7 @@ class NewsletterContentAPI {
     rules: ContentRule[], 
     dateRange: DateRange, 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<EventContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 5, selection_criteria: customCriteria || {} };
@@ -263,7 +263,7 @@ class NewsletterContentAPI {
     rules: ContentRule[], 
     dateRange: DateRange, 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<NewsContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 3, selection_criteria: customCriteria || {} };
@@ -334,7 +334,7 @@ class NewsletterContentAPI {
     rules: ContentRule[], 
     dateRange: DateRange, 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<OpportunityContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 3, selection_criteria: customCriteria || {} };
@@ -413,7 +413,7 @@ class NewsletterContentAPI {
     rules: ContentRule[], 
     dateRange: DateRange, 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<MarketplaceContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 2, selection_criteria: customCriteria || {} };
@@ -483,7 +483,7 @@ class NewsletterContentAPI {
   private async curateMembers(
     rules: ContentRule[], 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<MemberContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 1, selection_criteria: customCriteria || {} };
@@ -553,7 +553,7 @@ class NewsletterContentAPI {
   private async curateCompanies(
     rules: ContentRule[], 
     maxItems?: number,
-    customCriteria?: any
+    customCriteria?: Record<string, unknown>
   ): Promise<CompanyContent[]> {
     try {
       const rule = rules[0] || { max_items: maxItems || 1, selection_criteria: customCriteria || {} };

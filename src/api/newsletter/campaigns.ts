@@ -502,7 +502,7 @@ class NewsletterCampaignAPI {
     campaignId: string, 
     subscriptionId: string, 
     eventType: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained',
-    eventData?: any
+    eventData?: Record<string, unknown>
   ): Promise<void> {
     try {
       await supabase

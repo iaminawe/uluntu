@@ -15,7 +15,7 @@ class NewsletterAnalyticsAPI {
     campaignId: string,
     subscriptionId: string | undefined,
     eventType: NewsletterAnalytics['event_type'],
-    eventData?: Record<string, any>,
+    eventData?: Record<string, unknown>,
     ipAddress?: string,
     userAgent?: string
   ): Promise<boolean> {

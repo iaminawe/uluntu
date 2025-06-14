@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
 import { supabase } from '@/lib/supabase';
-import type { MarketplaceListing, MarketplaceFilters } from '../../../types';
+import type { MarketplaceFilters } from '../../../types';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => {

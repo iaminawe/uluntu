@@ -323,7 +323,7 @@ class NewsletterSubscriptionAPI {
    */
   async updateSubscriptionStatus(id: string, status: NewsletterSubscription['status']): Promise<boolean> {
     try {
-      const updateData: any = { status };
+      const updateData: Record<string, unknown> = { status };
       
       if (status === 'unsubscribed') {
         updateData.unsubscribed_at = new Date().toISOString();
@@ -396,7 +396,7 @@ class NewsletterSubscriptionAPI {
       if (!subscription) return;
 
       const newBounceCount = subscription.bounce_count + 1;
-      const updateData: any = { bounce_count: newBounceCount };
+      const updateData: Record<string, unknown> = { bounce_count: newBounceCount };
 
       // Hard bounce or too many soft bounces = mark as bounced
       if (bounceType === 'hard' || newBounceCount >= 5) {

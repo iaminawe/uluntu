@@ -2,7 +2,7 @@ export interface AdminFeature {
   id: string;
   feature_key: string;
   enabled: boolean;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -11,7 +11,7 @@ export interface AdminFeatureTranslation {
   id: string;
   feature_id: string;
   language_code: string;
-  translations: Record<string, any>;
+  translations: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -31,7 +31,7 @@ export interface ModerationItem {
   entity_type: 'members' | 'companies' | 'groups' | 'events' | 'news' | 'resources' | 'marketplace' | 'opportunities';
   entity_id: string;
   action_type: 'create' | 'update' | 'delete';
-  content: Record<string, any>;
+  content: Record<string, unknown>;
   submitted_by: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewed_by: string | null;
@@ -48,7 +48,7 @@ export interface AuditLogEntry {
   action: string;
   entity_type: string | null;
   entity_id: string | null;
-  changes: Record<string, any> | null;
+  changes: Record<string, unknown> | null;
   ip_address: string | null;
   user_agent: string | null;
   created_at: string;
@@ -72,13 +72,13 @@ export interface AdminStats {
 export interface Permission {
   resource: string;
   actions: string[];
-  conditions?: Record<string, any>;
+  conditions?: Record<string, unknown>;
 }
 
 export interface FeatureConfig {
   maxItems?: number;
   requireApproval?: boolean;
   allowedRoles?: string[];
-  customFields?: any;
-  [key: string]: any;
+  customFields?: unknown;
+  [key: string]: unknown;
 }

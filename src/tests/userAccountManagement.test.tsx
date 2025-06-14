@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'; // Import fireEvent
-import SignUpPageWithAPI from './__mocks__/SignUpPageWithAPI'; // Import the mocked component
-import { membersApi, supabase } from './__mocks__/userAccountManagement';
+import SignUpPageWithAPI from '../__mocks__/SignUpPageWithAPI'; // Import the mocked component
+import { membersApi, supabase } from '../__mocks__/userAccountManagement';
 
 interface Member {
   id: string;

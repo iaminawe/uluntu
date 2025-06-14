@@ -94,7 +94,7 @@ jest.mock('../hooks/useNewsQueries', () => {
 });
 
 describe('News Management', () => {
-  const _renderWithProviders = (component: React.ReactNode) => {
+  const renderWithProviders = (component: React.ReactNode) => {
     return render(
       <Provider store={store}>
         <BrowserRouter>

@@ -34,6 +34,354 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          id: string
+          admin_id: string
+          action: string
+          entity_type: string
+          entity_id: string | null
+          changes: Json
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          admin_id: string
+          action: string
+          entity_type: string
+          entity_id?: string | null
+          changes?: Json
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          admin_id?: string
+          action?: string
+          entity_type?: string
+          entity_id?: string | null
+          changes?: Json
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      admin_features: {
+        Row: {
+          id: string
+          feature_key: string
+          enabled: boolean | null
+          config: Json
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          feature_key: string
+          enabled?: boolean | null
+          config?: Json
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          feature_key?: string
+          enabled?: boolean | null
+          config?: Json
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      admin_feature_translations: {
+        Row: {
+          id: string
+          feature_id: string
+          language_code: string
+          name: string
+          description: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          feature_id: string
+          language_code: string
+          name: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          feature_id?: string
+          language_code?: string
+          name?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscriptions: {
+        Row: {
+          id: string
+          email: string
+          member_id: string | null
+          status: string | null
+          preferences: Json
+          subscription_token: string
+          confirmation_token: string | null
+          confirmed_at: string | null
+          subscribed_at: string | null
+          unsubscribed_at: string | null
+          last_sent_at: string | null
+          bounce_count: number | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          email: string
+          member_id?: string | null
+          status?: string | null
+          preferences?: Json
+          subscription_token?: string
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          subscribed_at?: string | null
+          unsubscribed_at?: string | null
+          last_sent_at?: string | null
+          bounce_count?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          email?: string
+          member_id?: string | null
+          status?: string | null
+          preferences?: Json
+          subscription_token?: string
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          subscribed_at?: string | null
+          unsubscribed_at?: string | null
+          last_sent_at?: string | null
+          bounce_count?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_templates: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          type: string | null
+          template_content: string
+          default_settings: Json
+          preview_image: string | null
+          is_active: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          type?: string | null
+          template_content: string
+          default_settings?: Json
+          preview_image?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          type?: string | null
+          template_content?: string
+          default_settings?: Json
+          preview_image?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_campaigns: {
+        Row: {
+          id: string
+          title: string
+          subject: string
+          template_id: string | null
+          template_data: Json
+          content: Json
+          custom_message: string | null
+          branding: Json
+          status: string | null
+          send_type: string | null
+          scheduled_at: string | null
+          sent_at: string | null
+          recipient_count: number | null
+          delivery_stats: Json
+          created_by: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          subject: string
+          template_id?: string | null
+          template_data?: Json
+          content?: Json
+          custom_message?: string | null
+          branding?: Json
+          status?: string | null
+          send_type?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          recipient_count?: number | null
+          delivery_stats?: Json
+          created_by: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          subject?: string
+          template_id?: string | null
+          template_data?: Json
+          content?: Json
+          custom_message?: string | null
+          branding?: Json
+          status?: string | null
+          send_type?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          recipient_count?: number | null
+          delivery_stats?: Json
+          created_by?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_content_rules: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          content_type: string | null
+          selection_criteria: Json
+          max_items: number | null
+          priority: number | null
+          is_active: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          content_type?: string | null
+          selection_criteria?: Json
+          max_items?: number | null
+          priority?: number | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          content_type?: string | null
+          selection_criteria?: Json
+          max_items?: number | null
+          priority?: number | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_analytics: {
+        Row: {
+          id: string
+          campaign_id: string | null
+          subscription_id: string | null
+          event_type: string | null
+          event_data: Json
+          postmark_message_id: string | null
+          occurred_at: string | null
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          campaign_id?: string | null
+          subscription_id?: string | null
+          event_type?: string | null
+          event_data?: Json
+          postmark_message_id?: string | null
+          occurred_at?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          campaign_id?: string | null
+          subscription_id?: string | null
+          event_type?: string | null
+          event_data?: Json
+          postmark_message_id?: string | null
+          occurred_at?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_content_cache: {
+        Row: {
+          id: string
+          content_type: string
+          date_range_start: string
+          date_range_end: string
+          content: Json
+          generated_at: string | null
+          expires_at: string | null
+        }
+        Insert: {
+          id?: string
+          content_type: string
+          date_range_start: string
+          date_range_end: string
+          content: Json
+          generated_at?: string | null
+          expires_at?: string | null
+        }
+        Update: {
+          id?: string
+          content_type?: string
+          date_range_start?: string
+          date_range_end?: string
+          content?: Json
+          generated_at?: string | null
+          expires_at?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           cover_image: string | null
