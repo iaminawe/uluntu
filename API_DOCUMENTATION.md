@@ -26,6 +26,373 @@ export function handleSupabaseError(error: any, context: string): void {
 
 ## API Modules
 
+### Administrative APIs (`/api/admin/`)
+
+The administrative API layer provides comprehensive platform management capabilities with strict superadmin access control.
+
+#### Features API (`/api/admin/features.ts`)
+
+##### Types
+```typescript
+interface AdminFeature {
+  id: string;
+  feature_key: string;
+  enabled: boolean;
+  config: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+interface FeatureTranslation {
+  id: string;
+  feature_id: string;
+  language_code: string;
+  translations: Record<string, string>;
+  created_at: string;
+}
+```
+
+##### Methods
+
+###### `getFeatures()`
+Fetches all feature flags with their configurations.
+
+```typescript
+const features = await adminFeaturesApi.getFeatures();
+```
+
+**Returns:** `Promise<AdminFeature[]>`
+
+###### `toggleFeature(featureKey, enabled)`
+Enables or disables a specific feature.
+
+```typescript
+const success = await adminFeaturesApi.toggleFeature('marketplace', true);
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `updateFeatureConfig(featureKey, config)`
+Updates the configuration for a feature.
+
+```typescript
+const success = await adminFeaturesApi.updateFeatureConfig('events', {
+  maxAttendeesDefault: 100,
+  requireApproval: false
+});
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `isFeatureEnabled(featureKey)`
+Checks if a feature is currently enabled.
+
+```typescript
+const isEnabled = await adminFeaturesApi.isFeatureEnabled('groups');
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `getFeatureTranslations(featureId)`
+Fetches all translations for a specific feature.
+
+```typescript
+const translations = await adminFeaturesApi.getFeatureTranslations('feature-uuid');
+```
+
+**Returns:** `Promise<FeatureTranslation[]>`
+
+###### `upsertFeatureTranslation(featureId, languageCode, translations)`
+Creates or updates translations for a feature in a specific language.
+
+```typescript
+const success = await adminFeaturesApi.upsertFeatureTranslation(
+  'feature-uuid',
+  'es',
+  {
+    title: 'Eventos',
+    description: 'Gestionar eventos de la comunidad',
+    createButton: 'Crear Evento'
+  }
+);
+```
+
+**Returns:** `Promise<boolean>`
+
+#### Roles API (`/api/admin/roles.ts`)
+
+##### Types
+```typescript
+interface Role {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Record<string, string[]>;
+  is_system: boolean;
+  created_at: string;
+}
+
+interface UserRole {
+  user_id: string;
+  role_id: string;
+  assigned_at: string;
+  assigned_by: string;
+  role: Role;
+}
+```
+
+##### Methods
+
+###### `getRoles()`
+Fetches all available roles.
+
+```typescript
+const roles = await adminRolesApi.getRoles();
+```
+
+**Returns:** `Promise<Role[]>`
+
+###### `createRole(roleData)`
+Creates a new role with specified permissions.
+
+```typescript
+const newRole = await adminRolesApi.createRole({
+  name: 'Event Manager',
+  description: 'Can manage events and registrations',
+  permissions: {
+    events: ['create', 'read', 'update', 'delete'],
+    members: ['read']
+  }
+});
+```
+
+**Returns:** `Promise<Role | null>`
+
+###### `updateRole(id, updates)`
+Updates an existing role (system roles protected).
+
+```typescript
+const updated = await adminRolesApi.updateRole('role-uuid', {
+  description: 'Updated role description',
+  permissions: { events: ['read', 'update'] }
+});
+```
+
+**Returns:** `Promise<Role | null>`
+
+###### `deleteRole(id)`
+Deletes a role (system roles protected).
+
+```typescript
+const success = await adminRolesApi.deleteRole('role-uuid');
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `assignRole(userId, roleId)`
+Assigns a role to a user.
+
+```typescript
+const success = await adminRolesApi.assignRole('user-uuid', 'role-uuid');
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `removeRole(userId, roleId)`
+Removes a role from a user.
+
+```typescript
+const success = await adminRolesApi.removeRole('user-uuid', 'role-uuid');
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `getUserRoles(userId)`
+Fetches all roles assigned to a specific user.
+
+```typescript
+const userRoles = await adminRolesApi.getUserRoles('user-uuid');
+```
+
+**Returns:** `Promise<UserRole[]>`
+
+###### `checkPermission(userId, resource, action)`
+Checks if a user has permission for a specific action on a resource.
+
+```typescript
+const hasPermission = await adminRolesApi.checkPermission(
+  'user-uuid',
+  'events',
+  'create'
+);
+```
+
+**Returns:** `Promise<boolean>`
+
+#### Moderation API (`/api/admin/moderation.ts`)
+
+##### Types
+```typescript
+interface ModerationItem {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  submitted_by: string;
+  reviewed_by?: string;
+  submitted_at: string;
+  reviewed_at?: string;
+  review_notes?: string;
+}
+```
+
+##### Methods
+
+###### `getModerationQueue(filters?)`
+Fetches items in the moderation queue with optional filtering.
+
+```typescript
+const queue = await adminModerationApi.getModerationQueue({
+  status: 'pending',
+  entityType: 'events',
+  limit: 20,
+  offset: 0
+});
+```
+
+**Returns:** `Promise<{ data: ModerationItem[], count: number }>`
+
+###### `approveContent(itemId, notes?)`
+Approves a moderation item.
+
+```typescript
+const success = await adminModerationApi.approveContent(
+  'moderation-uuid',
+  'Content looks good'
+);
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `rejectContent(itemId, notes)`
+Rejects a moderation item with required notes.
+
+```typescript
+const success = await adminModerationApi.rejectContent(
+  'moderation-uuid',
+  'Content violates community guidelines'
+);
+```
+
+**Returns:** `Promise<boolean>`
+
+###### `getContentDetails(entityType, entityId)`
+Fetches the actual content for review.
+
+```typescript
+const content = await adminModerationApi.getContentDetails('events', 'event-uuid');
+```
+
+**Returns:** `Promise<any>`
+
+#### Stats API (`/api/admin/stats.ts`)
+
+##### Types
+```typescript
+interface AdminStats {
+  totalMembers: number;
+  totalCompanies: number;
+  totalGroups: number;
+  totalEvents: number;
+  pendingModeration: number;
+  activeUsers: number;
+}
+
+interface ActivityStat {
+  date: string;
+  signups: number;
+  events_created: number;
+  listings_created: number;
+}
+```
+
+##### Methods
+
+###### `getOverviewStats()`
+Fetches platform overview statistics.
+
+```typescript
+const stats = await adminStatsApi.getOverviewStats();
+```
+
+**Returns:** `Promise<AdminStats>`
+
+###### `getActivityStats(dateRange?)`
+Fetches activity statistics over time.
+
+```typescript
+const activity = await adminStatsApi.getActivityStats({
+  startDate: new Date('2024-01-01'),
+  endDate: new Date()
+});
+```
+
+**Returns:** `Promise<ActivityStat[]>`
+
+#### Audit API (`/api/admin/audit.ts`)
+
+##### Types
+```typescript
+interface AuditLogEntry {
+  id: string;
+  admin_id: string;
+  action: string;
+  entity_type?: string;
+  entity_id?: string;
+  changes?: Record<string, any>;
+  created_at: string;
+  admin?: { email: string };
+}
+
+interface AuditFilters {
+  adminId?: string;
+  entityType?: string;
+  action?: string;
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+  offset?: number;
+}
+```
+
+##### Methods
+
+###### `getAuditLogs(filters?)`
+Fetches audit log entries with optional filtering.
+
+```typescript
+const logs = await adminAuditApi.getAuditLogs({
+  action: 'create',
+  entityType: 'events',
+  startDate: new Date('2024-01-01'),
+  limit: 50
+});
+```
+
+**Returns:** `Promise<{ data: AuditLogEntry[], count: number }>`
+
+###### `exportAuditLogs(filters?)`
+Exports audit logs as CSV format.
+
+```typescript
+const csv = await adminAuditApi.exportAuditLogs({
+  startDate: new Date('2024-01-01'),
+  endDate: new Date()
+});
+```
+
+**Returns:** `Promise<string>`
+
 ### Events API (`/api/eventsApi.ts`)
 
 #### Types

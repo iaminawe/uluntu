@@ -34,12 +34,20 @@ This platform connects community members, local businesses, and organizations to
     *   **Posting Opportunities:** Company representatives and community organizations can post job listings, volunteer opportunities, and event announcements.
     *   **Browsing Opportunities:** Users can browse the opportunities board to find local jobs, volunteer positions, and events.
     *   **Applying for Opportunities:** Users can apply for jobs and volunteer positions directly through the platform.
+*   **Administrative Dashboard:** Comprehensive admin area for platform management (Superadmin access only).
+    *   **Entity Management:** Manage all platform entities (members, companies, groups, events, news, resources, marketplace, opportunities) with advanced search, filtering, and bulk operations.
+    *   **User & Role Management:** Assign roles, manage permissions, and control user access with granular permission system.
+    *   **Content Moderation:** Review, approve, or reject user-generated content with streamlined moderation workflow.
+    *   **Feature Flags & Settings:** Enable/disable platform features and configure settings with real-time updates.
+    *   **Internationalization:** Manage translations for multiple languages (English, Spanish, French, German, Chinese, Japanese).
+    *   **Audit Trail:** Complete logging of all administrative actions with advanced filtering and CSV export capabilities.
+    *   **Analytics Dashboard:** Platform statistics, user activity metrics, and system health monitoring.
 
 ## Architecture
 
 The project follows a modular architecture with the following key components:
 
-*   **API Endpoints:** Located in `src/api/`, these endpoints manage data for events, groups, marketplace listings, news, and resources using Supabase for data storage and retrieval. Each API endpoint follows RESTful principles, providing a clear and consistent interface for data access.
+*   **API Endpoints:** Located in `src/api/`, these endpoints manage data for events, groups, marketplace listings, news, resources, and administrative functions using Supabase for data storage and retrieval. Each API endpoint follows RESTful principles, providing a clear and consistent interface for data access. The admin API layer (`src/api/admin/`) provides specialized endpoints for platform administration.
 *   **UI Components:** Reusable UI components in `src/components/` provide a user-friendly interface. These components are designed to be modular and extensible, allowing for easy customization and reuse throughout the platform.
 *   **Pages:** The `src/pages/` directory contains the website pages, organizing UI components and providing navigation. Each page represents a specific section of the platform, such as the events page, groups page, or marketplace page.
 *   **Data Adapters:** Functions in `src/adapters/` ensure data consistency between the application and Supabase. These adapters handle data transformation and validation, ensuring that data is consistent and accurate across the platform.
@@ -60,7 +68,8 @@ The data flow is as follows:
 
 ## User Roles
 
-*   **Administrator:** Full access to manage the platform. Administrators can manage users, content, and settings.
+*   **Superadmin:** Ultimate platform access with admin dashboard capabilities. Superadmins can access the comprehensive administrative interface to manage all aspects of the platform, including entity management, user roles, content moderation, feature flags, internationalization, and audit trails.
+*   **Administrator:** Full access to manage platform content and users. Administrators can manage events, groups, news, resources, and user accounts through the standard interface.
 *   **Moderator:** Moderates content and manages users. Moderators can approve or reject content, manage user accounts, and enforce community guidelines.
 *   **Registered User:** Creates and manages events, groups, and marketplace listings. Registered users can participate in community activities, connect with other users, and contribute to the platform.
 *   **Guest:** Views content without creating an account. Guests can browse the platform, read news articles, and view resources.
@@ -75,8 +84,13 @@ To install and run the platform, follow these steps:
 3.  **Configure Supabase:**
     *   Create a Supabase project at [supabase.com](https://supabase.com).
     *   Update the `.env` file with your Supabase API URL and API key.
-4.  **Run the application:** `npm start`
-5.  **Access the platform:** Open your browser and navigate to `http://localhost:3000`.
+    *   Run the database migration: `supabase/migrations/20250113_admin_features.sql` to set up admin tables.
+4.  **Set up Admin Access:**
+    *   Create your first user account through the platform.
+    *   Manually assign the 'superadmin' role in the Supabase dashboard or via SQL.
+    *   Access the admin dashboard at `/admin` route.
+5.  **Run the application:** `npm start`
+6.  **Access the platform:** Open your browser and navigate to `http://localhost:3000`.
 
 ## Usage
 

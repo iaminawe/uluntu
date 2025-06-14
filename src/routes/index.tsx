@@ -44,6 +44,10 @@ import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/Dashboard';
 import UsersPage from '../pages/admin/UsersPage';
 import SettingsPage from '../pages/admin/SettingsPage';
+import ModerationPage from '../pages/admin/ModerationPage';
+import RolesPage from '../pages/admin/RolesPage';
+import AdminMembersPage from '../pages/admin/entities/MembersPage';
+import AuditPage from '../pages/admin/AuditPage';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
@@ -162,7 +166,11 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: 'users', element: <UsersPage /> },
-      { path: 'settings', element: <SettingsPage /> }
+      { path: 'roles', element: <RolesPage /> },
+      { path: 'moderation', element: <ModerationPage /> },
+      { path: 'settings', element: <SettingsPage /> },
+      { path: 'audit', element: <AuditPage /> },
+      { path: 'entities/members', element: <AdminMembersPage /> }
     ]
   }
 ]);
