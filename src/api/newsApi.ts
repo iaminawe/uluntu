@@ -4,7 +4,7 @@ import {
   adaptNewsArticleFromDatabase,
   adaptNewsArticleToDatabase,
   SupabaseNewsArticleWithAuthor,
-} from '../adapters/newsAdapter';
+} from '@/adapters/newsAdapter';
 import type { Database } from '../types/supabase';
 
 // Helper function to adapt a list of items

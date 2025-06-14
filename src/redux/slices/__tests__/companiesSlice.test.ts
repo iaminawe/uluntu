@@ -14,7 +14,7 @@ import companiesReducer, {
 } from '@/features/companies/store/companiesSlice'; // Assuming initialState is exported if needed, or manage locally
 import { Company, CompanyInput } from '../../../types';
 import * as companiesApi from '@/features/companies/api/companiesApi';
-import * as mockQueries from '../../../hooks/useQueries';
+import * as mockQueries from '@/hooks/useQueries';
 import * as envConfig from '../../../config/env';
 
 // Mock modules
