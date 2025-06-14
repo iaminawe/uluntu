@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { supabase, checkSupabaseConnection } from '../lib/supabase';
+import { supabase, checkSupabaseConnection } from '@/lib/supabase';
 import { membersApi } from '../api/membersApi';
 import { companiesApi } from '../api/companiesApi';
 import { handleSupabaseError } from '../api/supabaseUtils';
 
 // Mock the supabase client
 // Mock the supabase client with simple jest.fn() mocks that can be customized in each test
-jest.mock('../lib/supabase', () => {
+jest.mock('@/lib/supabase', () => {
   return {
     supabase: {
       from: jest.fn(),

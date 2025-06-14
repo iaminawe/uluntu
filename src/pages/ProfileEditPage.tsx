@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { useMember } from "../hooks/useQueries";
+import { useMemberById as useMember } from '@/hooks/useMemberQueries';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import BasicInfoSection from './DirectoryEditPage/BasicInfoSection';
 import SkillsSection from './DirectoryEditPage/SkillsSection';

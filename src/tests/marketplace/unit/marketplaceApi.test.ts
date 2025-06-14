@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
-import { supabase } from '@/shared/lib/supabaseClient';
+import { supabase } from '@/lib/supabase';
 import type { MarketplaceListing, MarketplaceFilters } from '../../../types';
 
 // Mock Supabase client
-jest.mock('../../../lib/supabaseClient', () => {
+jest.mock('@/lib/supabase', () => {
   const mockFrom = jest.fn();
   const mockAuth = {
     getUser: jest.fn()

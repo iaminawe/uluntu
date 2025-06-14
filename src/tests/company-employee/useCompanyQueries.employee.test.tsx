@@ -6,7 +6,7 @@ import {
   useAddCompanyEmployee,
   useUpdateCompanyEmployee,
   useRemoveCompanyEmployee
-} from '@/features/companies/hooks/useCompanyQueries';
+} from '@/hooks/useCompanyQueries';
 import { companiesApi } from '@/features/companies/api/companiesApi';
 import { CompanyEmployee } from '../../types';
 

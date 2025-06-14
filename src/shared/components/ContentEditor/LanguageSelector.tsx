@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
-import { SUPPORTED_LANGUAGES } from '../../constants/languages';
+import { SUPPORTED_LANGUAGES } from '@/constants/languages';
 
 export const LanguageSelector: React.FC = () => {
   const { currentLanguage, changeLanguage } = useContent();
