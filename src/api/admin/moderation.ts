@@ -113,7 +113,7 @@ export const adminModerationApi = {
   },
 
   // Apply approved moderation action
-  private async applyModerationAction(item: ModerationItem) {
+  async applyModerationAction(item: ModerationItem) {
     const { entity_type, entity_id, action_type, content } = item;
 
     switch (action_type) {
