@@ -6,7 +6,7 @@ import DirectoryFilters from './DirectoryFilters';
 import { DirectoryListProps, FilterOptions, Member as DirectoryMember } from './types';
 import { extractUniqueSkills } from './utils';
 import { useMembersWithFilters } from '@/hooks/useMemberQueries';
-import { Member as QueryMember } from '../../hooks/useMemberQueries';
+import { Member as QueryMember } from '@/hooks/useMemberQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',
