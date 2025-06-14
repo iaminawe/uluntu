@@ -9,21 +9,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
-    '^.+\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        tsconfig: '<rootDir>/tsconfig.json',
-        astTransformers: {
-          before: [
-            {
-              path: './jest-ts-import-meta-env-transformer.js',
-              options: {},
-            },
-          ],
-        },
-      },
-    ],
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },
 
   // Ignore transformations for node_modules except for specific packages
