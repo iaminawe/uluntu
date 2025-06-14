@@ -1,145 +1,183 @@
-# Community Platform
+# Supabase CLI
 
-## Overview
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
+](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
 
-This platform connects community members, local businesses, and organizations to foster a thriving local community. It provides features for managing events, groups, a marketplace, news, resources, and opportunities within your hyperlocal community, including jobs, events, and volunteer positions.
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
 
-## Features
+This repository contains all the functionality for Supabase CLI.
 
-*   **Events Management:** Create, manage, and discover local events.
-    *   **Creating Events:** Users can create events with details such as date, time, location, description, and registration information.
-    *   **Event Registration:** Real-time registration system with attendee tracking and capacity management.
-    *   **Managing Events:** Event organizers can manage attendees, update event details, and view registration status.
-    *   **Discovering Events:** Advanced search and filtering by type (in-person/online/hybrid), date range, and keywords.
-    *   **Event Sessions:** Support for multi-session events with presenters, videos, and downloadable resources.
-*   **Groups Management:** Form and manage community groups.
-    *   **Creating Groups:** Users can create groups based on shared interests, hobbies, or goals.
-    *   **Managing Groups:** Group administrators can manage members, organize activities, and share resources.
-    *   **Joining Groups:** Users can join groups to connect with like-minded individuals and participate in community activities.
-*   **Marketplace:** List and sell products and services.
-    *   **Listing Items:** Users can list items for sale with details such as description, price, images, and contact information.
-    *   **Contact Management:** Sellers can choose how buyers contact them (email/phone/both) with privacy controls.
-    *   **Seller Profiles:** Automatic integration with member profiles for trusted transactions.
-    *   **Advanced Search:** Filter by type, condition, price range, and location.
-    *   **Form Validation:** Comprehensive validation ensures quality listings.
-*   **News:** Stay informed about local news and articles.
-    *   **Publishing Articles:** Administrators and moderators can publish news articles about local events, initiatives, and announcements.
-    *   **Reading Articles:** Users can read news articles to stay informed about what's happening in their community.
-    *   **Commenting on Articles:** Users can engage with news articles by leaving comments and sharing their thoughts.
-*   **Resources:** Find helpful resources for the community.
-    *   **Adding Resources:** Administrators and moderators can add resources such as links to local services, guides, and information.
-    *   **Browsing Resources:** Users can browse the resources library to find helpful information and services.
-    *   **Suggesting Resources:** Users can suggest new resources to be added to the library.
-*   **Opportunities:** Discover opportunities within your hyperlocal community, including jobs, events, and volunteer positions.
-    *   **Posting Opportunities:** Company representatives and community organizations can post job listings, volunteer opportunities, and event announcements.
-    *   **Browsing Opportunities:** Users can browse the opportunities board to find local jobs, volunteer positions, and events.
-    *   **Applying for Opportunities:** Users can apply for jobs and volunteer positions directly through the platform.
-*   **Administrative Dashboard:** Comprehensive admin area for platform management (Superadmin access only).
-    *   **Entity Management:** Manage all platform entities (members, companies, groups, events, news, resources, marketplace, opportunities) with advanced search, filtering, and bulk operations.
-    *   **User & Role Management:** Assign roles, manage permissions, and control user access with granular permission system.
-    *   **Content Moderation:** Review, approve, or reject user-generated content with streamlined moderation workflow.
-    *   **Feature Flags & Settings:** Enable/disable platform features and configure settings with real-time updates.
-    *   **Internationalization:** Manage translations for multiple languages (English, Spanish, French, German, Chinese, Japanese).
-    *   **Audit Trail:** Complete logging of all administrative actions with advanced filtering and CSV export capabilities.
-    *   **Analytics Dashboard:** Platform statistics, user activity metrics, and system health monitoring.
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
 
-## Architecture
+## Getting started
 
-The project follows a modular architecture with the following key components:
+### Install the CLI
 
-*   **API Endpoints:** Located in `src/api/`, these endpoints manage data for events, groups, marketplace listings, news, resources, and administrative functions using Supabase for data storage and retrieval. Each API endpoint follows RESTful principles, providing a clear and consistent interface for data access. The admin API layer (`src/api/admin/`) provides specialized endpoints for platform administration.
-*   **UI Components:** Reusable UI components in `src/components/` provide a user-friendly interface. These components are designed to be modular and extensible, allowing for easy customization and reuse throughout the platform.
-*   **Pages:** The `src/pages/` directory contains the website pages, organizing UI components and providing navigation. Each page represents a specific section of the platform, such as the events page, groups page, or marketplace page.
-*   **Data Adapters:** Functions in `src/adapters/` ensure data consistency between the application and Supabase. These adapters handle data transformation and validation, ensuring that data is consistent and accurate across the platform.
-*   **State Management:** Redux Toolkit for UI state and React Query for server state, providing optimal performance and user experience.
-*   **Supabase:** Provides backend-as-a-service for data storage, authentication, and real-time updates with Row Level Security for data protection.
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
 
-For detailed technical information, see:
-- [Technical Documentation](TECHNICAL_DOCUMENTATION.md) - Architecture, database schema, and implementation details
-- [API Documentation](API_DOCUMENTATION.md) - Complete API reference with examples
+```bash
+npm i supabase --save-dev
+```
 
-The data flow is as follows:
+To install the beta release channel:
 
-1.  User interacts with UI components.
-2.  UI components call API endpoints.
-3.  API endpoints use data adapters to convert data.
-4.  API endpoints interact with Supabase.
-5.  Supabase sends real-time updates to UI components.
+```bash
+npm i supabase@beta --save-dev
+```
 
-## User Roles
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
 
-*   **Superadmin:** Ultimate platform access with admin dashboard capabilities. Superadmins can access the comprehensive administrative interface to manage all aspects of the platform, including entity management, user roles, content moderation, feature flags, internationalization, and audit trails.
-*   **Administrator:** Full access to manage platform content and users. Administrators can manage events, groups, news, resources, and user accounts through the standard interface.
-*   **Moderator:** Moderates content and manages users. Moderators can approve or reject content, manage user accounts, and enforce community guidelines.
-*   **Registered User:** Creates and manages events, groups, and marketplace listings. Registered users can participate in community activities, connect with other users, and contribute to the platform.
-*   **Guest:** Views content without creating an account. Guests can browse the platform, read news articles, and view resources.
-*   **Company Representative:** Manages company profile and posts opportunities. Company representatives can create and manage company profiles, post job listings, and promote their products and services.
+```
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
+```
 
-## Installation
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
 
-To install and run the platform, follow these steps:
+<details>
+  <summary><b>macOS</b></summary>
 
-1.  **Clone the repository:** `git clone <repository_url>`
-2.  **Install dependencies:** `npm install`
-3.  **Configure Supabase:**
-    *   Create a Supabase project at [supabase.com](https://supabase.com).
-    *   Update the `.env` file with your Supabase API URL and API key.
-    *   Run the database migration: `supabase/migrations/20250113_admin_features.sql` to set up admin tables.
-4.  **Set up Admin Access:**
-    *   Create your first user account through the platform.
-    *   Manually assign the 'superadmin' role in the Supabase dashboard or via SQL.
-    *   Access the admin dashboard at `/admin` route.
-5.  **Run the application:** `npm start`
-6.  **Access the platform:** Open your browser and navigate to `http://localhost:3000`.
+  Available via [Homebrew](https://brew.sh). To install:
 
-## Usage
+  ```sh
+  brew install supabase/tap/supabase
+  ```
 
-Here are some examples of how to use the platform's features:
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
 
-*   **Creating an Event:**
-    1.  Log in to your account.
-    2.  Navigate to the "Events" page.
-    3.  Click the "Create Event" button.
-    4.  Fill in the event details, such as name, date, time, location, and description.
-    5.  Click the "Save" button to create the event.
-*   **Joining a Group:**
-    1.  Log in to your account.
-    2.  Navigate to the "Groups" page.
-    3.  Browse the list of available groups.
-    4.  Click the "Join" button next to the group you want to join.
-*   **Listing an Item on the Marketplace:**
-    1.  Log in to your account.
-    2.  Navigate to the "Marketplace" page.
-    3.  Click the "Create New Listing" button.
-    4.  Fill in the item details:
-        - Title, description, and price
-        - Item type and condition
-        - Location and tags
-        - Contact preferences (email/phone/both)
-    5.  Click the "Save" button to list the item on the marketplace.
-*   **Registering for an Event:**
-    1.  Browse to an event you're interested in.
-    2.  Click the "Register Now" button.
-    3.  Confirm your registration.
-    4.  View your registration status and other attendees.
-    5.  Unregister if your plans change.
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
 
-## Contribution Guidelines
+<details>
+  <summary><b>Windows</b></summary>
 
-We welcome contributions to the project! Here's how you can contribute:
+  Available via [Scoop](https://scoop.sh). To install:
 
-*   **Code Contributions:**
-    1.  Fork the repository.
-    2.  Create a new branch for your feature or bug fix.
-    3.  Implement your changes.
-    4.  Submit a pull request.
-*   **Bug Reports:**
-    *   Report bugs by creating a new issue in the repository.
-    *   Provide detailed information about the bug, including steps to reproduce it.
-*   **Feature Requests:**
-    *   Suggest new features by creating a new issue in the repository.
-    *   Describe the feature in detail and explain why it would be valuable.
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
 
-## Licensing
+  To upgrade:
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute the code as long as you include the original license file.
+  ```powershell
+  scoop update supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Linux</b></summary>
+
+  Available via [Homebrew](https://brew.sh) and Linux packages.
+
+  #### via Homebrew
+
+  To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+
+  #### via Linux packages
+
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
+
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
+
+```bash
+supabase bootstrap
+```
+
+Or using npx:
+
+```bash
+npx supabase bootstrap
+```
+
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+
+## Docs
+
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+
+## Breaking changes
+
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
+```
