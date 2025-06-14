@@ -44,11 +44,19 @@ Each feature contains:
 
 ### Standard Commands
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (port 5555)
 npm run build        # Build for production
 npm run test         # Run test suite (100% passing)
 npm run lint         # Run linter and format checks
 npm run typecheck    # Run TypeScript type checking
+```
+
+### Database Commands
+```bash
+supabase start       # Start local Supabase stack
+supabase db reset    # Reset database with migrations and seed data
+supabase migration new <name>  # Create new migration
+supabase db push     # Apply migrations to remote database
 ```
 
 ### SPARC Development Commands
@@ -187,6 +195,13 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 - Resource categories
 - Bookmarking
 
+### 🔧 Admin Dashboard (`/pages/AdminDashboard`)
+- Sample content management (import/remove)
+- Content management system integration
+- Feature flags configuration
+- Role-based access control
+- User and entity management
+
 ## Redux Store Structure
 
 ```typescript
@@ -300,6 +315,27 @@ npm run build && npm run analyze
 - **API Documentation**: `/docs/api/`
 - **Component Storybook**: Run `npm run storybook`
 - **SPARC Methodology**: [Claude-Flow Docs](https://github.com/ruvnet/claude-code-flow/docs/sparc.md)
+
+## Sample Content Management
+
+The platform includes a comprehensive sample content system for development and testing:
+
+### Migration: `20250614000000_create_sample_content_management.sql`
+- Creates sample content tables and management functions
+- Includes 15 sample members with varied profiles
+- 13 entities each for companies, groups, events, news articles, and resources
+- Rich relationships between all entities
+
+### Admin Dashboard Access
+- Navigate to `/admin` (requires admin/superadmin role)
+- Use "Sample Content" tab to import/remove sample data
+- Real-time status display and error handling
+- One-click import/remove functionality
+
+### Database Functions
+- `import_sample_content()` - Safely imports all sample data
+- `remove_sample_content()` - Removes sample data by UUID patterns
+- `get_sample_content_status()` - Returns current import status
 
 ## Important Notes
 
