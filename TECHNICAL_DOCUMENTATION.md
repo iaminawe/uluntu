@@ -6,11 +6,12 @@
 3. [Project Structure](#project-structure)
 4. [Database Schema](#database-schema)
 5. [API Documentation](#api-documentation)
-6. [State Management](#state-management)
-7. [Authentication & Authorization](#authentication--authorization)
-8. [Feature Implementation Details](#feature-implementation-details)
-9. [Testing](#testing)
-10. [Deployment](#deployment)
+6. [Administrative System](#administrative-system)
+7. [State Management](#state-management)
+8. [Authentication & Authorization](#authentication--authorization)
+9. [Feature Implementation Details](#feature-implementation-details)
+10. [Testing](#testing)
+11. [Deployment](#deployment)
 
 ## Architecture Overview
 
@@ -61,6 +62,12 @@ The Kootenay Tech Community platform is built with a modern, scalable architectu
 ```
 src/
 ├── api/                 # API client modules
+│   ├── admin/          # Administrative API layer
+│   │   ├── features.ts
+│   │   ├── roles.ts
+│   │   ├── moderation.ts
+│   │   ├── stats.ts
+│   │   └── audit.ts
 │   ├── eventsApi.ts
 │   ├── marketplaceApi.ts
 │   ├── membersApi.ts
@@ -71,6 +78,8 @@ src/
 │   └── memberAdapter.ts
 ├── components/         # Reusable UI components
 │   ├── ui/            # Base UI components
+│   ├── admin/         # Administrative components
+│   │   └── EntityTable.tsx
 │   ├── EventsList/
 │   ├── MarketplaceList/
 │   └── MembersList/
@@ -79,6 +88,15 @@ src/
 │   ├── useEventQueries.ts
 │   └── useCurrentMember.ts
 ├── pages/             # Page components
+│   ├── admin/         # Administrative pages
+│   │   ├── AdminLayout.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── UsersPage.tsx
+│   │   ├── SettingsPage.tsx
+│   │   ├── ModerationPage.tsx
+│   │   ├── RolesPage.tsx
+│   │   ├── AuditPage.tsx
+│   │   └── entities/
 │   ├── EventDetailPage/
 │   ├── MarketplaceEditPage/
 │   └── HomePage/
@@ -87,6 +105,7 @@ src/
 │   └── slices/
 ├── router/            # Routing configuration
 ├── types/             # TypeScript type definitions
+│   ├── admin.ts       # Administrative type definitions
 │   ├── common.ts
 │   ├── marketplace.ts
 │   └── supabase.ts
@@ -145,6 +164,58 @@ src/
 - `show_contact_info` (BOOLEAN)
 - `status` (TEXT)
 
+### Administrative Tables
+
+#### `admin_features`
+- `id` (UUID, PK)
+- `feature_key` (TEXT, UNIQUE)
+- `enabled` (BOOLEAN)
+- `config` (JSONB)
+- `created_at` (TIMESTAMPTZ)
+- `updated_at` (TIMESTAMPTZ)
+
+#### `admin_feature_translations`
+- `id` (UUID, PK)
+- `feature_id` (UUID, FK to admin_features)
+- `language_code` (TEXT)
+- `translations` (JSONB)
+- `created_at` (TIMESTAMPTZ)
+
+#### `roles`
+- `id` (UUID, PK)
+- `name` (TEXT, UNIQUE)
+- `description` (TEXT)
+- `permissions` (JSONB)
+- `is_system` (BOOLEAN)
+- `created_at` (TIMESTAMPTZ)
+
+#### `user_roles`
+- `user_id` (UUID, FK to auth.users)
+- `role_id` (UUID, FK to roles)
+- `assigned_at` (TIMESTAMPTZ)
+- `assigned_by` (UUID, FK to auth.users)
+- Primary Key: (user_id, role_id)
+
+#### `moderation_queue`
+- `id` (UUID, PK)
+- `entity_type` (TEXT)
+- `entity_id` (UUID)
+- `status` (TEXT)
+- `submitted_by` (UUID, FK to auth.users)
+- `reviewed_by` (UUID, FK to auth.users)
+- `submitted_at` (TIMESTAMPTZ)
+- `reviewed_at` (TIMESTAMPTZ)
+- `review_notes` (TEXT)
+
+#### `admin_audit_log`
+- `id` (UUID, PK)
+- `admin_id` (UUID, FK to auth.users)
+- `action` (TEXT)
+- `entity_type` (TEXT)
+- `entity_id` (UUID)
+- `changes` (JSONB)
+- `created_at` (TIMESTAMPTZ)
+
 ### Row Level Security (RLS)
 
 All tables have RLS enabled with policies for:
@@ -197,6 +268,130 @@ membersApi.getByUserId(userId: string)
 
 // Get members by company
 membersApi.getByCompany(companyId: string)
+```
+
+## Administrative System
+
+### Admin API Layer
+
+The administrative system provides a comprehensive API layer for platform management:
+
+#### Features API (`src/api/admin/features.ts`)
+```typescript
+// Feature flag management
+adminFeaturesApi.getFeatures()
+adminFeaturesApi.toggleFeature(featureKey: string, enabled: boolean)
+adminFeaturesApi.updateFeatureConfig(featureKey: string, config: object)
+adminFeaturesApi.isFeatureEnabled(featureKey: string)
+
+// Translation management
+adminFeaturesApi.getFeatureTranslations(featureId: string)
+adminFeaturesApi.upsertFeatureTranslation(featureId: string, languageCode: string, translations: object)
+```
+
+#### Roles API (`src/api/admin/roles.ts`)
+```typescript
+// Role management
+adminRolesApi.getRoles()
+adminRolesApi.createRole(role: RoleData)
+adminRolesApi.updateRole(id: string, updates: Partial<Role>)
+adminRolesApi.deleteRole(id: string)
+
+// User role assignment
+adminRolesApi.assignRole(userId: string, roleId: string)
+adminRolesApi.removeRole(userId: string, roleId: string)
+adminRolesApi.getUserRoles(userId: string)
+adminRolesApi.checkPermission(userId: string, resource: string, action: string)
+```
+
+#### Moderation API (`src/api/admin/moderation.ts`)
+```typescript
+// Content moderation
+adminModerationApi.getModerationQueue(filters?: ModerationFilters)
+adminModerationApi.approveContent(itemId: string, notes?: string)
+adminModerationApi.rejectContent(itemId: string, notes: string)
+adminModerationApi.getContentDetails(entityType: string, entityId: string)
+```
+
+#### Stats API (`src/api/admin/stats.ts`)
+```typescript
+// Platform statistics
+adminStatsApi.getOverviewStats()
+adminStatsApi.getActivityStats(dateRange?: DateRange)
+```
+
+#### Audit API (`src/api/admin/audit.ts`)
+```typescript
+// Audit logging
+adminAuditApi.getAuditLogs(filters?: AuditFilters)
+adminAuditApi.exportAuditLogs(filters?: AuditFilters)
+```
+
+### Admin Pages Architecture
+
+#### AdminLayout (`src/pages/admin/AdminLayout.tsx`)
+- Sidebar navigation with role verification
+- Responsive design with mobile menu
+- Superadmin access control
+
+#### Dashboard (`src/pages/admin/Dashboard.tsx`)
+- Platform overview statistics
+- Recent activity feed
+- Pending moderation alerts
+- Quick action cards
+
+#### Entity Management
+- Generic EntityTable component for all entities
+- Reusable table with search, sort, pagination
+- Bulk operations (delete, export)
+- Custom actions per entity type
+
+#### Settings Management
+- Feature flag toggles with configuration
+- Multi-language translation editor
+- Real-time feature updates
+
+### Security Architecture
+
+#### Access Control
+- **Superadmin Role**: Ultimate platform access
+- **RLS Policies**: Database-level security
+- **Permission System**: Granular action control
+- **Audit Trail**: Complete action logging
+
+#### Permission Matrix
+```typescript
+{
+  "resources": ["members", "events", "groups", "marketplace", "news", "resources", "opportunities"],
+  "actions": ["create", "read", "update", "delete", "moderate"],
+  "roles": {
+    "superadmin": { "*": ["*"] },
+    "admin": { "content": ["create", "read", "update", "delete"] },
+    "moderator": { "content": ["read", "moderate"] }
+  }
+}
+```
+
+### Internationalization (i18n)
+
+#### Language Support
+- 6 languages: English, Spanish, French, German, Chinese, Japanese
+- Feature-specific translations
+- Admin translation management interface
+
+#### Translation Structure
+```typescript
+{
+  "title": "Feature Title",
+  "description": "Feature Description", 
+  "createButton": "Create New",
+  "editButton": "Edit",
+  "deleteButton": "Delete",
+  "searchPlaceholder": "Search...",
+  "emptyState": "No items found",
+  "loadingState": "Loading...",
+  "errorState": "Error occurred"
+}
 ```
 
 ## State Management
@@ -255,9 +450,11 @@ useCreateListing() // Create mutation
 ### Authorization Levels
 
 - **Guest**: Can view public content
-- **Authenticated User**: Can create content, register for events
+- **Authenticated User**: Can create content, register for events  
 - **Content Owner**: Can edit/delete own content
-- **Admin**: Full access to all features
+- **Moderator**: Can moderate content and manage users
+- **Admin**: Full access to content management features
+- **Superadmin**: Ultimate platform access including administrative dashboard
 
 ### Protected Routes
 
@@ -326,6 +523,18 @@ supabase
 npm test
 ```
 
+### Test Coverage
+
+#### Admin API Tests (✅ All Passing)
+- **Features API**: 9 tests covering feature flag management
+- **Roles API**: 12 tests covering role and permission management
+- **Total**: 21/21 admin API tests passing
+
+#### Component Tests
+- **Admin Pages**: Integration tests for all admin pages
+- **EntityTable**: Component tests for generic table functionality
+- **UI Components**: Unit tests for reusable components
+
 ### Test Structure
 ```typescript
 describe('Event Registration', () => {
@@ -333,10 +542,17 @@ describe('Event Registration', () => {
     // Test implementation
   });
 });
+
+describe('Admin Features API', () => {
+  it('should toggle feature enabled status', async () => {
+    // Admin-specific test implementation
+  });
+});
 ```
 
 ### Mock Data
 - Mock data in `src/data/mock/`
+- Admin API mocking for integration tests
 - API mocking with MSW for integration tests
 
 ## Deployment
@@ -367,15 +583,19 @@ npm run preview
 Migrations in `supabase/migrations/`:
 - Run with `supabase db push`
 - Version controlled with timestamps
+- **Required**: `20250113_admin_features.sql` for admin functionality
 
 ### Deployment Checklist
 
 - [ ] Environment variables configured
-- [ ] Database migrations applied
-- [ ] RLS policies verified
+- [ ] Database migrations applied (including admin features)
+- [ ] RLS policies verified (including admin tables)
 - [ ] Build optimizations enabled
 - [ ] Error tracking configured
 - [ ] Performance monitoring set up
+- [ ] Superadmin role assigned to initial admin user
+- [ ] Admin dashboard accessibility verified (/admin route)
+- [ ] Feature flags configured for production environment
 
 ## Performance Optimizations
 
@@ -395,9 +615,18 @@ Migrations in `supabase/migrations/`:
 
 ## Future Enhancements
 
+### Platform Features
 - **Image Upload**: Direct file upload to Supabase Storage
 - **In-app Messaging**: Real-time chat between users
 - **Payment Processing**: Stripe integration for marketplace
 - **Email Notifications**: Event reminders, new messages
 - **Mobile App**: React Native implementation
-- **Analytics Dashboard**: Usage statistics for admins
+
+### Administrative Enhancements  
+- **Advanced Analytics**: Detailed user behavior tracking
+- **Content Scheduling**: Schedule publication of news and events
+- **Bulk Import/Export**: CSV import for bulk data operations
+- **Custom Reports**: Configurable reporting dashboard
+- **API Rate Limiting**: Prevent abuse with configurable limits
+- **Advanced Moderation**: AI-powered content filtering
+- **Multi-tenant Support**: Support for multiple communities
