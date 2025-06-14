@@ -18,7 +18,7 @@ import {
   GroupFilters
 } from '../store/groupsSlice';
 import { GroupInput } from '../api/groupsApi';
-import { useGroupEvents, useGroupMembers } from './useGroupQueries';
+import { useGroupEvents, useGroupMembers } from '@/hooks/useGroupQueries';
 
 /**
  * Custom hook for accessing and manipulating the groups collection
