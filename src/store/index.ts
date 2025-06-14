@@ -9,7 +9,7 @@ import resourcesReducer from '@/features/resources/store/resourcesSlice';
 import groupsReducer from '@/features/groups/store/groupsSlice';
 import newsReducer from '@/features/news/store/newsSlice';
 import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
-import contentReducer from '@/redux/slices/contentSlice';
+import contentReducer from '@/store/contentSlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MembersTabProps } from './types';
-import Pagination from '@/shared/components/ui/Pagination'; // Assuming Pagination.tsx is in src/components
+import Pagination from '@/components/Pagination';
 
 const ITEMS_PER_PAGE = 8;
 

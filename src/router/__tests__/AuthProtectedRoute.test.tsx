@@ -4,10 +4,10 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import AuthProtectedRoute from '../AuthProtectedRoute'
 import { SessionProvider } from '../../context/SessionContext'
 import { Session, AuthChangeEvent } from '@supabase/supabase-js'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 // Mock supabase client
-jest.mock('../../lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),

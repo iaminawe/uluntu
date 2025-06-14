@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useNewsArticle } from '@/features/news/hooks/useNewsQueries';
+import { useNewsArticle } from '@/hooks/useNewsQueries';
 import FormHeader from './FormHeader';
 import TagsInput from './TagsInput';
 import FormInputs from './FormInputs';

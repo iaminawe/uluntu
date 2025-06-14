@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGroup } from '../../hooks/useQueries';
+import { useGroup } from '@/hooks/useGroupQueries';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import FormHeader from './FormHeader';

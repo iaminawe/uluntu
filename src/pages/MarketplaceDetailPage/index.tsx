@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
-import { useMarketplaceItem } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import { useMarketplaceItem } from '@/hooks/useMarketplaceQueries';
 import { useMarketplaceListingByIdRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';

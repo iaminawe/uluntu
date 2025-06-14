@@ -10,7 +10,7 @@ import { useMembersRedux } from '../../hooks/useMembersRedux';
 import { Member as ReduxMember } from '@/features/directory/store/membersSlice';
 import { FilterOptions } from '@/features/directory/components/MembersList/types';
 import { Member as UITypeMember } from '../../types';
-import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
+import Pagination from '@/components/Pagination';
 
 // We need to adapt between the Member type from Redux and the one in types.ts
 const adaptMemberForUI = (reduxMember: ReduxMember): UITypeMember => {

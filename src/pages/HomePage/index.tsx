@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { Users, Heart, Briefcase } from 'lucide-react';
-import { useMembers } from '@/features/directory/hooks/useMemberQueries';
-import { useCompanies } from '@/features/companies/hooks/useCompanyQueries';
-import { useEvents } from '@/features/events/hooks/useEventQueries';
-import { useNewsArticlesWithFilters } from '@/features/news/hooks/useNewsQueries';
-import { useGroups } from '@/features/groups/hooks/useGroupQueries';
+import { useMembers } from '@/hooks/useMemberQueries';
+import { useCompanies } from '@/hooks/useCompanyQueries';
+import { useEvents } from '@/hooks/useEventQueries';
+import { useNewsArticlesWithFilters } from '@/hooks/useNewsQueries';
+import { useGroups } from '@/hooks/useGroupQueries';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
@@ -16,7 +16,7 @@ import { FeaturedItems } from './FeaturedItems';
 import { Member, Company, Event, Group, NewsArticle } from './types';
 
 // Import the source types
-import { Member as ApiMember } from '@/features/directory/hooks/useMemberQueries';
+import { Member as ApiMember } from '@/hooks/useMemberQueries';
 import { Company as ApiCompany } from '../../types';
 import { Event as ApiEvent } from '../../types';
 import { Group as ApiGroup } from '../../types';
