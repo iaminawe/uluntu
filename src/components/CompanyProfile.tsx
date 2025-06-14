@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { MapPin, Globe, Users, Calendar, BookOpen, Newspaper, Mail, Send, X, Building, Briefcase } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MapPin, Globe, Users, Calendar, BookOpen, Newspaper, Mail, Send, X, Briefcase } from 'lucide-react';
 
 interface CompanyMember {
   id: number;
@@ -278,7 +278,7 @@ function ContactModal({ company, onClose }: ContactModalProps) {
   );
 }
 
-export default function CompanyProfile({ companyId }: { companyId: string }) {
+export default function CompanyProfile({ companyId: _companyId }: { companyId: string }) {
   const [showContactModal, setShowContactModal] = useState(false);
   
   // In a real app, you'd fetch the company data based on the companyId
@@ -379,7 +379,7 @@ export default function CompanyProfile({ companyId }: { companyId: string }) {
                 />
                 <div>
                   <Link
-                    href={`/directory/${member.id}`}
+                    to={`/directory/${member.id}`}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {member.name}
@@ -402,7 +402,7 @@ export default function CompanyProfile({ companyId }: { companyId: string }) {
             {company.events.map(event => (
               <div key={event.id}>
                 <Link
-                  href={`/events/${event.id}`}
+                  to={`/events/${event.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {event.title}
@@ -424,7 +424,7 @@ export default function CompanyProfile({ companyId }: { companyId: string }) {
             {company.resources.map(resource => (
               <div key={resource.id}>
                 <Link
-                  href={`/resources/${resource.id}`}
+                  to={`/resources/${resource.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {resource.title}
@@ -446,7 +446,7 @@ export default function CompanyProfile({ companyId }: { companyId: string }) {
             {company.opportunities.map(opportunity => (
               <div key={opportunity.id}>
                 <Link
-                  href={`/opportunities/${opportunity.id}`}
+                  to={`/opportunities/${opportunity.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {opportunity.title}
@@ -468,7 +468,7 @@ export default function CompanyProfile({ companyId }: { companyId: string }) {
             {company.posts.map(post => (
               <div key={post.id}>
                 <Link
-                  href={`/posts/${post.id}`}
+                  to={`/posts/${post.id}`}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {post.title}

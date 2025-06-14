@@ -15,6 +15,9 @@ export interface FilterOptions {
   tags: string[];
 }
 
+// Contact method options
+export type ContactMethod = 'email' | 'phone' | 'both';
+
 // Base marketplace listing type used by MarketplaceList component
 export interface MarketplaceListing {
   id: string;
@@ -34,6 +37,11 @@ export interface MarketplaceListing {
   };
   status?: ContentStatus;
   featured?: boolean;
+  // Contact information fields
+  contactEmail?: string;
+  contactPhone?: string;
+  contactMethod?: ContactMethod;
+  showContactInfo?: boolean;
 }
 
 // Mock data type matching Supabase schema

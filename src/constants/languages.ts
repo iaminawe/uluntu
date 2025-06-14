@@ -40,3 +40,13 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
 ];
 
 export const DEFAULT_LANGUAGE = 'en';
+
+// Simple language mapping for admin settings
+export const LANGUAGES = {
+  en: 'English',
+  es: 'Spanish', 
+  fr: 'French',
+  de: 'German',
+  zh: 'Chinese',
+  ja: 'Japanese'
+} as const;

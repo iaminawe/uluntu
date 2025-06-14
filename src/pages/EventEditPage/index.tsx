@@ -10,7 +10,8 @@ import OrganizerSelect from './OrganizerSelect';
 import SessionsManager from './SessionsManager';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
-import { FormData } from './types'; // Removed duplicate import
+import { FormData } from './types';
+import { uploadEventImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
   title: '',
@@ -36,6 +37,8 @@ export default function EventEditPage() {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   // Use Redux-based hook for a single event
   const { 
@@ -85,6 +88,22 @@ export default function EventEditPage() {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        image: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        image: ''
+      }));
+    }
+  };
   
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -121,8 +140,25 @@ export default function EventEditPage() {
     }
     
     setIsSubmitting(true);
+    let finalImageUrl = formData.image;
     
     try {
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const eventId = id || `temp-${Date.now()}`;
+        const { url, error } = await uploadEventImage(imageFile, eventId);
+        
+        if (error) {
+          console.error('Error uploading image:', error);
+          setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
+          return;
+        }
+        
+        finalImageUrl = url;
+        setIsUploadingImage(false);
+      }
+      
       if (isEditMode && id) {
         // Update existing event using Redux action
         await updateEventData({
@@ -131,14 +167,18 @@ export default function EventEditPage() {
           date: formData.date,
           end_date: formData.endDate,
           location: formData.location,
-          image: formData.image,
+          image: finalImageUrl,
           type: formData.type,
           url: formData.url || null,
           organizer_id: formData.organizerId
         });
       } else {
         // For creating a new event, we'll need to enhance the eventsRedux hooks later
-        // Temporarily simulate API call
+        // Temporarily simulate API call with final image URL
+        console.log('Creating new event with data:', {
+          ...formData,
+          image: finalImageUrl
+        });
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
@@ -150,8 +190,10 @@ export default function EventEditPage() {
       }, 1500);
     } catch (error) {
       console.error('Error submitting event:', error);
+      setErrors(prev => ({ ...prev, image: 'Failed to save event. Please try again.' }));
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImage(false);
     }
   };
   
@@ -201,6 +243,8 @@ export default function EventEditPage() {
               <EventImage 
                 formData={formData}
                 handleChange={handleChange}
+                onImageChange={handleImageChange}
+                isSubmitting={isSubmitting || isUploadingImage}
               />
               
               <OrganizerSelect

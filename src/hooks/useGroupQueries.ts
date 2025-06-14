@@ -256,3 +256,257 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
         enabled: validNumericId !== undefined,
     });
 }
+
+export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+    mutationFn: ({ groupId, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Joining group', groupId, 'with member', memberId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.joinGroup(groupId, memberId);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+    },
+  });
+}
+
+export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+    mutationFn: ({ groupId, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Leaving group', groupId, 'with member', memberId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.leaveGroup(groupId, memberId);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+    },
+  });
+}
+
+export function useGroupMembership(groupId?: string, memberId?: string): UseQueryResult<boolean, Error> {
+  return useQuery<boolean, Error>({
+    queryKey: ['groupMembership', groupId, memberId],
+    queryFn: async () => {
+      if (!groupId || !memberId) return false;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return false; // Mock always returns false
+      }
+      return groupsApi.isMember(groupId, memberId);
+    },
+    enabled: !!groupId && !!memberId,
+  });
+}
+
+export function useGroupMemberRole(groupId?: string, memberId?: string): UseQueryResult<'admin' | 'member' | null, Error> {
+  return useQuery<'admin' | 'member' | null, Error>({
+    queryKey: ['groupMemberRole', groupId, memberId],
+    queryFn: async () => {
+      if (!groupId || !memberId) return null;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return null; // Mock always returns null
+      }
+      return groupsApi.getMemberRole(groupId, memberId);
+    },
+    enabled: !!groupId && !!memberId,
+  });
+}
+
+export function useUpdateMemberRole(): UseMutationResult<
+  boolean,
+  Error,
+  { groupId: string; memberId: string; role: 'admin' | 'member' }
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string; role: 'admin' | 'member' }>({
+    mutationFn: ({ groupId, memberId, role }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Updating member role', memberId, 'to', role, 'in group', groupId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.updateMemberRole(groupId, memberId, role);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['groupMemberRole', variables.groupId, variables.memberId] });
+    },
+  });
+}
+
+export function useRemoveMember(): UseMutationResult<
+  boolean,
+  Error,
+  { groupId: string; memberId: string }
+> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+    mutationFn: ({ groupId, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Removing member', memberId, 'from group', groupId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.removeMember(groupId, memberId);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.groupId] });
+    },
+  });
+}
+
+// Activities and Announcements hooks
+export function useGroupActivities(groupId?: string): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupActivities', groupId],
+    queryFn: async () => {
+      if (!groupId) return [];
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return []; // Mock returns empty array
+      }
+      return groupsApi.getActivities(groupId);
+    },
+    enabled: !!groupId,
+  });
+}
+
+export function useGroupAnnouncements(groupId?: string): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupAnnouncements', groupId],
+    queryFn: async () => {
+      if (!groupId) return [];
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return []; // Mock returns empty array
+      }
+      return groupsApi.getAnnouncements(groupId);
+    },
+    enabled: !!groupId,
+  });
+}
+
+export function useCreateActivity(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, { groupId: string; data: any }>({
+    mutationFn: ({ groupId, data }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Creating activity', data);
+        return Promise.resolve(data);
+      }
+      return groupsApi.createActivity(groupId, data);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupActivities', variables.groupId] });
+    },
+  });
+}
+
+export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, { groupId: string; data: any }>({
+    mutationFn: ({ groupId, data }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Creating announcement', data);
+        return Promise.resolve(data);
+      }
+      return groupsApi.createAnnouncement(groupId, data);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupAnnouncements', variables.groupId] });
+    },
+  });
+}
+
+// Invitation hooks
+export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupInvitations', groupId],
+    queryFn: async () => {
+      if (!groupId) return [];
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return []; // Mock returns empty array
+      }
+      return groupsApi.getInvitations(groupId);
+    },
+    enabled: !!groupId,
+  });
+}
+
+export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, { groupId: string; data: any }>({
+    mutationFn: ({ groupId, data }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Creating invitation', data);
+        return Promise.resolve(data);
+      }
+      return groupsApi.createInvitation(groupId, data);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
+    },
+  });
+}
+
+export function useCancelInvitation(): UseMutationResult<boolean, Error, string> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, string>({
+    mutationFn: (invitationId) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Canceling invitation', invitationId);
+        return Promise.resolve(true);
+      }
+      return groupsApi.cancelInvitation(invitationId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations'] });
+    },
+  });
+}
+
+export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token: string; memberId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, { token: string; memberId: string }>({
+    mutationFn: ({ token, memberId }) => {
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        console.log('Mock: Accepting invitation', token);
+        return Promise.resolve(true);
+      }
+      return groupsApi.acceptInvitation(token, memberId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['groupMembers'] });
+    },
+  });
+}
+
+export function useInvitationByToken(token?: string): UseQueryResult<any, Error> {
+  return useQuery<any, Error>({
+    queryKey: ['invitation', token],
+    queryFn: async () => {
+      if (!token) return null;
+      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+        return null; // Mock returns null
+      }
+      return groupsApi.getInvitationByToken(token);
+    },
+    enabled: !!token,
+  });
+}

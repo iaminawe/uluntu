@@ -40,6 +40,7 @@ export interface BasicInfoSectionProps {
   formData: FormData;
   errors: Partial<Record<keyof FormData | 'social', string>>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onImageChange: (file: File | null) => void;
   isSubmitting: boolean;
 }
 

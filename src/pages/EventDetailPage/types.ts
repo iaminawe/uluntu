@@ -22,6 +22,7 @@ export interface RegisterSidebarProps {
   formattedTime: string;
   isRegistering: boolean;
   registrationSuccess: boolean;
+  isAlreadyRegistered: boolean;
   onRegister: () => void;
 }
 

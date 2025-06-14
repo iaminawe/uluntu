@@ -255,3 +255,185 @@ export function useDeleteEvent(): UseMutationResult<
     },
   });
 }
+
+// Event registration hooks
+export function useEventRegistrationStatus(eventId?: string, memberId?: string): UseQueryResult<boolean, Error> {
+  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  
+  return useQuery<boolean, Error>({
+    queryKey: ['event-registration', eventId, memberId, useSupabase ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      if (!eventId || !memberId) {
+        return false;
+      }
+
+      if (useSupabase) {
+        return await eventsApi.getRegistrationStatus(eventId, memberId);
+      } else {
+        // Mock registration status - always return false for simplicity
+        return false;
+      }
+    },
+    enabled: !!eventId && !!memberId,
+    staleTime: 30 * 1000, // 30 seconds - fresher data for registration status
+  });
+}
+
+export function useRegisterForEvent(): UseMutationResult<
+  boolean,
+  Error,
+  { eventId: string; memberId: string }
+> {
+  const queryClient = useQueryClient();
+  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+
+  return useMutation<boolean, Error, { eventId: string; memberId: string }>({
+    mutationFn: async ({ eventId, memberId }) => {
+      if (useSupabase) {
+        return await eventsApi.registerForEvent(eventId, memberId);
+      } else {
+        console.log('Mock: Registering for event', eventId, 'with member', memberId);
+        return true; // Mock success
+      }
+    },
+    onSuccess: (_data, { eventId, memberId }) => {
+      const queryPrefix = useSupabase ? 'supabase' : 'mock';
+      // Invalidate registration status query
+      queryClient.invalidateQueries({ 
+        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      });
+      // Invalidate event data to update attendee count
+      queryClient.invalidateQueries({ 
+        queryKey: ['events', eventId, queryPrefix] 
+      });
+      // Invalidate events list to update attendee counts
+      queryClient.invalidateQueries({ 
+        queryKey: ['events', 'all', queryPrefix] 
+      });
+    },
+  });
+}
+
+export function useUnregisterFromEvent(): UseMutationResult<
+  boolean,
+  Error,
+  { eventId: string; memberId: string }
+> {
+  const queryClient = useQueryClient();
+  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+
+  return useMutation<boolean, Error, { eventId: string; memberId: string }>({
+    mutationFn: async ({ eventId, memberId }) => {
+      if (useSupabase) {
+        return await eventsApi.unregisterFromEvent(eventId, memberId);
+      } else {
+        console.log('Mock: Unregistering from event', eventId, 'with member', memberId);
+        return true; // Mock success
+      }
+    },
+    onSuccess: (_data, { eventId, memberId }) => {
+      const queryPrefix = useSupabase ? 'supabase' : 'mock';
+      // Invalidate registration status query
+      queryClient.invalidateQueries({ 
+        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      });
+      // Invalidate event data to update attendee count
+      queryClient.invalidateQueries({ 
+        queryKey: ['events', eventId, queryPrefix] 
+      });
+      // Invalidate events list to update attendee counts
+      queryClient.invalidateQueries({ 
+        queryKey: ['events', 'all', queryPrefix] 
+      });
+      // Invalidate attendees list
+      queryClient.invalidateQueries({ 
+        queryKey: ['event-attendees', eventId, queryPrefix] 
+      });
+    },
+  });
+}
+
+// Event attendee management hooks
+export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error> {
+  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  
+  return useQuery<any[], Error>({
+    queryKey: ['event-attendees', eventId, useSupabase ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      if (!eventId) {
+        return [];
+      }
+
+      if (useSupabase) {
+        return await eventsApi.getEventAttendees(eventId);
+      } else {
+        // Mock attendees data
+        return [
+          {
+            event_id: eventId,
+            member_id: 'mock-member-1',
+            registered_at: new Date().toISOString(),
+            status: 'registered',
+            members: {
+              id: 'mock-member-1',
+              name: 'John Doe',
+              image: '',
+              title: 'Software Developer',
+              company: 'Tech Corp'
+            }
+          },
+          {
+            event_id: eventId,
+            member_id: 'mock-member-2',
+            registered_at: new Date().toISOString(),
+            status: 'registered',
+            members: {
+              id: 'mock-member-2',
+              name: 'Jane Smith',
+              image: '',
+              title: 'Product Manager',
+              company: 'Innovation Inc'
+            }
+          }
+        ];
+      }
+    },
+    enabled: !!eventId,
+    staleTime: 2 * 60 * 1000, // 2 minutes - reasonably fresh for attendee data
+  });
+}
+
+export function useUpdateAttendeeStatus(): UseMutationResult<
+  boolean,
+  Error,
+  { eventId: string; memberId: string; status: string }
+> {
+  const queryClient = useQueryClient();
+  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+
+  return useMutation<boolean, Error, { eventId: string; memberId: string; status: string }>({
+    mutationFn: async ({ eventId, memberId, status }) => {
+      if (useSupabase) {
+        return await eventsApi.updateAttendeeStatus(eventId, memberId, status);
+      } else {
+        console.log('Mock: Updating attendee status', { eventId, memberId, status });
+        return true; // Mock success
+      }
+    },
+    onSuccess: (_data, { eventId, memberId }) => {
+      const queryPrefix = useSupabase ? 'supabase' : 'mock';
+      // Invalidate attendees list
+      queryClient.invalidateQueries({ 
+        queryKey: ['event-attendees', eventId, queryPrefix] 
+      });
+      // Invalidate registration status if it's the current user
+      queryClient.invalidateQueries({ 
+        queryKey: ['event-registration', eventId, memberId, queryPrefix] 
+      });
+      // Invalidate event data to update attendee count
+      queryClient.invalidateQueries({ 
+        queryKey: ['events', eventId, queryPrefix] 
+      });
+    },
+  });
+}

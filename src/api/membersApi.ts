@@ -238,5 +238,70 @@ export const membersApi = {
       handleSupabaseError(error, 'deleting member');
       return false;
     }
+  },
+
+  async getByUserId(userId: string): Promise<Member | null> {
+    try {
+      const { data, error } = await supabase
+        .from('members')
+        .select(`
+          *,
+          member_skills(skill)
+        `)
+        .eq('user_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        handleSupabaseError(error, 'fetching member by user id');
+        return null;
+      }
+      
+      return data ? adaptMemberFromDatabase(data) : null;
+    } catch (error) {
+      handleSupabaseError(error, 'fetching member by user id');
+      return null;
+    }
+  },
+
+  async getByCompany(companyId: string): Promise<Member[]> {
+    try {
+      // Get member IDs associated with this company
+      const { data: companyMembers, error: companyMembersError } = await supabase
+        .from('company_members')
+        .select('member_id')
+        .eq('company_id', companyId);
+
+      if (companyMembersError) {
+        handleSupabaseError(companyMembersError, 'fetching company members');
+        return [];
+      }
+
+      if (!companyMembers || companyMembers.length === 0) {
+        return [];
+      }
+
+      const memberIds = companyMembers.map(cm => cm.member_id);
+
+      // Get the member details
+      const { data: membersData, error: membersError } = await supabase
+        .from('members')
+        .select(`
+          *,
+          member_skills(skill)
+        `)
+        .in('id', memberIds)
+        .eq('status', 'published')
+        .order('name');
+
+      if (membersError) {
+        handleSupabaseError(membersError, 'fetching members by company');
+        return [];
+      }
+
+      return adaptItemsList(membersData || [], adaptMemberFromDatabase);
+    } catch (error) {
+      handleSupabaseError(error, 'fetching members by company');
+      return [];
+    }
   }
 };

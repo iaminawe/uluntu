@@ -5,11 +5,12 @@ import { EventType, DateRangeFilter } from '@/features/events/components/EventsL
 
 interface ActionBarProps {
   onSearch?: (value: string) => void;
+  onFiltersChange?: (filters: { type?: EventType; dateRange?: DateRangeFilter }) => void;
   viewMode: 'list' | 'calendar';
   onViewModeChange: (mode: 'list' | 'calendar') => void;
 }
 
-const ActionBar: React.FC<ActionBarProps> = ({ onSearch, viewMode, onViewModeChange }) => {
+const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onFiltersChange, viewMode, onViewModeChange }) => {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<EventType | 'all'>('all');
@@ -21,6 +22,26 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, viewMode, onViewModeCha
     // Pass the search term to the parent component if onSearch prop is provided
     if (onSearch) {
       onSearch(value);
+    }
+  };
+
+  const handleTypeChange = (type: EventType | 'all') => {
+    setSelectedType(type);
+    if (onFiltersChange) {
+      onFiltersChange({
+        type: type === 'all' ? undefined : type,
+        dateRange
+      });
+    }
+  };
+
+  const handleDateRangeChange = (range: DateRangeFilter) => {
+    setDateRange(range);
+    if (onFiltersChange) {
+      onFiltersChange({
+        type: selectedType === 'all' ? undefined : selectedType,
+        dateRange: range
+      });
     }
   };
 
@@ -39,7 +60,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, viewMode, onViewModeCha
           <div className="relative">
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as EventType | 'all')}
+              onChange={(e) => handleTypeChange(e.target.value as EventType | 'all')}
               className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
             >
               <option value="all">All Event Types</option>
@@ -58,7 +79,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, viewMode, onViewModeCha
           <div className="relative">
             <select
               value={dateRange}
-              onChange={(e) => setDateRange(e.target.value as DateRangeFilter)}
+              onChange={(e) => handleDateRangeChange(e.target.value as DateRangeFilter)}
               className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
             >
               <option value="upcoming">Upcoming</option>

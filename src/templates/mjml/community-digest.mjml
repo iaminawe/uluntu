@@ -1,0 +1,367 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{newsletter_title}}</mj-title>
+    <mj-preview>{{preview_text}}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" />
+      <mj-text font-size="16px" color="#334155" line-height="1.6" />
+      <mj-section background-color="#ffffff" padding="0px" />
+    </mj-attributes>
+    <mj-style inline="inline">
+      .header-logo { max-height: 40px; }
+      .event-date { background-color: #f8fafc; padding: 8px 12px; border-radius: 6px; font-weight: 600; color: #3b82f6; }
+      .news-meta { font-size: 14px; color: #64748b; }
+      .opportunity-badge { background-color: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+      .marketplace-price { font-size: 18px; font-weight: 700; color: #059669; }
+      .member-skills { background-color: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin: 2px; }
+      .social-icon { width: 24px; height: 24px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f8fafc">
+    
+    <!-- Header -->
+    <mj-section background-color="{{primary_color}}" padding="20px 0">
+      <mj-column>
+        <mj-image 
+          src="{{logo_url}}" 
+          alt="{{community_name}}"
+          align="center"
+          width="150px"
+          css-class="header-logo"
+        />
+        <mj-text align="center" color="white" font-size="24px" font-weight="700" padding="10px 0 0 0">
+          {{newsletter_title}}
+        </mj-text>
+        <mj-text align="center" color="white" font-size="16px" padding="5px 0 0 0" opacity="0.9">
+          {{date}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Custom Message Section -->
+    {{#if custom_message}}
+    <mj-section background-color="#ffffff" padding="30px 20px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="600" color="#1e293b" padding-bottom="15px">
+          Message from the Community
+        </mj-text>
+        <mj-text>
+          {{custom_message}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    {{/if}}
+
+    <!-- Upcoming Events Section -->
+    {{#if events}}
+    <mj-section background-color="#ffffff" padding="30px 20px 0px 20px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" color="#1e293b" padding-bottom="20px">
+          🗓️ Upcoming Events
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    {{#each events}}
+    <mj-section background-color="#ffffff" padding="0px 20px 20px 20px">
+      <mj-column>
+        <mj-table>
+          <tr>
+            <td style="width: 80px; vertical-align: top; padding-right: 15px;">
+              <div class="event-date">
+                {{format_date date "MMM DD"}}
+              </div>
+            </td>
+            <td style="vertical-align: top;">
+              <mj-text padding="0px" font-size="18px" font-weight="600" color="#1e293b">
+                {{title}}
+              </mj-text>
+              <mj-text padding="5px 0px" font-size="14px" color="#64748b">
+                📍 {{location}} • {{type}} • {{format_time date}}
+              </mj-text>
+              <mj-text padding="10px 0px">
+                {{description}}
+              </mj-text>
+              {{#if registration_url}}
+              <mj-button 
+                background-color="{{../primary_color}}" 
+                color="white" 
+                font-size="14px" 
+                padding="15px 0px"
+                border-radius="6px"
+                href="{{registration_url}}"
+              >
+                Register Now
+                {{#if max_attendees}}
+                ({{subtract max_attendees attendee_count}} spots left)
+                {{/if}}
+              </mj-button>
+              {{/if}}
+            </td>
+          </tr>
+        </mj-table>
+        <mj-divider border-color="#e2e8f0" padding="20px 0px" />
+      </mj-column>
+    </mj-section>
+    {{/each}}
+    {{/if}}
+
+    <!-- Latest News Section -->
+    {{#if news}}
+    <mj-section background-color="#ffffff" padding="30px 20px 0px 20px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" color="#1e293b" padding-bottom="20px">
+          📰 Community News
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    {{#each news}}
+    <mj-section background-color="#ffffff" padding="0px 20px 20px 20px">
+      <mj-column>
+        {{#if hero_image}}
+        <mj-image 
+          src="{{hero_image}}" 
+          alt="{{title}}"
+          border-radius="8px"
+          padding-bottom="15px"
+        />
+        {{/if}}
+        <mj-text font-size="18px" font-weight="600" color="#1e293b" padding="0px 0px 10px 0px">
+          {{title}}
+        </mj-text>
+        <mj-text font-size="14px" color="#64748b" padding="0px 0px 15px 0px" css-class="news-meta">
+          By {{author}} • {{format_date published_at "MMMM DD, YYYY"}}
+          {{#if tags}}
+          • {{join tags ", "}}
+          {{/if}}
+        </mj-text>
+        <mj-text padding="0px 0px 15px 0px">
+          {{excerpt}}
+        </mj-text>
+        <mj-text padding="0px 0px 20px 0px">
+          <a href="{{read_more_url}}" style="color: {{../primary_color}}; text-decoration: none; font-weight: 600;">
+            Read full article →
+          </a>
+        </mj-text>
+        <mj-divider border-color="#e2e8f0" padding="0px" />
+      </mj-column>
+    </mj-section>
+    {{/each}}
+    {{/if}}
+
+    <!-- Opportunities Section -->
+    {{#if opportunities}}
+    <mj-section background-color="#ffffff" padding="30px 20px 0px 20px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" color="#1e293b" padding-bottom="20px">
+          💼 New Opportunities
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    {{#each opportunities}}
+    <mj-section background-color="#ffffff" padding="0px 20px 20px 20px">
+      <mj-column>
+        <mj-table>
+          <tr>
+            <td style="width: 60px; vertical-align: top; padding-right: 15px;">
+              {{#if company_logo}}
+              <img src="{{company_logo}}" alt="{{company}}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;" />
+              {{else}}
+              <div style="width: 50px; height: 50px; background-color: #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #64748b;">
+                {{substring company 0 2}}
+              </div>
+              {{/if}}
+            </td>
+            <td style="vertical-align: top;">
+              <mj-text padding="0px" font-size="18px" font-weight="600" color="#1e293b">
+                {{title}}
+                <span class="opportunity-badge">{{uppercase type}}</span>
+              </mj-text>
+              <mj-text padding="5px 0px" font-size="14px" color="#64748b">
+                {{company}} 
+                {{#if location}}• {{location}}{{/if}}
+                {{#if remote}}• Remote{{/if}}
+                {{#if deadline}}• Apply by {{format_date deadline "MMM DD"}}{{/if}}
+              </mj-text>
+              <mj-text padding="10px 0px">
+                {{truncate description 150}}
+              </mj-text>
+              {{#if requirements}}
+              <mj-text padding="10px 0px" font-size="14px" color="#64748b">
+                Requirements: {{join requirements ", "}}
+              </mj-text>
+              {{/if}}
+              <mj-button 
+                background-color="{{../secondary_color}}" 
+                color="white" 
+                font-size="14px" 
+                padding="15px 0px"
+                border-radius="6px"
+                href="{{application_url}}"
+              >
+                View Details & Apply
+              </mj-button>
+            </td>
+          </tr>
+        </mj-table>
+        <mj-divider border-color="#e2e8f0" padding="20px 0px" />
+      </mj-column>
+    </mj-section>
+    {{/each}}
+    {{/if}}
+
+    <!-- Marketplace Section -->
+    {{#if marketplace}}
+    <mj-section background-color="#ffffff" padding="30px 20px 0px 20px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" color="#1e293b" padding-bottom="20px">
+          🛍️ Featured Marketplace
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    {{#each marketplace}}
+    <mj-section background-color="#ffffff" padding="0px 20px 20px 20px">
+      <mj-column width="40%">
+        {{#if images.[0]}}
+        <mj-image 
+          src="{{images.[0]}}" 
+          alt="{{title}}"
+          border-radius="8px"
+          width="150px"
+        />
+        {{else}}
+        <div style="width: 150px; height: 100px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b;">
+          No Image
+        </div>
+        {{/if}}
+      </mj-column>
+      <mj-column width="60%">
+        <mj-text font-size="18px" font-weight="600" color="#1e293b" padding="0px 0px 10px 0px">
+          {{title}}
+        </mj-text>
+        {{#if price}}
+        <mj-text padding="0px 0px 10px 0px" css-class="marketplace-price">
+          ${{format_price price}}
+        </mj-text>
+        {{/if}}
+        <mj-text font-size="14px" color="#64748b" padding="0px 0px 10px 0px">
+          {{condition}} • {{seller}}
+          {{#if location}}• {{location}}{{/if}}
+        </mj-text>
+        <mj-text padding="0px 0px 15px 0px">
+          {{truncate description 100}}
+        </mj-text>
+        <mj-button 
+          background-color="{{../secondary_color}}" 
+          color="white" 
+          font-size="14px" 
+          padding="10px 0px"
+          border-radius="6px"
+          href="{{contact_url}}"
+        >
+          Contact Seller
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    {{/each}}
+    {{/if}}
+
+    <!-- Member Spotlight Section -->
+    {{#if members}}
+    <mj-section background-color="#f8fafc" padding="30px 20px">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="700" color="#1e293b" padding-bottom="20px" align="center">
+          👤 Member Spotlight
+        </mj-text>
+        
+        {{#each members}}
+        <mj-table align="center">
+          <tr>
+            <td style="text-align: center; padding-bottom: 20px;">
+              {{#if image}}
+              <img src="{{image}}" alt="{{name}}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;" />
+              {{else}}
+              <div style="width: 80px; height: 80px; background-color: {{../primary_color}}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 24px; margin: 0 auto 15px;">
+                {{substring name 0 2}}
+              </div>
+              {{/if}}
+              <mj-text font-size="20px" font-weight="600" color="#1e293b" padding="0px" align="center">
+                {{name}}
+              </mj-text>
+              {{#if title}}
+              <mj-text font-size="16px" color="{{../primary_color}}" padding="5px 0px" align="center">
+                {{title}}
+              </mj-text>
+              {{/if}}
+              {{#if location}}
+              <mj-text font-size="14px" color="#64748b" padding="5px 0px" align="center">
+                📍 {{location}}
+              </mj-text>
+              {{/if}}
+              <mj-text padding="15px 0px" align="center">
+                {{bio}}
+              </mj-text>
+              {{#if skills}}
+              <mj-text font-size="14px" padding="10px 0px" align="center">
+                {{#each skills}}
+                <span class="member-skills">{{this}}</span>
+                {{/each}}
+              </mj-text>
+              {{/if}}
+              <mj-button 
+                background-color="{{../primary_color}}" 
+                color="white" 
+                font-size="14px" 
+                padding="15px 0px"
+                border-radius="6px"
+                href="{{profile_url}}"
+              >
+                View Profile
+              </mj-button>
+            </td>
+          </tr>
+        </mj-table>
+        {{/each}}
+      </mj-column>
+    </mj-section>
+    {{/if}}
+
+    <!-- Footer -->
+    <mj-section background-color="#1e293b" padding="30px 20px">
+      <mj-column>
+        <mj-text align="center" color="white" font-size="18px" font-weight="600" padding-bottom="15px">
+          {{community_name}}
+        </mj-text>
+        <mj-text align="center" color="#94a3b8" font-size="14px" padding-bottom="20px">
+          {{footer_text}}
+        </mj-text>
+        
+        {{#if social_links}}
+        <mj-social font-size="15px" icon-size="24px" mode="horizontal" align="center" padding-bottom="20px">
+          {{#each social_links}}
+          <mj-social-element name="{{platform}}" href="{{url}}" background-color="{{../primary_color}}">
+          </mj-social-element>
+          {{/each}}
+        </mj-social>
+        {{/if}}
+        
+        <mj-divider border-color="#374151" padding="20px 0px" />
+        
+        <mj-text align="center" color="#94a3b8" font-size="12px" padding-bottom="10px">
+          You're receiving this because you subscribed to {{community_name}} newsletter.
+        </mj-text>
+        <mj-text align="center" font-size="12px" padding="0px">
+          <a href="{{unsubscribe_url}}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
+          •
+          <a href="{{web_view_url}}" style="color: #94a3b8; text-decoration: underline;">View in browser</a>
+          •
+          <a href="{{preferences_url}}" style="color: #94a3b8; text-decoration: underline;">Update preferences</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

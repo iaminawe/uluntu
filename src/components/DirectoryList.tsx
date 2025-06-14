@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 const SAMPLE_MEMBERS = [
   {
@@ -100,7 +100,7 @@ export default function DirectoryList() {
         {filteredMembers.map(member => (
           <Link
             key={member.id}
-            href={`/directory/${member.id}`}
+            to={`/directory/${member.id}`}
             className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="h-48 overflow-hidden">

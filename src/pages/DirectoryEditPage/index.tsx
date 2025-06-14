@@ -8,6 +8,7 @@ import SkillsSection from './SkillsSection';
 import SocialSection from './SocialSection';
 import { FormData } from './types';
 import { initialFormData } from './data';
+import { uploadDirectoryImage } from '../../lib/supabase';
 
 export default function DirectoryEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,8 @@ export default function DirectoryEditPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   const { 
     data: member, 
@@ -101,6 +104,22 @@ export default function DirectoryEditPage() {
       skills: prev.skills.filter(skill => skill !== skillToRemove)
     }));
   };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        image: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        image: ''
+      }));
+    }
+  };
   
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData | 'social', string>> = {};
@@ -137,9 +156,30 @@ export default function DirectoryEditPage() {
     }
     
     setIsSubmitting(true);
+    let finalImageUrl = formData.image;
     
     try {
-      // In a real implementation this would make an API call
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const directoryId = id || `temp-${Date.now()}`;
+        const { url, error } = await uploadDirectoryImage(imageFile, directoryId);
+        
+        if (error) {
+          console.error('Error uploading image:', error);
+          setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
+          return;
+        }
+        
+        finalImageUrl = url;
+        setIsUploadingImage(false);
+      }
+      
+      // Update form data with final image URL
+      const finalFormData = { ...formData, image: finalImageUrl };
+      
+      // In a real implementation this would make an API call with finalFormData
+      console.log('Submitting directory profile with data:', finalFormData);
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setSubmitSuccess(true);
@@ -150,8 +190,10 @@ export default function DirectoryEditPage() {
       }, 1000);
     } catch (error) {
       console.error('Error submitting form:', error);
+      setErrors(prev => ({ ...prev, image: 'Failed to save profile. Please try again.' }));
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImage(false);
     }
   };
 
@@ -220,7 +262,8 @@ export default function DirectoryEditPage() {
                 formData={formData}
                 errors={errors}
                 onChange={handleChange}
-                isSubmitting={isSubmitting}
+                onImageChange={handleImageChange}
+                isSubmitting={isSubmitting || isUploadingImage}
               />
               
               <hr className="border-t border-slate-200 dark:border-slate-700" />

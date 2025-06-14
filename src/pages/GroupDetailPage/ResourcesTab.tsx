@@ -1,9 +1,29 @@
 import { ResourcesTabProps } from './types';
+import { Plus, ExternalLink, Trash2 } from 'lucide-react';
+import { useGroupMemberRole } from '../../hooks/useGroupQueries';
+import { useCurrentMember } from '../../hooks/useCurrentMember';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading }) => {
+const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading, groupId }) => {
+  const { data: currentMember } = useCurrentMember();
+  const { data: currentUserRole } = useGroupMemberRole(groupId, currentMember?.id);
+  const isAdmin = currentUserRole === 'admin';
+  const [removingResource, setRemovingResource] = useState<string | null>(null);
   return (
     <div>
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Group Resources</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Group Resources</h2>
+        {isAdmin && (
+          <Link
+            to={`/resources/new?groupId=${groupId}`}
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Resource
+          </Link>
+        )}
+      </div>
       
       {isLoading ? (
         <div className="animate-pulse space-y-6">
@@ -37,14 +57,33 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading }) => 
                     Added on {new Date(resource.dateAdded).toLocaleDateString()}
                   </p>
                 </div>
-                <a
-                  href={resource.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
-                >
-                  View
-                </a>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={resource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors flex items-center gap-1"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View
+                  </a>
+                  {isAdmin && currentMember && resource.contributor.id === currentMember.id && (
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Remove this resource from the group?')) {
+                          setRemovingResource(resource.id);
+                          // TODO: Implement resource removal
+                          console.log('Remove resource:', resource.id);
+                          setRemovingResource(null);
+                        }
+                      }}
+                      disabled={removingResource === resource.id}
+                      className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}

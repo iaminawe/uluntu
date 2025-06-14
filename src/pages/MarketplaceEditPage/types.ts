@@ -17,6 +17,11 @@ export interface FormData {
   tags: string[];
   newTag: string;
   featured: boolean;
+  // Contact information fields
+  contactEmail: string;
+  contactPhone: string;
+  contactMethod: 'email' | 'phone' | 'both' | '';
+  showContactInfo: boolean;
 }
 
 export interface SampleListing {

@@ -213,5 +213,115 @@ export const eventsApi = {
       handleSupabaseError(error, 'deleting event');
       return false;
     }
+  },
+
+  async registerForEvent(eventId: string, memberId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('event_attendees')
+        .insert({
+          event_id: eventId,
+          member_id: memberId,
+          status: 'registered'
+        });
+
+      if (error) {
+        handleSupabaseError(error, 'registering for event');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'registering for event');
+      return false;
+    }
+  },
+
+  async unregisterFromEvent(eventId: string, memberId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('event_attendees')
+        .delete()
+        .eq('event_id', eventId)
+        .eq('member_id', memberId);
+
+      if (error) {
+        handleSupabaseError(error, 'unregistering from event');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'unregistering from event');
+      return false;
+    }
+  },
+
+  async getRegistrationStatus(eventId: string, memberId: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('event_attendees')
+        .select('event_id')
+        .eq('event_id', eventId)
+        .eq('member_id', memberId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        handleSupabaseError(error, 'checking registration status');
+        return false;
+      }
+      
+      return !!data; // Return true if registration exists
+    } catch (error) {
+      handleSupabaseError(error, 'checking registration status');
+      return false;
+    }
+  },
+
+  async getEventAttendees(eventId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('event_attendees')
+        .select(`
+          *,
+          members(
+            id,
+            name,
+            image,
+            title,
+            company
+          )
+        `)
+        .eq('event_id', eventId)
+        .eq('status', 'registered')
+        .order('registered_at', { ascending: true });
+
+      if (error) {
+        handleSupabaseError(error, 'fetching event attendees');
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, 'fetching event attendees');
+      return [];
+    }
+  },
+
+  async updateAttendeeStatus(eventId: string, memberId: string, status: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('event_attendees')
+        .update({ status })
+        .eq('event_id', eventId)
+        .eq('member_id', memberId);
+
+      if (error) {
+        handleSupabaseError(error, 'updating attendee status');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'updating attendee status');
+      return false;
+    }
   }
 };
