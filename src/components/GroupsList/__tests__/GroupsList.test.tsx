@@ -20,7 +20,7 @@ jest.mock('../../JoinModal', () => ({
 }));
 
 // Mock the Pagination component
-jest.mock('../../Pagination', () => ({
+jest.mock('@/components/Pagination', () => ({
   __esModule: true,
   default: ({ currentPage, totalPages, onPageChange }: any) => (
     <div data-testid="pagination">
@@ -126,10 +126,10 @@ jest.mock('../../../hooks/useGroupsRedux', () => ({
   })
 }));
 
-jest.mock('../../../hooks/useQueries');
+jest.mock('@/hooks/useGroupQueries');
 
 // Import the module to get access to the mocked functions
-import * as useQueriesModule from '../../../hooks/useQueries';
+import * as useQueriesModule from '@/hooks/useGroupQueries';
 
 const mockUseGroupsWithFilters = useQueriesModule.useGroupsWithFilters as jest.MockedFunction<typeof useQueriesModule.useGroupsWithFilters>;
 
@@ -252,7 +252,7 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-008: should use React Query by default', () => {
-      const { useGroupsWithFilters } = require('../../../hooks/useQueries');
+      const { useGroupsWithFilters } = require('@/hooks/useGroupQueries');
       
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />

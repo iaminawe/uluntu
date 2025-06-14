@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from '@/features/marketplace/components/MarketplaceList/ListingCard';
-import Pagination from '@/shared/components/ui/Pagination';
+import Pagination from '@/components/Pagination';
 import { MarketplaceListProps } from '@/features/marketplace/components/MarketplaceList/types';
-import { useMarketplaceItemsWithFilters } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import { useMarketplaceItemsWithFilters } from '@/hooks/useMarketplaceQueries';
 import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
 import { MarketplaceListing } from '../../types/marketplace';
 

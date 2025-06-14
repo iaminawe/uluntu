@@ -3,7 +3,7 @@ import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from './ArticleCard';
 import FeaturedArticleCard from './FeaturedArticleCard';
-import Pagination from '../Pagination'; // Import Pagination
+import Pagination from '@/components/Pagination';
 import { FilterOptions, NewsArticlesListProps } from './types';
 import { useNewsArticlesWithFilters } from '../../hooks/useNewsQueries';
 

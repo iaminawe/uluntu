@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import OpportunityCard from '@/features/opportunities/components/OpportunitiesList/OpportunityCard';
-import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
+import Pagination from '@/components/Pagination';
 import { 
   Opportunity, 
   OpportunitiesListProps, 

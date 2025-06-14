@@ -6,7 +6,7 @@ import { getTypeIcon } from '@/features/marketplace/components/MarketplaceItemDe
 import ContactModal from '@/features/marketplace/components/MarketplaceItemDetail/ContactModal';
 import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
-import { useMarketplaceItem } from '@/features/marketplace/hooks/useMarketplaceQueries';
+import { useMarketplaceItem } from '@/hooks/useMarketplaceQueries';
 import SkeletonText from '@/shared/components/ui/Skeleton/SkeletonText';
 import SkeletonImage from '@/shared/components/ui/Skeleton/SkeletonImage';
 import { MarketplaceItem } from '../../types';

@@ -12,7 +12,7 @@ import {
 import { NewsArticle as MainNewsArticle } from '../../types';
 
 import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
-import { useNewsArticlesWithFilters } from '../../hooks/useQueries';
+import { useNewsArticlesWithFilters } from '@/hooks/useNewsQueries';
 
 const NewsList = ({ initialTag = 'all', initialSearch = '', articles: passedArticles, useRedux = false }: NewsListProps & { useRedux?: boolean }) => {
   // State for filters

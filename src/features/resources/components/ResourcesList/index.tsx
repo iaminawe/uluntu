@@ -4,7 +4,7 @@ import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
 import { useFilteredResourcesRedux } from '../../hooks/useResourcesRedux';
-import { ResourceFilters } from '../../redux/slices/resourcesSlice';
+import { ResourceFilters } from '../../store/resourcesSlice';
 
 interface ResourcesListProps {
   resources?: Resource[];
