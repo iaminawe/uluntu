@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { PlusCircle, X, Clock, Video, Link, User, Trash2, Plus } from 'lucide-react';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 import { EventSession, EventPresenter, EventSessionResource } from '../../types';
+import { uploadDirectoryImage } from '../../lib/supabase';
 
 interface SessionsManagerProps {
   sessions: EventSession[];
@@ -38,6 +40,7 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [expandedPresenterIndex, setExpandedPresenterIndex] = useState<{ sessionIndex: number, presenterIndex: number } | null>(null);
   const [expandedResourceIndex, setExpandedResourceIndex] = useState<{ sessionIndex: number, resourceIndex: number } | null>(null);
+  const [uploadingImages, setUploadingImages] = useState<Set<string>>(new Set());
 
   const addSession = () => {
     const newSession = {
@@ -107,6 +110,42 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
     
     updateSession(sessionIndex, updatedSession);
     setExpandedPresenterIndex(null);
+  };
+
+  const handlePresenterImageUpload = async (sessionIndex: number, presenterIndex: number, file: File | null) => {
+    if (!file) {
+      updatePresenter(sessionIndex, presenterIndex, { 
+        ...sessions[sessionIndex].presenters[presenterIndex], 
+        image: '' 
+      });
+      return;
+    }
+
+    const presenterKey = `${sessionIndex}-${presenterIndex}`;
+    setUploadingImages(prev => new Set([...prev, presenterKey]));
+
+    try {
+      const presenterId = `presenter-${sessionIndex}-${presenterIndex}-${Date.now()}`;
+      const { url, error } = await uploadDirectoryImage(file, presenterId);
+      
+      if (error) {
+        console.error('Error uploading presenter image:', error);
+        return;
+      }
+
+      updatePresenter(sessionIndex, presenterIndex, { 
+        ...sessions[sessionIndex].presenters[presenterIndex], 
+        image: url || ''
+      });
+    } catch (error) {
+      console.error('Error uploading presenter image:', error);
+    } finally {
+      setUploadingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(presenterKey);
+        return newSet;
+      });
+    }
   };
 
   const addResource = (sessionIndex: number) => {
@@ -587,21 +626,18 @@ const SessionsManager: React.FC<SessionsManagerProps> = ({ sessions, onSessionsC
                                       </div>
                                     </div>
 
-                                    {/* Image URL */}
+                                    {/* Profile Image Upload */}
                                     <div>
-                                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                        Profile Image URL
-                                      </label>
-                                      <input
-                                        type="text"
-                                        value={presenter.image}
-                                        onChange={(e) => updatePresenter(
-                                          sessionIndex, 
-                                          presenterIndex, 
-                                          { ...presenter, image: e.target.value }
-                                        )}
-                                        className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
-                                        placeholder="https://example.com/image.jpg"
+                                      <FormImageUpload
+                                        id={`presenter-image-${sessionIndex}-${presenterIndex}`}
+                                        name={`presenterImage-${sessionIndex}-${presenterIndex}`}
+                                        label="Profile Image"
+                                        currentImage={presenter.image}
+                                        onChange={(file) => handlePresenterImageUpload(sessionIndex, presenterIndex, file)}
+                                        disabled={uploadingImages.has(`${sessionIndex}-${presenterIndex}`)}
+                                        helperText="Upload a profile image for this presenter"
+                                        maxSize={3 * 1024 * 1024}
+                                        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
                                       />
                                     </div>
 

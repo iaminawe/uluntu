@@ -13,9 +13,11 @@ import { Label } from '../../components/ui/Label';
 import { Textarea } from '../../components/ui/Textarea';
 import { Switch } from '../../components/ui/Switch';
 import { TagsInput } from '../../components/ui/TagsInput';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 import { Card } from '../../components/ui/Card';
 import { NewsArticleInput } from '../../types/news';
 import { useNewsArticleByIdRedux, useNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { uploadNewsImage } from '../../lib/supabase';
 
 // Form validation schema
 const formSchema = z.object({
@@ -37,6 +39,8 @@ export default function NewsArticleEditPage() {
   const navigate = useNavigate();
   const isNewArticle = !id;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   // Redux hooks
   const { 
@@ -103,15 +107,45 @@ export default function NewsArticleEditPage() {
       );
     }
   }, [title, isNewArticle, setValue]);
+
+  // Handle image upload
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setValue('image', objectUrl);
+    } else {
+      setValue('image', '');
+    }
+  };
   
   // Handle form submission
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
+    let finalImageUrl = data.image;
     
     try {
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const newsId = id || `temp-${Date.now()}`;
+        const { url, error } = await uploadNewsImage(imageFile, newsId);
+        
+        if (error) {
+          console.error('Error uploading image:', error);
+          throw new Error('Failed to upload image. Please try again.');
+        }
+        
+        finalImageUrl = url;
+        setIsUploadingImage(false);
+      }
+      
+      // Update data with final image URL
+      const finalData = { ...data, image: finalImageUrl };
+      
       if (isNewArticle) {
         // Create new article
-        const newArticle = await createArticle(data as NewsArticleInput);
+        const newArticle = await createArticle(finalData as NewsArticleInput);
         if (newArticle) {
           navigate(`/news/${newArticle.id}`);
         }
@@ -119,7 +153,7 @@ export default function NewsArticleEditPage() {
         // Update existing article
         const updatedArticle = await updateArticle({
           id,
-          data: data as Partial<NewsArticleInput>
+          data: finalData as Partial<NewsArticleInput>
         });
         
         if (updatedArticle) {
@@ -130,6 +164,7 @@ export default function NewsArticleEditPage() {
       console.error('Error saving article:', error);
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImage(false);
     }
   };
   
@@ -232,18 +267,20 @@ export default function NewsArticleEditPage() {
               )}
             </div>
             
-            {/* Image */}
+            {/* Featured Image */}
             <div>
-              <Label htmlFor="image">Featured Image URL</Label>
-              <Input
+              <FormImageUpload
                 id="image"
-                {...register('image')}
-                className={errors.image ? 'border-red-500' : ''}
-                placeholder="https://example.com/image.jpg"
+                name="image"
+                label="Featured Image"
+                currentImage={watch('image')}
+                onChange={handleImageChange}
+                disabled={isSubmitting || isUploadingImage}
+                helperText="Upload a featured image for this news article"
+                maxSize={5 * 1024 * 1024}
+                acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                error={errors.image?.message}
               />
-              {errors.image && (
-                <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>
-              )}
             </div>
             
             {/* Image Alt Text */}

@@ -31,6 +31,7 @@ export interface FormInputsProps {
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  onImageChange: (file: File | null) => void;
   errors: Partial<FormData>;
 }
 

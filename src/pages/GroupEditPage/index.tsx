@@ -12,6 +12,7 @@ import ImageUpload from './ImageUpload';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
+import { uploadGroupImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
   name: '',
@@ -33,6 +34,9 @@ export default function GroupEditPage() {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   
   const { 
     data: group, 
@@ -72,6 +76,38 @@ export default function GroupEditPage() {
   const handleInterestsChange = (interests: string[]) => {
     setFormData(prev => ({ ...prev, interests }));
   };
+
+  const handleHeroImageChange = (file: File | null) => {
+    setHeroImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        heroImage: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        heroImage: ''
+      }));
+    }
+  };
+
+  const handleCoverImageChange = (file: File | null) => {
+    setCoverImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        coverImage: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        coverImage: ''
+      }));
+    }
+  };
   
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -100,13 +136,42 @@ export default function GroupEditPage() {
     }
     
     setIsSubmitting(true);
+    let finalHeroImageUrl = formData.heroImage;
+    let finalCoverImageUrl = formData.coverImage;
     
     try {
+      // Upload images if new files were selected
+      setIsUploadingImages(true);
+      const groupIdForUpload = id || `temp-${Date.now()}`;
+      
+      if (heroImageFile) {
+        const { url, error } = await uploadGroupImage(heroImageFile, groupIdForUpload, 'hero');
+        if (error) {
+          console.error('Error uploading hero image:', error);
+          setErrors(prev => ({ ...prev, heroImage: 'Failed to upload hero image. Please try again.' }));
+          return;
+        }
+        finalHeroImageUrl = url;
+      }
+      
+      if (coverImageFile) {
+        const { url, error } = await uploadGroupImage(coverImageFile, groupIdForUpload, 'cover');
+        if (error) {
+          console.error('Error uploading cover image:', error);
+          setErrors(prev => ({ ...prev, coverImage: 'Failed to upload cover image. Please try again.' }));
+          return;
+        }
+        finalCoverImageUrl = url;
+      }
+      
+      setIsUploadingImages(false);
+      
       const groupData = {
         name: formData.name,
         description: formData.description,
         longDescription: formData.longDescription || null,
-        heroImage: formData.heroImage,
+        heroImage: finalHeroImageUrl,
+        coverImage: finalCoverImageUrl,
         visibility: formData.visibility,
         interests: formData.interests
       };
@@ -130,8 +195,10 @@ export default function GroupEditPage() {
     } catch (error) {
       console.error('Error submitting group:', error);
       console.error(isEditMode ? 'Failed to update group' : 'Failed to create group');
+      setErrors(prev => ({ ...prev, heroImage: 'Failed to save group. Please try again.' }));
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImages(false);
     }
   };
   
@@ -189,7 +256,10 @@ export default function GroupEditPage() {
                 <ImageUpload 
                   formData={formData}
                   handleChange={handleChange}
+                  onHeroImageChange={handleHeroImageChange}
+                  onCoverImageChange={handleCoverImageChange}
                   errors={errors}
+                  isSubmitting={isSubmitting || isUploadingImages}
                 />
                 
                 <div>

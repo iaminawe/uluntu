@@ -10,6 +10,7 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { ContentStatus } from '../../types/common';
+import { uploadNewsImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
   title: '',
@@ -35,6 +36,8 @@ export default function NewsEditPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   const { 
     data: article, 
@@ -83,8 +86,24 @@ export default function NewsEditPage() {
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
   };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        image: objectUrl
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        image: ''
+      }));
+    }
+  };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
@@ -99,17 +118,45 @@ export default function NewsEditPage() {
     }
     
     setIsSubmitting(true);
+    let finalImageUrl = formData.image;
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const newsId = id || `temp-${Date.now()}`;
+        const { url, error } = await uploadNewsImage(imageFile, newsId);
+        
+        if (error) {
+          console.error('Error uploading image:', error);
+          setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
+          return;
+        }
+        
+        finalImageUrl = url;
+        setIsUploadingImage(false);
+      }
+      
+      // Update form data with final image URL
+      const finalFormData = { ...formData, image: finalImageUrl };
+      
+      // Simulate API call with final form data
+      console.log('Submitting news article with data:', finalFormData);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       setSubmitSuccess(true);
       
       // Navigate after successful submission
       setTimeout(() => {
         navigate(isEditMode ? `/news/${id}` : '/news');
       }, 1500);
-    }, 1500);
+    } catch (error) {
+      console.error('Error submitting news article:', error);
+      setErrors(prev => ({ ...prev, image: 'Failed to save article. Please try again.' }));
+    } finally {
+      setIsSubmitting(false);
+      setIsUploadingImage(false);
+    }
   };
   
   const handleDelete = () => {
@@ -163,6 +210,7 @@ export default function NewsEditPage() {
                 formData={formData}
                 handleChange={handleChange}
                 setFormData={setFormData}
+                onImageChange={handleImageChange}
                 errors={errors}
               />
               

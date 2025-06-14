@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Image, Palette, Check, X } from 'lucide-react';
+import { FormImageUpload } from '../ui/Form/FormImageUpload';
 import { useContent } from '../../contexts/ContentContext';
+import { uploadBackgroundImage } from '../../lib/supabase';
 
 interface EditableBackgroundProps {
   pageId: string;
@@ -18,6 +20,8 @@ export const EditableBackground: React.FC<EditableBackgroundProps> = ({
   const [backgroundImage, setBackgroundImage] = useState('');
   const [gradientFrom, setGradientFrom] = useState('');
   const [gradientTo, setGradientTo] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const pageContent = getPageContent(pageId);
   
@@ -29,35 +33,70 @@ export const EditableBackground: React.FC<EditableBackgroundProps> = ({
     setIsEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!pageContent) return;
     
-    updatePageContent({
-      pageId,
-      field: 'backgroundImage',
-      language: 'en', // Background settings are language-independent
-      content: backgroundImage
-    });
+    let finalImageUrl = backgroundImage;
     
-    updatePageContent({
-      pageId,
-      field: 'gradientFrom',
-      language: 'en',
-      content: gradientFrom
-    });
-    
-    updatePageContent({
-      pageId,
-      field: 'gradientTo',
-      language: 'en',
-      content: gradientTo
-    });
-    
-    setIsEditing(false);
+    try {
+      // Upload image if a new file was selected
+      if (imageFile) {
+        setIsUploadingImage(true);
+        const contentId = `${pageId}-${Date.now()}`;
+        const { url, error } = await uploadBackgroundImage(imageFile, contentId);
+        
+        if (error) {
+          console.error('Error uploading background image:', error);
+          return;
+        }
+        
+        finalImageUrl = url || '';
+        setIsUploadingImage(false);
+      }
+      
+      updatePageContent({
+        pageId,
+        field: 'backgroundImage',
+        language: 'en', // Background settings are language-independent
+        content: finalImageUrl
+      });
+      
+      updatePageContent({
+        pageId,
+        field: 'gradientFrom',
+        language: 'en',
+        content: gradientFrom
+      });
+      
+      updatePageContent({
+        pageId,
+        field: 'gradientTo',
+        language: 'en',
+        content: gradientTo
+      });
+      
+      setIsEditing(false);
+      setImageFile(null);
+    } catch (error) {
+      console.error('Error saving background:', error);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+    setImageFile(null);
+  };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setBackgroundImage(objectUrl);
+    } else {
+      setBackgroundImage('');
+    }
   };
 
   const getBackgroundStyle = () => {
@@ -87,15 +126,16 @@ export const EditableBackground: React.FC<EditableBackgroundProps> = ({
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                  Background Image URL
-                </label>
-                <input
-                  type="url"
-                  value={backgroundImage}
-                  onChange={(e) => setBackgroundImage(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                <FormImageUpload
+                  id={`background-image-${pageId}`}
+                  name="backgroundImage"
+                  label="Background Image"
+                  currentImage={backgroundImage}
+                  onChange={handleImageChange}
+                  disabled={isUploadingImage}
+                  helperText="Upload a background image for this section"
+                  maxSize={10 * 1024 * 1024}
+                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
                 />
               </div>
               

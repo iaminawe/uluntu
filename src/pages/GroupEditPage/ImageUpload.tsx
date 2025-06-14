@@ -1,33 +1,41 @@
 import { ImageUploadProps } from './types';
-import { FormInput } from '../../components/ui/Form';
+import { FormImageUpload } from '../../components/ui/Form/FormImageUpload';
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ 
   formData, 
   handleChange, 
-  errors 
+  onHeroImageChange,
+  onCoverImageChange,
+  errors,
+  isSubmitting = false
 }) => {
   return (
     <>
-      <FormInput
+      <FormImageUpload
         id="heroImage"
         name="heroImage"
-        label="Hero Image URL *"
-        value={formData.heroImage}
-        onChange={handleChange}
-        error={errors.heroImage}
-        placeholder="https://example.com/image.jpg"
+        label="Hero Image"
+        currentImage={formData.heroImage}
+        onChange={onHeroImageChange}
+        disabled={isSubmitting}
         helperText="Main image for the group (displayed in listings)"
+        maxSize={5 * 1024 * 1024}
+        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+        error={errors.heroImage}
         required
       />
       
-      <FormInput
+      <FormImageUpload
         id="coverImage"
         name="coverImage"
-        label="Cover Image URL (Optional)"
-        value={formData.coverImage || ''}
-        onChange={handleChange}
-        placeholder="https://example.com/cover.jpg"
+        label="Cover Image (Optional)"
+        currentImage={formData.coverImage}
+        onChange={onCoverImageChange}
+        disabled={isSubmitting}
         helperText="Banner image for the group detail page (optional)"
+        maxSize={5 * 1024 * 1024}
+        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+        error={errors.coverImage}
       />
     </>
   );
