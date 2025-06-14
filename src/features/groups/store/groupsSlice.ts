@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { Group } from '../../types';
-import { groupsApi, GroupInput } from '../../api/groupsApi';
-import * as mockQueries from '../../hooks/useGroupQueries';
+import { RootState } from '@/store';
+import { Group } from '@/types';
+import { groupsApi, GroupInput } from '../api/groupsApi';
+import * as mockQueries from '@/hooks/useGroupQueries';
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';

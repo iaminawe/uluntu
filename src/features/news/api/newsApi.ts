@@ -1,10 +1,10 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import { NewsArticle } from '../types';
 import {
   adaptNewsArticleFromDatabase,
   adaptNewsArticleToDatabase,
   SupabaseNewsArticleWithAuthor,
-} from '../adapters/newsAdapter';
+} from '../utils/newsAdapter';
 import type { Database } from '../types/supabase';
 
 // Helper function to adapt a list of items

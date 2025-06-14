@@ -3,9 +3,9 @@ import {
   createAsyncThunk,
   PayloadAction
 } from '@reduxjs/toolkit';
-import { membersApi, MemberInput } from '../../api/membersApi';
-import allMockData from '../../data/mock/mockData';
-import { ContentStatus } from '../../types/common';
+import { membersApi, MemberInput } from '../api/membersApi';
+import allMockData from '@/data/mock/mockData';
+import { ContentStatus } from '@/shared/types/common';
 
 // Define Member type for the Redux state
 export interface Member {

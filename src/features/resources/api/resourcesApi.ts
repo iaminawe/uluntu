@@ -1,8 +1,8 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptResourceFromDatabase,
   adaptResourceToDatabase,
-} from '../adapters/resourceAdapter';
+} from '../utils/resourceAdapter';
 import { Resource, ContentStatus } from '../types'; // Ensure Resource type is imported
 import { Database } from '../types/supabase'; // Ensure Database type is imported
 

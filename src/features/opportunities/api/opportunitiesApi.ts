@@ -1,8 +1,8 @@
-import { supabase, handleSupabaseError } from './supabaseUtils';
+import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptOpportunityFromDatabase,
   adaptOpportunityToDatabase
-} from '../adapters/opportunityAdapter';
+} from '../utils/opportunityAdapter';
 import { Opportunity } from '../types';
 
 // Helper function to adapt a list of items
