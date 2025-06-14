@@ -9,6 +9,10 @@ const __dirname = dirname(__filename)
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    port: 5555, // Using a different port to avoid conflicts
+    strictPort: true, // Fail if port is already in use
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
