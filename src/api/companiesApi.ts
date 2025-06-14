@@ -4,7 +4,7 @@ import {
   adaptCompanyToSupabaseInsert,
   adaptCompanyToSupabaseUpdate
 } from '@/adapters/companyAdapter';
-import { Company, CompanyMember, CompanyEmployee } from '../types';
+import { Company, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
 
 // Helper function to adapt a list of items

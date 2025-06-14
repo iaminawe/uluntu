@@ -209,11 +209,6 @@ export function adaptMarketplaceItemFromSupabase(
     image: item.images && item.images.length > 0 ? item.images[0] : '/placeholder-image.png',
     seller: sellerInfo,
     datePosted: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString(),
-    // Contact information fields
-    contactEmail: item.contact_email || undefined,
-    contactPhone: item.contact_phone || undefined,
-    contactMethod: item.contact_method as ('email' | 'phone' | 'both') || undefined,
-    showContactInfo: item.show_contact_info !== false,
   };
 }
 
@@ -235,10 +230,6 @@ export function adaptMarketplaceItemToSupabase(
     status: item.status || 'draft', // Default to draft if undefined
     featured: typeof item.featured === 'boolean' ? item.featured : false, // Ensure it's boolean
     // Contact information fields
-    contact_email: item.contactEmail || null,
-    contact_phone: item.contactPhone || null,
-    contact_method: item.contactMethod || null,
-    show_contact_info: typeof item.showContactInfo === 'boolean' ? item.showContactInfo : true,
     // 'category' is not part of the original Supabase insert data from dataAdapters.ts
     // If your Supabase table marketplace_listings has a 'category' column, add it here:
     // category: item.category || null,

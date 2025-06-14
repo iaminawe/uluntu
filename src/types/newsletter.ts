@@ -32,7 +32,7 @@ export interface NewsletterCampaign {
   title: string;
   subject: string;
   template_id: string;
-  template_data: Record<string, any>;
+  template_data: Record<string, unknown>;
   content: CuratedContent;
   custom_message?: string;
   branding: BrandingConfig;
@@ -176,7 +176,7 @@ export interface NewsletterTemplate {
   description: string;
   type: 'mjml' | 'react-email';
   template_content: string;
-  default_settings: Record<string, any>;
+  default_settings: Record<string, unknown>;
   preview_image?: string;
   is_active: boolean;
   created_at: string;
@@ -219,7 +219,7 @@ export interface NewsletterAnalytics {
   campaign_id: string;
   subscription_id?: string;
   event_type: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained';
-  event_data?: Record<string, any>;
+  event_data?: Record<string, unknown>;
   postmark_message_id?: string;
   occurred_at: string;
   ip_address?: string;
@@ -231,7 +231,7 @@ export interface ContentCache {
   content_type: ContentType;
   date_range_start: string;
   date_range_end: string;
-  content: any;
+  content: unknown;
   generated_at: string;
   expires_at: string;
 }
@@ -413,7 +413,7 @@ export interface ResendWebhook {
     bounce_type?: 'hard' | 'soft';
     created_at: string;
     headers?: Record<string, string>;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
