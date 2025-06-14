@@ -5,9 +5,9 @@ import {
   PageContent, 
   ContentSection,
   Language
-} from '../../types/content';
-import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../../data/defaultContent';
-import { DEFAULT_LANGUAGE } from '../../constants/languages';
+} from '@/types/content';
+import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '@/data/defaultContent';
+import { DEFAULT_LANGUAGE } from '@/constants/languages';
 import { RootState } from '@/store/index';
 
 // Storage key for localStorage

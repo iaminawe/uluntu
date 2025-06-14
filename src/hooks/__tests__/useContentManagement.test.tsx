@@ -11,8 +11,8 @@ import contentReducer, {
   toggleEditMode,
   saveContent
 } from '@/store/contentSlice';
-import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../../data/defaultContent';
-import { DEFAULT_LANGUAGE } from '../../constants/languages';
+import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '@/data/defaultContent';
+import { DEFAULT_LANGUAGE } from '@/constants/languages';
 import { RootState } from '@/store/index';
 
 // Mock localStorage

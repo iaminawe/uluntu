@@ -8,9 +8,9 @@ import contentReducer, {
   saveContent,
   importContent
 } from './contentSlice';
-import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../../data/defaultContent';
-import { DEFAULT_LANGUAGE } from '../../constants/languages';
-import { ContentManagementState } from '../../types/content';
+import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '@/data/defaultContent';
+import { DEFAULT_LANGUAGE } from '@/constants/languages';
+import { ContentManagementState } from '@/types/content';
 
 // Mock localStorage
 const mockLocalStorage = (() => {
