@@ -382,6 +382,81 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_roles: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          permissions: Json
+          is_system: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          permissions?: Json
+          is_system?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          permissions?: Json
+          is_system?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      moderation_queue: {
+        Row: {
+          id: string
+          item_id: string
+          item_type: string
+          item_data: Json
+          status: string | null
+          submitted_by: string
+          submitted_at: string | null
+          reviewed_by: string | null
+          reviewed_at: string | null
+          review_notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          item_id: string
+          item_type: string
+          item_data: Json
+          status?: string | null
+          submitted_by: string
+          submitted_at?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          item_id?: string
+          item_type?: string
+          item_data?: Json
+          status?: string | null
+          submitted_by?: string
+          submitted_at?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           cover_image: string | null
