@@ -3,7 +3,7 @@ import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListPro
 import { useFilteredEventsRedux } from '@/features/events/hooks/useEventsRedux';
 import EventCard from '@/features/events/components/EventsList/EventCard';
 import PastEventCard from '@/features/events/components/EventsList/PastEventCard';
-import Pagination from '@/shared/components/ui/Pagination';
+import Pagination from '@/components/Pagination';
 
 const UPCOMING_EVENTS_PER_PAGE = 5;
 const PAST_EVENTS_PER_PAGE = 9;

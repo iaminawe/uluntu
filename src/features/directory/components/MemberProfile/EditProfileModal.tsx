@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Member } from './types';
-import FormImageUpload from '../ui/Form/FormImageUpload';
-import { uploadProfileImage, getCurrentUser } from '../../lib/supabase';
+import FormImageUpload from '@/shared/components/ui/Form/FormImageUpload';
+import { uploadProfileImage, getCurrentUser } from '@/lib/supabase';
 
 interface EditProfileModalProps {
   member: Member;

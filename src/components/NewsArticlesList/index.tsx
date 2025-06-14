@@ -3,9 +3,9 @@ import { AlertTriangle } from 'lucide-react';
 
 import ArticleCard from '@/features/news/components/NewsArticlesList/ArticleCard';
 import FeaturedArticleCard from '@/features/news/components/NewsArticlesList/FeaturedArticleCard';
-import Pagination from '@/shared/components/ui/Pagination'; // Import Pagination
+import Pagination from '@/components/Pagination';
 import { FilterOptions, NewsArticlesListProps } from '@/features/news/components/NewsArticlesList/types';
-import { useNewsArticlesWithFilters } from '@/features/news/hooks/useNewsQueries';
+import { useNewsArticlesWithFilters } from '@/hooks/useNewsQueries';
 
 const ARTICLES_PER_PAGE = 4;
 

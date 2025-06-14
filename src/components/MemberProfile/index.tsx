@@ -4,7 +4,7 @@ import ProfileHeader from '@/features/directory/components/MemberProfile/Profile
 import ProfileContent from '@/features/directory/components/MemberProfile/ProfileContent';
 import ContactModal from '@/features/directory/components/MemberProfile/ContactModal';
 import EditProfileModal from '@/features/directory/components/MemberProfile/EditProfileModal';
-import { useMember } from '../../hooks/useQueries';
+import { useMemberById as useMember } from '@/hooks/useMemberQueries';
 import { useMemberContributions } from '../../hooks/useMemberContributions';
 import { mapMemberToProfileMember } from '../../adapters/memberAdapter';
 

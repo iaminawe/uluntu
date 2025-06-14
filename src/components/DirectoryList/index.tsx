@@ -5,8 +5,8 @@ import MemberCard from '@/features/directory/components/DirectoryList/MemberCard
 import DirectoryFilters from '@/features/directory/components/DirectoryList/DirectoryFilters';
 import { DirectoryListProps, FilterOptions, Member as DirectoryMember } from '@/features/directory/components/DirectoryList/types';
 import { extractUniqueSkills } from '@/features/directory/components/DirectoryList/utils';
-import { useMembersWithFilters } from '../../hooks/useQueries';
-import { Member as QueryMember } from '@/features/directory/hooks/useMemberQueries';
+import { useMembersWithFilters } from '@/hooks/useMemberQueries';
+import { Member as QueryMember } from '@/hooks/useMemberQueries';
 
 const DirectoryList = ({ 
   initialSearch = '',

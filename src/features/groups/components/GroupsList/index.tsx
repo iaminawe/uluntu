@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useGroupsWithFilters } from '../../hooks/useQueries';
+import { useGroupsWithFilters } from '@/hooks/useGroupQueries';
 import { Group, GroupsListProps } from './types';
 import GroupCard from './GroupCard';
 import JoinModal from '../JoinModal'; // Reusing the existing JoinModal component
-import Pagination from '../Pagination'; // Import Pagination
+import Pagination from '@/components/Pagination';
 import { useFilteredGroupsRedux } from '../../hooks/useGroupsRedux';
-import { GroupFilters } from '../../redux/slices/groupsSlice';
+import { GroupFilters } from '../../store/groupsSlice';
 
 const GROUPS_PER_PAGE = 8;
 

@@ -9,7 +9,7 @@ import CommentsSection from '@/features/news/components/NewsDetail/CommentsSecti
 import CommentModal from '@/features/news/components/NewsDetail/CommentModal';
 import ShareModal from '@/features/news/components/NewsDetail/ShareModal';
 import { NewsArticle, SAMPLE_ARTICLE, NewsComment, adaptMainNewsArticleToLocal } from '@/features/news/components/NewsDetail/types';
-import { useNewsArticle } from '../../hooks/useQueries';
+import { useNewsArticle } from '@/hooks/useNewsQueries';
 
 interface NewsDetailProps {
   articleId?: string;
