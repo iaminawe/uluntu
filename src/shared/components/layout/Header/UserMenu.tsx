@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, UserPlus, LogIn, Edit } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,10 +63,8 @@ export default function UserMenu() {
                   {user.email}
                 </p>
               </div>
-              <a
-                href="http://localhost:5174/profile"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/profile"
                 className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 onClick={() => setIsOpen(false)}
               >
@@ -74,7 +72,7 @@ export default function UserMenu() {
                   <User className="h-4 w-4 mr-2" />
                   Your Profile
                 </div>
-              </a>
+              </Link>
               <Link
                 to="/profile/edit"
                 className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
