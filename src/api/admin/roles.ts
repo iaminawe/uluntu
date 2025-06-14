@@ -1,132 +1,51 @@
-import { supabase } from '@/lib/supabase';
 import { Role } from '@/types/admin';
 
 export const adminRolesApi = {
-  // Get all roles
+  // Get all roles - temporarily return empty data until DB is set up
   async getRoles() {
-    const { data, error } = await supabase
-      .from('roles')
-      .select('*')
-      .order('name');
-
-    if (error) throw error;
-    return data as Role[];
+    console.warn('Admin roles temporarily disabled - returning empty data');
+    return [] as Role[];
   },
 
-  // Get single role
-  async getRole(roleId: string) {
-    const { data, error } = await supabase
-      .from('roles')
-      .select('*')
-      .eq('id', roleId)
-      .single();
-
-    if (error) throw error;
-    return data as Role;
+  // Get single role - temporarily stub
+  async getRole(_roleId: string) {
+    console.warn('Admin role lookup temporarily disabled');
+    return null;
   },
 
-  // Create role
-  async createRole(role: Omit<Role, 'id' | 'created_at' | 'updated_at'>) {
-    const { data, error } = await supabase
-      .from('roles')
-      .insert(role)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as Role;
+  // Create role - temporarily stub
+  async createRole(_role: Omit<Role, 'id' | 'created_at' | 'updated_at'>) {
+    console.warn('Admin role creation temporarily disabled');
+    return { id: 'temp-id', created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as Role;
   },
 
-  // Update role
-  async updateRole(roleId: string, updates: Partial<Role>) {
-    const { data, error } = await supabase
-      .from('roles')
-      .update(updates)
-      .eq('id', roleId)
-      .eq('is_system', false) // Prevent updating system roles
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as Role;
+  // Update role - temporarily stub
+  async updateRole(_roleId: string, _updates: Partial<Role>) {
+    console.warn('Admin role update temporarily disabled');
+    return true;
   },
 
-  // Delete role
-  async deleteRole(roleId: string) {
-    const { error } = await supabase
-      .from('roles')
-      .delete()
-      .eq('id', roleId)
-      .eq('is_system', false); // Prevent deleting system roles
-
-    if (error) throw error;
+  // Delete role - temporarily stub
+  async deleteRole(_roleId: string) {
+    console.warn('Admin role deletion temporarily disabled');
+    return true;
   },
 
-  // Get user roles
-  async getUserRoles(userId: string) {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .select(`
-        *,
-        role:roles(*)
-      `)
-      .eq('user_id', userId);
-
-    if (error) throw error;
-    return data;
+  // Assign role to user - temporarily stub
+  async assignRole(_userId: string, _roleId: string) {
+    console.warn('Admin role assignment temporarily disabled');
+    return true;
   },
 
-  // Assign role to user
-  async assignRole(userId: string, roleId: string) {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .insert({
-        user_id: userId,
-        role_id: roleId
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  // Remove role from user - temporarily stub
+  async removeRole(_userId: string, _roleId: string) {
+    console.warn('Admin role removal temporarily disabled');
+    return true;
   },
 
-  // Remove role from user
-  async removeRole(userId: string, roleId: string) {
-    const { error } = await supabase
-      .from('user_roles')
-      .delete()
-      .eq('user_id', userId)
-      .eq('role_id', roleId);
-
-    if (error) throw error;
-  },
-
-  // Check if user has permission
-  async checkPermission(
-    userId: string,
-    resource: string,
-    action: string
-  ): Promise<boolean> {
-    try {
-      const userRoles = await this.getUserRoles(userId);
-      
-      for (const userRole of userRoles) {
-        const permissions = userRole.role?.permissions || {};
-        
-        // Check for wildcard permission
-        if (permissions['*']?.includes('*')) return true;
-        
-        // Check for specific resource wildcard
-        if (permissions[resource]?.includes('*')) return true;
-        
-        // Check for specific permission
-        if (permissions[resource]?.includes(action)) return true;
-      }
-      
-      return false;
-    } catch {
-      return false;
-    }
+  // Get user roles - temporarily stub
+  async getUserRoles(_userId: string) {
+    console.warn('Admin user roles lookup temporarily disabled');
+    return [] as Role[];
   }
 };

@@ -1,116 +1,70 @@
-import { supabase } from '@/lib/supabase';
 import { AdminFeature, AdminFeatureTranslation } from '@/types/admin';
 
 export const adminFeaturesApi = {
-  // Get all features
+  // Get all features - temporarily return empty data until DB is set up
   async getFeatures() {
-    const { data, error } = await supabase
-      .from('admin_features')
-      .select('*')
-      .order('feature_key');
-
-    if (error) throw error;
-    return data as AdminFeature[];
+    console.warn('Admin features temporarily disabled - returning empty data');
+    return [] as AdminFeature[];
   },
 
-  // Get single feature
-  async getFeature(featureKey: string) {
-    const { data, error } = await supabase
-      .from('admin_features')
-      .select('*')
-      .eq('feature_key', featureKey)
-      .single();
-
-    if (error) throw error;
-    return data as AdminFeature;
+  // Get single feature - temporarily stub
+  async getFeature(_featureKey: string) {
+    console.warn('Admin feature lookup temporarily disabled');
+    return null;
   },
 
-  // Update feature
-  async updateFeature(featureKey: string, updates: Partial<AdminFeature>) {
-    const { data, error } = await supabase
-      .from('admin_features')
-      .update(updates)
-      .eq('feature_key', featureKey)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as AdminFeature;
+  // Update feature - temporarily stub
+  async updateFeature(_featureKey: string, _updates: Partial<AdminFeature>) {
+    console.warn('Admin feature update temporarily disabled');
+    return true;
   },
 
-  // Toggle feature
-  async toggleFeature(featureKey: string, enabled: boolean) {
-    return this.updateFeature(featureKey, { enabled });
+  // Create feature - temporarily stub
+  async createFeature(feature: Omit<AdminFeature, 'id' | 'created_at' | 'updated_at'>) {
+    console.warn('Admin feature creation temporarily disabled');
+    return { id: 'temp-id', ...feature, created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as AdminFeature;
   },
 
-  // Update feature config
-  async updateFeatureConfig(featureKey: string, config: Record<string, any>) {
-    return this.updateFeature(featureKey, { config });
+  // Delete feature - temporarily stub
+  async deleteFeature(_featureKey: string) {
+    console.warn('Admin feature deletion temporarily disabled');
+    return true;
   },
 
-  // Get feature translations
-  async getFeatureTranslations(featureId: string) {
-    const { data, error } = await supabase
-      .from('admin_feature_translations')
-      .select('*')
-      .eq('feature_id', featureId)
-      .order('language_code');
-
-    if (error) throw error;
-    return data as AdminFeatureTranslation[];
+  // Get feature translations - temporarily stub
+  async getFeatureTranslations(_featureId: string) {
+    console.warn('Admin feature translations temporarily disabled');
+    return [] as AdminFeatureTranslation[];
   },
 
-  // Get translations for a specific language
-  async getFeatureTranslation(featureId: string, languageCode: string) {
-    const { data, error } = await supabase
-      .from('admin_feature_translations')
-      .select('*')
-      .eq('feature_id', featureId)
-      .eq('language_code', languageCode)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error; // Ignore not found
-    return data as AdminFeatureTranslation | null;
+  // Toggle feature - temporarily stub
+  async toggleFeature(_featureKey: string, _enabled: boolean) {
+    console.warn('Admin feature toggle temporarily disabled');
+    return true;
   },
 
-  // Create or update translations
-  async upsertFeatureTranslation(
-    featureId: string,
-    languageCode: string,
-    translations: Record<string, any>
-  ) {
-    const { data, error } = await supabase
-      .from('admin_feature_translations')
-      .upsert({
-        feature_id: featureId,
-        language_code: languageCode,
-        translations
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as AdminFeatureTranslation;
+  // Check if feature is enabled - temporarily stub
+  async isFeatureEnabled(_featureKey: string) {
+    console.warn('Admin feature check temporarily disabled');
+    return false;
   },
 
-  // Delete translations
-  async deleteFeatureTranslation(featureId: string, languageCode: string) {
-    const { error } = await supabase
-      .from('admin_feature_translations')
-      .delete()
-      .eq('feature_id', featureId)
-      .eq('language_code', languageCode);
-
-    if (error) throw error;
+  // Update feature config - temporarily stub
+  async updateFeatureConfig(_featureKey: string, _config: Record<string, unknown>) {
+    console.warn('Admin feature config update temporarily disabled');
+    return true;
   },
 
-  // Check if feature is enabled
-  async isFeatureEnabled(featureKey: string): Promise<boolean> {
-    try {
-      const feature = await this.getFeature(featureKey);
-      return feature?.enabled || false;
-    } catch {
-      return false; // Default to disabled if error
-    }
+  // Upsert feature translation - temporarily stub
+  async upsertFeatureTranslation(featureId: string, languageCode: string, translation: Partial<AdminFeatureTranslation>) {
+    console.warn('Admin feature translation upsert temporarily disabled');
+    return { 
+      id: 'temp-id', 
+      feature_id: featureId, 
+      language_code: languageCode, 
+      ...translation,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    } as AdminFeatureTranslation;
   }
 };
