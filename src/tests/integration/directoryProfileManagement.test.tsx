@@ -5,7 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import membersReducer, {
   updateMember,
   fetchMemberById
-} from '../redux/slices/membersSlice';
+} from '@/features/directory/store/membersSlice';
 import { ContentStatus } from '../types/common';
 
 // Mock the API calls

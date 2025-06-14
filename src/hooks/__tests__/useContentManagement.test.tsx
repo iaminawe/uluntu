@@ -10,7 +10,7 @@ import contentReducer, {
   changeLanguage,
   toggleEditMode,
   saveContent
-} from '../../redux/slices/contentSlice';
+} from '@/store/contentSlice';
 import { DEFAULT_PAGES, DEFAULT_SECTIONS } from '../../data/defaultContent';
 import { DEFAULT_LANGUAGE } from '../../constants/languages';
 import { RootState } from '@/store/index';

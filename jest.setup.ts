@@ -123,12 +123,12 @@ process.env.SUPABASE_URL = 'http://localhost:54321';
 process.env.SUPABASE_KEY = 'your-anon-key';
 
 // Mocking for react-router-dom's Link component if needed, or other external libraries
-import React from 'react'; // Import React for React.createElement
+const mockReact = require('react'); // Use require to avoid issues with out-of-scope variables
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // Import and retain default behavior
-  Link: jest.fn().mockImplementation(({ to, children, ...rest }: { to: string; children: React.ReactNode; [key: string]: any }) => {
-    return React.createElement('a', { href: to, ...rest }, children);
+  Link: jest.fn().mockImplementation(({ to, children, ...rest }: { to: string; children: any; [key: string]: any }) => {
+    return mockReact.createElement('a', { href: to, ...rest }, children);
   }),
   useNavigate: jest.fn(() => jest.fn()),
   useParams: jest.fn(() => ({})),
