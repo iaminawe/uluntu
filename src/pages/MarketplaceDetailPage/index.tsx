@@ -34,7 +34,6 @@ import RelatedListings from './RelatedListings';
 import ContactModal from './ContactModal';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import DetailDebug from './DetailDebug';
 
 export default function MarketplaceDetailPage() {
   const { id } = useParams();
@@ -184,8 +183,6 @@ export default function MarketplaceDetailPage() {
           </div>
         </div>
         
-        {/* Debug information */}
-        <DetailDebug />
       </ContentContainer>
 
       {showContactModal && (
