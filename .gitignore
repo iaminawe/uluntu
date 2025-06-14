@@ -31,6 +31,7 @@ dist-ssr
 .env.dev
 .env.local
 .env.prod
+.env.production
 .env.test
 
 # Claude-flow
@@ -44,6 +45,19 @@ memory/
 temp.*
 test_output.txt
 migration-log.txt
+*.tsbuildinfo
+
+# Development artifacts
+.bolt/
+.claude/
+.roo/
+.roomodes
+.next/
+.project
+codereport/
+coordination/
+research/
+config/
 
 # OS files
 Thumbs.db
