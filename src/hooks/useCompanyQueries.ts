@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 
 // Mock data service
-import * as mockQueries from '../hooks/useQueries';
+import * as mockQueries from './useQueries';
 import { Company, CompanyEmployee } from '../types';
 
 // Supabase API services

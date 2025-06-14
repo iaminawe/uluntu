@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectAllMarketplaceListings,
   selectMarketplaceListingById,
@@ -19,7 +19,7 @@ import {
   deleteMarketplaceListing,
   setFilters,
   clearFilters
-} from '../redux/slices/marketplaceSlice';
+} from '../store/marketplaceSlice';
 import { MarketplaceItemsQueryOptions } from '../types/marketplace';
 import { MarketplaceItemInput } from '../api/marketplaceApi';
 

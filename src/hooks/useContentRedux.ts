@@ -17,7 +17,7 @@ import {
   selectError,
   selectPageById,
   selectSectionsByPageId
-} from '../redux/slices/contentSlice';
+} from '@/store/contentSlice';
 import { ContentEditRequest, Language, PageContent, ContentSection } from '../types/content';
 
 /**

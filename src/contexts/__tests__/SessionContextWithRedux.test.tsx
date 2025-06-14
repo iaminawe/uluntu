@@ -10,7 +10,7 @@ import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/featu
 import { mockUser, mockSession, flushPromises } from '@/shared/utils/testUtils';
 
 // Mock supabase client
-jest.mock('../../lib/supabase', () => {
+jest.mock('@/lib/supabase', () => {
   return {
     supabase: {
       auth: {
@@ -23,7 +23,7 @@ jest.mock('../../lib/supabase', () => {
 });
 
 // Import the mocked supabase client
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 // Redux store for testing
 function createTestStore() {

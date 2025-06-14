@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { useDispatch } from "react-redux";
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { signInWithSession, signOut as reduxSignOut, updateSession as updateReduxSession } from '@/features/auth/store/authSlice';
 
 type SessionContext = {

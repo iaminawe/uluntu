@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchGroups,
   fetchGroupById,
@@ -16,7 +16,7 @@ import {
   selectGroupsError,
   selectGroupsFilters,
   GroupFilters
-} from '../redux/slices/groupsSlice';
+} from '../store/groupsSlice';
 import { GroupInput } from '../api/groupsApi';
 import { useGroupEvents, useGroupMembers } from './useGroupQueries';
 

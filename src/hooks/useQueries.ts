@@ -31,21 +31,21 @@ export const simulateApiCall = async <T>(data: T): Promise<T> => {
  * @deprecated All query hooks have been moved to specialized files.
  * Please import from the appropriate specialized query file instead:
  * 
- * - Member queries: import from '@/features/directory/hooks/useMemberQueries'
- * - Company queries: import from '@/features/companies/hooks/useCompanyQueries'
- * - Event queries: import from '@/features/events/hooks/useEventQueries'
- * - Group queries: import from '@/features/groups/hooks/useGroupQueries'
- * - Resource queries: import from './useResourceQueries'
- * - Marketplace queries: import from '@/features/marketplace/hooks/useMarketplaceQueries'
- * - News queries: import from '@/features/news/hooks/useNewsQueries'
- * - Opportunity queries: import from './useOpportunityQueries'
+ * - Member queries: import from '@/hooks/useMemberQueries'
+ * - Company queries: import from '@/hooks/useCompanyQueries'
+ * - Event queries: import from '@/hooks/useEventQueries'
+ * - Group queries: import from '@/hooks/useGroupQueries'
+ * - Resource queries: import from '@/hooks/useResourceQueries'
+ * - Marketplace queries: import from '@/hooks/useMarketplaceQueries'
+ * - News queries: import from '@/hooks/useNewsQueries'
+ * - Opportunity queries: import from '@/hooks/useOpportunityQueries'
  */
 
 // Re-export specialized query hooks for backward compatibility
-import { useMembers, useMembersWithFilters, useMemberById } from '@/features/directory/hooks/useMemberQueries';
-import { useCompanies, useCompaniesWithFilters, useCompany, useCompanyEmployees } from '@/features/companies/hooks/useCompanyQueries';
-import { useEvents, useEventsWithFilters, useEvent } from '@/features/events/hooks/useEventQueries';
-import { useGroups, useGroupsWithFilters, useGroup, useGroupEvents, useGroupMembers } from '@/features/groups/hooks/useGroupQueries';
+import { useMembers, useMembersWithFilters, useMemberById } from './useMemberQueries';
+import { useCompanies, useCompaniesWithFilters, useCompany, useCompanyEmployees } from './useCompanyQueries';
+import { useEvents, useEventsWithFilters, useEvent } from './useEventQueries';
+import { useGroups, useGroupsWithFilters, useGroup, useGroupEvents, useGroupMembers } from './useGroupQueries';
 import { useResources, useResourcesWithFilters, useResource } from './useResourceQueries';
 import { useOpportunities, useOpportunity } from './useOpportunityQueries';
 
@@ -68,7 +68,7 @@ import {
   useCreateMarketplaceItem,
   useUpdateMarketplaceItem,
   useDeleteMarketplaceItem,
-} from '@/features/marketplace/hooks/useMarketplaceQueries';
+} from './useMarketplaceQueries';
 
 // Import and re-export news hooks from the dedicated file
 import {
@@ -77,7 +77,7 @@ import {
   useCreateNewsArticle,
   useUpdateNewsArticle,
   useDeleteNewsArticle,
-} from '@/features/news/hooks/useNewsQueries';
+} from './useNewsQueries';
 
 // Re-export for backward compatibility
 export {
@@ -101,9 +101,9 @@ export {
  */
 
 // Import and re-export delete hooks from specialized files
-import { useDeleteCompany } from '@/features/companies/hooks/useCompanyQueries';
-import { useDeleteEvent } from '@/features/events/hooks/useEventQueries';
-import { useDeleteGroup } from '@/features/groups/hooks/useGroupQueries';
+import { useDeleteCompany } from './useCompanyQueries';
+import { useDeleteEvent } from './useEventQueries';
+import { useDeleteGroup } from './useGroupQueries';
 import { useDeleteResource } from './useResourceQueries';
 import { useDeleteOpportunity } from './useOpportunityQueries';
 

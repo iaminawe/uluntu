@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchCompanies,
   fetchCompanyById,
@@ -16,7 +16,7 @@ import {
   selectCompaniesError,
   selectCompaniesFilters,
   CompanyFilters
-} from '../redux/slices/companiesSlice';
+} from '../store/companiesSlice';
 import { CompanyInput } from '../api/companiesApi';
 
 /**

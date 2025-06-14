@@ -4,10 +4,10 @@ import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import { Session, User, AuthChangeEvent, Subscription } from '@supabase/supabase-js'
 import { SessionProvider, useSession } from '@/shared/contexts/SessionContext'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 // Mock supabase client
-jest.mock('../../lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),

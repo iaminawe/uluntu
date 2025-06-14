@@ -3,7 +3,7 @@ import { Session, User, AuthError } from '@supabase/supabase-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/index';
 import { useAuth as useReduxAuth } from '@/features/auth/hooks/useAuth';
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
   session: Session | null;

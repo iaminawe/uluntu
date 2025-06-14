@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchOpportunities,
   fetchOpportunityById,
@@ -20,7 +20,7 @@ import {
   selectOpportunitiesError,
   selectOpportunitiesFilters,
   OpportunityFilters
-} from '../redux/slices/opportunitiesSlice';
+} from '../store/opportunitiesSlice';
 import { OpportunityInput } from '../api/opportunitiesApi';
 
 /**

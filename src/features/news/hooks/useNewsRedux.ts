@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchNewsArticles,
   fetchNewsArticleById,
@@ -24,7 +24,7 @@ import {
   selectNewsFilters,
   NewsFilters,
   NewsArticleInput
-} from '../redux/slices/newsSlice';
+} from '../store/newsSlice';
 
 /**
  * Custom hook for accessing and manipulating the news articles collection
