@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { proposedTopics } from '../data/sampleData';
 
 interface Topic {
   id: number;
@@ -7,6 +6,34 @@ interface Topic {
   description: string;
   votes: number;
 }
+
+// Default proposed topics
+const proposedTopics: Topic[] = [
+  {
+    id: 1,
+    title: 'Introduction to Large Language Models',
+    description: 'Understanding how LLMs work and their applications',
+    votes: 12
+  },
+  {
+    id: 2,
+    title: 'Building AI-Powered Applications',
+    description: 'Practical guide to integrating AI into your projects',
+    votes: 8
+  },
+  {
+    id: 3,
+    title: 'AI Ethics and Responsible Development',
+    description: 'Best practices for ethical AI implementation',
+    votes: 15
+  },
+  {
+    id: 4,
+    title: 'Machine Learning for Beginners',
+    description: 'Getting started with ML concepts and tools',
+    votes: 10
+  }
+];
 
 const VotingSection: React.FC = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
