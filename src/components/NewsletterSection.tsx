@@ -1,18 +1,44 @@
 import React, { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
 
 const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  
+  const subscribeMutation = useMutation({
+    mutationFn: (email: string) => newsletterSubscriptionApi.subscribe({
+      email,
+      preferences: {
+        frequency: 'weekly',
+        content_types: ['events', 'news', 'opportunities', 'marketplace'],
+        format: 'digest',
+        location_filter: true,
+        language: 'en'
+      }
+    }),
+    onSuccess: (result) => {
+      if (result) {
+        setSubmitted(true);
+        setEmail('');
+        setError('');
+        // Reset after 5 seconds
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        setError('Failed to subscribe. Please try again.');
+      }
+    },
+    onError: () => {
+      setError('Failed to subscribe. Please try again.');
+    }
+  });
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real implementation, you would submit to a backend service
-    // For now, just simulate success
     if (email) {
-      setSubmitted(true);
-      setEmail('');
-      // Reset after 3 seconds
-      setTimeout(() => setSubmitted(false), 3000);
+      setError('');
+      subscribeMutation.mutate(email);
     }
   };
 
@@ -37,6 +63,9 @@ const NewsletterSection: React.FC = () => {
                   Success!
                 </div>
                 <p>Thank you for subscribing to our newsletter!</p>
+                <p className="text-sm text-purple-300 mt-2">
+                  Please check your email to confirm your subscription.
+                </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
@@ -51,13 +80,19 @@ const NewsletterSection: React.FC = () => {
                   />
                   <button 
                     type="submit"
-                    className="px-6 py-3 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition-colors"
+                    disabled={subscribeMutation.isPending}
+                    className="px-6 py-3 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Subscribe
+                    {subscribeMutation.isPending ? 'Subscribing...' : 'Subscribe'}
                   </button>
                 </div>
+                {error && (
+                  <div className="mt-3 text-sm text-red-300 text-center">
+                    {error}
+                  </div>
+                )}
                 <p className="text-xs text-purple-300 mt-3">
-                  We respect your privacy. Your email will only be used for Kootenay AI Collective communications.
+                  We respect your privacy. Your email will only be used for Kootenay Tech Community communications.
                   You can unsubscribe at any time.
                 </p>
               </form>

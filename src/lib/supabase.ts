@@ -224,6 +224,145 @@ export const uploadCoverImage = async (file: File, userId: string): Promise<{ ur
   }
 };
 
+// Content image upload functions
+export const uploadOpportunityImage = async (file: File, opportunityId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_CONTENT_IMAGES_BUCKET || 'content-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `opportunities/${opportunityId}/image.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading opportunity image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadNewsImage = async (file: File, newsId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_CONTENT_IMAGES_BUCKET || 'content-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `news/${newsId}/featured.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading news image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadGroupImage = async (file: File, groupId: string, imageType: 'hero' | 'cover'): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_GROUP_IMAGES_BUCKET || 'group-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${groupId}/${imageType}.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error(`Error uploading group ${imageType} image:`, error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadEventImage = async (file: File, eventId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_CONTENT_IMAGES_BUCKET || 'content-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `events/${eventId}/featured.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading event image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadDirectoryImage = async (file: File, directoryId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_PROFILE_IMAGES_BUCKET || 'profile-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `directory/${directoryId}/profile.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading directory image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
+export const uploadBackgroundImage = async (file: File, contentId: string): Promise<{ url: string | null; error: Error | null }> => {
+  try {
+    const bucket = import.meta.env.VITE_BACKGROUND_IMAGES_BUCKET || 'background-images';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${contentId}/background.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    return { url: data.publicUrl, error: null };
+  } catch (error) {
+    console.error('Error uploading background image:', error);
+    return { url: null, error: error as Error };
+  }
+};
+
 /**
  * Sends a password reset email to the specified email address
  * @param email The email address to send the password reset link to

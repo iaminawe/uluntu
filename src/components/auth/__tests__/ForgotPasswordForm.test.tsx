@@ -12,9 +12,8 @@ jest.mock('../../../contexts/AuthContext', () => ({
 // Mock the react-router-dom
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  Link: ({ children, to }: { children: React.ReactNode, to: string }) => (
-    <a href={to}>{children}</a>
-  ),
+  Link: ({ children, to }: { children: React.ReactNode, to: string }) => 
+    React.createElement('a', { href: to }, children),
 }));
 
 // Mock console.error and console.log

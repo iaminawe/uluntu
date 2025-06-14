@@ -16,9 +16,8 @@ jest.mock('../../../hooks/useAuth', () => ({
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => jest.fn(),
-  Link: ({ children, to }: { children: React.ReactNode, to: string }) => (
-    <a href={to}>{children}</a>
-  ),
+  Link: ({ children, to }: { children: React.ReactNode, to: string }) => 
+    React.createElement('a', { href: to }, children),
 }));
 
 describe('SignUpForm Component', () => {

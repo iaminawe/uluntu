@@ -2,7 +2,7 @@
 
 ## 1. Overall Project Goal
 
-**AI Verifiable Project Goal:** Build a fully functional hyperlocal community platform that enables local residents, businesses, and organizations to connect, share information, and engage in community activities through a web-based interface. The platform must pass all high-level acceptance tests defined in [`tests/high_level_tests.ts`](../tests/high_level_tests.ts) and meet all completion criteria specified in [`docs/acceptance_test_plan.md`](./acceptance_test_plan.md).
+**AI Verifiable Project Goal:** Build a fully functional hyperlocal community platform that enables local residents, businesses, and organizations to connect, share information, and engage in community activities through a web-based interface. The platform must pass all high-level acceptance tests defined in [`tests/high_level_tests.ts`](../tests/high_level_tests.ts) and meet all completion criteria specified in [`docs/acceptance_test_plan_updated_v2.md`](./acceptance_test_plan_updated_v2.md).
 
 **Success Criteria:** 
 - All 8 core feature modules (User Management, Events, Groups, Marketplace, News, Resources, Opportunities, Company Profiles) are fully functional
@@ -13,81 +13,108 @@
 
 ## 2. Development Phases
 
-### Phase 1: Foundation & User Authentication with Template Integration
-**Phase AI Verifiable End Goal:** Users can register, log in, log out, and manage their profiles with appropriate role-based permissions using the integrated mmvergara/react-supabase-auth-template. All user authentication acceptance tests (UAM-001 through UAM-007) pass successfully.
+### Phase 1: Foundation & Template-Based Authentication
+**Phase AI Verifiable End Goal:** Users can register, log in, log out, and manage their profiles with appropriate role-based permissions using the integrated `mmvergara/react-supabase-auth-template`. All user authentication acceptance tests (UAM-001 through UAM-008) pass successfully.
 
 #### Micro-tasks:
 
-##### 1.1 Integrate Template Infrastructure
-- **AI Verifiable Deliverable:** Project builds successfully with the integrated template using `npm install && npm run build` without errors
+##### 1.1 Integrate Template Files
+- **AI Verifiable Deliverable:** Template files from `mmvergara/react-supabase-auth-template` are successfully integrated into the project structure
 - **Completion Criteria:**
-  - Template files correctly integrated into project structure
-  - Package.json dependencies merged and installed
-  - Build process completes with exit code 0
-  - Development server starts with `npm run dev`
-- **References:** Technical foundation for all subsequent development, Template Integration Guide
+  - Template files (`router/index.tsx`, `context/SessionContext.tsx`, `Providers.tsx`) copied to appropriate locations
+  - Project builds successfully with `npm run build` without errors
+  - Template components are accessible from the main application
+- **References:** Template Integration Guide, GitHub Template Research Report
 
-##### 1.2 Configure Supabase Authentication with Template Components
-- **AI Verifiable Deliverable:** Supabase client connection established and template authentication service configured
+##### 1.2 Configure Supabase Authentication with Template
+- **AI Verifiable Deliverable:** Supabase client connection established and authentication service configured to work with the template
 - **Completion Criteria:**
-  - Template's Supabase client initializes without errors
-  - Template's authentication context provider properly integrated
-  - Environment variables properly configured according to template requirements
-  - Session context from template accessible throughout the application
-- **References:** [`src/lib/supabase.ts`](../src/lib/supabase.ts), [`src/context/SessionContext.tsx`](../src/context/SessionContext.tsx), Template Integration Guide
+  - Supabase client initializes without errors
+  - Authentication context provider properly integrated
+  - Environment variables properly configured
+  - Session context accessible throughout the application
+  - Template uses the same Supabase client instance as the rest of the application
+- **References:** [`src/lib/supabase.ts`](../src/lib/supabase.ts), [`src/auth_template/context/SessionContext.tsx`](../src/auth_template/context/SessionContext.tsx)
 
-##### 1.3 Implement User Registration with Template Components
-- **AI Verifiable Deliverable:** New users can register with email and password using template components, creating database records
+##### 1.3 Implement User Registration with Template
+- **AI Verifiable Deliverable:** New users can register with email and password using the template's authentication system
 - **Completion Criteria:**
-  - Template registration form accepts valid email/password combinations
+  - Registration form accepts valid email/password combinations
   - User record created in Supabase users table with correct schema
-  - Registration success redirects to home page using template routing
+  - Registration success redirects to home page
   - Test UAM-001 passes: `expect(registrationResult.success).toBe(true)`
-- **References:** UAM-001, AC-UAM-REGISTER, Template Integration Guide
+- **References:** UAM-001, AC-UAM-REGISTER
 
-##### 1.4 Implement User Login with Template Components
-- **AI Verifiable Deliverable:** Registered users can authenticate with valid credentials using template components
+##### 1.4 Implement User Login with Template
+- **AI Verifiable Deliverable:** Registered users can authenticate with valid credentials using the template's authentication system
 - **Completion Criteria:**
-  - Template login form validates credentials against database
-  - Successful login establishes user session using template session context
-  - User redirected to profile or home page using template routing
+  - Login form validates credentials against database
+  - Successful login establishes user session
+  - User redirected to profile or home page
   - Test UAM-002 passes: `expect(loginResult.success).toBe(true)`
-- **References:** UAM-002, AC-UAM-LOGIN, Template Integration Guide
+- **References:** UAM-002, AC-UAM-LOGIN
 
-##### 1.5 Implement User Logout with Template Components
-- **AI Verifiable Deliverable:** Users can securely end their session using template components
+##### 1.5 Implement User Logout with Template
+- **AI Verifiable Deliverable:** Users can securely end their session using the template's authentication system
 - **Completion Criteria:**
-  - Template logout action clears user session
-  - User redirected to login page or home as guest using template routing
+  - Logout action clears user session
+  - User redirected to login page or home as guest
   - Test UAM-003 passes: `expect(logoutResult.success).toBe(true)`
-- **References:** UAM-003, AC-UAM-LOGOUT, Template Integration Guide
+- **References:** UAM-003, AC-UAM-LOGOUT
 
-##### 1.6 Extend Template for User Profile Management
-- **AI Verifiable Deliverable:** Users can view and edit their profile information beyond template's basic functionality
+##### 1.6 Extend Template with User Profile Management
+- **AI Verifiable Deliverable:** Users can view and edit their profile information beyond the template's basic functionality
 - **Completion Criteria:**
-  - Profile page displays user information using extended template components
+  - Profile page displays user information
   - Profile edit form updates database records
   - Changes persist and display correctly
   - Tests UAM-004 and UAM-005 pass
-- **References:** UAM-004, UAM-005, Template Integration Guide
+- **References:** UAM-004, UAM-005, Template Integration Guide Section 7
 
-##### 1.7 Extend Template for Role-Based Access Control
-- **AI Verifiable Deliverable:** Template's authentication system extended to support role-based permissions
+##### 1.7 Extend Template with Role-Based Access Control
+- **AI Verifiable Deliverable:** Authentication system extended to support role-based permissions beyond the template's basic functionality
 - **Completion Criteria:**
-  - User roles (Guest, Registered, Moderator, Admin, Company Rep) enforced using extended template components
+  - User roles (Guest, Registered, Moderator, Admin, Company Rep) enforced
   - Permission checks prevent unauthorized actions
   - Admin can modify user roles
   - Test UAM-006 passes: role updates reflected in database
-- **References:** UAM-006, Template Integration Guide
+- **References:** UAM-006, Template Integration Guide Section 7
 
-##### 1.8 Extend Template for Password Reset
-- **AI Verifiable Deliverable:** Users can reset forgotten passwords via email using extended template functionality
+##### 1.8 Extend Template with Password Reset
+- **AI Verifiable Deliverable:** Users can reset forgotten passwords via email, extending the template's functionality
 - **Completion Criteria:**
   - Password reset request triggers email notification using Supabase functionality
   - Reset link allows password change
   - New password enables successful login
   - Test UAM-007 passes: `expect(newPasswordResult.success).toBe(true)`
-- **References:** UAM-007, Template Integration Guide
+- **References:** UAM-007, Template Integration Guide Section 7
+
+##### 1.9 Implement Security Hardening for Template
+- **AI Verifiable Deliverable:** Template's authentication system is hardened with additional security measures
+- **Completion Criteria:**
+  - Input validation and sanitization implemented
+  - CSRF protection added
+  - Rate limiting implemented for authentication attempts
+  - Security audit passes
+- **References:** Template Integration Guide Section 7, GitHub Template Research Report Section 6
+
+##### 1.10 Integrate Template with Existing UI
+- **AI Verifiable Deliverable:** Template's authentication components are styled to match the platform's design system
+- **Completion Criteria:**
+  - Authentication forms match platform's visual design
+  - Navigation and transitions are consistent
+  - Responsive design works on all target devices
+  - UI components render correctly
+- **References:** Template Integration Guide Section 7
+
+##### 1.11 Secure Development Bypass
+- **AI Verifiable Deliverable:** Development bypass for authentication is properly secured
+- **Completion Criteria:**
+  - Development bypass is disabled by default in production
+  - Mechanism prevents accidental enablement in production
+  - Bypass is only enabled in development environments
+  - Test UAM-008 passes: development bypass remains disabled in production
+- **References:** UAM-008, Template Integration Guide Section 7
 
 ### Phase 2: Event Management System
 **Phase AI Verifiable End Goal:** Users can create, discover, register for, and manage events. All event management acceptance tests (EVT-001 through EVT-007) pass successfully.
@@ -147,6 +174,14 @@
   - Test EVT-004 passes: communication functionality verified
 - **References:** EVT-004
 
+##### 2.7 Complete Event Registration and Communication Implementation
+- **AI Verifiable Deliverable:** Event registration and communication features are fully implemented and tested.
+- **Completion Criteria:**
+  - All aspects of event registration and communication are functional.
+  - All relevant acceptance tests pass.
+  - Code quality meets project standards.
+- **References:** EVT-004, EVT-006, Code Comprehension Report
+
 ### Phase 3: Groups Management System
 **Phase AI Verifiable End Goal:** Users can create, join, manage, and participate in community groups. All group management acceptance tests (GRP-001 through GRP-007) pass successfully.
 
@@ -205,6 +240,14 @@
   - Test GRP-004 passes: resource sharing functional
 - **References:** GRP-004
 
+##### 3.7 Complete Group Resource Sharing Implementation
+- **AI Verifiable Deliverable:** Group resource sharing feature is fully implemented and tested.
+- **Completion Criteria:**
+  - All aspects of group resource sharing are functional.
+  - All relevant acceptance tests pass.
+  - Code quality meets project standards.
+- **References:** GRP-004, Code Comprehension Report
+
 ### Phase 4: Marketplace System
 **Phase AI Verifiable End Goal:** Users can list, browse, search, and interact around marketplace items and services. All marketplace acceptance tests (MKT-001 through MKT-006) pass successfully.
 
@@ -254,6 +297,14 @@
   - Purchase confirmation system works
   - Test MKT-006 passes: purchase workflow verified
 - **References:** MKT-006
+
+##### 4.6 Complete Marketplace Purchase Process Implementation
+- **AI Verifiable Deliverable:** Marketplace purchase process is fully implemented and tested.
+- **Completion Criteria:**
+  - All aspects of the purchase process are functional.
+  - All relevant acceptance tests pass.
+  - Code quality meets project standards.
+- **References:** MKT-006, Code Comprehension Report
 
 ### Phase 5: News System
 **Phase AI Verifiable End Goal:** Administrators can publish news articles and users can read and comment on them. All news acceptance tests (NWS-001 through NWS-004) pass successfully.
@@ -410,6 +461,14 @@
   - Test CPF-002 passes: company profile displayed on job opportunity page
 - **References:** CPF-002
 
+##### 8.4 Complete API Implementation for Company Employees
+- **AI Verifiable Deliverable:** The Supabase API for company employees is fully implemented.
+- **Completion Criteria:**
+  - The `useCompanyEmployees` hook in `useCompanyQueries.ts` returns the correct data.
+  - Type inconsistencies in `CompanyDetailPage/index.tsx` are resolved.
+  - All relevant acceptance tests pass.
+- **References:** Code Comprehension Report, `src/api/companiesApi.ts`, `src/hooks/useCompanyQueries.ts`, `src/pages/CompanyDetailPage/index.tsx`
+
 ### Phase 9: Integration Testing and Launch Preparation
 **Phase AI Verifiable End Goal:** All systems integrate seamlessly, API connections are stable, and the platform is ready for production deployment. All integration tests pass and launch readiness criteria are met.
 
@@ -451,66 +510,66 @@
   - Security audit passes
 - **References:** Blueprint Section 7, Security requirements
 
-##### 9.5 Implement Production Deployment
+##### 9.5 Implement Security Hardening for Development Bypass
+- **AI Verifiable Deliverable:** The development bypass for authentication is properly secured and cannot be accidentally enabled in production.
+- **Completion Criteria:**
+  - The development bypass is disabled by default in production.
+  - There is a mechanism to prevent it from being accidentally enabled in production.
+  - The bypass is only enabled in development environments.
+- **References:** Code Comprehension Report
+
+##### 9.6 Implement Production Deployment
 - **AI Verifiable Deliverable:** Platform successfully deployed to production environment
 - **Completion Criteria:**
   - Production deployment completes without errors
   - All environment variables configured
   - Database migrations successful
   - Platform accessible via production URL
-- **References:** Launch readiness checklist
+- **References:** Blueprint Section 8
 
-##### 9.6 Implement Launch Verification
-- **AI Verifiable Deliverable:** All acceptance tests pass in production environment
+##### 9.7 Implement Launch Verification
+- **AI Verifiable Deliverable:** Platform verified as ready for public launch
 - **Completion Criteria:**
-  - All high-level tests execute successfully in production
-  - User workflows function end-to-end
-  - Data persistence verified
-  - Platform ready for user onboarding
-- **References:** [`tests/high_level_tests.ts`](../tests/high_level_tests.ts), [`docs/acceptance_test_plan.md`](./acceptance_test_plan.md)
+  - All critical and high-priority tests pass
+  - User acceptance testing completed
+  - Performance meets requirements under load
+  - Security verification completed
+- **References:** Blueprint Section 8
 
 ## 3. AI Verification Framework
 
-Each micro-task includes specific, measurable completion criteria that can be programmatically verified:
+The AI verification framework for this project consists of:
 
-- **Database State Verification:** Check for presence and correctness of database records in Supabase tables (e.g., verify a new user record exists after registration with expected fields populated according to template schema)
-- **Function Return Value Testing:** Verify API and function responses match expected values (e.g., confirm adaptCompanyFromDatabase returns correctly formatted company object)
-- **UI State Verification:** Confirm correct page navigation and content display (e.g., verify redirect to profile page after successful login using template routing, confirm error messages display when validation fails)
-- **Integration Testing:** Validate cross-module functionality and data flow (e.g., verify that creating a company profile correctly associates with posted opportunities)
-- **Adapter Transformation Testing:** Verify data transformations between frontend and backend formats work correctly (e.g., test that adaptMemberFromDatabase correctly handles null values)
-- **Performance Metrics:** Measure and verify system performance benchmarks (e.g., confirm page load times under 3 seconds, API response times under 500ms)
-- **Security Compliance:** Automated security scanning and validation (e.g., verify that template's authentication checks prevent unauthorized access to protected routes)
-- **Role-Based Access Control:** Verify that permissions are correctly enforced based on user roles (e.g., confirm that only administrators can access admin-only features using the extended template's permission system)
-- **Template Component Integration:** Verify that template components are correctly integrated and extended (e.g., confirm that SessionContext is accessible throughout the application, verify that protected routes correctly restrict access based on authentication state)
+1. **Automated Test Execution:** All tests defined in the acceptance test plan will be executed automatically to verify that the platform meets the requirements.
+2. **File Existence Checks:** The AI will verify that all required files exist and have the correct content.
+3. **Database Schema Validation:** The AI will verify that the database schema matches the expected structure.
+4. **API Response Validation:** The AI will verify that API endpoints return the expected responses.
+5. **UI Component Rendering:** The AI will verify that UI components render correctly.
 
 ## 4. Dependencies and Prerequisites
 
-- **Technical Stack:** JavaScript/TypeScript, React 18, Supabase, Node.js, Vite, Tailwind CSS
-- **Development Environment:** Node.js runtime, npm package manager
-- **External Services:** Supabase backend-as-a-service (Authentication, Database, Storage)
-- **Testing Framework:** Jest for automated testing with co-located test files
-- **State Management:** React Query for server state, React Context for application state (leveraging template's SessionContext)
-- **Routing:** React Router v6 (integrated with template's protected routes)
-- **Version Control:** Git repository with proper branching strategy
-- **Template Integration:** mmvergara/react-supabase-auth-template providing authentication foundation, session management, and protected routes
+The project has the following dependencies and prerequisites:
+
+1. **Supabase:** The project uses Supabase for authentication, database, and storage.
+2. **React:** The frontend is built using React.
+3. **TypeScript:** The project uses TypeScript for type safety.
+4. **Vite:** The project uses Vite for fast development and building.
+5. **React Router:** The project uses React Router for routing.
+6. **mmvergara/react-supabase-auth-template:** The project uses this template for authentication.
 
 ## 5. Risk Mitigation
 
-- **Incremental Development:** Each phase builds upon previous phases with clear dependencies
-- **Continuous Testing:** AI verification at each micro-task level prevents regression
-- **Modular Architecture:** Independent modules reduce system-wide failure risk
-- **Rollback Capability:** Each phase can be independently deployed or rolled back
-- **Documentation:** Comprehensive documentation ensures maintainability
+The following risks have been identified and mitigated:
+
+1. **Authentication Security:** The template's authentication system will be hardened with additional security measures.
+2. **Development Bypass:** The development bypass for authentication will be properly secured.
+3. **Template Integration:** The template will be carefully integrated to avoid conflicts with existing code.
 
 ## 6. Success Metrics
 
-- **Functional Completeness:** 100% of acceptance tests pass
-- **Performance Standards:** Page load times < 3 seconds, API response times < 500ms
-- **Code Quality:** No TypeScript errors, consistent adapter patterns, proper error handling
-- **Test Coverage:** All critical paths and edge cases covered by automated tests
-- **Security:** All inputs properly validated and sanitized, authentication and authorization secure
-- **User Experience:** Intuitive navigation, responsive design, accessibility compliance
-- **Security Standards:** No critical vulnerabilities, secure data handling
-- **Deployment Success:** Zero-downtime deployment, environment parity
+The success of the project will be measured by:
 
-This PRD Master Plan provides a comprehensive roadmap for building the hyperlocal community platform with clear, AI-verifiable milestones that ensure systematic progress toward a fully functional, tested, and deployed solution.
+1. **Test Pass Rate:** All acceptance tests must pass.
+2. **User Satisfaction:** User feedback must be positive.
+3. **Performance Metrics:** The platform must meet performance requirements.
+4. **Security Audit:** The platform must pass security audits.

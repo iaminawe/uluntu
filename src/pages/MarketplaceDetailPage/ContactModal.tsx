@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Mail, Phone, MessageSquare } from 'lucide-react';
 import { ContactModalProps } from './types';
 
 const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
@@ -41,7 +42,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Contact about {listing.title}
+            Contact Seller
           </h3>
           <button 
             onClick={onClose} 
@@ -55,7 +56,51 @@ const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
           </button>
         </div>
         
-        {submitSuccess ? (
+        {/* Show contact information if available */}
+        {listing.showContactInfo && (listing.contactEmail || listing.contactPhone) ? (
+          <div className="space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+              <h4 className="font-medium text-slate-900 dark:text-white mb-3 flex items-center">
+                <MessageSquare className="h-5 w-5 mr-2 text-orange-500" />
+                Contact Information
+              </h4>
+              
+              {listing.contactEmail && (listing.contactMethod === 'email' || listing.contactMethod === 'both') && (
+                <div className="flex items-center mb-3">
+                  <Mail className="h-5 w-5 mr-3 text-slate-400" />
+                  <a 
+                    href={`mailto:${listing.contactEmail}?subject=Inquiry about ${listing.title}`}
+                    className="text-orange-500 hover:text-orange-600 transition-colors"
+                  >
+                    {listing.contactEmail}
+                  </a>
+                </div>
+              )}
+              
+              {listing.contactPhone && (listing.contactMethod === 'phone' || listing.contactMethod === 'both') && (
+                <div className="flex items-center">
+                  <Phone className="h-5 w-5 mr-3 text-slate-400" />
+                  <a 
+                    href={`tel:${listing.contactPhone}`}
+                    className="text-orange-500 hover:text-orange-600 transition-colors"
+                  >
+                    {listing.contactPhone}
+                  </a>
+                </div>
+              )}
+            </div>
+            
+            <div className="text-sm text-slate-600 dark:text-slate-300 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="font-medium mb-1">Tips for contacting sellers:</p>
+              <ul className="list-disc list-inside space-y-1 text-xs">
+                <li>Be specific about what you're interested in</li>
+                <li>Ask about availability and condition</li>
+                <li>Suggest a meeting place if applicable</li>
+                <li>Be respectful and professional</li>
+              </ul>
+            </div>
+          </div>
+        ) : submitSuccess ? (
           <div className="bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 p-4 rounded-lg">
             <p>Message sent successfully! The seller will contact you soon.</p>
           </div>

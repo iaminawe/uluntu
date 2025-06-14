@@ -6,6 +6,7 @@ export interface FormData {
   heroImage: string;
   coverImage: string;
   visibility: 'open' | 'closed' | 'secret';
+  interests: string[];
 }
 
 export type LoadingStateProps = Record<string, never>;
@@ -29,7 +30,10 @@ export interface VisibilitySelectProps {
 export interface ImageUploadProps {
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onHeroImageChange: (file: File | null) => void;
+  onCoverImageChange: (file: File | null) => void;
   errors: Partial<FormData>;
+  isSubmitting?: boolean;
 }
 
 export interface FormActionsProps {

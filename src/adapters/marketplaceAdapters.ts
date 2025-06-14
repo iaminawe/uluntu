@@ -22,6 +22,11 @@ export interface MarketplaceListing {
   seller_id: string | null;
   updated_at: string | null;
   created_at?: string | null;
+  // Contact information fields
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  contact_method?: string | null;
+  show_contact_info?: boolean | null;
 }
 
 // Mock marketplace listing interface
@@ -158,6 +163,11 @@ export interface MarketplaceItemFormInput {
   status?: ContentStatus;
   featured?: boolean;
   category?: string; // Optional: if used to derive tags or for other logic
+  // Contact information fields
+  contactEmail?: string;
+  contactPhone?: string;
+  contactMethod?: 'email' | 'phone' | 'both';
+  showContactInfo?: boolean;
 }
 
 // Adapts from Supabase row to Frontend MarketplaceItem
@@ -199,6 +209,11 @@ export function adaptMarketplaceItemFromSupabase(
     image: item.images && item.images.length > 0 ? item.images[0] : '/placeholder-image.png',
     seller: sellerInfo,
     datePosted: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString(),
+    // Contact information fields
+    contactEmail: item.contact_email || undefined,
+    contactPhone: item.contact_phone || undefined,
+    contactMethod: item.contact_method as ('email' | 'phone' | 'both') || undefined,
+    showContactInfo: item.show_contact_info !== false,
   };
 }
 
@@ -219,6 +234,11 @@ export function adaptMarketplaceItemToSupabase(
     seller_id: item.sellerId || null, // This should be the UUID string or null
     status: item.status || 'draft', // Default to draft if undefined
     featured: typeof item.featured === 'boolean' ? item.featured : false, // Ensure it's boolean
+    // Contact information fields
+    contact_email: item.contactEmail || null,
+    contact_phone: item.contactPhone || null,
+    contact_method: item.contactMethod || null,
+    show_contact_info: typeof item.showContactInfo === 'boolean' ? item.showContactInfo : true,
     // 'category' is not part of the original Supabase insert data from dataAdapters.ts
     // If your Supabase table marketplace_listings has a 'category' column, add it here:
     // category: item.category || null,
