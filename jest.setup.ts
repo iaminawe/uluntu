@@ -7,9 +7,9 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
 
 // Make the environment variables available to the test environment
 if (typeof globalThis !== 'undefined') {
-  // @ts-ignore
+  // @ts-expect-error - Adding process to globalThis
   globalThis.process = globalThis.process || {};
-  // @ts-ignore
+  // @ts-expect-error - Adding env to process
   globalThis.process.env = globalThis.process.env || {};
   
   // Override environment variables for tests
@@ -31,7 +31,7 @@ console.log('Test environment loaded:', {
 // jest.setup.ts
 
 // Define the global variable that the AST transformer will point import.meta.env to
-// @ts-ignore
+// @ts-expect-error - Adding __JEST_IMPORT_META_ENV__ to globalThis
 globalThis.__JEST_IMPORT_META_ENV__ = {
   // Supabase URL and keys (multiple naming conventions for compatibility)
   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'http://localhost:54321',
@@ -40,7 +40,7 @@ globalThis.__JEST_IMPORT_META_ENV__ = {
   
   // Feature flags
   VITE_DEV_BYPASS_AUTH: process.env.VITE_DEV_BYPASS_AUTH || 'false',
-  VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE || 'true',
+  VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE || 'false',
   
   // Environment indicators
   DEV: true,
@@ -59,7 +59,7 @@ globalThis.__JEST_IMPORT_META_ENV__ = {
 process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
 process.env.VITE_SUPABASE_KEY = process.env.VITE_SUPABASE_KEY || 'your-anon-key';
 process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-process.env.VITE_USE_SUPABASE = process.env.VITE_USE_SUPABASE || 'true';
+process.env.VITE_USE_SUPABASE = process.env.VITE_USE_SUPABASE || 'false';
 process.env.VITE_DEV_BYPASS_AUTH = process.env.VITE_DEV_BYPASS_AUTH || 'false';
 process.env.VITE_PROFILE_IMAGES_BUCKET = 'profile-images';
 
@@ -123,11 +123,12 @@ process.env.SUPABASE_URL = 'http://localhost:54321';
 process.env.SUPABASE_KEY = 'your-anon-key';
 
 // Mocking for react-router-dom's Link component if needed, or other external libraries
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const mockReact = require('react'); // Use require to avoid issues with out-of-scope variables
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // Import and retain default behavior
-  Link: jest.fn().mockImplementation(({ to, children, ...rest }: { to: string; children: any; [key: string]: any }) => {
+  Link: jest.fn().mockImplementation(({ to, children, ...rest }: { to: string; children: React.ReactNode; [key: string]: unknown }) => {
     return mockReact.createElement('a', { href: to, ...rest }, children);
   }),
   useNavigate: jest.fn(() => jest.fn()),

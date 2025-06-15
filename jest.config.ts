@@ -13,21 +13,14 @@ const config = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@supabase|@reduxjs))'
+    'node_modules/(?!(@supabase|@reduxjs|@testing-library))'
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/lib/supabase$': '<rootDir>/src/__mocks__/lib/supabase.ts',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/src/__mocks__/fileMock.js',
   },
-  transform: {
-    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
-  },
-
-  // Ignore transformations for node_modules except for specific packages
-  transformIgnorePatterns: [
-    '/node_modules/(?!(@supabase|@testing-library)/)',
-  ],
 };
 
 export default config;
