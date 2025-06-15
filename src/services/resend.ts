@@ -14,14 +14,19 @@ class ResendService {
   private fromName: string;
 
   constructor() {
-    const apiKey = process.env.VITE_RESEND_API_KEY || process.env.RESEND_API_KEY;
+    const apiKey = import.meta.env.VITE_RESEND_API_KEY;
     if (!apiKey) {
-      throw new Error('Resend API key is required. Set VITE_RESEND_API_KEY or RESEND_API_KEY environment variable.');
+      console.warn('Resend API key not found. Email functionality will be disabled.');
+      // Use a placeholder key to prevent errors
+      this.client = new Resend('re_placeholder_key');
+      this.fromEmail = 'noreply@example.com';
+      this.fromName = 'Nelson Tech Community';
+      return;
     }
 
     this.client = new Resend(apiKey);
-    this.fromEmail = process.env.VITE_FROM_EMAIL || 'newsletter@kootenaytech.community';
-    this.fromName = process.env.VITE_FROM_NAME || 'Kootenay Tech Community';
+    this.fromEmail = import.meta.env.VITE_FROM_EMAIL || 'newsletter@kootenaytech.community';
+    this.fromName = import.meta.env.VITE_FROM_NAME || 'Kootenay Tech Community';
   }
 
   /**
@@ -468,22 +473,22 @@ class ResendService {
   }
 
   private getUnsubscribeUrl(token: string): string {
-    const baseUrl = process.env.VITE_APP_URL || 'http://localhost:3000';
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
     return `${baseUrl}/newsletter/unsubscribe?token=${token}`;
   }
 
   private getConfirmationUrl(token: string): string {
-    const baseUrl = process.env.VITE_APP_URL || 'http://localhost:3000';
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
     return `${baseUrl}/newsletter/confirm?token=${token}`;
   }
 
   private getWebViewUrl(campaignId: string): string {
-    const baseUrl = process.env.VITE_APP_URL || 'http://localhost:3000';
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
     return `${baseUrl}/newsletter/view/${campaignId}`;
   }
 
   private getPreferencesUrl(token: string): string {
-    const baseUrl = process.env.VITE_APP_URL || 'http://localhost:3000';
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
     return `${baseUrl}/newsletter/preferences?token=${token}`;
   }
 
