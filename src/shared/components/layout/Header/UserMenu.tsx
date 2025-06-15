@@ -2,12 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, UserPlus, LogIn, Edit } from 'lucide-react';
 import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  
+  // Get the member profile for the current user
+  const { data: member } = useMemberByUserId(user?.id);
 
   // Close the menu when clicking outside
   useEffect(() => {
@@ -63,16 +67,18 @@ export default function UserMenu() {
                   {user.email}
                 </p>
               </div>
-              <Link
-                to="/profile"
-                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center">
-                  <User className="h-4 w-4 mr-2" />
-                  Your Profile
-                </div>
-              </Link>
+              {member && (
+                <Link
+                  to={`/directory/${member.id}`}
+                  className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    Your Profile
+                  </div>
+                </Link>
+              )}
               <Link
                 to="/profile/edit"
                 className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"

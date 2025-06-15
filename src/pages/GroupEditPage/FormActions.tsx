@@ -17,7 +17,7 @@ const FormActions: React.FC<FormActionsProps> = ({
   
   const handleDelete = () => {
     // In a real app, would make API call to delete the group
-    console.log('Delete group with ID:', id);
+    // TODO: Implement delete group functionality
     navigate('/groups');
   };
   

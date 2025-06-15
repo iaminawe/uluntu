@@ -224,21 +224,7 @@ export default function GroupDetailPage() {
       <PageHeader group={group} setShowJoinModal={setShowJoinModal} />
       
       <ContentContainer>
-        {/* Announcements Section */}
-        <AnnouncementsSection announcements={announcements} isLoading={false} />
-        
-        {/* Admin announcement button */}
-        {isAdmin && (
-          <div className="mb-6">
-            <button
-              onClick={() => setShowAnnouncementModal(true)}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
-            >
-              <Megaphone className="h-4 w-4" />
-              Create Announcement
-            </button>
-          </div>
-        )}
+        {/* TODO: Add announcements section back when implemented */}
         
         <Card className="overflow-hidden">
             {/* Tabs Section */}
@@ -264,19 +250,6 @@ export default function GroupDetailPage() {
         <JoinModal
           group={group} // group is guaranteed to be defined here due to the conditional rendering above
           onClose={() => setShowJoinModal(false)}
-        />
-      )}
-      
-      {/* Create Announcement Modal */}
-      {showAnnouncementModal && (
-        <CreateAnnouncementModal
-          isOpen={showAnnouncementModal}
-          onClose={() => setShowAnnouncementModal(false)}
-          groupId={id!}
-          onSuccess={() => {
-            refetchAnnouncements();
-            setShowAnnouncementModal(false);
-          }}
         />
       )}
     </>

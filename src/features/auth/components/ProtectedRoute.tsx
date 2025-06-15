@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps) {
   const { user, loading, userRoles } = useAuth();
   const location = useLocation();
+  
 
   if (loading) {
     return (
@@ -29,8 +30,8 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
     const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
     
     if (!hasRequiredRole) {
-      // Redirect to unauthorized page or home
-      return <Navigate to="/unauthorized" replace />;
+      // Redirect to home since unauthorized page doesn't exist
+      return <Navigate to="/" replace />;
     }
   }
 

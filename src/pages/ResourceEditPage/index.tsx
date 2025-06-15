@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ContentStatus } from '../../data/mock/types';
+import { resourcesApi, ResourceInput } from '@/features/resources/api/resourcesApi';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import FormHeader from './FormHeader';
@@ -36,6 +39,8 @@ export default function ResourceEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditing = id !== undefined && id !== 'create';
+  const { user } = useAuth();
+  const { data: member } = useMemberByUserId(user?.id);
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -55,27 +60,36 @@ export default function ResourceEditPage() {
   const [isLoading, setIsLoading] = useState(isEditing);
   
   useEffect(() => {
-    if (isEditing) {
-      // This would normally be an API call
-      setIsLoading(true);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setFormData({
-          title: SAMPLE_RESOURCE.title,
-          description: SAMPLE_RESOURCE.description,
-          type: SAMPLE_RESOURCE.type,
-          url: SAMPLE_RESOURCE.url,
-          tags: SAMPLE_RESOURCE.tags,
-          groupId: SAMPLE_RESOURCE.group.id.toString(),
-          newTag: '',
-          status: SAMPLE_RESOURCE.status,
-          featured: SAMPLE_RESOURCE.featured || false
-        });
-        setIsLoading(false);
-      }, 500);
+    if (isEditing && id) {
+      loadResource();
     }
-  }, [isEditing]);
+  }, [isEditing, id]);
+
+  const loadResource = async () => {
+    if (!id) return;
+    
+    setIsLoading(true);
+    try {
+      const resource = await resourcesApi.getById(id);
+      if (resource) {
+        setFormData({
+          title: resource.title,
+          description: resource.description,
+          type: resource.type as ResourceType,
+          url: resource.url,
+          tags: resource.tags || [],
+          groupId: resource.groupId || '',
+          newTag: '',
+          status: resource.status,
+          featured: resource.featured || false
+        });
+      }
+    } catch (error) {
+      console.error('Error loading resource:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -101,21 +115,43 @@ export default function ResourceEditPage() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!member) {
+      console.error('Member not found');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // This would normally send the data to an API
-      console.log('Submitting resource data:', formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSubmitSuccess(true);
-      
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate('/resources');
-      }, 1500);
+      const resourceData: ResourceInput = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        url: formData.url,
+        status: formData.status,
+        featured: formData.featured,
+        contributorId: member.id,
+        groupId: formData.groupId || null,
+        tags: formData.tags
+      };
+
+      let result;
+      if (isEditing && id) {
+        result = await resourcesApi.update(id, resourceData);
+      } else {
+        result = await resourcesApi.create(resourceData);
+      }
+
+      if (result) {
+        setSubmitSuccess(true);
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          navigate('/resources');
+        }, 1500);
+      } else {
+        throw new Error('Failed to save resource');
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -124,17 +160,17 @@ export default function ResourceEditPage() {
   };
   
   const handleDelete = async () => {
+    if (!id) return;
+    
     setIsSubmitting(true);
     
     try {
-      // This would normally send a delete request to an API
-      console.log('Deleting resource:', id);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect after successful deletion
-      navigate('/resources');
+      const success = await resourcesApi.delete(id);
+      if (success) {
+        navigate('/resources');
+      } else {
+        console.error('Failed to delete resource');
+      }
     } catch (error) {
       console.error('Error deleting resource:', error);
     } finally {

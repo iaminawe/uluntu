@@ -9,12 +9,7 @@ type SessionContext = {
   signOut: () => Promise<void>
 }
 
-const SessionContext = createContext<SessionContext>({
-  session: null,
-  user: null,
-  loading: true,
-  signOut: () => Promise.resolve()
-})
+const SessionContext = createContext<SessionContext | undefined>(undefined)
 
 export const SessionProvider = ({ children }: PropsWithChildren) => {
   const [session, setSession] = useState<Session | null>(null)
@@ -57,7 +52,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
 
 export const useSession = () => {
   const context = useContext(SessionContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useSession must be used within a SessionProvider")
   }
   return context

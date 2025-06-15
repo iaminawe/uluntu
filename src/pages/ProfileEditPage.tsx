@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContext';
-import { useMemberById as useMember } from '@/hooks/useMemberQueries';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
+import { createMemberProfile, updateMemberProfile } from '@/features/directory/api/createMemberProfile';
+import { uploadImage } from '@/utils/uploadImage';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import BasicInfoSection from './DirectoryEditPage/BasicInfoSection';
 import SkillsSection from './DirectoryEditPage/SkillsSection';
+import InterestsSection from './DirectoryEditPage/InterestsSection';
 import SocialSection from './DirectoryEditPage/SocialSection';
 import { FormData } from './DirectoryEditPage/types';
 import { initialFormData } from './DirectoryEditPage/data';
@@ -16,12 +19,13 @@ export default function ProfileEditPage() {
   const { user } = useAuth();
   const userId = user?.id;
   
-  // In a real app, this would fetch the member data for the logged-in user
-  // For now, we're just using the ID from the authentication
-  const { data: member, isLoading } = useMember(userId || '');
+  // Fetch the member profile associated with the logged-in user
+  const { data: member, isLoading, refetch } = useMemberByUserId(userId);
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [newSkill, setNewSkill] = useState('');
+  const [newInterest, setNewInterest] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -39,15 +43,15 @@ export default function ProfileEditPage() {
       // Cast social to a Record to safely access properties
       const socialData = member.social as Record<string, any> || {};
       
-      setFormData({
+      const newFormData = {
         name: member.name || '',
         title: typeof member.title === 'string' ? member.title : '',
         company: typeof member.company === 'string' ? member.company : '',
         location: typeof member.location === 'string' ? member.location : '',
         image: member.image || '',
         bio: member.bio || '',
-        intro: typeof member.intro === 'string' ? member.intro : '',
         skills: Array.isArray(member.skills) ? member.skills : [],
+        interests: Array.isArray((member as any).interests) ? (member as any).interests : [],
         joinDate: member.joinDate || new Date().toISOString().split('T')[0],
         social: {
           linkedin: socialData.linkedin || '',
@@ -55,7 +59,9 @@ export default function ProfileEditPage() {
           github: socialData.github || '',
           website: socialData.website || ''
         }
-      });
+      };
+      
+      setFormData(newFormData);
     }
   }, [member]);
   
@@ -81,6 +87,23 @@ export default function ProfileEditPage() {
     }
   };
   
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    
+    if (file) {
+      // Create a preview URL for display
+      const previewUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, image: previewUrl }));
+    } else {
+      setFormData(prev => ({ ...prev, image: '' }));
+    }
+    
+    // Clear image error if it exists
+    if (errors.image) {
+      setErrors(prev => ({ ...prev, image: undefined }));
+    }
+  };
+  
   const handleAddSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
       setFormData(prev => ({
@@ -103,6 +126,28 @@ export default function ProfileEditPage() {
     }));
   };
   
+  const handleAddInterest = () => {
+    if (newInterest.trim() && !formData.interests.includes(newInterest.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        interests: [...prev.interests, newInterest.trim()]
+      }));
+      setNewInterest('');
+      
+      // Clear interest error if it exists
+      if (errors.interests) {
+        setErrors(prev => ({ ...prev, interests: undefined }));
+      }
+    }
+  };
+  
+  const handleRemoveInterest = (interestToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.filter(interest => interest !== interestToRemove)
+    }));
+  };
+  
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData | 'social', string>> = {};
     
@@ -114,9 +159,10 @@ export default function ProfileEditPage() {
       newErrors.title = 'Title is required';
     }
     
-    if (!formData.image.trim()) {
-      newErrors.image = 'Profile image is required';
-    }
+    // Image is now optional
+    // if (!formData.image || (typeof formData.image === 'string' && !formData.image.trim())) {
+    //   newErrors.image = 'Profile image is required';
+    // }
     
     if (!formData.bio.trim()) {
       newErrors.bio = 'Bio is required';
@@ -140,17 +186,67 @@ export default function ProfileEditPage() {
     setIsSubmitting(true);
     
     try {
-      // In a real implementation this would make an API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Upload image if there's a new file
+      let imageUrl = formData.image;
+      if (imageFile) {
+        try {
+          imageUrl = await uploadImage(imageFile);
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+          setErrors(prev => ({ ...prev, image: 'Failed to upload image' }));
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      
+      // Prepare the data for submission
+      const memberData = {
+        name: formData.name,
+        title: formData.title,
+        bio: formData.bio,
+        location: formData.location,
+        image: imageUrl,
+        company: formData.company || undefined,
+        skills: formData.skills,
+        interests: formData.interests,
+        social: {
+          website: formData.social.website || undefined,
+          github: formData.social.github || undefined,
+          linkedin: formData.social.linkedin || undefined,
+          twitter: formData.social.twitter || undefined
+        },
+        user_id: userId! // Link to the authenticated user
+      };
+
+      let profileId = member?.id;
+      
+      if (member) {
+        // Update existing profile
+        await updateMemberProfile(member.id, memberData);
+      } else {
+        // Create new profile
+        const newProfile = await createMemberProfile(memberData);
+        if (newProfile) {
+          profileId = newProfile.id;
+        }
+      }
+      
+      // Refetch the member data to get the updated/created profile
+      await refetch();
       
       setSubmitSuccess(true);
       
-      // Redirect after successful submission
+      // Redirect to the profile page after successful submission
       setTimeout(() => {
-        navigate('/profile');
-      }, 2000);
+        if (profileId) {
+          navigate(`/directory/${profileId}`);
+        } else {
+          navigate('/directory');
+        }
+      }, 1000);
     } catch (error) {
       console.error('Error saving profile:', error);
+      // You might want to show an error message to the user here
     } finally {
       setIsSubmitting(false);
     }
@@ -170,6 +266,9 @@ export default function ProfileEditPage() {
     );
   }
 
+  // If no member profile exists yet, allow creating one
+  const isCreatingNew = !member && !isLoading;
+
 
 
   return (
@@ -184,20 +283,22 @@ export default function ProfileEditPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Edit Profile
+                {isCreatingNew ? 'Create Your Profile' : 'Edit Profile'}
               </h1>
               
               <p className="mt-2 text-slate-600 dark:text-slate-400">
-                Update your profile information in the community directory
+                {isCreatingNew 
+                  ? 'Set up your profile to get listed in the community directory'
+                  : 'Update your profile information in the community directory'}
               </p>
             </div>
             
             <Link 
-              to="/profile"
+              to={member ? `/directory/${member.id}` : '/directory'}
               className="flex items-center text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Profile
+              View Profile
             </Link>
           </div>
           
@@ -233,6 +334,7 @@ export default function ProfileEditPage() {
                   formData={formData}
                   errors={errors}
                   onChange={handleChange}
+                  onImageChange={handleImageChange}
                   isSubmitting={isSubmitting}
                 />
                 
@@ -250,6 +352,18 @@ export default function ProfileEditPage() {
                 
                 <hr className="border-t border-slate-200 dark:border-slate-700" />
                 
+                <InterestsSection 
+                  interests={formData.interests}
+                  newInterest={newInterest}
+                  setNewInterest={setNewInterest}
+                  onAdd={handleAddInterest}
+                  onRemove={handleRemoveInterest}
+                  isSubmitting={isSubmitting}
+                  error={errors.interests}
+                />
+                
+                <hr className="border-t border-slate-200 dark:border-slate-700" />
+                
                 <SocialSection 
                   social={formData.social}
                   onChange={handleChange}
@@ -260,7 +374,7 @@ export default function ProfileEditPage() {
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
                     type="button"
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate(member ? `/directory/${member.id}` : '/directory')}
                     className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                               text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                               transition-colors"

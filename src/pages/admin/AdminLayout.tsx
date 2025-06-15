@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 import {
   LayoutDashboard,
   Users,
@@ -28,10 +28,11 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  // Check if user is superadmin
-  const isSuperAdmin = userRoles?.some(role => role.role === 'superadmin');
+  // Check if user is superadmin or admin
+  const hasAdminAccess = userRoles?.includes('superadmin') || userRoles?.includes('admin');
 
-  if (!isSuperAdmin) {
+  if (!hasAdminAccess) {
+    console.log('AdminLayout: No admin access, redirecting. Roles:', userRoles);
     return <Navigate to="/" replace />;
   }
 

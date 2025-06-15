@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import GroupsList from '@/features/groups/components/GroupsList';
-import TestGroups from './TestGroups';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useGroupsRedux } from '../../hooks/useGroupsRedux';
 import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 export default function GroupsPage() {
+  const navigate = useNavigate();
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [visibilityFilter, setVisibilityFilter] = useState<GroupVisibility[]>([]);
@@ -59,20 +60,15 @@ export default function GroupsPage() {
             primaryActionUrl="/groups/create"
             primaryAction={{
               text: "Create a Group",
-              onClick: () => console.log('Navigate to create group')
+              onClick: () => navigate('/groups/create')
             }}
           />
         ) : (
-          <>
-            <TestGroups />
-            <div className="mt-8">
-              <GroupsList 
-                searchTerm={searchTerm} 
-                visibilityFilter={visibilityFilter}
-                useRedux={true} 
-              />
-            </div>
-          </>
+          <GroupsList 
+            searchTerm={searchTerm} 
+            visibilityFilter={visibilityFilter}
+            useRedux={true} 
+          />
         )}
       </ContentContainer>
     </>
