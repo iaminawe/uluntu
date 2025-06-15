@@ -59,6 +59,21 @@ supabase migration new <name>  # Create new migration
 supabase db push     # Apply migrations to remote database
 ```
 
+### Database Setup & Seeding
+```bash
+# 1. Add missing columns to existing tables
+psql -f add_tags_to_resources.sql
+
+# 2. Seed resources and marketplace with sample data
+psql -f seed_resources_marketplace_fixed.sql
+
+# 3. Create the new tagging system infrastructure
+psql -f create_minimal_tags_system.sql
+
+# 4. Populate tags and create relationships
+psql -f seed_tags_system.sql
+```
+
 ### SPARC Development Commands
 ```bash
 # List available SPARC modes
@@ -119,6 +134,52 @@ import { store } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 ```
 
+## Supabase Client Usage
+
+**IMPORTANT:** Always use the Supabase client from `@/lib/supabase`:
+
+```typescript
+import { supabase, sessionCache } from '@/lib/supabase';
+```
+
+**DO NOT** create new Supabase client instances or use the deprecated `@/lib/supabaseClient` file (which has been removed).
+
+The main Supabase file (`/src/lib/supabase.ts`) provides:
+- `supabase` - The single Supabase client instance
+- `sessionCache` - WeakMap for session conversions
+- Authentication helper functions (`signIn`, `signUp`, `signOut`, etc.)
+- Connection checking utilities
+
+## Environment Variable Usage
+
+**IMPORTANT:** Use the correct method for accessing environment variables:
+
+### In Client-Side Code (Browser)
+```typescript
+// Use import.meta.env for Vite environment variables
+const apiKey = import.meta.env.VITE_RESEND_API_KEY;
+const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+const mode = import.meta.env.MODE; // 'development' | 'production' | 'test'
+```
+
+### In Shared Code (Browser & Tests)
+```typescript
+// Use the centralized config helper to avoid test issues
+import { IS_SUPABASE_ENABLED } from '@/config/env';
+
+if (IS_SUPABASE_ENABLED) {
+  // Use Supabase
+} else {
+  // Use mock data
+}
+```
+
+**DO NOT** use `process.env` in client-side code as it will cause runtime errors.
+
+### Test Environment
+- Tests use `.env.test` with `VITE_USE_SUPABASE=false` to ensure consistent mock data usage
+- Production uses `.env` with `VITE_USE_SUPABASE=true` for real database access
+
 ## Code Style Guidelines
 
 ### Feature Development
@@ -129,7 +190,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 ### Best Practices
 - **TypeScript Required** - All new code must be TypeScript
-- **Test Coverage** - Maintain 100% test coverage (currently 461/461 tests passing)
+- **Test Coverage** - Maintain high test coverage (currently 397/428 tests passing - 92.5%)
 - **Component Size** - Keep components under 200 lines
 - **File Size** - Keep files under 500 lines
 - **Function Size** - Keep functions under 50 lines
@@ -147,37 +208,54 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 - User authentication (sign in/up/out)
 - Password reset functionality
 - Protected routes and role-based access
-- Session management
+- Session management with Supabase
+- Role-based permissions (authenticated, group_member, admin, superadmin)
 
 ### 🏢 Companies (`/features/companies`)
 - Company profiles and listings
-- Employee management
-- Company search and filtering
+- Industry categorization (array-based)
+- Company size and location tracking
+- Employee management via company_members table
+- Tag-based organization and filtering
 
 ### 👥 Directory (`/features/directory`)
 - Member profiles and search
 - Professional networking
 - Contact management
+- Skill tracking with member_tags (with experience levels)
+- Employment status and location tracking
 
 ### 📅 Events (`/features/events`)
 - Event creation and management
-- Calendar integration
-- RSVP functionality
+- Calendar integration with date/time support
+- RSVP functionality via event_attendees
+- Multi-session events with event_sessions
+- Presenter management and resource linking
+- Location and capacity management
+- Tag-based categorization
 
 ### 👫 Groups (`/features/groups`)
-- Community groups
-- Membership management
-- Group discussions
+- Community groups with visibility controls
+- Membership management via group_members
+- Group discussions and activities
+- Member count tracking
+- Tag-based organization
 
 ### 🛍️ Marketplace (`/features/marketplace`)
-- Buy/sell listings
+- Buy/sell listings with images array
 - Product/service categories
-- Contact sellers
+- Contact sellers via JSON contact_info
+- Condition tracking and pricing
+- Location-based listings
+- Tag-based filtering and search
 
 ### 📰 News (`/features/news`)
-- News articles and updates
-- Categories and tags
-- Newsletter subscriptions
+- News articles with rich content
+- Hero images and excerpts
+- Publication date management
+- Author attribution
+- Tag-based categorization
+- News associations for related content
 
 ### 🎯 Onboarding (`/features/onboarding`)
 - 5-step wizard
@@ -186,21 +264,46 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 - Company association
 
 ### 💼 Opportunities (`/features/opportunities`)
-- Job postings
+- Job postings with detailed information
 - Volunteer opportunities
-- Application tracking
+- Application tracking and deadlines
+- Remote work options
+- Salary range and benefits
+- Tag-based categorization
 
 ### 📚 Resources (`/features/resources`)
-- Educational content
-- Resource categories
-- Bookmarking
+- Educational content with multiple types
+- Resource categories and descriptions
+- Contributor attribution
+- Group association
+- Array-based and relational tagging
+- Status management (published/draft)
 
-### 🔧 Admin Dashboard (`/pages/AdminDashboard`)
-- Sample content management (import/remove)
-- Content management system integration
-- Feature flags configuration
-- Role-based access control
-- User and entity management
+### 🏷️ Tagging System
+- **Reusable Tags**: Central tags table with 85+ predefined tags
+- **Categories**: Technology, Industry, Location, Skills, Products, Brands, Features
+- **Relational Tagging**: Junction tables for all content types
+- **Array-based Tags**: Legacy support for existing implementations
+- **Usage Tracking**: Automatic tag usage counts via triggers
+- **Color-coded**: Visual organization with hex color codes
+- **Slug Generation**: URL-friendly tag identifiers
+
+### 📧 Newsletter System
+- **Campaign Management**: Create and manage email campaigns
+- **Subscriber Management**: Track subscriptions and preferences
+- **Analytics Dashboard**: Campaign performance metrics
+- **Template System**: Reusable email templates
+- **Automated Campaigns**: Scheduled and triggered emails
+
+### 🔧 Admin Dashboard (`/pages/admin/`)
+- **Entity Management**: Admin pages for all content types
+- **Sample Content**: Import/remove sample data functionality
+- **User Management**: Role assignment and user oversight
+- **Content Moderation**: Review and approve user submissions
+- **Analytics**: Platform usage and performance metrics
+- **Audit Logging**: Track all administrative actions
+- **Feature Flags**: Toggle platform features
+- **Newsletter Dashboard**: Email campaign management
 
 ## Redux Store Structure
 
@@ -215,9 +318,20 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
   news: NewsState,
   opportunities: OpportunitiesState,
   resources: ResourcesState,
-  content: ContentState
+  content: ContentState,
+  tags: TagsState,
+  newsletter: NewsletterState,
+  admin: AdminState
 }
 ```
+
+### State Management Features
+- **Centralized Auth**: User sessions, roles, and permissions
+- **Content Management**: CRUD operations for all entity types
+- **Tag Management**: Reusable tags with usage tracking
+- **Admin Operations**: Moderation, user management, analytics
+- **Newsletter Management**: Campaign creation and subscriber tracking
+- **Real-time Updates**: Optimistic updates with error handling
 
 ## Testing Strategy
 
@@ -315,6 +429,58 @@ npm run build && npm run analyze
 - **API Documentation**: `/docs/api/`
 - **Component Storybook**: Run `npm run storybook`
 - **SPARC Methodology**: [Claude-Flow Docs](https://github.com/ruvnet/claude-code-flow/docs/sparc.md)
+
+## Database Schema
+
+### Core Tables
+
+#### Authentication & Users
+- `members` - User profiles with bio, skills, employment status
+- `user_roles` - Role assignments (authenticated, group_member, admin, superadmin)
+- `member_skills` - Legacy simple skill tracking
+- `member_tags` - Enhanced skill tracking with levels and experience
+
+#### Content Tables
+- `companies` - Company profiles with industry arrays and verification status
+- `company_members` - Company-member relationships
+- `events` - Events with sessions, presenters, and attendees
+- `event_sessions` - Multi-session event support
+- `event_attendees` - RSVP tracking
+- `event_presenters` - Speaker management
+- `groups` - Community groups with visibility controls
+- `group_members` - Group membership tracking
+- `news` - Articles with hero images and excerpts
+- `news_associations` - Related content linking
+- `resources` - Educational content with contributor attribution
+- `opportunities` - Job/volunteer postings with detailed metadata
+- `marketplace_listings` - Buy/sell listings with contact info
+
+#### Tagging System
+- `tags` - Central reusable tags with colors and categories
+- `event_tags`, `news_tags`, `group_tags`, `company_tags` - Junction tables
+- `member_tags`, `opportunity_tags`, `marketplace_tags` - Enhanced tagging
+- `resource_tags` - Legacy string-based tags (to be migrated)
+
+#### Admin & Management
+- `admin_features` - Feature flags and configuration
+- `admin_feature_translations` - Multi-language support
+- `custom_roles` - Custom role definitions
+- `moderation_queue` - Content moderation workflow
+- `admin_audit_log` - Administrative action tracking
+
+#### Newsletter System
+- `newsletter_campaigns` - Email campaign management
+- `newsletter_subscribers` - Subscription tracking
+- `newsletter_templates` - Reusable email templates
+- `newsletter_analytics` - Campaign performance metrics
+
+### Key Schema Features
+- **UUID Primary Keys** - All tables use UUID for better scalability
+- **Row Level Security (RLS)** - Comprehensive security policies
+- **JSONB Support** - Contact info, permissions, and configuration data
+- **Array Support** - Tags, images, and multi-value fields
+- **Timestamp Tracking** - Created/updated timestamps with triggers
+- **Referential Integrity** - Foreign keys with cascade deletes
 
 ## Sample Content Management
 
