@@ -18,8 +18,19 @@ if (!supabaseAnonKey) {
   throw new Error('VITE_SUPABASE_ANON_KEY environment variable is required');
 }
 
-// Create Supabase client with validated environment variables
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Create Supabase client with validated environment variables and explicit auth options
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage,
+    storageKey: 'nelson-tech-auth'
+  }
+});
+
+// Cache for session conversions using WeakMap
+export const sessionCache = new WeakMap();
 
 // Check Supabase connection status
 export const checkSupabaseConnection = async (): Promise<boolean> => {

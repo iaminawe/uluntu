@@ -38,6 +38,7 @@ import ResetPasswordPage from '../pages/ResetPasswordPage';
 import UnauthorizedPage from '../pages/auth/UnauthorizedPage';
 import ProfileEditPage from '../pages/ProfileEditPage';
 import AcceptInvitationPage from '../pages/AcceptInvitationPage';
+import TestAuthPage from '../pages/TestAuthPage';
 
 // Admin pages
 import AdminLayout from '../pages/admin/AdminLayout';
@@ -47,7 +48,20 @@ import SettingsPage from '../pages/admin/SettingsPage';
 import ModerationPage from '../pages/admin/ModerationPage';
 import RolesPage from '../pages/admin/RolesPage';
 import AdminMembersPage from '../pages/admin/entities/MembersPage';
+import AdminCompaniesPage from '../pages/admin/entities/CompaniesPage';
+import AdminGroupsPage from '../pages/admin/entities/GroupsPage';
+import AdminEventsPage from '../pages/admin/entities/EventsPage';
+import AdminNewsPage from '../pages/admin/entities/NewsPage';
+import AdminResourcesPage from '../pages/admin/entities/ResourcesPage';
+import AdminMarketplacePage from '../pages/admin/entities/MarketplacePage';
+import AdminOpportunitiesPage from '../pages/admin/entities/OpportunitiesPage';
 import AuditPage from '../pages/admin/AuditPage';
+
+// Newsletter pages
+import NewsletterDashboard from '../pages/admin/newsletter/NewsletterDashboard';
+import CampaignManager from '../pages/admin/newsletter/CampaignManager';
+import SubscriberManager from '../pages/admin/newsletter/SubscriberManager';
+import AnalyticsDashboard from '../pages/admin/newsletter/AnalyticsDashboard';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
@@ -151,8 +165,8 @@ export const router = createBrowserRouter([
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
+      { path: 'test-auth', element: <TestAuthPage /> },
       { path: 'invite/:token', element: <AcceptInvitationPage /> },
-      { path: 'profile', element: <DirectoryDetailPage /> },
       { 
         path: 'profile/edit', 
         element: <ProtectedRoute><ProfileEditPage /></ProtectedRoute> 
@@ -170,7 +184,18 @@ export const router = createBrowserRouter([
       { path: 'moderation', element: <ModerationPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'audit', element: <AuditPage /> },
-      { path: 'entities/members', element: <AdminMembersPage /> }
+      { path: 'entities/members', element: <AdminMembersPage /> },
+      { path: 'entities/companies', element: <AdminCompaniesPage /> },
+      { path: 'entities/groups', element: <AdminGroupsPage /> },
+      { path: 'entities/events', element: <AdminEventsPage /> },
+      { path: 'entities/news', element: <AdminNewsPage /> },
+      { path: 'entities/resources', element: <AdminResourcesPage /> },
+      { path: 'entities/marketplace', element: <AdminMarketplacePage /> },
+      { path: 'entities/opportunities', element: <AdminOpportunitiesPage /> },
+      { path: 'newsletter', element: <NewsletterDashboard /> },
+      { path: 'newsletter/campaigns', element: <CampaignManager /> },
+      { path: 'newsletter/subscribers', element: <SubscriberManager /> },
+      { path: 'newsletter/analytics', element: <AnalyticsDashboard /> }
     ]
   }
 ]);

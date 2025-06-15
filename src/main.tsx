@@ -35,7 +35,7 @@ createRoot(document.getElementById('root')!).render(
               <ContentProvider>
                 <RouterProvider router={router} />
                 <ReactQueryDevtools initialIsOpen={false} />
-                <DebugUserRoles />
+                {/* <DebugUserRoles /> */}
               </ContentProvider>
             </QueryClientProvider>
           </AuthProvider>
