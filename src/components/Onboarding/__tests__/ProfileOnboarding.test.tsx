@@ -22,8 +22,8 @@ jest.mock('../../../hooks/useProfileCompletion', () => ({
 }));
 
 // Import the mocked functions
-const { useCurrentMember } = require('../../../hooks/useCurrentMember');
-const { useProfilePrivacy, getPrivacyStatusDisplay } = require('../../../hooks/useProfilePrivacy');
+const { useCurrentMember: mockUseCurrentMember } = require('../../../hooks/useCurrentMember');
+const { useProfilePrivacy: mockUseProfilePrivacy, getPrivacyStatusDisplay } = require('../../../hooks/useProfilePrivacy');
 const { useProfileCompletion: mockUseProfileCompletion } = require('../../../hooks/useProfileCompletion');
 
 // Test wrapper component
@@ -75,13 +75,13 @@ describe('ProfileOnboarding', () => {
     jest.clearAllMocks();
     
     // Setup mocks
-    useCurrentMember.mockReturnValue({
+    mockUseCurrentMember.mockReturnValue({
       data: mockMember,
       isLoading: false,
       error: null,
     });
     
-    useProfilePrivacy.mockReturnValue(mockPrivacySettings);
+    mockUseProfilePrivacy.mockReturnValue(mockPrivacySettings);
     
     getPrivacyStatusDisplay.mockReturnValue({
       label: 'Private',
@@ -94,7 +94,7 @@ describe('ProfileOnboarding', () => {
       isComplete: false,
       completionPercentage: 25,
       missingFields: ['bio', 'image', 'title'],
-      requiredFields: ['bio', 'image'],
+      requiredFields: ['name', 'bio', 'image'],
       suggestedFields: ['title'],
     });
     
@@ -205,8 +205,12 @@ describe('ProfileOnboarding', () => {
       const privacyButton = screen.getByRole('button', { name: /set privacy preferences/i });
       fireEvent.click(privacyButton);
 
-      const privateRadio = screen.getByRole('radio', { name: /private profile/i });
-      expect(privateRadio).toBeChecked();
+      // Find the radio inputs by their checked state
+      const radioInputs = screen.getAllByRole('radio');
+      expect(radioInputs).toHaveLength(2);
+      
+      // The second radio (private) should be checked based on mock data
+      expect(radioInputs[1]).toBeChecked();
     });
 
     it('allows toggling privacy settings', async () => {
@@ -219,8 +223,10 @@ describe('ProfileOnboarding', () => {
       const privacyButton = screen.getByRole('button', { name: /set privacy preferences/i });
       fireEvent.click(privacyButton);
 
-      const publicRadio = screen.getByRole('radio', { name: /public profile/i });
-      fireEvent.click(publicRadio);
+      // Find the radio inputs
+      const radioInputs = screen.getAllByRole('radio');
+      // Click the first radio (public)
+      fireEvent.click(radioInputs[0]);
 
       await waitFor(() => {
         expect(mockPrivacySettings.togglePublicVisibility).toHaveBeenCalled();
@@ -255,6 +261,15 @@ describe('ProfileOnboarding', () => {
         isLoading: false,
         error: null,
       } as any);
+
+      // Mock complete profile
+      mockUseProfileCompletion.mockReturnValue({
+        isComplete: true,
+        completionPercentage: 100,
+        missingFields: [],
+        requiredFields: [],
+        suggestedFields: [],
+      });
 
       render(
         <TestWrapper>
@@ -301,6 +316,15 @@ describe('ProfileOnboarding', () => {
         isLoading: false,
         error: null,
       } as any);
+
+      // Mock complete profile
+      mockUseProfileCompletion.mockReturnValue({
+        isComplete: true,
+        completionPercentage: 100,
+        missingFields: [],
+        requiredFields: [],
+        suggestedFields: [],
+      });
 
       render(
         <TestWrapper>

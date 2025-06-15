@@ -4,7 +4,7 @@ import DirectoryFilters from '@/features/directory/components/DirectoryList/Dire
 import { FilterOptions } from '@/features/directory/components/DirectoryList/types';
 
 // Mock the utils module
-jest.mock('../utils', () => ({
+jest.mock('@/features/directory/components/DirectoryList/utils', () => ({
   getSkillColor: jest.fn(() => 'bg-blue-100 text-blue-800')
 }));
 

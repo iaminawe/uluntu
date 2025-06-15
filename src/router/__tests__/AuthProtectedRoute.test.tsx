@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import AuthProtectedRoute from '../AuthProtectedRoute'
@@ -11,15 +11,8 @@ jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),
-      onAuthStateChange: jest.fn(() => ({
-        data: {
-          subscription: {
-            id: 'mock-sub-id',
-            callback: () => {},
-            unsubscribe: jest.fn()
-          }
-        }
-      }))
+      onAuthStateChange: jest.fn(),
+      signOut: jest.fn()
     }
   }
 }))
@@ -52,27 +45,37 @@ const renderWithRouter = (
   initialEntries = ['/protected']
 ) => {
   return render(
-    <MemoryRouter initialEntries={initialEntries}>
-      <Routes>
-        <Route element={<AuthProtectedRoute />}>
-          <Route path="/protected" element={<ProtectedContent />} />
-        </Route>
-        <Route path="/auth/sign-in" element={<SignInPage />} />
-      </Routes>
-    </MemoryRouter>
+    <SessionProvider>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Routes>
+          <Route element={<AuthProtectedRoute />}>
+            <Route path="/protected" element={<ProtectedContent />} />
+          </Route>
+          <Route path="/auth/sign-in" element={<SignInPage />} />
+        </Routes>
+      </MemoryRouter>
+    </SessionProvider>
   )
 }
 
 describe('AuthProtectedRoute', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Default mock implementation for onAuthStateChange
+    jest.mocked(supabase.auth.onAuthStateChange).mockReturnValue({
+      data: {
+        subscription: {
+          id: 'mock-sub-id',
+          callback: () => {},
+          unsubscribe: jest.fn()
+        }
+      }
+    })
   })
 
   it('should show nothing while loading', () => {
-    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { session: null },
-      error: null
-    })
+    // Mock getSession to never resolve during this test
+    jest.mocked(supabase.auth.getSession).mockImplementation(() => new Promise(() => {}))
 
     const { container } = render(
       <SessionProvider>
@@ -86,32 +89,24 @@ describe('AuthProtectedRoute', () => {
   })
 
   it('should redirect to sign in when not authenticated', async () => {
-    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: null },
       error: null
     })
 
-    const { findByTestId } = render(
-      <SessionProvider>
-        {renderWithRouter()}
-      </SessionProvider>
-    )
+    const { findByTestId } = renderWithRouter()
 
     const signInPage = await findByTestId('sign-in')
     expect(signInPage).toBeInTheDocument()
   })
 
   it('should render protected content when authenticated', async () => {
-    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: mockSession },
       error: null
     })
 
-    const { findByTestId } = render(
-      <SessionProvider>
-        {renderWithRouter()}
-      </SessionProvider>
-    )
+    const { findByTestId } = renderWithRouter()
 
     const protectedContent = await findByTestId('protected')
     expect(protectedContent).toBeInTheDocument()
@@ -119,12 +114,12 @@ describe('AuthProtectedRoute', () => {
 
   it('should handle session changes', async () => {
     // Initial authenticated state
-    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: mockSession },
       error: null
     })
 
-    // Initialize authChangeCallback before test
+    // Store the callback passed to onAuthStateChange
     let authChangeCallback: (event: AuthChangeEvent, session: Session | null) => void = () => {}
     jest.mocked(supabase.auth.onAuthStateChange).mockImplementation((callback) => {
       authChangeCallback = callback
@@ -139,18 +134,22 @@ describe('AuthProtectedRoute', () => {
       }
     })
 
-    const { findByTestId } = render(
-      <SessionProvider>
-        {renderWithRouter()}
-      </SessionProvider>
-    )
+    const { findByTestId } = renderWithRouter()
 
     // Initially should show protected content
     const protectedContent = await findByTestId('protected')
     expect(protectedContent).toBeInTheDocument()
 
+    // Mock getSession to return null for next call
+    jest.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: null },
+      error: null
+    })
+
     // Simulate session expiry/logout
-    authChangeCallback('SIGNED_OUT', null)
+    await waitFor(() => {
+      authChangeCallback('SIGNED_OUT', null)
+    })
 
     // Should redirect to sign in
     const signInPage = await findByTestId('sign-in')

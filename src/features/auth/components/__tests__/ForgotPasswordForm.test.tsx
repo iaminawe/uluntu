@@ -2,10 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ForgotPasswordForm from '../ForgotPasswordForm';
 import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
 
 // Mock the useAuth hook
-jest.mock('../../../contexts/AuthContext', () => ({
+jest.mock('@/shared/contexts/AuthContextWithRedux', () => ({
   useAuth: jest.fn(),
 }));
 
@@ -28,7 +27,8 @@ describe('ForgotPasswordForm Component', () => {
     jest.clearAllMocks();
     
     // Setup the mock implementation of useAuth
-    (useAuth as jest.Mock).mockReturnValue({
+    const { useAuth } = require('@/shared/contexts/AuthContextWithRedux');
+    useAuth.mockReturnValue({
       forgotPassword: mockForgotPassword,
     });
 

@@ -1,9 +1,9 @@
 import { companiesApi } from '../../api/companiesApi';
 import { CompanyEmployee } from '../../types';
-import { supabase } from '../../api/supabaseUtils';
+import { supabase } from '@/api/supabaseUtils';
 
 // Mock the supabaseUtils to properly mock supabase
-jest.mock('../../api/supabaseUtils', () => ({
+jest.mock('@/api/supabaseUtils', () => ({
   supabase: {
     from: jest.fn()
   },

@@ -1,10 +1,10 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import ResetPasswordForm from '@/features/auth/components/ResetPasswordForm';
+import ResetPasswordForm from '../ResetPasswordForm';
 
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 
 // Mock the useAuth hook
-jest.mock('../../../contexts/AuthContext', () => ({
+jest.mock('@/shared/contexts/AuthContextWithRedux', () => ({
   useAuth: jest.fn(),
 }));
 

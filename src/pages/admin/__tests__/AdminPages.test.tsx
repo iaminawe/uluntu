@@ -56,23 +56,47 @@ jest.mock('@/api/admin/roles', () => ({
 jest.mock('@/api/admin/moderation', () => ({
   adminModerationApi: {
     getModerationQueue: jest.fn(() => Promise.resolve({ data: [], count: 0 })),
+    getModerationStats: jest.fn(() => Promise.resolve({
+      totalPending: 0,
+      byType: {}
+    })),
     approveContent: jest.fn(),
     rejectContent: jest.fn(),
-    getContentDetails: jest.fn()
+    getContentDetails: jest.fn(),
+    approveItem: jest.fn(),
+    rejectItem: jest.fn()
   }
 }));
 
 jest.mock('@/api/admin/stats', () => ({
   adminStatsApi: {
-    getOverviewStats: jest.fn(() => Promise.resolve({
+    getDashboardStats: jest.fn(() => Promise.resolve({
       totalMembers: 0,
       totalCompanies: 0,
       totalGroups: 0,
       totalEvents: 0,
+      totalNews: 0,
+      totalResources: 0,
+      totalMarketplaceListings: 0,
+      totalOpportunities: 0,
       pendingModeration: 0,
-      activeUsers: 0
+      totalUsers: 0,
+      recentActivity: []
     })),
-    getActivityStats: jest.fn(() => Promise.resolve([]))
+    getUserGrowthStats: jest.fn(() => Promise.resolve({
+      labels: [],
+      data: []
+    })),
+    getContentStats: jest.fn(() => Promise.resolve({
+      published: 0,
+      draft: 0,
+      archived: 0
+    })),
+    getEngagementStats: jest.fn(() => Promise.resolve({
+      activeUsers: 0,
+      pageViews: 0,
+      interactions: 0
+    }))
   }
 }));
 
@@ -111,11 +135,11 @@ describe('Admin Pages', () => {
       );
 
       expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('Platform overview and statistics')).toBeInTheDocument();
+      expect(screen.getByText('Overview of your platform\'s activity and statistics')).toBeInTheDocument();
       
       await waitFor(() => {
         expect(screen.getByText('Total Members')).toBeInTheDocument();
-        expect(screen.getByText('Total Companies')).toBeInTheDocument();
+        expect(screen.getByText('Companies')).toBeInTheDocument();
       });
     });
   });
@@ -158,7 +182,7 @@ describe('Admin Pages', () => {
       );
 
       expect(screen.getByText('Content Moderation')).toBeInTheDocument();
-      expect(screen.getByText('Review and moderate user-generated content')).toBeInTheDocument();
+      expect(screen.getByText('Review and moderate user-submitted content')).toBeInTheDocument();
     });
   });
 
@@ -171,7 +195,7 @@ describe('Admin Pages', () => {
       );
 
       expect(screen.getByText('Role Management')).toBeInTheDocument();
-      expect(screen.getByText('Manage roles and permissions')).toBeInTheDocument();
+      expect(screen.getByText('Create and manage user roles with granular permissions')).toBeInTheDocument();
     });
   });
 

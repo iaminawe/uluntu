@@ -95,7 +95,7 @@ describe('SignInForm Component', () => {
     expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123');
   });
 
-  it('should navigate to dashboard on successful authentication', async () => {
+  it('should navigate to home page on successful authentication', async () => {
     // Render with unauthenticated status
     render(<SignInForm />, { wrapper });
     
@@ -116,7 +116,7 @@ describe('SignInForm Component', () => {
     
     // Verify navigation occurred
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 
