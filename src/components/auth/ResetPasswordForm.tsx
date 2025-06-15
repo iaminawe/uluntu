@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 
 export default function ResetPasswordForm() {
   const [password, setPassword] = useState('');
