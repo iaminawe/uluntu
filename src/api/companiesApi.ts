@@ -243,7 +243,7 @@ export const companiesApi = {
   async addCompanyEmployee(companyId: string, memberId: string, employeeData?: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .insert({
           company_id: companyId,
           member_id: memberId,
@@ -266,16 +266,16 @@ export const companiesApi = {
       if (!data) return null;
 
       return {
-        id: data.id,
+        id: `${data.company_id}-${data.member_id}`, // Composite ID
         company_id: data.company_id,
         member_id: data.member_id,
         role: data.role || undefined,
-        department: data.department || undefined,
-        start_date: data.start_date || undefined,
-        end_date: data.end_date || undefined,
-        is_current: data.is_current ?? true,
-        created_at: data.created_at,
-        updated_at: data.updated_at || undefined,
+        department: undefined, // Not in schema
+        start_date: data.joined_date || undefined,
+        end_date: undefined, // Not in schema
+        is_current: true, // Assume current if in table
+        created_at: data.joined_date || new Date().toISOString(),
+        updated_at: undefined, // Not in schema
         member: data.member ? {
           id: data.member.id,
           name: data.member.name,
@@ -303,7 +303,7 @@ export const companiesApi = {
   async updateCompanyEmployee(employeeId: string, updates: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .update({
           role: updates.role,
           department: updates.department,
@@ -327,16 +327,16 @@ export const companiesApi = {
       if (!data) return null;
 
       return {
-        id: data.id,
+        id: `${data.company_id}-${data.member_id}`, // Composite ID
         company_id: data.company_id,
         member_id: data.member_id,
         role: data.role || undefined,
-        department: data.department || undefined,
-        start_date: data.start_date || undefined,
-        end_date: data.end_date || undefined,
-        is_current: data.is_current ?? true,
-        created_at: data.created_at,
-        updated_at: data.updated_at || undefined,
+        department: undefined, // Not in schema
+        start_date: data.joined_date || undefined,
+        end_date: undefined, // Not in schema
+        is_current: true, // Assume current if in table
+        created_at: data.joined_date || new Date().toISOString(),
+        updated_at: undefined, // Not in schema
         member: data.member ? {
           id: data.member.id,
           name: data.member.name,
@@ -364,7 +364,7 @@ export const companiesApi = {
   async removeCompanyEmployee(employeeId: string): Promise<boolean> {
     try {
       const { error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .delete()
         .eq('id', employeeId);
 
@@ -385,22 +385,16 @@ export const companiesApi = {
       console.log(`Fetching employees for company ID: ${companyId}...`);
       
       let query = supabase
-        .from('company_employees')
+        .from('company_members')
         .select(`
           *,
           member:members(*)
         `)
         .eq('company_id', companyId);
 
-      // Apply filters
-      if (filters?.currentOnly) {
-        query = query.eq('is_current', true);
-      }
-      if (filters?.department) {
-        query = query.eq('department', filters.department);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
+      // Apply filters - Note: is_current and department don't exist in schema
+      // We'll only order by joined_date since created_at doesn't exist
+      const { data, error } = await query.order('joined_date', { ascending: false, nullsFirst: false });
 
       if (error) {
         console.error(`Supabase error fetching employees for company ${companyId}:`, error);
@@ -415,16 +409,16 @@ export const companiesApi = {
       if (!data) return [];
       
       return data.map(employee => ({
-        id: employee.id,
+        id: `${employee.company_id}-${employee.member_id}`, // Composite ID
         company_id: employee.company_id,
         member_id: employee.member_id,
         role: employee.role || undefined,
-        department: employee.department || undefined,
-        start_date: employee.start_date || undefined,
-        end_date: employee.end_date || undefined,
-        is_current: employee.is_current ?? true,
-        created_at: employee.created_at,
-        updated_at: employee.updated_at || undefined,
+        department: undefined, // Not in schema
+        start_date: employee.joined_date || undefined,
+        end_date: undefined, // Not in schema
+        is_current: true, // Assume current if in table
+        created_at: employee.joined_date || new Date().toISOString(),
+        updated_at: undefined, // Not in schema
         member: employee.member ? {
           id: employee.member.id,
           name: employee.member.name,
