@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
 import type { Database } from '../types/supabase'; // Use relative path instead of path alias
 import type { Resource as FrontendResource, ContentStatus } from '../types'; // Import FrontendResource and ContentStatus
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Define ResourceInput type for create/update operations
 type ResourceInput = {
@@ -47,7 +48,7 @@ const nullToUndefined = <T>(val: T | null): T | undefined => {
 };
 
 // Configuration for using Supabase or mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true'; // Consistent with other query hooks
+const USE_SUPABASE = IS_SUPABASE_ENABLED; // Consistent with other query hooks
 
 // Define a type that can handle both frontend and mock data structures
 type ResourceLike = {

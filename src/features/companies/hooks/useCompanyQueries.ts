@@ -6,9 +6,10 @@ import { Company, CompanyEmployee } from '../types';
 
 // Supabase API services
 import { companiesApi, CompanyInput } from '../api/companiesApi';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Type for filters to keep compatibility with the API
 interface CompanyFilters {

@@ -8,6 +8,7 @@ import {
   adaptNewsArticleToDatabase as adaptNewsArticleToDatabase, // Import the to-database adapter
   type SupabaseNewsArticleWithAuthor as NewsArticleSupabaseRow // Keep alias for minimal changes
 } from '@/adapters/newsAdapter';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Type aliases for easier use
 type Tables = Database['public']['Tables'];
@@ -67,7 +68,7 @@ function mapMockNewsToInternalNews(mockItem: MockNewsArticle): NewsArticle {
 }
 
 export function useNewsArticles() {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useQuery<NewsArticle[], Error>({
     queryKey: ['newsArticles'],
@@ -106,7 +107,7 @@ export function useNewsArticlesWithFilters(filters?: {
   featured?: boolean;
   status?: ContentStatus;
 }) {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useQuery<NewsArticle[], Error>({
     queryKey: ['newsArticles', 'filtered', filters],
@@ -191,7 +192,7 @@ export function useNewsArticlesWithFilters(filters?: {
 }
 
 export function useNewsArticle(id: string | number | undefined) {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useQuery<NewsArticle | undefined, Error>({
     queryKey: ['newsArticle', id],
@@ -234,7 +235,7 @@ export function useNewsArticle(id: string | number | undefined) {
 
 export function useCreateNewsArticle() {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<NewsArticle | null, Error, NewsArticleInput>({
     mutationFn: async (data: NewsArticleInput): Promise<NewsArticle | null> => {
@@ -318,7 +319,7 @@ export function useCreateNewsArticle() {
 
 export function useUpdateNewsArticle() {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<NewsArticle | null, Error, { id: string | number; data: Partial<NewsArticleInput> }>({
     mutationFn: async ({ id, data }: { id: string | number; data: Partial<NewsArticleInput> }): Promise<NewsArticle | null> => {
@@ -404,7 +405,7 @@ export function useRelatedNewsArticles(articleId: string | number | undefined, t
 
 export function useDeleteNewsArticle() {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<boolean, Error, string | number>({
     mutationFn: async (id: string | number): Promise<boolean> => {

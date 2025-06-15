@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
 import type { Database } from '@/types/supabase';
 import { Opportunity as FrontendOpportunity } from '@/types';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Define Tables type to correctly access the Row property
 type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T];
@@ -51,7 +52,7 @@ import { opportunitiesApi } from '@/features/opportunities/api/opportunitiesApi'
 // Mock data and types
 import mockData from '../data/mock/mockData';
 
-const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true'; // Use strict equality check
+const useSupabase = IS_SUPABASE_ENABLED; // Use strict equality check
 
 /**
  * Custom hook to fetch a list of opportunities.

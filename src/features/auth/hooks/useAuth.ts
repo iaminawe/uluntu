@@ -11,7 +11,7 @@ import {
 } from '../store/authSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { supabase } from '@/lib/supabase';
-import { sessionCache } from '@/lib/supabaseClient';
+import { sessionCache } from '@/lib/supabase';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {
@@ -86,6 +86,22 @@ export const useAuth = () => {
           },
           session: convertSession(data.session)
         }));
+        
+        // Fetch user roles from database
+        try {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', data.user.id);
+          
+          if (!rolesError && rolesData) {
+            const roles = rolesData.map(r => r.role);
+            dispatch(setRoles(roles));
+            console.log('Fetched and set user roles:', roles);
+          }
+        } catch (roleErr) {
+          console.error('Error fetching user roles:', roleErr);
+        }
       } else {
         console.error('Sign-in data incomplete:', data);
         dispatch(setAuthError('Incomplete authentication data'));

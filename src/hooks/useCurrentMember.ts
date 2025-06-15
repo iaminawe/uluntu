@@ -2,11 +2,12 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { membersApi } from '../api/membersApi';
 import { Member } from '../types';
 import { useAuth } from './useAuth';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Hook to get the current user's member profile
 export function useCurrentMember(): UseQueryResult<Member | null, Error> {
   const { user, isAuthenticated } = useAuth();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   
   return useQuery<Member | null, Error>({
     queryKey: ['member', 'current', user?.id, useSupabase ? 'supabase' : 'mock'],
