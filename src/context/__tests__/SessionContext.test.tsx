@@ -125,6 +125,12 @@ describe('SessionContext', () => {
       </SessionProvider>
     )
 
+    // Initially should show no session
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false')
+      expect(screen.getByTestId('session')).toHaveTextContent('no-session')
+    })
+
     // Simulate auth state change
     authChangeCallback('SIGNED_IN', mockSession)
 
