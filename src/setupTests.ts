@@ -78,10 +78,13 @@ global.IntersectionObserver = class IntersectionObserver {
 const originalConsoleError = console.error;
 console.error = (...args) => {
   // Ignore specific errors that are expected in tests
+  const firstArg = args[0];
   if (
-    args[0]?.includes('Warning: ReactDOM.render is no longer supported') ||
-    args[0]?.includes('supabaseUrl is required') ||
-    args[0]?.includes('Invalid hook call')
+    typeof firstArg === 'string' && (
+      firstArg.includes('Warning: ReactDOM.render is no longer supported') ||
+      firstArg.includes('supabaseUrl is required') ||
+      firstArg.includes('Invalid hook call')
+    )
   ) {
     return;
   }
