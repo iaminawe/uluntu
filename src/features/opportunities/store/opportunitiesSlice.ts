@@ -3,9 +3,10 @@ import { RootState } from '@/store';
 import { Opportunity } from '../types';
 import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
 import * as mockQueries from '@/hooks/useQueries';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define type for opportunity filters to match the API interface
 export interface OpportunityFilters {

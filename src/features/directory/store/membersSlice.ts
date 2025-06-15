@@ -6,6 +6,7 @@ import {
 import { membersApi, MemberInput } from '../api/membersApi';
 import allMockData from '@/data/mock/mockData';
 import { ContentStatus } from '@/shared/types/common';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Define Member type for the Redux state
 export interface Member {
@@ -97,7 +98,7 @@ export const fetchMembers = createAsyncThunk(
   'members/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const members = await membersApi.getAll();
@@ -120,7 +121,7 @@ export const fetchMemberById = createAsyncThunk(
         return undefined;
       }
 
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const member = await membersApi.getById(id);
@@ -140,7 +141,7 @@ export const fetchFilteredMembers = createAsyncThunk(
   'members/fetchFiltered',
   async (filters: MemberFilters, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const members = await membersApi.getAll(filters);
@@ -181,7 +182,7 @@ export const createMember = createAsyncThunk(
   'members/create',
   async (memberData: MemberInput, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const member = await membersApi.create(memberData);
@@ -223,7 +224,7 @@ export const updateMember = createAsyncThunk(
   'members/update',
   async ({ id, data }: { id: string; data: Partial<MemberInput> }, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const member = await membersApi.update(id, data);
@@ -267,7 +268,7 @@ export const deleteMember = createAsyncThunk(
   'members/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const success = await membersApi.delete(id);

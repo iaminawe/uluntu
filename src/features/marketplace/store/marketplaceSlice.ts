@@ -3,6 +3,7 @@ import { marketplaceApi, MarketplaceItemInput } from '../api/marketplaceApi';
 import mockData from '@/data/mock/mockData';
 import { RootState } from '@/store';
 import { MarketplaceListing, MarketplaceItemsQueryOptions, MockMarketplaceListing } from '../types/marketplace';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Define an interface for the marketplace state
 export interface MarketplaceState {
@@ -60,7 +61,7 @@ export const fetchMarketplaceListings = createAsyncThunk(
   'marketplace/fetchListings',
   async (_, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const listings = await marketplaceApi.getAll();
         return listings;
       } else {
@@ -78,7 +79,7 @@ export const fetchMarketplaceListingById = createAsyncThunk(
   'marketplace/fetchListingById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const listing = await marketplaceApi.getById(id);
         return listing;
       } else {
@@ -97,7 +98,7 @@ export const fetchFilteredMarketplaceListings = createAsyncThunk(
   'marketplace/fetchFilteredListings',
   async (filters: MarketplaceItemsQueryOptions, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const listings = await marketplaceApi.getAll(filters);
         return { listings, filters };
       } else {
@@ -147,7 +148,7 @@ export const fetchRelatedMarketplaceListings = createAsyncThunk(
   'marketplace/fetchRelatedListings',
   async ({ id, limit = 3 }: { id: string, limit?: number }, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const relatedListings = await marketplaceApi.getRelated(id, limit);
         return relatedListings;
       } else {
@@ -179,7 +180,7 @@ export const fetchSellerMarketplaceListings = createAsyncThunk(
   'marketplace/fetchSellerListings',
   async (sellerId: string, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const listings = await marketplaceApi.getAll({ seller_id: sellerId });
         return listings;
       } else {
@@ -202,7 +203,7 @@ export const createMarketplaceListing = createAsyncThunk(
   'marketplace/createListing',
   async (listingData: MarketplaceItemInput, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const newListing = await marketplaceApi.create(listingData);
         return newListing;
       } else {
@@ -240,7 +241,7 @@ export const updateMarketplaceListing = createAsyncThunk(
   'marketplace/updateListing',
   async ({ id, data }: { id: string, data: Partial<MarketplaceItemInput> }, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const updatedListing = await marketplaceApi.update(id, data);
         return updatedListing;
       } else {
@@ -281,7 +282,7 @@ export const deleteMarketplaceListing = createAsyncThunk(
   'marketplace/deleteListing',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (import.meta.env.VITE_USE_SUPABASE === 'true') {
+      if (IS_SUPABASE_ENABLED) {
         const success = await marketplaceApi.delete(id);
         if (!success) {
           return rejectWithValue('Failed to delete marketplace listing');

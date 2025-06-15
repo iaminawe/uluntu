@@ -3,9 +3,10 @@ import { RootState } from '../store';
 import { Resource } from '../../types';
 import { resourcesApi, ResourceInput } from '../api/resourcesApi';
 import * as mockQueries from '@/hooks/useQueries';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define type for resource filters to match the API interface
 export interface ResourceFilters {

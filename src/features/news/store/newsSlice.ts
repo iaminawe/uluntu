@@ -3,9 +3,10 @@ import { RootState } from '@/store';
 import { NewsArticle, ContentStatus } from '@/types';
 import { newsApi } from '../api/newsApi';
 import * as mockQueries from '@/hooks/useNewsQueries';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define the input type for news article data
 export interface NewsArticleInput {
