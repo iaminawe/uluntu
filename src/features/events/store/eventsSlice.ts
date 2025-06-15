@@ -7,6 +7,7 @@ import { eventsApi, EventInput as EventsApiEventInput } from '../api/eventsApi';
 import { events as mockEvents } from '@/data/mock/events';
 import { Event as FrontendEvent } from '../../types';
 import { Database } from '../../types/supabase';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 export interface EventFilters {
   search?: string;
@@ -37,7 +38,7 @@ export const fetchEvents = createAsyncThunk(
   'events/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const events = await eventsApi.getAll();
@@ -60,7 +61,7 @@ export const fetchEventById = createAsyncThunk(
         return undefined;
       }
 
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const event = await eventsApi.getById(id);
@@ -81,7 +82,7 @@ export const fetchFilteredEvents = createAsyncThunk(
   'events/fetchFiltered',
   async (filters: EventFilters, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const events = await eventsApi.getAll(filters);
@@ -126,7 +127,7 @@ export const createEvent = createAsyncThunk(
   'events/create',
   async (eventData: Database['public']['Tables']['events']['Insert'], { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const event = await eventsApi.create(eventData as EventsApiEventInput);
@@ -172,7 +173,7 @@ export const updateEvent = createAsyncThunk(
   'events/update',
   async ({ id, data }: { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         const event = await eventsApi.update(id, data as EventsApiEventInput);
@@ -224,7 +225,7 @@ export const deleteEvent = createAsyncThunk(
   'events/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+      const useSupabase = IS_SUPABASE_ENABLED;
       
       if (useSupabase) {
         await eventsApi.delete(id);

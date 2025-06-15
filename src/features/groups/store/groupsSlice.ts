@@ -3,9 +3,10 @@ import { RootState } from '@/store';
 import { Group } from '@/types';
 import { groupsApi, GroupInput } from '../api/groupsApi';
 import * as mockQueries from '@/hooks/useGroupQueries';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Toggle between Supabase and mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define type for group filters to match the API interface
 export interface GroupFilters {
