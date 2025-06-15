@@ -4,6 +4,7 @@ import { Group as FrontendGroupType } from '../types'; // Import the main fronte
 import { Group as MockGroup } from '@/features/groups/components/GroupsList/types';
 import { Group } from '../data/mock/groups'; // This is the mock data's Group type
 import { Event as MockEvent } from '../data/mock/events';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Interface for the mockQueries object structure
 interface MockQueries {
@@ -52,12 +53,12 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
   const validNumericId = numericId !== undefined && !isNaN(numericId) ? numericId : undefined;
 
   return useQuery<MockEvent[], Error>({
-    queryKey: ['groupEvents', validNumericId, import.meta.env.VITE_USE_SUPABASE === 'true' ? 'supabase' : 'mock'],
+    queryKey: ['groupEvents', validNumericId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
     queryFn: async (): Promise<MockEvent[]> => {
       if (validNumericId === undefined) {
         return [];
       }
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         const groupEvents = mockData.events.filter((event) => String(event.group_id) === String(validNumericId));
         return groupEvents as MockEvent[];
       }
@@ -82,11 +83,11 @@ export function useGroups(): UseQueryResult<FrontendGroupType[], Error> {
     queryFn: () => groupsApi.getAll(), // groupsApi.getAll() returns Promise<FrontendGroupType[]>
     select: (data: FrontendGroupType[]) => data, // Explicit select
     staleTime: 5 * 60 * 1000,
-    enabled: import.meta.env.VITE_USE_SUPABASE === 'true',
+    enabled: IS_SUPABASE_ENABLED,
   });
   const mockQuery = mockQueries.useGroups();
 
-  if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+  if (!IS_SUPABASE_ENABLED) {
     // Assuming MockGroup is compatible enough or this path needs its own specific typing
     return mockQuery as unknown as UseQueryResult<FrontendGroupType[], Error>; 
   }
@@ -99,11 +100,11 @@ export function useGroupsWithFilters(filters?: GroupFilters): UseQueryResult<Fro
     queryFn: () => groupsApi.getAll(filters ? { ...filters, visibility: filters.visibility as string[] } : undefined), // Returns Promise<FrontendGroupType[]>
     select: (data: FrontendGroupType[]) => data, // Explicit select to reinforce type
     staleTime: 5 * 60 * 1000,
-    enabled: import.meta.env.VITE_USE_SUPABASE === 'true',
+    enabled: IS_SUPABASE_ENABLED,
   });
   const mockQuery = mockQueries.useGroupsWithFilters(filters);
 
-  if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+  if (!IS_SUPABASE_ENABLED) {
     return mockQuery as unknown as UseQueryResult<FrontendGroupType[], Error>;
   }
   return supabaseQuery;
@@ -122,13 +123,13 @@ export function useGroup(id?: string): UseQueryResult<FrontendGroupType | null, 
       return groupsApi.getById(id);
     },
     select: (data: FrontendGroupType | null) => data, // Explicit select
-    enabled: import.meta.env.VITE_USE_SUPABASE === 'true' && id !== undefined,
+    enabled: IS_SUPABASE_ENABLED && id !== undefined,
     staleTime: 5 * 60 * 1000,
   });
   const numericId = id ? parseInt(id, 10) : undefined;
   const mockQuery = mockQueries.useGroup(numericId === undefined || isNaN(numericId) ? undefined : String(numericId));
 
-  if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+  if (!IS_SUPABASE_ENABLED) {
     return mockQuery as unknown as UseQueryResult<FrontendGroupType | null, Error>;
   }
   return supabaseQuery;
@@ -142,8 +143,8 @@ export function useCreateGroup(): UseMutationResult<
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (data: GroupInput) => { console.log('Mock create group:', data); return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
-    mutateAsync: async (data: GroupInput) => { console.log('Mock create group async:', data); return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutate: async (data: GroupInput) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutateAsync: async (data: GroupInput) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
     status: 'success' as const,
     data: (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null,
     error: null,
@@ -165,7 +166,7 @@ export function useCreateGroup(): UseMutationResult<
     },
   });
 
-  if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+  if (!IS_SUPABASE_ENABLED) {
     return mockMutation;
   }
   return supabaseMutation;
@@ -179,8 +180,8 @@ export function useUpdateGroup(): UseMutationResult<
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (vars: { id: string; data: Partial<GroupInput> }) => { console.log('Mock update group:', vars); return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
-    mutateAsync: async (vars: { id: string; data: Partial<GroupInput> }) => { console.log('Mock update group async:', vars); return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutate: async (vars: { id: string; data: Partial<GroupInput> }) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutateAsync: async (vars: { id: string; data: Partial<GroupInput> }) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
     status: 'success' as const,
     data: (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null,
     error: null, 
@@ -203,7 +204,7 @@ export function useUpdateGroup(): UseMutationResult<
     },
   });
 
-  if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+  if (!IS_SUPABASE_ENABLED) {
     return mockMutation;
   }
   return supabaseMutation;
@@ -218,8 +219,8 @@ export function useDeleteGroup(): UseMutationResult<
 
   return useMutation<boolean, Error, string>({
     mutationFn: async (id: string): Promise<boolean> => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Deleting group with id:', id);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock delete group
         // const index = mockData.groups.findIndex(g => g.id.toString() === id);
         // if (index > -1) { mockData.groups.splice(index, 1); } // Avoid direct mutation
         return true;
@@ -227,7 +228,7 @@ export function useDeleteGroup(): UseMutationResult<
       return groupsApi.delete(id);
     },
     onSuccess: (_data, id) => {
-      const queryPrefix = import.meta.env.VITE_USE_SUPABASE !== 'true' ? 'supabase' : 'mock';
+      const queryPrefix = !IS_SUPABASE_ENABLED ? 'supabase' : 'mock';
       queryClient.invalidateQueries({ queryKey: [queryPrefix, 'groups'] });
       queryClient.invalidateQueries({ queryKey: [queryPrefix, 'groups', id] });
     },
@@ -239,13 +240,13 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
     const validNumericId = numericId !== undefined && !isNaN(numericId) ? numericId : undefined;
 
     return useQuery<MockGroupMemberType[], Error>({
-        queryKey: ['groupMembers', validNumericId, import.meta.env.VITE_USE_SUPABASE !== 'true' ? 'supabase' : 'mock'],
+        queryKey: ['groupMembers', validNumericId, !IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
         queryFn: async (): Promise<MockGroupMemberType[]> => {
             if (validNumericId === undefined) {
                 return [];
             }
 
-            if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+            if (!IS_SUPABASE_ENABLED) {
                 const groupData = mockData.groups.find((g: Group) => g.id.toString() === validNumericId.toString());
                 return groupData?.members || [];
             }
@@ -262,8 +263,8 @@ export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: str
 
   return useMutation<boolean, Error, { groupId: string; memberId: string }>({
     mutationFn: ({ groupId, memberId }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Joining group', groupId, 'with member', memberId);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock join group
         return Promise.resolve(true);
       }
       return groupsApi.joinGroup(groupId, memberId);
@@ -281,8 +282,8 @@ export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: st
 
   return useMutation<boolean, Error, { groupId: string; memberId: string }>({
     mutationFn: ({ groupId, memberId }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Leaving group', groupId, 'with member', memberId);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock leave group
         return Promise.resolve(true);
       }
       return groupsApi.leaveGroup(groupId, memberId);
@@ -300,7 +301,7 @@ export function useGroupMembership(groupId?: string, memberId?: string): UseQuer
     queryKey: ['groupMembership', groupId, memberId],
     queryFn: async () => {
       if (!groupId || !memberId) return false;
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return false; // Mock always returns false
       }
       return groupsApi.isMember(groupId, memberId);
@@ -314,7 +315,7 @@ export function useGroupMemberRole(groupId?: string, memberId?: string): UseQuer
     queryKey: ['groupMemberRole', groupId, memberId],
     queryFn: async () => {
       if (!groupId || !memberId) return null;
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return null; // Mock always returns null
       }
       return groupsApi.getMemberRole(groupId, memberId);
@@ -332,8 +333,8 @@ export function useUpdateMemberRole(): UseMutationResult<
 
   return useMutation<boolean, Error, { groupId: string; memberId: string; role: 'admin' | 'member' }>({
     mutationFn: ({ groupId, memberId, role }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Updating member role', memberId, 'to', role, 'in group', groupId);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock update member role
         return Promise.resolve(true);
       }
       return groupsApi.updateMemberRole(groupId, memberId, role);
@@ -354,8 +355,8 @@ export function useRemoveMember(): UseMutationResult<
 
   return useMutation<boolean, Error, { groupId: string; memberId: string }>({
     mutationFn: ({ groupId, memberId }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Removing member', memberId, 'from group', groupId);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock remove member
         return Promise.resolve(true);
       }
       return groupsApi.removeMember(groupId, memberId);
@@ -373,7 +374,7 @@ export function useGroupActivities(groupId?: string): UseQueryResult<any[], Erro
     queryKey: ['groupActivities', groupId],
     queryFn: async () => {
       if (!groupId) return [];
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
       return groupsApi.getActivities(groupId);
@@ -387,7 +388,7 @@ export function useGroupAnnouncements(groupId?: string): UseQueryResult<any[], E
     queryKey: ['groupAnnouncements', groupId],
     queryFn: async () => {
       if (!groupId) return [];
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
       return groupsApi.getAnnouncements(groupId);
@@ -401,8 +402,8 @@ export function useCreateActivity(): UseMutationResult<any, Error, { groupId: st
 
   return useMutation<any, Error, { groupId: string; data: any }>({
     mutationFn: ({ groupId, data }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Creating activity', data);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock create activity
         return Promise.resolve(data);
       }
       return groupsApi.createActivity(groupId, data);
@@ -418,8 +419,8 @@ export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId
 
   return useMutation<any, Error, { groupId: string; data: any }>({
     mutationFn: ({ groupId, data }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Creating announcement', data);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock create announcement
         return Promise.resolve(data);
       }
       return groupsApi.createAnnouncement(groupId, data);
@@ -436,7 +437,7 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Err
     queryKey: ['groupInvitations', groupId],
     queryFn: async () => {
       if (!groupId) return [];
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
       return groupsApi.getInvitations(groupId);
@@ -450,8 +451,8 @@ export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: 
 
   return useMutation<any, Error, { groupId: string; data: any }>({
     mutationFn: ({ groupId, data }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Creating invitation', data);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock create invitation
         return Promise.resolve(data);
       }
       return groupsApi.createInvitation(groupId, data);
@@ -467,8 +468,8 @@ export function useCancelInvitation(): UseMutationResult<boolean, Error, string>
 
   return useMutation<boolean, Error, string>({
     mutationFn: (invitationId) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Canceling invitation', invitationId);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock cancel invitation
         return Promise.resolve(true);
       }
       return groupsApi.cancelInvitation(invitationId);
@@ -484,8 +485,8 @@ export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token
 
   return useMutation<boolean, Error, { token: string; memberId: string }>({
     mutationFn: ({ token, memberId }) => {
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
-        console.log('Mock: Accepting invitation', token);
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock accept invitation
         return Promise.resolve(true);
       }
       return groupsApi.acceptInvitation(token, memberId);
@@ -502,7 +503,7 @@ export function useInvitationByToken(token?: string): UseQueryResult<any, Error>
     queryKey: ['invitation', token],
     queryFn: async () => {
       if (!token) return null;
-      if (import.meta.env.VITE_USE_SUPABASE !== 'true') {
+      if (!IS_SUPABASE_ENABLED) {
         return null; // Mock returns null
       }
       return groupsApi.getInvitationByToken(token);

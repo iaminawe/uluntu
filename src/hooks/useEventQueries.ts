@@ -3,6 +3,7 @@ import { eventsApi, EventInput as EventsApiEventInput } from '@/features/events/
 import { Database } from '../types/supabase';
 import { Event as FrontendEvent } from '../types'; // Renamed to avoid conflict with mock Event
 import { events as mockEvents, Event as MockEvent } from '../data/mock/events';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Event specific types
 export interface EventFilters {
@@ -13,7 +14,7 @@ export interface EventFilters {
 
 // Events hooks
 export function useEvents(): UseQueryResult<FrontendEvent[], Error> {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   return useQuery<FrontendEvent[], Error>({
     queryKey: ['events', 'all', useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -31,7 +32,7 @@ export function useEvents(): UseQueryResult<FrontendEvent[], Error> {
 }
 
 export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<FrontendEvent[], Error> {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   return useQuery<FrontendEvent[], Error>({
     queryKey: ['events', 'filters', filters, useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -78,7 +79,7 @@ export function useEventsWithFilters(filters?: EventFilters): UseQueryResult<Fro
 }
 
 export function useEvent(id?: string): UseQueryResult<FrontendEvent | undefined, Error> {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   return useQuery<FrontendEvent | undefined, Error>({
     queryKey: ['events', id, useSupabase ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -113,7 +114,7 @@ export function useCreateEvent(): UseMutationResult<
   unknown
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<FrontendEvent | null, Error, Database['public']['Tables']['events']['Insert']>({
     mutationFn: (eventData: Database['public']['Tables']['events']['Insert']) => {
@@ -183,7 +184,7 @@ export function useUpdateEvent(): UseMutationResult<
   unknown
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<FrontendEvent | null, Error, { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }>({
     mutationFn: ({ id, data }: { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }) => {
@@ -231,7 +232,7 @@ export function useDeleteEvent(): UseMutationResult<
   string // ID
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<void, Error, string>({
     mutationFn: async (id: string): Promise<void> => {
@@ -258,7 +259,7 @@ export function useDeleteEvent(): UseMutationResult<
 
 // Event registration hooks
 export function useEventRegistrationStatus(eventId?: string, memberId?: string): UseQueryResult<boolean, Error> {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   
   return useQuery<boolean, Error>({
     queryKey: ['event-registration', eventId, memberId, useSupabase ? 'supabase' : 'mock'],
@@ -285,7 +286,7 @@ export function useRegisterForEvent(): UseMutationResult<
   { eventId: string; memberId: string }
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<boolean, Error, { eventId: string; memberId: string }>({
     mutationFn: async ({ eventId, memberId }) => {
@@ -320,7 +321,7 @@ export function useUnregisterFromEvent(): UseMutationResult<
   { eventId: string; memberId: string }
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<boolean, Error, { eventId: string; memberId: string }>({
     mutationFn: async ({ eventId, memberId }) => {
@@ -355,7 +356,7 @@ export function useUnregisterFromEvent(): UseMutationResult<
 
 // Event attendee management hooks
 export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error> {
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
   
   return useQuery<any[], Error>({
     queryKey: ['event-attendees', eventId, useSupabase ? 'supabase' : 'mock'],
@@ -409,7 +410,7 @@ export function useUpdateAttendeeStatus(): UseMutationResult<
   { eventId: string; memberId: string; status: string }
 > {
   const queryClient = useQueryClient();
-  const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+  const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<boolean, Error, { eventId: string; memberId: string; status: string }>({
     mutationFn: async ({ eventId, memberId, status }) => {

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResul
 import { membersApi, MemberInput } from '@/features/directory/api/membersApi';
 import allMockData from '../data/mock/mockData';
 import { ContentStatus } from '../types/common';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Define a Member type for consistency with our UI needs
 export type Member = {
@@ -12,6 +13,7 @@ export type Member = {
   image?: string;
   role?: string; // Maps to title in the API
   skills?: string[];
+  interests?: string[];
   joinDate?: string; // Standard property name for API
   joinedDate?: string; // Used in mock data
   created_at?: string;
@@ -67,7 +69,7 @@ function adaptMember(data: unknown): Member {
 // No need for a separate function since we're now using adaptMember directly
 
 // Configuration to switch between mock and real data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Members hooks
 // Define filter types for Members

@@ -4,6 +4,7 @@ import mockData from '@/data/mock/mockData';
 import { ContentStatus } from '../types/common';
 import { MarketplaceItem } from '../types';
 import { MarketplaceListing, MarketplaceItemsQueryOptions, MockMarketplaceListing } from '../types/marketplace';
+import { IS_SUPABASE_ENABLED } from '@/config/env';
 
 // Extending the centralized MarketplaceListing type for internal use
 interface InternalMarketplaceFields {
@@ -111,7 +112,7 @@ function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): Mark
 
 
 // Configuration for using Supabase or mock data
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true';
+const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define input types based on Database schema
 export type MarketplaceListingInput = {
