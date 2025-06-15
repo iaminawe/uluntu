@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ModerationItem } from '@/types/admin';
 
 export const adminModerationApi = {

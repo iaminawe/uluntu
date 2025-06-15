@@ -3,7 +3,6 @@ import { Member } from '@/features/directory/components/MemberProfile/types';
 import ProfileHeader from '@/features/directory/components/MemberProfile/ProfileHeader';
 import ProfileContent from '@/features/directory/components/MemberProfile/ProfileContent';
 import ContactModal from '@/features/directory/components/MemberProfile/ContactModal';
-import EditProfileModal from '@/features/directory/components/MemberProfile/EditProfileModal';
 import { useMemberById as useMember } from '@/hooks/useMemberQueries';
 import { useMemberContributions } from '../../hooks/useMemberContributions';
 import { mapMemberToProfileMember } from '../../adapters/memberAdapter';
@@ -17,14 +16,6 @@ const MemberProfile = ({ memberId }: MemberProfileProps) => {
   const { data: member, isLoading: isMemberLoading, error: memberError } = useMember(memberId);
   const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(memberId);
   const [showContactModal, setShowContactModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-
-  const handleProfileUpdate = (data: Partial<Member>) => {
-    // In a real app, this would make an API call to update the member
-    console.log('Profile updated:', data);
-    // Optionally invalidate queries to refetch data
-    // queryClient.invalidateQueries(['members', parseInt(memberId)]);
-  };
 
   // Loading state
   if (isMemberLoading || isContributionsLoading) {
@@ -60,7 +51,6 @@ const MemberProfile = ({ memberId }: MemberProfileProps) => {
       <ProfileHeader 
         member={profileMember}
         onContactClick={() => setShowContactModal(true)}
-        onEditClick={() => setShowEditModal(true)}
       />
       
       <ProfileContent 
@@ -72,15 +62,6 @@ const MemberProfile = ({ memberId }: MemberProfileProps) => {
         <ContactModal
           member={profileMember}
           onClose={() => setShowContactModal(false)}
-        />
-      )}
-
-      {showEditModal && (
-        <EditProfileModal
-          member={profileMember}
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleProfileUpdate}
         />
       )}
     </div>

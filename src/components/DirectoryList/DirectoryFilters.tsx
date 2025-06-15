@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { Search, X, Tag } from 'lucide-react';
 import { FilterOptions } from '@/features/directory/components/DirectoryList/types';
 import { getSkillColor } from '@/features/directory/components/DirectoryList/utils';
