@@ -39,7 +39,7 @@ export const store = configureStore({
     getDefaultMiddleware(),
   devTools: {
     // Only enable in non-production environments
-    enabled: process.env.NODE_ENV !== 'production',
+    enabled: import.meta.env.MODE !== 'production',
     // Custom name for the instance shown in DevTools
     name: 'Kootenay Tech Community',
     // Trace action execution path through middleware, enhancers, and reducers
