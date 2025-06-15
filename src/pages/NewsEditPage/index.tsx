@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useNewsArticle } from '@/hooks/useNewsQueries';
+import { newsApi } from '@/features/news/api/newsApi';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import FormHeader from './FormHeader';
 import TagsInput from './TagsInput';
 import FormInputs from './FormInputs';
@@ -29,6 +31,7 @@ export default function NewsEditPage() {
   // Use string ID for consistency - hooks have been updated to handle string IDs
   const articleId = id || undefined;
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newTag, setNewTag] = useState('');
@@ -137,19 +140,40 @@ export default function NewsEditPage() {
         setIsUploadingImage(false);
       }
       
-      // Update form data with final image URL
-      const finalFormData = { ...formData, image: finalImageUrl };
-      
-      // Simulate API call with final form data
-      console.log('Submitting news article with data:', finalFormData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setSubmitSuccess(true);
-      
-      // Navigate after successful submission
-      setTimeout(() => {
-        navigate(isEditMode ? `/news/${id}` : '/news');
-      }, 1500);
+      // Prepare data for API
+      const newsArticleData = {
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        image: finalImageUrl,
+        tags: formData.tags,
+        status: formData.status,
+        featured: formData.featured,
+        // Use current user as author for new articles
+        ...(isEditMode ? {} : { author: { id: user?.id, name: user?.name || 'Unknown', image: user?.image || '' } }),
+        // Use current date as publish date for new articles
+        ...(isEditMode ? {} : { date: new Date().toISOString() })
+      };
+
+      let result;
+      if (isEditMode && id) {
+        // Update existing article
+        result = await newsApi.update(id, newsArticleData);
+      } else {
+        // Create new article
+        result = await newsApi.create(newsArticleData);
+      }
+
+      if (result) {
+        setSubmitSuccess(true);
+        
+        // Navigate after successful submission
+        setTimeout(() => {
+          navigate(isEditMode ? `/news/${result.id}` : '/news');
+        }, 1500);
+      } else {
+        throw new Error('Failed to save article');
+      }
     } catch (error) {
       console.error('Error submitting news article:', error);
       setErrors(prev => ({ ...prev, image: 'Failed to save article. Please try again.' }));
@@ -159,14 +183,23 @@ export default function NewsEditPage() {
     }
   };
   
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!id) return;
+    
     setIsSubmitting(true);
     
-    // Simulate API call to delete the article
-    setTimeout(() => {
+    try {
+      const success = await newsApi.delete(id);
+      if (success) {
+        navigate('/news');
+      } else {
+        console.error('Failed to delete article');
+      }
+    } catch (error) {
+      console.error('Error deleting article:', error);
+    } finally {
       setIsSubmitting(false);
-      navigate('/news');
-    }, 1000);
+    }
   };
   
   if (articleLoading && isEditMode) {

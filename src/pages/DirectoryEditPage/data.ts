@@ -8,8 +8,8 @@ export const initialFormData: FormData = {
   location: '',
   image: '',
   bio: '',
-  intro: '',
   skills: [],
+  interests: [],
   joinDate: new Date().toISOString().split('T')[0],
   social: {
     linkedin: '',

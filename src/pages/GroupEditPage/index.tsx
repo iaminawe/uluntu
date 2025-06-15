@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGroup } from '@/hooks/useGroupQueries';
+import { groupsApi, GroupInput } from '@/features/groups/api/groupsApi';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import FormHeader from './FormHeader';
@@ -92,15 +93,36 @@ export default function GroupEditPage() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSubmitSuccess(true);
-      
-      // Navigate back after success
-      setTimeout(() => {
-        navigate(isEditMode ? `/groups/${id}` : '/groups');
-      }, 1500);
+      // Prepare data for API
+      const groupData: GroupInput = {
+        name: formData.name,
+        description: formData.description,
+        longDescription: formData.longDescription || null,
+        heroImage: formData.heroImage,
+        visibility: formData.visibility,
+        status: 'published',
+        featured: formData.featured
+      };
+
+      let result;
+      if (isEditMode && id) {
+        // Update existing group
+        result = await groupsApi.update(id, groupData);
+      } else {
+        // Create new group
+        result = await groupsApi.create(groupData);
+      }
+
+      if (result) {
+        setSubmitSuccess(true);
+        
+        // Navigate back after success
+        setTimeout(() => {
+          navigate(isEditMode ? `/groups/${id}` : '/groups');
+        }, 1500);
+      } else {
+        throw new Error('Failed to save group');
+      }
     } catch (error) {
       console.error('Error submitting group:', error);
     } finally {

@@ -73,7 +73,6 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading, group
                         if (window.confirm('Remove this resource from the group?')) {
                           setRemovingResource(resource.id);
                           // TODO: Implement resource removal
-                          console.log('Remove resource:', resource.id);
                           setRemovingResource(null);
                         }
                       }}

@@ -1,7 +1,10 @@
 import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
 import {
   adaptOpportunityFromDatabase,
-  adaptOpportunityToDatabase
+  adaptOpportunityToDatabase,
+  adaptOpportunityInputToDatabase,
+  adaptExtendedOpportunityFromDatabase,
+  ExtendedOpportunity
 } from '../utils/opportunityAdapter';
 import { Opportunity } from '../types';
 
@@ -14,18 +17,21 @@ function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
 export interface OpportunityInput {
   title: string;
   description?: string | null;
-  type?: 'full-time' | 'part-time' | 'contract' | 'volunteer' | null;
+  type?: 'job' | 'volunteer' | 'funding' | 'community' | null;
+  organization?: string | null;
   location?: string | null;
   remote?: boolean | null;
-  salary?: string | null;
+  compensation?: string | null; // Maps to salary in some places, compensation in database
   deadline?: string | null;
-  company?: {
-    id: string;
-    name: string;
-    logo: string; // Making logo required to match the Opportunity type
-  } | null;
+  contactEmail?: string | null;
+  website?: string | null;
+  image?: string | null;
+  requirements?: string[] | null;
+  responsibilities?: string[] | null;
+  benefits?: string[] | null;
   status?: 'draft' | 'published' | 'archived' | null;
   featured?: boolean | null;
+  postedBy?: string | null; // Member ID who posted this opportunity
 }
 
 export const opportunitiesApi = {
@@ -95,23 +101,29 @@ export const opportunitiesApi = {
     }
   },
 
+  async getExtendedById(id: string): Promise<ExtendedOpportunity | null> {
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, `fetching extended opportunity with id ${id}`);
+        return null;
+      }
+      
+      return data ? adaptExtendedOpportunityFromDatabase(data) : null;
+    } catch (error) {
+      handleSupabaseError(error, `fetching extended opportunity with id ${id}`);
+      return null;
+    }
+  },
+
   async create(opportunityData: OpportunityInput): Promise<Opportunity | null> {
     try {
-      // Map OpportunityInput to what adaptOpportunityToDatabase expects
-      const opportunityWithCorrectFormat: Partial<Opportunity> = {
-        title: opportunityData.title,
-        description: opportunityData.description === null ? undefined : opportunityData.description,
-        type: opportunityData.type === null ? undefined : opportunityData.type,
-        location: opportunityData.location === null ? undefined : opportunityData.location,
-        remote: opportunityData.remote === null ? undefined : opportunityData.remote,
-        salary: opportunityData.salary === null ? undefined : opportunityData.salary,
-        deadline: opportunityData.deadline === null ? undefined : opportunityData.deadline,
-        company: opportunityData.company === null ? undefined : opportunityData.company,
-        status: opportunityData.status === null ? undefined : opportunityData.status,
-        featured: opportunityData.featured === null ? undefined : opportunityData.featured
-      };
-      
-      const supabaseData = adaptOpportunityToDatabase(opportunityWithCorrectFormat);
+      const supabaseData = adaptOpportunityInputToDatabase(opportunityData);
       
       const { data, error } = await supabase
         .from('opportunities')
@@ -133,25 +145,30 @@ export const opportunitiesApi = {
 
   async update(id: string, opportunityData: Partial<OpportunityInput>): Promise<Opportunity | null> {
     try {
-      // Map Partial<OpportunityInput> to what adaptOpportunityToDatabase expects
-      const opportunityWithCorrectFormat: Partial<Opportunity> = {};
+      // For updates, we need to only include fields that are actually being updated
+      const updateData: any = {};
       
-      if (opportunityData.title !== undefined) opportunityWithCorrectFormat.title = opportunityData.title === null ? '' : opportunityData.title;
-      if (opportunityData.description !== undefined) opportunityWithCorrectFormat.description = opportunityData.description === null ? undefined : opportunityData.description;
-      if (opportunityData.type !== undefined) opportunityWithCorrectFormat.type = opportunityData.type === null ? undefined : opportunityData.type;
-      if (opportunityData.location !== undefined) opportunityWithCorrectFormat.location = opportunityData.location === null ? undefined : opportunityData.location;
-      if (opportunityData.remote !== undefined) opportunityWithCorrectFormat.remote = opportunityData.remote === null ? undefined : opportunityData.remote;
-      if (opportunityData.salary !== undefined) opportunityWithCorrectFormat.salary = opportunityData.salary === null ? undefined : opportunityData.salary;
-      if (opportunityData.deadline !== undefined) opportunityWithCorrectFormat.deadline = opportunityData.deadline === null ? undefined : opportunityData.deadline;
-      if (opportunityData.company !== undefined) opportunityWithCorrectFormat.company = opportunityData.company === null ? undefined : opportunityData.company;
-      if (opportunityData.status !== undefined) opportunityWithCorrectFormat.status = opportunityData.status === null ? undefined : opportunityData.status;
-      if (opportunityData.featured !== undefined) opportunityWithCorrectFormat.featured = opportunityData.featured === null ? undefined : opportunityData.featured;
-      
-      const supabaseData = adaptOpportunityToDatabase(opportunityWithCorrectFormat);
+      if (opportunityData.title !== undefined) updateData.title = opportunityData.title;
+      if (opportunityData.description !== undefined) updateData.description = opportunityData.description;
+      if (opportunityData.type !== undefined) updateData.type = opportunityData.type;
+      if (opportunityData.organization !== undefined) updateData.organization = opportunityData.organization;
+      if (opportunityData.location !== undefined) updateData.location = opportunityData.location;
+      if (opportunityData.remote !== undefined) updateData.remote = opportunityData.remote;
+      if (opportunityData.compensation !== undefined) updateData.compensation = opportunityData.compensation;
+      if (opportunityData.deadline !== undefined) updateData.deadline = opportunityData.deadline;
+      if (opportunityData.contactEmail !== undefined) updateData.contact_email = opportunityData.contactEmail;
+      if (opportunityData.website !== undefined) updateData.website = opportunityData.website;
+      if (opportunityData.image !== undefined) updateData.image = opportunityData.image;
+      if (opportunityData.requirements !== undefined) updateData.requirements = opportunityData.requirements;
+      if (opportunityData.responsibilities !== undefined) updateData.responsibilities = opportunityData.responsibilities;
+      if (opportunityData.benefits !== undefined) updateData.benefits = opportunityData.benefits;
+      if (opportunityData.status !== undefined) updateData.status = opportunityData.status;
+      if (opportunityData.featured !== undefined) updateData.featured = opportunityData.featured;
+      if (opportunityData.postedBy !== undefined) updateData.posted_by = opportunityData.postedBy;
       
       const { data, error } = await supabase
         .from('opportunities')
-        .update(supabaseData)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();

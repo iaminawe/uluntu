@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useContext, useEffect, useState } fro
 import { Session, User } from "@supabase/supabase-js";
 import { useDispatch } from "react-redux";
 import { supabase } from "@/lib/supabase";
-import { signInWithSession, signOut as reduxSignOut, updateSession as updateReduxSession } from "@/features/auth/store/authSlice";
+import { signInWithSession, signOut as reduxSignOut, updateSession as updateReduxSession, setRoles } from "@/features/auth/store/authSlice";
 
 type SessionContext = {
   session: Session | null;
@@ -29,13 +29,40 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
+  // Function to fetch user roles from the database
+  const fetchUserRoles = async (userId: string) => {
+    try {
+      console.log('Fetching roles for user:', userId);
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+      
+      if (error) {
+        console.error('Error fetching user roles:', error);
+        return [];
+      }
+      
+      console.log('Fetched roles:', data);
+      const roles = data?.map(r => r.role) || [];
+      console.log('Processed roles:', roles);
+      return roles;
+    } catch (err) {
+      console.error('Exception fetching user roles:', err);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    console.log('SessionProvider: Checking for existing session...');
+    supabase.auth.getSession().then(async ({ data, error }) => {
+      console.log('SessionProvider: getSession result:', { session: data.session, error });
       const currentSession = data.session;
       setSession(currentSession);
       
       // Sync with Redux store
       if (currentSession) {
+        console.log('SessionProvider: Session found, syncing with Redux');
         dispatch(signInWithSession({
           user: {
             id: currentSession.user.id,
@@ -47,13 +74,19 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             expires_at: new Date(currentSession.expires_at * 1000).toISOString()
           }
         }));
+        
+        // Fetch and set user roles
+        const roles = await fetchUserRoles(currentSession.user.id);
+        dispatch(setRoles(roles));
+      } else {
+        console.log('SessionProvider: No session found');
       }
       
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
+      async (_event, currentSession) => {
         setSession(currentSession);
         
         // Sync with Redux store
@@ -69,6 +102,10 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
               expires_at: new Date(currentSession.expires_at * 1000).toISOString()
             }
           }));
+          
+          // Fetch and set user roles
+          const roles = await fetchUserRoles(currentSession.user.id);
+          dispatch(setRoles(roles));
         } else {
           dispatch(reduxSignOut());
         }

@@ -6,7 +6,7 @@ export default function TestGroups() {
   
   // Load groups on component mount
   useEffect(() => {
-    console.log('Loading groups...');
+    // Loading groups...
     loadGroups();
   }, [loadGroups]);
   

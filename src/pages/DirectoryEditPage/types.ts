@@ -7,8 +7,8 @@ export interface FormData {
   location: string;
   image: string;
   bio: string;
-  intro?: string; // Short introduction sentence
   skills: string[];
+  interests: string[];
   joinDate: string;
   social: {
     linkedin?: string;

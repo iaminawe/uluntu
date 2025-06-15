@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 export interface FormImageUploadProps {
@@ -79,6 +79,20 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const inputRef = useRef<HTMLInputElement>(null);
   
+  // Update preview when currentImage prop changes
+  useEffect(() => {
+    setPreview(currentImage || null);
+  }, [currentImage]);
+  
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+  
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -145,9 +159,6 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
     
     // Call the onChange handler with the file
     onChange(file);
-    
-    // Clean up the object URL when component unmounts
-    return () => URL.revokeObjectURL(objectUrl);
   };
   
   const handleRemove = (e: React.MouseEvent) => {
@@ -192,7 +203,6 @@ export const FormImageUpload: React.FC<FormImageUploadProps> = ({
           accept={acceptedTypes.join(',')}
           onChange={handleChange}
           disabled={disabled}
-          required={required}
         />
         
         {preview ? (

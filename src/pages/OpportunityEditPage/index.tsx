@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
+import { opportunitiesApi, OpportunityInput } from '@/features/opportunities/api/opportunitiesApi';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Card } from '@/shared/components/ui/Card';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import BasicInfoSection from './BasicInfoSection';
@@ -10,13 +13,15 @@ import FormHeader from './FormHeader';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
-import { SAMPLE_OPPORTUNITY, initialFormData } from './data';
+import { initialFormData } from './data';
 import { uploadOpportunityImage } from '../../lib/supabase';
 
 export default function OpportunityEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditMode = !!id;
+  const { user } = useAuth();
+  const { data: member } = useMemberByUserId(user?.id);
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newRequirement, setNewRequirement] = useState('');
@@ -30,35 +35,43 @@ export default function OpportunityEditPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   
-  // In a real implementation, this would use a hook like useOpportunity(opportunityId)
   useEffect(() => {
-    if (isEditMode) {
-      // Simulate loading
-      const timer = setTimeout(() => {
-        // For edit mode, populate form with sample data
-        setFormData({
-          title: SAMPLE_OPPORTUNITY.title,
-          description: SAMPLE_OPPORTUNITY.description,
-          type: SAMPLE_OPPORTUNITY.type,
-          organization: SAMPLE_OPPORTUNITY.organization,
-          location: SAMPLE_OPPORTUNITY.location,
-          deadline: SAMPLE_OPPORTUNITY.deadline,
-          contactEmail: SAMPLE_OPPORTUNITY.contactEmail || '',
-          website: SAMPLE_OPPORTUNITY.website || '',
-          image: SAMPLE_OPPORTUNITY.image || '',
-          compensation: SAMPLE_OPPORTUNITY.compensation || '',
-          requirements: SAMPLE_OPPORTUNITY.requirements || [],
-          responsibilities: SAMPLE_OPPORTUNITY.responsibilities || [],
-          benefits: SAMPLE_OPPORTUNITY.benefits || [],
-          status: SAMPLE_OPPORTUNITY.status,
-          featured: SAMPLE_OPPORTUNITY.featured
-        });
-        setIsLoading(false);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
+    if (isEditMode && id) {
+      loadOpportunity();
     }
   }, [isEditMode, id]);
+
+  const loadOpportunity = async () => {
+    if (!id) return;
+    
+    setIsLoading(true);
+    try {
+      const opportunity = await opportunitiesApi.getExtendedById(id);
+      if (opportunity) {
+        setFormData({
+          title: opportunity.title,
+          description: opportunity.description,
+          type: opportunity.type as FormData['type'],
+          organization: opportunity.organization,
+          location: opportunity.location,
+          deadline: opportunity.deadline,
+          contactEmail: opportunity.contactEmail,
+          website: opportunity.website,
+          image: opportunity.image,
+          compensation: opportunity.compensation,
+          requirements: opportunity.requirements,
+          responsibilities: opportunity.responsibilities,
+          benefits: opportunity.benefits,
+          status: opportunity.status as FormData['status'],
+          featured: opportunity.featured
+        });
+      }
+    } catch (error) {
+      console.error('Error loading opportunity:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -203,19 +216,47 @@ export default function OpportunityEditPage() {
         setIsUploadingImage(false);
       }
       
-      // Update form data with final image URL
-      const finalFormData = { ...formData, image: finalImageUrl };
+      if (!member) {
+        console.error('Member not found for opportunity creation');
+        return;
+      }
       
-      // Simulate API call with final form data
-      console.log('Submitting opportunity with data:', finalFormData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setSubmitSuccess(true);
-      
-      // Navigate back after success
-      setTimeout(() => {
-        navigate(isEditMode ? `/opportunities/${id}` : '/opportunities');
-      }, 2000);
+      const opportunityData: OpportunityInput = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        organization: formData.organization,
+        location: formData.location,
+        compensation: formData.compensation,
+        deadline: formData.deadline,
+        contactEmail: formData.contactEmail,
+        website: formData.website,
+        image: finalImageUrl,
+        requirements: formData.requirements,
+        responsibilities: formData.responsibilities,
+        benefits: formData.benefits,
+        status: formData.status,
+        featured: formData.featured,
+        postedBy: member.id
+      };
+
+      let result;
+      if (isEditMode && id) {
+        result = await opportunitiesApi.update(id, opportunityData);
+      } else {
+        result = await opportunitiesApi.create(opportunityData);
+      }
+
+      if (result) {
+        setSubmitSuccess(true);
+        
+        // Navigate back after success
+        setTimeout(() => {
+          navigate(isEditMode ? `/opportunities/${id}` : '/opportunities');
+        }, 2000);
+      } else {
+        throw new Error('Failed to save opportunity');
+      }
     } catch (error) {
       console.error('Error submitting opportunity:', error);
       setErrors(prev => ({ ...prev, image: 'Failed to save opportunity. Please try again.' }));
@@ -226,14 +267,17 @@ export default function OpportunityEditPage() {
   };
   
   const handleDelete = async () => {
+    if (!id) return;
+    
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect after successful deletion
-      navigate('/opportunities');
+      const success = await opportunitiesApi.delete(id);
+      if (success) {
+        navigate('/opportunities');
+      } else {
+        console.error('Failed to delete opportunity');
+      }
     } catch (error) {
       console.error('Error deleting opportunity:', error);
       setShowDeleteConfirm(false);

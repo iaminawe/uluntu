@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEventRedux } from '@/features/events/hooks/useEventsRedux';
+import { eventsApi, EventInput } from '@/features/events/api/eventsApi';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { format } from 'date-fns';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';
@@ -32,6 +35,8 @@ export default function EventEditPage() {
   // Use the original string ID which is what useEvent expects
   const eventIdString = id || '';
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: member } = useMemberByUserId(user?.id);
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -173,13 +178,30 @@ export default function EventEditPage() {
           organizer_id: formData.organizerId
         });
       } else {
-        // For creating a new event, we'll need to enhance the eventsRedux hooks later
-        // Temporarily simulate API call with final image URL
-        console.log('Creating new event with data:', {
-          ...formData,
-          image: finalImageUrl
-        });
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Create new event using events API
+        if (!member) {
+          console.error('Member not found for event creation');
+          return;
+        }
+        
+        const eventData: EventInput = {
+          title: formData.title,
+          description: formData.description,
+          date: formData.date,
+          endDate: formData.endDate,
+          location: formData.location,
+          image: finalImageUrl,
+          type: formData.type,
+          url: formData.url || null,
+          organizerId: member.id,
+          status: 'published',
+          featured: false
+        };
+
+        const result = await eventsApi.create(eventData);
+        if (!result) {
+          throw new Error('Failed to create event');
+        }
       }
       
       setSubmitSuccess(true);
