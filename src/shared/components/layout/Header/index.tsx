@@ -17,7 +17,8 @@ const Header: React.FC<HeaderProps> = ({
         { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks" },
         { text: "Directory", href: "/directory", description: "Connect with tech professionals" },
         { text: "Groups", href: "/groups", description: "Join communities of interest" },
-        { text: "News", href: "/news", description: "Latest tech news and articles" }
+        { text: "News", href: "/news", description: "Latest tech news and articles" },
+        { text: "Galleries", href: "/galleries", description: "Browse community photo galleries" }
       ]
     },
     { 
