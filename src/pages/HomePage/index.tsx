@@ -16,6 +16,7 @@ import { fetchCompanies } from '@/features/companies/store/companiesSlice';
 import { fetchEvents } from '@/features/events/store/eventsSlice';
 import { fetchNewsArticles } from '@/features/news/store/newsSlice';
 import { fetchGroups } from '@/features/groups/store/groupsSlice';
+import { fetchGalleries } from '@/features/gallery/store/gallerySlice';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
@@ -27,7 +28,8 @@ import {
   GlassCard, 
   FeatureCard,
   ImageSection,
-  ImageGallery
+  ImageGallery,
+  DetailedCard
 } from '@/shared/components/visual';
 
 import { FeaturedItems } from './FeaturedItems';
@@ -168,6 +170,7 @@ export default function HomePage() {
   const apiEvents = useAppSelector(state => state.events?.events || []);
   const apiNews = useAppSelector(state => state.news?.articles || []);
   const apiGroups = useAppSelector(state => state.groups?.groups || []);
+  const apiGalleries = useAppSelector(state => state.gallery?.galleries || []);
   
   // Get loading and error states
   const membersStatus = useAppSelector(state => state.members?.status);
@@ -175,6 +178,7 @@ export default function HomePage() {
   const eventsStatus = useAppSelector(state => state.events?.status);
   const newsStatus = useAppSelector(state => state.news?.status);
   const groupsStatus = useAppSelector(state => state.groups?.status);
+  const galleriesStatus = useAppSelector(state => state.gallery?.status);
   
   // Determine if any data is still loading
   const isLoading = 
@@ -182,7 +186,8 @@ export default function HomePage() {
     companiesStatus === 'loading' || 
     eventsStatus === 'loading' || 
     newsStatus === 'loading' || 
-    groupsStatus === 'loading';
+    groupsStatus === 'loading' ||
+    galleriesStatus === 'loading';
   
   // Get the first error encountered, if any
   const error = 
@@ -190,7 +195,8 @@ export default function HomePage() {
     companiesStatus === 'failed' ? 'Failed to load companies' :
     eventsStatus === 'failed' ? 'Failed to load events' :
     newsStatus === 'failed' ? 'Failed to load news' :
-    groupsStatus === 'failed' ? 'Failed to load groups' : null;
+    groupsStatus === 'failed' ? 'Failed to load groups' :
+    galleriesStatus === 'failed' ? 'Failed to load galleries' : null;
   
   // Fetch data on component mount
   useEffect(() => {
@@ -199,6 +205,7 @@ export default function HomePage() {
     dispatch(fetchEvents());
     dispatch(fetchNewsArticles());
     dispatch(fetchGroups());
+    dispatch(fetchGalleries());
   }, [dispatch]);
 
   // Convert API data to HomePage types
@@ -270,49 +277,61 @@ export default function HomePage() {
     }
   ], [members.length, events.length, companies.length]);
 
-  // Transform events for display
-  const upcomingEventCards = useMemo(() => 
-    featuredEvents.slice(0, 3).map((event, index) => ({
-      image: { 
-        src: event.image || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop",
-        alt: event.title
-      },
-      title: event.title,
-      description: event.description,
-      badge: event.type === 'online' ? 'Online' : event.type === 'hybrid' ? 'Hybrid' : 'In-Person',
-      badgeColor: event.type === 'online' ? 'bg-blue-500' : event.type === 'hybrid' ? 'bg-purple-500' : 'bg-emerald-500',
-      meta: [
-        { text: new Date(event.date).toLocaleDateString() },
-        { text: event.location }
-      ],
-      link: `/events/${event.id}`
-    })), [featuredEvents]
-  );
+  // Get upcoming events sorted by date
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter(event => new Date(event.date) >= now)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 6); // Get 6 upcoming events
+  }, [events]);
 
-  // Community gallery from news and events
-  const communityGallery = useMemo(() => {
-    const newsItems = latestNews.slice(0, 3).map((article, index) => ({
-      id: `news-${article.id}`,
-      image: { 
-        src: article.image || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
-        alt: article.title
-      },
+  // Community moments content (news, blogs, galleries)
+  const communityMoments = useMemo(() => {
+    // Get latest news articles (including blogs)
+    const newsItems = news.slice(0, 4).map(article => ({
+      id: article.id,
       title: article.title,
-      category: "news" as const
+      excerpt: article.excerpt,
+      image: article.image,
+      date: article.date,
+      author: article.author,
+      category: article.tags?.includes('blog') ? 'Blog' : 'News',
+      readTime: '5 min read', // You could calculate this from content
+      link: `/news/${article.slug || article.id}`,
+      type: 'news' as const
     }));
     
-    const eventItems = featuredEvents.slice(0, 3).map((event, index) => ({
-      id: `event-${event.id}`,
-      image: { 
-        src: event.image || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=600&fit=crop",
-        alt: event.title
-      },
-      title: event.title,
-      category: "events" as const
-    }));
+    // Get featured galleries  
+    const galleryItems = apiGalleries
+      .filter(gallery => gallery.privacy === 'public' && gallery.photos?.length > 0)
+      .slice(0, 2)
+      .map(gallery => ({
+        id: gallery.id,
+        title: gallery.title,
+        excerpt: gallery.description || 'A collection of photos from our community',
+        image: gallery.photos?.[0]?.url || gallery.coverImage,
+        date: gallery.created_at,
+        author: gallery.owner ? {
+          id: gallery.owner.id,
+          name: gallery.owner.name,
+          image: gallery.owner.image
+        } : {
+          id: '1',
+          name: 'Community',
+          image: ''
+        },
+        category: 'Gallery',
+        readTime: `${gallery.photos?.length || 0} photos`,
+        link: `/galleries/${gallery.id}`,
+        type: 'gallery' as const
+      }));
     
-    return [...newsItems, ...eventItems];
-  }, [latestNews, featuredEvents]);
+    // Combine and sort by date
+    return [...newsItems, ...galleryItems]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 6); // Show 6 items total
+  }, [news, apiGalleries]);
 
   if (isLoading) {
     return (
@@ -373,6 +392,7 @@ export default function HomePage() {
                 dispatch(fetchEvents());
                 dispatch(fetchNewsArticles());
                 dispatch(fetchGroups());
+                dispatch(fetchGalleries());
               }} 
               message="We couldn't load the community data. Please try again."
             />
@@ -426,35 +446,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Upcoming Events with Image Cards */}
-      {upcomingEventCards.length > 0 && (
-        <ImageSection
-          title="Upcoming Events"
-          subtitle="Don't Miss Out"
-          description="Join the most exciting tech events happening in the Kootenays"
-          background={{
-            src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=2400&h=800&fit=crop",
-            alt: "Event background"
-          }}
-          theme="dark"
-          padding="xl"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            {upcomingEventCards.map((event, index) => (
-              <ImageCard
-                key={index}
-                {...event}
-                variant="glass"
-                hoverable
-                animated
-              />
-            ))}
+      {/* Upcoming Events Section */}
+      {upcomingEvents.length > 0 && (
+        <section className="py-20 bg-slate-50 dark:bg-slate-900">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                Upcoming Events
+              </h2>
+              <p className="text-xl text-slate-600 dark:text-slate-400">
+                Join the most exciting tech events happening in the Kootenays
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <DetailedCard
+                  key={event.id}
+                  id={event.id}
+                  title={event.title}
+                  excerpt={event.description}
+                  image={event.image}
+                  date={event.date}
+                  category={event.type === 'online' ? 'Online' : event.type === 'hybrid' ? 'Hybrid' : 'In-Person'}
+                  link={`/events/${event.id}`}
+                  linkText="View Event"
+                  author={{
+                    name: event.organizer.name,
+                    image: event.organizer.image
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        </ImageSection>
+        </section>
       )}
 
-      {/* Community Gallery */}
-      {communityGallery.length > 0 && (
+      {/* Community Moments Section */}
+      {communityMoments.length > 0 && (
         <section className="py-20 bg-white dark:bg-slate-800">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -462,17 +491,27 @@ export default function HomePage() {
                 Community Moments
               </h2>
               <p className="text-xl text-slate-600 dark:text-slate-400">
-                Capturing the spirit of innovation in the Kootenays
+                Latest news, blogs, and galleries from our community
               </p>
             </div>
             
-            <ImageGallery
-              items={communityGallery}
-              columns={3}
-              gap="md"
-              variant="grid"
-              animated
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {communityMoments.map((item) => (
+                <DetailedCard
+                  key={`${item.type}-${item.id}`}
+                  id={item.id}
+                  title={item.title}
+                  excerpt={item.excerpt}
+                  image={item.image}
+                  date={item.date}
+                  author={item.author}
+                  category={item.category}
+                  readTime={item.readTime}
+                  link={item.link}
+                  linkText={item.type === 'gallery' ? 'View Gallery' : 'Read More'}
+                />
+              ))}
+            </div>
           </div>
         </section>
       )}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight } from 'lucide-react';
+import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera } from 'lucide-react';
 import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shared/hooks/useUserContent';
@@ -107,6 +107,16 @@ export default function UserMenu() {
                 <div className="flex items-center">
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
+                </div>
+              </Link>
+              <Link
+                to="/my-galleries"
+                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                onClick={() => setIsOpen(false)}
+              >
+                <div className="flex items-center">
+                  <Camera className="h-4 w-4 mr-2" />
+                  My Galleries
                 </div>
               </Link>
               

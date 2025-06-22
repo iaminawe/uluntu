@@ -84,6 +84,7 @@ import OnboardingWizard from '@/features/onboarding/components/OnboardingWizard'
 import GalleriesPage from '../pages/GalleriesPage';
 import GalleryDetailPage from '../pages/GalleryDetailPage';
 import MyGalleriesPage from '../pages/MyGalleriesPage';
+import GalleryEditPage from '../pages/GalleryEditPage';
 
 export const router = createBrowserRouter([
   {
@@ -198,7 +199,15 @@ export const router = createBrowserRouter([
       
       // Gallery routes
       { path: 'galleries', element: <GalleriesPage /> },
+      { 
+        path: 'galleries/create', 
+        element: <ProtectedRoute><GalleryEditPage /></ProtectedRoute> 
+      },
       { path: 'galleries/:id', element: <GalleryDetailPage /> },
+      { 
+        path: 'galleries/:id/edit', 
+        element: <ProtectedRoute><GalleryEditPage /></ProtectedRoute> 
+      },
       { 
         path: 'my-galleries', 
         element: <ProtectedRoute><MyGalleriesPage /></ProtectedRoute> 

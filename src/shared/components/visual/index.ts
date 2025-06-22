@@ -11,6 +11,7 @@ export { default as ImageCard } from './ImageCard';
 export { default as GlassCard } from './GlassCard';
 export { default as HoverCard } from './HoverCard';
 export { default as FeatureCard } from './FeatureCard';
+export { DetailedCard } from './DetailedCard';
 
 // Gallery Components
 export { default as ImageGallery } from './ImageGallery';

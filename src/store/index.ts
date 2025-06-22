@@ -12,6 +12,7 @@ import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
 import pagesReducer from '@/features/pages/store/pagesSlice';
 import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
 import contentReducer from '@/store/contentSlice';
+import galleryReducer from '@/features/gallery/store/gallerySlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';
 
@@ -37,6 +38,7 @@ export const store = configureStore({
     pages: pagesReducer,
     onboarding: onboardingReducer,
     content: contentReducer,
+    gallery: galleryReducer,
     // Other reducers will be added as they are implemented
   },
   middleware: (getDefaultMiddleware) => 
