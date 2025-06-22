@@ -131,14 +131,14 @@ export function useFilteredGroupsRedux(initialFilters?: GroupFilters) {
   // Apply filters when they change
   useEffect(() => {
     // Only dispatch if we have filters to apply
-    if (Object.keys(currentFilters).length > 0) {
+    if (currentFilters && Object.keys(currentFilters).length > 0) {
       dispatch(fetchFilteredGroups(currentFilters));
     }
   }, [dispatch, currentFilters]);
 
   // Helper for updating just certain filters without affecting others
   const updateFilters = (newFilters: Partial<GroupFilters>) => {
-    dispatch(setFilters({ ...currentFilters, ...newFilters }));
+    dispatch(setFilters({ ...(currentFilters || {}), ...newFilters }));
   };
 
   // Pagination logic

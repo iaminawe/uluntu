@@ -89,7 +89,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
     return (
       <div className="relative group">
         <InputComponent
-          ref={inputRef as any}
+          ref={inputRef as unknown}
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}

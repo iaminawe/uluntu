@@ -33,25 +33,40 @@ export interface GroupInput {
 export const groupsApi = {
   async getAll(filters?: { search?: string; visibility?: string[] }): Promise<FrontendGroup[]> {
     try {
-      let query = supabase
-        .from('groups')
-        .select(`*`)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false });
-
-      if (filters?.search) {
-        query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      console.log('[GroupsAPI] getAll called with filters:', filters);
+      
+      // Use direct REST API call to bypass Supabase client issues
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!url || !key) {
+        throw new Error('Missing Supabase configuration');
       }
-
-      if (filters?.visibility && filters.visibility.length > 0) {
-        query = query.in('visibility', filters.visibility);
+      
+      // Build query string
+      let queryString = 'select=*&status=eq.published&order=created_at.desc';
+      
+      console.log('[GroupsAPI] Using direct REST API call');
+      
+      const response = await fetch(`${url}/rest/v1/groups?${queryString}`, {
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        }
+      });
+      
+      console.log('[GroupsAPI] Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[GroupsAPI] Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-
-      const { data, error } = await query;
-      if (error) {
-        handleSupabaseError(error, 'fetching groups');
-        return [];
-      }
+      
+      const data = await response.json();
+      console.log('[GroupsAPI] Response data:', data?.length, 'groups');
       
       // Use our helper function instead of adaptListFromSupabase
       return adaptItemsList(data || [], adaptGroupFromDatabase);
@@ -216,14 +231,11 @@ export const groupsApi = {
     }
   },
 
-  async getGroupMembers(groupId: string): Promise<any[]> {
+  async getGroupMembers(groupId: string): Promise<unknown[]> {
     try {
       const { data, error } = await supabase
         .from('group_members')
-        .select(`
-          *,
-          member:members(*)
-        `)
+        .select('*')
         .eq('group_id', groupId)
         .order('joined_date', { ascending: false });
 

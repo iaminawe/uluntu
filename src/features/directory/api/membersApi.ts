@@ -27,13 +27,10 @@ export interface MemberInput {
 export const membersApi = {
   async getAll(filters?: { search?: string; skills?: string[] }): Promise<Member[]> {
     try {
-      // First, get the basic member data without the problematic joins
+      // Get the basic member data without joins to prevent timeouts
       let query = supabase
         .from('members')
-        .select(`
-          *,
-          member_skills(skill)
-        `)
+        .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
@@ -47,24 +44,44 @@ export const membersApi = {
         return [];
       }
 
-      // Filter by skills if provided
-      let filteredData = data || [];
-      if (filters?.skills && filters.skills.length > 0) {
-        filteredData = filteredData.filter(member => 
-          member.member_skills?.some(s_obj => {
-            if (typeof s_obj === 'object' && s_obj !== null && 'skill' in s_obj) {
-              const skillVal = (s_obj as { skill: unknown }).skill;
-              if (typeof skillVal === 'string') {
-                return filters.skills!.includes(skillVal);
-              }
-            }
-            return false;
-          })
-        );
+      // Log the raw data structure to understand what we're working with
+      console.log('[MembersAPI] Raw data structure:', {
+        firstItem: data && data.length > 0 ? Object.keys(data[0]) : 'No data',
+        sampleData: data?.slice(0, 1)
+      });
+      
+      // Ensure we have data to adapt
+      if (!data || data.length === 0) {
+        console.log('[MembersAPI] No data to adapt, returning empty array');
+        return [];
       }
-
-      // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(filteredData, adaptMemberFromDatabase);
+      
+      // Directly adapt the data without using helper functions that might be causing issues
+      const adapted = data.map(item => {
+        // Create a basic member object with required fields
+        const member: Member = {
+          id: item.id,
+          name: item.name || '',
+          title: item.title || '',
+          bio: item.bio || '',
+          location: item.location || '',
+          image: item.image || '',
+          social: item.social || {},
+          intro: item.intro || '',
+          status: item.status || 'draft',
+          featured: item.featured || false,
+          // Add any other fields that might be needed
+        };
+        
+        return member;
+      });
+      
+      console.log('[MembersAPI] Adapted members:', {
+        count: adapted.length,
+        sample: adapted.slice(0, 2)
+      });
+      
+      return adapted;
     } catch (error) {
       handleSupabaseError(error, 'fetching members');
       return [];
@@ -73,52 +90,20 @@ export const membersApi = {
 
   async getById(id: string): Promise<Member | null> {
     try {
-      // First, get the basic member data without the problematic joins
-      const { data: memberData, error: memberError } = await supabase
+      // Get the basic member data without joins to prevent timeouts
+      const { data, error } = await supabase
         .from('members')
-        .select(`
-          *,
-          member_skills(skill)
-        `)
+        .select('*')
         .eq('id', id)
         .eq('status', 'published')
         .single();
 
-      if (memberError) {
-        handleSupabaseError(memberError, 'fetching member by id');
+      if (error) {
+        handleSupabaseError(error, 'fetching member by id');
         return null;
       }
       
-      // Get the companies for this member in a separate query to avoid RLS recursion
-      // This approach fetches the company_id values first, then gets the company details
-      const { data: companyMembersData, error: companyMembersError } = await supabase
-        .from('company_members')
-        .select('company_id')
-        .eq('member_id', id);
-      
-      // If we have company IDs, fetch the company details
-      let companiesData: { id: string; name: string; logo: string }[] = [];
-      if (!companyMembersError && companyMembersData && companyMembersData.length > 0) {
-        const companyIds = companyMembersData.map(cm => cm.company_id);
-        const { data: companies, error: companiesError } = await supabase
-          .from('companies')
-          .select('id, name, logo')
-          .in('id', companyIds);
-        
-        if (!companiesError) {
-          companiesData = companies || [];
-        }
-      }
-      
-      // Combine the data
-      const combinedData = {
-        ...memberData,
-        company_members: companiesData.map(company => ({
-          companies: company
-        }))
-      };
-      
-      return adaptMemberFromDatabase(combinedData);
+      return data ? adaptMemberFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'fetching member by id');
       return null;

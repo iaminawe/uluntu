@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { 
   initializeContent,
   saveContent,

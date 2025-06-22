@@ -6,7 +6,7 @@ import {
 import { membersApi, MemberInput } from '../api/membersApi';
 import allMockData from '@/data/mock/mockData';
 import { ContentStatus } from '@/shared/types/common';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define Member type for the Redux state
 export interface Member {
@@ -98,13 +98,30 @@ export const fetchMembers = createAsyncThunk(
   'members/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
-        const members = await membersApi.getAll();
-        return members.map(m => adaptMember(m));
+      console.log('Redux thunk: fetchMembers started');
+      if (getIsSupabaseEnabled()) {
+        console.log('Using Supabase for members data');
+        try {
+          const members = await membersApi.getAll();
+          console.log('[MembersSlice] Received members:', {
+            count: members?.length || 0,
+            isArray: Array.isArray(members)
+          });
+          
+          // If Supabase returned empty results, fall back to mock data
+          if (!members || members.length === 0) {
+            console.warn('[MembersSlice] No members returned from API, falling back to mock data');
+            return allMockData.members.map(m => adaptMember(m));
+          }
+          
+          return members.map(m => adaptMember(m));
+        } catch (apiError) {
+          console.error('[MembersSlice] API error in fetchMembers:', apiError);
+          console.log('[MembersSlice] Falling back to mock data due to API error');
+          return allMockData.members.map(m => adaptMember(m));
+        }
       } else {
-        // Use mock data
+        console.log('Using mock data for members');
         return allMockData.members.map(m => adaptMember(m));
       }
     } catch (error) {
@@ -121,9 +138,7 @@ export const fetchMemberById = createAsyncThunk(
         return undefined;
       }
 
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const member = await membersApi.getById(id);
         return member ? adaptMember(member) : undefined;
       } else {
@@ -141,9 +156,7 @@ export const fetchFilteredMembers = createAsyncThunk(
   'members/fetchFiltered',
   async (filters: MemberFilters, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const members = await membersApi.getAll(filters);
         return members.map(m => adaptMember(m));
       } else {
@@ -182,9 +195,7 @@ export const createMember = createAsyncThunk(
   'members/create',
   async (memberData: MemberInput, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const member = await membersApi.create(memberData);
         return member ? adaptMember(member) : null;
       } else {
@@ -224,9 +235,7 @@ export const updateMember = createAsyncThunk(
   'members/update',
   async ({ id, data }: { id: string; data: Partial<MemberInput> }, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const member = await membersApi.update(id, data);
         return member ? adaptMember(member) : null;
       } else {
@@ -268,9 +277,7 @@ export const deleteMember = createAsyncThunk(
   'members/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const success = await membersApi.delete(id);
         return success ? id : null;
       } else {

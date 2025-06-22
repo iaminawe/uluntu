@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Direct Supabase Connection Test</h1>
+    <button onclick="testConnection()">Test Connection</button>
+    <div id="status"></div>
+    <pre id="logs"></pre>
+
+    <script>
+        const supabaseUrl = 'https://opkqtpmmtvprhfyjmkhx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wa3F0cG1tdHZwcmhmeWpta2h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzk1NTAsImV4cCI6MjA2MzYxNTU1MH0.0AGpsyD0KCZrwKfOhPatw08Kf1XyVgMhQA6_Uj8l4aU';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+        
+        function log(message) {
+            console.log(message);
+            document.getElementById('logs').textContent += message + '\n';
+        }
+        
+        async function testConnection() {
+            document.getElementById('status').textContent = 'Testing...';
+            log('Starting connection test...');
+            
+            try {
+                // Test 1: Check news table
+                log('Fetching from news table...');
+                const { data, error, count } = await supabaseClient
+                    .from('news')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (error) {
+                    log('Error: ' + JSON.stringify(error));
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                } else {
+                    log('Success! Count: ' + count);
+                    document.getElementById('status').textContent = 'Success! Found ' + count + ' articles';
+                    
+                    // Test 2: Fetch one article
+                    log('Fetching one article...');
+                    const { data: article, error: err2 } = await supabaseClient
+                        .from('news')
+                        .select('id, title, slug')
+                        .limit(1);
+                    
+                    if (err2) {
+                        log('Error fetching article: ' + JSON.stringify(err2));
+                    } else if (article && article.length > 0) {
+                        log('Article: ' + JSON.stringify(article[0]));
+                    }
+                }
+            } catch (err) {
+                log('Exception: ' + err.message);
+                document.getElementById('status').textContent = 'Exception: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

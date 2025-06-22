@@ -34,17 +34,57 @@ export interface EventInput {
 export const eventsApi = {
   async getAll(filters?: { search?: string; types?: string[]; dateRange?: string }): Promise<FrontendEvent[]> {
     try {
-      console.log('Fetching all events with filters:', filters);
+      console.log('[EventsAPI] Fetching all events with filters:', filters);
+      console.log('[EventsAPI] Supabase URL:', import.meta.env.VITE_SUPABASE_URL || 'Not set');
       
-      // First, get the basic event data without including the members join
+      // First, let's do a simple test query to check if we can access the database at all
+      console.log('[EventsAPI] Running test query to verify Supabase connection...');
+      try {
+        // Try a simple count query to check access
+        const testResult = await supabase.from('events').select('count', { count: 'exact' });
+        console.log('[EventsAPI] Test query result:', {
+          data: testResult.data,
+          count: testResult.count,
+          error: testResult.error,
+          errorMessage: testResult.error?.message,
+          errorCode: testResult.error?.code,
+          status: testResult.status,
+          statusText: testResult.statusText
+        });
+        
+        // Try to list some common tables to check permissions
+        console.log('[EventsAPI] Checking table access...');
+        const tablesCheck = [];
+        
+        // Check events table
+        const eventsCheck = await supabase.from('events').select('id').limit(1);
+        tablesCheck.push({ table: 'events', success: !eventsCheck.error, error: eventsCheck.error?.message });
+        
+        // Check members table
+        const membersCheck = await supabase.from('members').select('id').limit(1);
+        tablesCheck.push({ table: 'members', success: !membersCheck.error, error: membersCheck.error?.message });
+        
+        // Check companies table
+        const companiesCheck = await supabase.from('companies').select('id').limit(1);
+        tablesCheck.push({ table: 'companies', success: !companiesCheck.error, error: companiesCheck.error?.message });
+        
+        console.log('[EventsAPI] Table access check results:', tablesCheck);
+      } catch (testError) {
+        console.error('[EventsAPI] Test query failed:', testError);
+      }
+      
+      // Now proceed with the actual query
       let query = supabase
         .from('events')
         .select(`
           *,
           event_sessions(*)
         `)
-        .eq('status', 'published')
+        // Temporarily remove status filter to see all events
+        // .eq('status', 'published')
         .order('date', { ascending: true });
+
+      console.log('[EventsAPI] Query built, about to execute');
 
       if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
@@ -77,15 +117,80 @@ export const eventsApi = {
           break;
       }
 
-      const { data, error } = await query;
+      console.log('[EventsAPI] Executing Supabase query...', query);
+      
+      // Log the SQL query being executed (if available)
+      if (typeof query.toSQL === 'function') {
+        try {
+          const sqlQuery = query.toSQL();
+          console.log('[EventsAPI] SQL Query:', sqlQuery);
+        } catch (e) {
+          console.log('[EventsAPI] Could not get SQL query:', e);
+        }
+      }
+      
+      // Execute the query with detailed error handling
+      let data, error;
+      try {
+        const result = await query;
+        data = result.data;
+        error = result.error;
+        console.log('[EventsAPI] Query result:', { 
+          dataLength: data?.length, 
+          error, 
+          data: data?.slice(0, 2),
+          rawData: data
+        });
+      } catch (queryError) {
+        console.error('[EventsAPI] Query execution error:', queryError);
+        error = queryError;
+      }
+      
       if (error) {
+        console.error('[EventsAPI] Supabase error:', error);
         handleSupabaseError(error, 'fetching events');
         return [];
       }
       
-      // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], adaptEventFromDatabase);
+      // Log the raw data structure to understand what we're working with
+      console.log('[EventsAPI] Raw data structure:', {
+        firstItem: data && data.length > 0 ? Object.keys(data[0]) : 'No data',
+        sampleData: data?.slice(0, 1)
+      });
+      
+      // Ensure we have data to adapt
+      if (!data || data.length === 0) {
+        console.log('[EventsAPI] No data to adapt, returning empty array');
+        return [];
+      }
+      
+      // Directly adapt the data without using helper functions that might be causing issues
+      const adapted = data.map(item => {
+        // Create a basic event object with required fields
+        const event: FrontendEvent = {
+          id: item.id,
+          title: item.title || '',
+          description: item.description || '',
+          date: item.date || new Date().toISOString(),
+          location: item.location || '',
+          type: item.type || 'other',
+          status: item.status || 'draft',
+          featured: item.featured || false,
+          image: item.image || '',
+          // Add any other fields that might be needed
+        };
+        
+        return event;
+      });
+      
+      console.log('[EventsAPI] Adapted events:', {
+        count: adapted.length,
+        sample: adapted.slice(0, 2)
+      });
+      
+      return adapted;
     } catch (error) {
+      console.error('[EventsAPI] Exception caught:', error);
       handleSupabaseError(error, 'fetching events');
       return [];
     }
@@ -97,11 +202,7 @@ export const eventsApi = {
         .from('events')
         .select(`
           *,
-          event_sessions(*),
-          members!events_organizer_id_fkey(id, name, image, title),
-          event_attendees(
-            members(id, name, image)
-          )
+          event_sessions(*)
         `)
         .eq('id', id)
         .eq('status', 'published')
@@ -142,7 +243,7 @@ export const eventsApi = {
       const { data, error } = await supabase
         .from('events')
         .insert(supabaseData)
-        .select('*, event_sessions(*), members!events_organizer_id_fkey(id, name, image, title)')
+        .select('*, event_sessions(*)')
         .single();
 
       if (error) {
@@ -182,7 +283,7 @@ export const eventsApi = {
         .from('events')
         .update(supabaseData)
         .eq('id', id)
-        .select('*, event_sessions(*), members!events_organizer_id_fkey(id, name, image, title)')
+        .select('*, event_sessions(*)')
         .single();
 
       if (error) {

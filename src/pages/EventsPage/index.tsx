@@ -13,22 +13,17 @@ import { useEventsRedux } from '@/features/events/hooks/useEventsRedux';
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Use the Redux-based useEventsRedux hook to fetch events data.
-  const { events = [], isLoading, error, getAllEvents } = useEventsRedux();
   
-  // Fetch events when component mounts
+  // Use Redux for events data
+  const { events, isLoading, isError, error, getAllEvents } = useEventsRedux();
+  
+  // Load events on mount
   useEffect(() => {
+    console.log('[EventsPage] Loading events via Redux...');
     getAllEvents();
   }, [getAllEvents]);
   
   const hasEvents = events.length > 0;
-  
-  useEffect(() => {
-    console.log('EventsPage - Events:', events);
-    console.log('EventsPage - Loading:', isLoading);
-    console.log('EventsPage - Error:', error);
-  }, [events, isLoading, error]);
   
   return (
     <>
@@ -48,10 +43,10 @@ export default function EventsPage() {
         
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
-        ) : error ? (
+        ) : isError ? (
           <QueryError 
-            error={error || 'Error loading events'} 
-            retry={() => getAllEvents()} 
+            error={error ? new Error(String(error)) : new Error('Failed to load events')} 
+            retry={getAllEvents} 
             message="We couldn't load the events. Please try again."
           />
         ) : !hasEvents ? (
@@ -66,17 +61,10 @@ export default function EventsPage() {
           />
         ) : viewMode === 'list' ? (
           <EventsList 
-            initialSearch={searchTerm} 
-            parentEvents={events} 
-            parentLoading={isLoading} 
-            parentError={error}
+            initialSearch={searchTerm}
           />
         ) : (
-          <EventsCalendar 
-            events={events} 
-            isLoading={isLoading} 
-            error={error} 
-          />
+          <EventsCalendar />
         )}
       </ContentContainer>
     </>

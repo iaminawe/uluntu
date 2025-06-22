@@ -7,7 +7,7 @@ import { eventsApi, EventInput as EventsApiEventInput } from '../api/eventsApi';
 import { events as mockEvents } from '@/data/mock/events';
 import { Event as FrontendEvent } from '../../types';
 import { Database } from '../../types/supabase';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
+import { getIsSupabaseEnabled } from '@/config/env';
 
 export interface EventFilters {
   search?: string;
@@ -38,12 +38,30 @@ export const fetchEvents = createAsyncThunk(
   'events/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
-        const events = await eventsApi.getAll();
-        return events;
+      if (getIsSupabaseEnabled()) {
+        console.log('[EventsSlice] Fetching from Supabase...');
+        try {
+          const events = await eventsApi.getAll();
+          console.log('[EventsSlice] Received events:', {
+            count: events?.length || 0,
+            isArray: Array.isArray(events),
+            sample: events?.slice(0, 2) || 'No events',
+            events: events
+          });
+          
+          // If Supabase returned empty results, fall back to mock data
+          if (!events || events.length === 0) {
+            console.warn('[EventsSlice] No events returned from API, falling back to mock data');
+            return mockEvents || [];
+          }
+          
+          return events;
+        } catch (apiError) {
+          console.error('[EventsSlice] API error in fetchEvents:', apiError);
+          return rejectWithValue('Failed to fetch events: ' + (apiError?.message || String(apiError)));
+        }
       } else {
+        console.log('[EventsSlice] Using mock data...');
         // Use mock data
         return Promise.resolve(mockEvents || []);
       }
@@ -61,9 +79,7 @@ export const fetchEventById = createAsyncThunk(
         return undefined;
       }
 
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const event = await eventsApi.getById(id);
         return event || undefined;
       } else {
@@ -82,9 +98,7 @@ export const fetchFilteredEvents = createAsyncThunk(
   'events/fetchFiltered',
   async (filters: EventFilters, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const events = await eventsApi.getAll(filters);
         return events;
       } else {
@@ -127,9 +141,7 @@ export const createEvent = createAsyncThunk(
   'events/create',
   async (eventData: Database['public']['Tables']['events']['Insert'], { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const event = await eventsApi.create(eventData as EventsApiEventInput);
         return event;
       } else {
@@ -173,9 +185,7 @@ export const updateEvent = createAsyncThunk(
   'events/update',
   async ({ id, data }: { id: string; data: Partial<Database['public']['Tables']['events']['Update']> }, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         const event = await eventsApi.update(id, data as EventsApiEventInput);
         return event;
       } else {
@@ -225,9 +235,7 @@ export const deleteEvent = createAsyncThunk(
   'events/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      const useSupabase = IS_SUPABASE_ENABLED;
-      
-      if (useSupabase) {
+      if (getIsSupabaseEnabled()) {
         await eventsApi.delete(id);
         return id;
       } else {
@@ -264,9 +272,15 @@ const eventsSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchEvents.fulfilled, (state, action) => {
+        console.log('[EventsSlice] fetchEvents.fulfilled with payload:', {
+          payloadLength: action.payload?.length || 0,
+          firstItem: action.payload?.[0] || 'No items',
+          isArray: Array.isArray(action.payload)
+        });
         state.status = 'succeeded';
         state.events = action.payload as FrontendEvent[];
         state.error = null;
+        console.log('[EventsSlice] State updated with events:', state.events.length);
       })
       .addCase(fetchEvents.rejected, (state, action) => {
         state.status = 'failed';

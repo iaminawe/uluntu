@@ -232,7 +232,7 @@ class ResendService {
       if (!eventType) return;
 
       // Store analytics data
-      await this.recordAnalytics(campaignId, subscriptionId, eventType as any, {
+      await this.recordAnalytics(campaignId, subscriptionId, eventType as unknown, {
         resend_message_id: data.email_id,
         timestamp: data.created_at,
         event_data: data

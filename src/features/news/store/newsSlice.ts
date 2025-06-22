@@ -2,11 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { NewsArticle, ContentStatus } from '@/types';
 import { newsApi } from '../api/newsApi';
-import * as mockQueries from '@/hooks/useNewsQueries';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
-
-// Toggle between Supabase and mock data
-const USE_SUPABASE = IS_SUPABASE_ENABLED;
+import mockData from '@/data/mock/mockData';
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define the input type for news article data
 export interface NewsArticleInput {
@@ -62,10 +59,21 @@ export const fetchNewsArticles = createAsyncThunk(
   'news/fetchNewsArticles',
   async (_, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
-        return await newsApi.getAll();
+      console.log('[NewsSlice] fetchNewsArticles - getIsSupabaseEnabled():', getIsSupabaseEnabled());
+      
+      if (getIsSupabaseEnabled()) {
+        console.log('[NewsSlice] Fetching from Supabase...');
+        try {
+          const articles = await newsApi.getAll();
+          console.log('[NewsSlice] Received articles:', articles?.length || 0);
+          return articles || [];
+        } catch (apiError) {
+          console.error('[NewsSlice] API error:', apiError);
+          throw apiError;
+        }
       } else {
-        return mockQueries.useNewsArticles().data || [];
+        console.log('[NewsSlice] Using mock data...');
+        return mockData.newsArticles || [];
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch news articles');
@@ -77,12 +85,12 @@ export const fetchNewsArticleById = createAsyncThunk(
   'news/fetchNewsArticleById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const article = await newsApi.getById(id);
         return article || null;
       } else {
-        const result = mockQueries.useNewsArticle(id);
-        return result?.data || null;
+        const article = mockData.newsArticles.find(a => a.id === id);
+        return article || null;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch news article with ID: ${id}`);
@@ -94,13 +102,12 @@ export const fetchNewsArticleBySlug = createAsyncThunk(
   'news/fetchNewsArticleBySlug',
   async (slug: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const article = await newsApi.getBySlug(slug);
         return article || null;
       } else {
-        // Mock implementation - normally you'd have a useNewsArticleBySlug hook
-        const articles = mockQueries.useNewsArticles().data || [];
-        const article = articles.find(a => a.slug === slug);
+        // Mock implementation - find article by slug
+        const article = mockData.newsArticles.find(a => a.slug === slug);
         return article || null;
       }
     } catch (error) {
@@ -113,17 +120,36 @@ export const fetchFilteredNewsArticles = createAsyncThunk(
   'news/fetchFilteredNewsArticles',
   async (filters: NewsFilters, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const articles = await newsApi.getAll(filters);
         return articles;
       } else {
-        const queryResult = mockQueries.useNewsArticlesWithFilters({
-          search: filters.search,
-          tag: filters.tags?.[0], // The mock hook only supports a single tag
-          featured: filters.featured,
-          status: filters.status
-        });
-        const articles = queryResult.data || [];
+        // Mock filtering logic
+        let filteredArticles = mockData.newsArticles || [];
+        
+        if (filters.search) {
+          const searchTerm = filters.search.toLowerCase();
+          filteredArticles = filteredArticles.filter(article =>
+            article.title.toLowerCase().includes(searchTerm) ||
+            (article.content && article.content.toLowerCase().includes(searchTerm))
+          );
+        }
+        
+        if (filters.tags && filters.tags.length > 0) {
+          filteredArticles = filteredArticles.filter(article =>
+            article.tags && filters.tags!.some(tag => article.tags!.includes(tag))
+          );
+        }
+        
+        if (filters.featured !== undefined) {
+          filteredArticles = filteredArticles.filter(article => article.featured === filters.featured);
+        }
+        
+        if (filters.status) {
+          filteredArticles = filteredArticles.filter(article => article.status === filters.status);
+        }
+        
+        const articles = filteredArticles;
         return articles;
       }
     } catch (error) {
@@ -136,14 +162,19 @@ export const fetchRelatedNewsArticles = createAsyncThunk(
   'news/fetchRelatedNewsArticles',
   async ({ id, limit = 3 }: { id: string; limit?: number }, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await newsApi.getRelated(id, limit);
       } else {
-        const article = mockQueries.useNewsArticle(id).data;
+        const article = mockData.newsArticles.find(a => a.id === id);
         if (!article) return [];
         
-        const result = mockQueries.useRelatedNewsArticles(id, article.tags, limit);
-        return result.data || [];
+        // Find related articles based on shared tags
+        const relatedArticles = mockData.newsArticles
+          .filter(a => a.id !== id && a.tags && article.tags && 
+            a.tags.some(tag => article.tags!.includes(tag)))
+          .slice(0, limit);
+        
+        return relatedArticles;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch related news articles for ID: ${id}`);
@@ -155,10 +186,10 @@ export const fetchFeaturedNewsArticles = createAsyncThunk(
   'news/fetchFeaturedNewsArticles',
   async (_, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await newsApi.getAll({ featured: true });
       } else {
-        const articles = mockQueries.useNewsArticlesWithFilters({ featured: true }).data || [];
+        const articles = mockData.newsArticles.filter(a => a.featured === true);
         return articles;
       }
     } catch (error) {
@@ -171,13 +202,27 @@ export const createNewsArticle = createAsyncThunk(
   'news/createNewsArticle',
   async (articleData: NewsArticleInput, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const newArticle = await newsApi.create(articleData);
         return newArticle;
       } else {
         // Create a mock article with the data provided
-        const mockResult = mockQueries.useCreateNewsArticle().mutateAsync(articleData);
-        return mockResult;
+        const newArticle = {
+          id: Date.now().toString(),
+          title: articleData.title,
+          slug: articleData.slug || articleData.title.toLowerCase().replace(/\s+/g, '-'),
+          content: articleData.content || '',
+          excerpt: articleData.excerpt || '',
+          author_id: articleData.author_id || 'mock-author',
+          publish_date: articleData.publish_date || new Date().toISOString().split('T')[0],
+          hero_image: articleData.hero_image || '',
+          tags: articleData.tags || [],
+          status: articleData.status || 'published',
+          featured: articleData.featured || false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        return newArticle as any;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create news article');
@@ -189,13 +234,17 @@ export const updateNewsArticle = createAsyncThunk(
   'news/updateNewsArticle',
   async ({ id, data }: { id: string; data: Partial<NewsArticleInput> }, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const updatedArticle = await newsApi.update(id, data);
         return updatedArticle;
       } else {
         // Update a mock article with the data provided
-        const mockResult = mockQueries.useUpdateNewsArticle().mutateAsync({ id, data });
-        return mockResult;
+        const existingArticle = mockData.newsArticles.find(a => a.id === id);
+        if (existingArticle) {
+          const updatedArticle = { ...existingArticle, ...data, updatedAt: new Date().toISOString() };
+          return updatedArticle as any;
+        }
+        throw new Error(`News article with ID ${id} not found`);
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to update news article with ID: ${id}`);
@@ -207,14 +256,14 @@ export const deleteNewsArticle = createAsyncThunk(
   'news/deleteNewsArticle',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const success = await newsApi.delete(id);
         if (success) {
           return id;
         }
         throw new Error(`Failed to delete news article with ID: ${id}`);
       } else {
-        await mockQueries.useDeleteNewsArticle().mutateAsync(id);
+        // Mock delete - just return the id to indicate success
         return id;
       }
     } catch (error) {

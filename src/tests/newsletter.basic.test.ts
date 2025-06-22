@@ -1,3 +1,9 @@
+// Mock environment dependencies first
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
 import { newsletterCampaignApi } from '@/api/newsletter/campaigns';
 import { newsletterContentApi } from '@/api/newsletter/content';

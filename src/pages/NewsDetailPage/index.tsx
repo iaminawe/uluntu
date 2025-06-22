@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useNewsArticleByIdRedux, useRelatedNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { useNewsArticleBySlugRedux, useRelatedNewsArticlesRedux } from '../../hooks/useNewsRedux';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import ArticleHeader from './ArticleHeader';
@@ -11,8 +11,7 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 
 export default function NewsDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const articleId = id;
+  const { slug } = useParams<{ slug: string }>();
 
   // Call hooks unconditionally at the top level using Redux
   const { 
@@ -20,16 +19,16 @@ export default function NewsDetailPage() {
     isLoading: articleLoading, 
     isError: articleIsError,
     error: articleError 
-  } = useNewsArticleByIdRedux(articleId);
+  } = useNewsArticleBySlugRedux(slug);
   
-  // Then use the article's tags for related articles
+  // Then use the article's id for related articles
   const { 
     relatedArticles = [], 
     isLoading: relatedLoading 
-  } = useRelatedNewsArticlesRedux(articleId, 3)
+  } = useRelatedNewsArticlesRedux(article?.id, 3)
 
-  if (!articleId) {
-    // Handle the case where articleId is not available after hooks have been called
+  if (!slug) {
+    // Handle the case where slug is not available after hooks have been called
     return <ErrorState />;
   }
 
@@ -50,7 +49,7 @@ export default function NewsDetailPage() {
       
       <ContentContainer maxWidth="3xl">
         <Card className="mb-6">
-          <ArticleHeader article={article} id={id || ''} />
+          <ArticleHeader article={article} id={article.id || ''} />
           <ArticleContent article={article} />
           <AuthorInfo author={article.author} />
         </Card>

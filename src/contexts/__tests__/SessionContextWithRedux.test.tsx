@@ -2,25 +2,31 @@
  * @jest-environment jsdom
  */
 
+// Mock environment dependencies first
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: jest.fn(),
+    auth: { 
+      getUser: jest.fn(),
+      getSession: jest.fn(),
+      onAuthStateChange: jest.fn(),
+      signOut: jest.fn()
+    }
+  },
+  sessionCache: new WeakMap()
+}));
+
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import { act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Session, AuthChangeEvent, Subscription } from '@supabase/supabase-js';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer, { signInWithSession, signOut as reduxSignOut } from '@/features/auth/store/authSlice';
 import { mockUser, mockSession, flushPromises } from '@/shared/utils/testUtils';
-
-// Mock supabase client
-jest.mock('@/lib/supabase', () => {
-  return {
-    supabase: {
-      auth: {
-        getSession: jest.fn(),
-        signOut: jest.fn(),
-        onAuthStateChange: jest.fn()
-      }
-    }
-  };
-});
 
 // Import the mocked supabase client
 import { supabase } from '@/lib/supabase';

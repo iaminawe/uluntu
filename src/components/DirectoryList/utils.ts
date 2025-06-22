@@ -61,7 +61,7 @@ const matchesSearch = (member: Member, search: string): boolean => {
   );
 };
 
-// Helper function to check if member has any of the selected skills
+// Helper function to check if member has unknown of the selected skills
 const hasAnySkill = (memberSkills: string[], selectedSkills: string[]): boolean => {
   return selectedSkills.some(skill => memberSkills.includes(skill));
 };

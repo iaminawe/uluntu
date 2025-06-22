@@ -9,7 +9,7 @@ import { GroupFilters } from '../../store/groupsSlice';
 
 const GROUPS_PER_PAGE = 8;
 
-const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRedux = false }: GroupsListProps & { useRedux?: boolean }) => {
+const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRedux = true }: GroupsListProps & { useRedux?: boolean }) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -88,7 +88,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
         <div className="text-center py-12 text-red-500">
           <p>Error loading groups</p>
           {error && typeof error === 'object' && 'message' in error && (
-            <p>{(error as any).message}</p>
+            <p>{(error as unknown).message}</p>
           )}
         </div>
       </div>

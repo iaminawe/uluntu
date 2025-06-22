@@ -1,7 +1,22 @@
+// Mock environment dependencies first
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: jest.fn(),
+    auth: { getUser: jest.fn() }
+  },
+  sessionCache: new WeakMap()
+}));
+
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { store } from '@/store/index';
+import * as useNewsQueriesModule from '../hooks/useNewsQueries';
 
 // Mock the API calls
 const mockNewsArticle = {
@@ -111,7 +126,7 @@ describe('News Management', () => {
   it('NEWS-001: As an Administrator or Content Creator, I want to publish news articles with a title, content, images, and tags', async () => {
     // Mock implementation for creating a news article
     const createNewsArticleMock = jest.fn().mockResolvedValue(mockNewsArticle);
-    require('../hooks/useNewsQueries').useCreateNewsArticle.mockReturnValue({
+    (useNewsQueriesModule as any).useCreateNewsArticle.mockReturnValue({
       mutateAsync: createNewsArticleMock,
       isLoading: false,
       error: null
@@ -135,7 +150,7 @@ describe('News Management', () => {
     };
     
     const updateNewsArticleMock = jest.fn().mockResolvedValue(updatedArticle);
-    require('../hooks/useNewsQueries').useUpdateNewsArticle.mockReturnValue({
+    (useNewsQueriesModule as any).useUpdateNewsArticle.mockReturnValue({
       mutateAsync: updateNewsArticleMock,
       isLoading: false,
       error: null
@@ -152,7 +167,7 @@ describe('News Management', () => {
   it('NEWS-003: As an Administrator or Content Creator, I want to remove outdated news articles', async () => {
     // Mock implementation for deleting a news article
     const deleteNewsArticleMock = jest.fn().mockResolvedValue({});
-    require('../hooks/useNewsQueries').useDeleteNewsArticle.mockReturnValue({
+    (useNewsQueriesModule as any).useDeleteNewsArticle.mockReturnValue({
       mutateAsync: deleteNewsArticleMock,
       isLoading: false,
       error: null
@@ -178,7 +193,7 @@ describe('News Management', () => {
       }
     ];
     
-    require('../hooks/useNewsQueries').useNewsArticlesWithFilters.mockReturnValue({
+    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue({
       data: filteredArticles,
       isLoading: false,
       error: null,
@@ -205,7 +220,7 @@ describe('News Management', () => {
       mockNewsArticle
     ];
     
-    require('../hooks/useNewsQueries').useNewsArticlesWithFilters.mockReturnValue({
+    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue({
       data: searchResults,
       isLoading: false,
       error: null,

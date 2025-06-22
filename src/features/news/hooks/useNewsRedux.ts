@@ -40,11 +40,9 @@ export function useNewsArticlesRedux() {
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Load articles if needed
+  // Load articles
   const loadArticles = () => {
-    if (status === 'idle') {
-      dispatch(fetchNewsArticles());
-    }
+    dispatch(fetchNewsArticles());
   };
 
   return {

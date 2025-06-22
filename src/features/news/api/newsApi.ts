@@ -6,6 +6,7 @@ import {
   SupabaseNewsArticleWithAuthor,
 } from '../utils/newsAdapter';
 import type { Database } from '../types/supabase';
+import { generateSlug } from '@/utils/slugify';
 
 // Helper function to adapt a list of items
 function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
@@ -18,40 +19,51 @@ type NewsTableUpdate = Database['public']['Tables']['news']['Update'];
 export const newsApi = {
   async getAll(filters: { search?: string; tags?: string[]; featured?: boolean; status?: string } = {}): Promise<NewsArticle[]> {
     try {
+      console.log('[NewsAPI] getAll called with filters:', filters);
       
-      let query = supabase.from('news').select(`
-        *,
-        members!author_id (*)
-      `);
-
-      if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,excerpt.ilike.%${filters.search}%`);
-      }
-      if (filters.tags && filters.tags.length > 0) {
-        query = query.overlaps('tags', filters.tags);
+      // Use direct REST API call to bypass Supabase client issues
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!url || !key) {
+        throw new Error('Missing Supabase configuration');
       }
       
-      if (filters.featured !== undefined) {
-        query = query.eq('featured', filters.featured);
+      // Build query string
+      let queryString = 'select=*';
+      
+      // Add status filter (default to published)
+      const status = filters.status || 'published';
+      queryString += `&status=eq.${status}`;
+      
+      // Add order
+      queryString += '&order=publish_date.desc';
+      
+      console.log('[NewsAPI] Using direct REST API call:', `${url}/rest/v1/news?${queryString}`);
+      
+      const response = await fetch(`${url}/rest/v1/news?${queryString}`, {
+        headers: {
+          'apikey': key,
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        }
+      });
+      
+      console.log('[NewsAPI] Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[NewsAPI] Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
-      if (filters.status) {
-        query = query.eq('status', filters.status);
-      } else {
-        // Default to only published articles if no status filter specified
-        query = query.eq('status', 'published');
-      }
-
-      const { data, error } = await query.order('publish_date', { ascending: false });
-
-      if (error) {
-        handleSupabaseError(error, 'fetching news articles');
-        return [];
-      }
+      const data = await response.json();
+      console.log('[NewsAPI] Response data:', data?.length, 'articles');
       
-      
-      // Use our helper function instead of adaptListFromSupabase
-      const adaptedArticles = adaptItemsList(data || [], (item: SupabaseNewsArticleWithAuthor) => adaptNewsArticleFromDatabase(item));
+      // Use our helper function to adapt the data
+      const adaptedArticles = adaptItemsList(data || [], (item: any) => adaptNewsArticleFromDatabase(item));
+      console.log('[NewsAPI] Adapted articles:', adaptedArticles.length);
       return adaptedArticles;
     } catch (error) {
       handleSupabaseError(error, 'fetching news articles');
@@ -63,10 +75,7 @@ export const newsApi = {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select(`
-          *,
-          members!author_id (*)
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
@@ -75,7 +84,7 @@ export const newsApi = {
         return null;
       }
       
-      return data ? adaptNewsArticleFromDatabase(data as SupabaseNewsArticleWithAuthor) : null;
+      return data ? adaptNewsArticleFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `fetching news article with id ${id}`);
       return null;
@@ -86,10 +95,7 @@ export const newsApi = {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select(`
-          *,
-          members!author_id (*)
-        `)
+        .select('*')
         .eq('slug', slug) 
         .single();
 
@@ -98,7 +104,7 @@ export const newsApi = {
         return null;
       }
       
-      return data ? adaptNewsArticleFromDatabase(data as SupabaseNewsArticleWithAuthor) : null;
+      return data ? adaptNewsArticleFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `fetching news article with slug ${slug}`);
       return null;
@@ -109,13 +115,13 @@ export const newsApi = {
     try {
       const supabaseArticle = adaptNewsArticleToDatabase(newsArticleData);
       if (!supabaseArticle.slug && newsArticleData.title) {
-        supabaseArticle.slug = newsArticleData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+        supabaseArticle.slug = generateSlug(newsArticleData.title, { strict: true });
       }
 
       const { data, error } = await supabase
         .from('news')
         .insert(supabaseArticle as NewsTableInsert)
-        .select(`*, members!author_id (*)`)
+        .select('*')
         .single();
 
       if (error) {
@@ -123,7 +129,7 @@ export const newsApi = {
         return null;
       }
       
-      return data ? adaptNewsArticleFromDatabase(data as SupabaseNewsArticleWithAuthor) : null;
+      return data ? adaptNewsArticleFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating news article');
       return null;
@@ -133,11 +139,17 @@ export const newsApi = {
   async update(id: string, newsArticleData: Partial<NewsArticle>): Promise<NewsArticle | null> {
     try {
       const supabaseArticle = adaptNewsArticleToDatabase(newsArticleData);
+      
+      // Generate slug if title is provided but slug is not
+      if (newsArticleData.title && !newsArticleData.slug && !supabaseArticle.slug) {
+        supabaseArticle.slug = generateSlug(newsArticleData.title, { strict: true });
+      }
+      
       const { data, error } = await supabase
         .from('news')
         .update(supabaseArticle as NewsTableUpdate)
         .eq('id', id)
-        .select(`*, members!author_id (*)`)
+        .select('*')
         .single();
 
       if (error) {
@@ -145,7 +157,7 @@ export const newsApi = {
         return null;
       }
       
-      return data ? adaptNewsArticleFromDatabase(data as SupabaseNewsArticleWithAuthor) : null;
+      return data ? adaptNewsArticleFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `updating news article with id ${id}`);
       return null;
@@ -170,7 +182,7 @@ export const newsApi = {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select(`*, members!author_id (*)`)
+        .select('*')
         .neq('id', newsId)
         .limit(limit)
         .order('publish_date', { ascending: false });
@@ -181,7 +193,7 @@ export const newsApi = {
       }
       
       // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], (item: SupabaseNewsArticleWithAuthor) => adaptNewsArticleFromDatabase(item));
+      return adaptItemsList(data || [], (item: any) => adaptNewsArticleFromDatabase(item));
     } catch (error) {
       handleSupabaseError(error, `fetching related news articles for id ${newsId}`);
       return [];

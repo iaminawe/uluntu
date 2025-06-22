@@ -31,12 +31,11 @@ export interface MarketplaceItemInput {
 export const marketplaceApi = {
   async getAll(filters?: MarketplaceItemsQueryOptions): Promise<MarketplaceItem[]> {
     try {
+      console.log('[MarketplaceAPI] getAll called with filters:', filters);
+      
       let query = supabase
         .from('marketplace_listings')
-        .select(`
-          *,
-          members (*)
-        `);
+        .select('*');
 
       // Apply filters if provided
       if (filters) {
@@ -70,14 +69,21 @@ export const marketplaceApi = {
         }
       }
 
+      console.log('[MarketplaceAPI] Executing query...');
       const { data, error } = await query;
+      console.log('[MarketplaceAPI] Query result:', { dataLength: data?.length, error });
+      console.log('[MarketplaceAPI] Raw data:', data);
 
       if (error) {
+        console.error('[MarketplaceAPI] Supabase error:', error);
         throw handleSupabaseError(error);
       }
 
       // Use our helper function with type assertion to avoid compatibility issues
-      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
+      const adapted = adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
+      console.log('[MarketplaceAPI] Adapted items:', adapted.length);
+      console.log('[MarketplaceAPI] First adapted item:', adapted[0]);
+      return adapted;
     } catch (error) {
       console.error('Error fetching marketplace items:', error);
       throw error;
@@ -116,10 +122,7 @@ export const marketplaceApi = {
       // Now perform the full query
       const { data, error } = await supabase
         .from('marketplace_listings')
-        .select(`
-          *,
-          members!marketplace_listings_seller_id_fkey(id, name, image)
-        `)
+        .select('*')
         .eq('id', formattedId)
         .single();
 
@@ -132,7 +135,7 @@ export const marketplaceApi = {
       console.log('MarketplaceAPI: Successfully retrieved item data:', data);
       
       // Use type assertion to avoid type compatibility issues
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       console.error('MarketplaceAPI: Exception in getById:', error);
       handleSupabaseError(error, 'fetching marketplace item by id');
@@ -154,10 +157,7 @@ export const marketplaceApi = {
       // Find related items
       const { data, error } = await supabase
         .from('marketplace_listings')
-        .select(`
-          *,
-          members!marketplace_listings_seller_id_fkey(id, name, image)
-        `)
+        .select('*')
         .eq('status', 'published')
         .neq('id', itemId)
         .eq('type', currentItem.type)
@@ -170,7 +170,7 @@ export const marketplaceApi = {
       }
       
       // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
+      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as unknown));
     } catch (error) {
       handleSupabaseError(error, 'fetching marketplace items by seller');
       return []; // Return empty array on error
@@ -191,7 +191,7 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating marketplace item');
       return null;
@@ -213,7 +213,7 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating marketplace item');
       return null;

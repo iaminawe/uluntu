@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectAllMarketplaceListings,
@@ -66,7 +66,7 @@ export function useMarketplaceListingsRedux() {
  */
 export function useMarketplaceListingByIdRedux(id: string) {
   const dispatch = useAppDispatch();
-  const listing = useAppSelector(selectMarketplaceListingById);
+  const listing = useAppSelector(state => selectMarketplaceListingById(state, id));
   const status = useAppSelector(selectMarketplaceStatus);
   const error = useAppSelector(selectMarketplaceError);
   
@@ -109,16 +109,25 @@ export function useFilteredMarketplaceListingsRedux(initialFilters?: Marketplace
   const status = useAppSelector(selectMarketplaceStatus);
   const error = useAppSelector(selectMarketplaceError);
   
+  // Fetch initial data on mount - only once
+  useEffect(() => {
+    if (status === 'idle') {
+      console.log('[useFilteredMarketplaceListingsRedux] Fetching initial data...');
+      dispatch(fetchFilteredMarketplaceListings({}));
+    }
+  }, [dispatch]);
+  
   // Apply initial filters if provided
   const updateFilters = useCallback((filters: MarketplaceItemsQueryOptions) => {
+    console.log('[useFilteredMarketplaceListingsRedux] Updating filters:', filters);
     dispatch(setFilters(filters));
     return dispatch(fetchFilteredMarketplaceListings(filters));
   }, [dispatch]);
   
-  // Fetch listings with current filters
-  const fetchListings = useCallback(() => {
-    return dispatch(fetchFilteredMarketplaceListings(currentFilters));
-  }, [dispatch, currentFilters]);
+  // Fetch listings with specific filters (no dependency on currentFilters)
+  const fetchListings = useCallback((filters?: MarketplaceItemsQueryOptions) => {
+    return dispatch(fetchFilteredMarketplaceListings(filters || {}));
+  }, [dispatch]);
   
   // Reset filters
   const resetFilters = useCallback(() => {

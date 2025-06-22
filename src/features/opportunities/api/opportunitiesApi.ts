@@ -42,6 +42,8 @@ export const opportunitiesApi = {
     location?: string[] 
   }): Promise<Opportunity[]> {
     try {
+      console.log('[OpportunitiesAPI] Fetching opportunities with filters:', filters);
+      
       let query = supabase
         .from('opportunities')
         .select('*')
@@ -68,13 +70,18 @@ export const opportunitiesApi = {
       }
 
       const { data, error } = await query;
+      
+      console.log('[OpportunitiesAPI] Query result:', { dataLength: data?.length, error });
 
       if (error) {
+        console.error('[OpportunitiesAPI] Supabase error:', error);
         handleSupabaseError(error, 'fetching opportunities');
         return [];
       }
       
-      return adaptItemsList(data || [], adaptOpportunityFromDatabase);
+      const adapted = adaptItemsList(data || [], adaptOpportunityFromDatabase);
+      console.log('[OpportunitiesAPI] Adapted opportunities:', adapted.length);
+      return adapted;
     } catch (error) {
       handleSupabaseError(error, 'fetching opportunities');
       return [];

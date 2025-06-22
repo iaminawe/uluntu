@@ -1,6 +1,7 @@
 import { supabase, handleSupabaseError } from './supabaseUtils';
 import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '@/adapters/eventAdapter';
-import { Event as FrontendEvent } from '../types'; // For typing
+import { Event as FrontendEvent } from '../types';
+import { Database } from '@/types/supabase';
 
 // Helper function to adapt a list of items
 function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
@@ -276,7 +277,7 @@ export const eventsApi = {
     }
   },
 
-  async getEventAttendees(eventId: string): Promise<any[]> {
+  async getEventAttendees(eventId: string): Promise<(Database['public']['Tables']['event_attendees']['Row'] & { member?: Database['public']['Tables']['members']['Row'] })[]> {
     try {
       const { data, error } = await supabase
         .from('event_attendees')

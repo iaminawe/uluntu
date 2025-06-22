@@ -7,37 +7,112 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          changes: Json | null
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_feature_translations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          feature_id: string | null
+          id: string
+          language_code: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          feature_id?: string | null
+          id?: string
+          language_code: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          feature_id?: string | null
+          id?: string
+          language_code?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_feature_translations_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "admin_features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_features: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          enabled: boolean | null
+          feature_key: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          enabled?: boolean | null
+          feature_key: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          enabled?: boolean | null
+          feature_key?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           cover_image: string | null
-          cover_image_url: string | null
           created_at: string | null
           description: string
           featured: boolean | null
@@ -53,7 +128,6 @@ export type Database = {
         }
         Insert: {
           cover_image?: string | null
-          cover_image_url?: string | null
           created_at?: string | null
           description: string
           featured?: boolean | null
@@ -69,7 +143,6 @@ export type Database = {
         }
         Update: {
           cover_image?: string | null
-          cover_image_url?: string | null
           created_at?: string | null
           description?: string
           featured?: boolean | null
@@ -120,6 +193,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      company_tags: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_tags_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          permissions: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          permissions?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          permissions?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       event_attendees: {
         Row: {
@@ -278,6 +417,42 @@ export type Database = {
           },
         ]
       }
+      event_tags: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_tags_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           address: string | null
@@ -395,6 +570,42 @@ export type Database = {
           },
         ]
       }
+      group_tags: {
+        Row: {
+          created_at: string | null
+          group_id: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          group_id: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_tags_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
           cover_image: string | null
@@ -440,56 +651,121 @@ export type Database = {
       marketplace_listings: {
         Row: {
           condition: string | null
+          contact_info: Json | null
           created_at: string | null
-          description: string | null
+          description: string
           featured: boolean | null
           id: string
           images: string[] | null
-          location: string | null
+          location: string
           price: number | null
-          seller_id: string | null
-          status: string | null
+          seller_id: string
+          status: string
           tags: string[] | null
           title: string
           type: string
-          updated_at: string | null
         }
         Insert: {
           condition?: string | null
+          contact_info?: Json | null
           created_at?: string | null
-          description?: string | null
+          description: string
           featured?: boolean | null
           id?: string
           images?: string[] | null
-          location?: string | null
+          location: string
           price?: number | null
-          seller_id?: string | null
-          status?: string | null
+          seller_id: string
+          status?: string
           tags?: string[] | null
           title: string
           type: string
-          updated_at?: string | null
         }
         Update: {
           condition?: string | null
+          contact_info?: Json | null
           created_at?: string | null
-          description?: string | null
+          description?: string
           featured?: boolean | null
           id?: string
           images?: string[] | null
-          location?: string | null
+          location?: string
           price?: number | null
-          seller_id?: string | null
-          status?: string | null
+          seller_id?: string
+          status?: string
           tags?: string[] | null
           title?: string
           type?: string
-          updated_at?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "marketplace_listings_seller_id_fkey"
             columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          listing_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          listing_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          listing_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_tags_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_interests: {
+        Row: {
+          created_at: string | null
+          id: string
+          interest: string
+          member_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interest: string
+          member_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interest?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_interests_member_id_fkey"
+            columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
             referencedColumns: ["id"]
@@ -519,19 +795,62 @@ export type Database = {
           },
         ]
       }
+      member_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          member_id: string
+          skill_level: string | null
+          tag_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          member_id: string
+          skill_level?: string | null
+          tag_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          member_id?: string
+          skill_level?: string | null
+          tag_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_tags_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       members: {
         Row: {
           arrived_in_nelson: string | null
           bio: string | null
+          company: string | null
           created_at: string | null
           employment_status: string | null
           featured: boolean | null
           id: string
           image: string | null
-          intro: string | null
           location: string | null
           name: string
           open_to_volunteering: boolean | null
+          social: Json | null
           status: string
           title: string | null
           user_id: string | null
@@ -540,15 +859,16 @@ export type Database = {
         Insert: {
           arrived_in_nelson?: string | null
           bio?: string | null
+          company?: string | null
           created_at?: string | null
           employment_status?: string | null
           featured?: boolean | null
           id?: string
           image?: string | null
-          intro?: string | null
           location?: string | null
           name: string
           open_to_volunteering?: boolean | null
+          social?: Json | null
           status?: string
           title?: string | null
           user_id?: string | null
@@ -557,19 +877,65 @@ export type Database = {
         Update: {
           arrived_in_nelson?: string | null
           bio?: string | null
+          company?: string | null
           created_at?: string | null
           employment_status?: string | null
           featured?: boolean | null
           id?: string
           image?: string | null
-          intro?: string | null
           location?: string | null
           name?: string
           open_to_volunteering?: boolean | null
+          social?: Json | null
           status?: string
           title?: string | null
           user_id?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      moderation_queue: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_data: Json
+          item_id: string
+          item_type: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          submitted_at: string | null
+          submitted_by: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_data: Json
+          item_id: string
+          item_type: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          submitted_by: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_data?: Json
+          item_id?: string
+          item_type?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          submitted_by?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -655,74 +1021,437 @@ export type Database = {
           },
         ]
       }
+      news_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          news_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          news_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          news_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_tags_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_analytics: {
+        Row: {
+          campaign_id: string | null
+          event_data: Json | null
+          event_type: string | null
+          id: string
+          ip_address: unknown | null
+          occurred_at: string | null
+          postmark_message_id: string | null
+          subscription_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          event_data?: Json | null
+          event_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          occurred_at?: string | null
+          postmark_message_id?: string | null
+          subscription_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          event_data?: Json | null
+          event_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          occurred_at?: string | null
+          postmark_message_id?: string | null
+          subscription_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_analytics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_analytics_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_campaigns: {
+        Row: {
+          branding: Json | null
+          content: Json | null
+          created_at: string | null
+          created_by: string
+          custom_message: string | null
+          delivery_stats: Json | null
+          id: string
+          recipient_count: number | null
+          scheduled_at: string | null
+          send_type: string | null
+          sent_at: string | null
+          status: string | null
+          subject: string
+          template_data: Json | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          branding?: Json | null
+          content?: Json | null
+          created_at?: string | null
+          created_by: string
+          custom_message?: string | null
+          delivery_stats?: Json | null
+          id?: string
+          recipient_count?: number | null
+          scheduled_at?: string | null
+          send_type?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          template_data?: Json | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          branding?: Json | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string
+          custom_message?: string | null
+          delivery_stats?: Json | null
+          id?: string
+          recipient_count?: number | null
+          scheduled_at?: string | null
+          send_type?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          template_data?: Json | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_content_cache: {
+        Row: {
+          content: Json
+          content_type: string
+          date_range_end: string
+          date_range_start: string
+          expires_at: string | null
+          generated_at: string | null
+          id: string
+        }
+        Insert: {
+          content: Json
+          content_type: string
+          date_range_end: string
+          date_range_start: string
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+        }
+        Update: {
+          content?: Json
+          content_type?: string
+          date_range_end?: string
+          date_range_start?: string
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      newsletter_content_rules: {
+        Row: {
+          content_type: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          max_items: number | null
+          name: string
+          priority: number | null
+          selection_criteria: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_items?: number | null
+          name: string
+          priority?: number | null
+          selection_criteria?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_items?: number | null
+          name?: string
+          priority?: number | null
+          selection_criteria?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscriptions: {
+        Row: {
+          bounce_count: number | null
+          confirmation_token: string | null
+          confirmed_at: string | null
+          created_at: string | null
+          email: string
+          id: string
+          last_sent_at: string | null
+          member_id: string | null
+          preferences: Json | null
+          status: string | null
+          subscribed_at: string | null
+          subscription_token: string
+          unsubscribed_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bounce_count?: number | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          last_sent_at?: string | null
+          member_id?: string | null
+          preferences?: Json | null
+          status?: string | null
+          subscribed_at?: string | null
+          subscription_token?: string
+          unsubscribed_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bounce_count?: number | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          last_sent_at?: string | null
+          member_id?: string | null
+          preferences?: Json | null
+          status?: string | null
+          subscribed_at?: string | null
+          subscription_token?: string
+          unsubscribed_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_subscriptions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_templates: {
+        Row: {
+          created_at: string | null
+          default_settings: Json | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          preview_image: string | null
+          template_content: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_settings?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          preview_image?: string | null
+          template_content: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_settings?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          preview_image?: string | null
+          template_content?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       opportunities: {
         Row: {
           benefits: string[] | null
           compensation: string | null
-          contact_email: string | null
+          contact_email: string
           created_at: string | null
           deadline: string | null
-          description: string | null
+          description: string
           featured: boolean | null
           id: string
           image: string | null
-          location: string | null
-          organization: string | null
-          posted_by: string | null
-          remote: boolean | null
+          location: string
+          organization: string
+          posted_by: string
+          remote: boolean
           requirements: string[] | null
           responsibilities: string[] | null
-          status: string | null
+          status: string
           title: string
-          type: string | null
-          updated_at: string | null
+          type: string
           website: string | null
         }
         Insert: {
           benefits?: string[] | null
           compensation?: string | null
-          contact_email?: string | null
+          contact_email: string
           created_at?: string | null
           deadline?: string | null
-          description?: string | null
+          description: string
           featured?: boolean | null
           id?: string
           image?: string | null
-          location?: string | null
-          organization?: string | null
-          posted_by?: string | null
-          remote?: boolean | null
+          location: string
+          organization: string
+          posted_by: string
+          remote?: boolean
           requirements?: string[] | null
           responsibilities?: string[] | null
-          status?: string | null
+          status?: string
           title: string
-          type?: string | null
-          updated_at?: string | null
+          type: string
           website?: string | null
         }
         Update: {
           benefits?: string[] | null
           compensation?: string | null
-          contact_email?: string | null
+          contact_email?: string
           created_at?: string | null
           deadline?: string | null
-          description?: string | null
+          description?: string
           featured?: boolean | null
           id?: string
           image?: string | null
-          location?: string | null
-          organization?: string | null
-          posted_by?: string | null
-          remote?: boolean | null
+          location?: string
+          organization?: string
+          posted_by?: string
+          remote?: boolean
           requirements?: string[] | null
           responsibilities?: string[] | null
-          status?: string | null
+          status?: string
           title?: string
-          type?: string | null
-          updated_at?: string | null
+          type?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_posted_by_fkey"
+            columns: ["posted_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunity_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          opportunity_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          opportunity_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          opportunity_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunity_tags_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunity_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resource_tags: {
         Row: {
@@ -757,6 +1486,7 @@ export type Database = {
           id: string
           image: string | null
           status: string
+          tags: string[] | null
           title: string
           type: string
           url: string
@@ -770,6 +1500,7 @@ export type Database = {
           id?: string
           image?: string | null
           status?: string
+          tags?: string[] | null
           title: string
           type: string
           url: string
@@ -783,6 +1514,7 @@ export type Database = {
           id?: string
           image?: string | null
           status?: string
+          tags?: string[] | null
           title?: string
           type?: string
           url?: string
@@ -804,23 +1536,70 @@ export type Database = {
           },
         ]
       }
+      tags: {
+        Row: {
+          category: string | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          status: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          status?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          status?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
-          created_at: string
-          id: number
-          role: Database["public"]["Enums"]["app_role"]
+          created_at: string | null
+          role: string
           user_id: string
         }
         Insert: {
-          created_at?: string
-          id?: number
-          role: Database["public"]["Enums"]["app_role"]
+          created_at?: string | null
+          role: string
           user_id: string
         }
         Update: {
-          created_at?: string
-          id?: number
-          role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string | null
+          role?: string
           user_id?: string
         }
         Relationships: []
@@ -831,12 +1610,28 @@ export type Database = {
     }
     Functions: {
       create_member_profile: {
-        Args: { name_to_set: string }
+        Args: { name?: string }
         Returns: undefined
+      }
+      generate_tag_slug: {
+        Args: { tag_name: string }
+        Returns: string
+      }
+      is_admin_of_group: {
+        Args: { p_user_id: string; p_group_id: string }
+        Returns: boolean
+      }
+      is_member_of_group: {
+        Args: { p_user_id: string; p_group_id: string }
+        Returns: boolean
+      }
+      is_superadmin_direct: {
+        Args: { check_user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
-      app_role: "authenticated" | "group_member" | "admin" | "superadmin"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -950,13 +1745,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
+  public: {
     Enums: {},
   },
-  public: {
-    Enums: {
-      app_role: ["authenticated", "group_member", "admin", "superadmin"],
-    },
-  },
 } as const
-

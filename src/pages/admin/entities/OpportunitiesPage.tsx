@@ -13,9 +13,9 @@ const AdminOpportunitiesPage: React.FC = () => {
             <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
             {value}
           </div>
-          {item.company_name && (
+          {item.organization && (
             <div className="text-sm text-gray-500">
-              {item.company_name}
+              {item.organization}
             </div>
           )}
         </div>
@@ -23,7 +23,7 @@ const AdminOpportunitiesPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'opportunity_type',
+      key: 'type',
       label: 'Type',
       render: (value: string) => {
         const typeConfig = {
@@ -54,7 +54,7 @@ const AdminOpportunitiesPage: React.FC = () => {
               {value}
             </div>
           )}
-          {item.is_remote && (
+          {item.remote && (
             <div className="text-sm text-blue-600">Remote Available</div>
           )}
         </div>
@@ -62,29 +62,9 @@ const AdminOpportunitiesPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'employment_type',
-      label: 'Employment',
-      render: (value: string) => {
-        const empConfig = {
-          'full-time': { text: 'Full-time', color: 'bg-green-100 text-green-800' },
-          'part-time': { text: 'Part-time', color: 'bg-blue-100 text-blue-800' },
-          'contract': { text: 'Contract', color: 'bg-orange-100 text-orange-800' },
-          'temporary': { text: 'Temporary', color: 'bg-yellow-100 text-yellow-800' }
-        };
-        const config = empConfig[value as keyof typeof empConfig] || { text: value, color: 'bg-gray-100 text-gray-800' };
-        
-        return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
-            {config.text}
-          </span>
-        );
-      },
-      sortable: true
-    },
-    {
-      key: 'salary_range',
-      label: 'Salary',
-      render: (value: string, item: any) => (
+      key: 'compensation',
+      label: 'Compensation',
+      render: (value: string) => (
         <div className="flex items-center">
           <DollarSign className="w-4 h-4 mr-1 text-gray-500" />
           {value || 'Not specified'}
@@ -93,7 +73,7 @@ const AdminOpportunitiesPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'application_deadline',
+      key: 'deadline',
       label: 'Deadline',
       render: (value: string) => {
         if (!value) return 'No deadline';
@@ -112,21 +92,10 @@ const AdminOpportunitiesPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'view_count',
-      label: 'Views',
-      render: (value: number) => (
-        <div className="flex items-center">
-          <Eye className="w-4 h-4 mr-1 text-gray-500" />
-          {value || 0}
-        </div>
-      ),
-      sortable: true
-    },
-    {
-      key: 'is_active',
+      key: 'status',
       label: 'Status',
-      render: (value: boolean, item: any) => {
-        const deadline = item.application_deadline ? new Date(item.application_deadline) : null;
+      render: (value: string, item: any) => {
+        const deadline = item.deadline ? new Date(item.deadline) : null;
         const now = new Date();
         const isExpired = deadline && deadline < now;
         
@@ -139,14 +108,15 @@ const AdminOpportunitiesPage: React.FC = () => {
           );
         }
         
+        const isActive = value === 'published';
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
           }`}>
-            {value ? (
+            {isActive ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
-                Active
+                Published
               </>
             ) : (
               <>
@@ -172,7 +142,7 @@ const AdminOpportunitiesPage: React.FC = () => {
       entityType="opportunities"
       entityName="Opportunities"
       columns={columns}
-      searchFields={['title', 'description', 'company_name', 'location', 'opportunity_type']}
+      searchFields={['title', 'description', 'organization', 'location', 'type']}
       detailPath="/opportunities/:id"
       editPath="/opportunities/:id/edit"
       createPath="/opportunities/create"

@@ -12,51 +12,6 @@ import ErrorState from './ErrorState';
 import { Resource } from '../../types';
 import { useResourceRedux } from '@/features/resources/hooks/useResourcesRedux';
 
-// This would normally come from a hook like useResource
-const SAMPLE_RESOURCE: Resource = {
-  id: '1',
-  title: 'Introduction to AI Ethics',
-  description: 'A comprehensive guide to ethical considerations in AI development. This resource covers important topics like bias in AI, privacy concerns, transparency in algorithms, and ethical guidelines for AI practitioners.',
-  type: 'document',
-  url: 'https://example.com/ai-ethics-guide',
-  dateAdded: '2024-03-01',
-  contributor: {
-    id: '1',
-    name: 'Sarah Johnson'
-  },
-  groupId: '1',
-  image: '/images/ai-ethics.jpg'
-};
-
-// Sample related resources that would normally come from a hook like useRelatedResources
-const RELATED_RESOURCES: Resource[] = [
-    {
-      id: '2',
-      title: 'Machine Learning Workshop Recording',
-      description: 'Recording of our February workshop on practical ML applications.',
-      type: 'video',
-      url: 'https://example.com/ml-workshop',
-      dateAdded: '2024-02-15',
-      contributor: {
-        id: '2',
-        name: 'Michael Chen'
-      },
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
-    },
-    {
-      id: '3',
-      title: 'AI Ethics Presentation Slides',
-      description: 'Slides from the recent AI ethics presentation at Kootenay Tech Meetup.',
-      type: 'document',
-      url: 'https://example.com/ai-ethics-slides',
-      dateAdded: '2024-02-28',
-      contributor: {
-        id: '3',
-        name: 'Emma Wilson'
-      },
-      image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
-    }
-  ];
 
 export default function ResourceDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -110,7 +65,7 @@ export default function ResourceDetailPage() {
                 />
                 
                 <RelatedResources 
-                  relatedResources={RELATED_RESOURCES} 
+                  relatedResources={[]} 
                   getTypeIcon={getTypeIcon} 
                 />
               </div>

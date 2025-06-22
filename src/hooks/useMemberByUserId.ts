@@ -35,7 +35,7 @@ function adaptMember(data: unknown): Member {
                typeof member.joined_date === 'string' ? member.joined_date :
                typeof member.joinDate === 'string' ? member.joinDate : undefined,
     created_at: typeof member.created_at === 'string' ? member.created_at : undefined,
-    status: typeof member.status === 'string' ? member.status as any : undefined,
+    status: typeof member.status === 'string' ? member.status as unknown : undefined,
     featured: typeof member.featured === 'boolean' ? member.featured : undefined,
     // Include additional fields from the database
     title: typeof member.title === 'string' ? member.title : undefined,

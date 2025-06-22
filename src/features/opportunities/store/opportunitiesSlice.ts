@@ -3,10 +3,7 @@ import { RootState } from '@/store';
 import { Opportunity } from '../types';
 import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
 import * as mockQueries from '@/hooks/useQueries';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
-
-// Toggle between Supabase and mock data
-const USE_SUPABASE = IS_SUPABASE_ENABLED;
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for opportunity filters to match the API interface
 export interface OpportunityFilters {
@@ -46,9 +43,14 @@ export const fetchOpportunities = createAsyncThunk(
   'opportunities/fetchOpportunities',
   async (_, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
-        return await opportunitiesApi.getAll();
+      
+      if (getIsSupabaseEnabled()) {
+        console.log('[OpportunitiesSlice] Fetching from Supabase...');
+        const opportunities = await opportunitiesApi.getAll();
+        console.log('[OpportunitiesSlice] Received opportunities:', opportunities.length);
+        return opportunities;
       } else {
+        console.log('[OpportunitiesSlice] Using mock data...');
         const result = mockQueries.useOpportunities();
         return result?.data || [];
       }
@@ -62,7 +64,7 @@ export const fetchOpportunityById = createAsyncThunk(
   'opportunities/fetchOpportunityById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const opportunity = await opportunitiesApi.getById(id);
         return opportunity || null;
       } else {
@@ -79,7 +81,7 @@ export const fetchFilteredOpportunities = createAsyncThunk(
   'opportunities/fetchFilteredOpportunities',
   async (filters: OpportunityFilters, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await opportunitiesApi.getAll(filters);
       } else {
         const result = mockQueries.useOpportunities(filters);
@@ -95,7 +97,7 @@ export const fetchFeaturedOpportunities = createAsyncThunk(
   'opportunities/fetchFeaturedOpportunities',
   async (limit: number = 3, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await opportunitiesApi.getFeatured(limit);
       } else {
         const result = mockQueries.useFeaturedOpportunities(limit);
@@ -111,7 +113,7 @@ export const fetchCompanyOpportunities = createAsyncThunk(
   'opportunities/fetchCompanyOpportunities',
   async (companyId: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await opportunitiesApi.getByCompany(companyId);
       } else {
         const result = mockQueries.useCompanyOpportunities(companyId);
@@ -127,7 +129,7 @@ export const createOpportunity = createAsyncThunk(
   'opportunities/createOpportunity',
   async (opportunityData: OpportunityInput, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const newOpportunity = await opportunitiesApi.create(opportunityData);
         return newOpportunity;
       } else {
@@ -145,7 +147,7 @@ export const updateOpportunity = createAsyncThunk(
   'opportunities/updateOpportunity',
   async ({ id, data }: { id: string; data: Partial<OpportunityInput> }, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const updatedOpportunity = await opportunitiesApi.update(id, data);
         return updatedOpportunity;
       } else {
@@ -163,7 +165,7 @@ export const deleteOpportunity = createAsyncThunk(
   'opportunities/deleteOpportunity',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const success = await opportunitiesApi.delete(id);
         if (success) {
           return id;

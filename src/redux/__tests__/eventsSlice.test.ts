@@ -1,3 +1,17 @@
+// Mock environment dependencies first
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: jest.fn(),
+    auth: { getUser: jest.fn() }
+  },
+  sessionCache: new WeakMap()
+}));
+
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import { configureStore } from '@reduxjs/toolkit';
 import eventsReducer, {
   fetchEvents,
