@@ -1,19 +1,31 @@
 // Gallery Types
 export interface Photo {
   id: string;
-  url: string;
-  thumbnailUrl?: string;
+  gallery_id: string;
+  user_id: string;
+  file_name: string;
+  original_file_name: string;
+  file_size: number;
+  mime_type: string;
+  storage_path: string;
+  thumbnail_path?: string;
+  medium_path?: string;
+  url?: string; // For backward compatibility
   title?: string;
   description?: string;
+  alt_text?: string;
+  caption?: string;
   tags?: string[];
-  uploadedAt: string;
-  updatedAt?: string;
-  fileSize: number;
-  width: number;
-  height: number;
-  mimeType: string;
-  order?: number;
+  width?: number;
+  height?: number;
+  sort_order: number;
+  is_cover?: boolean;
+  visibility: 'visible' | 'hidden';
   metadata?: PhotoMetadata;
+  created_at: string;
+  updated_at?: string;
+  uploaded_at?: string; // Alias for created_at
+  order?: number; // Alias for sort_order
 }
 
 export interface PhotoMetadata {
@@ -33,15 +45,48 @@ export interface PhotoMetadata {
 
 export interface Gallery {
   id: string;
+  user_id: string;
+  owner_type?: 'user' | 'group' | 'company';
+  owner_id?: string;
   title: string;
   description?: string;
-  coverPhotoId?: string;
-  photos: Photo[];
-  privacy: 'public' | 'private' | 'unlisted';
+  slug: string;
+  cover_photo_id?: string;
+  coverImage?: string; // For compatibility
+  privacy_level: 'public' | 'members_only' | 'private';
+  privacy?: 'public' | 'private' | 'unlisted'; // For backward compatibility
+  visibility: 'visible' | 'hidden' | 'archived';
+  sort_order: number;
+  photo_count: number;
+  view_count: number;
+  is_featured: boolean;
   tags?: string[];
-  createdAt: string;
-  updatedAt: string;
-  ownerId: string;
+  created_at: string;
+  updated_at: string;
+  createdAt?: string; // Alias for created_at
+  updatedAt?: string; // Alias for updated_at  
+  ownerId?: string; // Alias for user_id
+  owner?: {
+    id: string;
+    name: string;
+    image?: string;
+  };
+  // Group owner info (when owner_type is 'group')
+  group?: {
+    id: string;
+    name: string;
+    slug: string;
+    hero_image?: string;
+  };
+  // Company owner info (when owner_type is 'company')
+  company?: {
+    id: string;
+    name: string;
+    slug: string;
+    logo?: string;
+  };
+  gallery_photos?: Photo[]; // From join
+  photos?: Photo[]; // Alias for gallery_photos
   settings?: GallerySettings;
   stats?: GalleryStats;
 }
@@ -81,6 +126,24 @@ export interface PhotoUploadInput {
   galleryId?: string;
 }
 
+export interface CreateGalleryInput {
+  title: string;
+  description?: string;
+  privacy_level: 'public' | 'members_only' | 'private';
+  visibility: 'visible' | 'hidden';
+  tags?: string[];
+  owner_type?: 'user' | 'group' | 'company';
+  owner_id?: string;
+}
+
+export interface UpdateGalleryInput {
+  title?: string;
+  description?: string;
+  privacy_level?: 'public' | 'members_only' | 'private';
+  visibility?: 'visible' | 'hidden';
+  tags?: string[];
+}
+
 export interface GalleryFilters {
   search?: string;
   tags?: string[];
@@ -91,6 +154,9 @@ export interface GalleryFilters {
   };
   sortBy?: 'date' | 'title' | 'views' | 'likes';
   sortOrder?: 'asc' | 'desc';
+  visibility?: Gallery['visibility'];
+  ownerType?: 'user' | 'group' | 'company';
+  ownerId?: string;
 }
 
 export interface BatchOperation {

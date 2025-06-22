@@ -170,7 +170,7 @@ export default function HomePage() {
   const apiEvents = useAppSelector(state => state.events?.events || []);
   const apiNews = useAppSelector(state => state.news?.articles || []);
   const apiGroups = useAppSelector(state => state.groups?.groups || []);
-  const apiGalleries = useAppSelector(state => state.gallery?.galleries || []);
+  const apiGalleries = useAppSelector((state: any) => state.gallery?.galleries || []);
   
   // Get loading and error states
   const membersStatus = useAppSelector(state => state.members?.status);
@@ -178,7 +178,7 @@ export default function HomePage() {
   const eventsStatus = useAppSelector(state => state.events?.status);
   const newsStatus = useAppSelector(state => state.news?.status);
   const groupsStatus = useAppSelector(state => state.groups?.status);
-  const galleriesStatus = useAppSelector(state => state.gallery?.status);
+  const galleriesStatus = useAppSelector((state: any) => state.gallery?.status);
   
   // Determine if any data is still loading
   const isLoading = 
@@ -304,28 +304,47 @@ export default function HomePage() {
     
     // Get featured galleries  
     const galleryItems = apiGalleries
-      .filter(gallery => gallery.privacy === 'public' && gallery.photos?.length > 0)
+      .filter(gallery => {
+        const isPublic = gallery.privacy === 'public' || gallery.privacy_level === 'public';
+        const hasPhotos = (gallery.photos?.length || gallery.gallery_photos?.length || 0) > 0;
+        return isPublic && hasPhotos;
+      })
       .slice(0, 2)
-      .map(gallery => ({
-        id: gallery.id,
-        title: gallery.title,
-        excerpt: gallery.description || 'A collection of photos from our community',
-        image: gallery.photos?.[0]?.url || gallery.coverImage,
-        date: gallery.created_at,
-        author: gallery.owner ? {
-          id: gallery.owner.id,
-          name: gallery.owner.name,
-          image: gallery.owner.image
-        } : {
-          id: '1',
-          name: 'Community',
-          image: ''
-        },
-        category: 'Gallery',
-        readTime: `${gallery.photos?.length || 0} photos`,
-        link: `/galleries/${gallery.id}`,
-        type: 'gallery' as const
-      }));
+      .map(gallery => {
+        const photos = gallery.photos || gallery.gallery_photos || [];
+        const firstPhoto = photos[0];
+        let imageUrl = gallery.coverImage;
+        
+        // Try to get image URL from first photo
+        if (firstPhoto) {
+          imageUrl = firstPhoto.url || firstPhoto.thumbnail_path || firstPhoto.medium_path;
+          // If still no URL, construct from storage path
+          if (!imageUrl && firstPhoto.storage_path) {
+            imageUrl = `${window.location.origin}/storage/v1/object/public/gallery-photos/${firstPhoto.storage_path}`;
+          }
+        }
+        
+        return {
+          id: gallery.id,
+          title: gallery.title,
+          excerpt: gallery.description || 'A collection of photos from our community',
+          image: imageUrl,
+          date: gallery.created_at || gallery.createdAt,
+          author: gallery.owner ? {
+            id: gallery.owner.id,
+            name: gallery.owner.name,
+            image: gallery.owner.image
+          } : {
+            id: '1',
+            name: 'Community',
+            image: ''
+          },
+          category: 'Gallery',
+          readTime: `${photos.length} photos`,
+          link: `/galleries/${gallery.id}`,
+          type: 'gallery' as const
+        };
+      });
     
     // Combine and sort by date
     return [...newsItems, ...galleryItems]
