@@ -26,7 +26,34 @@ This directory contains comprehensive demo data for the Nelson Tech Community Pl
 - Job applications and career activity
 - News article likes and community engagement
 
-### 3. `validate_seeds.sql`
+### 3. `03_photo_gallery_seed_data.sql`
+**Photo gallery system data** featuring:
+- 8 user galleries showcasing diverse tech disciplines
+- 9 professional photos with realistic metadata and EXIF data
+- Photo likes, comments, and engagement patterns
+- Photo promotions and admin workflow examples
+- Dynamic page headers with photo backgrounds
+- Gallery privacy levels and moderation status
+
+### 4. `04_newsletter_campaign_seed_data.sql`
+**Newsletter and campaign system data** including:
+- 13 newsletter subscriptions with diverse preferences
+- 4 professional email templates (digest, event, welcome, roundup)
+- 5 newsletter campaigns (sent, scheduled, draft, automated)
+- 10 content automation rules for intelligent curation
+- 18 analytics records with realistic engagement metrics
+- Content caching for performance optimization
+
+### 5. `05_gallery_newsletter_relationships.sql`
+**Cross-platform integration data** that connects:
+- Photo-tag relationships for better categorization
+- Newsletter campaign photo usage and tracking
+- Gallery photos in news articles and events
+- Company and group photo showcases
+- Resource thumbnail associations
+- Engagement analytics across platforms
+
+### 6. `validate_seeds.sql`
 **Validation script** to verify:
 - Table existence and structure
 - Data counts and completeness
@@ -38,11 +65,12 @@ This directory contains comprehensive demo data for the Nelson Tech Community Pl
 
 ### Load Complete Demo Data
 ```bash
-# Load primary demo content
+# Load all seed files in order
 psql -d your_database -f database/seeds/01_fresh_demo_content_final.sql
-
-# Add relationship data
 psql -d your_database -f database/seeds/02_additional_demo_relationships.sql
+psql -d your_database -f database/seeds/03_photo_gallery_seed_data.sql
+psql -d your_database -f database/seeds/04_newsletter_campaign_seed_data.sql
+psql -d your_database -f database/seeds/05_gallery_newsletter_relationships.sql
 ```
 
 ### Validate Data
@@ -57,6 +85,9 @@ psql -d your_database -f database/seeds/validate_seeds.sql
 supabase db reset
 supabase db seed database/seeds/01_fresh_demo_content_final.sql
 supabase db seed database/seeds/02_additional_demo_relationships.sql
+supabase db seed database/seeds/03_photo_gallery_seed_data.sql
+supabase db seed database/seeds/04_newsletter_campaign_seed_data.sql
+supabase db seed database/seeds/05_gallery_newsletter_relationships.sql
 ```
 
 ## Demo Data Features
@@ -79,6 +110,9 @@ supabase db seed database/seeds/02_additional_demo_relationships.sql
 - **News**: Tech growth, awards, mentorship programs, expansion
 - **Resources**: Courses, documentation, articles, frameworks
 - **Opportunities**: Full-time, part-time, contract, various experience levels
+- **Photo Galleries**: Professional workspaces, tech setups, design processes
+- **Newsletters**: Weekly digests, event announcements, welcome emails
+- **Visual Content**: Dynamic page headers, photo promotions, cross-platform integration
 
 ## Data Quality
 
@@ -89,10 +123,13 @@ supabase db seed database/seeds/02_additional_demo_relationships.sql
 - Status fields use consistent enums
 
 ### Realism
-- Professional photos from Unsplash
-- Authentic company descriptions
+- Professional photos with realistic metadata and EXIF data
+- Authentic company descriptions and portfolios
 - Realistic pricing for marketplace items
 - Proper geographic coordinates for events
+- Gallery photos showcasing actual tech workspaces
+- Newsletter engagement metrics based on industry standards
+- Cross-platform photo usage demonstrating real workflows
 
 ### Completeness
 - No orphaned records
@@ -117,20 +154,24 @@ supabase db seed database/seeds/02_additional_demo_relationships.sql
 ## Testing
 
 The seed data is designed to support:
-- **Feature Testing**: All platform features have supporting data
-- **UI Testing**: Diverse content for visual testing
-- **Integration Testing**: Realistic user workflows
-- **Performance Testing**: Sufficient data volume for testing
+- **Feature Testing**: All platform features have supporting data including galleries and newsletters
+- **UI Testing**: Diverse visual content for comprehensive interface testing
+- **Integration Testing**: Realistic cross-platform workflows and data relationships
+- **Performance Testing**: Sufficient data volume including photos and analytics
+- **Admin Testing**: Photo promotions, newsletter campaigns, and moderation workflows
+- **Analytics Testing**: Engagement metrics, click tracking, and performance data
 
 ## Privacy & Compliance
 
 - All personal data is fictional
 - No real contact information used
-- Stock photos with proper licensing
+- Placeholder images with proper paths (not actual files)
 - Generic company information only
+- Newsletter analytics data is simulated
+- Photo metadata includes realistic but non-personal technical details
 
 ---
 
 **Last Updated**: June 2025  
 **Compatible With**: PostgreSQL 12+, Supabase  
-**Data Version**: 1.0.0
+**Data Version**: 2.0.0 (includes galleries, newsletters, and cross-platform integration)
