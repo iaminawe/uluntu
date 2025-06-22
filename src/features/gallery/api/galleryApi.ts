@@ -8,23 +8,11 @@ export const galleryApi = {
       .from('user_galleries')
       .select(`
         *,
-        gallery_photos (*),
+        gallery_photos!gallery_photos_gallery_id_fkey (*),
         owner:members!user_id (
           id,
           name,
           image
-        ),
-        group:groups!owner_id (
-          id,
-          name,
-          slug,
-          hero_image
-        ),
-        company:companies!owner_id (
-          id,
-          name,
-          slug,
-          logo
         )
       `)
       .order('created_at', { ascending: false });
@@ -85,23 +73,11 @@ export const galleryApi = {
       .from('user_galleries')
       .select(`
         *,
-        gallery_photos (*),
+        gallery_photos!gallery_photos_gallery_id_fkey (*),
         owner:members!user_id (
           id,
           name,
           image
-        ),
-        group:groups!owner_id (
-          id,
-          name,
-          slug,
-          hero_image
-        ),
-        company:companies!owner_id (
-          id,
-          name,
-          slug,
-          logo
         )
       `)
       .eq('id', id)
@@ -170,56 +146,173 @@ export const galleryApi = {
     return true;
   },
 
-  // Photo operations
-  async uploadPhoto(input: PhotoUploadInput): Promise<Photo> {
-    const fileName = `${Date.now()}-${input.file.name}`;
-    const filePath = `gallery/${fileName}`;
-
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('gallery-photos')
-      .upload(filePath, input.file);
-
-    if (uploadError) {
-      console.error('Error uploading photo:', uploadError);
-      throw uploadError;
-    }
-
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('gallery-photos')
-      .getPublicUrl(filePath);
-
-    // Create photo record
-    const photoData = {
-      gallery_id: input.galleryId,
-      user_id: '', // This should be set from auth context
-      file_name: fileName,
-      original_file_name: input.file.name,
-      file_size: input.file.size,
-      mime_type: input.file.type,
-      storage_path: filePath,
-      title: input.title || input.file.name,
-      description: input.description,
-      tags: input.tags,
-      sort_order: 0,
-      visibility: 'visible' as const
-    };
-
+  async getGalleryPhotos(galleryId: string): Promise<Photo[]> {
     const { data, error } = await supabase
       .from('gallery_photos')
-      .insert([photoData])
-      .select()
-      .single();
+      .select('*')
+      .eq('gallery_id', galleryId)
+      .eq('visibility', 'visible')
+      .order('sort_order', { ascending: true });
 
     if (error) {
-      console.error('Error creating photo record:', error);
-      // Clean up uploaded file
-      await supabase.storage.from('gallery-photos').remove([filePath]);
+      console.error('Error fetching gallery photos:', error);
       throw error;
     }
 
-    return data;
+    return data || [];
+  },
+
+  // Photo operations
+  async batchUploadPhotos(inputs: PhotoUploadInput[]): Promise<{ success: Photo[]; failed: { input: PhotoUploadInput; error: string }[] }> {
+    const results = {
+      success: [] as Photo[],
+      failed: [] as { input: PhotoUploadInput; error: string }[]
+    };
+
+    for (const input of inputs) {
+      try {
+        const photo = await this.uploadPhoto(input);
+        results.success.push(photo);
+      } catch (error) {
+        results.failed.push({
+          input,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+
+    return results;
+  },
+
+  async uploadPhoto(input: PhotoUploadInput): Promise<Photo> {
+    const baseFileName = `${Date.now()}-${input.file.name.replace(/\.[^/.]+$/, "")}`;
+    const fileExtension = input.file.name.split('.').pop() || 'jpg';
+    
+    // Storage paths for different sizes
+    const storagePaths = {
+      original: `gallery/original/${baseFileName}.${fileExtension}`,
+      large: `gallery/large/${baseFileName}.${fileExtension}`,
+      medium: `gallery/medium/${baseFileName}.${fileExtension}`,
+      small: `gallery/small/${baseFileName}.${fileExtension}`,
+      thumbnail: `gallery/thumbnail/${baseFileName}.${fileExtension}`
+    };
+
+    const uploadedPaths: Record<string, string> = {};
+    const uploadedUrls: Record<string, string> = {};
+
+    try {
+      // Upload original image
+      const originalFile = input.processedImages?.original || input.file;
+      const { error: originalError } = await supabase.storage
+        .from('gallery-photos')
+        .upload(storagePaths.original, originalFile);
+
+      if (originalError) {
+        throw originalError;
+      }
+
+      uploadedPaths.original = storagePaths.original;
+      uploadedUrls.original = supabase.storage
+        .from('gallery-photos')
+        .getPublicUrl(storagePaths.original).data.publicUrl;
+
+      // Upload processed variants if available
+      if (input.processedImages) {
+        const sizePromises = Object.entries(input.processedImages).map(async ([sizeType, file]) => {
+          if (!file || sizeType === 'original') return; // Original already handled
+          
+          const sizePath = storagePaths[sizeType as keyof typeof storagePaths];
+          if (!sizePath) return;
+
+          const { error } = await supabase.storage
+            .from('gallery-photos')
+            .upload(sizePath, file);
+
+          if (error) {
+            console.warn(`Failed to upload ${sizeType} variant:`, error);
+            return;
+          }
+
+          uploadedPaths[sizeType] = sizePath;
+          uploadedUrls[sizeType] = supabase.storage
+            .from('gallery-photos')
+            .getPublicUrl(sizePath).data.publicUrl;
+        });
+
+        await Promise.all(sizePromises);
+      }
+
+      // Get dimensions
+      const dimensions = input.dimensions || { width: 0, height: 0, aspectRatio: 1 };
+
+      // Create photo record with all variants
+      const photoData = {
+        gallery_id: input.galleryId,
+        user_id: (await supabase.auth.getUser()).data.user?.id || '',
+        file_name: `${baseFileName}.${fileExtension}`,
+        original_file_name: input.file.name,
+        file_size: originalFile.size,
+        mime_type: input.file.type,
+        // Storage paths
+        storage_path: storagePaths.original, // Main path for compatibility
+        original_path: uploadedPaths.original,
+        large_path: uploadedPaths.large,
+        medium_path: uploadedPaths.medium,
+        small_path: uploadedPaths.small,
+        thumbnail_path: uploadedPaths.thumbnail,
+        // URLs
+        original_url: uploadedUrls.original,
+        large_url: uploadedUrls.large,
+        medium_url: uploadedUrls.medium,
+        small_url: uploadedUrls.small,
+        thumbnail_url: uploadedUrls.thumbnail,
+        // Dimensions
+        width: dimensions.width,
+        height: dimensions.height,
+        aspect_ratio: dimensions.aspectRatio,
+        // Processing metadata
+        placeholder_data: input.placeholder,
+        dominant_color: input.dominantColor,
+        processing_status: 'completed' as const,
+        // Standard fields
+        title: input.title || input.file.name,
+        description: input.description,
+        alt_text: input.title || input.file.name,
+        tags: input.tags,
+        sort_order: 0,
+        visibility: 'visible' as const
+      };
+
+      const { data, error } = await supabase
+        .from('gallery_photos')
+        .insert([photoData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating photo record:', error);
+        // Clean up uploaded files
+        const pathsToClean = Object.values(uploadedPaths);
+        if (pathsToClean.length > 0) {
+          await supabase.storage.from('gallery-photos').remove(pathsToClean);
+        }
+        throw error;
+      }
+
+      // Set the main URL for backward compatibility
+      data.url = data.medium_url || data.original_url;
+
+      return data;
+
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      // Clean up any uploaded files
+      const pathsToClean = Object.values(uploadedPaths);
+      if (pathsToClean.length > 0) {
+        await supabase.storage.from('gallery-photos').remove(pathsToClean);
+      }
+      throw error;
+    }
   },
 
   async updatePhoto(id: string, updates: Partial<Photo>): Promise<Photo> {
