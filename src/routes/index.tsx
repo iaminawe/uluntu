@@ -80,6 +80,11 @@ import GroupGuard from '@/features/auth/components/GroupGuard';
 // Onboarding pages
 import OnboardingWizard from '@/features/onboarding/components/OnboardingWizard';
 
+// Gallery pages
+import GalleriesPage from '../pages/GalleriesPage';
+import GalleryDetailPage from '../pages/GalleryDetailPage';
+import MyGalleriesPage from '../pages/MyGalleriesPage';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -189,6 +194,14 @@ export const router = createBrowserRouter([
       { 
         path: 'profile/edit', 
         element: <ProtectedRoute><ProfileEditPage /></ProtectedRoute> 
+      },
+      
+      // Gallery routes
+      { path: 'galleries', element: <GalleriesPage /> },
+      { path: 'galleries/:id', element: <GalleryDetailPage /> },
+      { 
+        path: 'my-galleries', 
+        element: <ProtectedRoute><MyGalleriesPage /></ProtectedRoute> 
       }
     ]
   },

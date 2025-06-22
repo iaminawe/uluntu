@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5555, // Using a different port to avoid conflicts
-    strictPort: true, // Fail if port is already in use
+    strictPort: false, // Allow fallback to other ports if occupied
   },
   resolve: {
     alias: {
