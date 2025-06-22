@@ -84,27 +84,27 @@ UPDATE user_galleries SET cover_photo_id = '00000003-0003-0003-0003-000000000003
 
 INSERT INTO "public"."photo_likes" ("id", "photo_id", "user_id", "created_at") VALUES
 	-- Sarah's dual monitor setup (popular)
-	('like-001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', '2025-06-20 15:30:00+00'),
-	('like-002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-20 16:45:00+00'),
-	('like-003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '8fa10942-4a64-4911-a45d-eb4996002302', '2025-06-21 09:15:00+00'),
-	('like-004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-21 14:20:00+00'),
+	('10000001-0001-0001-0001-000000000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', '2025-06-20 15:30:00+00'),
+	('10000002-0002-0002-0002-000000000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-20 16:45:00+00'),
+	('10000003-0003-0003-0003-000000000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '8fa10942-4a64-4911-a45d-eb4996002302', '2025-06-21 09:15:00+00'),
+	('10000004-0004-0004-0004-000000000004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-21 14:20:00+00'),
 	
 	-- Emily's telemedicine setup
-	('like-005', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-18 12:30:00+00'),
-	('like-006', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', '2025-06-18 16:45:00+00'),
-	('like-007', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-19 10:20:00+00'),
+	('10000005-0005-0005-0005-000000000005', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-18 12:30:00+00'),
+	('10000006-0006-0006-0006-000000000006', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', '2025-06-18 16:45:00+00'),
+	('10000007-0007-0007-0007-000000000007', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-19 10:20:00+00'),
 	
 	-- Jennifer's data visualization (very popular)
-	('like-008', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-22 10:15:00+00'),
-	('like-009', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', '2025-06-22 11:30:00+00'),
-	('like-010', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-22 13:45:00+00'),
-	('like-011', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', '2025-06-22 15:20:00+00'),
-	('like-012', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', '2025-06-22 16:10:00+00'),
+	('10000008-0008-0008-0008-000000000008', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-22 10:15:00+00'),
+	('10000009-0009-0009-0009-000000000009', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', '2025-06-22 11:30:00+00'),
+	('10000010-0010-0010-0010-000000000010', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-22 13:45:00+00'),
+	('10000011-0011-0011-0011-000000000011', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', '2025-06-22 15:20:00+00'),
+	('10000012-0012-0012-0012-000000000012', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', '2025-06-22 16:10:00+00'),
 	
 	-- Amanda's brand photoshoot
-	('like-013', '00000003-0003-0003-0003-000000000003', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-21 11:30:00+00'),
-	('like-014', '00000003-0003-0003-0003-000000000003', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-21 14:15:00+00'),
-	('like-015', '00000003-0003-0003-0003-000000000003', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-21 16:45:00+00');
+	('10000013-0013-0013-0013-000000000013', '00000003-0003-0003-0003-000000000003', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-21 11:30:00+00'),
+	('10000014-0014-0014-0014-000000000014', '00000003-0003-0003-0003-000000000003', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-21 14:15:00+00'),
+	('10000015-0015-0015-0015-000000000015', '00000003-0003-0003-0003-000000000003', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-21 16:45:00+00');
 
 -- =====================================================
 -- PHOTO COMMENTS (thoughtful professional feedback)
@@ -112,20 +112,20 @@ INSERT INTO "public"."photo_likes" ("id", "photo_id", "user_id", "created_at") V
 
 INSERT INTO "public"."photo_comments" ("id", "photo_id", "user_id", "content", "moderation_status", "created_at") VALUES
 	-- Comments on Sarah's setup
-	('comment-001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', 'Love the clean setup! What monitor arms are you using? I''m looking to upgrade my own workspace.', 'approved', '2025-06-20 15:35:00+00'),
-	('comment-002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', 'That mountain view is incredible! Makes me want to move my desk closer to the window.', 'approved', '2025-06-20 16:50:00+00'),
+	('20000001-0001-0001-0001-000000000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'd0519096-9dd8-4397-b0bd-3dbb8cebdb39', 'Love the clean setup! What monitor arms are you using? I''m looking to upgrade my own workspace.', 'approved', '2025-06-20 15:35:00+00'),
+	('20000002-0002-0002-0002-000000000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', 'That mountain view is incredible! Makes me want to move my desk closer to the window.', 'approved', '2025-06-20 16:50:00+00'),
 	
 	-- Comments on Emily's telemedicine setup
-	('comment-003', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', 'This is amazing! How are you handling patient privacy and security with remote consultations?', 'approved', '2025-06-18 17:00:00+00'),
-	('comment-004', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'The impact this must have on rural healthcare access is huge. Great work bridging that gap!', 'approved', '2025-06-19 08:30:00+00'),
+	('20000003-0003-0003-0003-000000000003', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '1918195d-3aab-4a48-9999-f17e2a4f2ef9', 'This is amazing! How are you handling patient privacy and security with remote consultations?', 'approved', '2025-06-18 17:00:00+00'),
+	('20000004-0004-0004-0004-000000000004', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'The impact this must have on rural healthcare access is huge. Great work bridging that gap!', 'approved', '2025-06-19 08:30:00+00'),
 	
 	-- Comments on Jennifer's data visualization
-	('comment-005', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', 'Absolutely beautiful way to present climate data. What tools did you use for this visualization?', 'approved', '2025-06-22 12:00:00+00'),
-	('comment-006', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', 'The color palette really helps tell the story. Data visualization is truly an art form!', 'approved', '2025-06-22 14:30:00+00'),
+	('20000005-0005-0005-0005-000000000005', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', 'Absolutely beautiful way to present climate data. What tools did you use for this visualization?', 'approved', '2025-06-22 12:00:00+00'),
+	('20000006-0006-0006-0006-000000000006', 'ffffffff-ffff-ffff-ffff-ffffffffffff', '7131f030-4431-4dbf-816b-9cb4ebd2d54d', 'The color palette really helps tell the story. Data visualization is truly an art form!', 'approved', '2025-06-22 14:30:00+00'),
 	
 	-- Comments on Amanda's brand shoot
-	('comment-007', '00000003-0003-0003-0003-000000000003', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'The lighting in this shot is perfect! Which local startup was this for?', 'approved', '2025-06-21 12:15:00+00'),
-	('comment-008', '00000003-0003-0003-0003-000000000003', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', 'Love seeing the behind-the-scenes process. Brand photography is such an important part of startup identity.', 'approved', '2025-06-21 17:20:00+00');
+	('20000007-0007-0007-0007-000000000007', '00000003-0003-0003-0003-000000000003', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'The lighting in this shot is perfect! Which local startup was this for?', 'approved', '2025-06-21 12:15:00+00'),
+	('20000008-0008-0008-0008-000000000008', '00000003-0003-0003-0003-000000000003', 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', 'Love seeing the behind-the-scenes process. Brand photography is such an important part of startup identity.', 'approved', '2025-06-21 17:20:00+00');
 
 -- =====================================================
 -- PHOTO PROMOTIONS (admin promotion workflow)
@@ -133,13 +133,13 @@ INSERT INTO "public"."photo_comments" ("id", "photo_id", "user_id", "content", "
 
 INSERT INTO "public"."photo_promotions" ("id", "photo_id", "promoted_by", "promotion_type", "promotion_status", "priority", "start_date", "end_date", "context_type", "review_notes", "impression_count", "click_count", "created_at", "updated_at") VALUES
 	-- Homepage hero promotion for Jennifer's data viz
-	('promo-001', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'homepage_hero', 'active', 100, '2025-06-22 00:00:00+00', '2025-07-22 23:59:59+00', 'general', 'Perfect representation of our data-driven community. Beautiful and impactful.', 1247, 89, '2025-06-22 08:00:00+00', '2025-06-22 08:00:00+00'),
+	('30000001-0001-0001-0001-000000000001', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'homepage_hero', 'active', 100, '2025-06-22 00:00:00+00', '2025-07-22 23:59:59+00', 'general', 'Perfect representation of our data-driven community. Beautiful and impactful.', 1247, 89, '2025-06-22 08:00:00+00', '2025-06-22 08:00:00+00'),
 	
 	-- Featured promotion for Emily's telemedicine
-	('promo-002', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'featured', 'active', 90, '2025-06-18 00:00:00+00', '2025-07-18 23:59:59+00', 'general', 'Showcases innovation in healthcare tech - perfect for our community image.', 567, 34, '2025-06-18 09:00:00+00', '2025-06-18 09:00:00+00'),
+	('30000002-0002-0002-0002-000000000002', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'featured', 'active', 90, '2025-06-18 00:00:00+00', '2025-07-18 23:59:59+00', 'general', 'Showcases innovation in healthcare tech - perfect for our community image.', 567, 34, '2025-06-18 09:00:00+00', '2025-06-18 09:00:00+00'),
 	
 	-- Gallery cover promotion for Sarah's setup
-	('promo-003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'gallery_cover', 'active', 80, '2025-06-20 00:00:00+00', '2025-08-20 23:59:59+00', 'page', 'Great example of remote work setup in the Kootenays.', 234, 12, '2025-06-20 10:00:00+00', '2025-06-20 10:00:00+00');
+	('30000003-0003-0003-0003-000000000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'gallery_cover', 'active', 80, '2025-06-20 00:00:00+00', '2025-08-20 23:59:59+00', 'page', 'Great example of remote work setup in the Kootenays.', 234, 12, '2025-06-20 10:00:00+00', '2025-06-20 10:00:00+00');
 
 -- =====================================================
 -- PAGE HEADERS (dynamic page headers with photos)
@@ -147,13 +147,13 @@ INSERT INTO "public"."photo_promotions" ("id", "photo_id", "promoted_by", "promo
 
 INSERT INTO "public"."page_headers" ("id", "page_slug", "photo_id", "title", "subtitle", "overlay_text", "overlay_position", "overlay_opacity", "text_color", "background_color", "darken_image", "priority", "is_active", "start_date", "end_date", "created_by", "created_at") VALUES
 	-- Home page header with Jennifer's data viz
-	('header-001', 'home', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'Nelson Tech Community', 'Where Innovation Meets Nature', 'Connecting tech professionals in the heart of the Kootenays', 'center', 0.75, '#ffffff', '#1f2937', true, 100, true, '2025-06-22 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-22 08:00:00+00'),
+	('40000001-0001-0001-0001-000000000001', 'home', 'ffffffff-ffff-ffff-ffff-ffffffffffff', 'Nelson Tech Community', 'Where Innovation Meets Nature', 'Connecting tech professionals in the heart of the Kootenays', 'center', 0.75, '#ffffff', '#1f2937', true, 100, true, '2025-06-22 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-22 08:00:00+00'),
 	
 	-- About page header with Emily's telemedicine
-	('header-002', 'about', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'About Us', 'Innovation in Healthcare Technology', 'Bridging the gap between healthcare and technology in rural BC', 'bottom-left', 0.80, '#ffffff', '#065f46', true, 90, true, '2025-06-18 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-18 09:00:00+00'),
+	('40000002-0002-0002-0002-000000000002', 'about', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'About Us', 'Innovation in Healthcare Technology', 'Bridging the gap between healthcare and technology in rural BC', 'bottom-left', 0.80, '#ffffff', '#065f46', true, 90, true, '2025-06-18 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-18 09:00:00+00'),
 	
 	-- Directory page header with Amanda's brand shoot
-	('header-003', 'directory', '00000003-0003-0003-0003-000000000003', 'Member Directory', 'Meet Our Community', 'Discover talented tech professionals in the Kootenays', 'top-right', 0.70, '#ffffff', '#7c2d12', true, 80, true, '2025-06-21 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-21 11:00:00+00');
+	('40000003-0003-0003-0003-000000000003', 'directory', '00000003-0003-0003-0003-000000000003', 'Member Directory', 'Meet Our Community', 'Discover talented tech professionals in the Kootenays', 'top-right', 0.70, '#ffffff', '#7c2d12', true, 80, true, '2025-06-21 00:00:00+00', '2025-12-31 23:59:59+00', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-21 11:00:00+00');
 
 COMMIT;
 
