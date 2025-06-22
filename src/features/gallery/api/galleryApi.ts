@@ -5,10 +5,27 @@ export const galleryApi = {
   // Gallery CRUD operations
   async getAllGalleries(filters?: GalleryFilters): Promise<Gallery[]> {
     let query = supabase
-      .from('galleries')
+      .from('user_galleries')
       .select(`
         *,
-        photos (*)
+        gallery_photos (*),
+        owner:members!user_id (
+          id,
+          name,
+          image
+        ),
+        group:groups!owner_id (
+          id,
+          name,
+          slug,
+          hero_image
+        ),
+        company:companies!owner_id (
+          id,
+          name,
+          slug,
+          logo
+        )
       `)
       .order('created_at', { ascending: false });
 
@@ -17,11 +34,24 @@ export const galleryApi = {
     }
 
     if (filters?.privacy) {
-      query = query.eq('privacy', filters.privacy);
+      const privacyMap = {
+        'public': 'public',
+        'private': 'private',
+        'unlisted': 'members_only'
+      };
+      query = query.eq('privacy_level', privacyMap[filters.privacy] || filters.privacy);
     }
 
     if (filters?.tags && filters.tags.length > 0) {
       query = query.contains('tags', filters.tags);
+    }
+
+    if (filters?.ownerType) {
+      query = query.eq('owner_type', filters.ownerType);
+    }
+
+    if (filters?.ownerId) {
+      query = query.eq('owner_id', filters.ownerId);
     }
 
     if (filters?.dateRange) {
@@ -37,19 +67,41 @@ export const galleryApi = {
       throw error;
     }
 
-    return data || [];
+    // Transform data to match interface
+    const galleries = (data || []).map(gallery => ({
+      ...gallery,
+      photos: gallery.gallery_photos || [],
+      createdAt: gallery.created_at,
+      updatedAt: gallery.updated_at,
+      ownerId: gallery.user_id,
+      privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level
+    }));
+    
+    return galleries;
   },
 
   async getGalleryById(id: string): Promise<Gallery | null> {
     const { data, error } = await supabase
-      .from('galleries')
+      .from('user_galleries')
       .select(`
         *,
-        photos (*),
-        owner:members!owner_id (
+        gallery_photos (*),
+        owner:members!user_id (
           id,
           name,
           image
+        ),
+        group:groups!owner_id (
+          id,
+          name,
+          slug,
+          hero_image
+        ),
+        company:companies!owner_id (
+          id,
+          name,
+          slug,
+          logo
         )
       `)
       .eq('id', id)
@@ -60,12 +112,22 @@ export const galleryApi = {
       throw error;
     }
 
-    return data;
+    if (!data) return null;
+    
+    // Transform data to match interface
+    return {
+      ...data,
+      photos: data.gallery_photos || [],
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      ownerId: data.user_id,
+      privacy: data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level
+    };
   },
 
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
     const { data, error } = await supabase
-      .from('galleries')
+      .from('user_galleries')
       .insert([gallery])
       .select()
       .single();
@@ -80,7 +142,7 @@ export const galleryApi = {
 
   async updateGallery(id: string, updates: Partial<Gallery>): Promise<Gallery> {
     const { data, error } = await supabase
-      .from('galleries')
+      .from('user_galleries')
       .update(updates)
       .eq('id', id)
       .select()
@@ -96,7 +158,7 @@ export const galleryApi = {
 
   async deleteGallery(id: string): Promise<boolean> {
     const { error } = await supabase
-      .from('galleries')
+      .from('user_galleries')
       .delete()
       .eq('id', id);
 
@@ -115,7 +177,7 @@ export const galleryApi = {
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('photos')
+      .from('gallery-photos')
       .upload(filePath, input.file);
 
     if (uploadError) {
@@ -125,23 +187,27 @@ export const galleryApi = {
 
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('photos')
+      .from('gallery-photos')
       .getPublicUrl(filePath);
 
     // Create photo record
     const photoData = {
-      url: publicUrl,
+      gallery_id: input.galleryId,
+      user_id: '', // This should be set from auth context
+      file_name: fileName,
+      original_file_name: input.file.name,
+      file_size: input.file.size,
+      mime_type: input.file.type,
+      storage_path: filePath,
       title: input.title || input.file.name,
       description: input.description,
       tags: input.tags,
-      file_size: input.file.size,
-      mime_type: input.file.type,
-      gallery_id: input.galleryId,
-      uploaded_at: new Date().toISOString()
+      sort_order: 0,
+      visibility: 'visible' as const
     };
 
     const { data, error } = await supabase
-      .from('photos')
+      .from('gallery_photos')
       .insert([photoData])
       .select()
       .single();
@@ -149,7 +215,7 @@ export const galleryApi = {
     if (error) {
       console.error('Error creating photo record:', error);
       // Clean up uploaded file
-      await supabase.storage.from('photos').remove([filePath]);
+      await supabase.storage.from('gallery-photos').remove([filePath]);
       throw error;
     }
 
@@ -158,7 +224,7 @@ export const galleryApi = {
 
   async updatePhoto(id: string, updates: Partial<Photo>): Promise<Photo> {
     const { data, error } = await supabase
-      .from('photos')
+      .from('gallery_photos')
       .update(updates)
       .eq('id', id)
       .select()
@@ -175,8 +241,8 @@ export const galleryApi = {
   async deletePhoto(id: string): Promise<boolean> {
     // Get photo to delete file
     const { data: photo, error: fetchError } = await supabase
-      .from('photos')
-      .select('url')
+      .from('gallery_photos')
+      .select('storage_path')
       .eq('id', id)
       .single();
 
@@ -185,13 +251,12 @@ export const galleryApi = {
       throw fetchError;
     }
 
-    // Extract file path from URL
-    const url = new URL(photo.url);
-    const filePath = url.pathname.split('/').slice(-2).join('/');
+    // Use storage_path directly
+    const filePath = photo.storage_path;
 
     // Delete from storage
     const { error: storageError } = await supabase.storage
-      .from('photos')
+      .from('gallery-photos')
       .remove([filePath]);
 
     if (storageError) {
@@ -200,7 +265,7 @@ export const galleryApi = {
 
     // Delete record
     const { error } = await supabase
-      .from('photos')
+      .from('gallery_photos')
       .delete()
       .eq('id', id);
 
@@ -215,8 +280,8 @@ export const galleryApi = {
   async batchDeletePhotos(photoIds: string[]): Promise<boolean> {
     // Get photos to delete files
     const { data: photos, error: fetchError } = await supabase
-      .from('photos')
-      .select('url')
+      .from('gallery_photos')
+      .select('storage_path')
       .in('id', photoIds);
 
     if (fetchError) {
@@ -224,16 +289,13 @@ export const galleryApi = {
       throw fetchError;
     }
 
-    // Extract file paths
-    const filePaths = photos.map(photo => {
-      const url = new URL(photo.url);
-      return url.pathname.split('/').slice(-2).join('/');
-    });
+    // Use storage_path directly
+    const filePaths = photos.map(photo => photo.storage_path);
 
     // Delete from storage
     if (filePaths.length > 0) {
       const { error: storageError } = await supabase.storage
-        .from('photos')
+        .from('gallery-photos')
         .remove(filePaths);
 
       if (storageError) {
@@ -243,7 +305,7 @@ export const galleryApi = {
 
     // Delete records
     const { error } = await supabase
-      .from('photos')
+      .from('gallery_photos')
       .delete()
       .in('id', photoIds);
 
@@ -258,8 +320,8 @@ export const galleryApi = {
   async reorderPhotos(galleryId: string, photoOrders: { id: string; order: number }[]): Promise<boolean> {
     const updates = photoOrders.map(({ id, order }) => 
       supabase
-        .from('photos')
-        .update({ order })
+        .from('gallery_photos')
+        .update({ sort_order: order })
         .eq('id', id)
         .eq('gallery_id', galleryId)
     );
@@ -277,12 +339,22 @@ export const galleryApi = {
 
   // Gallery stats
   async incrementViewCount(galleryId: string): Promise<void> {
-    const { error } = await supabase.rpc('increment_gallery_views', {
-      gallery_id: galleryId
-    });
-
-    if (error) {
-      console.error('Error incrementing view count:', error);
+    // Direct update since RPC might not exist
+    const { data: gallery } = await supabase
+      .from('user_galleries')
+      .select('view_count')
+      .eq('id', galleryId)
+      .single();
+      
+    if (gallery) {
+      const { error } = await supabase
+        .from('user_galleries')
+        .update({ view_count: (gallery.view_count || 0) + 1 })
+        .eq('id', galleryId);
+        
+      if (error) {
+        console.error('Error incrementing view count:', error);
+      }
     }
   },
 

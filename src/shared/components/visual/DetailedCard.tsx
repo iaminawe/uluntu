@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, User, Image as ImageIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface DetailedCardProps {
   id: string;
@@ -39,18 +38,11 @@ export function DetailedCard({
 
   return (
     <article
-      className={cn(
-        'group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300',
-        'border border-slate-200 dark:border-slate-700',
-        className
-      )}
+      className={`group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-700 ${className || ''}`}
     >
       {/* Image */}
       <Link to={link} className="block relative overflow-hidden">
-        <div className={cn(
-          "relative bg-slate-100 dark:bg-slate-700",
-          isCompact ? "aspect-[16/9]" : "aspect-[16/10]"
-        )}>
+        <div className={`relative bg-slate-100 dark:bg-slate-700 ${isCompact ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
           {image ? (
             <img
               src={image}
@@ -75,10 +67,7 @@ export function DetailedCard({
       </Link>
 
       {/* Content */}
-      <div className={cn(
-        "p-6",
-        isCompact && "p-4"
-      )}>
+      <div className={`p-6 ${isCompact ? "p-4" : ""}`}>
         {/* Meta */}
         <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-3">
           {date && (
@@ -103,20 +92,14 @@ export function DetailedCard({
         </div>
 
         {/* Title */}
-        <h3 className={cn(
-          "font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-orange-500 transition-colors",
-          isCompact ? "text-lg" : "text-xl"
-        )}>
+        <h3 className={`font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-orange-500 transition-colors ${isCompact ? "text-lg" : "text-xl"}`}>
           <Link to={link}>
             {title}
           </Link>
         </h3>
 
         {/* Excerpt */}
-        <p className={cn(
-          "text-slate-600 dark:text-slate-400 line-clamp-3 mb-4",
-          isCompact && "text-sm line-clamp-2"
-        )}>
+        <p className={`text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 ${isCompact ? "text-sm line-clamp-2" : ""}`}>
           {excerpt}
         </p>
 
@@ -145,16 +128,10 @@ export function DetailedCard({
           {/* Read More Link */}
           <Link
             to={link}
-            className={cn(
-              "inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-medium transition-colors",
-              author && "ml-auto"
-            )}
+            className={`inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-medium transition-colors ${author ? "ml-auto" : ""}`}
           >
             <span className={isCompact ? "text-sm" : ""}>{linkText}</span>
-            <ArrowRight className={cn(
-              "transition-transform group-hover:translate-x-1",
-              isCompact ? "w-4 h-4" : "w-5 h-5"
-            )} />
+            <ArrowRight className={`transition-transform group-hover:translate-x-1 ${isCompact ? "w-4 h-4" : "w-5 h-5"}`} />
           </Link>
         </div>
       </div>

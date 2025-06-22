@@ -4,6 +4,8 @@ export { photoApi } from './photoApi';
 export { uploadApi } from './uploadApi';
 export { promotionApi } from './promotionApi';
 export { pageHeaderAssignmentApi } from './pageHeaderApi';
+export { groupGalleryApi } from './groupGalleryApi';
+export { companyGalleryApi } from './companyGalleryApi';
 
 // Re-export types for convenience
 export type {

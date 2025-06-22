@@ -6,7 +6,9 @@ import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { PhotoUpload } from '@/features/gallery/components/PhotoUpload';
+import { GallerySelector } from '@/features/gallery/components/GallerySelector';
 import { uploadApi } from '@/features/gallery/api/uploadApi';
+import { useUserGroups } from '@/shared/hooks/useUserContent';
 import type { Gallery, CreateGalleryInput, UpdateGalleryInput } from '@/features/gallery/types';
 
 const GalleryEditPage: React.FC = () => {
@@ -14,6 +16,12 @@ const GalleryEditPage: React.FC = () => {
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
   const isEditing = !!id;
+  
+  // Get user's groups for gallery selector
+  const { groups: userGroups } = useUserGroups();
+  
+  // Mock user companies for now - you'd want to implement useUserCompanies hook
+  const userCompanies: Array<{ id: string; name: string; role: string }> = [];
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -23,8 +31,15 @@ const GalleryEditPage: React.FC = () => {
     description: '',
     privacy_level: 'public',
     visibility: 'visible',
-    tags: []
+    tags: [],
+    owner_type: 'user',
+    owner_id: undefined
   });
+  const [galleryOwner, setGalleryOwner] = useState<{
+    type: 'user' | 'group' | 'company';
+    id?: string;
+    name?: string;
+  }>({ type: 'user' });
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -60,8 +75,27 @@ const GalleryEditPage: React.FC = () => {
         description: gallery.description || '',
         privacy_level: gallery.privacy_level,
         visibility: gallery.visibility,
-        tags: gallery.tags || []
+        tags: gallery.tags || [],
+        owner_type: gallery.owner_type || 'user',
+        owner_id: gallery.owner_id
       });
+      
+      // Set gallery owner for selector
+      if (gallery.owner_type === 'group' && gallery.group) {
+        setGalleryOwner({
+          type: 'group',
+          id: gallery.group.id,
+          name: gallery.group.name
+        });
+      } else if (gallery.owner_type === 'company' && gallery.company) {
+        setGalleryOwner({
+          type: 'company',
+          id: gallery.company.id,
+          name: gallery.company.name
+        });
+      } else {
+        setGalleryOwner({ type: 'user' });
+      }
     } catch (err) {
       console.error('Error loading gallery:', err);
       navigate('/my-galleries');
@@ -97,11 +131,18 @@ const GalleryEditPage: React.FC = () => {
     try {
       setSaving(true);
       
+      // Update form data with current gallery owner selection
+      const finalFormData = {
+        ...formData,
+        owner_type: galleryOwner.type,
+        owner_id: galleryOwner.type === 'user' ? user?.id : galleryOwner.id
+      };
+      
       if (isEditing && id) {
-        await galleryApi.updateGallery(id, formData as UpdateGalleryInput);
+        await galleryApi.updateGallery(id, finalFormData as UpdateGalleryInput);
         navigate(`/galleries/${id}`);
       } else {
-        const newGallery = await galleryApi.createGallery(formData);
+        const newGallery = await galleryApi.createGallery(finalFormData);
         // After creating, show upload modal or navigate
         if (newGallery) {
           setShowUpload(true);
@@ -176,6 +217,15 @@ const GalleryEditPage: React.FC = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Gallery Owner Selector */}
+          {!isEditing && (
+            <GallerySelector
+              value={galleryOwner}
+              onChange={setGalleryOwner}
+              userGroups={userGroups.map(g => ({ id: g.id, name: g.name, role: g.role || 'member' }))}
+              userCompanies={userCompanies}
+            />
+          )}
           {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
