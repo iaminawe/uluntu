@@ -71,6 +71,7 @@ import UpdateNewsSlugs from '../pages/admin/UpdateNewsSlugs';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
+import TestPage from '../pages/TestPage';
 
 // Auth components
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
@@ -91,7 +92,7 @@ export const router = createBrowserRouter([
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: 'partners', element: <PartnersPage /> },
-      { path: 'debug-data', element: <DebugDataPage /> },
+      { path: 'test', element: <TestPage /> },
       { path: 'directory', element: <DirectoryPage /> },
       { 
         path: 'directory/create', 
