@@ -36,11 +36,11 @@ export default function SignUpForm() {
       setIsLoading(true);
       setError(null);
       
-      const result = await signUp(email, password);
+      const { data, error } = await signUp(email, password);
       
       // Check if the result contains an error
-      if (result?.error) {
-        throw result.error;
+      if (error) {
+        throw error;
       }
 
       // No need to create a member profile anymore!
@@ -56,10 +56,10 @@ export default function SignUpForm() {
       // Show success message in the UI instead of an alert
       // The test is looking for this text in the document
       
-      // Redirect to home page after a delay
+      // Redirect to onboarding welcome page after a delay
       setTimeout(() => {
-        navigate('/');
-      }, 3000);
+        navigate('/onboarding/welcome');
+      }, 2000);
     } catch (err) {
       console.error('Error signing up:', err);
       // Make sure we display the exact error message expected by the test
@@ -95,7 +95,7 @@ export default function SignUpForm() {
       {success ? (
         <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
           <p className="text-sm text-green-700 dark:text-green-400">
-            Account created successfully! You can now sign in.
+            Account created successfully! Redirecting to complete your profile...
           </p>
         </div>
       ) : (
