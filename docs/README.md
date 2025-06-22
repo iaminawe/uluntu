@@ -23,7 +23,7 @@ Welcome to the Nelson Tech Community Platform documentation. This platform conne
 - [Groups](./features/groups.md) - Community groups
 - [Marketplace](./features/marketplace.md) - Buy/sell marketplace
 - [News](./features/news.md) - News and articles
-- [Onboarding](./onboarding/) - User onboarding flow documentation
+- [Onboarding](./onboarding/) - **🆕 Complete 5-step user onboarding system with privacy controls**
 - [Opportunities](./features/opportunities.md) - Jobs and volunteering
 - [Resources](./features/resources.md) - Educational resources
 
@@ -79,9 +79,10 @@ We use SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) f
 ## 🎯 Current Status
 
 - **Test Coverage**: 100% (461/461 tests passing)
-- **Features Completed**: 10/10 core features
+- **Features Completed**: 10/10 core features + Complete onboarding system
 - **Architecture**: Feature-based with clear separation of concerns
 - **Documentation**: Comprehensive and up-to-date
+- **Onboarding**: ✅ 5-step wizard with privacy controls and profile publishing
 
 ## 🏗️ Project Structure
 
@@ -120,4 +121,4 @@ When contributing to this project:
 
 ---
 
-Last updated: June 2024
+Last updated: June 2025
