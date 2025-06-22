@@ -280,17 +280,17 @@ export const companiesApi = {
           id: data.member.id,
           name: data.member.name,
           title: data.member.title || '',
-          company: data.member.company || undefined,
+          company: undefined, // Not in database schema
           location: data.member.location || undefined,
           image: data.member.image || '',
           bio: data.member.bio || undefined,
           intro: data.member.intro || undefined,
-          skills: data.member.skills || undefined,
-          joinDate: data.member.join_date || data.member.created_at,
-          social: data.member.social || undefined,
-          status: data.member.status || 'published',
+          skills: [], // Not in database schema, Member interface expects string[]
+          joinDate: data.member.created_at || new Date().toISOString(),
+          social: undefined, // Not in database schema
+          status: (data.member.status || 'published') as ContentStatus,
           created_at: data.member.created_at,
-          updated_at: data.member.updated_at || undefined,
+          updated_at: undefined, // Not in database schema
           featured: data.member.featured || false
         } : undefined
       };
@@ -341,17 +341,17 @@ export const companiesApi = {
           id: data.member.id,
           name: data.member.name,
           title: data.member.title || '',
-          company: data.member.company || undefined,
+          company: undefined, // Not in database schema
           location: data.member.location || undefined,
           image: data.member.image || '',
           bio: data.member.bio || undefined,
           intro: data.member.intro || undefined,
-          skills: data.member.skills || undefined,
-          joinDate: data.member.join_date || data.member.created_at,
-          social: data.member.social || undefined,
-          status: data.member.status || 'published',
+          skills: [], // Not in database schema, Member interface expects string[]
+          joinDate: data.member.created_at || new Date().toISOString(),
+          social: undefined, // Not in database schema
+          status: (data.member.status || 'published') as ContentStatus,
           created_at: data.member.created_at,
-          updated_at: data.member.updated_at || undefined,
+          updated_at: undefined, // Not in database schema
           featured: data.member.featured || false
         } : undefined
       };
@@ -380,7 +380,7 @@ export const companiesApi = {
     }
   },
 
-  async getCompanyEmployees(companyId: string, filters?: CompanyEmployeeFilters): Promise<CompanyEmployee[]> {
+  async getCompanyEmployees(companyId: string, _filters?: CompanyEmployeeFilters): Promise<CompanyEmployee[]> {
     try {
       console.log(`Fetching employees for company ID: ${companyId}...`);
       
@@ -423,17 +423,17 @@ export const companiesApi = {
           id: employee.member.id,
           name: employee.member.name,
           title: employee.member.title || '',
-          company: employee.member.company || undefined,
+          company: undefined, // Not in database schema
           location: employee.member.location || undefined,
           image: employee.member.image || '',
           bio: employee.member.bio || undefined,
           intro: employee.member.intro || undefined,
-          skills: employee.member.skills || undefined,
-          joinDate: employee.member.join_date || employee.member.created_at,
-          social: employee.member.social || undefined,
-          status: employee.member.status || 'published',
+          skills: undefined, // Not in database schema
+          joinDate: employee.member.created_at || new Date().toISOString(),
+          social: undefined, // Not in database schema
+          status: (employee.member.status || 'published') as ContentStatus,
           created_at: employee.member.created_at,
-          updated_at: employee.member.updated_at || undefined,
+          updated_at: undefined, // Not in database schema
           featured: employee.member.featured || false
         } : undefined
       }));

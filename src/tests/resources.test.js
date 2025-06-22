@@ -1,3 +1,17 @@
+// Mock environment dependencies first
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: jest.fn(),
+    auth: { getUser: jest.fn() }
+  },
+  sessionCache: new WeakMap()
+}));
+
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 // Using CommonJS syntax instead of ES modules
 const { render, screen, fireEvent, waitFor } = require('@testing-library/react');
 const userEvent = require('@testing-library/user-event');

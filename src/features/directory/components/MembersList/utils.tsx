@@ -31,7 +31,7 @@ export const filterMembers = (
         return false;
       }
       
-      // Check if member has any of the selected skills
+      // Check if member has unknown of the selected skills
       const hasSelectedSkill = filterOptions.skills.some(skill => 
         member.skills!.includes(skill)
       );

@@ -2,32 +2,62 @@ import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/supabase';
 import { AuthError } from '@supabase/supabase-js';
 
-// Get environment variables with proper validation
-// In test environment, check both import.meta.env and process.env
-const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || 
-  (typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_URL : null);
-const supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || 
-  (typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_ANON_KEY : null);
+// Get environment variables from Vite's import.meta.env
+const getEnvVar = (key: string): string | undefined => {
+  // In browser environment with Vite, use import.meta.env
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key];
+  }
+  return undefined;
+};
+
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+
+// Log Supabase configuration for debugging
+console.log('[Supabase] Configuration:', { 
+  url: supabaseUrl,
+  hasAnonKey: !!supabaseAnonKey,
+  anonKeyLength: supabaseAnonKey?.length
+});
 
 // Validate environment variables
 if (!supabaseUrl) {
+  console.error('[Supabase] Missing VITE_SUPABASE_URL environment variable');
   throw new Error('VITE_SUPABASE_URL environment variable is required');
 }
 
 if (!supabaseAnonKey) {
+  console.error('[Supabase] Missing VITE_SUPABASE_ANON_KEY environment variable');
   throw new Error('VITE_SUPABASE_ANON_KEY environment variable is required');
 }
 
-// Create Supabase client with validated environment variables and explicit auth options
+// Create Supabase client with minimal configuration to debug hanging issue
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    storage: window.localStorage,
-    storageKey: 'nelson-tech-auth'
+    autoRefreshToken: false,
+    persistSession: false,
+    detectSessionInUrl: false
   }
 });
+
+// Log when client is created
+console.log('[Supabase] Client created successfully');
+
+// Test the client immediately
+(async () => {
+  try {
+    console.log('[Supabase] Testing client with simple query...');
+    const { data, error } = await supabase.from('news').select('id').limit(1);
+    if (error) {
+      console.error('[Supabase] Initial test query error:', error);
+    } else {
+      console.log('[Supabase] Initial test query success:', data);
+    }
+  } catch (err) {
+    console.error('[Supabase] Initial test query exception:', err);
+  }
+})();
 
 // Cache for session conversions using WeakMap
 export const sessionCache = new WeakMap();

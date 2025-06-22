@@ -10,6 +10,13 @@
  * This function avoids direct references to import.meta that would cause syntax errors in Jest.
  */
 function getMetaEnvVariable(key: string): string | undefined {
+  // For Vite/browser environment - check if import.meta is available (prioritize this for browser)
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    if (import.meta.env[key] !== undefined) {
+      return import.meta.env[key];
+    }
+  }
+  
   // For Jest environment - check the global mock
   // @ts-ignore - Jest-specific global
   if (typeof globalThis !== 'undefined' && globalThis.__JEST_IMPORT_META_ENV__) {
@@ -17,32 +24,8 @@ function getMetaEnvVariable(key: string): string | undefined {
     return globalThis.__JEST_IMPORT_META_ENV__[key];
   }
 
-  // For Node.js environment - check process.env
-  if (typeof process !== 'undefined' && process.env) {
-    // Check for VITE_ prefixed env vars in process.env
-    if (key.startsWith('VITE_') && process.env[key]) {
-      return process.env[key];
-    }
-    
-    // Also check without VITE_ prefix for compatibility
-    const unprefixedKey = key.replace(/^VITE_/, '');
-    if (process.env[unprefixedKey]) {
-      return process.env[unprefixedKey];
-    }
-  }
-
-  // For Vite/browser environment - use a try/catch to handle import.meta
-  // We don't use import.meta directly in a way that would be evaluated at parse time
-  try {
-    // @ts-ignore - Use a variable to avoid direct reference
-    const importMeta = globalThis.import?.meta;
-    if (importMeta && importMeta.env && importMeta.env[key]) {
-      return importMeta.env[key];
-    }
-  } catch (e) {
-    // Silently fail if import.meta isn't available
-  }
-
+  // Note: We avoid using process.env in browser code as it causes ReferenceError
+  
   return undefined;
 }
 
@@ -51,4 +34,20 @@ function getMetaEnvVariable(key: string): string | undefined {
  * Determined by the VITE_USE_SUPABASE environment variable.
  * Defaults to false if the variable is not 'true'.
  */
-export const IS_SUPABASE_ENABLED: boolean = getMetaEnvVariable('VITE_USE_SUPABASE') === 'true';
+/**
+ * Gets the current value of IS_SUPABASE_ENABLED dynamically
+ * This ensures we always get the current environment value
+ */
+export function getIsSupabaseEnabled(): boolean {
+  const envValue = getMetaEnvVariable('VITE_USE_SUPABASE');
+  console.log('[config/env.ts] Dynamic check - VITE_USE_SUPABASE:', envValue);
+  
+  // Temporary: force Supabase enabled for debugging
+  console.log('[config/env.ts] Forcing Supabase enabled for debugging');
+  return true;
+  
+  // return envValue === 'true';
+}
+
+// For backward compatibility, export a getter that checks dynamically
+export const IS_SUPABASE_ENABLED: boolean = getIsSupabaseEnabled();

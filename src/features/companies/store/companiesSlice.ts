@@ -3,10 +3,7 @@ import { RootState } from '@/store';
 import { Company } from '@/types';
 import { companiesApi, CompanyInput } from '../api/companiesApi';
 import * as mockQueries from '@/hooks/useQueries';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
-
-// Toggle between Supabase and mock data
-const USE_SUPABASE = IS_SUPABASE_ENABLED;
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for company filters to match the API interface
 export interface CompanyFilters {
@@ -40,7 +37,7 @@ export const fetchCompanies = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       console.log('Redux thunk: fetchCompanies started');
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         console.log('Using Supabase for companies data');
         const companies = await companiesApi.getAll();
         console.log('Companies fetched in thunk:', companies.length);
@@ -61,7 +58,7 @@ export const fetchCompanyById = createAsyncThunk(
   'companies/fetchCompanyById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const company = await companiesApi.getById(id);
         return company || null;
       } else {
@@ -78,7 +75,7 @@ export const fetchFilteredCompanies = createAsyncThunk(
   'companies/fetchFilteredCompanies',
   async (filters: CompanyFilters, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await companiesApi.getAll(filters);
       } else {
         return mockQueries.useCompaniesWithFilters(filters).data || [];
@@ -93,7 +90,7 @@ export const createCompany = createAsyncThunk(
   'companies/createCompany',
   async (companyData: CompanyInput, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const newCompany = await companiesApi.create(companyData);
         return newCompany;
       } else {
@@ -126,7 +123,7 @@ export const updateCompany = createAsyncThunk(
   'companies/updateCompany',
   async ({ id, data }: { id: string; data: Partial<CompanyInput> }, { rejectWithValue, getState }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const updatedCompany = await companiesApi.update(id, data);
         return updatedCompany;
       } else {
@@ -164,7 +161,7 @@ export const deleteCompany = createAsyncThunk(
   'companies/deleteCompany',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const success = await companiesApi.delete(id);
         if (success) {
           return id;

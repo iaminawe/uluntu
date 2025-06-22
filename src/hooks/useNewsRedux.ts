@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   fetchNewsArticles,
   fetchNewsArticleById,
@@ -36,8 +36,9 @@ export function useNewsArticlesRedux() {
   const status = useAppSelector(selectNewsStatus);
   const error = useAppSelector(selectNewsError);
   
-  const isLoading = status === 'loading';
-  const isSuccess = status === 'succeeded';
+  // Fix: Only show loading if we don't have articles data yet
+  const isLoading = articles.length === 0 && status === 'loading';
+  const isSuccess = status === 'succeeded' || articles.length > 0;
   const isError = status === 'failed';
   
   // Load articles if needed

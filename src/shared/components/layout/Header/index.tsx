@@ -10,14 +10,41 @@ import UserMenu from "./UserMenu";
 const Header: React.FC<HeaderProps> = ({
   logo = "Nelson Tech",
   navLinks = [
-    { text: "Events", href: "/events" },
-    { text: "Directory", href: "/directory" },
-    { text: "Companies", href: "/companies" },
-    { text: "Opportunities", href: "/opportunities" },
-    { text: "Marketplace", href: "/marketplace" },
-    { text: "Resources", href: "/resources" },
-    { text: "Groups", href: "/groups" },
-    { text: "News", href: "/news" }
+    { 
+      text: "Community", 
+      href: "/community",
+      children: [
+        { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks" },
+        { text: "Directory", href: "/directory", description: "Connect with tech professionals" },
+        { text: "Groups", href: "/groups", description: "Join communities of interest" },
+        { text: "News", href: "/news", description: "Latest tech news and articles" }
+      ]
+    },
+    { 
+      text: "Business", 
+      href: "/business",
+      children: [
+        { text: "Companies", href: "/companies", description: "Explore local tech companies" },
+        { text: "Opportunities", href: "/opportunities", description: "Find jobs and volunteer roles" },
+        { text: "Marketplace", href: "/marketplace", description: "Buy and sell tech items" }
+      ]
+    },
+    { 
+      text: "Resources", 
+      href: "/resources", 
+      description: "Educational content and guides" 
+    },
+    { 
+      text: "About", 
+      href: "/about",
+      children: [
+        { text: "About Us", href: "/about", description: "Learn about our mission" },
+        { text: "Partners", href: "/partners", description: "Our community partners and sponsors" },
+        { text: "Contact", href: "/contact", description: "Get in touch with us" },
+        { text: "Privacy", href: "/privacy", description: "Privacy policy and data protection" },
+        { text: "Terms", href: "/terms", description: "Terms of service and guidelines" }
+      ]
+    }
   ]
 }) => {
   const [isOpen, setIsOpen] = useState(false);

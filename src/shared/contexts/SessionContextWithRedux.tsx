@@ -75,18 +75,21 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           }
         }));
         
-        // Fetch and set user roles
+        // Fetch and set user roles BEFORE setting loading to false
         const roles = await fetchUserRoles(currentSession.user.id);
         dispatch(setRoles(roles));
+        console.log('SessionProvider: Roles fetched and dispatched, now setting loading to false');
       } else {
         console.log('SessionProvider: No session found');
       }
       
+      // Only set loading to false AFTER roles are fetched (or no session exists)
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, currentSession) => {
+        console.log('SessionProvider: Auth state changed, event:', _event);
         setSession(currentSession);
         
         // Sync with Redux store
@@ -103,13 +106,15 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             }
           }));
           
-          // Fetch and set user roles
+          // Fetch and set user roles BEFORE setting loading to false
           const roles = await fetchUserRoles(currentSession.user.id);
           dispatch(setRoles(roles));
+          console.log('SessionProvider: Auth state change - roles fetched and dispatched');
         } else {
           dispatch(reduxSignOut());
         }
         
+        // Only set loading to false AFTER roles are fetched
         setLoading(false);
       }
     );

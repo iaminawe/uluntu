@@ -21,18 +21,24 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
     return (
       <div
-        className={`relative py-12 mb-8 overflow-hidden ${className}`} // Added overflow-hidden
-        // Removed inline background style from here
+        className={`relative py-12 mb-8 overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 ${className}`}
+        style={{
+          minHeight: '300px' // Ensure minimum height for the header
+        }}
       >
         {backgroundImage && (
           <img
             src={backgroundImage} // Use the prop directly as src
             alt="Header background"
             className="absolute inset-0 w-full h-full object-cover z-0" // Positioned as background
+            onError={(e) => {
+              console.error('Failed to load background image:', backgroundImage);
+              e.currentTarget.style.display = 'none';
+            }}
           />
         )}
-        {/* Overlay for the gradient */}
-        <div className="absolute inset-0 bg-black opacity-50 z-10"></div> {/* Simple opacity, adjust as needed */}
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
 
         <div className="container mx-auto px-4 relative z-20"> {/* Content needs higher z-index */}
           <div className="max-w-7xl mx-auto text-center">

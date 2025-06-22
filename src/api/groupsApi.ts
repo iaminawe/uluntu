@@ -6,8 +6,9 @@ import {
   GroupInsertData,
   GroupUpdateData,
 } from '@/adapters/groupAdapter';
-import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
-import { ContentStatus } from '../types/common'; // For casting 'status'
+import { Group as FrontendGroup } from '../types';
+import { ContentStatus } from '../types/common';
+import { Database } from '@/types/supabase';
 
 // Helper function to adapt a list of items
 function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
@@ -181,7 +182,7 @@ export const groupsApi = {
         .from('group_members')
         .insert({
           group_id: groupId,
-          user_id: userId,
+          member_id: userId,
           role: 'member',
           joined_date: new Date().toISOString()
         });
@@ -216,7 +217,7 @@ export const groupsApi = {
     }
   },
 
-  async getGroupMembers(groupId: string): Promise<any[]> {
+  async getGroupMembers(groupId: string): Promise<(Database['public']['Tables']['group_members']['Row'] & { member?: Database['public']['Tables']['members']['Row'] })[]> {
     try {
       const { data, error } = await supabase
         .from('group_members')

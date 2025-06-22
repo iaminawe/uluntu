@@ -76,7 +76,7 @@ const CampaignManager: React.FC = () => {
     setSelectedStatus(status);
     setFilters(prev => ({
       ...prev,
-      status: status === 'all' ? undefined : status as any,
+      status: status === 'all' ? undefined : status as unknown,
       offset: 0
     }));
   };

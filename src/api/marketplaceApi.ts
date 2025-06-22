@@ -82,7 +82,7 @@ export const marketplaceApi = {
       }
 
       // Use our helper function with type assertion to avoid compatibility issues
-      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
+      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as unknown));
     } catch (error) {
       console.error('Error fetching marketplace items:', error);
       throw error;
@@ -137,7 +137,7 @@ export const marketplaceApi = {
       console.log('MarketplaceAPI: Successfully retrieved item data:', data);
       
       // Use type assertion to avoid type compatibility issues
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       console.error('MarketplaceAPI: Exception in getById:', error);
       handleSupabaseError(error, 'fetching marketplace item by id');
@@ -175,7 +175,7 @@ export const marketplaceApi = {
       }
       
       // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
+      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as unknown));
     } catch (error) {
       handleSupabaseError(error, 'fetching marketplace items by seller');
       return []; // Return empty array on error
@@ -196,7 +196,7 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating marketplace item');
       return null;
@@ -218,7 +218,7 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as any) : null;
+      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating marketplace item');
       return null;

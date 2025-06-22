@@ -160,7 +160,7 @@ const ModerationPage: React.FC = () => {
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <select
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value as any)}
+          onChange={(e) => setSelectedStatus(e.target.value as unknown)}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Status</option>

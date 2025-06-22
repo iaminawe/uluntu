@@ -1,3 +1,9 @@
+// Mock environment dependencies first
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -287,7 +293,7 @@ describe('EntityTable', () => {
   });
 
   it('handles refresh functionality', async () => {
-    const { rerender } = render(
+    const { } = render(
       <TestWrapper>
         <EntityTable {...defaultProps} />
       </TestWrapper>

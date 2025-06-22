@@ -22,7 +22,7 @@ interface UserWithRoles {
   last_sign_in_at: string | null;
   app_metadata: Record<string, any>;
   user_metadata: Record<string, any>;
-  roles: Array<{ role: { id: string; name: string } }>;
+  roles: Array<{ id: string; name: string }>;
 }
 
 const UsersPage: React.FC = () => {
@@ -32,71 +32,113 @@ const UsersPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
 
+  // Helper function to format role names
+  const formatRoleName = (roleId: string): string => {
+    const roleMap: Record<string, string> = {
+      'authenticated': 'Authenticated',
+      'group_member': 'Group Member', 
+      'admin': 'Administrator',
+      'superadmin': 'Super Administrator'
+    };
+    return roleMap[roleId] || roleId;
+  };
+
   // Fetch users with their roles
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', searchTerm, selectedRole],
     queryFn: async () => {
-      // Get all user roles with user info
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select(`
-          *,
-          role:roles(*),
-          user:auth.users!user_id(
-            id,
-            email,
-            created_at,
-            last_sign_in_at,
-            raw_app_meta_data,
-            raw_user_meta_data
-          )
-        `);
-      
-      if (rolesError) throw rolesError;
+      try {
+        // Try using the database function first
+        const { data: adminUsersData, error: functionError } = await supabase
+          .rpc('get_admin_users');
 
-      // Group by user
-      const userMap = new Map<string, UserWithRoles>();
-      
-      userRoles?.forEach(userRole => {
-        if (!userRole.user) return;
-        
-        const userId = userRole.user_id;
-        if (!userMap.has(userId)) {
-          userMap.set(userId, {
-            id: userId,
-            email: userRole.user.email || '',
-            created_at: userRole.user.created_at,
-            last_sign_in_at: userRole.user.last_sign_in_at,
-            app_metadata: userRole.user.raw_app_meta_data || {},
-            user_metadata: userRole.user.raw_user_meta_data || {},
-            roles: []
+        if (functionError) {
+          console.warn('Database function failed, falling back to manual query:', functionError);
+          
+          // Fallback: Get all user roles
+          const { data: userRoles, error: rolesError } = await supabase
+            .from('user_roles')
+            .select('user_id, role');
+          
+          if (rolesError) {
+            console.error('Error fetching user roles:', rolesError);
+            return [];
+          }
+
+          // Group by user ID and create simplified user objects
+          const userMap = new Map<string, UserWithRoles>();
+          
+          userRoles?.forEach(userRole => {
+            const userId = userRole.user_id;
+            
+            if (!userMap.has(userId)) {
+              userMap.set(userId, {
+                id: userId,
+                email: `user-${userId.substring(0, 8)}@example.com`,
+                created_at: new Date().toISOString(),
+                last_sign_in_at: null,
+                app_metadata: {},
+                user_metadata: { name: `User ${userId.substring(0, 8)}` },
+                roles: []
+              });
+            }
+            
+            const user = userMap.get(userId)!;
+            user.roles.push({ id: userRole.role, name: formatRoleName(userRole.role) });
           });
+
+          let usersArray = Array.from(userMap.values());
+
+          // Filter by search term
+          if (searchTerm) {
+            usersArray = usersArray.filter(user =>
+              user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              user.user_metadata?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }
+
+          // Filter by role
+          if (selectedRole !== 'all') {
+            usersArray = usersArray.filter(user =>
+              user.roles.some(r => r.id === selectedRole)
+            );
+          }
+
+          return usersArray;
         }
-        
-        const user = userMap.get(userId)!;
-        if (userRole.role) {
-          user.roles.push({ role: userRole.role });
+
+        // Convert database function results to UserWithRoles format
+        const usersArray: UserWithRoles[] = adminUsersData?.map(user => ({
+          id: user.user_id,
+          email: user.email || `user-${user.user_id.substring(0, 8)}@example.com`,
+          created_at: user.created_at,
+          last_sign_in_at: user.last_sign_in_at,
+          app_metadata: {},
+          user_metadata: { name: user.name || 'Unknown User' },
+          roles: (user.roles || []).map(role => ({ id: role, name: formatRoleName(role) }))
+        })) || [];
+
+        // Apply filters
+        let filteredUsers = usersArray;
+
+        if (searchTerm) {
+          filteredUsers = filteredUsers.filter(user =>
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.user_metadata?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          );
         }
-      });
 
-      let usersArray = Array.from(userMap.values());
+        if (selectedRole !== 'all') {
+          filteredUsers = filteredUsers.filter(user =>
+            user.roles.some(r => r.id === selectedRole)
+          );
+        }
 
-      // Filter by search term
-      if (searchTerm) {
-        usersArray = usersArray.filter(user =>
-          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.user_metadata?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        return filteredUsers;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        return [];
       }
-
-      // Filter by role
-      if (selectedRole !== 'all') {
-        usersArray = usersArray.filter(user =>
-          user.roles.some(r => r.role?.id === selectedRole)
-        );
-      }
-
-      return usersArray;
     }
   });
 
@@ -220,16 +262,16 @@ const UsersPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-wrap gap-1">
-                      {user.roles.map(userRole => (
+                      {user.roles.map(role => (
                         <span
-                          key={userRole.role.id}
+                          key={role.id}
                           className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                         >
-                          {userRole.role.name}
+                          {role.name}
                           <button
                             onClick={() => removeRoleMutation.mutate({
                               userId: user.id,
-                              roleId: userRole.role.id
+                              roleId: role.id
                             })}
                             className="ml-1 hover:text-blue-600"
                           >
@@ -283,7 +325,7 @@ const UsersPage: React.FC = () => {
             </h3>
             <div className="space-y-2">
               {roles?.filter(role => 
-                !selectedUser.roles.some(ur => ur.role.id === role.id)
+                !selectedUser.roles.some(ur => ur.id === role.id)
               ).map(role => (
                 <button
                   key={role.id}

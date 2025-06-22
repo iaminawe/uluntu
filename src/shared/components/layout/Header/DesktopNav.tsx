@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { NavLinkItem } from './types';
 import ThemeToggle from './ThemeToggle';
+import Dropdown from './Dropdown';
 
 interface DesktopNavProps {
   navLinks: NavLinkItem[];
@@ -15,15 +15,13 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   toggleDarkMode 
 }) => {
   return (
-    <nav className="hidden md:flex items-center space-x-8">
+    <nav className="hidden md:flex items-center space-x-6">
       {navLinks.map((link, index) => (
-        <Link
+        <Dropdown
           key={index}
-          to={link.href}
-          className="text-white hover:text-orange-100 transition-colors"
-        >
-          {link.text}
-        </Link>
+          item={link}
+          isDesktop={true}
+        />
       ))}
       <ThemeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
     </nav>

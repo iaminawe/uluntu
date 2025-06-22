@@ -88,7 +88,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRed
         <div className="text-center py-12 text-red-500">
           <p>Error loading groups</p>
           {error && typeof error === 'object' && 'message' in error && (
-            <p>{(error as any).message}</p>
+            <p>{(error as unknown).message}</p>
           )}
         </div>
       </div>

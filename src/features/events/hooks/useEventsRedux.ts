@@ -25,8 +25,9 @@ export const useEventsRedux = () => {
     error 
   } = useAppSelector(state => state.events);
 
-  const isLoading = status === 'loading';
-  const isSuccess = status === 'succeeded';
+  // Fix: Only show loading if we don't have events data yet
+  const isLoading = events.length === 0 && status === 'loading';
+  const isSuccess = status === 'succeeded' || events.length > 0;
   const isError = status === 'failed';
 
   // Dispatch actions

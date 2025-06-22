@@ -3,10 +3,7 @@ import { RootState } from '../store';
 import { Resource } from '../../types';
 import { resourcesApi, ResourceInput } from '../api/resourcesApi';
 import * as mockQueries from '@/hooks/useQueries';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
-
-// Toggle between Supabase and mock data
-const USE_SUPABASE = IS_SUPABASE_ENABLED;
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for resource filters to match the API interface
 export interface ResourceFilters {
@@ -42,7 +39,7 @@ export const fetchResources = createAsyncThunk(
   'resources/fetchResources',
   async (_, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await resourcesApi.getAll();
       } else {
         return mockQueries.useResources().data || [];
@@ -57,7 +54,7 @@ export const fetchResourceById = createAsyncThunk(
   'resources/fetchResourceById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const resource = await resourcesApi.getById(id);
         return resource || null;
       } else {
@@ -74,7 +71,7 @@ export const fetchFilteredResources = createAsyncThunk(
   'resources/fetchFilteredResources',
   async (filters: ResourceFilters, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await resourcesApi.getAll(filters);
       } else {
         return mockQueries.useResourcesWithFilters(filters).data || [];
@@ -89,7 +86,7 @@ export const fetchGroupResources = createAsyncThunk(
   'resources/fetchGroupResources',
   async (groupId: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         // Assuming there's a getByGroup method in the API
         // If not, we might need to add it or use a filter approach
         if (typeof resourcesApi.getByGroup === 'function') {
@@ -112,7 +109,7 @@ export const createResource = createAsyncThunk(
   'resources/createResource',
   async (resourceData: ResourceInput, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const newResource = await resourcesApi.create(resourceData);
         return newResource;
       } else {
@@ -130,7 +127,7 @@ export const updateResource = createAsyncThunk(
   'resources/updateResource',
   async ({ id, data }: { id: string; data: Partial<ResourceInput> }, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const updatedResource = await resourcesApi.update(id, data);
         return updatedResource;
       } else {
@@ -148,7 +145,7 @@ export const deleteResource = createAsyncThunk(
   'resources/deleteResource',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const success = await resourcesApi.delete(id);
         if (success) {
           return id;

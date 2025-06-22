@@ -65,7 +65,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
                 Contact Information
               </h4>
               
-              {listing.contactEmail && (listing.contactMethod === 'email' || listing.contactMethod === 'both') && (
+              {listing.contactEmail && listing.contactMethod && (listing.contactMethod === 'email' || listing.contactMethod === 'both') && (
                 <div className="flex items-center mb-3">
                   <Mail className="h-5 w-5 mr-3 text-slate-400" />
                   <a 
@@ -77,7 +77,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
                 </div>
               )}
               
-              {listing.contactPhone && (listing.contactMethod === 'phone' || listing.contactMethod === 'both') && (
+              {listing.contactPhone && listing.contactMethod && (listing.contactMethod === 'phone' || listing.contactMethod === 'both') && (
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 mr-3 text-slate-400" />
                   <a 

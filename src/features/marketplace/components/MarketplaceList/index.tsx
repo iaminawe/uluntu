@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 import ListingCard from './ListingCard';
@@ -7,6 +7,7 @@ import { MarketplaceListProps } from './types';
 import { useMarketplaceItemsWithFilters } from '../../hooks/useMarketplaceQueries';
 import { useFilteredMarketplaceListingsRedux } from '../../hooks/useMarketplaceRedux';
 import { MarketplaceListing } from '../../types/marketplace';
+import { useMarketplaceNavigation } from '../../hooks/useMarketplaceNavigation';
 
 const LISTINGS_PER_PAGE = 9;
 
@@ -14,8 +15,9 @@ const MarketplaceList = ({
   initialType = 'all', 
   initialSearch = '', 
   sellerId,
-  useRedux = false
+  useRedux = true
 }: MarketplaceListProps & { useRedux?: boolean }) => {
+  const { navigateToListing } = useMarketplaceNavigation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +29,7 @@ const MarketplaceList = ({
     seller_id: sellerId || undefined
   }), [initialType, initialSearch, sellerId]);
   
-  // Get data from either Redux or direct API
+  // Get data from either Redux or direct API (but not both)
   const { 
     filteredListings: reduxListings = [],
     updateFilters: updateReduxFilters,
@@ -40,14 +42,19 @@ const MarketplaceList = ({
     data = [], 
     isLoading: queryIsLoading, 
     error: queryError 
-  } = useMarketplaceItemsWithFilters(queryOptions);
+  } = useMarketplaceItemsWithFilters(useRedux ? {} : queryOptions);
   
-  // Update Redux filters when component mounts or filters change
+  // Update Redux filters when component mounts or filters change (prevent loop)
   useEffect(() => {
     if (useRedux) {
-      updateReduxFilters(queryOptions);
+      const filters = {
+        types: initialType !== 'all' ? [initialType] : undefined,
+        search: initialSearch || undefined,
+        seller_id: sellerId || undefined
+      };
+      updateReduxFilters(filters);
     }
-  }, [useRedux, queryOptions, updateReduxFilters]);
+  }, [useRedux, initialType, initialSearch, sellerId]);
   
   // Update loading and error states
   useEffect(() => {
@@ -143,9 +150,17 @@ const MarketplaceList = ({
   }, [formattedListings, currentPage, itemsPerPage]);
   
   // Handler for pagination
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+  
+  // Handler for custom card click navigation
+  const handleCardClick = useCallback((listing: MarketplaceListing) => {
+    // Navigate to the listing detail page with analytics tracking
+    navigateToListing(listing, 'marketplace_list', 'click');
+  }, [navigateToListing]);
   
   // Render loading skeleton
   if (loading) {
@@ -221,7 +236,8 @@ const MarketplaceList = ({
         {currentListingsToDisplay.map(listing => (
           <ListingCard 
             key={listing.id} 
-            listing={listing} 
+            listing={listing}
+            onClick={handleCardClick}
           />
         ))}
       </div>

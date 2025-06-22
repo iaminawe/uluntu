@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase'; // Temporarily commented out until DB is set up
 
 export const adminStatsApi = {
   // Get admin dashboard statistics - temporarily return stub data until DB is set up

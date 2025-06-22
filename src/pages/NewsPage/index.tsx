@@ -6,30 +6,22 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import NewsList from '@/features/news/components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { useNewsArticlesRedux } from '@/features/news/hooks/useNewsRedux';
 import { NewsFilters } from '../../types/news';
 
 export default function NewsPage() {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  // Fetch news articles with the current filters using Redux
-  const { 
-    filteredArticles: articles = [], 
-    isLoading, 
-    isError, 
-    error,
-    updateFilters 
-  } = useFilteredNewsArticlesRedux();
-
-  // Update filters when search term or tags change
+  
+  // Use Redux for news data
+  const { articles, isLoading, isError, error, loadArticles } = useNewsArticlesRedux();
+  
+  // Load articles on mount
   useEffect(() => {
-    updateFilters({
-      search: searchTerm,
-      tags: selectedTags
-    });
-  }, [searchTerm, selectedTags, updateFilters]);
+    console.log('[NewsPage] Loading news via Redux...');
+    loadArticles();
+  }, [loadArticles]);
   
   const hasArticles = articles.length > 0;
   
@@ -55,10 +47,7 @@ export default function NewsPage() {
         ) : isError ? (
           <QueryError 
             error={error ? new Error(String(error)) : new Error('Failed to load news articles')} 
-            retry={() => updateFilters({
-              search: searchTerm,
-              tags: selectedTags
-            })} 
+            retry={loadArticles} 
             message="We couldn't load the news articles. Please try again."
           />
         ) : !hasArticles ? (
@@ -75,8 +64,6 @@ export default function NewsPage() {
           <NewsList 
             initialSearch={searchTerm}
             initialTag={selectedTags.length > 0 ? selectedTags[0] : 'all'}
-            articles={articles}
-            useRedux={true}
           />
         )}
       </ContentContainer>

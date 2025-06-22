@@ -65,7 +65,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         
         {company.industry && company.industry.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-auto justify-center">
-            {company.industry.slice(0, 3).map(ind => (
+            {company.industry.slice(0, 3).map((ind: string) => (
               <span
                 key={ind}
                 className="inline-block px-2.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-xs"

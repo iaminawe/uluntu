@@ -7,65 +7,21 @@ import { Link } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { Company } from '../../types';
-import { companiesApi } from '@/features/companies/api/companiesApi';
-
-// Check if we should use Supabase or mock data
-const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+import { useCompaniesRedux } from '@/features/companies/hooks/useCompaniesRedux';
 
 export default function CompaniesPage() {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [companies, setCompanies] = useState<Company[]>([]);
   
-  // Load companies from Supabase or use mock data
+  // Use Redux for companies data
+  const { companies, isLoading, isError, error, loadCompanies } = useCompaniesRedux();
+  
+  // Load companies on mount
   useEffect(() => {
-    console.log('Using Supabase:', useSupabase);
-    
-    let isMounted = true;
-    const loadCompanies = async () => {
-      try {
-        if (useSupabase) {
-          // Fetch from Supabase
-          const companiesData = await companiesApi.getAll({
-            search: searchTerm,
-            industries: selectedIndustries.length > 0 ? selectedIndustries : undefined
-          });
-          
-          if (isMounted) {
-            setCompanies(companiesData);
-            setIsLoading(false);
-          }
-        } else {
-          // Use mock data with a small delay
-          setTimeout(() => {
-            if (isMounted) {
-              setCompanies(companiesApi.getMockCompanies());
-              setIsLoading(false);
-            }
-          }, 1000);
-        }
-      } catch (err) {
-        console.error('Error loading companies:', err);
-        if (isMounted) {
-          setIsError(true);
-          setError(err instanceof Error ? err : new Error('Failed to load companies'));
-          setIsLoading(false);
-          // Fallback to mock data
-          setCompanies(companiesApi.getMockCompanies());
-        }
-      }
-    };
-    
+    console.log('[CompaniesPage] Loading companies via Redux...');
     loadCompanies();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [searchTerm, selectedIndustries]);
+  }, [loadCompanies]);
   
   // Filter companies based on search term and selected industries
   const filteredCompanies = companies.filter(company => {
@@ -102,8 +58,8 @@ export default function CompaniesPage() {
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
           <QueryError 
-            error={error || new Error('Failed to load companies')} 
-            retry={() => window.location.reload()} 
+            error={error ? new Error(String(error)) : new Error('Failed to load companies')} 
+            retry={loadCompanies} 
             message="We couldn't load the companies. Please try again."
           />
         ) : companies.length === 0 ? (

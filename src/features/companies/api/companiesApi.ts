@@ -66,16 +66,21 @@ export const companiesApi = {
       }
 
       const { data, error } = await query;
+      console.log('[CompaniesAPI] Query result:', { data, dataLength: data?.length, error });
       
       if (error) {
         console.error('Supabase error fetching companies:', error);
-        // Return mock data instead of an empty array
-        return this.getMockCompanies();
+        throw error; // Let's see what the actual error is
       }
 
-      if (!data || data.length === 0) {
-        console.log('No companies found in Supabase, returning mock data');
-        return this.getMockCompanies();
+      if (!data) {
+        console.log('No data returned from Supabase (null/undefined)');
+        return [];
+      }
+      
+      if (data.length === 0) {
+        console.log('Empty array returned from Supabase');
+        return [];
       }
 
       console.log('Companies fetched successfully:', data.length, 'companies found');
@@ -90,7 +95,40 @@ export const companiesApi = {
         );
       }
 
-      return adaptItemsList(filteredData, adaptCompanyFromDatabase);
+      // Log the raw data structure to understand what we're working with
+      console.log('[CompaniesAPI] Raw data structure:', {
+        firstItem: filteredData && filteredData.length > 0 ? Object.keys(filteredData[0]) : 'No data',
+        sampleData: filteredData?.slice(0, 1)
+      });
+      
+      // Directly adapt the data without using helper functions that might be causing issues
+      const adapted = filteredData.map(item => {
+        // Create a basic company object with required fields
+        const company: Company = {
+          id: item.id,
+          name: item.name || '',
+          description: item.description || '',
+          logo: item.logo || '',
+          coverImage: item.cover_image || '',
+          industry: Array.isArray(item.industry) ? item.industry : [],
+          size: item.size || '',
+          founded: item.founded || '',
+          location: item.location || '',
+          website: item.website || '',
+          status: (item.status as ContentStatus) || 'draft',
+          featured: item.featured || false,
+          // Add any other fields that might be needed
+        };
+        
+        return company;
+      });
+      
+      console.log('[CompaniesAPI] Adapted companies:', {
+        count: adapted.length,
+        sample: adapted.slice(0, 2)
+      });
+      
+      return adapted;
     } catch (error) {
       console.error('Error in companiesApi.getAll:', error);
       // Return mock data instead of an empty array
@@ -252,10 +290,7 @@ export const companiesApi = {
           start_date: employeeData?.start_date || new Date().toISOString().split('T')[0],
           is_current: employeeData?.is_current ?? true
         })
-        .select(`
-          *,
-          member:members(*)
-        `)
+        .select('*')
         .single();
 
       if (error) {
@@ -276,23 +311,7 @@ export const companiesApi = {
         is_current: data.is_current ?? true,
         created_at: data.created_at,
         updated_at: data.updated_at || undefined,
-        member: data.member ? {
-          id: data.member.id,
-          name: data.member.name,
-          title: data.member.title || '',
-          company: data.member.company || undefined,
-          location: data.member.location || undefined,
-          image: data.member.image || '',
-          bio: data.member.bio || undefined,
-          intro: data.member.intro || undefined,
-          skills: data.member.skills || undefined,
-          joinDate: data.member.join_date || data.member.created_at,
-          social: data.member.social || undefined,
-          status: data.member.status || 'published',
-          created_at: data.member.created_at,
-          updated_at: data.member.updated_at || undefined,
-          featured: data.member.featured || false
-        } : undefined
+        member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
       };
     } catch (error) {
       console.error('Error adding company employee:', error);
@@ -313,10 +332,7 @@ export const companiesApi = {
           updated_at: new Date().toISOString()
         })
         .eq('id', employeeId)
-        .select(`
-          *,
-          member:members(*)
-        `)
+        .select('*')
         .single();
 
       if (error) {
@@ -337,23 +353,7 @@ export const companiesApi = {
         is_current: data.is_current ?? true,
         created_at: data.created_at,
         updated_at: data.updated_at || undefined,
-        member: data.member ? {
-          id: data.member.id,
-          name: data.member.name,
-          title: data.member.title || '',
-          company: data.member.company || undefined,
-          location: data.member.location || undefined,
-          image: data.member.image || '',
-          bio: data.member.bio || undefined,
-          intro: data.member.intro || undefined,
-          skills: data.member.skills || undefined,
-          joinDate: data.member.join_date || data.member.created_at,
-          social: data.member.social || undefined,
-          status: data.member.status || 'published',
-          created_at: data.member.created_at,
-          updated_at: data.member.updated_at || undefined,
-          featured: data.member.featured || false
-        } : undefined
+        member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
       };
     } catch (error) {
       console.error('Error updating company employee:', error);
@@ -386,10 +386,7 @@ export const companiesApi = {
       
       let query = supabase
         .from('company_employees')
-        .select(`
-          *,
-          member:members(*)
-        `)
+        .select('*')
         .eq('company_id', companyId);
 
       // Apply filters

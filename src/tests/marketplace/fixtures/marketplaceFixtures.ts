@@ -1,4 +1,4 @@
-import type { MarketplaceListing, MarketplaceFilters, User } from '../../../types';
+import type { MarketplaceListing } from '../../../types/marketplace';
 
 // Test users
 export const testUsers = {
@@ -166,7 +166,7 @@ export const filterListings = (
       const matchesSearch = 
         listing.title.toLowerCase().includes(searchLower) ||
         listing.description.toLowerCase().includes(searchLower) ||
-        listing.tags.some(tag => tag.toLowerCase().includes(searchLower));
+        listing.tags.some((tag: string) => tag.toLowerCase().includes(searchLower));
       
       if (!matchesSearch) return false;
     }
@@ -196,7 +196,7 @@ export const filterListings = (
 
     // Tags filter
     if (filters.tags.length > 0) {
-      const hasMatchingTag = filters.tags.some(filterTag =>
+      const hasMatchingTag = filters.tags.some((filterTag: string) =>
         listing.tags.includes(filterTag)
       );
       if (!hasMatchingTag) return false;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { NavLinkItem } from './types';
+import Dropdown from './Dropdown';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -19,14 +19,12 @@ const MobileNav: React.FC<MobileNavProps> = ({
     <div className="md:hidden bg-gradient-to-r from-orange-600 to-red-600">
       <div className="px-2 pt-2 pb-3 space-y-1">
         {navLinks.map((link, index) => (
-          <Link
+          <Dropdown
             key={index}
-            to={link.href}
-            className="block px-3 py-2 text-white hover:bg-orange-700 rounded-md"
-            onClick={onLinkClick}
-          >
-            {link.text}
-          </Link>
+            item={link}
+            isDesktop={false}
+            onLinkClick={onLinkClick}
+          />
         ))}
       </div>
     </div>

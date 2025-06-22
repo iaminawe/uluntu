@@ -1,10 +1,15 @@
 import { Helmet } from 'react-helmet-async';
 import { Users, Heart, Briefcase } from 'lucide-react';
-import { useMembers } from '@/hooks/useMemberQueries';
-import { useCompanies } from '@/hooks/useCompanyQueries';
-import { useEvents } from '@/hooks/useEventQueries';
-import { useNewsArticlesWithFilters } from '@/hooks/useNewsQueries';
-import { useGroups } from '@/hooks/useGroupQueries';
+import { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { fetchMembers } from '@/features/directory/store/membersSlice';
+import { fetchCompanies } from '@/features/companies/store/companiesSlice';
+import { fetchEvents } from '@/features/events/store/eventsSlice';
+import { fetchNewsArticles } from '@/features/news/store/newsSlice';
+import { fetchGroups } from '@/features/groups/store/groupsSlice';
+import SupabaseTest from '@/components/SupabaseTest';
+import SupabaseDirectTest from '@/components/SupabaseDirectTest';
+import SupabaseQuickTest from '@/components/SupabaseQuickTest';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
@@ -142,13 +147,48 @@ function adaptNewsForHomePage(news: ApiNewsArticle[]): NewsArticle[] {
 }
 
 export default function HomePage() {
-  // Fetch data using Tanstack Query
-  const { data: apiMembers = [] } = useMembers();
-  const { data: apiCompanies = [] } = useCompanies();
-  const { data: apiEvents = [] } = useEvents();
-  const { data: newsData } = useNewsArticlesWithFilters();
-  const apiNews = newsData || [];
-  const { data: apiGroups = [] } = useGroups();
+  const dispatch = useAppDispatch();
+  
+  // Get data from Redux store
+  const apiMembers = useAppSelector(state => state.members?.members || []);
+  const apiCompanies = useAppSelector(state => state.companies?.companies || []);
+  const apiEvents = useAppSelector(state => state.events?.events || []);
+  const apiNews = useAppSelector(state => state.news?.articles || []);
+  const apiGroups = useAppSelector(state => state.groups?.groups || []);
+  
+  // Get loading and error states
+  const membersStatus = useAppSelector(state => state.members?.status);
+  const companiesStatus = useAppSelector(state => state.companies?.status);
+  const eventsStatus = useAppSelector(state => state.events?.status);
+  const newsStatus = useAppSelector(state => state.news?.status);
+  const groupsStatus = useAppSelector(state => state.groups?.status);
+  
+  // Determine if any data is still loading
+  const isLoading = 
+    membersStatus === 'loading' || 
+    companiesStatus === 'loading' || 
+    eventsStatus === 'loading' || 
+    newsStatus === 'loading' || 
+    groupsStatus === 'loading';
+  
+  // Get the first error encountered, if any
+  const error = 
+    membersStatus === 'failed' ? 'Failed to load members' :
+    companiesStatus === 'failed' ? 'Failed to load companies' :
+    eventsStatus === 'failed' ? 'Failed to load events' :
+    newsStatus === 'failed' ? 'Failed to load news' :
+    groupsStatus === 'failed' ? 'Failed to load groups' : null;
+  
+  // Fetch data on component mount
+  useEffect(() => {
+    dispatch(fetchMembers());
+    dispatch(fetchCompanies());
+    dispatch(fetchEvents());
+    dispatch(fetchNewsArticles());
+    dispatch(fetchGroups());
+    
+    // Supabase is now working correctly
+  }, [dispatch]);
 
   // Convert API data to HomePage types
   const members = adaptMembersForHomePage(apiMembers);
@@ -156,6 +196,8 @@ export default function HomePage() {
   const events = adaptEventsForHomePage(apiEvents);
   const groups = adaptGroupsForHomePage(apiGroups);
   const news = adaptNewsForHomePage(apiNews);
+  
+
 
   // Get featured items
   const { 
@@ -170,9 +212,6 @@ export default function HomePage() {
     groups, 
     news 
   });
-
-  const isLoading = false;
-  const error = null;
 
   if (isLoading) {
     return (
@@ -198,7 +237,7 @@ export default function HomePage() {
       <>
         <Helmet>
           <title>Kootenay Tech Community</title>
-          <meta name="description" content="Connecting tech and knowledge workers in the Kootenays" />
+          <meta name="description" content="Kootenay Tech Community - Connecting tech professionals in the Kootenays" />
         </Helmet>
         
         <HeroSection />
@@ -207,7 +246,13 @@ export default function HomePage() {
           <ContentContainer>
             <QueryError 
               error={error} 
-              retry={() => console.log('Retrying homepage data')} 
+              retry={() => {
+                dispatch(fetchMembers());
+                dispatch(fetchCompanies());
+                dispatch(fetchEvents());
+                dispatch(fetchNewsArticles());
+                dispatch(fetchGroups());
+              }} 
               message="We couldn't load the community data. Please try again."
             />
           </ContentContainer>

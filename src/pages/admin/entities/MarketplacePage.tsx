@@ -1,8 +1,48 @@
 import React from 'react';
 import EntityTable from '@/components/admin/EntityTable';
 import { ShoppingBag, Tag, DollarSign, User, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const AdminMarketplacePage: React.FC = () => {
+  // Custom query to join with members table for seller names
+  const customQuery = async ({ searchTerm, currentPage, pageSize, sortBy }: { searchTerm: string; currentPage: number; pageSize: number; sortBy: { column: string; direction: 'asc' | 'desc' } }) => {
+    let query = supabase
+      .from('marketplace_listings')
+      .select(`
+        *,
+        seller_name:members(name)
+      `, { count: 'exact' });
+
+    // Apply search
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,type.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
+    }
+
+    // Apply sorting (avoid sorting by seller_name since it's a joined field)
+    if (sortBy.column === 'seller_name') {
+      // Sort by seller_id instead if trying to sort by seller_name
+      query = query.order('seller_id', { ascending: sortBy.direction === 'asc' });
+    } else {
+      query = query.order(sortBy.column, { ascending: sortBy.direction === 'asc' });
+    }
+
+    // Apply pagination
+    const from = (currentPage - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
+    if (error) throw error;
+
+    // Transform the data to flatten seller_name
+    const transformedData = (data || []).map(item => ({
+      ...item,
+      seller_name: item.seller_name?.name || 'Unknown'
+    }));
+
+    return { items: transformedData, total: count || 0 };
+  };
+
   const columns = [
     {
       key: 'title',
@@ -15,7 +55,7 @@ const AdminMarketplacePage: React.FC = () => {
           </div>
           {item.description && (
             <div className="text-sm text-gray-500 truncate max-w-xs">
-              {item.description}
+              {item.description.substring(0, 60)}...
             </div>
           )}
         </div>
@@ -23,39 +63,13 @@ const AdminMarketplacePage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'category',
-      label: 'Category',
-      render: (value: string) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          <Tag className="w-3 h-3 mr-1" />
-          {value}
-        </span>
-      ),
-      sortable: true
-    },
-    {
-      key: 'price',
-      label: 'Price',
-      render: (value: number, item: any) => (
-        <div className="flex items-center">
-          <DollarSign className="w-4 h-4 mr-1 text-gray-500" />
-          {value === 0 ? 'Free' : value ? `$${value.toFixed(2)}` : 'N/A'}
-          {item.is_negotiable && (
-            <span className="ml-1 text-xs text-blue-600">(Negotiable)</span>
-          )}
-        </div>
-      ),
-      sortable: true
-    },
-    {
-      key: 'listing_type',
+      key: 'type',
       label: 'Type',
       render: (value: string) => {
         const typeConfig = {
-          sell: { text: 'For Sale', color: 'bg-green-100 text-green-800' },
-          buy: { text: 'Wanted', color: 'bg-blue-100 text-blue-800' },
-          service: { text: 'Service', color: 'bg-purple-100 text-purple-800' },
-          trade: { text: 'Trade', color: 'bg-orange-100 text-orange-800' }
+          product: { text: 'Product', color: 'bg-green-100 text-green-800' },
+          service: { text: 'Service', color: 'bg-blue-100 text-blue-800' },
+          other: { text: 'Other', color: 'bg-purple-100 text-purple-800' }
         };
         const config = typeConfig[value as keyof typeof typeConfig] || { text: value, color: 'bg-gray-100 text-gray-800' };
         
@@ -65,6 +79,27 @@ const AdminMarketplacePage: React.FC = () => {
           </span>
         );
       },
+      sortable: true
+    },
+    {
+      key: 'price',
+      label: 'Price',
+      render: (value: number) => (
+        <div className="flex items-center">
+          <DollarSign className="w-4 h-4 mr-1 text-gray-500" />
+          {value === 0 ? 'Free' : value ? `$${value.toFixed(2)}` : 'N/A'}
+        </div>
+      ),
+      sortable: true
+    },
+    {
+      key: 'condition',
+      label: 'Condition',
+      render: (value: string) => value ? (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          {value}
+        </span>
+      ) : 'N/A',
       sortable: true
     },
     {
@@ -79,42 +114,29 @@ const AdminMarketplacePage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'view_count',
-      label: 'Views',
-      render: (value: number) => (
-        <div className="flex items-center">
-          <Eye className="w-4 h-4 mr-1 text-gray-500" />
-          {value || 0}
-        </div>
-      ),
+      key: 'location',
+      label: 'Location',
+      render: (value: string) => value || 'Not specified',
       sortable: true
     },
     {
-      key: 'is_active',
+      key: 'status',
       label: 'Status',
-      render: (value: boolean, item: any) => {
-        if (item.is_sold) {
-          return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Sold
-            </span>
-          );
-        }
-        
+      render: (value: string) => {
+        const isActive = value === 'published';
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
           }`}>
-            {value ? (
+            {isActive ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
-                Active
+                Published
               </>
             ) : (
               <>
                 <XCircle className="w-3 h-3 mr-1" />
-                Inactive
+                Draft
               </>
             )}
           </span>
@@ -132,13 +154,14 @@ const AdminMarketplacePage: React.FC = () => {
 
   return (
     <EntityTable
-      entityType="marketplace"
+      entityType="marketplace_listings"
       entityName="Marketplace Listings"
       columns={columns}
-      searchFields={['title', 'description', 'category', 'seller_name']}
+      searchFields={['title', 'description', 'type', 'location']}
       detailPath="/marketplace/:id"
       editPath="/marketplace/:id/edit"
       createPath="/marketplace/create"
+      customQuery={customQuery}
     />
   );
 };

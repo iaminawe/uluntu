@@ -13,7 +13,9 @@ import {
   Users,
   Key,
   CheckSquare,
-  Square
+  Square,
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
 
 const RolesPage: React.FC = () => {
@@ -25,6 +27,10 @@ const RolesPage: React.FC = () => {
     description: '',
     permissions: {} as Record<string, string[]>
   });
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   // Fetch roles
   const { data: roles, isLoading } = useQuery({
@@ -40,6 +46,18 @@ const RolesPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setShowCreateModal(false);
       resetForm();
+      setNotification({
+        type: 'success',
+        message: 'Role created successfully!'
+      });
+      setTimeout(() => setNotification(null), 5000);
+    },
+    onError: (error: any) => {
+      setNotification({
+        type: 'error',
+        message: error?.message || 'Failed to create role. Please try again.'
+      });
+      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -51,6 +69,18 @@ const RolesPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setEditingRole(null);
       resetForm();
+      setNotification({
+        type: 'success',
+        message: 'Role updated successfully!'
+      });
+      setTimeout(() => setNotification(null), 5000);
+    },
+    onError: (error: any) => {
+      setNotification({
+        type: 'error',
+        message: error?.message || 'Failed to update role. Please try again.'
+      });
+      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -59,6 +89,18 @@ const RolesPage: React.FC = () => {
     mutationFn: (roleId: string) => adminRolesApi.deleteRole(roleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      setNotification({
+        type: 'success',
+        message: 'Role deleted successfully!'
+      });
+      setTimeout(() => setNotification(null), 5000);
+    },
+    onError: (error: any) => {
+      setNotification({
+        type: 'error',
+        message: error?.message || 'Failed to delete role. Please try again.'
+      });
+      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -146,6 +188,22 @@ const RolesPage: React.FC = () => {
 
   return (
     <div>
+      {/* Notification Banner */}
+      {notification && (
+        <div className={`mb-4 p-4 rounded-lg flex items-center ${
+          notification.type === 'success' 
+            ? 'bg-green-50 text-green-800 border border-green-200' 
+            : 'bg-red-50 text-red-800 border border-red-200'
+        }`}>
+          {notification.type === 'success' ? (
+            <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+          ) : (
+            <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+          )}
+          <span>{notification.message}</span>
+        </div>
+      )}
+
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Role Management</h1>
@@ -168,8 +226,8 @@ const RolesPage: React.FC = () => {
           <div className="col-span-full text-center py-8 text-gray-500">
             Loading roles...
           </div>
-        ) : (
-          roles?.map((role) => (
+        ) : roles && roles.length > 0 ? (
+          roles.map((role) => (
             <div key={role.id} className="bg-white rounded-lg shadow p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
@@ -188,14 +246,18 @@ const RolesPage: React.FC = () => {
 
               {/* Permission Summary */}
               <div className="space-y-2 mb-4">
-                {Object.entries(role.permissions).map(([resource, actions]) => (
-                  <div key={resource} className="text-sm">
-                    <span className="font-medium text-gray-700">{resource}:</span>
-                    <span className="ml-2 text-gray-600">
-                      {actions.includes('*') ? 'All permissions' : actions.join(', ')}
-                    </span>
-                  </div>
-                ))}
+                {role.permissions && Object.keys(role.permissions).length > 0 ? (
+                  Object.entries(role.permissions).map(([resource, actions]) => (
+                    <div key={resource} className="text-sm">
+                      <span className="font-medium text-gray-700">{resource}:</span>
+                      <span className="ml-2 text-gray-600">
+                        {Array.isArray(actions) && actions.includes('*') ? 'All permissions' : Array.isArray(actions) ? actions.join(', ') : 'No permissions'}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic">No permissions defined</div>
+                )}
               </div>
 
               {/* Actions */}
@@ -223,6 +285,21 @@ const RolesPage: React.FC = () => {
               )}
             </div>
           ))
+        ) : (
+          <div className="col-span-full">
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No roles found</h3>
+              <p className="text-gray-500 mb-4">Get started by creating your first custom role.</p>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Role
+              </button>
+            </div>
+          </div>
         )}
       </div>
 

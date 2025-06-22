@@ -3,12 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import {
   Search,
-  Filter,
   Download,
   Trash2,
   Edit,
   Eye,
-  MoreVertical,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
@@ -16,34 +14,36 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface Column {
+interface Column<T = unknown> {
   key: string;
   label: string;
-  render?: (value: any, item: any) => React.ReactNode;
+  render?: (value: any, item: T) => React.ReactNode;
   sortable?: boolean;
 }
 
-interface EntityTableProps {
+interface EntityTableProps<T = unknown> {
   entityType: string;
   entityName: string;
-  columns: Column[];
+  columns: Column<T>[];
   searchFields?: string[];
   detailPath?: string;
   editPath?: string;
   createPath?: string;
-  customActions?: (item: any) => React.ReactNode;
+  customActions?: (item: T) => React.ReactNode;
+  customQuery?: (params: { searchTerm: string; currentPage: number; pageSize: number; sortBy: { column: string; direction: 'asc' | 'desc' } }) => Promise<{ items: T[]; total: number }>;
 }
 
-const EntityTable: React.FC<EntityTableProps> = ({
+const EntityTable = <T extends { id: string } = any>({
   entityType,
   entityName,
   columns,
-  searchFields = ['name', 'title', 'email'],
+  searchFields = [],
   detailPath,
   editPath,
   createPath,
-  customActions
-}) => {
+  customActions,
+  customQuery
+}: EntityTableProps<T>) => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,8 +56,12 @@ const EntityTable: React.FC<EntityTableProps> = ({
 
   // Fetch entities
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['admin-entities', entityType, searchTerm, currentPage, sortBy],
+    queryKey: ['admin-entities', entityType, searchTerm, currentPage, sortBy, !!customQuery],
     queryFn: async () => {
+      if (customQuery) {
+        return await customQuery({ searchTerm, currentPage, pageSize, sortBy });
+      }
+
       let query = supabase
         .from(entityType)
         .select('*', { count: 'exact' });
@@ -81,7 +85,7 @@ const EntityTable: React.FC<EntityTableProps> = ({
       const { data, error, count } = await query;
       if (error) throw error;
 
-      return { items: data || [], total: count || 0 };
+      return { items: (data as T[]) || [], total: count || 0 };
     }
   });
 
@@ -281,7 +285,7 @@ const EntityTable: React.FC<EntityTableProps> = ({
                   </td>
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {column.render ? column.render(item[column.key], item) : item[column.key]}
+                      {column.render ? column.render((item as unknown)[column.key], item) : (item as unknown)[column.key]}
                     </td>
                   ))}
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

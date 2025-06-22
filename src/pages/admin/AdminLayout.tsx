@@ -58,10 +58,10 @@ const AdminLayout: React.FC = () => {
       ]
     },
     {
-      name: 'Users & Roles',
+      name: 'Users',
       href: '/admin/users',
-      icon: Shield,
-      current: location.pathname.startsWith('/admin/users') || location.pathname.startsWith('/admin/roles')
+      icon: Users,
+      current: location.pathname.startsWith('/admin/users')
     },
     {
       name: 'Roles',

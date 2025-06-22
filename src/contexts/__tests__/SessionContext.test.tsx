@@ -1,3 +1,9 @@
+// Mock environment dependencies first
+jest.mock('@/config/env', () => ({
+  getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
+  IS_SUPABASE_ENABLED: false
+}));
+
 import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'

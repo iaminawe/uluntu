@@ -135,7 +135,7 @@ const NewsArticlesList = ({
               <div className="mb-10">
                 <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Featured</h3>
                 <div className="grid grid-cols-1 gap-8">
-                  {featuredArticles.map(article => (
+                  {featuredArticles.map((article: NewsArticle) => (
                       <FeaturedArticleCard key={article.id} article={article} />
                   ))}
                 </div>
@@ -150,7 +150,7 @@ const NewsArticlesList = ({
                   </h3>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {currentRegularArticlesToDisplay.map(article => (
+                  {currentRegularArticlesToDisplay.map((article: NewsArticle) => (
                     <ArticleCard key={article.id} article={article} />
                   ))}
                 </div>

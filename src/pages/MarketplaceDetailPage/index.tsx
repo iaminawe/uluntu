@@ -8,6 +8,12 @@ import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import { ListingType, Listing, ListingCondition } from './types';
 import PageHeader from './PageHeader';
+import ListingDetails from './ListingDetails';
+import SellerInfo from './SellerInfo';
+import RelatedListings from './RelatedListings';
+import ContactModal from './ContactModal';
+import LoadingState from './LoadingState';
+import ErrorState from './ErrorState';
 
 // Define a type for Supabase database record format
 interface DatabaseListing {
@@ -28,19 +34,13 @@ interface DatabaseListing {
   location?: string;
   tags?: string[];
 }
-import ListingDetails from './ListingDetails';
-import SellerInfo from './SellerInfo';
-import RelatedListings from './RelatedListings';
-import ContactModal from './ContactModal';
-import LoadingState from './LoadingState';
-import ErrorState from './ErrorState';
 
 export default function MarketplaceDetailPage() {
   const { id } = useParams();
   const [showContactModal, setShowContactModal] = useState(false);
   
   // Use both Redux and React Query hooks to support both implementations
-  const useRedux = true; // Set to true to use Redux, false to use React Query
+  const useRedux = false; // Set to true to use Redux, false to use React Query
   
   // Redux implementation
   const { 
@@ -64,6 +64,23 @@ export default function MarketplaceDetailPage() {
     }
   }, [id]);
   
+  // Debug logging
+  useEffect(() => {
+    console.log('MarketplaceDetailPage Debug:', {
+      id,
+      useRedux,
+      reduxListing,
+      reduxIsLoading,
+      reduxError,
+      apiListing,
+      queryIsLoading,
+      queryError,
+      hasListingData: !!reduxListing,
+      finalIsLoading: useRedux ? reduxIsLoading : queryIsLoading,
+      finalListing: useRedux ? reduxListing : apiListing
+    });
+  }, [id, reduxListing, reduxIsLoading, reduxError, apiListing, queryIsLoading, queryError]);
+  
   // Determine which data source to use
   const sourceData = useRedux ? reduxListing : apiListing;
   const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
@@ -74,7 +91,7 @@ export default function MarketplaceDetailPage() {
     if (!sourceData) return undefined;
     
     // For debugging purposes, log what we're receiving
-    console.log('Source data for listing:', sourceData);
+    console.log('Source data for listing:', JSON.stringify(sourceData, null, 2));
     
     // Check if data is in database format (from Supabase) or frontend format
     const isDbFormat = 'created_at' in sourceData || 'seller_id' in sourceData;

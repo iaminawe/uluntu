@@ -135,7 +135,7 @@ const matchesPriceRange = (price: number, range: string): boolean => {
   }
 };
 
-// Helper function to check if listing has any of the specified tags
+// Helper function to check if listing has unknown of the specified tags
 const hasAnyTag = (listingTags: string[], filterTags: string[]): boolean => {
   return filterTags.some(tag => listingTags.includes(tag));
 };

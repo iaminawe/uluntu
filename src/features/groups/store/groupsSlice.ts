@@ -2,11 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { Group } from '@/types';
 import { groupsApi, GroupInput } from '../api/groupsApi';
-import * as mockQueries from '@/hooks/useGroupQueries';
-import { IS_SUPABASE_ENABLED } from '@/config/env';
-
-// Toggle between Supabase and mock data
-const USE_SUPABASE = IS_SUPABASE_ENABLED;
+import mockData from '@/data/mock/mockData';
+import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for group filters to match the API interface
 export interface GroupFilters {
@@ -39,20 +36,21 @@ export const fetchGroups = createAsyncThunk(
   'groups/fetchGroups',
   async (_, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
+        console.log('[GroupsSlice] Fetching from Supabase...');
         const groups = await groupsApi.getAll();
-        // If Supabase returns empty due to RLS or other issues, fall back to mock data
-        if (groups.length === 0) {
-          return mockQueries.useGroups().data || [];
-        }
+        console.log('[GroupsSlice] Received groups:', groups.length);
         return groups;
       } else {
-        return mockQueries.useGroups().data || [];
+        console.log('[GroupsSlice] Using mock data...');
+        return mockData.groups || [];
       }
     } catch (error) {
+      console.error('[GroupsSlice] Error fetching groups:', error);
       // If Supabase fails completely, fall back to mock data
-      if (USE_SUPABASE) {
-        return mockQueries.useGroups().data || [];
+      if (getIsSupabaseEnabled()) {
+        console.log('[GroupsSlice] Falling back to mock data due to error');
+        return mockData.groups || [];
       }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch groups');
     }
@@ -63,12 +61,12 @@ export const fetchGroupById = createAsyncThunk(
   'groups/fetchGroupById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const group = await groupsApi.getById(id);
         return group || null;
       } else {
-        const result = mockQueries.useGroup(id);
-        return result?.data || null;
+        const group = mockData.groups.find(g => g.id === id);
+        return group || null;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch group with ID: ${id}`);
@@ -80,10 +78,23 @@ export const fetchFilteredGroups = createAsyncThunk(
   'groups/fetchFilteredGroups',
   async (filters: GroupFilters, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         return await groupsApi.getAll(filters);
       } else {
-        return mockQueries.useGroupsWithFilters(filters).data || [];
+        let filteredGroups = mockData.groups || [];
+        if (filters.search) {
+          const searchTerm = filters.search.toLowerCase();
+          filteredGroups = filteredGroups.filter(group => 
+            group.name.toLowerCase().includes(searchTerm) ||
+            (group.description && group.description.toLowerCase().includes(searchTerm))
+          );
+        }
+        if (filters.visibility && filters.visibility.length > 0) {
+          filteredGroups = filteredGroups.filter(group => 
+            filters.visibility!.includes(group.visibility)
+          );
+        }
+        return filteredGroups;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch filtered groups');
@@ -95,13 +106,22 @@ export const createGroup = createAsyncThunk(
   'groups/createGroup',
   async (groupData: GroupInput, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const newGroup = await groupsApi.create(groupData);
         return newGroup;
       } else {
         // Create a mock group with the data provided
-        const mockResult = mockQueries.useCreateGroup().mutateAsync(groupData);
-        return mockResult;
+        const newGroup = {
+          id: Date.now().toString(),
+          name: groupData.name,
+          description: groupData.description,
+          visibility: groupData.visibility as any,
+          memberCount: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          ...groupData
+        };
+        return newGroup as any;
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create group');
@@ -113,13 +133,17 @@ export const updateGroup = createAsyncThunk(
   'groups/updateGroup',
   async ({ id, data }: { id: string; data: Partial<GroupInput> }, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const updatedGroup = await groupsApi.update(id, data);
         return updatedGroup;
       } else {
         // Update a mock group with the data provided
-        const mockResult = mockQueries.useUpdateGroup().mutateAsync({ id, data });
-        return mockResult;
+        const existingGroup = mockData.groups.find(g => g.id === id);
+        if (existingGroup) {
+          const updatedGroup = { ...existingGroup, ...data, updatedAt: new Date().toISOString() };
+          return updatedGroup as any;
+        }
+        throw new Error(`Group with ID ${id} not found`);
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to update group with ID: ${id}`);
@@ -131,14 +155,14 @@ export const deleteGroup = createAsyncThunk(
   'groups/deleteGroup',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (USE_SUPABASE) {
+      if (getIsSupabaseEnabled()) {
         const success = await groupsApi.delete(id);
         if (success) {
           return id;
         }
         throw new Error(`Failed to delete group with ID: ${id}`);
       } else {
-        await mockQueries.useDeleteGroup().mutateAsync(id);
+        // Mock delete - just return the id to indicate success
         return id;
       }
     } catch (error) {
