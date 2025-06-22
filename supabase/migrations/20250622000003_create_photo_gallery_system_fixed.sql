@@ -441,86 +441,224 @@ ALTER TABLE photo_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE photo_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gallery_tags ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies for user_galleries
-CREATE POLICY "Public can view public galleries" ON user_galleries
-  FOR SELECT USING (privacy_level = 'public' AND visibility = 'visible');
+-- RLS Policies for user_galleries (with existence checks)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_galleries' 
+        AND policyname = 'Public can view public galleries'
+    ) THEN
+        CREATE POLICY "Public can view public galleries" ON user_galleries
+          FOR SELECT USING (privacy_level = 'public' AND visibility = 'visible');
+    END IF;
+END $$;
 
-CREATE POLICY "Users can view their own galleries" ON user_galleries
-  FOR SELECT USING (user_id = auth.uid());
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_galleries' 
+        AND policyname = 'Users can view their own galleries'
+    ) THEN
+        CREATE POLICY "Users can view their own galleries" ON user_galleries
+          FOR SELECT USING (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_galleries' 
+        AND policyname = 'Users can create their own galleries'
+    ) THEN
+        CREATE POLICY "Users can create their own galleries" ON user_galleries
+          FOR INSERT WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_galleries' 
+        AND policyname = 'Users can update their own galleries'
+    ) THEN
+        CREATE POLICY "Users can update their own galleries" ON user_galleries
+          FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_galleries' 
+        AND policyname = 'Users can delete their own galleries'
+    ) THEN
+        CREATE POLICY "Users can delete their own galleries" ON user_galleries
+          FOR DELETE USING (user_id = auth.uid());
+    END IF;
+END $$;
 
-CREATE POLICY "Users can create their own galleries" ON user_galleries
-  FOR INSERT WITH CHECK (user_id = auth.uid());
+-- RLS Policies for gallery_photos (with existence checks)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_photos' 
+        AND policyname = 'Public can view public gallery photos'
+    ) THEN
+        CREATE POLICY "Public can view public gallery photos" ON gallery_photos
+          FOR SELECT USING (
+            visibility = 'visible' AND
+            moderation_status = 'approved' AND
+            EXISTS (
+              SELECT 1 FROM user_galleries 
+              WHERE id = gallery_photos.gallery_id 
+              AND privacy_level = 'public' 
+              AND visibility = 'visible'
+            )
+          );
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_photos' 
+        AND policyname = 'Users can view their own photos'
+    ) THEN
+        CREATE POLICY "Users can view their own photos" ON gallery_photos
+          FOR SELECT USING (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_photos' 
+        AND policyname = 'Users can upload photos to their galleries'
+    ) THEN
+        CREATE POLICY "Users can upload photos to their galleries" ON gallery_photos
+          FOR INSERT WITH CHECK (
+            user_id = auth.uid() AND
+            EXISTS (
+              SELECT 1 FROM user_galleries 
+              WHERE id = gallery_photos.gallery_id 
+              AND user_id = auth.uid()
+            )
+          );
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_photos' 
+        AND policyname = 'Users can update their own photos'
+    ) THEN
+        CREATE POLICY "Users can update their own photos" ON gallery_photos
+          FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_photos' 
+        AND policyname = 'Users can delete their own photos'
+    ) THEN
+        CREATE POLICY "Users can delete their own photos" ON gallery_photos
+          FOR DELETE USING (user_id = auth.uid());
+    END IF;
+END $$;
 
-CREATE POLICY "Users can update their own galleries" ON user_galleries
-  FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+-- RLS Policies for photo_likes (with existence checks)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_likes' 
+        AND policyname = 'Anyone can view photo likes'
+    ) THEN
+        CREATE POLICY "Anyone can view photo likes" ON photo_likes
+          FOR SELECT USING (true);
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_likes' 
+        AND policyname = 'Authenticated users can like photos'
+    ) THEN
+        CREATE POLICY "Authenticated users can like photos" ON photo_likes
+          FOR INSERT WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_likes' 
+        AND policyname = 'Users can remove their own likes'
+    ) THEN
+        CREATE POLICY "Users can remove their own likes" ON photo_likes
+          FOR DELETE USING (user_id = auth.uid());
+    END IF;
+END $$;
 
-CREATE POLICY "Users can delete their own galleries" ON user_galleries
-  FOR DELETE USING (user_id = auth.uid());
+-- RLS Policies for photo_comments (with existence checks)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_comments' 
+        AND policyname = 'Anyone can view approved comments'
+    ) THEN
+        CREATE POLICY "Anyone can view approved comments" ON photo_comments
+          FOR SELECT USING (moderation_status = 'approved');
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_comments' 
+        AND policyname = 'Users can view their own comments'
+    ) THEN
+        CREATE POLICY "Users can view their own comments" ON photo_comments
+          FOR SELECT USING (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_comments' 
+        AND policyname = 'Authenticated users can comment'
+    ) THEN
+        CREATE POLICY "Authenticated users can comment" ON photo_comments
+          FOR INSERT WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_comments' 
+        AND policyname = 'Users can update their own comments'
+    ) THEN
+        CREATE POLICY "Users can update their own comments" ON photo_comments
+          FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_comments' 
+        AND policyname = 'Users can delete their own comments'
+    ) THEN
+        CREATE POLICY "Users can delete their own comments" ON photo_comments
+          FOR DELETE USING (user_id = auth.uid());
+    END IF;
+END $$;
 
--- RLS Policies for gallery_photos
-CREATE POLICY "Public can view public gallery photos" ON gallery_photos
-  FOR SELECT USING (
-    visibility = 'visible' AND
-    moderation_status = 'approved' AND
-    EXISTS (
-      SELECT 1 FROM user_galleries 
-      WHERE id = gallery_photos.gallery_id 
-      AND privacy_level = 'public' 
-      AND visibility = 'visible'
-    )
-  );
-
-CREATE POLICY "Users can view their own photos" ON gallery_photos
-  FOR SELECT USING (user_id = auth.uid());
-
-CREATE POLICY "Users can upload photos to their galleries" ON gallery_photos
-  FOR INSERT WITH CHECK (
-    user_id = auth.uid() AND
-    EXISTS (
-      SELECT 1 FROM user_galleries 
-      WHERE id = gallery_photos.gallery_id 
-      AND user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can update their own photos" ON gallery_photos
-  FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can delete their own photos" ON gallery_photos
-  FOR DELETE USING (user_id = auth.uid());
-
--- RLS Policies for photo_likes
-CREATE POLICY "Anyone can view photo likes" ON photo_likes
-  FOR SELECT USING (true);
-
-CREATE POLICY "Authenticated users can like photos" ON photo_likes
-  FOR INSERT WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can remove their own likes" ON photo_likes
-  FOR DELETE USING (user_id = auth.uid());
-
--- RLS Policies for photo_comments
-CREATE POLICY "Anyone can view approved comments" ON photo_comments
-  FOR SELECT USING (moderation_status = 'approved');
-
-CREATE POLICY "Users can view their own comments" ON photo_comments
-  FOR SELECT USING (user_id = auth.uid());
-
-CREATE POLICY "Authenticated users can comment" ON photo_comments
-  FOR INSERT WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update their own comments" ON photo_comments
-  FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can delete their own comments" ON photo_comments
-  FOR DELETE USING (user_id = auth.uid());
-
--- RLS Policies for photo_tags and gallery_tags
-CREATE POLICY "Anyone can view photo tags" ON photo_tags
-  FOR SELECT USING (true);
-
-CREATE POLICY "Anyone can view gallery tags" ON gallery_tags
-  FOR SELECT USING (true);
+-- RLS Policies for photo_tags and gallery_tags (with existence checks)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'photo_tags' 
+        AND policyname = 'Anyone can view photo tags'
+    ) THEN
+        CREATE POLICY "Anyone can view photo tags" ON photo_tags
+          FOR SELECT USING (true);
+    END IF;
+    
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'gallery_tags' 
+        AND policyname = 'Anyone can view gallery tags'
+    ) THEN
+        CREATE POLICY "Anyone can view gallery tags" ON gallery_tags
+          FOR SELECT USING (true);
+    END IF;
+END $$;
 
 -- Create helpful views for common queries
 CREATE OR REPLACE VIEW public_galleries AS
