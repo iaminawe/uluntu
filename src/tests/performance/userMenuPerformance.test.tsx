@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { performance } from 'perf_hooks';
@@ -7,11 +7,11 @@ import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 
 // Mock dependencies
-vi.mock('@/shared/contexts/AuthContextWithRedux');
-vi.mock('@/hooks/useMemberByUserId');
+jest.mock('@/shared/contexts/AuthContextWithRedux');
+jest.mock('@/hooks/useMemberByUserId');
 
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
-const mockUseMemberByUserId = useMemberByUserId as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
 
 // Performance measurement utilities
 const measureRenderTime = async (renderFn: () => void) => {
@@ -42,18 +42,18 @@ const renderUserMenu = () => {
 
 describe('UserMenu Performance Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Initial Render Performance', () => {
     it('should render quickly for unauthenticated users', async () => {
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -70,7 +70,7 @@ describe('UserMenu Performance Tests', () => {
     it('should render quickly for authenticated users', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -88,7 +88,7 @@ describe('UserMenu Performance Tests', () => {
     it('should handle slow member data loading gracefully', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
 
@@ -112,7 +112,7 @@ describe('UserMenu Performance Tests', () => {
     it('should open dropdown quickly', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -132,7 +132,7 @@ describe('UserMenu Performance Tests', () => {
     it('should close dropdown quickly', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -155,7 +155,7 @@ describe('UserMenu Performance Tests', () => {
     it('should handle rapid clicks efficiently', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -182,12 +182,12 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Memory Management', () => {
     it('should clean up event listeners on unmount', () => {
-      const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -209,7 +209,7 @@ describe('UserMenu Performance Tests', () => {
     it('should not cause memory leaks with multiple mounts/unmounts', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -236,7 +236,7 @@ describe('UserMenu Performance Tests', () => {
 
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -263,7 +263,7 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle auth state changes efficiently', async () => {
-      const mockSignOut = vi.fn();
+      const mockSignOut = jest.fn();
       
       // Start with authenticated user
       mockUseAuth.mockReturnValue({
@@ -305,7 +305,7 @@ describe('UserMenu Performance Tests', () => {
     it('should handle admin users with many permissions efficiently', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'admin123', email: 'admin@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: true,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -332,7 +332,7 @@ describe('UserMenu Performance Tests', () => {
     it('should handle concurrent interactions gracefully', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -372,7 +372,7 @@ describe('UserMenu Performance Tests', () => {
       // For now, we verify the component renders without heavy dependencies
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });

@@ -121,7 +121,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({ children }) => {
               </>
             ) : (
               <>
-                {isLastStep ? 'Complete' : 'Next'}
+                {isLastStep ? 'Complete Onboarding' : 'Next'}
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

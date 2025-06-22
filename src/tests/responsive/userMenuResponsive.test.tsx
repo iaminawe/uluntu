@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
@@ -6,22 +6,22 @@ import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 
 // Mock dependencies
-vi.mock('@/shared/contexts/AuthContextWithRedux');
-vi.mock('@/hooks/useMemberByUserId');
+jest.mock('@/shared/contexts/AuthContextWithRedux');
+jest.mock('@/hooks/useMemberByUserId');
 
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
-const mockUseMemberByUserId = useMemberByUserId as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
 
 // Mock window.matchMedia for responsive tests
 const mockMatchMedia = (query: string) => ({
   matches: false,
   media: query,
   onchange: null,
-  addListener: vi.fn(), // deprecated
-  removeListener: vi.fn(), // deprecated
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
+  addListener: jest.fn(), // deprecated
+  removeListener: jest.fn(), // deprecated
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  dispatchEvent: jest.fn(),
 });
 
 const renderUserMenu = () => {
@@ -34,15 +34,15 @@ const renderUserMenu = () => {
 
 describe('UserMenu Responsive Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: vi.fn().mockImplementation(mockMatchMedia),
+      value: jest.fn().mockImplementation(mockMatchMedia),
     });
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Mobile Layout (< 768px)', () => {
@@ -55,7 +55,7 @@ describe('UserMenu Responsive Tests', () => {
       });
       
       // Mock matchMedia for mobile
-      window.matchMedia = vi.fn().mockImplementation((query) => ({
+      window.matchMedia = jest.fn().mockImplementation((query) => ({
         ...mockMatchMedia(query),
         matches: query.includes('max-width: 767px'),
       }));
@@ -64,7 +64,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should render properly on mobile screens', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -83,7 +83,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should have proper touch targets on mobile', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -103,7 +103,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should handle tap events on mobile', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -122,7 +122,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should position dropdown correctly on mobile', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -138,7 +138,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should not cause horizontal scrolling on mobile', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -165,7 +165,7 @@ describe('UserMenu Responsive Tests', () => {
       });
       
       // Mock matchMedia for desktop
-      window.matchMedia = vi.fn().mockImplementation((query) => ({
+      window.matchMedia = jest.fn().mockImplementation((query) => ({
         ...mockMatchMedia(query),
         matches: query.includes('min-width: 768px'),
       }));
@@ -174,7 +174,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should render properly on desktop screens', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -188,7 +188,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should support hover interactions on desktop', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -207,7 +207,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should have proper spacing on desktop', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -234,7 +234,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should render properly on tablet screens', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -251,7 +251,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should handle both touch and mouse events on tablet', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -276,7 +276,7 @@ describe('UserMenu Responsive Tests', () => {
     it('should handle orientation changes', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -316,7 +316,7 @@ describe('UserMenu Responsive Tests', () => {
 
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -336,7 +336,7 @@ describe('UserMenu Responsive Tests', () => {
           id: 'user123', 
           email: 'very.long.email.address.that.might.overflow@example.com' 
         },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -355,7 +355,7 @@ describe('UserMenu Responsive Tests', () => {
       // Test with admin user (more menu items)
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'admin@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: true,
       });
       mockUseMemberByUserId.mockReturnValue({ 
