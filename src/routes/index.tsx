@@ -1,6 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 import HomePage from '../pages/HomePage';
+import AboutPage from '../pages/AboutPage';
+import ContactPage from '../pages/ContactPage';
+import PrivacyPage from '../pages/PrivacyPage';
+import TermsPage from '../pages/TermsPage';
+import PartnersPage from '../pages/PartnersPage';
 import DirectoryPage from '../pages/DirectoryPage';
 import CompaniesPage from '../pages/CompaniesPage';
 import EventsPage from '../pages/EventsPage';
@@ -38,7 +43,6 @@ import ResetPasswordPage from '../pages/ResetPasswordPage';
 import UnauthorizedPage from '../pages/auth/UnauthorizedPage';
 import ProfileEditPage from '../pages/ProfileEditPage';
 import AcceptInvitationPage from '../pages/AcceptInvitationPage';
-import TestAuthPage from '../pages/TestAuthPage';
 
 // Admin pages
 import AdminLayout from '../pages/admin/AdminLayout';
@@ -55,6 +59,7 @@ import AdminNewsPage from '../pages/admin/entities/NewsPage';
 import AdminResourcesPage from '../pages/admin/entities/ResourcesPage';
 import AdminMarketplacePage from '../pages/admin/entities/MarketplacePage';
 import AdminOpportunitiesPage from '../pages/admin/entities/OpportunitiesPage';
+import AdminPagesPage from '../pages/admin/entities/PagesPage';
 import AuditPage from '../pages/admin/AuditPage';
 
 // Newsletter pages
@@ -62,6 +67,7 @@ import NewsletterDashboard from '../pages/admin/newsletter/NewsletterDashboard';
 import CampaignManager from '../pages/admin/newsletter/CampaignManager';
 import SubscriberManager from '../pages/admin/newsletter/SubscriberManager';
 import AnalyticsDashboard from '../pages/admin/newsletter/AnalyticsDashboard';
+import UpdateNewsSlugs from '../pages/admin/UpdateNewsSlugs';
 
 // Error page
 import ErrorPage from '../pages/ErrorPage';
@@ -70,6 +76,9 @@ import ErrorPage from '../pages/ErrorPage';
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 import GroupGuard from '@/features/auth/components/GroupGuard';
 
+// Onboarding pages
+import OnboardingWizard from '@/features/onboarding/components/OnboardingWizard';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -77,6 +86,12 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'partners', element: <PartnersPage /> },
+      { path: 'debug-data', element: <DebugDataPage /> },
       { path: 'directory', element: <DirectoryPage /> },
       { 
         path: 'directory/create', 
@@ -112,7 +127,7 @@ export const router = createBrowserRouter([
         path: 'news/create', 
         element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
       },
-      { path: 'news/:id', element: <NewsDetailPage /> },
+      { path: 'news/:slug', element: <NewsDetailPage /> },
       { 
         path: 'news/:id/edit', 
         element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
@@ -165,7 +180,10 @@ export const router = createBrowserRouter([
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
-      { path: 'test-auth', element: <TestAuthPage /> },
+      { 
+        path: 'onboarding/*', 
+        element: <ProtectedRoute><OnboardingWizard /></ProtectedRoute> 
+      },
       { path: 'invite/:token', element: <AcceptInvitationPage /> },
       { 
         path: 'profile/edit', 
@@ -192,10 +210,14 @@ export const router = createBrowserRouter([
       { path: 'entities/resources', element: <AdminResourcesPage /> },
       { path: 'entities/marketplace', element: <AdminMarketplacePage /> },
       { path: 'entities/opportunities', element: <AdminOpportunitiesPage /> },
+      { path: 'entities/pages', element: <AdminPagesPage /> },
       { path: 'newsletter', element: <NewsletterDashboard /> },
       { path: 'newsletter/campaigns', element: <CampaignManager /> },
       { path: 'newsletter/subscribers', element: <SubscriberManager /> },
-      { path: 'newsletter/analytics', element: <AnalyticsDashboard /> }
+      { path: 'newsletter/analytics', element: <AnalyticsDashboard /> },
+      { path: 'utils/update-news-slugs', element: <UpdateNewsSlugs /> },
+      // Temporary development access to slug updater
+      { path: 'dev/update-news-slugs', element: <UpdateNewsSlugs /> }
     ]
   }
 ]);
