@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -19,16 +19,16 @@ const createTestStore = (initialState = {}) => {
 };
 
 // Mock Supabase
-vi.mock('@/lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
-      getSession: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      getSession: jest.fn(),
+      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
     },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(),
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(),
         })),
       })),
     })),
@@ -52,11 +52,11 @@ const renderWithProviders = (ui: React.ReactElement, initialState = {}) => {
 
 describe('UserMenu Integration Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Data Fetching Integration', () => {
@@ -77,7 +77,7 @@ describe('UserMenu Integration Tests', () => {
       };
 
       // Mock authenticated session
-      vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      (supabase.auth.getSession as jest.MockedFunction<typeof supabase.auth.getSession>).mockResolvedValue({
         data: {
           session: {
             user: mockUser,
@@ -89,16 +89,16 @@ describe('UserMenu Integration Tests', () => {
       });
 
       // Mock member fetch
-      const mockSelect = vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({
+      const mockSelect = jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn().mockResolvedValue({
             data: mockMember,
             error: null,
           }),
         })),
       }));
 
-      vi.mocked(supabase.from).mockReturnValue({
+      (supabase.from as jest.MockedFunction<typeof supabase.from>).mockReturnValue({
         select: mockSelect,
       } as any);
 
@@ -135,7 +135,7 @@ describe('UserMenu Integration Tests', () => {
       };
 
       // Mock authenticated session
-      vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      (supabase.auth.getSession as jest.MockedFunction<typeof supabase.auth.getSession>).mockResolvedValue({
         data: {
           session: {
             user: mockUser,
@@ -149,14 +149,14 @@ describe('UserMenu Integration Tests', () => {
       // Mock member fetch error
       const mockSelect = vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({
+          single: jest.fn().mockResolvedValue({
             data: null,
             error: { message: 'Failed to fetch member' },
           }),
         })),
       }));
 
-      vi.mocked(supabase.from).mockReturnValue({
+      (supabase.from as jest.MockedFunction<typeof supabase.from>).mockReturnValue({
         select: mockSelect,
       } as any);
 
@@ -191,7 +191,7 @@ describe('UserMenu Integration Tests', () => {
       };
 
       // Mock authenticated session
-      vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      (supabase.auth.getSession as jest.MockedFunction<typeof supabase.auth.getSession>).mockResolvedValue({
         data: {
           session: {
             user: mockUser,
@@ -205,7 +205,7 @@ describe('UserMenu Integration Tests', () => {
       // Mock delayed member fetch
       const mockSelect = vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn().mockImplementation(() => 
+          single: jest.fn().mockImplementation(() => 
             new Promise(resolve => setTimeout(() => resolve({
               data: { id: 'member123', name: 'Test User' },
               error: null,
@@ -214,7 +214,7 @@ describe('UserMenu Integration Tests', () => {
         })),
       }));
 
-      vi.mocked(supabase.from).mockReturnValue({
+      (supabase.from as jest.MockedFunction<typeof supabase.from>).mockReturnValue({
         select: mockSelect,
       } as any);
 

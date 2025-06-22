@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -18,16 +18,16 @@ const createTestStore = (initialState = {}) => {
 };
 
 // Mock Supabase and hooks
-vi.mock('@/lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
-      getSession: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      getSession: jest.fn(),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
     },
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn(),
+          single: jest.fn(),
         })),
       })),
     })),
@@ -51,11 +51,11 @@ const renderHeaderWithProviders = (initialRoute = '/', initialState = {}) => {
 
 describe('Header Navigation Integration Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Full Header Integration', () => {
@@ -256,7 +256,7 @@ describe('Header Navigation Integration Tests', () => {
     });
 
     it('should handle sign out navigation', async () => {
-      const mockSignOut = vi.fn().mockResolvedValue(undefined);
+      const mockSignOut = jest.fn().mockResolvedValue(undefined);
       const initialState = {
         auth: {
           user: { id: 'user123', email: 'user@example.com' },

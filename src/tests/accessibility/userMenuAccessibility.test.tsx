@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -10,11 +10,11 @@ import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 expect.extend(toHaveNoViolations);
 
 // Mock dependencies
-vi.mock('@/shared/contexts/AuthContextWithRedux');
-vi.mock('@/hooks/useMemberByUserId');
+jest.mock('@/shared/contexts/AuthContextWithRedux');
+jest.mock('@/hooks/useMemberByUserId');
 
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
-const mockUseMemberByUserId = useMemberByUserId as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
 
 const renderUserMenu = () => {
   return render(
@@ -26,14 +26,14 @@ const renderUserMenu = () => {
 
 describe('UserMenu Accessibility Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('ARIA Compliance', () => {
     it('should have no accessibility violations when closed', async () => {
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -46,7 +46,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should have no accessibility violations when open', async () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -65,7 +65,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should have proper ARIA attributes on menu button', () => {
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -83,7 +83,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should have proper role attributes on dropdown menu', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -102,7 +102,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should be keyboard navigable', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -124,7 +124,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should support Tab navigation through menu items', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: true,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -145,7 +145,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should close menu with Escape key', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -167,7 +167,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should have accessible text for all interactive elements', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -199,7 +199,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should announce menu state changes', () => {
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -224,7 +224,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should trap focus within menu when open', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -244,7 +244,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should return focus to trigger button when menu closes', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -268,7 +268,7 @@ describe('UserMenu Accessibility Tests', () => {
     it('should have sufficient color contrast for all text', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });

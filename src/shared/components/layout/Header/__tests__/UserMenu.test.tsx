@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import UserMenu from '../UserMenu';
@@ -6,18 +6,15 @@ import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 
 // Mock dependencies
-vi.mock('@/shared/contexts/AuthContextWithRedux');
-vi.mock('@/hooks/useMemberByUserId');
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-  };
-});
+jest.mock('@/shared/contexts/AuthContextWithRedux');
+jest.mock('@/hooks/useMemberByUserId');
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
 
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
-const mockUseMemberByUserId = useMemberByUserId as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
+const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
 
 const renderUserMenu = () => {
   return render(
@@ -29,18 +26,18 @@ const renderUserMenu = () => {
 
 describe('UserMenu Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Unauthenticated State', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -87,7 +84,7 @@ describe('UserMenu Component', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
         user: mockUser,
-        signOut: vi.fn().mockResolvedValue(undefined),
+        signOut: jest.fn().mockResolvedValue(undefined),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: mockMember });
@@ -124,7 +121,7 @@ describe('UserMenu Component', () => {
     });
 
     it('should handle sign out', async () => {
-      const mockSignOut = vi.fn().mockResolvedValue(undefined);
+      const mockSignOut = jest.fn().mockResolvedValue(undefined);
       mockUseAuth.mockReturnValue({
         user: mockUser,
         signOut: mockSignOut,
@@ -161,7 +158,7 @@ describe('UserMenu Component', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
         user: { id: 'admin123', email: 'admin@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: true,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -181,7 +178,7 @@ describe('UserMenu Component', () => {
     it('should handle member data loading state', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ 
@@ -201,8 +198,8 @@ describe('UserMenu Component', () => {
 
   describe('Error Handling', () => {
     it('should handle sign out errors gracefully', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const mockSignOut = vi.fn().mockRejectedValue(new Error('Sign out failed'));
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const mockSignOut = jest.fn().mockRejectedValue(new Error('Sign out failed'));
       
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
@@ -229,7 +226,7 @@ describe('UserMenu Component', () => {
     it('should support keyboard navigation', () => {
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
@@ -248,11 +245,11 @@ describe('UserMenu Component', () => {
 
   describe('Performance', () => {
     it('should clean up event listeners on unmount', () => {
-      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
       
       mockUseAuth.mockReturnValue({
         user: null,
-        signOut: vi.fn(),
+        signOut: jest.fn(),
         isAdmin: false,
       });
       mockUseMemberByUserId.mockReturnValue({ data: null });
