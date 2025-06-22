@@ -65,3 +65,43 @@ Thumbs.db
 
 # Claude-flow registry
 .docsregistry
+
+# Swarm directories
+swarm-auto-centralized-*
+
+# Temporary test files
+test-*.ts
+check-*.ts
+debug-*.ts
+*-test.ts
+test-*-connection.ts
+
+# Database backups and exports
+database/backups/
+database/production_export/
+database/archive/
+*.sql.bak
+
+# Development files
+dev.log
+*.dev
+*.local
+.env.development
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Reports and docs
+reports/
+docs/archive/
+
+# Scripts output
+scripts/output/
+
+# Public uploads
+public/uploads/
+
+# Temporary markdown files
+*-auto-*.md
+marketplace_navigation_implementation.md
+NOVEL_EDITOR_INTEGRATION_SUMMARY.md
