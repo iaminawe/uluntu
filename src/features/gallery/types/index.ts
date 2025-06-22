@@ -8,16 +8,41 @@ export interface Photo {
   file_size: number;
   mime_type: string;
   storage_path: string;
+  // Image size variants
   thumbnail_path?: string;
+  small_path?: string;
   medium_path?: string;
-  url?: string; // For backward compatibility
+  large_path?: string;
+  original_path?: string;
+  // URLs for different sizes
+  thumbnail_url?: string;
+  small_url?: string;
+  medium_url?: string;
+  large_url?: string;
+  original_url?: string;
+  url?: string; // For backward compatibility - defaults to medium_url
+  // Image dimensions for different sizes
+  thumbnail_width?: number;
+  thumbnail_height?: number;
+  small_width?: number;
+  small_height?: number;
+  medium_width?: number;
+  medium_height?: number;
+  large_width?: number;
+  large_height?: number;
+  width?: number; // Original width
+  height?: number; // Original height
+  // Processing info
+  aspect_ratio?: number;
+  dominant_color?: string;
+  placeholder_data?: string; // Low quality placeholder for progressive loading
+  processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  // Metadata
   title?: string;
   description?: string;
   alt_text?: string;
   caption?: string;
   tags?: string[];
-  width?: number;
-  height?: number;
   sort_order: number;
   is_cover?: boolean;
   visibility: 'visible' | 'hidden';
@@ -118,12 +143,33 @@ export interface UploadProgress {
   error?: string;
 }
 
+export interface SingleUploadProgress extends UploadProgress {
+  file?: File;
+  preview?: string;
+}
+
 export interface PhotoUploadInput {
   file: File;
   title?: string;
   description?: string;
   tags?: string[];
   galleryId?: string;
+  // Processed image variants
+  processedImages?: {
+    thumbnail?: File;
+    small?: File;
+    medium?: File;
+    large?: File;
+    original?: File;
+  };
+  // Metadata from processing
+  dimensions?: {
+    width: number;
+    height: number;
+    aspectRatio: number;
+  };
+  placeholder?: string; // Low quality placeholder data
+  dominantColor?: string;
 }
 
 export interface CreateGalleryInput {
@@ -169,4 +215,75 @@ export interface LightboxState {
   isOpen: boolean;
   currentPhotoIndex: number;
   photos: Photo[];
+}
+
+// Batch Upload Types
+export interface BatchUploadFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
+  type: string;
+  preview?: string;
+  status: 'pending' | 'validating' | 'uploading' | 'processing' | 'completed' | 'error' | 'cancelled';
+  progress: number;
+  error?: string;
+  uploadedPhoto?: Photo;
+  metadata?: {
+    width: number;
+    height: number;
+    duration?: number; // for videos
+  };
+}
+
+export interface BatchUploadConfig {
+  maxFiles: number;
+  maxFileSize: number; // in bytes
+  acceptedTypes: string[];
+  maxWidth?: number;
+  maxHeight?: number;
+  enableImageResize: boolean;
+  enableThumbnailGeneration: boolean;
+  concurrent: number; // max concurrent uploads
+}
+
+export interface BatchUploadProgress {
+  totalFiles: number;
+  completedFiles: number;
+  failedFiles: number;
+  overallProgress: number;
+  currentlyUploading: number;
+  isComplete: boolean;
+  hasErrors: boolean;
+}
+
+export interface BatchUploadQueue {
+  files: BatchUploadFile[];
+  progress: BatchUploadProgress;
+  config: BatchUploadConfig;
+}
+
+export interface FileValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+export interface BatchUploadHooks {
+  onFileAdd?: (file: BatchUploadFile) => void;
+  onFileRemove?: (fileId: string) => void;
+  onFileProgress?: (fileId: string, progress: number) => void;
+  onFileComplete?: (fileId: string, photo: Photo) => void;
+  onFileError?: (fileId: string, error: string) => void;
+  onBatchStart?: () => void;
+  onBatchComplete?: (results: BatchUploadResult) => void;
+  onBatchProgress?: (progress: BatchUploadProgress) => void;
+}
+
+export interface BatchUploadResult {
+  totalFiles: number;
+  successCount: number;
+  errorCount: number;
+  uploadedPhotos: Photo[];
+  errors: { fileId: string; fileName: string; error: string }[];
 }

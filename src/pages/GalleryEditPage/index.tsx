@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, Globe, Users, Lock, X } from 'lucide-react';
-import { PageContainer } from '@/shared/components/layout/PageContainer';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
@@ -171,7 +171,7 @@ const GalleryEditPage: React.FC = () => {
     });
   };
 
-  const handlePhotoUpload = async (files: any[]) => {
+  const handlePhotoUpload = async (files: File[]) => {
     if (!id) return;
     
     try {
@@ -181,10 +181,15 @@ const GalleryEditPage: React.FC = () => {
       console.error('Error uploading photos:', err);
     }
   };
+  
+  const handleBatchUpload = (uploadedPhotos: any[]) => {
+    console.log('Batch upload completed:', uploadedPhotos);
+    navigate(`/galleries/${id}`);
+  };
 
   if (loading) {
     return (
-      <PageContainer>
+      <ContentContainer>
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="space-y-4">
@@ -193,12 +198,12 @@ const GalleryEditPage: React.FC = () => {
             <div className="h-10 bg-gray-200 rounded w-1/3"></div>
           </div>
         </div>
-      </PageContainer>
+      </ContentContainer>
     );
   }
 
   return (
-    <PageContainer>
+    <ContentContainer>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -433,7 +438,9 @@ const GalleryEditPage: React.FC = () => {
                 <PhotoUpload
                   galleryId={id}
                   onUpload={handlePhotoUpload}
+                  onBatchUpload={handleBatchUpload}
                   maxFiles={20}
+                  showBatchUpload={true}
                 />
                 
                 <div className="mt-6 flex justify-end">
@@ -449,7 +456,7 @@ const GalleryEditPage: React.FC = () => {
           </div>
         )}
       </div>
-    </PageContainer>
+    </ContentContainer>
   );
 };
 
