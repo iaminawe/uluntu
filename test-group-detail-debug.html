@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Detail Debug</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+        pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Group Detail Debug Tool</h1>
+    
+    <div class="section">
+        <h2>1. Test Database Connection</h2>
+        <div id="db-status">Testing...</div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Groups Table Schema</h2>
+        <div id="schema-status">Loading...</div>
+        <pre id="schema-results"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>3. All Groups</h2>
+        <div id="groups-status">Loading...</div>
+        <pre id="groups-results"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>4. Test Specific Group</h2>
+        <input type="text" id="group-id" placeholder="Enter group ID">
+        <button onclick="testSpecificGroup()">Test Group</button>
+        <div id="specific-status"></div>
+        <pre id="specific-results"></pre>
+    </div>
+    
+    <script type="module">
+        const SUPABASE_URL = 'https://zcizkebuhmlurmtpszxs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjaXprZWJ1aG1sdXJtdHBzenhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgxNTU4MTMsImV4cCI6MjA0MzczMTgxM30.J5sOqIJBSa7vk1TjC37sA2CJ32i5vKhJ-_6Yag0QhYg';
+        
+        async function testDatabaseConnection() {
+            const statusEl = document.getElementById('db-status');
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    statusEl.innerHTML = '<span class="success">✓ Database connection successful</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="error">✗ Database connection failed: ' + response.status + '</span>';
+                }
+            } catch (error) {
+                statusEl.innerHTML = '<span class="error">✗ Connection error: ' + error.message + '</span>';
+            }
+        }
+        
+        async function checkGroupsSchema() {
+            const statusEl = document.getElementById('schema-status');
+            const resultsEl = document.getElementById('schema-results');
+            
+            try {
+                // Try to get groups with limit 0 to check if table exists
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/groups?limit=0`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'count=exact'
+                    }
+                });
+                
+                if (response.ok) {
+                    const contentRange = response.headers.get('content-range');
+                    statusEl.innerHTML = '<span class="success">✓ Groups table exists</span>';
+                    if (contentRange) {
+                        const total = contentRange.split('/')[1];
+                        statusEl.innerHTML += ` - Total rows: ${total}`;
+                    }
+                    
+                    // Get one row to see schema
+                    const sampleResponse = await fetch(`${SUPABASE_URL}/rest/v1/groups?limit=1`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    const sample = await sampleResponse.json();
+                    if (sample && sample.length > 0) {
+                        const columns = Object.keys(sample[0]);
+                        resultsEl.textContent = 'Table columns:\n' + columns.join('\n');
+                    }
+                } else {
+                    const error = await response.text();
+                    statusEl.innerHTML = '<span class="error">✗ Groups table error: ' + response.status + '</span>';
+                    resultsEl.textContent = error;
+                }
+            } catch (error) {
+                statusEl.innerHTML = '<span class="error">✗ Schema check error: ' + error.message + '</span>';
+            }
+        }
+        
+        async function getAllGroups() {
+            const statusEl = document.getElementById('groups-status');
+            const resultsEl = document.getElementById('groups-results');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/groups?select=*&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const groups = await response.json();
+                    statusEl.innerHTML = `<span class="success">✓ Found ${groups.length} groups</span>`;
+                    
+                    // Show summary of groups
+                    const summary = groups.map(g => ({
+                        id: g.id,
+                        name: g.name,
+                        visibility: g.visibility,
+                        status: g.status,
+                        created_at: g.created_at
+                    }));
+                    resultsEl.textContent = JSON.stringify(summary, null, 2);
+                } else {
+                    const error = await response.text();
+                    statusEl.innerHTML = '<span class="error">✗ Failed to get groups: ' + response.status + '</span>';
+                    resultsEl.textContent = error;
+                }
+            } catch (error) {
+                statusEl.innerHTML = '<span class="error">✗ Groups fetch error: ' + error.message + '</span>';
+            }
+        }
+        
+        window.testSpecificGroup = async function() {
+            const groupId = document.getElementById('group-id').value;
+            const statusEl = document.getElementById('specific-status');
+            const resultsEl = document.getElementById('specific-results');
+            
+            if (!groupId) {
+                statusEl.innerHTML = '<span class="error">Please enter a group ID</span>';
+                return;
+            }
+            
+            try {
+                statusEl.innerHTML = 'Testing group ID: ' + groupId;
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/groups?id=eq.${groupId}&select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const groups = await response.json();
+                    if (groups.length > 0) {
+                        statusEl.innerHTML = '<span class="success">✓ Group found</span>';
+                        resultsEl.textContent = JSON.stringify(groups[0], null, 2);
+                    } else {
+                        statusEl.innerHTML = '<span class="error">✗ No group found with ID: ' + groupId + '</span>';
+                        resultsEl.textContent = 'No data';
+                    }
+                } else {
+                    const error = await response.text();
+                    statusEl.innerHTML = '<span class="error">✗ Error fetching group: ' + response.status + '</span>';
+                    resultsEl.textContent = error;
+                }
+            } catch (error) {
+                statusEl.innerHTML = '<span class="error">✗ Fetch error: ' + error.message + '</span>';
+            }
+        }
+        
+        // Run tests
+        testDatabaseConnection();
+        checkGroupsSchema();
+        getAllGroups();
+    </script>
+</body>
+</html>

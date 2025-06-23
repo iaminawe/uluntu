@@ -218,17 +218,17 @@ export function adaptMarketplaceItemToSupabase(
 ): Tables['marketplace_listings']['Insert'] {
   // Create a safe version with proper null handling
   const safeItem: Tables['marketplace_listings']['Insert'] = {
-    title: item.title || '', // Ensure title is never undefined
-    description: item.description || null, // Allow null but not undefined
-    type: item.type || 'product', // Default to product if undefined
+    title: item.title || '', // Ensure title is never undefined - required field
+    description: item.description || '', // Required field, cannot be null in DB
+    type: (item.type ?? 'product') as string, // Required field, cannot be null in DB
     price: typeof item.price === 'number' ? item.price : null, // Ensure price is number or null
-    condition: item.condition || null, // Allow null but not undefined
+    condition: item.condition ?? null, // Allow null but not undefined
     images: Array.isArray(item.images) ? item.images : null, // Ensure it's an array or null
-    location: item.location || null, // Allow null but not undefined
+    location: item.location || '', // Required field, cannot be null in DB
     tags: Array.isArray(item.tags) ? item.tags : null, // Ensure it's an array or null
-    seller_id: item.sellerId || null, // This should be the UUID string or null
-    status: item.status || 'draft', // Default to draft if undefined
-    featured: typeof item.featured === 'boolean' ? item.featured : false, // Ensure it's boolean
+    seller_id: item.sellerId || '', // Required field, cannot be null in DB
+    status: item.status || 'draft', // Default to draft if undefined - required field
+    featured: typeof item.featured === 'boolean' ? item.featured : null, // Can be null in DB
     // Contact information fields
     // 'category' is not part of the original Supabase insert data from dataAdapters.ts
     // If your Supabase table marketplace_listings has a 'category' column, add it here:

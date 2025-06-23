@@ -14,7 +14,6 @@ import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSl
 import companiesReducer from '@/features/companies/store/companiesSlice';
 import groupsReducer from '@/features/groups/store/groupsSlice';
 import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
-import resourcesReducer from '@/features/resources/store/resourcesSlice';
 import newsReducer from '@/features/news/store/newsSlice';
 
 // Create a custom render function that includes Redux provider
@@ -32,7 +31,6 @@ function render(
         companies: companiesReducer,
         groups: groupsReducer,
         marketplace: marketplaceReducer,
-        resources: resourcesReducer,
         news: newsReducer,
       },
       preloadedState,

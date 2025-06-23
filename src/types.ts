@@ -144,7 +144,7 @@ export type { ContentStatus, BaseEntity, SocialLinks, Location };
 export interface Resource extends BaseEntity {
   title: string;
   description: string;
-  type: 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link'; // Added 'link' for broader compatibility
+  type: 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link' | 'gallery'; // Added 'link' and 'gallery' for broader compatibility
   url: string;
   image?: string;
   dateAdded: string; // Ensure this is always provided when creating a Resource
@@ -216,6 +216,7 @@ export interface Opportunity extends BaseEntity {
 
 // Export types from subdirectories
 export * from './types/content';
+export * from './types/settings';
 
 // Consolidated opportunity types from opportunity.ts
 export type OpportunityType = 'job' | 'volunteer' | 'funding' | 'community' | 'full-time' | 'part-time' | 'contract';

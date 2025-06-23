@@ -27,7 +27,7 @@ import membersReducer, {
 import { ContentStatus } from '../../types/common';
 
 // Mock the API calls
-jest.mock('../../api/membersApi', () => ({
+jest.mock('../../features/directory/api/membersApi', () => ({
   membersApi: {
     getAll: jest.fn(),
     getById: jest.fn(),

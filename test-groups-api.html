@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Groups API</title>
+</head>
+<body>
+    <h1>Groups API Test</h1>
+    <div id="status">Loading...</div>
+    <div id="results"></div>
+    
+    <script type="module">
+        const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'https://zcizkebuhmlurmtpszxs.supabase.co';
+        const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjaXprZWJ1aG1sdXJtdHBzenhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgxNTU4MTMsImV4cCI6MjA0MzczMTgxM30.J5sOqIJBSa7vk1TjC37sA2CJ32i5vKhJ-_6Yag0QhYg';
+        
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        
+        async function testGroupsAPI() {
+            try {
+                // Test 1: Get all groups
+                statusDiv.textContent = 'Testing groups API...';
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/groups?select=*&status=eq.published&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+                });
+                
+                statusDiv.textContent = `Response status: ${response.status}`;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    resultsDiv.innerHTML = `<pre style="color: red;">Error: ${errorText}</pre>`;
+                    return;
+                }
+                
+                const groups = await response.json();
+                resultsDiv.innerHTML = `
+                    <h2>Groups Found: ${groups.length}</h2>
+                    <pre>${JSON.stringify(groups, null, 2)}</pre>
+                `;
+                
+                // Test 2: Get a specific group if any exist
+                if (groups.length > 0) {
+                    const groupId = groups[0].id;
+                    statusDiv.textContent = `Testing single group fetch for ID: ${groupId}`;
+                    
+                    const singleResponse = await fetch(`${SUPABASE_URL}/rest/v1/groups?id=eq.${groupId}&select=*`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const singleGroup = await singleResponse.json();
+                    resultsDiv.innerHTML += `
+                        <h2>Single Group Test:</h2>
+                        <pre>${JSON.stringify(singleGroup, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                statusDiv.textContent = 'Error occurred';
+                resultsDiv.innerHTML = `<pre style="color: red;">Error: ${error.message}\n${error.stack}</pre>`;
+            }
+        }
+        
+        testGroupsAPI();
+    </script>
+</body>
+</html>

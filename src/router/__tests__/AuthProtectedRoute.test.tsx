@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import AuthProtectedRoute from '../AuthProtectedRoute'
-import { SessionProvider } from '../../context/SessionContext'
+import { SessionProvider } from '@/shared/contexts/SessionContext'
 import { Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 

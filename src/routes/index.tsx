@@ -1,90 +1,111 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import AppLayout from '../layouts/AppLayout';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+
+// Wrap lazy-loaded components with Suspense
+const withSuspense = (Component: React.LazyExoticComponent<any>) => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Component />
+    </Suspense>
+  );
+};
+
+// Eagerly loaded pages (for better initial load)
 import HomePage from '../pages/HomePage';
-import AboutPage from '../pages/AboutPage';
-import ContactPage from '../pages/ContactPage';
-import PrivacyPage from '../pages/PrivacyPage';
-import TermsPage from '../pages/TermsPage';
-import PartnersPage from '../pages/PartnersPage';
-import DirectoryPage from '../pages/DirectoryPage';
-import CompaniesPage from '../pages/CompaniesPage';
-import EventsPage from '../pages/EventsPage';
-import NewsPage from '../pages/NewsPage';
-import GroupsPage from '../pages/GroupsPage';
-import ResourcesPage from '../pages/ResourcesPage';
-import MarketplacePage from '../pages/MarketplacePage';
-import OpportunitiesPage from '../pages/OpportunitiesPage';
-
-// Detail pages
-import DirectoryDetailPage from '../pages/DirectoryDetailPage';
-import CompanyDetailPage from '../pages/CompanyDetailPage';
-import EventDetailPage from '../pages/EventDetailPage';
-import NewsDetailPage from '../pages/NewsDetailPage';
-import GroupDetailPage from '../pages/GroupDetailPage';
-
-// Edit pages
-import NewsEditPage from '../pages/NewsEditPage';
-import EventEditPage from '../pages/EventEditPage';
-import GroupEditPage from '../pages/GroupEditPage';
-import CompanyEditPage from '../pages/CompanyEditPage';
-import DirectoryEditPage from '../pages/DirectoryEditPage';
-import OpportunityEditPage from '../pages/OpportunityEditPage';
-import OpportunityDetailPage from '../pages/OpportunityDetailPage';
-import ResourceDetailPage from '../pages/ResourceDetailPage';
-import ResourceEditPage from '../pages/ResourceEditPage';
-import MarketplaceDetailPage from '../pages/MarketplaceDetailPage';
-import MarketplaceEditPage from '../pages/MarketplaceEditPage';
-
-// Auth pages
 import SignInPage from '../pages/auth/SignInPage';
 import SignUpPage from '../pages/auth/SignUpPage';
-import ForgotPasswordPage from '../pages/ForgotPasswordPage';
-import ResetPasswordPage from '../pages/ResetPasswordPage';
 import UnauthorizedPage from '../pages/auth/UnauthorizedPage';
-import ProfileEditPage from '../pages/ProfileEditPage';
-import AcceptInvitationPage from '../pages/AcceptInvitationPage';
-
-// Admin pages
-import AdminLayout from '../pages/admin/AdminLayout';
-import AdminDashboard from '../pages/admin/Dashboard';
-import UsersPage from '../pages/admin/UsersPage';
-import SettingsPage from '../pages/admin/SettingsPage';
-import ModerationPage from '../pages/admin/ModerationPage';
-import RolesPage from '../pages/admin/RolesPage';
-import AdminMembersPage from '../pages/admin/entities/MembersPage';
-import AdminCompaniesPage from '../pages/admin/entities/CompaniesPage';
-import AdminGroupsPage from '../pages/admin/entities/GroupsPage';
-import AdminEventsPage from '../pages/admin/entities/EventsPage';
-import AdminNewsPage from '../pages/admin/entities/NewsPage';
-import AdminResourcesPage from '../pages/admin/entities/ResourcesPage';
-import AdminMarketplacePage from '../pages/admin/entities/MarketplacePage';
-import AdminOpportunitiesPage from '../pages/admin/entities/OpportunitiesPage';
-import AdminPagesPage from '../pages/admin/entities/PagesPage';
-import AuditPage from '../pages/admin/AuditPage';
-
-// Newsletter pages
-import NewsletterDashboard from '../pages/admin/newsletter/NewsletterDashboard';
-import CampaignManager from '../pages/admin/newsletter/CampaignManager';
-import SubscriberManager from '../pages/admin/newsletter/SubscriberManager';
-import AnalyticsDashboard from '../pages/admin/newsletter/AnalyticsDashboard';
-import UpdateNewsSlugs from '../pages/admin/UpdateNewsSlugs';
-
-// Error page
 import ErrorPage from '../pages/ErrorPage';
-import TestPage from '../pages/TestPage';
+
+// Lazy load main pages
+const AboutPage = lazy(() => import('../pages/AboutPage'));
+const ContactPage = lazy(() => import('../pages/ContactPage'));
+const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
+const TermsPage = lazy(() => import('../pages/TermsPage'));
+const PartnersPage = lazy(() => import('../pages/PartnersPage'));
+const TestPage = lazy(() => import('../pages/TestPage'));
+const DebugPage = lazy(() => import('../pages/DebugPage'));
+
+// Lazy load feature pages
+const DirectoryPage = lazy(() => import('../pages/DirectoryPage'));
+const CompaniesPage = lazy(() => import('../pages/CompaniesPage'));
+const EventsPage = lazy(() => import('../pages/EventsPage'));
+const NewsPage = lazy(() => import('../pages/NewsPage'));
+const GroupsPage = lazy(() => import('../pages/GroupsPage'));
+const ResourcesPage = lazy(() => import('../pages/ResourcesPage'));
+const MarketplacePage = lazy(() => import('../pages/MarketplacePage'));
+const OpportunitiesPage = lazy(() => import('../pages/OpportunitiesPage'));
+
+// Lazy load detail pages
+const DirectoryDetailPage = lazy(() => import('../pages/DirectoryDetailPage'));
+const CompanyDetailPage = lazy(() => import('../pages/CompanyDetailPage'));
+const EventDetailPage = lazy(() => import('../pages/EventDetailPage'));
+const NewsDetailPage = lazy(() => import('../pages/NewsDetailPage'));
+const GroupDetailPage = lazy(() => import('../pages/GroupDetailPage'));
+const OpportunityDetailPage = lazy(() => import('../pages/OpportunityDetailPage'));
+const ResourceDetailPage = lazy(() => import('../pages/ResourceDetailPage'));
+const MarketplaceDetailPage = lazy(() => import('../pages/MarketplaceDetailPage'));
+
+// Lazy load edit pages
+const NewsEditPage = lazy(() => import('../pages/NewsEditPage'));
+const EventEditPage = lazy(() => import('../pages/EventEditPage'));
+const GroupEditPage = lazy(() => import('../pages/GroupEditPage'));
+const CompanyEditPage = lazy(() => import('../pages/CompanyEditPage'));
+const DirectoryEditPage = lazy(() => import('../pages/DirectoryEditPage'));
+const OpportunityEditPage = lazy(() => import('../pages/OpportunityEditPage'));
+const ResourceEditPage = lazy(() => import('../pages/ResourceEditPage'));
+const MarketplaceEditPage = lazy(() => import('../pages/MarketplaceEditPage'));
+
+// Lazy load auth pages
+const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
+const ProfileEditPage = lazy(() => import('../pages/ProfileEditPage'));
+const AcceptInvitationPage = lazy(() => import('../pages/AcceptInvitationPage'));
+
+// Lazy load admin pages
+const AdminLayout = lazy(() => import('../pages/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('../pages/admin/Dashboard'));
+const UsersPage = lazy(() => import('../pages/admin/UsersPage'));
+const SettingsPage = lazy(() => import('../pages/admin/SettingsPage'));
+const UnifiedSettingsPage = lazy(() => import('../pages/admin/UnifiedSettingsPage'));
+const ModerationPage = lazy(() => import('../pages/admin/ModerationPage'));
+const RolesPage = lazy(() => import('../pages/admin/RolesPage'));
+const AdminMembersPage = lazy(() => import('../pages/admin/entities/MembersPage'));
+const AdminCompaniesPage = lazy(() => import('../pages/admin/entities/CompaniesPage'));
+const AdminGroupsPage = lazy(() => import('../pages/admin/entities/GroupsPage'));
+const AdminEventsPage = lazy(() => import('../pages/admin/entities/EventsPage'));
+const AdminNewsPage = lazy(() => import('../pages/admin/entities/NewsPage'));
+const AdminResourcesPage = lazy(() => import('../pages/admin/entities/ResourcesPage'));
+const AdminMarketplacePage = lazy(() => import('../pages/admin/entities/MarketplacePage'));
+const AdminOpportunitiesPage = lazy(() => import('../pages/admin/entities/OpportunitiesPage'));
+const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
+const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
+const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
+const ContactInboxDetailPage = lazy(() => import('../pages/admin/ContactInboxDetailPage'));
+const PerformanceMetricsPage = lazy(() => import('../pages/admin/PerformanceMetricsPage'));
+
+// Lazy load newsletter pages
+const NewsletterDashboard = lazy(() => import('../pages/admin/newsletter/NewsletterDashboard'));
+const CampaignManager = lazy(() => import('../pages/admin/newsletter/CampaignManager'));
+const SubscriberManager = lazy(() => import('../pages/admin/newsletter/SubscriberManager'));
+const AnalyticsDashboard = lazy(() => import('../pages/admin/newsletter/AnalyticsDashboard'));
+const UpdateNewsSlugs = lazy(() => import('../pages/admin/UpdateNewsSlugs'));
+
 
 // Auth components
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 import GroupGuard from '@/features/auth/components/GroupGuard';
 
-// Onboarding pages
-import OnboardingWizard from '@/features/onboarding/components/OnboardingWizard';
+// Lazy load onboarding
+const OnboardingWizard = lazy(() => import('@/features/onboarding/components/OnboardingWizard'));
 
-// Gallery pages
-import GalleriesPage from '../pages/GalleriesPage';
-import GalleryDetailPage from '../pages/GalleryDetailPage';
-import MyGalleriesPage from '../pages/MyGalleriesPage';
-import GalleryEditPage from '../pages/GalleryEditPage';
+// Lazy load gallery pages
+const GalleriesPage = lazy(() => import('../pages/GalleriesPage'));
+const GalleryDetailPage = lazy(() => import('../pages/GalleryDetailPage'));
+const MyGalleriesPage = lazy(() => import('../pages/MyGalleriesPage'));
+const GalleryEditPage = lazy(() => import('../pages/GalleryEditPage'));
 
 export const router = createBrowserRouter([
   {
@@ -93,154 +114,167 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'privacy', element: <PrivacyPage /> },
-      { path: 'terms', element: <TermsPage /> },
-      { path: 'partners', element: <PartnersPage /> },
-      { path: 'test', element: <TestPage /> },
-      { path: 'directory', element: <DirectoryPage /> },
+      { path: 'about', element: withSuspense(AboutPage) },
+      { path: 'contact', element: withSuspense(ContactPage) },
+      { path: 'privacy', element: withSuspense(PrivacyPage) },
+      { path: 'terms', element: withSuspense(TermsPage) },
+      { path: 'partners', element: withSuspense(PartnersPage) },
+      { path: 'test', element: withSuspense(TestPage) },
+      { path: 'debug', element: withSuspense(DebugPage) },
+      { path: 'directory', element: withSuspense(DirectoryPage) },
       { 
         path: 'directory/create', 
-        element: <ProtectedRoute><DirectoryEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
       },
-      { path: 'directory/:id', element: <DirectoryDetailPage /> },
+      { path: 'directory/:id', element: withSuspense(DirectoryDetailPage) },
       { 
         path: 'directory/:id/edit', 
-        element: <ProtectedRoute><DirectoryEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
       },
-      { path: 'companies', element: <CompaniesPage /> },
+      { path: 'companies', element: withSuspense(CompaniesPage) },
       { 
         path: 'companies/create', 
-        element: <ProtectedRoute><CompanyEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
       },
-      { path: 'companies/:id', element: <CompanyDetailPage /> },
+      { path: 'companies/:id', element: withSuspense(CompanyDetailPage) },
       { 
         path: 'companies/:id/edit', 
-        element: <ProtectedRoute><CompanyEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
       },
-      { path: 'events', element: <EventsPage /> },
+      { path: 'events', element: withSuspense(EventsPage) },
       { 
         path: 'events/create', 
-        element: <ProtectedRoute><EventEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
       },
-      { path: 'events/:id', element: <EventDetailPage /> },
+      { path: 'events/:id', element: withSuspense(EventDetailPage) },
       { 
         path: 'events/:id/edit', 
-        element: <ProtectedRoute><EventEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
       },
-      { path: 'news', element: <NewsPage /> },
+      { path: 'news', element: withSuspense(NewsPage) },
       { 
         path: 'news/create', 
-        element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute> 
       },
-      { path: 'news/:slug', element: <NewsDetailPage /> },
+      { path: 'news/:slug', element: withSuspense(NewsDetailPage) },
       { 
         path: 'news/:id/edit', 
-        element: <ProtectedRoute><NewsEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute> 
       },
-      { path: 'groups', element: <GroupsPage /> },
+      { path: 'groups', element: withSuspense(GroupsPage) },
       { 
         path: 'groups/create', 
-        element: <ProtectedRoute><GroupEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(GroupEditPage)}</ProtectedRoute> 
       },
       { 
         path: 'groups/:id', 
-        element: <GroupGuard><GroupDetailPage /></GroupGuard> 
+        element: <GroupGuard>{withSuspense(GroupDetailPage)}</GroupGuard> 
       },
       { 
         path: 'groups/:id/edit', 
-        element: <ProtectedRoute><GroupGuard><GroupEditPage /></GroupGuard></ProtectedRoute> 
+        element: <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute> 
       },
-      { path: 'resources', element: <ResourcesPage /> },
+      { path: 'resources', element: withSuspense(ResourcesPage) },
       { 
         path: 'resources/create', 
-        element: <ProtectedRoute><ResourceEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
       },
-      { path: 'resources/:id', element: <ResourceDetailPage /> },
+      { path: 'resources/:id', element: withSuspense(ResourceDetailPage) },
       { 
         path: 'resources/:id/edit', 
-        element: <ProtectedRoute><ResourceEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
       },
-      { path: 'marketplace', element: <MarketplacePage /> },
+      { path: 'marketplace', element: withSuspense(MarketplacePage) },
       { 
         path: 'marketplace/create', 
-        element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
       },
-      { path: 'marketplace/:id', element: <MarketplaceDetailPage /> },
+      { path: 'marketplace/:id', element: withSuspense(MarketplaceDetailPage) },
       { 
         path: 'marketplace/:id/edit', 
-        element: <ProtectedRoute><MarketplaceEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
       },
-      { path: 'opportunities', element: <OpportunitiesPage /> },
+      { path: 'opportunities', element: withSuspense(OpportunitiesPage) },
       { 
         path: 'opportunities/create', 
-        element: <ProtectedRoute><OpportunityEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
       },
-      { path: 'opportunities/:id', element: <OpportunityDetailPage /> },
+      { path: 'opportunities/:id', element: withSuspense(OpportunityDetailPage) },
       { 
         path: 'opportunities/:id/edit', 
-        element: <ProtectedRoute><OpportunityEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
       },
       { path: 'signin', element: <SignInPage /> },
       { path: 'signup', element: <SignUpPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
+      { path: 'forgot-password', element: withSuspense(ForgotPasswordPage) },
+      { path: 'reset-password', element: withSuspense(ResetPasswordPage) },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
       { 
         path: 'onboarding/*', 
-        element: <ProtectedRoute><OnboardingWizard /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(OnboardingWizard)}</ProtectedRoute> 
       },
-      { path: 'invite/:token', element: <AcceptInvitationPage /> },
+      { path: 'invite/:token', element: withSuspense(AcceptInvitationPage) },
       { 
         path: 'profile/edit', 
-        element: <ProtectedRoute><ProfileEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(ProfileEditPage)}</ProtectedRoute> 
       },
       
       // Gallery routes
-      { path: 'galleries', element: <GalleriesPage /> },
+      { path: 'galleries', element: withSuspense(GalleriesPage) },
       { 
         path: 'galleries/create', 
-        element: <ProtectedRoute><GalleryEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
       },
-      { path: 'galleries/:id', element: <GalleryDetailPage /> },
+      { path: 'galleries/:id', element: withSuspense(GalleryDetailPage) },
       { 
         path: 'galleries/:id/edit', 
-        element: <ProtectedRoute><GalleryEditPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
       },
       { 
         path: 'my-galleries', 
-        element: <ProtectedRoute><MyGalleriesPage /></ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute> 
       }
     ]
   },
   {
     path: '/admin',
-    element: <ProtectedRoute requiredRoles={['superadmin', 'admin']}><AdminLayout /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute requiredRoles={['superadmin', 'admin']}>
+        <Suspense fallback={<LoadingSpinner />}>
+          <AdminLayout />
+        </Suspense>
+      </ProtectedRoute>
+    ),
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: 'users', element: <UsersPage /> },
-      { path: 'roles', element: <RolesPage /> },
-      { path: 'moderation', element: <ModerationPage /> },
-      { path: 'settings', element: <SettingsPage /> },
-      { path: 'audit', element: <AuditPage /> },
-      { path: 'entities/members', element: <AdminMembersPage /> },
-      { path: 'entities/companies', element: <AdminCompaniesPage /> },
-      { path: 'entities/groups', element: <AdminGroupsPage /> },
-      { path: 'entities/events', element: <AdminEventsPage /> },
-      { path: 'entities/news', element: <AdminNewsPage /> },
-      { path: 'entities/resources', element: <AdminResourcesPage /> },
-      { path: 'entities/marketplace', element: <AdminMarketplacePage /> },
-      { path: 'entities/opportunities', element: <AdminOpportunitiesPage /> },
-      { path: 'entities/pages', element: <AdminPagesPage /> },
-      { path: 'newsletter', element: <NewsletterDashboard /> },
-      { path: 'newsletter/campaigns', element: <CampaignManager /> },
-      { path: 'newsletter/subscribers', element: <SubscriberManager /> },
-      { path: 'newsletter/analytics', element: <AnalyticsDashboard /> },
-      { path: 'utils/update-news-slugs', element: <UpdateNewsSlugs /> },
+      { index: true, element: withSuspense(AdminDashboard) },
+      { path: 'users', element: withSuspense(UsersPage) },
+      { path: 'roles', element: withSuspense(RolesPage) },
+      { path: 'moderation', element: withSuspense(ModerationPage) },
+      { 
+        path: 'settings', 
+        element: withSuspense(UnifiedSettingsPage)
+      },
+      { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
+      { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
+      { path: 'audit', element: withSuspense(AuditPage) },
+      { path: 'performance', element: withSuspense(PerformanceMetricsPage) },
+      { path: 'entities/members', element: withSuspense(AdminMembersPage) },
+      { path: 'entities/companies', element: withSuspense(AdminCompaniesPage) },
+      { path: 'entities/groups', element: withSuspense(AdminGroupsPage) },
+      { path: 'entities/events', element: withSuspense(AdminEventsPage) },
+      { path: 'entities/news', element: withSuspense(AdminNewsPage) },
+      { path: 'entities/resources', element: withSuspense(AdminResourcesPage) },
+      { path: 'entities/marketplace', element: withSuspense(AdminMarketplacePage) },
+      { path: 'entities/opportunities', element: withSuspense(AdminOpportunitiesPage) },
+      { path: 'entities/pages', element: withSuspense(AdminPagesPage) },
+      { path: 'newsletter', element: withSuspense(NewsletterDashboard) },
+      { path: 'newsletter/campaigns', element: withSuspense(CampaignManager) },
+      { path: 'newsletter/subscribers', element: withSuspense(SubscriberManager) },
+      { path: 'newsletter/analytics', element: withSuspense(AnalyticsDashboard) },
+      { path: 'utils/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
       // Temporary development access to slug updater
-      { path: 'dev/update-news-slugs', element: <UpdateNewsSlugs /> }
+      { path: 'dev/update-news-slugs', element: withSuspense(UpdateNewsSlugs) }
     ]
   }
 ]);

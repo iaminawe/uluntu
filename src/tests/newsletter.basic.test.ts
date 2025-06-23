@@ -4,9 +4,9 @@ jest.mock('@/config/env', () => ({
   IS_SUPABASE_ENABLED: false
 }));
 
-import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
-import { newsletterCampaignApi } from '@/api/newsletter/campaigns';
-import { newsletterContentApi } from '@/api/newsletter/content';
+import { newsletterSubscriptionApi } from '@/features/newsletter/api/subscriptions';
+import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
+import { newsletterContentApi } from '@/features/newsletter/api/content';
 
 // Mock Supabase to avoid actual database calls during testing
 jest.mock('@/lib/supabase', () => ({

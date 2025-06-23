@@ -1,15 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shared/hooks/useUserContent';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut } = useSession();
+  const authState = useAppSelector(state => state.auth);
+  const userRoles = authState.roles.list;
+  const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
+  
+  // Debug logging for admin access
+  console.log('🔍 UserMenu Debug:', {
+    user: user?.email,
+    isAdmin,
+    userRoles,
+    hasUser: !!user,
+    shouldShowAdmin: !!user && isAdmin
+  });
   
   // Get the member profile for the current user
   const { data: member } = useMemberByUserId(user?.id);
@@ -142,7 +155,7 @@ export default function UserMenu() {
                       {groups.slice(0, 3).map((group) => (
                         <Link
                           key={group.id}
-                          to={`/groups/${group.slug}`}
+                          to={`/groups/${group.id}`}
                           className="block py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 truncate"
                           onClick={() => setIsOpen(false)}
                         >

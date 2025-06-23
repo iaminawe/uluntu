@@ -2,9 +2,18 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { 
+      getUser: jest.fn(),
+      getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null })
+    },
+    storage: {
+      from: jest.fn().mockReturnValue({
+        list: jest.fn().mockResolvedValue({ data: [], error: null })
+      })
+    }
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
+  checkSupabaseConnection: jest.fn().mockResolvedValue(false)
 }));
 
 jest.mock('@/config/env', () => ({
@@ -23,10 +32,10 @@ jest.mock('@/config/env', () => ({
  */
 
 const { supabase, checkSupabaseConnection } = require('../lib/supabase');
-const { membersApi } = require('../api/membersApi');
-const { companiesApi } = require('../api/companiesApi');
-const { opportunitiesApi } = require('../api/opportunitiesApi');
-const { eventsApi } = require('../api/eventsApi');
+const { membersApi } = require('../features/directory/api/membersApi');
+const { companiesApi } = require('../features/companies/api/companiesApi');
+const { opportunitiesApi } = require('../features/opportunities/api/opportunitiesApi');
+const { eventsApi } = require('../features/events/api/eventsApi');
 
 // Force enable tests in all environments, but they'll adapt based on connection status
 const testRunner = describe;

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const supabaseUrl = 'https://opkqtpmmtvprhfyjmkhx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wa3F0cG1tdHZwcmhmeWpta2h4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzk1NTAsImV4cCI6MjA2MzYxNTU1MH0.0AGpsyD0KCZrwKfOhPatw08Kf1XyVgMhQA6_Uj8l4aU';
+        
+        const { createClient } = supabase;
+        const client = createClient(supabaseUrl, supabaseKey);
+        
+        const resultsDiv = document.getElementById('results');
+        
+        async function testConnection() {
+            resultsDiv.innerHTML = '<p>Testing connection...</p>';
+            
+            try {
+                // Test members table
+                const { data: members, error: membersError } = await client
+                    .from('members')
+                    .select('*')
+                    .limit(3);
+                
+                if (membersError) throw membersError;
+                
+                // Test events table  
+                const { data: events, error: eventsError } = await client
+                    .from('events')
+                    .select('*')
+                    .limit(3);
+                
+                if (eventsError) throw eventsError;
+                
+                // Test news table
+                const { data: news, error: newsError } = await client
+                    .from('news')
+                    .select('*')
+                    .limit(3);
+                
+                if (newsError) throw newsError;
+                
+                resultsDiv.innerHTML = `
+                    <h2>✅ Connection Successful!</h2>
+                    <p><strong>Members:</strong> ${members.length} found</p>
+                    <p><strong>Events:</strong> ${events.length} found</p>
+                    <p><strong>News:</strong> ${news.length} found</p>
+                    <h3>Sample Member:</h3>
+                    <pre>${JSON.stringify(members[0], null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <h2>❌ Connection Failed</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        testConnection();
+    </script>
+</body>
+</html>

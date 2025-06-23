@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dynamic color CSS variables - will be set by ThemeProvider */
+    --color-primary: 251, 115, 22; /* orange-500 fallback */
+    --color-secondary: 239, 68, 68; /* red-500 fallback */
+    --color-accent: 59, 130, 246; /* blue-500 fallback */
+  }
+
+  /* Apply dynamic colors to Tailwind utilities */
+  .bg-primary {
+    background-color: rgb(var(--color-primary));
+  }
+  
+  .bg-secondary {
+    background-color: rgb(var(--color-secondary));
+  }
+  
+  .bg-accent {
+    background-color: rgb(var(--color-accent));
+  }
+  
+  .text-primary {
+    color: rgb(var(--color-primary));
+  }
+  
+  .text-secondary {
+    color: rgb(var(--color-secondary));
+  }
+  
+  .text-accent {
+    color: rgb(var(--color-accent));
+  }
+  
+  .border-primary {
+    border-color: rgb(var(--color-primary));
+  }
+  
+  .border-secondary {
+    border-color: rgb(var(--color-secondary));
+  }
+  
+  .border-accent {
+    border-color: rgb(var(--color-accent));
+  }
+  
+  /* Gradient utilities */
+  .gradient-primary {
+    background: linear-gradient(to right, rgb(var(--color-primary)), rgb(var(--color-secondary)));
+  }
+}
