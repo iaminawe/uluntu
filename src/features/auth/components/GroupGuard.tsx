@@ -23,24 +23,33 @@ export default function GroupGuard({ children }: GroupGuardProps) {
 
   useEffect(() => {
     async function checkGroupAccess() {
-      if (!id || loading) return;
+      console.log('[GroupGuard] Checking access for group:', id, { loading, user: !!user, isAdmin });
+      
+      if (!id || loading) {
+        console.log('[GroupGuard] Skipping check - no ID or still loading');
+        return;
+      }
 
       try {
         // If user is a superadmin, they always have access
         if (isAdmin) {
+          console.log('[GroupGuard] User is admin - granting access');
           setHasAccess(true);
           return;
         }
 
         // If user is not authenticated, they only have access to open/closed groups
         if (!user) {
+          console.log('[GroupGuard] No user - checking group visibility');
           const { data: group } = await supabase
             .from('groups')
             .select('visibility')
             .eq('id', id)
             .single();
 
-          setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
+          const access = group?.visibility === 'open' || group?.visibility === 'closed';
+          console.log('[GroupGuard] Group visibility:', group?.visibility, 'Access:', access);
+          setHasAccess(access);
           return;
         }
 
@@ -79,9 +88,10 @@ export default function GroupGuard({ children }: GroupGuardProps) {
 
         setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
       } catch (error) {
-        console.error('Error checking group access:', error);
+        console.error('[GroupGuard] Error checking group access:', error);
         setHasAccess(false);
       } finally {
+        console.log('[GroupGuard] Check complete. hasAccess:', hasAccess);
         setIsLoading(false);
       }
     }
@@ -89,6 +99,8 @@ export default function GroupGuard({ children }: GroupGuardProps) {
     checkGroupAccess();
   }, [id, user, loading, isAdmin]);
 
+  console.log('[GroupGuard] Render state:', { loading, isLoading, hasAccess });
+  
   if (loading || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -97,9 +109,17 @@ export default function GroupGuard({ children }: GroupGuardProps) {
     );
   }
 
-  if (!hasAccess) {
+  if (hasAccess === false) {
+    console.log('[GroupGuard] Access denied - redirecting to unauthorized');
     return <Navigate to="/unauthorized" replace />;
   }
 
-  return <>{children}</>;
+  if (hasAccess === true) {
+    console.log('[GroupGuard] Access granted - rendering children');
+    return <>{children}</>;
+  }
+  
+  // This shouldn't happen, but just in case
+  console.log('[GroupGuard] Unexpected state - hasAccess is null but not loading');
+  return null;
 }

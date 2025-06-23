@@ -24,8 +24,12 @@ export default function GroupDetailPage() {
   const [selectedTab, setSelectedTab] = useState<TabType>('about');
   const [showJoinModal, setShowJoinModal] = useState(false);
   
+  console.log('[GroupDetailPage] Rendering with ID:', id);
+  
   // Use the Redux hook to fetch group data
   const { group, isLoading, isError, error } = useGroupRedux(id);
+  
+  console.log('[GroupDetailPage] State:', { group, isLoading, isError, error });
   
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
     switch (visibility) {
