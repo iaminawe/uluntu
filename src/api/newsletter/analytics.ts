@@ -59,25 +59,25 @@ class NewsletterAnalyticsApi {
    */
   async getCampaignAnalytics(campaignId: string): Promise<CampaignAnalytics> {
     try {
-      // Use typed RPC call with explicit cast for our custom function
+      // Use typed RPC call
       const { data, error } = await (supabase.rpc as any)('get_campaign_analytics', { p_campaign_id: campaignId });
 
       if (error) throw error;
 
       // Ensure we return a properly typed object
-      if (data && typeof data === 'object') {
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
         return {
-          campaign_id: data.campaign_id || campaignId,
-          sent_count: data.sent_count || 0,
-          delivered_count: data.delivered_count || 0,
-          opened_count: data.opened_count || 0,
-          clicked_count: data.clicked_count || 0,
-          bounced_count: data.bounced_count || 0,
-          unsubscribed_count: data.unsubscribed_count || 0,
-          complained_count: data.complained_count || 0,
-          open_rate: data.open_rate || 0,
-          click_rate: data.click_rate || 0,
-          bounce_rate: data.bounce_rate || 0
+          campaign_id: (data as any).campaign_id || campaignId,
+          sent_count: (data as any).sent_count || 0,
+          delivered_count: (data as any).delivered_count || 0,
+          opened_count: (data as any).opened_count || 0,
+          clicked_count: (data as any).clicked_count || 0,
+          bounced_count: (data as any).bounced_count || 0,
+          unsubscribed_count: (data as any).unsubscribed_count || 0,
+          complained_count: (data as any).complained_count || 0,
+          open_rate: (data as any).open_rate || 0,
+          click_rate: (data as any).click_rate || 0,
+          bounce_rate: (data as any).bounce_rate || 0
         };
       }
 

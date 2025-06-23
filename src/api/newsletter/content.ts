@@ -29,8 +29,13 @@ class NewsletterContentApi {
       if (error && error.code !== 'PGRST116') throw error; // Ignore 'not found' errors
 
       return data ? {
-        ...data,
-        content_type: data.content_type as NewsletterContent['content_type']
+        id: data.id,
+        content_type: data.content_type as NewsletterContent['content_type'],
+        date_range_start: data.date_range_start,
+        date_range_end: data.date_range_end,
+        content: data.content,
+        generated_at: data.generated_at,
+        expires_at: data.expires_at
       } : null;
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get Cached Content');
@@ -52,10 +57,15 @@ class NewsletterContentApi {
 
       if (error) throw error;
 
-      return data?.map(item => ({
-        ...item,
-        content_type: item.content_type as NewsletterContent['content_type']
-      })) || [];
+      return (data || []).map(item => ({
+        id: item.id,
+        content_type: item.content_type as NewsletterContent['content_type'],
+        date_range_start: item.date_range_start,
+        date_range_end: item.date_range_end,
+        content: item.content,
+        generated_at: item.generated_at,
+        expires_at: item.expires_at
+      }));
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get All Cached Content');
       throw new Error(sanitized.userMessage);
@@ -70,21 +80,27 @@ class NewsletterContentApi {
       const { data, error } = await supabase
         .from('newsletter_content_cache')
         .insert({
-          // content_type: content.content_type, // Note: field not in schema
-          date_range_start: content.date_range_start,
-          date_range_end: content.date_range_end,
+          content_type: content.content_type || 'events',
+          date_range_start: content.date_range_start || new Date().toISOString(),
+          date_range_end: content.date_range_end || new Date().toISOString(),
           content: content.content,
           generated_at: new Date().toISOString(),
           expires_at: content.expires_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours default
-        } as any) // Type assertion for schema mismatch
+        })
         .select()
         .single();
 
       if (error) throw error;
-
+      if (!data) throw new Error('Failed to cache content');
+      
       return {
-        ...data,
-        content_type: data.content_type as NewsletterContent['content_type']
+        id: data.id,
+        content_type: data.content_type as NewsletterContent['content_type'],
+        date_range_start: data.date_range_start,
+        date_range_end: data.date_range_end,
+        content: data.content,
+        generated_at: data.generated_at,
+        expires_at: data.expires_at
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Cache Content');
@@ -112,10 +128,16 @@ class NewsletterContentApi {
         .single();
 
       if (error) throw error;
-
+      if (!data) throw new Error('Failed to update content');
+      
       return {
-        ...data,
-        content_type: data.content_type as NewsletterContent['content_type']
+        id: data.id,
+        content_type: data.content_type as NewsletterContent['content_type'],
+        date_range_start: data.date_range_start,
+        date_range_end: data.date_range_end,
+        content: data.content,
+        generated_at: data.generated_at,
+        expires_at: data.expires_at
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Update Cached Content');
@@ -187,7 +209,7 @@ class NewsletterContentApi {
       }
 
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select(selectFields)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
@@ -195,10 +217,7 @@ class NewsletterContentApi {
 
       if (error) throw error;
 
-      return data?.map(item => ({
-        ...item,
-        content_type: item.content_type as NewsletterContent['content_type']
-      })) || [];
+      return data || [];
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get Recent Content');
       throw new Error(sanitized.userMessage);

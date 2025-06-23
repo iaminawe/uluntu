@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/checkSupabase';
+import { supabase } from '@/lib/supabase';
 
 export interface TransactionalEmailRequest {
   template_name: string;
@@ -198,7 +198,9 @@ export async function sendContactAutoReply(
         footer_text: 'Kootenay Tech Community',
       },
     },
-    // Note: submission_id removed as it's not a valid sendEmail option
+    options: {
+      // Custom tracking for auto-reply emails
+    }
   });
 }
 
@@ -289,9 +291,9 @@ export async function getTransactionalTemplates(): Promise<{
   data: Array<{
     id: string;
     name: string;
-    description: string;
-    type: string;
-    is_active: boolean;
+    description: string | null;
+    type: string | null;
+    is_active: boolean | null;
   }> | null;
   error: any;
 }> {
@@ -302,7 +304,7 @@ export async function getTransactionalTemplates(): Promise<{
       .eq('is_active', true)
       .order('name');
 
-    return { data, error };
+    return { data: data || null, error };
   } catch (error) {
     console.error('Error fetching transactional templates:', error);
     return { data: null, error };

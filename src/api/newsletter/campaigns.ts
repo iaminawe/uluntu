@@ -35,20 +35,20 @@ class NewsletterCampaignsApi {
       id: dbCampaign.id,
       title: dbCampaign.title,
       subject: dbCampaign.subject,
-      content: dbCampaign.content,
+      content: dbCampaign.content || {},
       template_id: dbCampaign.template_id || undefined,
-      template_data: dbCampaign.template_data,
+      template_data: dbCampaign.template_data || undefined,
       custom_message: dbCampaign.custom_message || undefined,
-      branding: dbCampaign.branding,
+      branding: dbCampaign.branding || undefined,
       status: (dbCampaign.status as Campaign['status']) || 'draft',
-      send_type: (dbCampaign.send_type as Campaign['send_type']) || 'manual',
+      send_type: (dbCampaign.send_type as Campaign['send_type']) || undefined,
       scheduled_at: dbCampaign.scheduled_at || undefined,
       sent_at: dbCampaign.sent_at || undefined,
-      created_at: dbCampaign.created_at || '',
-      updated_at: dbCampaign.updated_at || '',
+      created_at: dbCampaign.created_at || new Date().toISOString(),
+      updated_at: dbCampaign.updated_at || new Date().toISOString(),
       created_by: dbCampaign.created_by,
       recipient_count: dbCampaign.recipient_count || undefined,
-      delivery_stats: dbCampaign.delivery_stats
+      delivery_stats: dbCampaign.delivery_stats || undefined
     };
   }
 
@@ -122,8 +122,8 @@ class NewsletterCampaignsApi {
       const { data, error } = await supabase
         .from('newsletter_campaigns')
         .insert({
-          // title: campaign.title, // Note: title field not in schema
-          // subject: campaign.subject, // Note: subject field not in schema
+          title: campaign.title || 'Untitled Campaign',
+          subject: campaign.subject || 'Newsletter',
           template_id: campaign.template_id,
           template_data: campaign.template_data || {},
           content: campaign.content || {},
@@ -148,7 +148,7 @@ class NewsletterCampaignsApi {
             clicked: 0
           },
           created_by: campaign.created_by || 'system'
-        } as any) // Type assertion for schema mismatch
+        })
         .select()
         .single();
 

@@ -26,7 +26,8 @@ class NewsletterAnalyticsAPI {
           campaign_id: campaignId,
           subscription_id: subscriptionId,
           event_type: eventType,
-          event_data: eventData || {},
+          event_data: (eventData || {}) as any,
+          occurred_at: new Date().toISOString(),
           ip_address: ipAddress,
           user_agent: userAgent
         });
@@ -62,12 +63,15 @@ class NewsletterAnalyticsAPI {
       if (analyticsError) throw analyticsError;
 
       const events = analytics || [];
-      const stats = campaign?.delivery_stats || { sent: 0, delivered: 0, bounced: 0, opened: 0, clicked: 0 };
+      const defaultStats = { sent: 0, delivered: 0, bounced: 0, opened: 0, clicked: 0 };
+      const rawStats = campaign?.delivery_stats || defaultStats;
+      const stats = rawStats as any;
       const totalSent = stats.sent || 0;
 
       // Calculate engagement timeline (grouped by date)
       const timelineMap = new Map<string, { opens: number; clicks: number }>();
       events.forEach(event => {
+        if (!event.occurred_at) return;
         const date = new Date(event.occurred_at).toISOString().split('T')[0];
         const existing = timelineMap.get(date) || { opens: 0, clicks: 0 };
         
@@ -84,9 +88,10 @@ class NewsletterAnalyticsAPI {
       // Calculate top links from click events
       const linkMap = new Map<string, number>();
       events
-        .filter(e => e.event_type === 'clicked' && e.event_data?.url)
+        .filter(e => e.event_type === 'clicked' && e.event_data && typeof e.event_data === 'object' && 'url' in e.event_data)
         .forEach(event => {
-          const url = event.event_data.url;
+          if (!event.event_data || typeof event.event_data !== 'object') return;
+          const url = (event.event_data as any).url;
           linkMap.set(url, (linkMap.get(url) || 0) + 1);
         });
 
@@ -97,7 +102,9 @@ class NewsletterAnalyticsAPI {
 
       // Count event types
       const eventCounts = events.reduce((acc, event) => {
-        acc[event.event_type] = (acc[event.event_type] || 0) + 1;
+        if (event.event_type) {
+          acc[event.event_type] = (acc[event.event_type] || 0) + 1;
+        }
         return acc;
       }, {} as Record<string, number>);
 
@@ -160,7 +167,10 @@ class NewsletterAnalyticsAPI {
       if (error) throw error;
 
       return {
-        data: data || [],
+        data: (data || []).map(item => ({
+          ...item,
+          event_type: item.event_type as NewsletterAnalytics['event_type']
+        })),
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
@@ -207,7 +217,7 @@ class NewsletterAnalyticsAPI {
       let validCampaigns = 0;
 
       sentCampaigns.forEach(campaign => {
-        const stats = campaign.delivery_stats;
+        const stats = campaign.delivery_stats as any;
         if (stats && stats.sent > 0) {
           totalOpenRate += ((stats.opened || 0) / stats.sent) * 100;
           if (stats.opened > 0) {
@@ -297,7 +307,8 @@ class NewsletterAnalyticsAPI {
 
       if (fetchError) throw fetchError;
 
-      const stats = campaign?.delivery_stats || { sent: 0, delivered: 0, bounced: 0, opened: 0, clicked: 0 };
+      const rawStats = campaign?.delivery_stats || { sent: 0, delivered: 0, bounced: 0, opened: 0, clicked: 0 };
+      const stats = rawStats as any;
       stats[eventType] = (stats[eventType] || 0) + 1;
 
       const { error: updateError } = await supabase
@@ -335,6 +346,7 @@ class NewsletterAnalyticsAPI {
       // Group by date
       const dailyMetrics = new Map<string, { opens: number; clicks: number }>();
       events?.forEach(event => {
+        if (!event.occurred_at) return;
         const date = new Date(event.occurred_at).toISOString().split('T')[0];
         const metrics = dailyMetrics.get(date) || { opens: 0, clicks: 0 };
         
@@ -363,9 +375,9 @@ class NewsletterAnalyticsAPI {
       if (campaignError) throw campaignError;
 
       const top_campaigns = (campaigns || [])
-        .filter(c => c.delivery_stats && c.delivery_stats.sent > 0)
+        .filter(c => c.delivery_stats && (c.delivery_stats as any).sent > 0)
         .map(c => {
-          const stats = c.delivery_stats;
+          const stats = c.delivery_stats as any;
           const open_rate = (stats.opened / stats.sent) * 100;
           const click_rate = stats.opened > 0 ? (stats.clicked / stats.opened) * 100 : 0;
           return {

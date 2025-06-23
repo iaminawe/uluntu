@@ -5,20 +5,20 @@ export interface Subscription {
   id: string;
   email: string;
   member_id?: string;
-  status: 'pending' | 'active' | 'unsubscribed' | 'bounced'; // Added 'pending' status
+  status: 'pending' | 'active' | 'unsubscribed' | 'bounced';
   preferences?: {
-    frequency?: 'weekly' | 'monthly'; // Matched schema values
+    frequency?: 'weekly' | 'monthly';
     content_types?: string[];
     format?: string;
     location_filter?: boolean;
     language?: string;
   };
-  subscription_token: string; // Added required field
-  confirmation_token?: string;
-  confirmed_at?: string;
+  subscription_token: string;
+  confirmation_token?: string | null;
+  confirmed_at?: string | null;
   subscribed_at: string;
-  unsubscribed_at?: string;
-  last_sent_at?: string;
+  unsubscribed_at?: string | null;
+  last_sent_at?: string | null;
   bounce_count: number;
   created_at: string;
   updated_at: string;
@@ -61,10 +61,22 @@ class NewsletterSubscriptionsApi {
       if (error) throw error;
 
       return {
-        subscriptions: data?.map(item => ({
-          ...item,
-          member_id: item.member_id || undefined
-        })) || [],
+        subscriptions: (data || []).map(item => ({
+          id: item.id,
+          email: item.email,
+          member_id: item.member_id || undefined,
+          status: (item.status || 'pending') as Subscription['status'],
+          preferences: item.preferences as Subscription['preferences'] || undefined,
+          subscription_token: item.subscription_token || '',
+          confirmation_token: item.confirmation_token,
+          confirmed_at: item.confirmed_at,
+          subscribed_at: item.subscribed_at || item.created_at || new Date().toISOString(),
+          unsubscribed_at: item.unsubscribed_at,
+          last_sent_at: item.last_sent_at,
+          bounce_count: item.bounce_count || 0,
+          created_at: item.created_at || new Date().toISOString(),
+          updated_at: item.updated_at || new Date().toISOString()
+        })),
         total: count || 0
       };
     } catch (error) {
@@ -86,9 +98,23 @@ class NewsletterSubscriptionsApi {
 
       if (error) throw error;
 
+      if (!data) return null;
+      
       return {
-        ...data,
-        member_id: data.member_id || undefined
+        id: data.id,
+        email: data.email,
+        member_id: data.member_id || undefined,
+        status: (data.status || 'pending') as Subscription['status'],
+        preferences: data.preferences as Subscription['preferences'] || undefined,
+        subscription_token: data.subscription_token || '',
+        confirmation_token: data.confirmation_token,
+        confirmed_at: data.confirmed_at,
+        subscribed_at: data.subscribed_at || data.created_at || new Date().toISOString(),
+        unsubscribed_at: data.unsubscribed_at,
+        last_sent_at: data.last_sent_at,
+        bounce_count: data.bounce_count || 0,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get Subscription');
@@ -109,9 +135,23 @@ class NewsletterSubscriptionsApi {
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
 
+      if (!data) return null;
+      
       return {
-        ...data,
-        member_id: data.member_id || undefined
+        id: data.id,
+        email: data.email,
+        member_id: data.member_id || undefined,
+        status: (data.status || 'pending') as Subscription['status'],
+        preferences: data.preferences as Subscription['preferences'] || undefined,
+        subscription_token: data.subscription_token || '',
+        confirmation_token: data.confirmation_token,
+        confirmed_at: data.confirmed_at,
+        subscribed_at: data.subscribed_at || data.created_at || new Date().toISOString(),
+        unsubscribed_at: data.unsubscribed_at,
+        last_sent_at: data.last_sent_at,
+        bounce_count: data.bounce_count || 0,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get By Email');
@@ -131,9 +171,13 @@ class NewsletterSubscriptionsApi {
       const { data, error } = await supabase
         .from('newsletter_subscriptions')
         .insert({
-          ...subscription,
+          email: subscription.email,
+          member_id: subscription.member_id,
+          preferences: subscription.preferences,
           status: 'active',
           subscribed_at: new Date().toISOString(),
+          subscription_token: crypto.randomUUID(),
+          bounce_count: 0,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -141,10 +185,23 @@ class NewsletterSubscriptionsApi {
         .single();
 
       if (error) throw error;
-
+      if (!data) throw new Error('Failed to create subscription');
+      
       return {
-        ...data,
-        member_id: data.member_id || undefined
+        id: data.id,
+        email: data.email,
+        member_id: data.member_id || undefined,
+        status: (data.status || 'active') as Subscription['status'],
+        preferences: data.preferences as Subscription['preferences'] || undefined,
+        subscription_token: data.subscription_token || '',
+        confirmation_token: data.confirmation_token,
+        confirmed_at: data.confirmed_at,
+        subscribed_at: data.subscribed_at || data.created_at || new Date().toISOString(),
+        unsubscribed_at: data.unsubscribed_at,
+        last_sent_at: data.last_sent_at,
+        bounce_count: data.bounce_count || 0,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Create');
@@ -168,10 +225,23 @@ class NewsletterSubscriptionsApi {
         .single();
 
       if (error) throw error;
-
+      if (!data) throw new Error('Failed to update subscription');
+      
       return {
-        ...data,
-        member_id: data.member_id || undefined
+        id: data.id,
+        email: data.email,
+        member_id: data.member_id || undefined,
+        status: (data.status || 'active') as Subscription['status'],
+        preferences: data.preferences as Subscription['preferences'] || undefined,
+        subscription_token: data.subscription_token || '',
+        confirmation_token: data.confirmation_token,
+        confirmed_at: data.confirmed_at,
+        subscribed_at: data.subscribed_at || data.created_at || new Date().toISOString(),
+        unsubscribed_at: data.unsubscribed_at,
+        last_sent_at: data.last_sent_at,
+        bounce_count: data.bounce_count || 0,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Update');
