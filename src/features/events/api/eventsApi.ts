@@ -1,11 +1,7 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '../utils/eventAdapter';
 import { Event as FrontendEvent } from '../types'; // For typing
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
@@ -76,12 +72,8 @@ export const eventsApi = {
       // Now proceed with the actual query
       let query = supabase
         .from('events')
-        .select(`
-          *,
-          event_sessions(*)
-        `)
-        // Temporarily remove status filter to see all events
-        // .eq('status', 'published')
+        .select('*')
+        .eq('status', 'published')
         .order('date', { ascending: true });
 
       console.log('[EventsAPI] Query built, about to execute');

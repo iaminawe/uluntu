@@ -4,9 +4,7 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import { membersApi, MemberInput } from '../api/membersApi';
-import allMockData from '@/data/mock/mockData';
 import { ContentStatus } from '@/shared/types/common';
-import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define Member type for the Redux state
 export interface Member {
@@ -99,32 +97,16 @@ export const fetchMembers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       console.log('Redux thunk: fetchMembers started');
-      if (getIsSupabaseEnabled()) {
-        console.log('Using Supabase for members data');
-        try {
-          const members = await membersApi.getAll();
-          console.log('[MembersSlice] Received members:', {
-            count: members?.length || 0,
-            isArray: Array.isArray(members)
-          });
-          
-          // If Supabase returned empty results, fall back to mock data
-          if (!members || members.length === 0) {
-            console.warn('[MembersSlice] No members returned from API, falling back to mock data');
-            return allMockData.members.map(m => adaptMember(m));
-          }
-          
-          return members.map(m => adaptMember(m));
-        } catch (apiError) {
-          console.error('[MembersSlice] API error in fetchMembers:', apiError);
-          console.log('[MembersSlice] Falling back to mock data due to API error');
-          return allMockData.members.map(m => adaptMember(m));
-        }
-      } else {
-        console.log('Using mock data for members');
-        return allMockData.members.map(m => adaptMember(m));
-      }
+      console.log('Fetching members from API');
+      const members = await membersApi.getAll();
+      console.log('[MembersSlice] Received members:', {
+        count: members?.length || 0,
+        isArray: Array.isArray(members)
+      });
+      
+      return members ? members.map(m => adaptMember(m)) : [];
     } catch (error) {
+      console.error('[MembersSlice] Error fetching members:', error);
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch members');
     }
   }
@@ -138,14 +120,8 @@ export const fetchMemberById = createAsyncThunk(
         return undefined;
       }
 
-      if (getIsSupabaseEnabled()) {
-        const member = await membersApi.getById(id);
-        return member ? adaptMember(member) : undefined;
-      } else {
-        // Find in mock data
-        const member = allMockData.members.find((m) => String(m.id) === id);
-        return member ? adaptMember(member) : undefined;
-      }
+      const member = await membersApi.getById(id);
+      return member ? adaptMember(member) : undefined;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch member with ID ${id}`);
     }

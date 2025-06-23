@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon } from 'lucide-react';
+import { FileText, Video, BookOpen, Wrench, FileText as ArticleIcon, Link, Camera } from 'lucide-react';
 import { Resource } from '../../types';
 
 // Define a type alias for the Resource type property
@@ -17,6 +17,10 @@ export const getTypeIcon = (type: ResourceTypeAlias): React.ReactNode => {
       return React.createElement(Wrench, { className: "h-4 w-4" });
     case 'article':
       return React.createElement(ArticleIcon, { className: "h-4 w-4" });
+    case 'link':
+      return React.createElement(Link, { className: "h-4 w-4" });
+    case 'gallery':
+      return React.createElement(Camera, { className: "h-4 w-4" });
     default:
       return React.createElement(FileText, { className: "h-4 w-4" });
   }
@@ -34,6 +38,10 @@ export const getResourceTypeLabel = (type: ResourceTypeAlias): string => {
       return 'Tool';
     case 'article':
       return 'Article';
+    case 'link':
+      return 'Link';
+    case 'gallery':
+      return 'Gallery';
     default:
       return 'Resource';
   }

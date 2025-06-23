@@ -17,7 +17,10 @@ import {
   getImageDimensions,
   resizeImage
 } from '../utils/fileValidation';
+import { imageProcessingService } from '../services/imageProcessingService';
 import { galleryApi } from '../api/galleryApi';
+import { GalleryErrorHandler } from '../utils/errorHandler';
+import { logger } from '@/utils/logger';
 
 interface UseBatchUploadProps {
   galleryId?: string;
@@ -120,6 +123,25 @@ export const useBatchUpload = ({
           }))
       };
       
+      // Show batch completion notification
+      if (completedFiles > 0 && failedFiles === 0) {
+        GalleryErrorHandler.showSuccess(
+          `Successfully uploaded ${completedFiles} photo${completedFiles !== 1 ? 's' : ''}!`
+        );
+      } else if (completedFiles > 0 && failedFiles > 0) {
+        GalleryErrorHandler.showWarning(
+          `Uploaded ${completedFiles} photo${completedFiles !== 1 ? 's' : ''}, ${failedFiles} failed`
+        );
+      } else if (failedFiles > 0) {
+        GalleryErrorHandler.showError({
+          code: 'BATCH_UPLOAD_FAILED',
+          message: 'All uploads failed',
+          userMessage: `Failed to upload ${failedFiles} photo${failedFiles !== 1 ? 's' : ''}. Please check the files and try again.`,
+          retry: true,
+          recoverable: true
+        });
+      }
+      
       hooks.onBatchComplete?.(result);
       setIsUploading(false);
     }
@@ -134,7 +156,10 @@ export const useBatchUpload = ({
     
     // Show validation errors if any
     if (totalErrors.length > 0) {
-      console.warn('File validation errors:', totalErrors);
+      logger.warn('File validation errors', 'BATCH_UPLOAD', totalErrors);
+      totalErrors.forEach(error => {
+        GalleryErrorHandler.showWarning(error, { duration: 4000 });
+      });
     }
     
     // Convert valid files to BatchUploadFile objects
@@ -150,7 +175,7 @@ export const useBatchUpload = ({
             preview = await createImagePreview(file);
             metadata = await getImageDimensions(file);
           } catch (error) {
-            console.warn(`Failed to create preview for ${file.name}:`, error);
+            logger.warn(`Failed to create preview for ${file.name}`, 'BATCH_UPLOAD', error);
           }
         }
         
@@ -179,7 +204,13 @@ export const useBatchUpload = ({
     
     // Handle invalid files
     invalidFiles.forEach(({ file, errors }) => {
-      console.error(`Invalid file ${file.name}:`, errors);
+      logger.error(`Invalid file ${file.name}`, 'BATCH_UPLOAD', errors);
+      errors.forEach(error => {
+        GalleryErrorHandler.showError(
+          { code: 'VALIDATION_ERROR', message: error, userMessage: `${file.name}: ${error}` },
+          'VALIDATION'
+        );
+      });
     });
     
   }, [config, hooks]);
@@ -245,33 +276,29 @@ export const useBatchUpload = ({
       throw new Error('Gallery ID is required for upload');
     }
     
-    updateFile(file.id, { status: 'validating', progress: 0 });
-    
-    let processedFile = file.file;
-    
-    // Resize image if needed
-    if (config.enableImageResize && file.type.startsWith('image/') && file.metadata) {
-      if (file.metadata.width > (config.maxWidth || 2000) || 
-          file.metadata.height > (config.maxHeight || 2000)) {
-        try {
-          updateFile(file.id, { status: 'processing', progress: 25 });
-          processedFile = await resizeImage(file.file, config.maxWidth, config.maxHeight);
-        } catch (error) {
-          console.warn(`Failed to resize ${file.name}:`, error);
-          // Continue with original file
-        }
-      }
-    }
-    
-    updateFile(file.id, { status: 'uploading', progress: 50 });
-    
-    const uploadInput: PhotoUploadInput = {
-      file: processedFile,
-      title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
-      galleryId
-    };
+    updateFile(file.id, { status: 'validating', progress: 10 });
     
     try {
+      // Enhanced processing with image processing service
+      updateFile(file.id, { status: 'processing', progress: 30 });
+      
+      const uploadInput = await imageProcessingService.enhanceUploadInput(
+        file.file,
+        galleryId,
+        {
+          enableWebP: config.enableImageResize,
+          smartCrop: true,
+          variants: config.enableImageResize ? {
+            thumbnail: { width: 300, height: 300, quality: 0.8 },
+            small: { width: 600, height: 400, quality: 0.85 },
+            medium: { width: 1200, height: 800, quality: 0.9 },
+            large: { width: 2000, height: 1333, quality: 0.95 }
+          } : undefined
+        }
+      );
+      
+      updateFile(file.id, { status: 'uploading', progress: 70 });
+      
       const uploadedPhoto = await galleryApi.uploadPhoto(uploadInput);
       updateFile(file.id, { 
         status: 'completed', 
@@ -279,12 +306,18 @@ export const useBatchUpload = ({
         uploadedPhoto 
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      const galleryError = GalleryErrorHandler.parseError(error, 'UPLOAD');
       updateFile(file.id, { 
         status: 'error', 
         progress: 0, 
-        error: errorMessage 
+        error: galleryError.userMessage || galleryError.message
       });
+      
+      // Only show error notification if it's not a batch operation
+      if (!config.concurrent || config.concurrent === 1) {
+        GalleryErrorHandler.showError(galleryError, 'UPLOAD');
+      }
+      
       throw error;
     }
   }, [galleryId, config, updateFile]);
@@ -322,7 +355,7 @@ export const useBatchUpload = ({
         try {
           await uploadFile(file);
         } catch (error) {
-          console.error(`Failed to upload ${file.name}:`, error);
+          logger.error(`Failed to upload ${file.name}`, 'BATCH_UPLOAD', error);
         } finally {
           activeUploadsRef.current.delete(file.id);
         }
@@ -402,7 +435,7 @@ export const useBatchUpload = ({
     try {
       await uploadFile(file);
     } catch (error) {
-      console.error(`Retry failed for ${file.name}:`, error);
+      logger.error(`Retry failed for ${file.name}`, 'BATCH_UPLOAD', error);
     }
   }, [queue.files, updateFile, uploadFile]);
   

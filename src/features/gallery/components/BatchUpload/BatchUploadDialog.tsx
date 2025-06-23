@@ -102,11 +102,11 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title=\"Batch Photo Upload\"
-      size=\"large\"
-      className=\"max-w-4xl\"
+      title="Batch Photo Upload"
+      size="large"
+      className="max-w-4xl"
     >
-      <div className=\"space-y-6\">
+      <div className="space-y-6">
         {/* Upload Area */}
         {!hasFiles && (
           <BatchUploadArea
@@ -128,17 +128,17 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
         
         {/* Action Bar */}
         {hasFiles && (
-          <div className=\"bg-slate-50 dark:bg-slate-800 rounded-lg p-4\">
-            <div className=\"flex items-center justify-between flex-wrap gap-4\">
+          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               {/* Left Actions */}
-              <div className=\"flex items-center space-x-3\">
+              <div className="flex items-center space-x-3">
                 {!isUploading && canUpload && (
                   <Button
                     onClick={handleStartUpload}
-                    className=\"bg-orange-500 hover:bg-orange-600 text-white\"
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
                     disabled={!canUpload}
                   >
-                    <Play className=\"w-4 h-4 mr-2\" />
+                    <Play className="w-4 h-4 mr-2" />
                     Start Upload
                   </Button>
                 )}
@@ -146,9 +146,9 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                 {isUploading && !isPaused && (
                   <Button
                     onClick={pauseUpload}
-                    variant=\"outline\"
+                    variant="outline"
                   >
-                    <Pause className=\"w-4 h-4 mr-2\" />
+                    <Pause className="w-4 h-4 mr-2" />
                     Pause
                   </Button>
                 )}
@@ -156,9 +156,9 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                 {isUploading && isPaused && (
                   <Button
                     onClick={resumeUpload}
-                    className=\"bg-orange-500 hover:bg-orange-600 text-white\"
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
                   >
-                    <Play className=\"w-4 h-4 mr-2\" />
+                    <Play className="w-4 h-4 mr-2" />
                     Resume
                   </Button>
                 )}
@@ -166,10 +166,10 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                 {isUploading && (
                   <Button
                     onClick={cancelUpload}
-                    variant=\"outline\"
-                    className=\"text-red-600 border-red-200 hover:bg-red-50\"
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
-                    <Square className=\"w-4 h-4 mr-2\" />
+                    <Square className="w-4 h-4 mr-2" />
                     Cancel
                   </Button>
                 )}
@@ -177,40 +177,40 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                 {hasFailedFiles && !isUploading && (
                   <Button
                     onClick={retryFailedFiles}
-                    variant=\"outline\"
-                    className=\"text-orange-600 border-orange-200 hover:bg-orange-50\"
+                    variant="outline"
+                    className="text-orange-600 border-orange-200 hover:bg-orange-50"
                   >
-                    <RotateCcw className=\"w-4 h-4 mr-2\" />
+                    <RotateCcw className="w-4 h-4 mr-2" />
                     Retry Failed
                   </Button>
                 )}
               </div>
               
               {/* Right Actions */}
-              <div className=\"flex items-center space-x-3\">
+              <div className="flex items-center space-x-3">
                 {!hasFiles && (
                   <Button
                     onClick={() => document.querySelector<HTMLInputElement>('input[type=file]')?.click()}
-                    variant=\"outline\"
+                    variant="outline"
                   >
-                    <Upload className=\"w-4 h-4 mr-2\" />
+                    <Upload className="w-4 h-4 mr-2" />
                     Add More Files
                   </Button>
                 )}
                 
                 <Button
                   onClick={() => setShowFileList(!showFileList)}
-                  variant=\"outline\"
-                  size=\"sm\"
+                  variant="outline"
+                  size="sm"
                 >
                   {showFileList ? (
                     <>
-                      <ChevronUp className=\"w-4 h-4 mr-1\" />
+                      <ChevronUp className="w-4 h-4 mr-1" />
                       Hide Files
                     </>
                   ) : (
                     <>
-                      <ChevronDown className=\"w-4 h-4 mr-1\" />
+                      <ChevronDown className="w-4 h-4 mr-1" />
                       Show Files ({queue.files.length})
                     </>
                   )}
@@ -219,11 +219,11 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                 {!isUploading && (
                   <Button
                     onClick={handleClearAll}
-                    variant=\"outline\"
-                    size=\"sm\"
-                    className=\"text-red-600 border-red-200 hover:bg-red-50\"
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
-                    <Trash2 className=\"w-4 h-4 mr-1\" />
+                    <Trash2 className="w-4 h-4 mr-1" />
                     Clear All
                   </Button>
                 )}
@@ -234,23 +234,23 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
         
         {/* Additional Upload Area (when files exist) */}
         {hasFiles && (
-          <div className=\"border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-4\">
+          <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-4">
             <BatchUploadArea
               onFilesSelected={addFiles}
               disabled={isUploading}
               maxFiles={queue.config.maxFiles}
               maxFileSize={queue.config.maxFileSize}
               acceptedTypes={queue.config.acceptedTypes}
-              className=\"border-0 p-4\"
+              className="border-0 p-4"
             />
           </div>
         )}
         
         {/* File List */}
         {hasFiles && showFileList && (
-          <div className=\"max-h-96 overflow-y-auto\">
-            <div className=\"mb-4 flex items-center justify-between\">
-              <h3 className=\"text-lg font-medium text-slate-900 dark:text-white\">
+          <div className="max-h-96 overflow-y-auto">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white">
                 Files ({queue.files.length})
               </h3>
             </div>
@@ -267,19 +267,19 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
       </div>
       
       {/* Footer */}
-      <div className=\"flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700\">
-        <div className=\"text-sm text-slate-500 dark:text-slate-400\">
+      <div className="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+        <div className="text-sm text-slate-500 dark:text-slate-400">
           {hasCompletedFiles && (
-            <span className=\"text-green-600 dark:text-green-400\">
+            <span className="text-green-600 dark:text-green-400">
               {queue.progress.completedFiles} photo{queue.progress.completedFiles !== 1 ? 's' : ''} uploaded successfully
             </span>
           )}
         </div>
         
-        <div className=\"flex items-center space-x-3\">
+        <div className="flex items-center space-x-3">
           <Button
             onClick={handleClose}
-            variant=\"outline\"
+            variant="outline"
           >
             {queue.progress.isComplete ? 'Close' : 'Cancel'}
           </Button>
@@ -287,7 +287,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
           {queue.progress.isComplete && hasCompletedFiles && (
             <Button
               onClick={handleClose}
-              className=\"bg-green-500 hover:bg-green-600 text-white\"
+              className="bg-green-500 hover:bg-green-600 text-white"
             >
               Done
             </Button>

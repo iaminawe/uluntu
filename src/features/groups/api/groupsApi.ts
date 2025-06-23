@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import {
   adaptGroupFromDatabase,
   adaptGroupToSupabaseInsert,
@@ -9,10 +9,6 @@ import {
 import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
 import { ContentStatus } from '../types/common'; // For casting 'status'
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
 // e.g., import { Tables } from '../types/supabase';
@@ -78,12 +74,16 @@ export const groupsApi = {
 
   async getById(id: string): Promise<FrontendGroup | null> {
     try {
+      console.log('[GroupsAPI] getById called with ID:', id);
+      
       // First, get the basic group data without any joins
       const { data: groupData, error: groupError } = await supabase
         .from('groups')
         .select('*')
         .eq('id', id)
         .single();
+
+      console.log('[GroupsAPI] getById response:', { groupData, groupError });
 
       if (groupError) {
         handleSupabaseError(groupError, `fetching group with id ${id}`);
@@ -92,8 +92,11 @@ export const groupsApi = {
       
       // Adapt only the core group data. The adaptGroupFromDatabase function initializes
       // events, resources, etc., to empty arrays as per FrontendGroup definition.
-      return groupData ? adaptGroupFromDatabase(groupData) : null;
+      const adaptedGroup = groupData ? adaptGroupFromDatabase(groupData) : null;
+      console.log('[GroupsAPI] getById adapted result:', adaptedGroup);
+      return adaptedGroup;
     } catch (error) {
+      console.error('[GroupsAPI] getById error:', error);
       handleSupabaseError(error, `fetching group with id ${id}`);
       return null;
     }

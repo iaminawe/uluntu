@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError } from '@/shared/api/client';
 import {
   Photo,
   PhotoFilters,

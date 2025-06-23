@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { Company } from '@/types';
 import { companiesApi, CompanyInput } from '../api/companiesApi';
-import * as mockQueries from '@/hooks/useQueries';
-import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for company filters to match the API interface
 export interface CompanyFilters {
@@ -37,18 +35,12 @@ export const fetchCompanies = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       console.log('Redux thunk: fetchCompanies started');
-      if (getIsSupabaseEnabled()) {
-        console.log('Using Supabase for companies data');
-        const companies = await companiesApi.getAll();
-        console.log('Companies fetched in thunk:', companies.length);
-        return companies;
-      } else {
-        console.log('Using mock data for companies');
-        return mockQueries.useCompanies().data || [];
-      }
+      console.log('Fetching companies from API');
+      const companies = await companiesApi.getAll();
+      console.log('Companies fetched in thunk:', companies.length);
+      return companies;
     } catch (error) {
       console.error('Error in fetchCompanies thunk:', error);
-      // Properly reject with error message to allow error handling
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch companies');
     }
   }
@@ -58,13 +50,8 @@ export const fetchCompanyById = createAsyncThunk(
   'companies/fetchCompanyById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const company = await companiesApi.getById(id);
-        return company || null;
-      } else {
-        const result = mockQueries.useCompany(id);
-        return result.data || null;
-      }
+      const company = await companiesApi.getById(id);
+      return company || null;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch company with ID: ${id}`);
     }
@@ -75,11 +62,7 @@ export const fetchFilteredCompanies = createAsyncThunk(
   'companies/fetchFilteredCompanies',
   async (filters: CompanyFilters, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        return await companiesApi.getAll(filters);
-      } else {
-        return mockQueries.useCompaniesWithFilters(filters).data || [];
-      }
+      return await companiesApi.getAll(filters);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch filtered companies');
     }
@@ -90,29 +73,8 @@ export const createCompany = createAsyncThunk(
   'companies/createCompany',
   async (companyData: CompanyInput, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const newCompany = await companiesApi.create(companyData);
-        return newCompany;
-      } else {
-        // Create a mock company with the data provided
-        const newCompany: Company = {
-          id: Date.now().toString(),
-          name: companyData.name,
-          description: companyData.description,
-          logo: companyData.logo || '',
-          coverImage: companyData.coverImage || '',
-          industry: companyData.industry || [],
-          size: companyData.size || '',
-          founded: companyData.founded || '',
-          location: companyData.location || '',
-          website: companyData.website || '',
-          status: companyData.status || 'published',
-          featured: companyData.featured || false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        return newCompany;
-      }
+      const newCompany = await companiesApi.create(companyData);
+      return newCompany;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create company');
     }
@@ -123,34 +85,8 @@ export const updateCompany = createAsyncThunk(
   'companies/updateCompany',
   async ({ id, data }: { id: string; data: Partial<CompanyInput> }, { rejectWithValue, getState }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const updatedCompany = await companiesApi.update(id, data);
-        return updatedCompany;
-      } else {
-        const state = getState() as RootState;
-        const currentCompany = state.companies.companies.find(company => company.id === id);
-        
-        if (!currentCompany) {
-          return null;
-        }
-
-        // Create an updated version of the company with the new data
-        const updatedCompany: Company = {
-          ...currentCompany,
-          name: data.name || currentCompany.name,
-          description: data.description || currentCompany.description,
-          founded: data.founded || currentCompany.founded,
-          industry: data.industry || currentCompany.industry,
-          size: data.size || currentCompany.size,
-          logo: data.logo !== undefined ? data.logo : currentCompany.logo,
-          website: data.website !== undefined ? data.website : currentCompany.website,
-          featured: data.featured !== undefined ? data.featured : currentCompany.featured,
-          location: data.location !== undefined ? data.location : currentCompany.location,
-          coverImage: data.coverImage !== undefined ? data.coverImage : currentCompany.coverImage,
-          updated_at: new Date().toISOString()
-        };
-        return updatedCompany;
-      }
+      const updatedCompany = await companiesApi.update(id, data);
+      return updatedCompany;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to update company with ID: ${id}`);
     }

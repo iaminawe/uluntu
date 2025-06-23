@@ -62,7 +62,8 @@ export const BatchUploadArea: React.FC<BatchUploadAreaProps> = ({
     if (disabled) return;
     
     // Set drag effect
-    if (hasFiles(e.nativeEvent)) {\n      e.dataTransfer.dropEffect = 'copy';
+    if (hasFiles(e.nativeEvent)) {
+      e.dataTransfer.dropEffect = 'copy';
     } else {
       e.dataTransfer.dropEffect = 'none';
     }
@@ -134,16 +135,16 @@ export const BatchUploadArea: React.FC<BatchUploadAreaProps> = ({
     >
       <input
         ref={fileInputRef}
-        type=\"file\"
+        type="file"
         multiple
         accept={acceptString}
         onChange={handleFileInputChange}
         disabled={disabled}
-        className=\"sr-only\"
+        className="sr-only"
       />
       
-      <div className=\"p-8 text-center\">
-        <div className=\"flex flex-col items-center space-y-4\">
+      <div className="p-8 text-center">
+        <div className="flex flex-col items-center space-y-4">
           {/* Upload Icon */}
           <div className={`
             w-16 h-16 rounded-lg flex items-center justify-center transition-colors
@@ -153,21 +154,21 @@ export const BatchUploadArea: React.FC<BatchUploadAreaProps> = ({
             }
           `}>
             {isDragOver && !disabled ? (
-              <Plus className=\"w-8 h-8\" />
+              <Plus className="w-8 h-8" />
             ) : (
-              <Upload className=\"w-8 h-8\" />
+              <Upload className="w-8 h-8" />
             )}
           </div>
           
           {/* Title and Description */}
           <div>
-            <h3 className=\"text-xl font-semibold text-slate-900 dark:text-white mb-2\">
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
               {isDragOver && !disabled
                 ? 'Drop files here'
                 : 'Upload Photos'
               }
             </h3>
-            <p className=\"text-slate-600 dark:text-slate-400 mb-4\">
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
               {isDragOver && !disabled
                 ? 'Release to add files to upload queue'
                 : 'Drag and drop photos here, or click to select files'
@@ -188,28 +189,28 @@ export const BatchUploadArea: React.FC<BatchUploadAreaProps> = ({
                 }
               `}
             >
-              <Upload className=\"w-5 h-5 mr-2\" />
+              <Upload className="w-5 h-5 mr-2" />
               Choose Photos
             </button>
           )}
           
           {/* File Restrictions */}
-          <div className=\"space-y-2 text-sm text-slate-500 dark:text-slate-400\">
-            <div className=\"flex items-center justify-center space-x-4 flex-wrap\">
+          <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-center space-x-4 flex-wrap">
               <span>Maximum {maxFiles} files</span>
               <span>•</span>
               <span>Up to {formatFileSize(maxFileSize)} each</span>
             </div>
-            <div className=\"flex items-center justify-center\">
+            <div className="flex items-center justify-center">
               <span>Supported: JPG, PNG, WebP, GIF</span>
             </div>
           </div>
           
           {/* Warning for disabled state */}
           {disabled && (
-            <div className=\"flex items-center justify-center space-x-2 text-amber-600 dark:text-amber-400\">
-              <AlertCircle className=\"w-4 h-4\" />
-              <span className=\"text-sm\">Upload disabled</span>
+            <div className="flex items-center justify-center space-x-2 text-amber-600 dark:text-amber-400">
+              <AlertCircle className="w-4 h-4" />
+              <span className="text-sm">Upload disabled</span>
             </div>
           )}
         </div>
@@ -217,8 +218,8 @@ export const BatchUploadArea: React.FC<BatchUploadAreaProps> = ({
       
       {/* Drag overlay */}
       {isDragOver && !disabled && (
-        <div className=\"absolute inset-0 bg-orange-500/10 border-2 border-orange-500 rounded-lg flex items-center justify-center\">
-          <div className=\"text-orange-600 dark:text-orange-400 font-medium\">
+        <div className="absolute inset-0 bg-orange-500/10 border-2 border-orange-500 rounded-lg flex items-center justify-center">
+          <div className="text-orange-600 dark:text-orange-400 font-medium">
             Drop files to add them
           </div>
         </div>

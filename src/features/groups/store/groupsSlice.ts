@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { Group } from '@/types';
 import { groupsApi, GroupInput } from '../api/groupsApi';
-import mockData from '@/data/mock/mockData';
 import { getIsSupabaseEnabled } from '@/config/env';
+import mockData from '@/data/mock/mockData';
 
 // Define type for group filters to match the API interface
 export interface GroupFilters {
@@ -36,22 +36,12 @@ export const fetchGroups = createAsyncThunk(
   'groups/fetchGroups',
   async (_, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        console.log('[GroupsSlice] Fetching from Supabase...');
-        const groups = await groupsApi.getAll();
-        console.log('[GroupsSlice] Received groups:', groups.length);
-        return groups;
-      } else {
-        console.log('[GroupsSlice] Using mock data...');
-        return mockData.groups || [];
-      }
+      console.log('[GroupsSlice] Fetching from Supabase...');
+      const groups = await groupsApi.getAll();
+      console.log('[GroupsSlice] Received groups:', groups.length);
+      return groups;
     } catch (error) {
       console.error('[GroupsSlice] Error fetching groups:', error);
-      // If Supabase fails completely, fall back to mock data
-      if (getIsSupabaseEnabled()) {
-        console.log('[GroupsSlice] Falling back to mock data due to error');
-        return mockData.groups || [];
-      }
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch groups');
     }
   }
@@ -61,13 +51,8 @@ export const fetchGroupById = createAsyncThunk(
   'groups/fetchGroupById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const group = await groupsApi.getById(id);
-        return group || null;
-      } else {
-        const group = mockData.groups.find(g => g.id === id);
-        return group || null;
-      }
+      const group = await groupsApi.getById(id);
+      return group || null;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch group with ID: ${id}`);
     }
@@ -78,24 +63,7 @@ export const fetchFilteredGroups = createAsyncThunk(
   'groups/fetchFilteredGroups',
   async (filters: GroupFilters, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        return await groupsApi.getAll(filters);
-      } else {
-        let filteredGroups = mockData.groups || [];
-        if (filters.search) {
-          const searchTerm = filters.search.toLowerCase();
-          filteredGroups = filteredGroups.filter(group => 
-            group.name.toLowerCase().includes(searchTerm) ||
-            (group.description && group.description.toLowerCase().includes(searchTerm))
-          );
-        }
-        if (filters.visibility && filters.visibility.length > 0) {
-          filteredGroups = filteredGroups.filter(group => 
-            filters.visibility!.includes(group.visibility)
-          );
-        }
-        return filteredGroups;
-      }
+      return await groupsApi.getAll(filters);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch filtered groups');
     }

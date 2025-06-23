@@ -39,21 +39,21 @@ const FileItem: React.FC<FileItemProps> = ({
   const getStatusIcon = () => {
     switch (file.status) {
       case 'pending':
-        return <div className=\"w-5 h-5 border-2 border-slate-300 rounded-full\" />;
+        return <div className="w-5 h-5 border-2 border-slate-300 rounded-full" />;
       case 'validating':
-        return <Loader2 className=\"w-5 h-5 text-blue-500 animate-spin\" />;
+        return <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />;
       case 'uploading':
-        return <Loader2 className=\"w-5 h-5 text-orange-500 animate-spin\" />;
+        return <Loader2 className="w-5 h-5 text-orange-500 animate-spin" />;
       case 'processing':
-        return <Loader2 className=\"w-5 h-5 text-purple-500 animate-spin\" />;
+        return <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />;
       case 'completed':
-        return <CheckCircle className=\"w-5 h-5 text-green-500\" />;
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'error':
-        return <XCircle className=\"w-5 h-5 text-red-500\" />;
+        return <XCircle className="w-5 h-5 text-red-500" />;
       case 'cancelled':
-        return <XCircle className=\"w-5 h-5 text-slate-400\" />;
+        return <XCircle className="w-5 h-5 text-slate-400" />;
       default:
-        return <div className=\"w-5 h-5 border-2 border-slate-300 rounded-full\" />;
+        return <div className="w-5 h-5 border-2 border-slate-300 rounded-full" />;
     }
   };
   
@@ -101,13 +101,13 @@ const FileItem: React.FC<FileItemProps> = ({
   
   if (compact) {
     return (
-      <div className=\"flex items-center space-x-3 p-2 bg-white dark:bg-slate-800 rounded border\">
+      <div className="flex items-center space-x-3 p-2 bg-white dark:bg-slate-800 rounded border">
         {/* Status Icon */}
         {getStatusIcon()}
         
         {/* File Info */}
-        <div className=\"flex-1 min-w-0\">
-          <div className=\"truncate text-sm font-medium text-slate-900 dark:text-white\">
+        <div className="flex-1 min-w-0">
+          <div className="truncate text-sm font-medium text-slate-900 dark:text-white">
             {file.name}
           </div>
           <div className={`text-xs ${getStatusColor()}`}>
@@ -117,33 +117,33 @@ const FileItem: React.FC<FileItemProps> = ({
         
         {/* Progress Bar */}
         {showProgress && file.status === 'uploading' && (
-          <div className=\"w-16 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5\">
+          <div className="w-16 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
             <div 
-              className=\"bg-orange-500 h-1.5 rounded-full transition-all duration-300\"
+              className="bg-orange-500 h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${file.progress}%` }}
             />
           </div>
         )}
         
         {/* Actions */}
-        <div className=\"flex items-center space-x-1\">
+        <div className="flex items-center space-x-1">
           {file.status === 'error' && (
             <button
               onClick={() => onRetry(file.id)}
-              className=\"p-1 text-slate-400 hover:text-orange-500 transition-colors\"
-              title=\"Retry upload\"
+              className="p-1 text-slate-400 hover:text-orange-500 transition-colors"
+              title="Retry upload"
             >
-              <RotateCcw className=\"w-4 h-4\" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           )}
           
           {file.status !== 'uploading' && file.status !== 'processing' && (
             <button
               onClick={() => onRemove(file.id)}
-              className=\"p-1 text-slate-400 hover:text-red-500 transition-colors\"
-              title=\"Remove file\"
+              className="p-1 text-slate-400 hover:text-red-500 transition-colors"
+              title="Remove file"
             >
-              <X className=\"w-4 h-4\" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -152,38 +152,38 @@ const FileItem: React.FC<FileItemProps> = ({
   }
   
   return (
-    <div className=\"p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700\">
-      <div className=\"flex items-start space-x-4\">
+    <div className="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+      <div className="flex items-start space-x-4">
         {/* Preview */}
-        <div className=\"flex-shrink-0\">
+        <div className="flex-shrink-0">
           {file.preview ? (
             <img
               src={file.preview}
               alt={file.name}
-              className=\"w-16 h-16 object-cover rounded-lg border border-slate-200 dark:border-slate-600\"
+              className="w-16 h-16 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
             />
           ) : (
-            <div className=\"w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 flex items-center justify-center\">
-              <ImageIcon className=\"w-6 h-6 text-slate-400\" />
+            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 flex items-center justify-center">
+              <ImageIcon className="w-6 h-6 text-slate-400" />
             </div>
           )}
         </div>
         
         {/* File Info */}
-        <div className=\"flex-1 min-w-0\">
-          <div className=\"flex items-start justify-between\">
-            <div className=\"flex-1 min-w-0\">
-              <h4 className=\"text-sm font-medium text-slate-900 dark:text-white truncate\">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-slate-900 dark:text-white truncate">
                 {file.name}
               </h4>
-              <div className=\"flex items-center space-x-2 mt-1\">
-                <span className=\"text-xs text-slate-500 dark:text-slate-400\">
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   {formatFileSize(file.size)}
                 </span>
                 {file.metadata && (
                   <>
-                    <span className=\"text-slate-300 dark:text-slate-600\">•</span>
-                    <span className=\"text-xs text-slate-500 dark:text-slate-400\">
+                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       {file.metadata.width} × {file.metadata.height}
                     </span>
                   </>
@@ -192,31 +192,31 @@ const FileItem: React.FC<FileItemProps> = ({
             </div>
             
             {/* Actions */}
-            <div className=\"flex items-center space-x-1 ml-2\">
+            <div className="flex items-center space-x-1 ml-2">
               {file.status === 'error' && (
                 <button
                   onClick={() => onRetry(file.id)}
-                  className=\"p-1.5 text-slate-400 hover:text-orange-500 transition-colors rounded\"
-                  title=\"Retry upload\"
+                  className="p-1.5 text-slate-400 hover:text-orange-500 transition-colors rounded"
+                  title="Retry upload"
                 >
-                  <RotateCcw className=\"w-4 h-4\" />
+                  <RotateCcw className="w-4 h-4" />
                 </button>
               )}
               
               {file.status !== 'uploading' && file.status !== 'processing' && (
                 <button
                   onClick={() => onRemove(file.id)}
-                  className=\"p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded\"
-                  title=\"Remove file\"
+                  className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded"
+                  title="Remove file"
                 >
-                  <X className=\"w-4 h-4\" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
           </div>
           
           {/* Status */}
-          <div className=\"flex items-center space-x-2 mt-2\">
+          <div className="flex items-center space-x-2 mt-2">
             {getStatusIcon()}
             <span className={`text-sm ${getStatusColor()}`}>
               {getStatusText()}
@@ -225,10 +225,10 @@ const FileItem: React.FC<FileItemProps> = ({
           
           {/* Progress Bar */}
           {showProgress && (file.status === 'uploading' || file.status === 'processing') && (
-            <div className=\"mt-3\">
-              <div className=\"bg-slate-200 dark:bg-slate-700 rounded-full h-2\">
+            <div className="mt-3">
+              <div className="bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                 <div 
-                  className=\"bg-orange-500 h-2 rounded-full transition-all duration-300\"
+                  className="bg-orange-500 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${file.progress}%` }}
                 />
               </div>
@@ -237,10 +237,10 @@ const FileItem: React.FC<FileItemProps> = ({
           
           {/* Error Message */}
           {file.status === 'error' && file.error && (
-            <div className=\"mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded\">
-              <div className=\"flex items-start space-x-2\">
-                <AlertTriangle className=\"w-4 h-4 text-red-500 flex-shrink-0 mt-0.5\" />
-                <span className=\"text-sm text-red-700 dark:text-red-300\">
+            <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded">
+              <div className="flex items-start space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-red-700 dark:text-red-300">
                   {file.error}
                 </span>
               </div>
@@ -280,9 +280,9 @@ export const BatchUploadFileList: React.FC<BatchUploadFileListProps> = ({
     
     return (
       <div>
-        <h4 className=\"text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center justify-between\">
+        <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center justify-between">
           <span>{title}</span>
-          <span className=\"text-xs text-slate-500 dark:text-slate-400\">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             {count !== undefined ? count : groupFiles.length}
           </span>
         </h4>
@@ -303,13 +303,13 @@ export const BatchUploadFileList: React.FC<BatchUploadFileListProps> = ({
   };
   
   return (
-    <div className=\"space-y-6\">
-      <FileGroup title=\"In Progress\" files={groupedFiles.active} />
-      <FileGroup title=\"Pending\" files={groupedFiles.pending} />
-      <FileGroup title=\"Failed\" files={groupedFiles.failed} />
-      <FileGroup title=\"Completed\" files={groupedFiles.completed} />
+    <div className="space-y-6">
+      <FileGroup title="In Progress" files={groupedFiles.active} />
+      <FileGroup title="Pending" files={groupedFiles.pending} />
+      <FileGroup title="Failed" files={groupedFiles.failed} />
+      <FileGroup title="Completed" files={groupedFiles.completed} />
       {groupedFiles.cancelled.length > 0 && (
-        <FileGroup title=\"Cancelled\" files={groupedFiles.cancelled} />
+        <FileGroup title="Cancelled" files={groupedFiles.cancelled} />
       )}
     </div>
   );

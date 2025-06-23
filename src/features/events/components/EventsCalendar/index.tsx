@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { Event } from '../../types';
-import { useEventsRedux } from '../../hooks/useEventsRedux';
+import { useEventsHybrid } from '../../hooks/useEventsHybrid';
 import { CalendarToolbar } from './CalendarToolbar';
 import { EventPopover } from './EventPopover';
 import { SubscribeModal } from './SubscribeModal';
@@ -20,8 +20,8 @@ interface EventsCalendarProps {
 }
 
 const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isLoading: propIsLoading, error: propError }) => {
-  // Use Redux for events data if not provided via props
-  const { events: reduxEvents, isLoading: reduxIsLoading, error: reduxError, getAllEvents } = useEventsRedux();
+  // Use hybrid approach for events data if not provided via props
+  const { events: reduxEvents, isLoading: reduxIsLoading, error: reduxError } = useEventsHybrid();
   
   // Use props if provided, otherwise use Redux state
   const events = propEvents || reduxEvents;
@@ -33,12 +33,7 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: propEvents, isL
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
 
-  // Fetch events when component mounts if using Redux
-  useEffect(() => {
-    if (!propEvents) {
-      getAllEvents();
-    }
-  }, [propEvents, getAllEvents]);
+  // Events are automatically fetched with the hybrid hook
 
   // Convert our events to the format expected by react-big-calendar
   const calendarEvents = events.map(event => ({

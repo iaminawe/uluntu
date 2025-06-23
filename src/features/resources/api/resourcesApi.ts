@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import {
   adaptResourceFromDatabase,
   adaptResourceToDatabase,

@@ -3,7 +3,7 @@ import { AlertTriangle } from 'lucide-react';
 
 import CompanyCard from './CompanyCard';
 import { CompaniesListProps } from './types';
-import { useFilteredCompaniesRedux } from '../../hooks/useCompaniesRedux';
+import { useCompaniesHybrid } from '../../hooks/useCompaniesHybrid';
 import Pagination from '@/components/Pagination';
 
 const ITEMS_PER_PAGE = 9; // Number of companies per page
@@ -27,7 +27,12 @@ const CompaniesList = ({
     updateFilters,
     setSearchTerm,
     setIndustries
-  } = useFilteredCompaniesRedux(initialReduxFilters);
+  } = useCompaniesHybrid();
+  
+  // Apply initial filters
+  useEffect(() => {
+    updateFilters(initialReduxFilters);
+  }, []);
   
   // Update filters when search term changes
   useEffect(() => {

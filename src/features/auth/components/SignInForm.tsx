@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
@@ -10,6 +10,7 @@ export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   // Get both the signIn function and the auth state from useAuth
   const { signIn, status, error: authError } = useAuth();
 
@@ -31,12 +32,14 @@ export default function SignInForm() {
     }
   }, [authError]);
 
-  // Redirect to home page when authenticated
+  // Redirect to intended page or home page when authenticated
   React.useEffect(() => {
     if (status === 'authenticated') {
-      navigate('/');
+      // Get the intended redirect location from state, or default to homepage
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     }
-  }, [status, navigate]);
+  }, [status, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

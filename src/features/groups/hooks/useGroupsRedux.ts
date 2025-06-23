@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   fetchGroups,
@@ -75,6 +75,7 @@ export function useGroupRedux(id?: string) {
   // Load group if we have an ID
   useEffect(() => {
     if (id) {
+      console.log('[useGroupRedux] Fetching group with ID:', id);
       // Always fetch the group data when the ID changes
       dispatch(fetchGroupById(id));
     }
@@ -115,6 +116,11 @@ export function useFilteredGroupsRedux(initialFilters?: GroupFilters) {
   const currentFilters = useAppSelector(selectGroupsFilters);
   const status = useAppSelector(selectGroupsStatus);
   const error = useAppSelector(selectGroupsError);
+  const allGroups = useAppSelector(selectAllGroups);
+  
+  // Track if we've already fetched to prevent loops
+  const hasFetchedRef = useRef(false);
+  const lastFiltersRef = useRef<string>('');
   
   // If we have groups, don't show loading even if status is loading
   const isLoading = status === 'loading' && groups.length === 0;
@@ -130,11 +136,28 @@ export function useFilteredGroupsRedux(initialFilters?: GroupFilters) {
 
   // Apply filters when they change
   useEffect(() => {
-    // Only dispatch if we have filters to apply
-    if (currentFilters && Object.keys(currentFilters).length > 0) {
+    // Skip if we're not using this hook actively (no initial filters means we're not filtering)
+    if (!initialFilters && !currentFilters) return;
+    
+    // Create a string representation of current filters to detect changes
+    const filterString = JSON.stringify(currentFilters || {});
+    if (filterString === lastFiltersRef.current) return;
+    lastFiltersRef.current = filterString;
+    
+    // Only fetch filtered groups if we have actual filter values
+    const hasActualFilters = currentFilters && (
+      currentFilters.search || 
+      (currentFilters.visibility && currentFilters.visibility.length > 0)
+    );
+    
+    if (hasActualFilters) {
       dispatch(fetchFilteredGroups(currentFilters));
+    } else if (!hasFetchedRef.current && allGroups.length === 0) {
+      // If no filters and we haven't fetched yet, fetch all groups once
+      hasFetchedRef.current = true;
+      dispatch(fetchGroups());
     }
-  }, [dispatch, currentFilters]);
+  }, [dispatch, currentFilters, initialFilters, allGroups.length]);
 
   // Helper for updating just certain filters without affecting others
   const updateFilters = (newFilters: Partial<GroupFilters>) => {

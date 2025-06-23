@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import { NewsArticle } from '../types';
 import {
   adaptNewsArticleFromDatabase,
@@ -8,10 +8,6 @@ import {
 import type { Database } from '../types/supabase';
 import { generateSlug } from '@/utils/slugify';
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 type NewsTableInsert = Database['public']['Tables']['news']['Insert'];
 type NewsTableUpdate = Database['public']['Tables']['news']['Update'];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListProps } from './types';
-import { useFilteredEventsRedux } from '../../hooks/useEventsRedux';
+import { useEventsHybrid } from '../../hooks/useEventsHybrid';
 import EventCard from './EventCard';
 import PastEventCard from './PastEventCard';
 import Pagination from '@/components/Pagination';
@@ -30,30 +30,30 @@ const EventsList = ({
   // Determine if we should use parent props or Redux
   const useParentData = parentEvents.length > 0;
   
-  // Use Redux-based hook for filtered events if not using parent data
+  // Use hybrid hook for filtered events if not using parent data
   const { 
     events: reduxEvents = [], 
     isLoading: reduxLoading, 
     error: reduxError, 
-    applyFilters, 
+    setSearchTerm,
+    setTypes,
+    setDateRange: setDateRangeFilter,
     clearAllFilters 
-  } = useFilteredEventsRedux();
+  } = useEventsHybrid();
   
   // Combined state values
   const mainEvents = useParentData ? parentEvents : reduxEvents;
   const isLoading = useParentData ? parentLoading : reduxLoading;
   const error = useParentData ? parentError : reduxError;
   
-  // Apply filters when they change (only if using Redux)
+  // Apply filters when they change (only if using hybrid approach)
   useEffect(() => {
     if (!useParentData) {
-      applyFilters({
-        search: initialSearch,
-        types: selectedTypes.length > 0 ? selectedTypes : undefined,
-        dateRange: dateRange
-      });
+      setSearchTerm(initialSearch);
+      setTypes(selectedTypes.length > 0 ? selectedTypes : undefined);
+      setDateRangeFilter(dateRange);
     }
-  }, [initialSearch, selectedTypes, dateRange, applyFilters, useParentData]);
+  }, [initialSearch, selectedTypes, dateRange, setSearchTerm, setTypes, setDateRangeFilter, useParentData]);
 
   useEffect(() => {
     // Reset pages when filters change
@@ -65,7 +65,7 @@ const EventsList = ({
     setSelectedTypes([]);
     setDateRange('all');
     
-    // Only clear Redux filters if not using parent data
+    // Only clear hybrid filters if not using parent data
     if (!useParentData) {
       clearAllFilters();
     }
@@ -75,22 +75,38 @@ const EventsList = ({
   const hasActiveFilters = selectedTypes.length > 0 || dateRange !== 'all' || initialSearch !== '';
   
   // Convert mainEvents to the local Event type using the adapter function
-  console.log('Main events before adaptation:', mainEvents);
   
   // Safely convert events to local format
   const allEvents: Event[] = [];
   
   if (Array.isArray(mainEvents) && mainEvents.length > 0) {
     for (const event of mainEvents) {
-      if (event && event.organizer) {
+      if (event && event.id && event.title) {
         try {
-          const adaptedEvent = adaptMainEventToLocal(event);
+          // Create a safe adapter that handles missing organizer
+          const adaptedEvent = {
+            id: event.id,
+            title: event.title,
+            date: event.date,
+            endDate: event.endDate,
+            location: event.location || '',
+            description: event.description || '',
+            image: event.image || '',
+            organizer: event.organizer || {
+              id: 'default',
+              name: 'Event Organizer',
+              image: ''
+            },
+            attendees: event.attendees,
+            type: event.type,
+            url: event.url
+          };
           allEvents.push(adaptedEvent);
         } catch (error) {
           console.error('Error adapting event:', error, event);
         }
       } else {
-        console.error('Invalid event data:', event);
+        console.warn('Skipping event with missing required fields:', event);
       }
     }
   }

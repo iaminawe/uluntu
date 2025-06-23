@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   X, 
   ChevronLeft, 
@@ -13,6 +13,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/lib/supabase';
 import type { Photo } from '../../types';
 
 interface PhotoLightboxProps {
@@ -35,6 +36,60 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   const [isLiked, setIsLiked] = useState(false);
   
   const currentPhoto = photos[currentIndex];
+  
+  // Helper function to get public URL from storage path
+  const getPublicUrl = useCallback((path: string | undefined) => {
+    if (!path) return null;
+    // If it's already a full URL, return as is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    // Otherwise, construct the public URL using Supabase storage
+    return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
+  }, []);
+  
+  // Get the best available image URL for the current photo
+  const currentPhotoUrl = useMemo(() => {
+    if (!currentPhoto) return '';
+    
+    // Try URL fields first (they might already be full URLs)
+    if (currentPhoto.large_url) return currentPhoto.large_url;
+    if (currentPhoto.medium_url) return currentPhoto.medium_url;
+    if (currentPhoto.url) return currentPhoto.url;
+    if (currentPhoto.original_url) return currentPhoto.original_url;
+    
+    // Then try paths and convert to URLs
+    const largePath = getPublicUrl(currentPhoto.large_path);
+    if (largePath) return largePath;
+    
+    const mediumPath = getPublicUrl(currentPhoto.medium_path);
+    if (mediumPath) return mediumPath;
+    
+    const storagePath = getPublicUrl(currentPhoto.storage_path);
+    if (storagePath) return storagePath;
+    
+    const originalPath = getPublicUrl(currentPhoto.original_path);
+    if (originalPath) return originalPath;
+    
+    return '';
+  }, [currentPhoto, getPublicUrl]);
+  
+  // Debug: Log photo data to understand structure
+  useEffect(() => {
+    if (currentPhoto) {
+      console.log('PhotoLightbox - Current photo data:', {
+        id: currentPhoto.id,
+        storage_path: currentPhoto.storage_path,
+        medium_path: currentPhoto.medium_path,
+        thumbnail_path: currentPhoto.thumbnail_path,
+        url: currentPhoto.url,
+        large_url: currentPhoto.large_url,
+        medium_url: currentPhoto.medium_url,
+        title: currentPhoto.title,
+        computedUrl: currentPhotoUrl
+      });
+    }
+  }, [currentPhoto, currentPhotoUrl]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -80,9 +135,9 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   };
 
   const handleDownload = () => {
-    if (currentPhoto) {
+    if (currentPhoto && currentPhotoUrl) {
       const link = document.createElement('a');
-      link.href = currentPhoto.photo_url;
+      link.href = currentPhotoUrl;
       link.download = currentPhoto.file_name || `photo-${currentPhoto.id}.jpg`;
       link.click();
     }
@@ -130,7 +185,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
       {/* Main Image */}
       <div className="absolute inset-0 flex items-center justify-center">
         <img
-          src={currentPhoto?.photo_url}
+          src={currentPhotoUrl}
           alt={currentPhoto?.title || 'Photo'}
           className="max-w-full max-h-full object-contain"
         />

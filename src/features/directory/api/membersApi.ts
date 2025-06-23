@@ -1,14 +1,10 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import {
   adaptMemberFromDatabase,
   adaptMemberToDatabase
 } from '../utils/memberAdapter';
 import { Member, ContentStatus } from '../types';
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 // Define the input type for member data passed from the application
 export interface MemberInput {

@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { NewsArticle, ContentStatus } from '@/types';
 import { newsApi } from '../api/newsApi';
-import mockData from '@/data/mock/mockData';
-import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define the input type for news article data
 export interface NewsArticleInput {
@@ -59,22 +57,11 @@ export const fetchNewsArticles = createAsyncThunk(
   'news/fetchNewsArticles',
   async (_, { rejectWithValue }) => {
     try {
-      console.log('[NewsSlice] fetchNewsArticles - getIsSupabaseEnabled():', getIsSupabaseEnabled());
       
-      if (getIsSupabaseEnabled()) {
-        console.log('[NewsSlice] Fetching from Supabase...');
-        try {
-          const articles = await newsApi.getAll();
-          console.log('[NewsSlice] Received articles:', articles?.length || 0);
-          return articles || [];
-        } catch (apiError) {
-          console.error('[NewsSlice] API error:', apiError);
-          throw apiError;
-        }
-      } else {
-        console.log('[NewsSlice] Using mock data...');
-        return mockData.newsArticles || [];
-      }
+      console.log('[NewsSlice] Fetching from Supabase...');
+      const articles = await newsApi.getAll();
+      console.log('[NewsSlice] Received articles:', articles?.length || 0);
+      return articles || [];
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch news articles');
     }
@@ -85,13 +72,8 @@ export const fetchNewsArticleById = createAsyncThunk(
   'news/fetchNewsArticleById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const article = await newsApi.getById(id);
-        return article || null;
-      } else {
-        const article = mockData.newsArticles.find(a => a.id === id);
-        return article || null;
-      }
+      const article = await newsApi.getById(id);
+      return article || null;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch news article with ID: ${id}`);
     }

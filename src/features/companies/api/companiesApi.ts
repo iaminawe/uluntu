@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError } from '@/shared/api';
 import {
   adaptCompanyFromDatabase,
   adaptCompanyToSupabaseInsert,
@@ -7,10 +7,8 @@ import {
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
+import { adaptItemsList } from '@/shared/api';
+import { logger } from '@/utils/logger';
 
 // Define filter options for company employees
 export interface CompanyEmployeeFilters {
@@ -53,7 +51,7 @@ interface MockCompany {
 export const companiesApi = {
   async getAll(filters?: { search?: string; industries?: string[] }): Promise<Company[]> {
     try {
-      console.log('Fetching companies from Supabase...');
+      logger.debug('Fetching companies from Supabase', 'COMPANIES');
       
       let query = supabase
         .from('companies')
@@ -66,24 +64,24 @@ export const companiesApi = {
       }
 
       const { data, error } = await query;
-      console.log('[CompaniesAPI] Query result:', { data, dataLength: data?.length, error });
+      logger.debug('Query result', 'COMPANIES', { dataLength: data?.length });
       
       if (error) {
-        console.error('Supabase error fetching companies:', error);
+        logger.apiError('getAll - companies', error);
         throw error; // Let's see what the actual error is
       }
 
       if (!data) {
-        console.log('No data returned from Supabase (null/undefined)');
+        logger.debug('No data returned from Supabase', 'COMPANIES');
         return [];
       }
       
       if (data.length === 0) {
-        console.log('Empty array returned from Supabase');
+        logger.debug('Empty array returned from Supabase', 'COMPANIES');
         return [];
       }
 
-      console.log('Companies fetched successfully:', data.length, 'companies found');
+      logger.debug('Companies fetched successfully', 'COMPANIES', { count: data.length });
       
       // Filter by industries if provided
       let filteredData = data;
@@ -96,7 +94,7 @@ export const companiesApi = {
       }
 
       // Log the raw data structure to understand what we're working with
-      console.log('[CompaniesAPI] Raw data structure:', {
+      logger.debug('Raw data structure', 'COMPANIES', {
         firstItem: filteredData && filteredData.length > 0 ? Object.keys(filteredData[0]) : 'No data',
         sampleData: filteredData?.slice(0, 1)
       });
@@ -123,14 +121,14 @@ export const companiesApi = {
         return company;
       });
       
-      console.log('[CompaniesAPI] Adapted companies:', {
+      logger.debug('Adapted companies', 'COMPANIES', {
         count: adapted.length,
         sample: adapted.slice(0, 2)
       });
       
       return adapted;
     } catch (error) {
-      console.error('Error in companiesApi.getAll:', error);
+      logger.apiError('getAll', error);
       // Return mock data instead of an empty array
       return this.getMockCompanies();
     }
@@ -138,7 +136,7 @@ export const companiesApi = {
   
   // Mock data for testing when Supabase is not available or returns no data
   getMockCompanies(): Company[] {
-    console.log('Returning mock companies data');
+    logger.debug('Returning mock companies data', 'COMPANIES');
     const mockCompanies: MockCompany[] = [
       {
         id: '1',
@@ -193,7 +191,7 @@ export const companiesApi = {
 
   async getById(id: string): Promise<Company | null> {
     try {
-      console.log(`Fetching company with ID: ${id}...`);
+      logger.debug('Fetching company by ID', 'COMPANIES', { id });
       
       const { data, error } = await supabase
         .from('companies')
@@ -203,15 +201,15 @@ export const companiesApi = {
         .single();
 
       if (error) {
-        console.error(`Supabase error fetching company with ID ${id}:`, error);
+        logger.apiError('getById - company', error);
         // Return null instead of throwing an error to prevent app crashes
         return null;
       }
       
-      console.log(`Company with ID ${id} fetched successfully:`, data ? 'found' : 'not found');
+      logger.debug('Company fetched', 'COMPANIES', { id, found: !!data });
       return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
-      console.error(`Error in companiesApi.getById for ID ${id}:`, error);
+      logger.apiError('getById', error);
       // Return null instead of throwing an error to prevent app crashes
       return null;
     }
@@ -314,7 +312,7 @@ export const companiesApi = {
         member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
       };
     } catch (error) {
-      console.error('Error adding company employee:', error);
+      logger.apiError('addCompanyEmployee', error);
       return null;
     }
   },
@@ -356,7 +354,7 @@ export const companiesApi = {
         member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
       };
     } catch (error) {
-      console.error('Error updating company employee:', error);
+      logger.apiError('updateCompanyEmployee', error);
       return null;
     }
   },
@@ -375,14 +373,14 @@ export const companiesApi = {
 
       return true;
     } catch (error) {
-      console.error('Error removing company employee:', error);
+      logger.apiError('removeCompanyEmployee', error);
       return false;
     }
   },
 
   async getCompanyEmployees(companyId: string, filters?: CompanyEmployeeFilters): Promise<CompanyEmployee[]> {
     try {
-      console.log(`Fetching employees for company ID: ${companyId}...`);
+      logger.debug('Fetching company employees', 'COMPANIES', { companyId });
       
       let query = supabase
         .from('company_employees')
@@ -400,13 +398,13 @@ export const companiesApi = {
       const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) {
-        console.error(`Supabase error fetching employees for company ${companyId}:`, error);
+        logger.apiError('getCompanyEmployees - fetch', error);
         handleSupabaseError(error, `fetching employees for company ${companyId}`);
         // Return empty array instead of throwing to prevent app crashes
         return [];
       }
       
-      console.log(`Employees for company ${companyId} fetched:`, data?.length || 0, 'employees found');
+      logger.debug('Company employees fetched', 'COMPANIES', { companyId, count: data?.length || 0 });
       
       // Type assertion with validation
       if (!data) return [];
@@ -441,7 +439,7 @@ export const companiesApi = {
         } : undefined
       }));
     } catch (error) {
-      console.error(`Error in companiesApi.getCompanyEmployees for company ${companyId}:`, error);
+      logger.apiError('getCompanyEmployees', error);
       return [];
     }
   }
