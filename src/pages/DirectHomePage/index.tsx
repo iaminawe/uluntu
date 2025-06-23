@@ -8,11 +8,11 @@ import HeroSection from '@/pages/HomePage/HeroSection';
 import ContentContainer from '@/components/ui/PageLayout/ContentContainer';
 
 // Import card components
-import MemberCard from '@/components/DirectoryList/MemberCard';
-import CompanyCard from '@/components/CompaniesList/CompanyCard';
-import EventCard from '@/components/EventsList/EventCard';
-import NewsCard from '@/components/NewsList/ArticleCard';
-import GroupCard from '@/components/GroupsList/GroupCard';
+import MemberCard from '@/features/directory/components/DirectoryList/MemberCard';
+import CompanyCard from '@/features/companies/components/CompaniesList/CompanyCard';
+import EventCard from '@/features/events/components/EventsList/EventCard';
+import NewsCard from '@/features/news/components/NewsList/ArticleCard';
+import GroupCard from '@/features/groups/components/GroupsList/GroupCard';
 
 // Define types that match the actual Supabase database structure
 // Database schema types with optional fields to handle variations
