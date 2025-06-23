@@ -37,8 +37,8 @@ createRoot(document.getElementById('root')!).render(
               <SettingsProvider>
                 <ThemeProvider>
                   {/* <ContentProvider> */}
-                  <DynamicAppConfig />
-                  <RouterProvider router={router} />
+                    <DynamicAppConfig />
+                    <RouterProvider router={router} />
                   <ReactQueryDevtools initialIsOpen={false} />
                   <Toaster 
                     position="top-right"
@@ -50,7 +50,7 @@ createRoot(document.getElementById('root')!).render(
                       },
                     }}
                   />
-                    {/* <DebugUserRoles /> */}
+                      {/* <DebugUserRoles /> */}
                     <SettingsDebugger />
                   {/* </ContentProvider> */}
                 </ThemeProvider>
