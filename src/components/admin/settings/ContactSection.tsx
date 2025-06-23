@@ -238,9 +238,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.is_enabled}
+                            checked={feature.enabled}
                             onCheckedChange={(checked) => {
-                              toast.info('Contact feature toggle functionality coming soon');
+                              toast.success('Contact feature toggle functionality coming soon');
                             }}
                             disabled={isLoading}
                           />
@@ -282,7 +282,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
               <div className="text-sm text-gray-600">Location Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{contactFeatures.filter(f => f.is_enabled).length}</div>
+              <div className="text-2xl font-bold text-orange-600">{contactFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
           </div>
