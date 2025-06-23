@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { resetPassword } from '@/lib/supabase';
 
 export default function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -11,7 +11,6 @@ export default function ResetPasswordForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { resetPassword } = useSession();
 
   // Check if we have the reset token in the URL
   useEffect(() => {

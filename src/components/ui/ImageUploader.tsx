@@ -146,7 +146,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 </Button>
                 <Button
                   size="sm"
-                  variant="destructive"
+                  variant="danger"
                   onClick={handleRemove}
                   disabled={disabled || isUploading}
                   className="bg-white bg-opacity-90 hover:bg-red-600 hover:text-white"

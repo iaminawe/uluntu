@@ -64,7 +64,7 @@ export default function RoleDebugUtility() {
 
       // 3. Check user_custom_roles table
       addToOutput('3️⃣ Checking user_custom_roles table...');
-      const { data: userCustomRolesData, error: userCustomRolesError } = await supabase
+      const { data: userCustomRolesData, error: userCustomRolesError } = await (supabase as any)
         .from('user_custom_roles')
         .select('*')
         .eq('user_id', userId);

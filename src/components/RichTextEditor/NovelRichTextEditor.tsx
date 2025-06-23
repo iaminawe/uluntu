@@ -157,7 +157,6 @@ const NovelRichTextEditor = ({
       >
         <EditorRoot>
           <EditorContent
-            id={id}
             initialValue={editorContent}
             onUpdate={handleUpdate}
             className="min-h-full"
@@ -204,7 +203,7 @@ const NovelRichTextEditor = ({
         </EditorRoot>
       </div>
       
-      <style jsx global>{`
+      <style>{`
         .novel-rich-text-editor .ProseMirror {
           outline: none;
           min-height: ${height};

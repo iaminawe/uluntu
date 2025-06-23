@@ -9,13 +9,17 @@ type SessionContext = {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; error: Error | null }>;
+  resetPassword: (newPassword: string) => Promise<{ success: boolean; error: Error | null }>;
 }
 
 const SessionContext = createContext<SessionContext>({
   session: null,
   user: null,
   loading: true,
-  signOut: () => Promise.resolve()
+  signOut: () => Promise.resolve(),
+  forgotPassword: () => Promise.resolve({ success: false, error: new Error('Not implemented') }),
+  resetPassword: () => Promise.resolve({ success: false, error: new Error('Not implemented') })
 });
 
 /**
@@ -185,13 +189,33 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
     dispatch(reduxSignOut());
   };
 
+  const forgotPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      return { success: !error, error: error ? new Error(error.message) : null };
+    } catch (err) {
+      return { success: false, error: err as Error };
+    }
+  };
+
+  const resetPassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      return { success: !error, error: error ? new Error(error.message) : null };
+    } catch (err) {
+      return { success: false, error: err as Error };
+    }
+  };
+
   return (
     <SessionContext.Provider
       value={{
         session,
         user: session?.user ?? null,
         loading,
-        signOut
+        signOut,
+        forgotPassword,
+        resetPassword
       }}
     >
       {children}

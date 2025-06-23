@@ -1,5 +1,29 @@
 import React from 'react';
-import { presenters } from '../data/sampleData';
+
+// Define presenter type
+interface Presenter {
+  name: string;
+  title: string;
+  talkTitle: string;
+  bio: string;
+  image: string;
+  socialLinks: { platform: string; url: string; }[];
+}
+
+// Sample presenter data - replace with actual data from your API
+const presenters: Presenter[] = [
+  {
+    name: 'John Doe',
+    title: 'AI Engineer',
+    talkTitle: 'Building Intelligent Systems',
+    bio: 'Expert in machine learning and AI systems.',
+    image: 'https://via.placeholder.com/300x300',
+    socialLinks: [
+      { platform: 'LinkedIn', url: '#' },
+      { platform: 'Twitter', url: '#' }
+    ]
+  }
+];
 
 const PresenterSection: React.FC = () => {
   return (

@@ -11,7 +11,8 @@ export type Member = {
   email?: string;
   bio?: string;
   image?: string;
-  role?: string; // Maps to title in the API
+  title?: string; // Job title/role
+  role?: string; // Maps to title in the API (for backwards compatibility)
   skills?: string[];
   interests?: string[];
   joinDate?: string; // Standard property name for API
@@ -19,6 +20,9 @@ export type Member = {
   created_at?: string;
   status?: ContentStatus;
   featured?: boolean;
+  location?: string;
+  company?: string;
+  social?: any;
   [key: string]: unknown; // Allow for additional properties
 };
 
@@ -48,6 +52,10 @@ function adaptMember(data: unknown): Member {
     name: isString(member.name) ? member.name : '',
     email: isString(member.email) ? member.email : undefined,
     bio: isString(member.bio) ? member.bio : undefined,
+    title: isString(member.title) ? member.title : isString(member.role) ? member.role : undefined,
+    location: isString(member.location) ? member.location : undefined,
+    company: isString(member.company) ? member.company : undefined,
+    social: member.social || undefined,
     image: isString(member.image) ? member.image : undefined,
     role: isString(member.title) ? member.title : 
           isString(member.role) ? member.role : undefined,
