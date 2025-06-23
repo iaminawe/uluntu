@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { newsApi } from '../api/newsApi';
 import { 
@@ -93,21 +94,21 @@ export function useNewsHybrid() {
   });
   
   // UI actions
-  const setSearchTerm = (search?: string) => {
+  const setSearchTerm = useCallback((search?: string) => {
     dispatch(updateFilters({ search }));
-  };
+  }, [dispatch]);
   
-  const setTags = (tags?: string[]) => {
+  const setTags = useCallback((tags?: string[]) => {
     dispatch(updateFilters({ tags }));
-  };
+  }, [dispatch]);
   
-  const setFeaturedFilter = (featured?: boolean) => {
+  const setFeaturedFilter = useCallback((featured?: boolean) => {
     dispatch(updateFilters({ featured }));
-  };
+  }, [dispatch]);
   
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     dispatch(clearFilters());
-  };
+  }, [dispatch]);
   
   // Sort and filter articles
   const sortedArticles = [...(articlesQuery.data || [])].sort((a, b) => {
@@ -149,10 +150,10 @@ export function useNewsHybrid() {
     setTags,
     setFeaturedFilter,
     resetFilters,
-    setSelectedArticle: (id: string | null) => dispatch(setSelectedArticle(id)),
-    setViewMode: (mode: 'grid' | 'list') => dispatch(setViewMode(mode)),
-    setSortBy: (by: 'date' | 'title' | 'featured') => dispatch(setSortBy(by)),
-    setSortOrder: (order: 'asc' | 'desc') => dispatch(setSortOrder(order)),
+    setSelectedArticle: useCallback((id: string | null) => dispatch(setSelectedArticle(id)), [dispatch]),
+    setViewMode: useCallback((mode: 'grid' | 'list') => dispatch(setViewMode(mode)), [dispatch]),
+    setSortBy: useCallback((by: 'date' | 'title' | 'featured') => dispatch(setSortBy(by)), [dispatch]),
+    setSortOrder: useCallback((order: 'asc' | 'desc') => dispatch(setSortOrder(order)), [dispatch]),
     
     // Queries
     getArticle,

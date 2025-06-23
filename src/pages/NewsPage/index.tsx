@@ -58,6 +58,7 @@ export default function NewsPage() {
           />
         ) : (
           <NewsList 
+            articles={articles}
             initialSearch={searchTerm}
             initialTag={selectedTags.length > 0 ? selectedTags[0] : 'all'}
           />

@@ -7,7 +7,7 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import GroupsList from '@/features/groups/components/GroupsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useGroupsRedux } from '@/features/groups/hooks/useGroupsRedux';
+import { useGroupsHybrid } from '@/features/groups/hooks/useGroupsHybrid';
 import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 export default function GroupsPage() {
@@ -16,16 +16,8 @@ export default function GroupsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibilityFilter, setVisibilityFilter] = useState<GroupVisibility[]>([]);
   
-  // Use Redux for groups data - but only for initial load check
-  const { groups, isLoading, isError, error, loadGroups } = useGroupsRedux();
-  
-  // Load groups on mount only if we don't have any
-  useEffect(() => {
-    if (groups.length === 0 && !isLoading && !isError) {
-      console.log('[GroupsPage] Initial load - fetching groups...');
-      loadGroups();
-    }
-  }, []); // Empty dependency to run only once on mount
+  // Use hybrid hook for groups data
+  const { groups, isLoading, error, refetch } = useGroupsHybrid();
   
   const hasGroups = groups.length > 0;
 
@@ -50,10 +42,10 @@ export default function GroupsPage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : isError ? (
+        ) : error ? (
           <QueryError 
-            error={error ? new Error(String(error)) : new Error('Failed to load groups')} 
-            retry={loadGroups} 
+            error={error} 
+            retry={refetch} 
             message="We couldn't load the groups. Please try again."
           />
         ) : !hasGroups ? (

@@ -15,7 +15,7 @@ import PostsTab from './PostsTab';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import JoinModal from '@/features/groups/components/JoinModal';
-import { useGroupRedux } from '@/features/groups/hooks/useGroupsRedux';
+import { useGroupsHybrid } from '@/features/groups/hooks/useGroupsHybrid';
 import { TabType } from './types';
 import DebugInfo from './DebugInfo';
 
@@ -26,10 +26,11 @@ export default function GroupDetailPage() {
   
   console.log('[GroupDetailPage] Rendering with ID:', id);
   
-  // Use the Redux hook to fetch group data
-  const { group, isLoading, isError, error } = useGroupRedux(id);
+  // Use the hybrid hook to fetch group data
+  const { getGroup } = useGroupsHybrid();
+  const { data: group, isLoading, error } = getGroup(id || '');
   
-  console.log('[GroupDetailPage] State:', { group, isLoading, isError, error });
+  console.log('[GroupDetailPage] State:', { group, isLoading, error });
   
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
     switch (visibility) {
