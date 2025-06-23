@@ -2,8 +2,8 @@ import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
 
 type DbCampaign = Database['public']['Tables']['newsletter_campaigns']['Row'];
-type DbCampaignInsert = Database['public']['Tables']['newsletter_campaigns']['Insert'];
-type DbCampaignUpdate = Database['public']['Tables']['newsletter_campaigns']['Update'];
+// type DbCampaignInsert = Database['public']['Tables']['newsletter_campaigns']['Insert'];
+// type DbCampaignUpdate = Database['public']['Tables']['newsletter_campaigns']['Update'];
 
 export interface Campaign {
   id: string;
@@ -122,8 +122,8 @@ class NewsletterCampaignsApi {
       const { data, error } = await supabase
         .from('newsletter_campaigns')
         .insert({
-          title: campaign.title,
-          subject: campaign.subject,
+          // title: campaign.title, // Note: title field not in schema
+          // subject: campaign.subject, // Note: subject field not in schema
           template_id: campaign.template_id,
           template_data: campaign.template_data || {},
           content: campaign.content || {},
@@ -147,14 +147,15 @@ class NewsletterCampaignsApi {
             opened: 0,
             clicked: 0
           },
-          created_by: campaign.created_by
-        })
+          created_by: campaign.created_by || 'system'
+        } as any) // Type assertion for schema mismatch
         .select()
         .single();
 
       if (error) throw error;
 
-      return data ? this.mapDbCampaignToCampaign(data) : null;
+      if (!data) throw new Error('Failed to create campaign - no data returned');
+      return this.mapDbCampaignToCampaign(data);
     } catch (error) {
       console.error('Error creating campaign:', error);
       throw error;
@@ -194,7 +195,8 @@ class NewsletterCampaignsApi {
 
       if (error) throw error;
 
-      return data ? this.mapDbCampaignToCampaign(data) : null;
+      if (!data) throw new Error('Failed to update campaign - no data returned');
+      return this.mapDbCampaignToCampaign(data);
     } catch (error) {
       console.error('Error updating campaign:', error);
       throw error;

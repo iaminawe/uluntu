@@ -61,7 +61,10 @@ class NewsletterSubscriptionsApi {
       if (error) throw error;
 
       return {
-        subscriptions: data || [],
+        subscriptions: data?.map(item => ({
+          ...item,
+          member_id: item.member_id || undefined
+        })) || [],
         total: count || 0
       };
     } catch (error) {
@@ -83,7 +86,10 @@ class NewsletterSubscriptionsApi {
 
       if (error) throw error;
 
-      return data;
+      return {
+        ...data,
+        member_id: data.member_id || undefined
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get Subscription');
       throw new Error(sanitized.userMessage);
@@ -103,7 +109,10 @@ class NewsletterSubscriptionsApi {
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
 
-      return data;
+      return {
+        ...data,
+        member_id: data.member_id || undefined
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get By Email');
       throw new Error(sanitized.userMessage);
@@ -133,7 +142,10 @@ class NewsletterSubscriptionsApi {
 
       if (error) throw error;
 
-      return data;
+      return {
+        ...data,
+        member_id: data.member_id || undefined
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Create');
       throw new Error(sanitized.userMessage);
@@ -157,7 +169,10 @@ class NewsletterSubscriptionsApi {
 
       if (error) throw error;
 
-      return data;
+      return {
+        ...data,
+        member_id: data.member_id || undefined
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Update');
       throw new Error(sanitized.userMessage);

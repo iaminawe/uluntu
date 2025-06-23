@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Settings, 
-  Toggle, 
+  // Toggle, - This export doesn't exist in lucide-react
   Eye, 
   EyeOff, 
   CheckCircle, 

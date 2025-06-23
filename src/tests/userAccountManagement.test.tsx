@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react'; // Not needed with new JSX transform
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'; // Import fireEvent
 import SignUpPageWithAPI from '../__mocks__/SignUpPageWithAPI'; // Import the mocked component
 import { membersApi, supabase } from '../__mocks__/userAccountManagement';

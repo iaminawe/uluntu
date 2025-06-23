@@ -215,7 +215,6 @@ export interface Opportunity extends BaseEntity {
 }
 
 // Export types from subdirectories
-export * from './types/content';
 export * from './types/settings';
 
 // Consolidated opportunity types from opportunity.ts

@@ -33,17 +33,43 @@ export default defineConfig({
   },
   build: {
     reportCompressedSize: true,
+    sourcemap: true,
+    minify: 'esbuild',
+    target: 'es2020',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
-          'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
-          'vendor-ui': ['framer-motion', 'lucide-react', '@heroicons/react'],
-          'vendor-editor': ['novel', '@tiptap/react', '@tiptap/starter-kit'],
-          'vendor-utils': ['date-fns', 'zod', 'uuid', 'slugify'],
+        manualChunks: (id) => {
+          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+            return 'vendor-react';
+          }
+          if (id.includes('@reduxjs/toolkit') || id.includes('react-redux')) {
+            return 'vendor-state';
+          }
+          if (id.includes('@tanstack/react-query')) {
+            return 'vendor-query';
+          }
+          if (id.includes('framer-motion') || id.includes('@heroicons/react') || id.includes('lucide-react')) {
+            return 'vendor-ui';
+          }
+          if (id.includes('novel') || id.includes('@tiptap')) {
+            return 'vendor-editor';
+          }
+          if (id.includes('date-fns') || id.includes('uuid') || id.includes('slugify') || id.includes('zod')) {
+            return 'vendor-utils';
+          }
+          if (id.includes('@supabase/supabase-js')) {
+            return 'vendor-supabase';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         }
-      }
+      },
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+        unknownGlobalSideEffects: false,
+      },
     }
   }
 })

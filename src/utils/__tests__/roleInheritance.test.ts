@@ -56,7 +56,9 @@ describe('roleInheritance', () => {
         id: 'authenticated',
         permissions: {
           members: ['read'],
-          events: ['read']
+          events: ['read'],
+          groups: [],
+          users: []
         }
       },
       {
@@ -64,7 +66,8 @@ describe('roleInheritance', () => {
         permissions: {
           members: ['read', 'update'],
           events: ['read', 'create'],
-          groups: ['read', 'update']
+          groups: ['read', 'update'],
+          users: []
         }
       },
       {
@@ -226,7 +229,7 @@ describe('roleInheritance', () => {
       const roles = Object.entries(ROLE_HIERARCHY);
       
       // Check that inherited roles have higher level numbers
-      roles.forEach(([roleName, config]) => {
+      roles.forEach(([_roleName, config]) => {
         config.inherits.forEach(inheritedRole => {
           const inheritedConfig = ROLE_HIERARCHY[inheritedRole];
           if (inheritedConfig) {
@@ -237,7 +240,7 @@ describe('roleInheritance', () => {
     });
 
     it('should have all required properties', () => {
-      Object.entries(ROLE_HIERARCHY).forEach(([roleName, config]) => {
+      Object.entries(ROLE_HIERARCHY).forEach(([_roleName, config]) => {
         expect(config).toHaveProperty('inherits');
         expect(config).toHaveProperty('level');
         expect(config).toHaveProperty('description');

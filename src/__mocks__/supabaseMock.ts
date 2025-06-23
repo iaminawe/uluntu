@@ -44,13 +44,13 @@ class MockPostgrestBuilder {
 }
 
 class MockTable {
-  private tableName: string;
+  private _tableName: string;
   
   constructor(tableName: string) {
-    this.tableName = tableName;
+    this._tableName = tableName;
   }
   
-  select = jest.fn((columns = '*', options = {}) => {
+  select = jest.fn((_columns = '*', options = {}) => {
     const count = options.count ? 10 : undefined;
     return new MockPostgrestBuilder([], null, count);
   });
@@ -172,7 +172,7 @@ export const mockSupabaseClient = {
   },
   
   // Utility method to configure mock responses globally
-  _setMockResponse: (tableName: string, data: any, error: any = null) => {
+  _setMockResponse: (_tableName: string, _data: any, _error: any = null) => {
     // This would be used in tests to set up specific responses
   }
 };

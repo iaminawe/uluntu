@@ -7,8 +7,8 @@ export interface NewsletterContent {
   date_range_start: string;
   date_range_end: string;
   content: any; // JSONB content
-  generated_at: string;
-  expires_at: string;
+  generated_at: string | null;
+  expires_at: string | null;
 }
 
 class NewsletterContentApi {
@@ -28,7 +28,10 @@ class NewsletterContentApi {
 
       if (error && error.code !== 'PGRST116') throw error; // Ignore 'not found' errors
 
-      return data || null;
+      return data ? {
+        ...data,
+        content_type: data.content_type as NewsletterContent['content_type']
+      } : null;
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get Cached Content');
       throw new Error(sanitized.userMessage);
@@ -49,7 +52,10 @@ class NewsletterContentApi {
 
       if (error) throw error;
 
-      return data || [];
+      return data?.map(item => ({
+        ...item,
+        content_type: item.content_type as NewsletterContent['content_type']
+      })) || [];
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get All Cached Content');
       throw new Error(sanitized.userMessage);
@@ -64,19 +70,22 @@ class NewsletterContentApi {
       const { data, error } = await supabase
         .from('newsletter_content_cache')
         .insert({
-          content_type: content.content_type,
+          // content_type: content.content_type, // Note: field not in schema
           date_range_start: content.date_range_start,
           date_range_end: content.date_range_end,
           content: content.content,
           generated_at: new Date().toISOString(),
           expires_at: content.expires_at || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours default
-        })
+        } as any) // Type assertion for schema mismatch
         .select()
         .single();
 
       if (error) throw error;
 
-      return data;
+      return {
+        ...data,
+        content_type: data.content_type as NewsletterContent['content_type']
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Cache Content');
       throw new Error(sanitized.userMessage);
@@ -104,7 +113,10 @@ class NewsletterContentApi {
 
       if (error) throw error;
 
-      return data;
+      return {
+        ...data,
+        content_type: data.content_type as NewsletterContent['content_type']
+      };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Update Cached Content');
       throw new Error(sanitized.userMessage);
@@ -183,7 +195,10 @@ class NewsletterContentApi {
 
       if (error) throw error;
 
-      return data || [];
+      return data?.map(item => ({
+        ...item,
+        content_type: item.content_type as NewsletterContent['content_type']
+      })) || [];
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Content - Get Recent Content');
       throw new Error(sanitized.userMessage);

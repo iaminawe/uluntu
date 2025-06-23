@@ -63,7 +63,7 @@ const EntityTable = <T extends { id: string } = any>({
       }
 
       let query = supabase
-        .from(entityType)
+        .from(entityType as any)
         .select('*', { count: 'exact' });
 
       // Apply search
@@ -85,7 +85,7 @@ const EntityTable = <T extends { id: string } = any>({
       const { data, error, count } = await query;
       if (error) throw error;
 
-      return { items: (data as T[]) || [], total: count || 0 };
+      return { items: (data || []) as T[], total: count || 0 };
     }
   });
 
@@ -93,7 +93,7 @@ const EntityTable = <T extends { id: string } = any>({
   const deleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
       const { error } = await supabase
-        .from(entityType)
+        .from(entityType as any)
         .delete()
         .in('id', ids);
       if (error) throw error;
@@ -107,7 +107,7 @@ const EntityTable = <T extends { id: string } = any>({
   // Export data
   const handleExport = async () => {
     const { data: allData } = await supabase
-      .from(entityType)
+      .from(entityType as any)
       .select('*');
 
     if (!allData) return;
@@ -116,7 +116,7 @@ const EntityTable = <T extends { id: string } = any>({
     const headers = columns.map(col => col.label).join(',');
     const rows = allData.map(item => 
       columns.map(col => {
-        const value = item[col.key];
+        const value = (item as Record<string, any>)[col.key];
         return typeof value === 'string' && value.includes(',') 
           ? `"${value}"` 
           : value;
