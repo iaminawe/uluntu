@@ -174,7 +174,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
               }`}
               title={`${isEnabled ? 'Disable' : 'Enable'} ${feature}`}
             >
-              <Toggle className="w-4 h-4" />
+              {isEnabled ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           )}
         </div>

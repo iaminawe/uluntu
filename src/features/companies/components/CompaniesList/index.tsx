@@ -97,7 +97,7 @@ const CompaniesList = ({
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <p className="text-red-500 font-medium mb-2">Error loading companies</p>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            {error || 'Please try again later.'}
+            {error?.message || 'Please try again later.'}
           </p>
           <button
             onClick={() => updateFilters(initialReduxFilters)} // Retry with initial filters

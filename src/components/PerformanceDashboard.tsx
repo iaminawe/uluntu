@@ -34,7 +34,7 @@ export function PerformanceDashboard() {
 
       setTestResults(results.join('\n\n'));
     } catch (error) {
-      setTestResults(`Error running tests: ${error}`);
+      setTestResults(`Error running tests: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsRunningTests(false);
     }

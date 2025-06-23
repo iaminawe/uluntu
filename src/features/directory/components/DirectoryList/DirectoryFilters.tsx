@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { Search, X, Tag } from 'lucide-react';
 import { FilterOptions } from './types';
 import { getSkillColor } from './utils';
@@ -119,8 +119,5 @@ const DirectoryFilters = ({
     </div>
   );
 };
-
-// Add missing imports
-import { useState, useEffect } from 'react';
 
 export default DirectoryFilters;

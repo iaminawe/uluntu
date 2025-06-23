@@ -27,7 +27,7 @@ export const RoleAssignmentUtility: React.FC<RoleAssignmentUtilityProps> = ({
       setCurrentRoles(roles.map(r => r.id));
       setMessage(`Current roles: ${roles.map(r => r.id).join(', ') || 'none'}`);
     } catch (error) {
-      setMessage(`Error checking roles: ${error}`);
+      setMessage(`Error checking roles: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +61,7 @@ export const RoleAssignmentUtility: React.FC<RoleAssignmentUtilityProps> = ({
         setMessage('❌ Failed to assign authenticated role');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error}`);
+      setMessage(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +83,7 @@ export const RoleAssignmentUtility: React.FC<RoleAssignmentUtilityProps> = ({
         setMessage('❌ Failed to assign admin role');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error}`);
+      setMessage(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoading(false);
     }

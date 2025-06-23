@@ -40,7 +40,7 @@ const PageEditPage: React.FC = () => {
         <div className="max-w-md w-full">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             <h2 className="text-lg font-semibold mb-2">Error Loading Page</h2>
-            <p>{error}</p>
+            <p>{error?.message || String(error)}</p>
           </div>
           
           <div className="mt-6 text-center">
