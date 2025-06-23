@@ -34,6 +34,7 @@
   },
   "include": [
     "src/**/*",
+    "src/types/jest-dom.d.ts",
     "vite.config.ts",
     "vite.config.performance.ts"
   ],
