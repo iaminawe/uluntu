@@ -1,62 +1,128 @@
 # Nelson Tech Community Platform Documentation
 
-Welcome to the Nelson Tech Community Platform documentation. This platform connects tech professionals in the Nelson/Kootenay region through various features including networking, events, marketplace, and resources.
+This is the primary documentation directory for the Nelson Tech Community Platform. Here you'll find comprehensive guides, architectural documentation, and implementation details.
 
-## 📚 Documentation Structure
+## 📅 Last Updated: 2025-06-23
 
-### Getting Started
-- [Project Overview](./overview.md) - High-level project information
-- [Architecture](./architecture.md) - System architecture and design decisions
-- [Development Setup](./setup.md) - How to get started with development
+### Recent Major Updates
+- **Gallery System**: Complete photo gallery implementation with batch upload
+- **Newsletter System**: Campaign management with analytics
+- **Settings System**: Dynamic superadmin configuration
+- **Hybrid State Architecture**: Full migration to React Query + Redux UI slices
 
-### Development Guides
-- [Feature Development Guide](./guides/feature-development.md) - How to build new features
-- [Testing Strategy](./guides/testing-strategy.md) - Testing approach and best practices
-- [Code Style Guide](./guides/code-style.md) - Coding standards and conventions
-- [Import Migration Guide](./import-migration-guide.md) - Guide for import path updates
+## 📁 Documentation Structure
+
+### Core Documentation
+- [`README.md`](README.md) - This file, documentation overview
+- [`CLAUDE.md`](../CLAUDE.md) - **ESSENTIAL**: Development guidelines and architectural patterns (READ THIS FIRST)
+- [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md) - Complete documentation index
+- [`API_STRUCTURE.md`](API_STRUCTURE.md) - API layer organization and patterns
+
+### Architecture Documentation
+- [`architecture/`](architecture/) - System architecture and design patterns
+  - [`HYBRID_STATE_MANAGEMENT.md`](architecture/HYBRID_STATE_MANAGEMENT.md) - Complete state management guide
+  - [`admin-redux-migration-report.md`](architecture/admin-redux-migration-report.md) - Admin system migration
+- [`patterns/`](patterns/) - Code patterns and templates
+- [`migrations/`](migrations/) - Migration guides and upgrade paths
+  - [`REDUX_TO_HYBRID_MIGRATION_GUIDE.md`](migrations/REDUX_TO_HYBRID_MIGRATION_GUIDE.md) - Migration patterns
 
 ### Feature Documentation
-- [Authentication](./features/auth.md) - User authentication and authorization
-- [Companies](./features/companies.md) - Company profiles and management
-- [Directory](./features/directory.md) - Member directory and profiles
-- [Events](./features/events.md) - Event management system
-- [Groups](./features/groups.md) - Community groups
-- [Marketplace](./features/marketplace.md) - Buy/sell marketplace
-- [News](./features/news.md) - News and articles
-- [Onboarding](./onboarding/) - **🆕 Complete 5-step user onboarding system with privacy controls**
-- [Opportunities](./features/opportunities.md) - Jobs and volunteering
-- [Resources](./features/resources.md) - Educational resources
+- [`gallery/`](gallery/) - Photo gallery system documentation
+  - [`PHOTO_GALLERY_IMPLEMENTATION.md`](gallery/PHOTO_GALLERY_IMPLEMENTATION.md) - Gallery implementation guide
+- [`newsletter/`](../features/newsletter/) - Newsletter system documentation
+- [`onboarding/`](onboarding/) - User onboarding system documentation
+- [`admin/`](../features/admin/) - Admin system features
+- [`api/`](api/) - API documentation and specifications
+- [`components/`](components/) - Component library and UI patterns
+- [`deployment/`](deployment/) - Deployment guides for various platforms
 
-### Architecture & Technical
-- [Redux Architecture](./redux_architecture.md) - State management patterns
-- [Component Documentation](./components/) - UI component library
-- [Feature Structure Example](./feature-structure-example.md) - How features are organized
+### Development Guides
+- [`guides/`](guides/) - Step-by-step development guides
+- [`development/`](development/) - Development best practices
+  - [`HYBRID_HOOK_IMPLEMENTATION_GUIDE.md`](development/HYBRID_HOOK_IMPLEMENTATION_GUIDE.md) - Hook implementation patterns
+- [`requirements/`](requirements/) - Feature requirements and specifications
+- [`implementation/`](implementation/) - Implementation summaries and details
 
-### Project Management
-- [Product Requirements](./PRD.md) - Current product requirements
-- [User Stories](./user_stories.md) - Feature user stories
-- [Roadmap](./comprehensive_roadmap_and_plan.md) - Development roadmap
-- [Technical Issues Tracker](./technical_issues_tracker.md) - Known issues and resolutions
+### Research and Reports
+- [`research/`](research/) - Research reports and findings
+- [`qa-reports/`](qa-reports/) - Quality assurance and validation reports
+- [`swarm-outputs/`](swarm-outputs/) - AI agent collaboration outputs
+- [`archive/`](archive/) - Historical documentation
+- [`memory/`](memory/) - Session and agent memory tracking
 
-### Migration & Reorganization
-- [Code Reorganization Plan](./code-reorganization-plan.md) - Architecture migration plan
-- [Reorganization Summary](./reorganization-summary.md) - What was accomplished
-- [Action Plan](./reorganization-action-plan.md) - Step-by-step migration guide
+## 🚀 Quick Start for Developers
 
-## 🚀 Quick Links
+### Essential Reading Order
+1. **First**: [`CLAUDE.md`](../CLAUDE.md) - Development guidelines and patterns
+2. **Second**: [`HYBRID_STATE_MANAGEMENT.md`](architecture/HYBRID_STATE_MANAGEMENT.md) - State management architecture
+3. **Third**: [`HYBRID_HOOK_IMPLEMENTATION_GUIDE.md`](development/HYBRID_HOOK_IMPLEMENTATION_GUIDE.md) - Implementation patterns
+4. **Then**: [`guides/feature-development.md`](guides/feature-development.md) - Feature development workflow
 
-- **[CLAUDE.md](../CLAUDE.md)** - AI assistant configuration and SPARC methodology
-- **[Migration Scripts](../scripts/)** - Automated reorganization scripts
-- **[Test Status](./test_status_update.md)** - Current test coverage report
+### Key Architectural Decisions
+- **State Management**: React Query for server state, Redux for UI state only
+- **Component Pattern**: Hybrid hooks combining React Query + Redux UI slices
+- **File Structure**: Feature-based organization
+- **Testing**: Jest + React Testing Library
+- **Build**: Vite with code splitting
+
+## 📚 Key Documentation Links
+
+### Core Systems
+- **Gallery System**: [`GALLERY_SYSTEM.md`](GALLERY_SYSTEM.md) - Complete gallery documentation
+- **Settings System**: [`implementation/super-admin-settings/`](implementation/super-admin-settings/) - Dynamic configuration
+- **Newsletter System**: Campaign management and analytics
+- **Storage Architecture**: [`STORAGE_ARCHITECTURE.md`](STORAGE_ARCHITECTURE.md) - File storage patterns
+
+### Development Resources
+- **Development Setup**: See main [`README.md`](../README.md#-quick-start)
+- **Contributing Guidelines**: Follow patterns in [`CLAUDE.md`](../CLAUDE.md)
+- **Testing Strategy**: Review test patterns in feature directories
+- **Deployment**: Check [`deployment/README.md`](deployment/README.md)
+
+### Migration & Updates
+- **Hybrid Migration**: [`HYBRID_MIGRATION_GUIDE.md`](HYBRID_MIGRATION_GUIDE.md)
+- **Error Handling**: [`ERROR_HANDLING_GUIDE.md`](ERROR_HANDLING_GUIDE.md)
+- **Performance**: Check qa-reports for performance baselines
+
+## 🔄 Documentation Maintenance
+
+When adding new features or making architectural changes:
+
+1. **Update [`CLAUDE.md`](../CLAUDE.md)** with new patterns (CRITICAL)
+2. Update relevant documentation in the appropriate directory
+3. Add implementation summaries to `/implementation`
+4. Create QA reports in `/qa-reports` for validation
+5. Keep [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md) current
+6. Archive outdated documentation in `/archive` with date stamps
+7. Update this README if adding new documentation categories
+
+## 📊 Documentation Coverage Status
+
+### Well Documented ✅
+- Gallery System
+- Hybrid State Architecture
+- Settings System
+- Newsletter System
+- Onboarding Flow
+
+### Needs Updates 🔄
+- Groups System (recent enhancements)
+- Contact Submissions
+- Performance Monitoring
+
+### Planned Documentation 📝
+- Advanced Permission System
+- Batch Operations
+- Real-time Features
 
 ## 📖 Key Concepts
 
 ### Feature-Based Architecture
 The project uses a feature-based architecture where each feature is self-contained with its own:
 - Components
-- Hooks
-- API calls
-- State management
+- Hooks (Hybrid pattern)
+- API calls (React Query)
+- State management (Redux UI slices)
 - Types
 - Tests
 
@@ -70,54 +136,11 @@ We use SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) f
 
 ### Technology Stack
 - **Frontend**: React 18, TypeScript, Vite
-- **State Management**: Redux Toolkit, React Query
+- **State Management**: React Query + Redux Toolkit (Hybrid)
 - **Styling**: Tailwind CSS
 - **Testing**: Jest, React Testing Library
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Deployment**: Vercel/Netlify
-
-## 🎯 Current Status
-
-- **Test Coverage**: 100% (461/461 tests passing)
-- **Features Completed**: 10/10 core features + Complete onboarding system
-- **Architecture**: Feature-based with clear separation of concerns
-- **Documentation**: Comprehensive and up-to-date
-- **Onboarding**: ✅ 5-step wizard with privacy controls and profile publishing
-
-## 🏗️ Project Structure
-
-```
-src/
-├── features/           # Feature modules (self-contained)
-├── shared/             # Shared code (components, utils)
-├── pages/              # Route pages (thin layers)
-├── store/              # Redux store configuration
-└── tests/              # Integration & E2E tests
-```
-
-## 📝 Development Workflow
-
-1. **Plan** - Use SPARC methodology to plan the feature
-2. **Test** - Write tests first (TDD approach)
-3. **Implement** - Build the feature
-4. **Document** - Update documentation
-5. **Review** - Code review and testing
-6. **Deploy** - Merge and deploy
-
-## 🤝 Contributing
-
-When contributing to this project:
-- Follow the established patterns and conventions
-- Maintain 100% test coverage
-- Update documentation for any changes
-- Use TypeScript for all new code
-- Keep features self-contained
-
-## 📞 Support
-
-- **Documentation**: This directory contains all project documentation
-- **Issues**: Create issues in the repository for bugs or features
-- **SPARC Methodology**: See [CLAUDE.md](../CLAUDE.md) for AI-assisted development
+- **Deployment**: Vercel/Netlify/Cloudflare
 
 ---
 
