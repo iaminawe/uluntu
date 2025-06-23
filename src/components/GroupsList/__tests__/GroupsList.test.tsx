@@ -1,3 +1,5 @@
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
+
 // Mock environment dependencies first
 jest.mock('@/lib/supabase', () => ({
   supabase: {
@@ -156,11 +158,11 @@ describe('GroupsList Component', () => {
         filters?.search || '',
         filters?.visibility || []
       );
-      return {
+      return createMockQueryResult({
         data: filteredGroups,
         isLoading: false,
         error: null
-      };
+      });
     });
   });
 
@@ -187,11 +189,13 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-002: should show loading state when data is loading', () => {
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: undefined,
-        isLoading: true,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: undefined,
+          isLoading: true,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -201,11 +205,13 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-003: should show error state when there is an error', () => {
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: undefined,
-        isLoading: false,
-        error: { message: 'Failed to fetch groups' }
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: undefined,
+          isLoading: false,
+          error: { message: 'Failed to fetch groups' }
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -216,11 +222,13 @@ describe('GroupsList Component', () => {
     });
 
     it('GL-004: should show empty state when no groups exist', () => {
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: [],
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: [],
+          isLoading: false,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -343,11 +351,13 @@ describe('GroupsList Component', () => {
         name: `Group ${i + 1}`
       }));
 
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: manyGroups,
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: manyGroups,
+          isLoading: false,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -373,11 +383,13 @@ describe('GroupsList Component', () => {
         name: `Group ${i + 1}`
       }));
 
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: manyGroups,
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: manyGroups,
+          isLoading: false,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -401,11 +413,13 @@ describe('GroupsList Component', () => {
         name: `Group ${i + 1}`
       }));
 
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: manyGroups,
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: manyGroups,
+          isLoading: false,
+          error: null
+        })
+      );
 
       const { rerender } = renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -422,11 +436,11 @@ describe('GroupsList Component', () => {
           'Group 5',
           []
         );
-        return {
+        return createMockQueryResult({
           data: filteredGroups,
           isLoading: false,
           error: null
-        };
+        });
       });
       
       rerender(
@@ -446,11 +460,11 @@ describe('GroupsList Component', () => {
     it('GL-018: should show join modal when join button is clicked for open group', async () => {
       // Mock to return only one open group for cleaner testing
       mockUseGroupsWithFilters.mockImplementation((filters) => {
-        return {
+        return createMockQueryResult({
           data: [mockGroups[0]], // Only Kootenay Coders Collective
           isLoading: false,
           error: null
-        };
+        });
       });
       
       renderWithProviders(
@@ -540,11 +554,13 @@ describe('GroupsList Component', () => {
         updatedAt: '2024-01-01T00:00:00.000Z'
       };
 
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: [incompleteGroup],
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: [incompleteGroup],
+          isLoading: false,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -561,11 +577,13 @@ describe('GroupsList Component', () => {
         description: 'B'.repeat(200)
       };
 
-      mockUseGroupsWithFilters.mockReturnValue({
-        data: [longGroup],
-        isLoading: false,
-        error: null
-      });
+      mockUseGroupsWithFilters.mockReturnValue(
+        createMockQueryResult({
+          data: [longGroup],
+          isLoading: false,
+          error: null
+        })
+      );
 
       renderWithProviders(
         <GroupsList searchTerm="" visibilityFilter={[]} />
@@ -585,11 +603,11 @@ describe('GroupsList Component', () => {
           'xyz123nonexistent',
           []
         );
-        return {
+        return createMockQueryResult({
           data: filteredGroups,
           isLoading: false,
           error: null
-        };
+        });
       });
       
       renderWithProviders(

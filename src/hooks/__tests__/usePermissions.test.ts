@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { usePermissions } from '../usePermissions';
 import { getEffectiveRoles, getMergedPermissions } from '@/utils/roleInheritance';
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
 
 // Mock dependencies
 jest.mock('@/app/hooks', () => ({
@@ -33,10 +34,12 @@ describe('usePermissions', () => {
       roles: { list: ['authenticated'], loading: false }
     });
     
-    mockUseQuery.mockReturnValue({
-      data: [],
-      isLoading: false
-    });
+    mockUseQuery.mockReturnValue(
+      createMockQueryResult({
+        data: [],
+        isLoading: false
+      })
+    );
     
     mockGetEffectiveRoles.mockReturnValue(['authenticated']);
     mockGetMergedPermissions.mockReturnValue({

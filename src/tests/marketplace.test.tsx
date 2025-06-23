@@ -15,6 +15,7 @@ jest.mock('@/config/env', () => ({
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { store } from '@/store/index';
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
 
 // Mock necessary modules
 jest.mock('../hooks/useAuth', () => ({
@@ -24,11 +25,14 @@ jest.mock('../hooks/useAuth', () => ({
   })
 }));
 
-jest.mock('../hooks/useMarketplaceQueries', () => ({
-  useMarketplaceItems: () => ({ data: [], isLoading: false, error: null }),
-  useMarketplaceItem: () => ({ data: null, isLoading: false, error: null }),
-  useMarketplaceItemsWithFilters: () => ({ data: [], isLoading: false, error: null })
-}));
+jest.mock('../hooks/useMarketplaceQueries', () => {
+  const { createMockQueryResult } = require('@/test-utils/react-query-mocks');
+  return {
+    useMarketplaceItems: () => createMockQueryResult({ data: [], isLoading: false, error: null }),
+    useMarketplaceItem: () => createMockQueryResult({ data: null, isLoading: false, error: null }),
+    useMarketplaceItemsWithFilters: () => createMockQueryResult({ data: [], isLoading: false, error: null })
+  };
+});
 
 jest.mock('../hooks/useMarketplaceRedux', () => ({
   useFilteredMarketplaceListingsRedux: () => ({

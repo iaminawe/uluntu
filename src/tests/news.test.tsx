@@ -17,6 +17,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { store } from '@/store/index';
 import * as useNewsQueriesModule from '../hooks/useNewsQueries';
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
 
 // Mock the API calls
 const mockNewsArticle = {
@@ -45,6 +46,7 @@ jest.mock('../hooks/useAuth', () => ({
 
 // Convert the file to use jest.mock with inline functions
 jest.mock('../hooks/useNewsQueries', () => {
+  const { createMockQueryResult } = require('@/test-utils/react-query-mocks');
   // Create a local reference to mockNewsArticle that can be used in the mock
   const localMockArticle = {
     id: '123',
@@ -62,49 +64,60 @@ jest.mock('../hooks/useNewsQueries', () => {
   };
   
   return {
-    useNewsArticles: jest.fn().mockReturnValue({
-      data: [localMockArticle],
-      isLoading: false,
-      error: null,
-      refetch: jest.fn()
-    }),
-    useNewsArticle: jest.fn().mockReturnValue({
-      data: localMockArticle,
-      isLoading: false,
-      error: null,
-      refetch: jest.fn()
-    }),
+    useNewsArticles: jest.fn().mockReturnValue(
+      createMockQueryResult({
+        data: [localMockArticle],
+        isLoading: false,
+        error: null,
+        refetch: jest.fn()
+      })
+    ),
+    useNewsArticle: jest.fn().mockReturnValue(
+      createMockQueryResult({
+        data: localMockArticle,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn()
+      })
+    ),
     useCreateNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue(localMockArticle),
       isLoading: false,
+      isPending: false,
       error: null
     }),
     useUpdateNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue(localMockArticle),
       isLoading: false,
+      isPending: false,
       error: null
     }),
     useDeleteNewsArticle: jest.fn().mockReturnValue({
       mutateAsync: jest.fn().mockResolvedValue({}),
       isLoading: false,
+      isPending: false,
       error: null
     }),
-    useNewsArticlesWithFilters: jest.fn().mockReturnValue({
-      data: [localMockArticle],
-      isLoading: false,
-      error: null,
-      refetch: jest.fn()
-    }),
-    useRelatedNewsArticles: jest.fn().mockReturnValue({
-      data: [{
+    useNewsArticlesWithFilters: jest.fn().mockReturnValue(
+      createMockQueryResult({
+        data: [localMockArticle],
+        isLoading: false,
+        error: null,
+        refetch: jest.fn()
+      })
+    ),
+    useRelatedNewsArticles: jest.fn().mockReturnValue(
+      createMockQueryResult({
+        data: [{
         ...localMockArticle,
         id: '124',
         title: 'Local Startups Receive Funding',
         excerpt: 'Three Kootenay-based tech startups receive provincial innovation grants.'
       }],
-      isLoading: false,
-      error: null
-    })
+        isLoading: false,
+        error: null
+      })
+    )
   };
 });
 
@@ -129,6 +142,7 @@ describe('News Management', () => {
     (useNewsQueriesModule as any).useCreateNewsArticle.mockReturnValue({
       mutateAsync: createNewsArticleMock,
       isLoading: false,
+      isPending: false,
       error: null
     });
 
@@ -153,6 +167,7 @@ describe('News Management', () => {
     (useNewsQueriesModule as any).useUpdateNewsArticle.mockReturnValue({
       mutateAsync: updateNewsArticleMock,
       isLoading: false,
+      isPending: false,
       error: null
     });
 
@@ -170,6 +185,7 @@ describe('News Management', () => {
     (useNewsQueriesModule as any).useDeleteNewsArticle.mockReturnValue({
       mutateAsync: deleteNewsArticleMock,
       isLoading: false,
+      isPending: false,
       error: null
     });
 
@@ -193,12 +209,14 @@ describe('News Management', () => {
       }
     ];
     
-    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue({
-      data: filteredArticles,
-      isLoading: false,
-      error: null,
-      refetch: jest.fn()
-    });
+    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue(
+      createMockQueryResult({
+        data: filteredArticles,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn()
+      })
+    );
 
     // Test steps would include:
     // 1. Render the news list page
@@ -220,12 +238,14 @@ describe('News Management', () => {
       mockNewsArticle
     ];
     
-    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue({
-      data: searchResults,
-      isLoading: false,
-      error: null,
-      refetch: jest.fn()
-    });
+    (useNewsQueriesModule as any).useNewsArticlesWithFilters.mockReturnValue(
+      createMockQueryResult({
+        data: searchResults,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn()
+      })
+    );
 
     // Test steps would include:
     // 1. Render the news list page

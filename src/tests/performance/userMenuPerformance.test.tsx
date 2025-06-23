@@ -1,5 +1,6 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
 import { BrowserRouter } from 'react-router-dom';
 import { performance } from 'perf_hooks';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
@@ -56,7 +57,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const renderTime = await measureRenderTime(() => {
         renderUserMenu();
@@ -73,9 +74,11 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
-      });
+      mockUseMemberByUserId.mockReturnValue(
+        createMockQueryResult({ 
+          data: { id: 'member123', name: 'Test User' } 
+        })
+      );
 
       const renderTime = await measureRenderTime(() => {
         renderUserMenu();
@@ -93,11 +96,13 @@ describe('UserMenu Performance Tests', () => {
       });
 
       // Simulate slow loading
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: null,
-        isLoading: true,
-        error: null,
-      });
+      mockUseMemberByUserId.mockReturnValue(
+        createMockQueryResult({ 
+          data: null,
+          isLoading: true,
+          error: null,
+        })
+      );
 
       const renderTime = await measureRenderTime(() => {
         renderUserMenu();
@@ -115,7 +120,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -135,7 +140,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -158,7 +163,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -190,7 +195,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { unmount } = renderUserMenu();
 
@@ -212,7 +217,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       // Mount and unmount multiple times
       for (let i = 0; i < 5; i++) {
@@ -239,9 +244,11 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
-      });
+      mockUseMemberByUserId.mockReturnValue(
+        createMockQueryResult({ 
+          data: { id: 'member123', name: 'Test User' } 
+        })
+      );
 
       const { rerender } = render(
         <BrowserRouter>
@@ -271,7 +278,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: mockSignOut,
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { rerender } = renderUserMenu();
       
@@ -308,9 +315,11 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: true,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'admin123', name: 'Admin User' } 
-      });
+      mockUseMemberByUserId.mockReturnValue(
+        createMockQueryResult({ 
+          data: { id: 'admin123', name: 'Admin User' } 
+        })
+      );
 
       const renderTime = await measureRenderTime(() => {
         renderUserMenu();
@@ -335,7 +344,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -375,7 +384,7 @@ describe('UserMenu Performance Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { container } = renderUserMenu();
       
