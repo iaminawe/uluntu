@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { createMemberProfile, updateMemberProfile } from '@/features/directory/api/createMemberProfile';
 import { uploadImage } from '@/utils/uploadImage';
@@ -16,7 +16,7 @@ import { initialFormData } from './DirectoryEditPage/data';
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useSession();
   const userId = user?.id;
   
   // Fetch the member profile associated with the logged-in user

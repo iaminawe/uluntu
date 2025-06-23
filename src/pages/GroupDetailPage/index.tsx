@@ -17,6 +17,7 @@ import ErrorState from './ErrorState';
 import JoinModal from '@/features/groups/components/JoinModal';
 import { useGroupRedux } from '@/features/groups/hooks/useGroupsRedux';
 import { TabType } from './types';
+import DebugInfo from './DebugInfo';
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -62,6 +63,7 @@ export default function GroupDetailPage() {
 
   return (
     <>
+      <DebugInfo />
       <Helmet>
         <title>{group.name} - Kootenay Tech Community</title>
         <meta name="description" content={group.description?.substring(0, 160)} />

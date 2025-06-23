@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminRolesApi } from '@/api/admin/roles';
+import { adminRolesApi } from '@/features/admin/api/roles';
 import { Role } from '@/types/admin';
 import {
   Shield,

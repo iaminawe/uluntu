@@ -10,14 +10,14 @@ import RelatedResources from './RelatedResources';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Resource } from '../../types';
-import { useResourceRedux } from '@/features/resources/hooks/useResourcesRedux';
+import { useResource } from '@/hooks/useResourceQueries';
 
 
 export default function ResourceDetailPage() {
   const { id } = useParams<{ id: string }>();
   
-  // Use the Redux hook to fetch resource data
-  const { resource, isLoading, isError, error } = useResourceRedux(id);
+  // Use React Query to fetch resource data
+  const { data: resource, isLoading, isError } = useResource(id);
   
   const getTypeIcon = (type: Resource['type']) => {
     switch (type) {

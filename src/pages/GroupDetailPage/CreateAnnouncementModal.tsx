@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { groupsApi } from '../../api/groupsApi';
+import { groupsApi } from '@/features/groups/api/groupsApi';
 import { useCurrentMember } from '../../hooks/useCurrentMember';
 
 interface CreateAnnouncementModalProps {

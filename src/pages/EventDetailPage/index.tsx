@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useEventRedux } from '@/features/events/hooks/useEventsRedux';
+import { useEventHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { format, parseISO } from 'date-fns';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
@@ -15,18 +15,11 @@ import ErrorState from './ErrorState';
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  // Use the original string ID as useEvent expects a string
-  const eventIdString = id || '';
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
-  // Use Redux-based hook for a single event
-  const { event, isLoading, error, getEvent } = useEventRedux(eventIdString);
-  
-  // Fetch event when component mounts or ID changes
-  useEffect(() => {
-    getEvent();
-  }, [getEvent, eventIdString]);
+  // Use hybrid approach for data fetching
+  const { event, isLoading, error } = useEventHybrid(id);
   
   const handleRegister = () => {
     setIsRegistering(true);

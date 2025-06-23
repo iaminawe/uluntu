@@ -11,14 +11,15 @@ import {
   Users,
   Edit,
   Trash2,
-  Flag
+  Flag,
+  BookmarkPlus
 } from 'lucide-react';
-import { PageContainer } from '@/shared/components/layout/PageContainer';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
-import { photoApi } from '@/features/gallery/api/photoApi';
 import { PhotoLightbox } from '@/features/gallery/components/PhotoLightbox';
+import { AddToResourcesButton } from '@/features/gallery/components/AddToResourcesButton';
 import { formatDistanceToNow } from 'date-fns';
 import type { Gallery, Photo } from '@/features/gallery/types';
 
@@ -47,7 +48,7 @@ const GalleryDetailPage: React.FC = () => {
       setLoading(true);
       const [galleryData, photosData] = await Promise.all([
         galleryApi.getGallery(id),
-        photoApi.getGalleryPhotos(id)
+        galleryApi.getGalleryPhotos(id)
       ]);
       
       setGallery(galleryData);
@@ -71,11 +72,17 @@ const GalleryDetailPage: React.FC = () => {
     }
     
     try {
-      await photoApi.likePhoto(photoId);
+      const isLiked = await galleryApi.likePhoto(photoId);
       // Update the photo in the list
       setPhotos(photos.map(photo => 
         photo.id === photoId 
-          ? { ...photo, like_count: (photo.like_count || 0) + 1, is_liked: true }
+          ? { 
+              ...photo, 
+              like_count: isLiked 
+                ? (photo.like_count || 0) + 1 
+                : Math.max((photo.like_count || 0) - 1, 0),
+              is_liked: isLiked
+            }
           : photo
       ));
     } catch (err) {
@@ -129,7 +136,7 @@ const GalleryDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <PageContainer>
+      <ContentContainer>
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-64 bg-gray-200 rounded mb-8"></div>
@@ -139,13 +146,13 @@ const GalleryDetailPage: React.FC = () => {
             ))}
           </div>
         </div>
-      </PageContainer>
+      </ContentContainer>
     );
   }
 
   if (error || !gallery) {
     return (
-      <PageContainer>
+      <ContentContainer>
         <div className="text-center py-12">
           <p className="text-red-600 mb-4">{error || 'Gallery not found'}</p>
           <button
@@ -155,14 +162,14 @@ const GalleryDetailPage: React.FC = () => {
             Back to Galleries
           </button>
         </div>
-      </PageContainer>
+      </ContentContainer>
     );
   }
 
   const isOwner = user?.id === gallery.owner_id;
 
   return (
-    <PageContainer>
+    <ContentContainer>
       <div className="max-w-7xl mx-auto">
         {/* Gallery Header */}
         <div className="mb-8">
@@ -185,9 +192,9 @@ const GalleryDetailPage: React.FC = () => {
                 </div>
                 <p className="text-gray-600 mb-4">{gallery.description}</p>
                 
-                <div className="flex items-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center gap-6 text-sm text-gray-500 mb-4">
                   <div>
-                    By <span className="font-medium text-gray-700">{gallery.owner?.name}</span>
+                    By <span className="font-medium text-gray-700">{gallery.owner?.name || 'Unknown User'}</span>
                   </div>
                   <div>
                     {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
@@ -200,6 +207,17 @@ const GalleryDetailPage: React.FC = () => {
                     <span>{getPrivacyLabel(gallery.privacy_level)}</span>
                   </div>
                 </div>
+                
+                {/* Add to Resources Button */}
+                {!isOwner && gallery.privacy_level === 'public' && (
+                  <AddToResourcesButton
+                    galleryId={gallery.id}
+                    galleryTitle={gallery.title}
+                    galleryDescription={gallery.description}
+                    galleryImage={gallery.cover_photo_url}
+                    variant="compact"
+                  />
+                )}
               </div>
 
               {/* Action Menu */}
@@ -276,8 +294,8 @@ const GalleryDetailPage: React.FC = () => {
                 onClick={() => handlePhotoClick(index)}
               >
                 <img
-                  src={photo.thumbnail_url || photo.photo_url}
-                  alt={photo.title || 'Photo'}
+                  src={photo.thumbnail_path || photo.medium_path || photo.storage_path}
+                  alt={photo.alt_text || photo.title || 'Photo'}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 
@@ -316,7 +334,7 @@ const GalleryDetailPage: React.FC = () => {
           />
         )}
       </div>
-    </PageContainer>
+    </ContentContainer>
   );
 };
 

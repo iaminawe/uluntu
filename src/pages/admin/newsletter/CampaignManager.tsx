@@ -16,7 +16,7 @@ import {
   Users,
   TrendingUp
 } from 'lucide-react';
-import { newsletterCampaignApi } from '@/api/newsletter/campaigns';
+import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 import { NewsletterCampaign, CampaignFilters } from '@/types/newsletter';
 
 const CampaignManager: React.FC = () => {

@@ -18,6 +18,10 @@ const getResourceTypeLabel = (type: ResourceType): string => {
       return 'Tool';
     case 'article':
       return 'Article';
+    case 'link':
+      return 'Link';
+    case 'gallery':
+      return 'Gallery';
     default: {
       // This should never happen since we've covered all possible ResourceType values
       // But TypeScript needs this for type safety
@@ -27,22 +31,33 @@ const getResourceTypeLabel = (type: ResourceType): string => {
   }
 };
 
-const ActionBar: React.FC = () => {
+interface ActionBarProps {
+  onSearch?: (value: string) => void;
+  onTypeChange?: (type: string) => void;
+  currentFilters?: { search?: string; types?: string[] };
+}
+
+const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onTypeChange, currentFilters }) => {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
   
   // Resource types from the main application's Resource type
-  const resourceTypes: ResourceType[] = ['document', 'video', 'guide', 'tool', 'article'];
+  const resourceTypes: ResourceType[] = ['document', 'video', 'guide', 'tool', 'article', 'link', 'gallery'];
   
   // Sample categories - would come from API in real implementation
   const categories = ['Guides', 'Tutorials', 'Research', 'Tools', 'Templates'];
   
   const handleSearch = (value: string) => {
-    console.log('Searching for resources:', value);
     setSearchTerm(value);
-    // This would normally update state or call a hook to filter data
+    onSearch?.(value);
+  };
+  
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedType(value as ResourceType | 'all');
+    onTypeChange?.(value);
   };
 
   return (
@@ -60,7 +75,7 @@ const ActionBar: React.FC = () => {
           <div className="relative">
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as ResourceType | 'all')}
+              onChange={handleTypeChange}
               className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
             >
               <option value="all">All Types</option>

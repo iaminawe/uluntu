@@ -13,7 +13,7 @@ import {
   Upload,
   Trash2
 } from 'lucide-react';
-import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
+import { newsletterSubscriptionApi } from '@/features/newsletter/api/subscriptions';
 import { NewsletterSubscription } from '@/types/newsletter';
 
 const SubscriberManager: React.FC = () => {

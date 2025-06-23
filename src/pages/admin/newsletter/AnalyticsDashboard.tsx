@@ -12,7 +12,7 @@ import {
   Minus
 } from 'lucide-react';
 import { newsletterAnalyticsApi } from '@/api/newsletter/analytics';
-import { newsletterCampaignApi } from '@/api/newsletter/campaigns';
+import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 
 const AnalyticsDashboard: React.FC = () => {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>('');

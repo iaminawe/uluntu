@@ -1,26 +1,63 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { useContactSubmissions } from '@/hooks/useContactSubmissions';
+import { useSetting } from '@/hooks/useSettings';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    type: 'general' as 'general' | 'support' | 'partnership' | 'volunteer' | 'speaker_request'
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const { createSubmission } = useContactSubmissions({ autoFetch: false });
+
+  // Get contact settings with fallbacks
+  const { value: contactEmail } = useSetting('contact', 'contact_email', 'hello@nelsontech.community');
+  const { value: contactPhone } = useSetting('contact', 'contact_phone', '+1 (250) 555-0123');
+  const { value: contactAddress } = useSetting('contact', 'contact_address', 'Nelson, British Columbia\nCanada');
+  const { value: organizationName } = useSetting('contact', 'organization_name', 'Nelson Tech Community');
+  const { value: responseTimeGeneral } = useSetting('contact', 'response_time_general', '24-48 hours');
+  const { value: responseTimePartnership } = useSetting('contact', 'response_time_partnership', '3-5 business days');
+  const { value: responseTimeSupport } = useSetting('contact', 'response_time_support', '12-24 hours');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setSubmitError(null);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitted(true);
-    setIsLoading(false);
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    try {
+      // Get client IP and user agent for analytics
+      const clientInfo = {
+        ip_address: undefined, // Would be set by server
+        user_agent: navigator.userAgent
+      };
+
+      const result = await createSubmission({
+        ...formData,
+        metadata: {
+          source: 'contact_page',
+          referrer: document.referrer,
+          ...clientInfo
+        }
+      });
+
+      if (result.success) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '', type: 'general' });
+      } else {
+        setSubmitError(result.error || 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setSubmitError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -85,7 +122,7 @@ export default function ContactPage() {
                     Email
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    hello@nelsontech.community
+                    {contactEmail}
                   </p>
                 </div>
               </div>
@@ -97,7 +134,7 @@ export default function ContactPage() {
                     Phone
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    +1 (250) 555-0123
+                    {contactPhone}
                   </p>
                 </div>
               </div>
@@ -109,8 +146,12 @@ export default function ContactPage() {
                     Location
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Nelson, British Columbia<br />
-                    Canada
+                    {contactAddress?.split('\n').map((line: string, index: number) => (
+                      <React.Fragment key={index}>
+                        {line}
+                        {index < contactAddress.split('\n').length - 1 && <br />}
+                      </React.Fragment>
+                    ))}
                   </p>
                 </div>
               </div>
@@ -124,15 +165,15 @@ export default function ContactPage() {
               <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
                 <div className="flex justify-between">
                   <span>General Inquiries:</span>
-                  <span>24-48 hours</span>
+                  <span>{responseTimeGeneral}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Partnership Requests:</span>
-                  <span>3-5 business days</span>
+                  <span>{responseTimePartnership}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Technical Support:</span>
-                  <span>12-24 hours</span>
+                  <span>{responseTimeSupport}</span>
                 </div>
               </div>
             </div>
@@ -146,6 +187,16 @@ export default function ContactPage() {
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Error Display */}
+                {submitError && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start">
+                    <AlertCircle className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <div className="text-red-700 dark:text-red-300 text-sm">
+                      {submitError}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -178,6 +229,28 @@ export default function ContactPage() {
                       placeholder="your.email@example.com"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="type" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Inquiry Type
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  >
+                    <option value="general">General Inquiry</option>
+                    <option value="support">Technical Support</option>
+                    <option value="partnership">Partnership Opportunity</option>
+                    <option value="volunteer">Volunteer Interest</option>
+                    <option value="speaker_request">Speaking Request</option>
+                  </select>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Help us route your message to the right team
+                  </p>
                 </div>
 
                 <div>

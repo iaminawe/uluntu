@@ -17,7 +17,6 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onFiltersChange, viewMo
   const [dateRange, setDateRange] = useState<DateRangeFilter>('upcoming');
   
   const handleSearch = (value: string) => {
-    console.log('Searching for events:', value);
     setSearchTerm(value);
     // Pass the search term to the parent component if onSearch prop is provided
     if (onSearch) {

@@ -12,7 +12,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { PageContainer } from '@/shared/components/layout/PageContainer';
+import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import { useGalleries } from '@/features/gallery/hooks/useGallery';
@@ -111,7 +111,7 @@ const MyGalleriesPage: React.FC = () => {
 
   if (loading) {
     return (
-      <PageContainer>
+      <ContentContainer>
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -124,13 +124,13 @@ const MyGalleriesPage: React.FC = () => {
             ))}
           </div>
         </div>
-      </PageContainer>
+      </ContentContainer>
     );
   }
 
   if (error) {
     return (
-      <PageContainer>
+      <ContentContainer>
         <div className="text-center py-12">
           <p className="text-red-600 mb-4">Error loading your galleries</p>
           <button
@@ -140,12 +140,12 @@ const MyGalleriesPage: React.FC = () => {
             Try Again
           </button>
         </div>
-      </PageContainer>
+      </ContentContainer>
     );
   }
 
   return (
-    <PageContainer>
+    <ContentContainer>
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
         <div className="mb-8">
@@ -359,7 +359,7 @@ const MyGalleriesPage: React.FC = () => {
           </div>
         )}
       </div>
-    </PageContainer>
+    </ContentContainer>
   );
 };
 

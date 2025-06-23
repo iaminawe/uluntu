@@ -12,8 +12,8 @@ import {
   Settings,
   FileText
 } from 'lucide-react';
-import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
-import { newsletterCampaignApi } from '@/api/newsletter/campaigns';
+import { newsletterSubscriptionApi } from '@/features/newsletter/api/subscriptions';
+import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 
 const NewsletterDashboard: React.FC = () => {
   // Fetch newsletter statistics

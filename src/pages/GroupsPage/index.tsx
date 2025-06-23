@@ -16,14 +16,16 @@ export default function GroupsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibilityFilter, setVisibilityFilter] = useState<GroupVisibility[]>([]);
   
-  // Use Redux for groups data
+  // Use Redux for groups data - but only for initial load check
   const { groups, isLoading, isError, error, loadGroups } = useGroupsRedux();
   
-  // Load groups on mount
+  // Load groups on mount only if we don't have any
   useEffect(() => {
-    console.log('[GroupsPage] Loading groups via Redux...');
-    loadGroups();
-  }, [loadGroups]);
+    if (groups.length === 0 && !isLoading && !isError) {
+      console.log('[GroupsPage] Initial load - fetching groups...');
+      loadGroups();
+    }
+  }, []); // Empty dependency to run only once on mount
   
   const hasGroups = groups.length > 0;
 

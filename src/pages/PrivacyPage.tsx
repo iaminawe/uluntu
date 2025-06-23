@@ -1,7 +1,13 @@
 import React from 'react';
 import { Shield, Eye, Lock, UserCheck, Database, Mail } from 'lucide-react';
+import { useSetting } from '@/hooks/useSettings';
 
 export default function PrivacyPage() {
+  // Get contact settings with fallbacks
+  const { value: privacyEmail } = useSetting('contact', 'privacy_email', 'privacy@nelsontech.community');
+  const { value: privacyAddress } = useSetting('contact', 'privacy_address', 'Nelson Tech Community, Privacy Officer, Nelson, BC, Canada');
+  const { value: organizationName } = useSetting('contact', 'organization_name', 'Nelson Tech Community');
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Hero Section */}
@@ -36,7 +42,7 @@ export default function PrivacyPage() {
             </h2>
           </div>
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
-            The Nelson Tech Community ("we", "us", or "our") operates the Nelson Tech Community platform. 
+            The {organizationName} ("we", "us", or "our") operates the {organizationName} platform. 
             This page informs you of our policies regarding the collection, use, and disclosure of personal 
             data when you use our service and the choices you have associated with that data.
           </p>
@@ -282,8 +288,8 @@ export default function PrivacyPage() {
             </p>
             
             <div className="space-y-2 text-slate-600 dark:text-slate-300">
-              <p><strong>Email:</strong> privacy@nelsontech.community</p>
-              <p><strong>Mail:</strong> Nelson Tech Community, Privacy Officer, Nelson, BC, Canada</p>
+              <p><strong>Email:</strong> {privacyEmail}</p>
+              <p><strong>Mail:</strong> {privacyAddress}</p>
             </div>
           </div>
         </section>
