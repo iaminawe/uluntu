@@ -31,36 +31,54 @@ export function useNewsHybrid() {
   // React Query for server state
   const articlesQuery = useQuery({
     queryKey: queryKeys.newsWithFilters(filters),
-    queryFn: () => newsApi.getFilteredNews(filters),
+    queryFn: () => newsApi.getAll(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
   const featuredQuery = useQuery({
     queryKey: queryKeys.featuredNews,
-    queryFn: () => newsApi.getFeaturedNews(),
+    queryFn: () => newsApi.getAll({ featured: true }),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
   
-  // Get single article
+  // Get single article by ID
   const getArticle = (id: string) => {
     return useQuery({
       queryKey: queryKeys.newsArticle(id),
-      queryFn: () => newsApi.getNewsById(id),
+      queryFn: () => newsApi.getById(id),
       enabled: !!id,
+    });
+  };
+  
+  // Get single article by slug
+  const getArticleBySlug = (slug: string) => {
+    return useQuery({
+      queryKey: ['news', 'slug', slug],
+      queryFn: () => newsApi.getBySlug(slug),
+      enabled: !!slug,
+    });
+  };
+  
+  // Get related articles
+  const getRelatedArticles = (articleId: string, limit: number = 3) => {
+    return useQuery({
+      queryKey: ['news', 'related', articleId, limit],
+      queryFn: () => newsApi.getRelated(articleId, limit),
+      enabled: !!articleId,
     });
   };
   
   // Mutations
   const createArticle = useMutation({
-    mutationFn: (data: NewsArticleInput) => newsApi.createNews(data),
+    mutationFn: (data: Partial<NewsArticle>) => newsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.news });
     },
   });
   
   const updateArticle = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<NewsArticleInput> }) => 
-      newsApi.updateNews(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<NewsArticle> }) => 
+      newsApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.news });
       queryClient.invalidateQueries({ queryKey: queryKeys.newsArticle(id) });
@@ -68,7 +86,7 @@ export function useNewsHybrid() {
   });
   
   const deleteArticle = useMutation({
-    mutationFn: (id: string) => newsApi.deleteNews(id),
+    mutationFn: (id: string) => newsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.news });
     },
@@ -138,6 +156,8 @@ export function useNewsHybrid() {
     
     // Queries
     getArticle,
+    getArticleBySlug,
+    getRelatedArticles,
     refetch: articlesQuery.refetch,
     
     // Mutations

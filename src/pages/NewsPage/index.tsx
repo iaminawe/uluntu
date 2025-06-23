@@ -6,21 +6,15 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import NewsList from '@/features/news/components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useNewsArticlesRedux } from '@/features/news/hooks/useNewsRedux';
+import { useNewsHybrid } from '@/features/news/hooks/useNewsHybrid';
 
 export default function NewsPage() {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
-  // Use Redux for news data
-  const { articles, isLoading, isError, error, loadArticles } = useNewsArticlesRedux();
-  
-  // Load articles on mount
-  useEffect(() => {
-    console.log('[NewsPage] Loading news via Redux...');
-    loadArticles();
-  }, [loadArticles]); // Now safe since loadArticles is memoized
+  // Use hybrid hook for news data
+  const { articles, isLoading, error, refetch, setSearchTerm: setFilterSearch } = useNewsHybrid();
   
   const hasArticles = articles && articles.length > 0;
   
@@ -36,17 +30,20 @@ export default function NewsPage() {
       <ContentContainer>
         <ActionBar 
           searchTerm={searchTerm}
-          onSearch={setSearchTerm}
+          onSearch={(term) => {
+            setSearchTerm(term);
+            setFilterSearch(term);
+          }}
           selectedTags={selectedTags}
           onTagsChange={setSelectedTags}
         />
         
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
-        ) : isError ? (
+        ) : error ? (
           <QueryError 
-            error={error ? new Error(String(error)) : new Error('Failed to load news articles')} 
-            retry={loadArticles} 
+            error={error instanceof Error ? error : new Error('Failed to load news articles')} 
+            retry={() => refetch()} 
             message="We couldn't load the news articles. Please try again."
           />
         ) : !hasArticles ? (
