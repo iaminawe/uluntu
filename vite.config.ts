@@ -1,14 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { fileURLToPath } from 'url'
-import { dirname, resolve } from 'path'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
+import type { UserConfig } from 'vite'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig((): UserConfig => ({
+  plugins: [
+    react({
+      babel: {
+        parserOpts: {
+          plugins: ['decorators-legacy', 'classProperties']
+        }
+      }
+    })
+  ],
   server: {
     port: 5555, // Using a different port to avoid conflicts
     strictPort: false, // Allow fallback to other ports if occupied
@@ -20,6 +29,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    // Entries to force include in optimization
+    entries: [
+      './src/main.tsx'
+    ],
     include: [
       'react',
       'react-dom',
@@ -29,18 +42,30 @@ export default defineConfig({
       '@tanstack/react-query',
       '@supabase/supabase-js',
     ],
-    // Force rebuild optimization cache after component cleanup
-    force: process.env.NODE_ENV === 'development',
+    // Optimization settings
+    esbuildOptions: {
+      target: 'es2020',
+      keepNames: true
+    },
   },
   build: {
     // Enable source maps for production debugging
-    sourcemap: true,
+    sourcemap: process.env.NODE_ENV === 'development' ? 'inline' : true,
     // Increase chunk warning limit for large vendor chunks
-    chunkSizeWarningLimit: 1000,
-    // Minify for production
+    chunkSizeWarningLimit: 1500,
+    // Minify settings
     minify: 'esbuild',
+    cssMinify: 'esbuild',
     // Target modern browsers for better optimization
-    target: 'es2020',
+    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+    // Output directory
+    outDir: 'dist',
+    // Clear output directory before build
+    emptyOutDir: true,
+    // CSS code splitting
+    cssCodeSplit: true,
+    // Assets handling
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
         // Let Vite automatically split chunks with default strategy
@@ -69,5 +94,32 @@ export default defineConfig({
         unknownGlobalSideEffects: false,
       },
     },
+    // Esbuild options for better minification
+    esbuild: {
+      logOverride: { 'this-is-undefined-in-esm': 'silent' },
+      legalComments: 'none',
+      treeShaking: true
+    }
   },
-})
+  // Define environment variables
+  define: {
+    '__APP_VERSION__': JSON.stringify(process.env.npm_package_version)
+  },
+  // Preview server configuration
+  preview: {
+    port: 4173,
+    strictPort: false
+  },
+  // CSS configuration
+  css: {
+    devSourcemap: true,
+    modules: {
+      localsConvention: 'camelCase'
+    }
+  },
+  // JSON handling
+  json: {
+    namedExports: true,
+    stringify: false
+  }
+}))

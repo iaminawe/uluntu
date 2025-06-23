@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, AlertCircle, CheckCircle } from 'lucide-react';
-import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { forgotPassword } from '@/lib/supabase';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { forgotPassword } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

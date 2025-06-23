@@ -1,11 +1,27 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "noEmit": true,
+    "tsBuildInfoFile": "./node.tsbuildinfo",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node"]
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["node"],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "target": "ES2020"
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "vite.config.performance.ts",
+    "jest.config.js",
+    "tailwind.config.js",
+    "postcss.config.js"
+  ]
 }

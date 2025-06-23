@@ -12,7 +12,7 @@ export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, error: authError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,11 +36,11 @@ export default function SignUpForm() {
       setIsLoading(true);
       setError(null);
       
-      const { data, error } = await signUp(email, password);
+      await signUp(email, password);
       
-      // Check if the result contains an error
-      if (error) {
-        throw error;
+      // Check if there was an error from auth state
+      if (authError) {
+        throw new Error(authError);
       }
 
       // No need to create a member profile anymore!

@@ -86,7 +86,7 @@ export class ContactSubmissionsAPI {
    */
   async submitContactForm(data: CreateContactSubmissionRequest): Promise<ContactSubmission> {
     try {
-      const { data: submission, error } = await supabase
+      const { data: submission, error } = await (supabase as any)
         .from('contact_submissions')
         .insert({
           name: data.name,
@@ -104,7 +104,7 @@ export class ContactSubmissionsAPI {
       if (error) throw error;
 
       // Send notification email if configured
-      await this.sendNewSubmissionNotification(submission);
+      await this.sendNewSubmissionNotification(submission as ContactSubmission);
 
       return submission;
     } catch (error) {

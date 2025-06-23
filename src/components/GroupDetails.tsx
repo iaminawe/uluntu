@@ -209,7 +209,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Latest Posts</h2>
               <Link
-                href={`/groups/${group.id}/posts`}
+                to={`/groups/${group.id}/posts`}
                 className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
               >
                 View All
@@ -231,7 +231,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-2">
                       <Link
-                        href={`/groups/${group.id}/posts/${post.id}`}
+                        to={`/groups/${group.id}/posts/${post.id}`}
                         className="hover:text-orange-500 transition-colors"
                       >
                         {post.title}
@@ -259,7 +259,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Upcoming Events</h2>
               <Link
-                href={`/groups/${group.id}/events`}
+                to={`/groups/${group.id}/events`}
                 className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
               >
                 View All
@@ -279,7 +279,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-2">
                       <Link
-                        href={`/events/${event.id}`}
+                        to={`/events/${event.id}`}
                         className="hover:text-orange-500 transition-colors"
                       >
                         {event.title}
@@ -310,7 +310,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">New Members</h2>
               <Link
-                href={`/groups/${group.id}/members`}
+                to={`/groups/${group.id}/members`}
                 className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
               >
                 View All
@@ -328,7 +328,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                   <div>
                     <h3 className="font-medium text-slate-900 dark:text-white">
                       <Link
-                        href={`/directory/${member.id}`}
+                        to={`/directory/${member.id}`}
                         className="hover:text-orange-500 transition-colors"
                       >
                         {member.name}
@@ -348,7 +348,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Resources</h2>
               <Link
-                href={`/groups/${group.id}/resources`}
+                to={`/groups/${group.id}/resources`}
                 className="text-orange-500 hover:text-orange-600 transition-colors flex items-center"
               >
                 View All
