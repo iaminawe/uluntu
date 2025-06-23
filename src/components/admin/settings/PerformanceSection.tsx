@@ -40,7 +40,8 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category
+        category: setting.category,
+        data_type: setting.data_type
       });
       
       setLocalSettings(prev => {
@@ -305,7 +306,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
               <div className="text-sm text-gray-600">Optimizations</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{performanceFeatures.filter(f => f.is_enabled).length}</div>
+              <div className="text-2xl font-bold text-orange-600">{performanceFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
           </div>

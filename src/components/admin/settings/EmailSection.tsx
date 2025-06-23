@@ -40,7 +40,8 @@ const EmailSection: React.FC<EmailSectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category
+        category: setting.category,
+        data_type: setting.data_type
       });
       
       setLocalSettings(prev => {

@@ -40,7 +40,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category
+        category: setting.category,
+        data_type: setting.data_type
       });
       
       setLocalSettings(prev => {
@@ -300,7 +301,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
               <div className="text-sm text-gray-600">Access Policies</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{securityFeatures.filter(f => f.is_enabled).length}</div>
+              <div className="text-2xl font-bold text-purple-600">{securityFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
           </div>
