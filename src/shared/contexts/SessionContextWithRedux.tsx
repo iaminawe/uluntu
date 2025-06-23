@@ -33,8 +33,9 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
   const fetchUserRoles = async (userId: string) => {
     try {
       console.log('🔍 Fetching roles for user:', userId);
-      console.log('🔍 Expected super admin user ID: 54fd6d34-5d30-4ad0-9c53-fc24aa0412b8');
-      console.log('🔍 User IDs match:', userId === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8');
+      const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+      console.log('🔍 Expected super admin user ID configured:', !!superAdminId);
+      console.log('🔍 User is super admin:', superAdminId && userId === superAdminId);
       
       // Skip session check and go directly to role query
       console.log('🔍 Attempting direct role query...');
@@ -58,7 +59,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
         // If it's an RLS issue, try a fallback approach
         if (error.message?.includes('permission') || error.code === 'PGRST301') {
           console.log('🔍 RLS issue detected, checking if this is the super admin user...');
-          if (userId === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+          const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+          if (superAdminId && userId === superAdminId) {
             console.log('✅ Super admin user detected, returning superadmin role');
             return ['superadmin'];
           }
@@ -78,7 +80,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
       console.error('❌ Exception details:', err);
       
       // Fallback for the known super admin user
-      if (userId === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+      const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+      if (superAdminId && userId === superAdminId) {
         console.log('✅ Exception occurred but this is super admin user, returning superadmin role');
         return ['superadmin'];
       }
@@ -131,7 +134,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           const timeoutPromise = new Promise<string[]>((resolve) => {
             setTimeout(() => {
               console.log('⏰ Role fetching timed out, using fallback');
-              if (currentSession.user.id === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+              const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+              if (superAdminId && currentSession.user.id === superAdminId) {
                 resolve(['superadmin']);
               } else {
                 resolve([]);
@@ -145,7 +149,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
         } catch (err) {
           console.error('❌ Error in role fetching process:', err);
           // Fallback for super admin
-          if (currentSession.user.id === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+          const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+          if (superAdminId && currentSession.user.id === superAdminId) {
             dispatch(setRoles(['superadmin']));
             console.log('✅ Used fallback superadmin role');
           }
@@ -204,7 +209,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             const timeoutPromise = new Promise<string[]>((resolve) => {
               setTimeout(() => {
                 console.log('⏰ Role fetching timed out in auth state change, using fallback');
-                if (currentSession.user.id === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+                const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+                if (superAdminId && currentSession.user.id === superAdminId) {
                   resolve(['superadmin']);
                 } else {
                   resolve([]);
@@ -218,7 +224,8 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           } catch (err) {
             console.error('❌ Error in auth state change role fetching:', err);
             // Fallback for super admin
-            if (currentSession.user.id === '54fd6d34-5d30-4ad0-9c53-fc24aa0412b8') {
+            const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+            if (superAdminId && currentSession.user.id === superAdminId) {
               dispatch(setRoles(['superadmin']));
               console.log('✅ Used fallback superadmin role in auth state change');
             }
