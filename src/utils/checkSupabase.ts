@@ -28,7 +28,7 @@ export async function checkSupabaseConnection() {
     });
     
     // Check tables
-    const tables = ['events', 'members', 'companies', 'groups', 'news_articles'] as const;
+    const tables = ['events', 'members', 'companies', 'groups', 'news'] as const;
     type TableName = typeof tables[number];
     const results: Record<string, Record<string, unknown>> = {};
     
