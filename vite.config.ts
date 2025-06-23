@@ -39,10 +39,6 @@ export default defineConfig({
     minify: 'esbuild',
     // Target modern browsers for better optimization
     target: 'es2020',
-    // Enable experimental features
-    experimental: {
-      renderBuiltUrl: undefined,
-    },
     rollupOptions: {
       output: {
         // Let Vite automatically split chunks with default strategy
