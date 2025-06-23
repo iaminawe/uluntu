@@ -5,29 +5,52 @@ import {
   ContentEditRequest, 
   PageContent
 } from '../types/content';
-import { useContentRedux, usePageContentRedux } from './useContentRedux';
+// import { useContentRedux, usePageContentRedux } from './useContentRedux';
 
 // This hook now wraps the Redux implementation for backward compatibility
 // New components should use useContentRedux directly
 
 export const useContentManagement = () => {
-  // Use the Redux hook internally
-  const { 
-    pages, 
-    sections, 
-    currentLanguage, 
-    isEditMode, 
-    loading, 
-    error,
-    updatePageContent: reduxUpdatePageContent,
-    updateSectionContent: reduxUpdateSectionContent,
-    changeLanguage: reduxChangeLanguage,
-    toggleEditMode: reduxToggleEditMode,
-    saveContent: reduxSaveContent,
-    exportContent: reduxExportContent,
-    importContent: reduxImportContent,
-    getLocalizedContent: reduxGetLocalizedContent
-  } = useContentRedux();
+  // Temporary stub implementation until useContentRedux is available
+  const pages = {};
+  const sections = {};
+  const currentLanguage: Language = 'en';
+  const isEditMode = false;
+  const loading = false;
+  const error = null;
+  
+  const reduxUpdatePageContent = useCallback((request: ContentEditRequest) => {
+    console.warn('updatePageContent not implemented');
+  }, []);
+  
+  const reduxUpdateSectionContent = useCallback((request: ContentEditRequest) => {
+    console.warn('updateSectionContent not implemented');
+  }, []);
+  
+  const reduxChangeLanguage = useCallback((language: Language) => {
+    console.warn('changeLanguage not implemented');
+  }, []);
+  
+  const reduxToggleEditMode = useCallback(() => {
+    console.warn('toggleEditMode not implemented');
+  }, []);
+  
+  const reduxSaveContent = useCallback(() => {
+    console.warn('saveContent not implemented');
+  }, []);
+  
+  const reduxExportContent = useCallback(() => {
+    console.warn('exportContent not implemented');
+  }, []);
+  
+  const reduxImportContent = useCallback((file: File) => {
+    console.warn('importContent not implemented');
+  }, []);
+  
+  const reduxGetLocalizedContent = useCallback((content: Record<string, string>, language?: Language): string => {
+    const lang = language || currentLanguage;
+    return content[lang] || content['en'] || '';
+  }, [currentLanguage]);
 
   // Save content wrapper function
   const saveContent = useCallback(() => {
