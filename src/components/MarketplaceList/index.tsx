@@ -5,7 +5,7 @@ import ListingCard from '@/features/marketplace/components/MarketplaceList/Listi
 import Pagination from '@/components/Pagination';
 import { MarketplaceListProps } from '@/features/marketplace/components/MarketplaceList/types';
 import { useMarketplaceItemsWithFilters } from '@/hooks/useMarketplaceQueries';
-import { useFilteredMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import { MarketplaceListing } from '../../types/marketplace';
 
 const LISTINGS_PER_PAGE = 9;
@@ -13,64 +13,39 @@ const LISTINGS_PER_PAGE = 9;
 const MarketplaceList = ({ 
   initialType = 'all', 
   initialSearch = '', 
-  sellerId,
-  useRedux = false
-}: MarketplaceListProps & { useRedux?: boolean }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  sellerId
+}: MarketplaceListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Query options for API
-  const queryOptions = useMemo(() => ({
-    types: initialType !== 'all' ? [initialType] : undefined,
-    search: initialSearch || undefined,
-    seller_id: sellerId || undefined
-  }), [initialType, initialSearch, sellerId]);
+  // Use hybrid hook for marketplace data
+  const { listings, isLoading, error } = useMarketplaceHybrid();
   
-  // Get data from either Redux or direct API
-  const { 
-    filteredListings: reduxListings = [],
-    updateFilters: updateReduxFilters,
-    isLoading: reduxIsLoading,
-    isError: reduxIsError,
-    error: reduxError
-  } = useFilteredMarketplaceListingsRedux();
+  // Filter listings based on props
+  const filteredListings = useMemo(() => {
+    return listings.filter((listing) => {
+      // Type filter
+      if (initialType !== 'all' && listing.type !== initialType) return false;
+      
+      // Search filter
+      if (initialSearch) {
+        const searchLower = initialSearch.toLowerCase();
+        const matchesSearch = 
+          listing.title?.toLowerCase().includes(searchLower) ||
+          listing.description?.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+      
+      // Seller filter
+      if (sellerId && listing.seller_id !== sellerId) return false;
+      
+      return true;
+    });
+  }, [listings, initialType, initialSearch, sellerId]);
   
-  const { 
-    data = [], 
-    isLoading: queryIsLoading, 
-    error: queryError 
-  } = useMarketplaceItemsWithFilters(queryOptions);
-  
-  // Update Redux filters when component mounts or filters change
-  useEffect(() => {
-    if (useRedux) {
-      updateReduxFilters(queryOptions);
-    }
-  }, [useRedux, queryOptions, updateReduxFilters]);
-  
-  // Update loading and error states
-  useEffect(() => {
-    setLoading(useRedux ? reduxIsLoading : queryIsLoading);
-    
-    if (useRedux && reduxIsError) {
-      setError(reduxError ? String(reduxError) : 'Failed to load marketplace listings');
-    } else if (!useRedux && queryError) {
-      setError('Failed to load marketplace listings. Please try again later.');
-    } else {
-      setError(null);
-    }
-  }, [useRedux, reduxIsLoading, reduxIsError, reduxError, queryIsLoading, queryError]);
-  
-  // Get the raw database listings
-  const rawListings = useRedux ? reduxListings : data;
-  
-  // Log the raw listings for debugging
-
-  // Convert database listings to the format expected by ListingCard
+  // Convert filtered listings to the format expected by ListingCard
   const formattedListings = useMemo(() => {
     // Safely handle potentially missing data
-    if (!rawListings || !Array.isArray(rawListings) || rawListings.length === 0) {
+    if (!filteredListings || !Array.isArray(filteredListings) || filteredListings.length === 0) {
       return [];
     }
     
@@ -93,7 +68,7 @@ const MarketplaceList = ({
       featured?: boolean;
     }
     
-    const formatted = rawListings.map((item: RawListing) => {
+    const formatted = filteredListings.map((item: RawListing) => {
       // Make sure we have an item to work with
       if (!item || typeof item !== 'object') {
         return null;
@@ -130,7 +105,7 @@ const MarketplaceList = ({
     }).filter(Boolean) as MarketplaceListing[]; // Remove any null items
     
     return formatted;
-  }, [rawListings]);
+  }, [filteredListings]);
   
   // Calculate pagination values
   const itemsPerPage = LISTINGS_PER_PAGE;
@@ -148,7 +123,7 @@ const MarketplaceList = ({
   };
   
   // Render loading skeleton
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="animate-fade-in">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -189,7 +164,7 @@ const MarketplaceList = ({
                     rounded-lg p-6 text-center">
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading Listings</h3>
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-red-600 dark:text-red-400">{error?.message || 'Failed to load marketplace listings'}</p>
       </div>
     );
   }

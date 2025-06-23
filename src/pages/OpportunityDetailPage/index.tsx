@@ -10,7 +10,7 @@ import ApplySidebar from './ApplySidebar';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { Opportunity } from './types';
-import { useOpportunityRedux } from '../../hooks/useOpportunitiesRedux';
+import { useOpportunitiesHybrid } from '@/features/opportunities/hooks/useOpportunitiesHybrid';
 
 // Sample opportunity data has been replaced with data from the Redux store
 
@@ -19,8 +19,9 @@ export default function OpportunityDetailPage() {
   const [isApplying, setIsApplying] = useState(false);
   const [applicationSuccess, setApplicationSuccess] = useState(false);
   
-  // Use the Redux hook to fetch opportunity data
-  const { opportunity, isLoading, isError, error } = useOpportunityRedux(id);
+  // Use the hybrid hook to fetch opportunity data
+  const { getOpportunity } = useOpportunitiesHybrid();
+  const { data: opportunity, isLoading, error } = getOpportunity(id || '');
   
   const handleApply = () => {
     setIsApplying(true);
@@ -35,7 +36,7 @@ export default function OpportunityDetailPage() {
     return <LoadingState />;
   }
 
-  if (isError || !opportunity) {
+  if (error || !opportunity) {
     return <ErrorState />;
   }
 

@@ -12,7 +12,7 @@ import {
 } from '@/features/opportunities/components/OpportunitiesList/types';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useOpportunitiesRedux } from '../../hooks/useOpportunitiesRedux';
+import { useOpportunitiesHybrid } from '@/features/opportunities/hooks/useOpportunitiesHybrid';
 
 // Define the SupabaseOpportunity type based on the Supabase schema
 type SupabaseOpportunity = {
@@ -148,13 +148,8 @@ export default function OpportunitiesPage() {
     }
   ];
 
-  // Use the Redux-based hook to fetch opportunities data
-  const { opportunities: fetchedOpportunities, loadOpportunities, isLoading, isError, error } = useOpportunitiesRedux();
-  
-  // Load opportunities on component mount
-  useEffect(() => {
-    loadOpportunities();
-  }, []);
+  // Use the hybrid hook to fetch opportunities data
+  const { opportunities: fetchedOpportunities, isLoading, error, refetch } = useOpportunitiesHybrid();
   
   // Convert fallback opportunities to the Supabase Opportunity type
   const fallbackOpportunitiesConverted: SupabaseOpportunity[] = FALLBACK_OPPORTUNITIES.map(fallback => ({
@@ -214,10 +209,10 @@ export default function OpportunitiesPage() {
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : isError ? (
+        ) : error ? (
           <QueryError 
-            error={error ? new Error(error) : new Error('Failed to load opportunities')} 
-            retry={() => loadOpportunities()} 
+            error={error} 
+            retry={refetch} 
             message="We couldn't load the opportunities. Please try again."
           />
         ) : !hasOpportunities ? (

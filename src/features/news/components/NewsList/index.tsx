@@ -21,31 +21,19 @@ const NewsList = ({ initialTag = 'all', initialSearch = '', articles: passedArti
     tag: initialTag,
   });
   
-  // Hybrid implementation - use passed articles or fetch from API
-  const { 
-    articles: hybridArticles,
-    isLoading: hybridIsLoading,
-    error: hybridError,
-    setSearchTerm,
-    setTags
-  } = useNewsHybrid();
-
-  // Update hybrid filters when component filters change
-  useEffect(() => {
-    setSearchTerm(filters.search);
-    setTags(filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined);
-  }, [filters, setSearchTerm, setTags]);
-
+  // Use hybrid hook only when no articles are passed
+  const hybridHook = useNewsHybrid();
+  
   // Choose which data source to use
-  const mainArticles = passedArticles || hybridArticles as MainNewsArticle[];
+  const mainArticles = passedArticles || hybridHook.articles as MainNewsArticle[];
   
   
   // Convert main NewsArticle type to local NewsArticle type using adapter function
   const articles = mainArticles.map(adaptMainNewsArticleToLocal);
   
   // Set loading and error states based on the chosen data source
-  const isLoading = passedArticles ? false : hybridIsLoading;
-  const error = passedArticles ? null : hybridError;
+  const isLoading = passedArticles ? false : hybridHook.isLoading;
+  const error = passedArticles ? null : hybridHook.error;
     
   // Filter and sort articles based on the fetched data
   // The hook should ideally return pre-filtered data based on search/tags,

@@ -1,38 +1,19 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import { useRelatedMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
-import { useRelatedMarketplaceItems } from '@/hooks/useMarketplaceQueries';
+import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 
 interface RelatedListingsProps {
   id: string;
   useRedux?: boolean;
 }
 
-export default function RelatedListings({ id, useRedux = false }: RelatedListingsProps) {
-  // Redux implementation
-  const {
-    relatedListings: reduxListings,
-    isLoading: reduxIsLoading,
-    fetchRelatedListings
-  } = useRelatedMarketplaceListingsRedux(id);
+export default function RelatedListings({ id }: RelatedListingsProps) {
+  // Use hybrid hook for related listings
+  const { getRelatedListings } = useMarketplaceHybrid();
+  const { data: listings = [], isLoading } = getRelatedListings(id, 3);
 
-  // React Query implementation
-  const {
-    data: queryListings = [],
-    isLoading: queryIsLoading
-  } = useRelatedMarketplaceItems(id, 3);
-
-  // Fetch related listings when component mounts (Redux)
-  useEffect(() => {
-    if (useRedux && id) {
-      fetchRelatedListings();
-    }
-  }, [id, useRedux, fetchRelatedListings]);
-
-  // Determine which data source to use
-  const listings = useRedux ? reduxListings : queryListings;
-  const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
+  // Listings and loading state are already available from the hybrid hook
 
   if (isLoading) {
     return (

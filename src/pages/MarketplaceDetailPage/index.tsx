@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 import { useMarketplaceItem } from '@/hooks/useMarketplaceQueries';
-import { useMarketplaceListingByIdRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import { ListingType, Listing, ListingCondition } from './types';
@@ -42,49 +42,20 @@ export default function MarketplaceDetailPage() {
   // Use both Redux and React Query hooks to support both implementations
   const useRedux = false; // Set to true to use Redux, false to use React Query
   
-  // Redux implementation
-  const { 
-    listing: reduxListing, 
-    isLoading: reduxIsLoading, 
-    error: reduxError,
-    fetchListing: fetchReduxListing
-  } = useMarketplaceListingByIdRedux(id || '');
-  
-  // React Query implementation
-  const { data: apiListing, isLoading: queryIsLoading, error: queryError } = useMarketplaceItem(id);
-  
-  // Fetch listing data when component mounts (Redux)
-   
-  useEffect(() => {
-    // Only fetch data once on component mount or when ID changes
-    // We intentionally omit fetchReduxListing and useRedux from deps to prevent infinite loops
-    if (useRedux && id) {
-      console.log('MarketplaceDetailPage: Fetching listing with ID:', id);
-      fetchReduxListing();
-    }
-  }, [id]);
+  // Use hybrid hook for marketplace data
+  const { getListing } = useMarketplaceHybrid();
+  const { data: sourceData, isLoading, error } = getListing(id || '');
   
   // Debug logging
   useEffect(() => {
     console.log('MarketplaceDetailPage Debug:', {
       id,
-      useRedux,
-      reduxListing,
-      reduxIsLoading,
-      reduxError,
-      apiListing,
-      queryIsLoading,
-      queryError,
-      hasListingData: !!reduxListing,
-      finalIsLoading: useRedux ? reduxIsLoading : queryIsLoading,
-      finalListing: useRedux ? reduxListing : apiListing
+      sourceData,
+      isLoading,
+      error,
+      hasListingData: !!sourceData
     });
-  }, [id, reduxListing, reduxIsLoading, reduxError, apiListing, queryIsLoading, queryError]);
-  
-  // Determine which data source to use
-  const sourceData = useRedux ? reduxListing : apiListing;
-  const isLoading = useRedux ? reduxIsLoading : queryIsLoading;
-  const error = useRedux ? reduxError : queryError;
+  }, [id, sourceData, isLoading, error]);
   
   // Convert API data to the expected Listing format
   const listing = useMemo(() => {

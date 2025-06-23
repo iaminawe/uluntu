@@ -4,47 +4,38 @@ import { Group, GroupsListProps } from '@/features/groups/components/GroupsList/
 import GroupCard from '@/features/groups/components/GroupsList/GroupCard';
 import JoinModal from '@/features/groups/components/JoinModal'; // Reusing the existing JoinModal component
 import Pagination from '@/components/Pagination';
-import { useFilteredGroupsRedux } from '../../hooks/useGroupsRedux';
-import { GroupFilters } from '@/features/groups/store/groupsSlice';
+import { useGroupsHybrid } from '@/features/groups/hooks/useGroupsHybrid';
 
 const GROUPS_PER_PAGE = 8;
 
-const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups, useRedux = false }: GroupsListProps & { useRedux?: boolean }) => {
+const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups }: GroupsListProps) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Memoize the filter values to prevent unnecessary re-renders
-  const queryFilters = useMemo(() => ({
-    search: searchTerm,
-    visibility: visibilityFilter.length > 0 ? visibilityFilter : undefined
-  }), [searchTerm, visibilityFilter]);
+  // Use hybrid hook for data if no groups are passed
+  const { groups: hybridGroups, isLoading, error } = useGroupsHybrid();
   
-  // Memoize Redux filters
-  const reduxFilters = useMemo(() => {
-    const filters: GroupFilters = {};
-    if (searchTerm) filters.search = searchTerm;
-    if (visibilityFilter.length > 0) filters.visibility = visibilityFilter;
-    return filters;
-  }, [searchTerm, visibilityFilter]);
-
-  // Connect to Redux if useRedux is true
-  const {
-    groups: reduxGroups,
-    isLoading: reduxLoading,
-    error: reduxError
-  } = useFilteredGroupsRedux(useRedux ? reduxFilters : undefined);
-
-  // Traditional React Query approach if not using Redux
-  const { 
-    data: queryFilteredGroups = [], 
-    isLoading: queryLoading, 
-    error: queryError 
-  } = useGroupsWithFilters(queryFilters);
-  
-  // Choose which data source to use
-  const filteredGroups = passedGroups || (useRedux ? reduxGroups : queryFilteredGroups);
-  const isLoading = passedGroups ? false : (useRedux ? reduxLoading : queryLoading);
-  const error = useRedux ? reduxError : queryError;
+  // Filter groups based on search and visibility
+  const filteredGroups = useMemo(() => {
+    const sourceGroups = passedGroups || hybridGroups;
+    return sourceGroups.filter((group) => {
+      // Search filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const matchesSearch = 
+          group.name?.toLowerCase().includes(searchLower) ||
+          group.description?.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+      
+      // Visibility filter
+      if (visibilityFilter.length > 0) {
+        if (!visibilityFilter.includes(group.visibility)) return false;
+      }
+      
+      return true;
+    });
+  }, [passedGroups, hybridGroups, searchTerm, visibilityFilter]);
 
   // Reset page when filters change
   useEffect(() => {

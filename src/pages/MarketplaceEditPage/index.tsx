@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMarketplaceListingByIdRedux, useMarketplaceListingsRedux } from '@/features/marketplace/hooks/useMarketplaceRedux';
+import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
 import TagsSection from './TagsSection';
@@ -31,30 +31,20 @@ export default function MarketplaceEditPage() {
     newTag: ''
   });
   
-  // Redux hooks for marketplace listings
+  // Use hybrid hook for marketplace data and actions
   const { 
-    listing, 
-    isLoading: fetchLoading, 
-    isError: fetchError,
-    fetchListing, 
-    updateListing,
+    getListing, 
+    createListing, 
+    updateListing, 
     deleteListing 
-  } = useMarketplaceListingByIdRedux(id || '');
+  } = useMarketplaceHybrid();
   
-  const { 
-    createListing 
-  } = useMarketplaceListingsRedux();
+  // Get listing data if editing
+  const { data: listing, isLoading: fetchLoading, error: fetchError } = getListing(id || '');
   
   // State for delete confirmation modal
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Fetch listing data if editing
-  useEffect(() => {
-    if (isEditing && id) {
-      fetchListing();
-    }
-  }, [isEditing, id, fetchListing]);
   
   // Update form data when listing is loaded
   useEffect(() => {
