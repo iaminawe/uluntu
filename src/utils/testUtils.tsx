@@ -8,13 +8,13 @@ import { HelmetProvider } from 'react-helmet-async';
 // Import your reducers
 import authReducer from '@/features/auth/store/authSlice';
 import contentReducer from '@/store/contentSlice';
-import membersReducer from '@/features/directory/store/membersSlice';
-import eventsReducer from '@/features/events/store/eventsSlice';
+import membersUIReducer from '@/features/directory/store/membersUISlice';
+import eventsUIReducer from '@/features/events/store/eventsUISlice';
 import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
-import companiesReducer from '@/features/companies/store/companiesSlice';
+import companiesUIReducer from '@/features/companies/store/companiesUISlice';
 import groupsReducer from '@/features/groups/store/groupsSlice';
 import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
-import newsReducer from '@/features/news/store/newsSlice';
+import newsUIReducer from '@/features/news/store/newsUISlice';
 
 // Create a custom render function that includes Redux provider
 function render(
@@ -25,13 +25,13 @@ function render(
       reducer: {
         auth: authReducer,
         content: contentReducer,
-        members: membersReducer,
-        events: eventsReducer,
+        membersUI: membersUIReducer,
+        eventsUI: eventsUIReducer,
         opportunities: opportunitiesReducer,
-        companies: companiesReducer,
+        companiesUI: companiesUIReducer,
         groups: groupsReducer,
         marketplace: marketplaceReducer,
-        news: newsReducer,
+        newsUI: newsUIReducer,
       },
       preloadedState,
     }),
