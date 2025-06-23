@@ -216,14 +216,14 @@ export interface SelectionCriteria {
 
 export interface NewsletterAnalytics {
   id: string;
-  campaign_id: string;
-  subscription_id?: string;
-  event_type: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained';
-  event_data?: Record<string, unknown>;
-  postmark_message_id?: string;
-  occurred_at: string;
-  ip_address?: string;
-  user_agent?: string;
+  campaign_id: string | null;
+  subscription_id?: string | null;
+  event_type: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained' | null;
+  event_data?: Record<string, unknown> | null;
+  postmark_message_id?: string | null;
+  occurred_at: string | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
 }
 
 export interface ContentCache {
