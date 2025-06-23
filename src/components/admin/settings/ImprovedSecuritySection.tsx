@@ -244,7 +244,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const renderField = (category: string, field: SettingField) => {
@@ -641,7 +641,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
               <Zap className="h-5 w-5 text-purple-600" />
               <span>Security Features</span>
               <Badge variant="secondary">
-                {securityFeatures.filter(f => f.is_enabled).length}/{securityFeatures.length} enabled
+                {securityFeatures.filter(f => f.enabled).length}/{securityFeatures.length} enabled
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -665,7 +665,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
                   <Switch
                     checked={feature.is_enabled}
                     onCheckedChange={(checked) => {
-                      toast.info('Security feature toggle functionality coming soon');
+                      toast.success('Security feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
                   />
@@ -716,7 +716,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {securityFeatures.filter(f => f.is_enabled).length}
+                {securityFeatures.filter(f => f.enabled).length}
               </div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>

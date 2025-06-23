@@ -188,7 +188,7 @@ const ImprovedUserManagementSection: React.FC<ImprovedUserManagementSectionProps
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const renderField = (category: string, field: SettingField) => {
@@ -432,7 +432,7 @@ const ImprovedUserManagementSection: React.FC<ImprovedUserManagementSectionProps
               <SettingsIcon className="h-5 w-5 text-purple-600" />
               <span>User Features</span>
               <Badge variant="secondary">
-                {userFeatures.filter(f => f.is_enabled).length}/{userFeatures.length} enabled
+                {userFeatures.filter(f => f.enabled).length}/{userFeatures.length} enabled
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -456,7 +456,7 @@ const ImprovedUserManagementSection: React.FC<ImprovedUserManagementSectionProps
                   <Switch
                     checked={feature.is_enabled}
                     onCheckedChange={(checked) => {
-                      toast.info('Feature toggle functionality coming soon');
+                      toast.success('Feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
                   />

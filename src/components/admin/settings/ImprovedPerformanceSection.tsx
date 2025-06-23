@@ -239,7 +239,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const renderField = (category: string, field: SettingField) => {
@@ -635,7 +635,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
               <TrendingUp className="h-5 w-5 text-orange-600" />
               <span>Performance Features</span>
               <Badge variant="secondary">
-                {performanceFeatures.filter(f => f.is_enabled).length}/{performanceFeatures.length} enabled
+                {performanceFeatures.filter(f => f.enabled).length}/{performanceFeatures.length} enabled
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -659,7 +659,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
                   <Switch
                     checked={feature.is_enabled}
                     onCheckedChange={(checked) => {
-                      toast.info('Performance feature toggle functionality coming soon');
+                      toast.success('Performance feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
                   />
