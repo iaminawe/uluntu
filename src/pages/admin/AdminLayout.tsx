@@ -40,7 +40,8 @@ const AdminLayout: React.FC = () => {
   // Get site name from settings
   const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
 
-  // Debug logging for troubleshooting
+  // Debug logging for troubleshooting (disabled)
+  /*
   console.log('🔍 AdminLayout Debug:', {
     user: user?.email,
     userRoles,
@@ -48,6 +49,7 @@ const AdminLayout: React.FC = () => {
     hasRoles: !!userRoles,
     rolesLength: userRoles?.length
   });
+  */
 
   // Check if user is superadmin or admin
   const hasAdminAccess = userRoles?.includes('superadmin') || userRoles?.includes('admin');

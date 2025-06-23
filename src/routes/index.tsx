@@ -69,7 +69,7 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('../pages/admin/Dashboard'));
 const UsersPage = lazy(() => import('../pages/admin/UsersPage'));
 const SettingsPage = lazy(() => import('../pages/admin/SettingsPage'));
-const UnifiedSettingsPage = lazy(() => import('../pages/admin/UnifiedSettingsPage'));
+const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 const ModerationPage = lazy(() => import('../pages/admin/ModerationPage'));
 const RolesPage = lazy(() => import('../pages/admin/RolesPage'));
 const AdminMembersPage = lazy(() => import('../pages/admin/entities/MembersPage'));
@@ -253,7 +253,7 @@ export const router = createBrowserRouter([
       { path: 'moderation', element: withSuspense(ModerationPage) },
       { 
         path: 'settings', 
-        element: withSuspense(UnifiedSettingsPage)
+        element: withSuspense(AdminSettingsPage)
       },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },

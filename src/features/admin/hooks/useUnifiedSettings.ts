@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useAdminSettings } from '@/hooks/useSettings';
-import { useAuth } from '@/hooks/useAuth';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { SettingCategory } from '@/types/settings';
 
 // Redux UI slice actions (we'll create this next)
@@ -10,8 +10,8 @@ import {
   setSidebarCollapsed,
   setMobileMenuOpen,
   clearFilters,
-  selectUnifiedSettingsUI
-} from '../store/unifiedSettingsUISlice';
+  selectAdminSettingsUI
+} from '../store/adminSettingsUISlice';
 
 export type UnifiedSettingsSection = 
   | 'general'
@@ -40,8 +40,8 @@ export interface UnifiedSettingsPermissions {
  */
 export function useUnifiedSettings() {
   const dispatch = useAppDispatch();
-  const { user } = useAuth();
-  const uiState = useAppSelector(selectUnifiedSettingsUI);
+  const { isAdmin, isSuperAdmin, hasAnyRole } = usePermissions();
+  const uiState = useAppSelector(selectAdminSettingsUI);
   
   // React Query for server state
   const {
@@ -57,16 +57,16 @@ export function useUnifiedSettings() {
     refetch
   } = useAdminSettings();
 
-  // Check permissions based on user role
+  // Check permissions using the modern permission system
   const permissions: UnifiedSettingsPermissions = {
-    canViewGeneral: user?.role === 'admin' || user?.role === 'superadmin',
-    canViewUsers: user?.role === 'admin' || user?.role === 'superadmin',
-    canViewFeatures: user?.role === 'superadmin',
-    canViewSecurity: user?.role === 'superadmin',
-    canViewEmail: user?.role === 'admin' || user?.role === 'superadmin',
-    canViewPerformance: user?.role === 'superadmin',
-    canViewContact: user?.role === 'admin' || user?.role === 'superadmin',
-    canViewAudit: user?.role === 'superadmin'
+    canViewGeneral: isAdmin(),
+    canViewUsers: isAdmin(),
+    canViewFeatures: isSuperAdmin(),
+    canViewSecurity: isSuperAdmin(),
+    canViewEmail: isAdmin(),
+    canViewPerformance: isSuperAdmin(),
+    canViewContact: isAdmin(),
+    canViewAudit: isSuperAdmin()
   };
 
   // Filter settings by category for current section
