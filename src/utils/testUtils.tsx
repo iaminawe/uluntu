@@ -7,7 +7,6 @@ import { HelmetProvider } from 'react-helmet-async';
 
 // Import your reducers
 import authReducer from '@/features/auth/store/authSlice';
-import contentReducer from '@/store/contentSlice';
 import membersUIReducer from '@/features/directory/store/membersUISlice';
 import eventsUIReducer from '@/features/events/store/eventsUISlice';
 import opportunitiesUIReducer from '@/features/opportunities/store/opportunitiesUISlice';
@@ -24,7 +23,6 @@ function render(
     store = configureStore({
       reducer: {
         auth: authReducer,
-        content: contentReducer,
         membersUI: membersUIReducer,
         eventsUI: eventsUIReducer,
         opportunitiesUI: opportunitiesUIReducer,
