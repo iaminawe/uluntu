@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useNewsArticleBySlugRedux, useRelatedNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { useNewsHybrid } from '@/features/news/hooks/useNewsHybrid';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
 import ArticleHeader from './ArticleHeader';
@@ -12,20 +12,20 @@ import ErrorState from './ErrorState';
 
 export default function NewsDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { getArticleBySlug, getRelatedArticles } = useNewsHybrid();
 
-  // Call hooks unconditionally at the top level using Redux
+  // Get article by slug
   const { 
-    article, 
+    data: article, 
     isLoading: articleLoading, 
-    isError: articleIsError,
     error: articleError 
-  } = useNewsArticleBySlugRedux(slug);
+  } = getArticleBySlug(slug || '');
   
-  // Then use the article's id for related articles
+  // Get related articles using the article's id
   const { 
-    relatedArticles = [], 
+    data: relatedArticles = [], 
     isLoading: relatedLoading 
-  } = useRelatedNewsArticlesRedux(article?.id, 3)
+  } = getRelatedArticles(article?.id || '', 3);
 
   if (!slug) {
     // Handle the case where slug is not available after hooks have been called
@@ -36,7 +36,7 @@ export default function NewsDetailPage() {
     return <LoadingState />;
   }
 
-  if (articleIsError || !article) {
+  if (articleError || !article) {
     return <ErrorState />;
   }
 

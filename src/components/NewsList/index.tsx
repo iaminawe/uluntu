@@ -11,60 +11,41 @@ import {
 } from '@/features/news/components/NewsList/utils';
 import { NewsArticle as MainNewsArticle } from '../../types';
 
-import { useFilteredNewsArticlesRedux } from '../../hooks/useNewsRedux';
+import { useNewsHybrid } from '@/features/news/hooks/useNewsHybrid';
 import { useNewsArticlesWithFilters } from '@/hooks/useNewsQueries';
 
-const NewsList = ({ initialTag = 'all', initialSearch = '', articles: passedArticles, useRedux = false }: NewsListProps & { useRedux?: boolean }) => {
+const NewsList = ({ initialTag = 'all', initialSearch = '', articles: passedArticles }: NewsListProps) => {
   // State for filters
   const [filters, setFilters] = useState<FilterOptions>({
     search: initialSearch,
     tag: initialTag,
   });
   
-  // Redux implementation
+  // Hybrid implementation - use passed articles or fetch from API
   const { 
-    articles: reduxArticles,
-    updateFilters: updateReduxFilters,
-    isLoading: reduxIsLoading,
-    isError: reduxIsError,
-    error: reduxError
-  } = useFilteredNewsArticlesRedux();
+    articles: hybridArticles,
+    isLoading: hybridIsLoading,
+    error: hybridError,
+    setSearchTerm,
+    setTags
+  } = useNewsHybrid();
 
-  // Traditional React Query implementation
-  const { 
-    data: newsDataArticles,
-    isLoading: newsDataIsLoading, 
-    error: newsDataError 
-  } = useNewsArticlesWithFilters({
-    search: filters.search,
-    // Ensure 'tag' is string | undefined, not 'all'
-    tag: filters.tag && filters.tag !== 'all' ? filters.tag : undefined 
-  });
-
-  // Update Redux filters when component filters change (if using Redux)
+  // Update hybrid filters when component filters change
   useEffect(() => {
-    if (useRedux) {
-      updateReduxFilters({
-        search: filters.search,
-        tags: filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined
-      });
-    }
-  }, [useRedux, filters, updateReduxFilters]);
+    setSearchTerm(filters.search);
+    setTags(filters.tag && filters.tag !== 'all' ? [filters.tag] : undefined);
+  }, [filters, setSearchTerm, setTags]);
 
   // Choose which data source to use
-  const mainArticles = passedArticles || (useRedux 
-    ? reduxArticles as MainNewsArticle[]
-    : (newsDataArticles || []) as MainNewsArticle[]);
+  const mainArticles = passedArticles || hybridArticles as MainNewsArticle[];
   
   
   // Convert main NewsArticle type to local NewsArticle type using adapter function
   const articles = mainArticles.map(adaptMainNewsArticleToLocal);
   
   // Set loading and error states based on the chosen data source
-  const isLoading = passedArticles ? false : (useRedux ? reduxIsLoading : newsDataIsLoading);
-  const error = useRedux 
-    ? (reduxError ? new Error(String(reduxError)) : (reduxIsError ? new Error('Error loading articles') : null)) 
-    : newsDataError;
+  const isLoading = passedArticles ? false : hybridIsLoading;
+  const error = passedArticles ? null : hybridError;
     
   // Filter and sort articles based on the fetched data
   // The hook should ideally return pre-filtered data based on search/tags,
