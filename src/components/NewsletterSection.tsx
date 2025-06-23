@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { newsletterSubscriptionApi } from '@/api/newsletter/subscriptions';
+import { newsletterSubscriptionApi } from '@/features/newsletter/api/subscriptions';
 
 const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');

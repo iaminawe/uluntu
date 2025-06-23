@@ -4,7 +4,7 @@ import { AlertTriangle } from 'lucide-react';
 import MemberCard from '@/features/directory/components/MembersList/MemberCard';
 import { Member, MembersListProps, FilterOptions } from '@/features/directory/components/MembersList/types';
 import { filterMembers, sortMembersByName } from '@/features/directory/components/MembersList/utils';
-import { useFilteredMembersRedux } from '../../hooks/useMembersRedux';
+import { useMembersHybrid } from '@/features/directory/hooks/useMembersHybrid';
 
 const MembersList = ({ 
   initialSearch = '', 
@@ -20,12 +20,13 @@ const MembersList = ({
     skills: initialSkills
   });
   
-  // Use Redux for filtered members if no parent members are provided
+  // Use hybrid approach for filtered members if no parent members are provided
   const { 
     members: reduxMembers = [], 
-    applyFilters,
+    setSearchTerm,
+    setSkills,
     clearAllFilters
-  } = useFilteredMembersRedux();
+  } = useMembersHybrid();
   
   // Determine if we should use parent props or Redux state
   const useParentData = parentMembers.length > 0 || parentLoading !== undefined;
@@ -35,15 +36,13 @@ const MembersList = ({
   // Filtered members based on current filters (for parent members mode)
   const [localFilteredMembers, setLocalFilteredMembers] = useState<Member[]>([]);
   
-  // Apply Redux filters when they change
+  // Apply hybrid filters when they change
   useEffect(() => {
     if (!useParentData) {
-      applyFilters({
-        search: filters.search,
-        skills: filters.skills
-      });
+      setSearchTerm(filters.search);
+      setSkills(filters.skills);
     }
-  }, [filters, applyFilters, useParentData]);
+  }, [filters, setSearchTerm, setSkills, useParentData]);
   
   // Apply local filters when parent members or filters change
   useEffect(() => {

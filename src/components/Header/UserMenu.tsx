@@ -1,13 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, UserPlus, LogIn, Edit } from 'lucide-react';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut } = useSession();
+  const authState = useAppSelector(state => state.auth);
+  const userRoles = authState.roles.list;
+  const isAdmin = userRoles.includes('admin') || userRoles.includes('superadmin');
   const navigate = useNavigate();
   
   // Get the member profile for the current user

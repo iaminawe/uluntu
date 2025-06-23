@@ -6,9 +6,11 @@ import DesktopNav from '@/shared/components/layout/Header/DesktopNav';
 import MobileNav from '@/shared/components/layout/Header/MobileNav';
 import ThemeToggle from '@/shared/components/layout/Header/ThemeToggle';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/providers/ThemeProvider';
 
 const Header: React.FC<HeaderProps> = ({
-  logo = "Nelson Tech",
+  logo,
   navLinks = [
     { text: "Events", href: "/events" },
     { text: "Directory", href: "/directory" },
@@ -20,9 +22,17 @@ const Header: React.FC<HeaderProps> = ({
     { text: "News", href: "/news" }
   ]
 }) => {
+  const { settings } = useSettings();
+  const { theme, toggleTheme, primaryColor, secondaryColor } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  
+  // Get site settings with fallbacks
+  const siteName = settings?.site?.site_name?.value || "Nelson Tech";
+  const siteLogo = settings?.site?.site_logo?.value;
+  const displayLogo = logo || siteLogo || siteName;
+  
+  const isDark = theme === 'dark';
 
   // Handle scroll effect
   useEffect(() => {
@@ -31,29 +41,20 @@ const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Initialize dark mode from system preference or localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    document.documentElement.classList.toggle("dark");
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-  };
+  const toggleDarkMode = toggleTheme;
 
   const closeMobileMenu = () => setIsOpen(false);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-gradient-to-r from-orange-500/90 to-red-500/90 backdrop-blur-sm shadow-sm"
-          : "bg-gradient-to-r from-orange-500 to-red-500"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`}
+      style={{
+        background: isScrolled
+          ? `linear-gradient(to right, ${primaryColor}e6, ${secondaryColor}e6)`
+          : `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`,
+        backdropFilter: isScrolled ? 'blur(4px)' : 'none',
+        boxShadow: isScrolled ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+      }}
     >
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -62,7 +63,15 @@ const Header: React.FC<HeaderProps> = ({
             to="/"
             className="text-white font-bold text-xl flex items-center"
           >
-            {logo}
+            {typeof displayLogo === 'string' && displayLogo.includes('http') ? (
+              <img 
+                src={displayLogo} 
+                alt={siteName} 
+                className="h-8 w-auto"
+              />
+            ) : (
+              displayLogo
+            )}
           </Link>
 
           {/* Desktop Navigation */}

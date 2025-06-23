@@ -2,12 +2,19 @@ import React from 'react';
 import { AboutSectionProps } from '@/shared/components/layout/AboutSection/types';
 import AboutContent from '@/shared/components/layout/AboutSection/AboutContent';
 import LocationInfo from '@/shared/components/layout/AboutSection/LocationInfo';
+import { useSetting } from '@/hooks/useSettings';
 
 const AboutSection: React.FC<AboutSectionProps> = ({ 
   title = "About the Collective",
   features,
   locationInfo 
 }) => {
+  // Get location settings with fallbacks
+  const { value: locationName } = useSetting('contact', 'location_name', 'Nelson Innovation Centre');
+  const { value: locationAddress } = useSetting('contact', 'location_address', 'Box 752 - 560 Baker Street\nNelson, BC V1L 4E5');
+  const { value: hostedByName } = useSetting('contact', 'hosted_by_name', 'Kootenay Association for Science & Technology (KAST)');
+  const { value: hostedByUrl } = useSetting('contact', 'hosted_by_url', '#');
+  const { value: mapsEmbedUrl } = useSetting('contact', 'maps_embed_url', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2599.3982126901476!2d-117.2931246!3d49.4938073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x537cb6a0878e85b7%3A0xb2217c37b07c8c3a!2sNelson%20Innovation%20Centre!5e0!3m2!1sen!2sca!4v1696376047294!5m2!1sen!2sca');
   // Default features if none provided
   const defaultFeatures = features || [
     {
@@ -36,19 +43,18 @@ const AboutSection: React.FC<AboutSectionProps> = ({
     }
   ];
 
-  // Default location info if none provided
+  // Default location info if none provided, using settings values
   const defaultLocationInfo = locationInfo || {
     title: "Location",
     address: [
-      "Nelson Innovation Centre",
-      "Box 752 - 560 Baker Street",
-      "Nelson, BC V1L 4E5"
+      locationName,
+      ...locationAddress?.split('\n') || []
     ],
     hostedBy: {
-      name: "Kootenay Association for Science & Technology (KAST)",
-      url: "#"
+      name: hostedByName,
+      url: hostedByUrl
     },
-    mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2599.3982126901476!2d-117.2931246!3d49.4938073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x537cb6a0878e85b7%3A0xb2217c37b07c8c3a!2sNelson%20Innovation%20Centre!5e0!3m2!1sen!2sca!4v1696376047294!5m2!1sen!2sca"
+    mapEmbedUrl: mapsEmbedUrl
   };
 
   return (

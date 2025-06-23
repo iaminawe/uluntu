@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useAppSelector } from '@/store/hooks';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -8,7 +9,9 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps) {
-  const { user, loading, userRoles } = useAuth();
+  const { user, loading } = useSession();
+  const authState = useAppSelector(state => state.auth);
+  const userRoles = authState.roles.list;
   const location = useLocation();
 
   if (loading) {

@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useAppSelector } from '@/store/hooks';
 import { supabase } from '@/lib/supabase';
 
 interface GroupGuardProps {
@@ -13,7 +14,10 @@ interface GroupGuardProps {
  */
 export default function GroupGuard({ children }: GroupGuardProps) {
   const { id } = useParams<{ id: string }>();
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading } = useSession();
+  const authState = useAppSelector(state => state.auth);
+  const userRoles = authState.roles.list;
+  const isAdmin = userRoles.includes('admin') || userRoles.includes('superadmin');
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

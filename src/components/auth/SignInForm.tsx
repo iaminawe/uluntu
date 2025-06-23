@@ -1,54 +1,51 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useSimpleError } from '@/hooks/useErrorHandling';
+import { ErrorAlert } from '@/components/ui/ErrorAlert';
+import { sanitizeError } from '@/utils/errorSanitization';
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  // Get both the signIn function and the auth state from useAuth
+  const location = useLocation();
   const { signIn, status, error: authError } = useAuth();
+  const { error, handleError, clearError } = useSimpleError('Sign In Form');
 
   // Set local error state based on authError from Redux when it changes
   React.useEffect(() => {
     if (authError) {
-      // Handle specific Supabase auth errors with more user-friendly messages
-      if (authError.includes('Invalid login credentials')) {
-        setError('Invalid email or password. Please try again.');
-      } else if (authError.includes('Email not confirmed')) {
-        setError('Please verify your email address before signing in.');
-      } else if (authError.includes('unexpected_failure')) {
-        setError('Authentication service is temporarily unavailable. Please try again later.');
-      } else {
-        setError(authError);
-      }
+      const sanitized = sanitizeError(authError);
+      handleError(authError);
     } else {
-      setError(null);
+      clearError();
     }
-  }, [authError]);
+  }, [authError, handleError, clearError]);
 
-  // Redirect to dashboard when authenticated
+  // Redirect to intended page or dashboard when authenticated
   React.useEffect(() => {
     if (status === 'authenticated') {
-      navigate('/');
+      // Get the intended redirect location from state, or default to homepage
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     }
-  }, [status, navigate]);
+  }, [status, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
-      setError('Please enter both email and password');
+      handleError('Please enter both email and password');
       return;
     }
     
     try {
       setIsLoading(true);
-      setError(null);
+      clearError();
       
       // Call signIn without destructuring the return value
       // The signIn function dispatches actions to Redux and doesn't return anything
@@ -58,8 +55,7 @@ export default function SignInForm() {
       // and handled by the useEffect hooks above
       console.log('Sign-in request completed');
     } catch (err) {
-      console.error('Error signing in:', err);
-      setError(err instanceof Error ? err.message : 'Failed to sign in');
+      handleError(err);
     } finally {
       setIsLoading(false);
     }
@@ -72,16 +68,11 @@ export default function SignInForm() {
       </h2>
       
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <AlertCircle className="h-5 w-5 text-red-500" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-            </div>
-          </div>
-        </div>
+        <ErrorAlert
+          error={error}
+          onDismiss={clearError}
+          className="mb-6"
+        />
       )}
       
       <form onSubmit={handleSubmit} className="space-y-6">

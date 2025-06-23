@@ -1,11 +1,14 @@
 import React from 'react';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { supabase } from '@/lib/supabase';
 import { useDispatch } from 'react-redux';
 import { setRoles } from '@/features/auth/store/authSlice';
+import { useAppSelector } from '@/store/hooks';
 
 export const DebugUserRoles: React.FC = () => {
-  const { user, userRoles, loading } = useAuth();
+  const { user, loading } = useSession();
+  const authState = useAppSelector(state => state.auth);
+  const userRoles = authState.roles.list;
   const dispatch = useDispatch();
 
   const refreshRoles = async () => {
