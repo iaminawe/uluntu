@@ -76,6 +76,14 @@ export interface MarketplaceListProps {
   initialSearch?: string;
   sellerId?: string; // Using string ID for consistency
   useRedux?: boolean; // Whether to use Redux or React Query for data fetching
+  // Optional parent data
+  listings?: any[];
+  loading?: boolean;
+  error?: Error | null;
+  // Filter props for compatibility with MarketplacePage
+  searchTerm?: string;
+  selectedType?: ListingType | 'all';
+  selectedCondition?: ListingCondition | 'all';
 }
 
 // Re-export types from central marketplace types

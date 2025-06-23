@@ -52,29 +52,38 @@ export function useUserGroups() {
           .single();
 
         if (memberError || !member) {
-          throw new Error('Could not find member profile');
+          // If member profile doesn't exist, return empty results instead of throwing
+          console.warn('Member profile not found for user, returning empty results');
+          setGroups([]);
+          return;
         }
 
-        // Get groups where user is a member
+        // Get groups where user is a member - use separate queries to avoid join issues
         const { data: groupMemberships, error: groupsError } = await supabase
           .from('group_members')
-          .select(`
-            group:groups (
-              id,
-              name,
-              member_count
-            )
-          `)
-          .eq('member_id', member.id)
-          .eq('status', 'active');
+          .select('group_id')
+          .eq('member_id', member.id);
 
         if (groupsError) {
           throw groupsError;
         }
 
-        const userGroups = groupMemberships
-          ?.map(membership => membership.group)
-          .filter(Boolean) as UserGroup[];
+        let userGroups: UserGroup[] = [];
+        
+        if (groupMemberships && groupMemberships.length > 0) {
+          const groupIds = groupMemberships.map(gm => gm.group_id);
+          
+          const { data: groups, error: groupsDataError } = await supabase
+            .from('groups')
+            .select('id, name, member_count')
+            .in('id', groupIds);
+            
+          if (groupsDataError) {
+            throw groupsDataError;
+          }
+          
+          userGroups = groups || [];
+        }
 
         setGroups(userGroups || []);
       } catch (err) {
@@ -120,7 +129,10 @@ export function useUserResources() {
           .single();
 
         if (memberError || !member) {
-          throw new Error('Could not find member profile');
+          // If member profile doesn't exist, return empty results instead of throwing
+          console.warn('Member profile not found for user, returning empty results');
+          setResources([]);
+          return;
         }
 
         // Get resources created by user
@@ -180,15 +192,18 @@ export function useUserMarketplaceItems() {
           .single();
 
         if (memberError || !member) {
-          throw new Error('Could not find member profile');
+          // If member profile doesn't exist, return empty results instead of throwing
+          console.warn('Member profile not found for user, returning empty results');
+          setItems([]);
+          return;
         }
 
-        // Get marketplace items created by user
+        // Get marketplace items created by user (using resources table as marketplace data)
         const { data: userItems, error: itemsError } = await supabase
-          .from('marketplace_listings')
-          .select('id, title, price, condition, images')
-          .eq('seller_id', member.id)
-          .eq('status', 'active')
+          .from('resources')
+          .select('id, title, image, type, created_at')
+          .eq('contributor_id', member.id)
+          .eq('status', 'published')
           .order('created_at', { ascending: false })
           .limit(5);
 
@@ -196,7 +211,16 @@ export function useUserMarketplaceItems() {
           throw itemsError;
         }
 
-        setItems(userItems || []);
+        // Transform resource data to marketplace item format
+        const transformedItems = (userItems || []).map(item => ({
+          id: item.id,
+          title: item.title,
+          price: 0, // Resources don't have prices
+          condition: 'new' as const,
+          images: item.image ? [item.image] : []
+        }));
+        
+        setItems(transformedItems);
       } catch (err) {
         console.error('Error fetching user marketplace items:', err);
         setError(err as Error);

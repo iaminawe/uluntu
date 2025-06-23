@@ -5,7 +5,7 @@ export { PagesList } from './components/PagesList';
 export { PageDetail } from './components/PageDetail';
 
 // Hooks
-export { usePagesRedux } from './hooks/usePagesRedux';
+// usePagesRedux hook not implemented yet
 
 // API
 export { pagesApi } from './api/pagesApi';

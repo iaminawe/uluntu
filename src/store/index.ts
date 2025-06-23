@@ -8,11 +8,12 @@ import opportunitiesUIReducer from '@/features/opportunities/store/opportunities
 import groupsUIReducer from '@/features/groups/store/groupsUISlice';
 import newsUIReducer from '@/features/news/store/newsUISlice';
 import marketplaceUIReducer from '@/features/marketplace/store/marketplaceUISlice';
+import resourcesUIReducer from '@/features/resources/store/resourcesUISlice';
 import pagesReducer from '@/features/pages/store/pagesSlice';
 import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
 import galleryReducer from '@/features/gallery/store/gallerySlice';
 import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
-import unifiedSettingsUIReducer from '@/features/admin/store/unifiedSettingsUISlice';
+import adminSettingsUIReducer from '@/features/admin/store/adminSettingsUISlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';
 
@@ -34,11 +35,12 @@ export const store = configureStore({
     groupsUI: groupsUIReducer,
     newsUI: newsUIReducer,
     marketplaceUI: marketplaceUIReducer,
+    resourcesUI: resourcesUIReducer,
     pages: pagesReducer,
     onboarding: onboardingReducer,
     gallery: galleryReducer,
     galleryUI: galleryUIReducer,
-    unifiedSettingsUI: unifiedSettingsUIReducer,
+    adminSettingsUI: adminSettingsUIReducer,
     // Other reducers will be added as they are implemented
   },
   middleware: (getDefaultMiddleware) => 

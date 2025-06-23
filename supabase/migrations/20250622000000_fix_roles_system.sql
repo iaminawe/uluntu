@@ -31,7 +31,7 @@ CREATE POLICY "Users can view own custom roles" ON public.user_custom_roles
     USING (user_id = auth.uid());
 
 -- Temporarily disable audit trigger for initial setup
-ALTER TABLE public.custom_roles DISABLE TRIGGER audit_custom_roles;
+ALTER TABLE public.custom_roles DISABLE TRIGGER IF EXISTS audit_custom_roles;
 
 -- Insert default system roles into custom_roles table if they don't exist
 INSERT INTO public.custom_roles (name, description, permissions, is_system)
@@ -51,7 +51,7 @@ VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- Re-enable audit trigger
-ALTER TABLE public.custom_roles ENABLE TRIGGER audit_custom_roles;
+ALTER TABLE public.custom_roles ENABLE TRIGGER IF EXISTS audit_custom_roles;
 
 -- Add audit trigger for user_custom_roles
 CREATE OR REPLACE TRIGGER audit_user_custom_roles

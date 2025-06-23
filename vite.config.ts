@@ -44,8 +44,6 @@ export default defineConfig({
           'vendor-utils': ['date-fns', 'uuid', 'slugify'],
           // Supabase
           'vendor-supabase': ['@supabase/supabase-js'],
-          // Form libraries
-          'vendor-forms': ['react-select', 'react-datepicker'],
         },
         // Better chunk naming
         chunkFileNames: (chunkInfo) => {

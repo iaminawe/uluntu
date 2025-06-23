@@ -39,7 +39,6 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
         .select('role')
         .eq('user_id', userId);
       
-      
       if (error) {
         console.error('Error fetching user roles:', error.message);
         
@@ -101,33 +100,24 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           }
         }));
         
-        // Fetch and set user roles with timeout BEFORE setting loading to false
-        try {
-          const rolePromise = fetchUserRoles(currentSession.user.id);
-          const timeoutPromise = new Promise<string[]>((resolve) => {
-            setTimeout(() => {
-              const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
-              if (superAdminId && currentSession.user.id === superAdminId) {
-                resolve(['superadmin']);
-              } else {
-                resolve([]);
-              }
-            }, 5000); // 5 second timeout
+        // Fetch roles asynchronously (non-blocking)
+        fetchUserRoles(currentSession.user.id)
+          .then(roles => {
+            dispatch(setRoles(roles));
+          })
+          .catch(err => {
+            console.error('Error in role fetching process:', err);
+            // Fallback for super admin
+            const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+            if (superAdminId && currentSession.user.id === superAdminId) {
+              dispatch(setRoles(['superadmin']));
+            } else {
+              dispatch(setRoles([]));
+            }
           });
-          
-          const roles = await Promise.race([rolePromise, timeoutPromise]);
-          dispatch(setRoles(roles));
-        } catch (err) {
-          console.error('Error in role fetching process:', err);
-          // Fallback for super admin
-          const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
-          if (superAdminId && currentSession.user.id === superAdminId) {
-            dispatch(setRoles(['superadmin']));
-          }
-        }
       }
       
-      // Only set loading to false AFTER roles are fetched (or no session exists)
+      // Set loading to false immediately (don't wait for roles)
       setLoading(false);
     });
 
@@ -162,35 +152,26 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             }
           }));
           
-          // Fetch and set user roles with timeout BEFORE setting loading to false
-          try {
-            const rolePromise = fetchUserRoles(currentSession.user.id);
-            const timeoutPromise = new Promise<string[]>((resolve) => {
-              setTimeout(() => {
-                const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
-                if (superAdminId && currentSession.user.id === superAdminId) {
-                  resolve(['superadmin']);
-                } else {
-                  resolve([]);
-                }
-              }, 5000); // 5 second timeout
+          // Fetch roles asynchronously (non-blocking)
+          fetchUserRoles(currentSession.user.id)
+            .then(roles => {
+              dispatch(setRoles(roles));
+            })
+            .catch(err => {
+              console.error('Error in auth state change role fetching:', err);
+              // Fallback for super admin
+              const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
+              if (superAdminId && currentSession.user.id === superAdminId) {
+                dispatch(setRoles(['superadmin']));
+              } else {
+                dispatch(setRoles([]));
+              }
             });
-            
-            const roles = await Promise.race([rolePromise, timeoutPromise]);
-            dispatch(setRoles(roles));
-          } catch (err) {
-            console.error('Error in auth state change role fetching:', err);
-            // Fallback for super admin
-            const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
-            if (superAdminId && currentSession.user.id === superAdminId) {
-              dispatch(setRoles(['superadmin']));
-            }
-          }
         } else {
           dispatch(reduxSignOut());
         }
         
-        // Only set loading to false AFTER roles are fetched
+        // Set loading to false immediately (don't wait for roles)
         setLoading(false);
       }
     );

@@ -149,7 +149,7 @@ class PerformanceMonitor {
   getMetrics(): PerformanceMetrics {
     return {
       ...this.metrics,
-      renderMetrics: Array.from(this.renderTracker.values())
+      renderMetrics: Array.from(this.renderTracker.values())[0] // Get first render metric or undefined
     };
   }
 
@@ -190,13 +190,14 @@ class PerformanceMonitor {
     }
 
     // Render Metrics
-    if (metrics.renderMetrics && metrics.renderMetrics.length > 0) {
+    if (metrics.renderMetrics) {
       report.push('Component Render Performance:');
-      const topRenders = metrics.renderMetrics
-        .sort((a, b) => b.renderCount - a.renderCount)
+      const renderMetricsArray = Array.from(this.renderTracker.values());
+      const topRenders = renderMetricsArray
+        .sort((a: RenderMetrics, b: RenderMetrics) => b.renderCount - a.renderCount)
         .slice(0, 5);
 
-      topRenders.forEach(component => {
+      topRenders.forEach((component: RenderMetrics) => {
         const avgRenderTime = component.renderTime / component.renderCount;
         report.push(`  ${component.componentName}:`);
         report.push(`    Renders: ${component.renderCount}`);

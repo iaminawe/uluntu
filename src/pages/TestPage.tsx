@@ -1,4 +1,5 @@
 import React from 'react';
+import { RoleAssignmentUtility } from '@/components/RoleAssignmentUtility';
 
 const TestPage: React.FC = () => {
   return (
@@ -10,6 +11,11 @@ const TestPage: React.FC = () => {
         <p>Node ENV: {import.meta.env.MODE}</p>
         <p>Supabase URL configured: {import.meta.env.VITE_SUPABASE_URL ? '✅ Yes' : '❌ No'}</p>
         <p>Use Supabase: {import.meta.env.VITE_USE_SUPABASE}</p>
+      </div>
+      
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Role Assignment Utility</h2>
+        <RoleAssignmentUtility />
       </div>
     </div>
   );

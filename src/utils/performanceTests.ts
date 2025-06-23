@@ -1,4 +1,4 @@
-import { performanceMonitor, markPerformance, measurePerformance } from './performanceMonitor';
+import { performanceMonitor, markPerformance } from './performanceMonitor';
 
 export interface PerformanceTestResult {
   testName: string;

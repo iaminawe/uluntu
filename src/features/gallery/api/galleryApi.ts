@@ -19,19 +19,7 @@ export const galleryApi = {
 
     let query = supabase
       .from('user_galleries')
-      .select(`
-        *,
-        cover_photo:gallery_photos!user_galleries_cover_photo_fkey (
-          id,
-          thumbnail_path,
-          storage_path
-        ),
-        gallery_photos!gallery_photos_gallery_id_fkey (
-          id,
-          thumbnail_path,
-          storage_path
-        )
-      `, { count: 'exact' })
+      .select('*', { count: 'exact' })
       .eq('privacy_level', 'public')
       .order('created_at', { ascending: false })
       .range(from, to);
@@ -58,7 +46,7 @@ export const galleryApi = {
     }
 
     if (filters?.ownerId) {
-      query = query.eq('owner_id', filters.ownerId);
+      query = query.eq('user_id', filters.ownerId);
     }
 
     if (filters?.dateRange) {
@@ -76,43 +64,16 @@ export const galleryApi = {
 
     // Transform data to match interface
     const galleries = (data || []).map(gallery => {
-      // Get cover photo URL from the joined data
-      let coverPhotoUrl = null;
-      
-      // Helper function to get public URL from storage path
-      const getPublicUrl = (path: string) => {
-        if (!path) return null;
-        // If it's already a full URL, return as is
-        if (path.startsWith('http://') || path.startsWith('https://')) {
-          return path;
-        }
-        // Otherwise, construct the public URL
-        return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
-      };
-      
-      // First try to use the explicit cover photo
-      if (gallery.cover_photo?.thumbnail_path) {
-        coverPhotoUrl = getPublicUrl(gallery.cover_photo.thumbnail_path);
-      } else if (gallery.cover_photo?.storage_path) {
-        coverPhotoUrl = getPublicUrl(gallery.cover_photo.storage_path);
-      }
-      // If no cover photo set, use the first photo from gallery_photos
-      else if (gallery.gallery_photos && gallery.gallery_photos.length > 0) {
-        const firstPhoto = gallery.gallery_photos[0];
-        const path = firstPhoto.thumbnail_path || firstPhoto.storage_path;
-        coverPhotoUrl = getPublicUrl(path);
-      }
-      
       return {
         ...gallery,
         photos: [],
         gallery_photos: [],
-        cover_photo_url: coverPhotoUrl,
+        cover_photo_url: null, // Will be populated separately if needed
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         ownerId: gallery.user_id,
         privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level,
-        photo_count: gallery.gallery_photos ? gallery.gallery_photos.length : 0
+        photo_count: gallery.photo_count || 0
       };
     });
     
@@ -130,15 +91,7 @@ export const galleryApi = {
   async getGallery(id: string): Promise<Gallery | null> {
     const { data, error } = await supabase
       .from('user_galleries')
-      .select(`
-        *,
-        gallery_photos!gallery_photos_gallery_id_fkey (*),
-        owner:members!user_id (
-          id,
-          name,
-          image
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .single();
 
@@ -148,6 +101,14 @@ export const galleryApi = {
     }
 
     if (!data) return null;
+    
+    // Fetch photos separately
+    const { data: photos } = await supabase
+      .from('gallery_photos')
+      .select('*')
+      .eq('gallery_id', id)
+      .eq('visibility', 'visible')
+      .order('sort_order', { ascending: true });
     
     // Helper function to get public URL from storage path
     const getPublicUrl = (path: string) => {
@@ -161,7 +122,7 @@ export const galleryApi = {
     };
     
     // Transform photos to include public URLs
-    const photos = (data.gallery_photos || []).map(photo => {
+    const processedPhotos = (photos || []).map(photo => {
       // Generate public URLs for all path fields
       const processedPhoto = { ...photo };
       
@@ -190,22 +151,22 @@ export const galleryApi = {
     
     // Get cover photo URL
     let coverPhotoUrl = null;
-    if (data.cover_photo_id && photos.length > 0) {
-      const coverPhoto = photos.find(p => p.id === data.cover_photo_id);
+    if (data.cover_photo_id && processedPhotos.length > 0) {
+      const coverPhoto = processedPhotos.find(p => p.id === data.cover_photo_id);
       if (coverPhoto) {
         coverPhotoUrl = coverPhoto.thumbnail_url || coverPhoto.small_url || coverPhoto.url;
       }
     }
     // Fallback to first photo if no cover photo set
-    if (!coverPhotoUrl && photos.length > 0) {
-      coverPhotoUrl = photos[0].thumbnail_url || photos[0].small_url || photos[0].url;
+    if (!coverPhotoUrl && processedPhotos.length > 0) {
+      coverPhotoUrl = processedPhotos[0].thumbnail_url || processedPhotos[0].small_url || processedPhotos[0].url;
     }
     
     // Transform data to match interface
     return {
       ...data,
-      photos: photos,
-      gallery_photos: photos,
+      photos: processedPhotos,
+      gallery_photos: processedPhotos,
       cover_photo_url: coverPhotoUrl,
       createdAt: data.created_at,
       updatedAt: data.updated_at,

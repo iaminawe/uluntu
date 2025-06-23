@@ -33,6 +33,12 @@ const handleAuthError = (dispatch: ReturnType<typeof useAppDispatch>, error: unk
   dispatch(setAuthError(sanitized.userMessage));
 };
 
+/**
+ * @deprecated This auth hook is deprecated. Please use:
+ * - `usePermissions()` from '@/hooks/usePermissions' for role/permission checks
+ * - `useSession()` from '@/shared/contexts/SessionContextWithRedux' for user/session data
+ * - `useAuth()` from '@/features/auth/hooks/useAuth' for auth operations
+ */
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { user, session, status, error, roles } = useAppSelector(state => state.auth);
@@ -166,7 +172,13 @@ export const useAuth = () => {
     }
   };
 
-  const hasRole = (role: string) => user?.role === role;
+  /**
+   * @deprecated Use `usePermissions()` hook instead for role checking
+   */
+  const hasRole = (role: string) => {
+    console.warn('useAuth.hasRole is deprecated. Use usePermissions() hook instead.');
+    return user?.role === role;
+  };
 
   // For testing purposes
   const setSession = (data: { user: User; session: Session }) => {

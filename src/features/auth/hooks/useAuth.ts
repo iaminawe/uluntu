@@ -173,7 +173,14 @@ export const useAuth = () => {
     }
   };
 
-  const hasRole = (role: string) => user?.role === role;
+  /**
+   * @deprecated Use `usePermissions()` hook instead for role checking
+   * This method checks user.role which may be undefined. Use the modern permission system instead.
+   */
+  const hasRole = (role: string) => {
+    console.warn('useAuth.hasRole is deprecated. Use usePermissions() hook instead.');
+    return user?.role === role;
+  };
 
   // For testing purposes
   const setSession = (data: { user: User; session: Session }) => {
