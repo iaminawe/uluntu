@@ -6,7 +6,8 @@ import membersUIReducer from '@/features/directory/store/membersUISlice';
 import companiesUIReducer from '@/features/companies/store/companiesUISlice';
 import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
 import groupsReducer from '@/features/groups/store/groupsSlice';
-import newsReducer from '@/features/news/store/newsSlice';
+import groupsUIReducer from '@/features/groups/store/groupsUISlice';
+import newsUIReducer from '@/features/news/store/newsUISlice';
 import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
 import pagesReducer from '@/features/pages/store/pagesSlice';
 import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
@@ -33,7 +34,8 @@ export const store = configureStore({
     companiesUI: companiesUIReducer,
     opportunities: opportunitiesReducer,
     groups: groupsReducer,
-    news: newsReducer,
+    groupsUI: groupsUIReducer,
+    newsUI: newsUIReducer,
     marketplace: marketplaceReducer,
     pages: pagesReducer,
     onboarding: onboardingReducer,

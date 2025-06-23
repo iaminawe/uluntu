@@ -6,7 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
-import { ContentProvider } from '@/shared/contexts/ContentContext';
+// import { ContentProvider } from '@/shared/contexts/ContentContext';
 import { SessionProvider } from '@/shared/contexts/SessionContextWithRedux';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { SettingsProvider } from '@/providers/SettingsProvider';
@@ -36,7 +36,7 @@ createRoot(document.getElementById('root')!).render(
               {/* SettingsProvider for global site configuration */}
               <SettingsProvider>
                 <ThemeProvider>
-                  <ContentProvider>
+                  {/* <ContentProvider> */}
                   <DynamicAppConfig />
                   <RouterProvider router={router} />
                   <ReactQueryDevtools initialIsOpen={false} />
@@ -52,7 +52,7 @@ createRoot(document.getElementById('root')!).render(
                   />
                     {/* <DebugUserRoles /> */}
                     <SettingsDebugger />
-                  </ContentProvider>
+                  {/* </ContentProvider> */}
                 </ThemeProvider>
               </SettingsProvider>
             </QueryClientProvider>
