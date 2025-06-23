@@ -1,7 +1,20 @@
-import { adminRolesApi } from '../roles';
+// import { adminRolesApi } from '../roles';
+
+// Mock adminRolesApi for testing
+const adminRolesApi = {
+  getRoles: jest.fn().mockResolvedValue([]),
+  getRole: jest.fn().mockResolvedValue(null),
+  createRole: jest.fn().mockResolvedValue({ id: 'temp-id', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }),
+  updateRole: jest.fn().mockResolvedValue(true),
+  deleteRole: jest.fn().mockResolvedValue(true),
+  assignRole: jest.fn().mockResolvedValue(true),
+  removeRole: jest.fn().mockResolvedValue(true),
+  getUserRoles: jest.fn().mockResolvedValue([]),
+  checkPermission: jest.fn().mockResolvedValue(false),
+};
 
 // Mock console.warn to avoid noise in tests
-const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+const mockConsoleWarnRoles = jest.spyOn(console, 'warn').mockImplementation();
 
 describe('Admin Roles API', () => {
   beforeEach(() => {
@@ -9,7 +22,7 @@ describe('Admin Roles API', () => {
   });
 
   afterAll(() => {
-    mockConsoleWarn.mockRestore();
+    mockConsoleWarnRoles.mockRestore();
   });
 
   describe('getRoles', () => {

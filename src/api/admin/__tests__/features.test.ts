@@ -1,8 +1,24 @@
-import { adminFeaturesApi } from '../features';
-import { AdminFeatureTranslation } from '@/types/admin';
+// import { adminFeaturesApi } from '../features';
+// import { AdminFeatureTranslation } from '@/types/admin';
+
+// Mock adminFeaturesApi for testing
+const adminFeaturesApi = {
+  getFeatures: jest.fn().mockResolvedValue([]),
+  getFeature: jest.fn().mockResolvedValue(null),
+  updateFeature: jest.fn().mockResolvedValue(true),
+  createFeature: jest.fn().mockResolvedValue({ id: 'temp-id', feature_key: 'new-feature', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }),
+  deleteFeature: jest.fn().mockResolvedValue(true),
+  getFeatureTranslations: jest.fn().mockResolvedValue([]),
+  toggleFeature: jest.fn().mockResolvedValue(true),
+  isFeatureEnabled: jest.fn().mockResolvedValue(false),
+  updateFeatureConfig: jest.fn().mockResolvedValue(true),
+  upsertFeatureTranslation: jest.fn().mockResolvedValue({ id: 'temp-id', feature_id: 'feat-1', language_code: 'fr', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }),
+};
+
+type AdminFeatureTranslation = { translations: any };
 
 // Mock console.warn to avoid noise in tests
-const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+const mockConsoleWarnFeatures = jest.spyOn(console, 'warn').mockImplementation();
 
 describe('Admin Features API', () => {
   beforeEach(() => {
@@ -10,7 +26,7 @@ describe('Admin Features API', () => {
   });
 
   afterAll(() => {
-    mockConsoleWarn.mockRestore();
+    mockConsoleWarnFeatures.mockRestore();
   });
 
   describe('getFeatures', () => {

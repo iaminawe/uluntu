@@ -1,129 +1,103 @@
 import { supabase } from '@/lib/supabase';
-import { newsletterContentApi } from './content';
-import { newsletterSubscriptionApi } from './subscriptions';
-import { resendService } from '@/services/resend';
-import { 
-  NewsletterCampaign, 
-  CreateCampaignRequest, 
-  UpdateCampaignRequest,
-  CampaignFilters,
-  PaginatedCampaigns,
-  CampaignAnalytics,
-  EmailPreview,
-  SendResult,
-  TemplateData,
-  SendTestEmailRequest
-} from '@/types/newsletter';
+import type { Database } from '@/types/supabase';
 
-class NewsletterCampaignAPI {
+type DbCampaign = Database['public']['Tables']['newsletter_campaigns']['Row'];
+type DbCampaignInsert = Database['public']['Tables']['newsletter_campaigns']['Insert'];
+type DbCampaignUpdate = Database['public']['Tables']['newsletter_campaigns']['Update'];
+
+export interface Campaign {
+  id: string;
+  title: string; // Changed from 'name' to match database schema
+  subject: string;
+  content: any; // Changed to match JSONB type
+  template_id?: string;
+  template_data?: any; // Added to match schema
+  custom_message?: string; // Added to match schema
+  branding?: any; // Added to match schema
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled'; // Updated status values
+  send_type?: 'manual' | 'scheduled' | 'automated'; // Added to match schema
+  scheduled_at?: string;
+  sent_at?: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  recipient_count?: number;
+  delivery_stats?: any; // Changed from metadata to match schema
+}
+
+class NewsletterCampaignsApi {
   /**
-   * Create a new newsletter campaign
+   * Get all campaigns
    */
-  async createCampaign(request: CreateCampaignRequest): Promise<NewsletterCampaign | null> {
-    try {
-      // Generate content if not provided
-      let content = request.content;
-      if (!content || Object.keys(content).length === 0) {
-        content = await newsletterContentApi.generateCuratedContent();
-        if (!content) {
-          throw new Error('Failed to generate newsletter content');
-        }
-      }
-
-      const campaignData = {
-        title: request.title,
-        subject: request.subject,
-        template_id: request.template_id,
-        custom_message: request.custom_message,
-        branding: {
-          primary_color: '#3B82F6',
-          secondary_color: '#64748B',
-          logo_url: '',
-          header_image: '',
-          footer_text: 'Kootenay Tech Community',
-          social_links: [],
-          ...request.branding
-        },
-        content,
-        scheduled_at: request.scheduled_at,
-        created_by: (await supabase.auth.getUser()).data.user?.id
-      };
-
-      const { data, error } = await supabase
-        .from('newsletter_campaigns')
-        .insert(campaignData)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating campaign:', error);
-      return null;
-    }
+  // Helper function to convert database row to Campaign interface
+  private mapDbCampaignToCampaign(dbCampaign: DbCampaign): Campaign {
+    return {
+      id: dbCampaign.id,
+      title: dbCampaign.title,
+      subject: dbCampaign.subject,
+      content: dbCampaign.content,
+      template_id: dbCampaign.template_id || undefined,
+      template_data: dbCampaign.template_data,
+      custom_message: dbCampaign.custom_message || undefined,
+      branding: dbCampaign.branding,
+      status: (dbCampaign.status as Campaign['status']) || 'draft',
+      send_type: (dbCampaign.send_type as Campaign['send_type']) || 'manual',
+      scheduled_at: dbCampaign.scheduled_at || undefined,
+      sent_at: dbCampaign.sent_at || undefined,
+      created_at: dbCampaign.created_at || '',
+      updated_at: dbCampaign.updated_at || '',
+      created_by: dbCampaign.created_by,
+      recipient_count: dbCampaign.recipient_count || undefined,
+      delivery_stats: dbCampaign.delivery_stats
+    };
   }
 
-  /**
-   * Get campaigns with filtering and pagination
-   */
-  async getCampaigns(filters: CampaignFilters = {}): Promise<PaginatedCampaigns | null> {
+  async getCampaigns(filters?: {
+    status?: string[];
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ campaigns: Campaign[]; total: number }> {
     try {
       let query = supabase
         .from('newsletter_campaigns')
-        .select('*, created_by_user:auth.users!created_by(email)', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
 
-      // Apply filters
-      if (filters.status) {
-        query = query.eq('status', filters.status);
+      if (filters?.status?.length) {
+        query = query.in('status', filters.status);
       }
 
-      if (filters.search) {
+      if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,subject.ilike.%${filters.search}%`);
       }
 
-      if (filters.created_by) {
-        query = query.eq('created_by', filters.created_by);
+      if (filters?.limit) {
+        query = query.limit(filters.limit);
       }
 
-      if (filters.template_id) {
-        query = query.eq('template_id', filters.template_id);
+      if (filters?.offset) {
+        query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
       }
-
-      if (filters.date_range) {
-        query = query
-          .gte('created_at', filters.date_range.start)
-          .lte('created_at', filters.date_range.end);
-      }
-
-      // Apply pagination
-      const limit = filters.limit || 20;
-      const offset = filters.offset || 0;
-      query = query.range(offset, offset + limit - 1);
-
-      // Order by created_at desc
-      query = query.order('created_at', { ascending: false });
 
       const { data, error, count } = await query;
 
       if (error) throw error;
 
       return {
-        data: data || [],
-        total: count || 0,
-        page: Math.floor(offset / limit) + 1,
-        page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        campaigns: (data || []).map(this.mapDbCampaignToCampaign.bind(this)),
+        total: count || 0
       };
     } catch (error) {
-      console.error('Error getting campaigns:', error);
-      return null;
+      console.error('Error fetching campaigns:', error);
+      throw error;
     }
   }
 
   /**
-   * Get single campaign by ID
+   * Get a single campaign
    */
-  async getCampaign(id: string): Promise<NewsletterCampaign | null> {
+  async getCampaign(id: string): Promise<Campaign | null> {
     try {
       const { data, error } = await supabase
         .from('newsletter_campaigns')
@@ -132,37 +106,105 @@ class NewsletterCampaignAPI {
         .single();
 
       if (error) throw error;
-      return data;
+
+      return data ? this.mapDbCampaignToCampaign(data) : null;
     } catch (error) {
-      console.error('Error getting campaign:', error);
-      return null;
+      console.error('Error fetching campaign:', error);
+      throw error;
     }
   }
 
   /**
-   * Update campaign
+   * Create a new campaign
    */
-  async updateCampaign(id: string, updates: UpdateCampaignRequest): Promise<NewsletterCampaign | null> {
+  async createCampaign(campaign: Partial<Campaign>): Promise<Campaign> {
     try {
       const { data, error } = await supabase
         .from('newsletter_campaigns')
-        .update(updates)
+        .insert({
+          title: campaign.title,
+          subject: campaign.subject,
+          template_id: campaign.template_id,
+          template_data: campaign.template_data || {},
+          content: campaign.content || {},
+          custom_message: campaign.custom_message,
+          branding: campaign.branding || {
+            primary_color: '#3B82F6',
+            secondary_color: '#64748B',
+            logo_url: '',
+            header_image: '',
+            footer_text: 'Kootenay Tech Community',
+            social_links: []
+          },
+          status: campaign.status || 'draft',
+          send_type: campaign.send_type || 'manual',
+          scheduled_at: campaign.scheduled_at,
+          recipient_count: campaign.recipient_count || 0,
+          delivery_stats: campaign.delivery_stats || {
+            sent: 0,
+            delivered: 0,
+            bounced: 0,
+            opened: 0,
+            clicked: 0
+          },
+          created_by: campaign.created_by
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data ? this.mapDbCampaignToCampaign(data) : null;
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update a campaign
+   */
+  async updateCampaign(id: string, updates: Partial<Campaign>): Promise<Campaign> {
+    try {
+      // Map the updates to match database schema
+      const updateData: any = {};
+      
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.subject !== undefined) updateData.subject = updates.subject;
+      if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.template_id !== undefined) updateData.template_id = updates.template_id;
+      if (updates.template_data !== undefined) updateData.template_data = updates.template_data;
+      if (updates.custom_message !== undefined) updateData.custom_message = updates.custom_message;
+      if (updates.branding !== undefined) updateData.branding = updates.branding;
+      if (updates.status !== undefined) updateData.status = updates.status;
+      if (updates.send_type !== undefined) updateData.send_type = updates.send_type;
+      if (updates.scheduled_at !== undefined) updateData.scheduled_at = updates.scheduled_at;
+      if (updates.sent_at !== undefined) updateData.sent_at = updates.sent_at;
+      if (updates.recipient_count !== undefined) updateData.recipient_count = updates.recipient_count;
+      if (updates.delivery_stats !== undefined) updateData.delivery_stats = updates.delivery_stats;
+      
+      updateData.updated_at = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('newsletter_campaigns')
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+
+      return data ? this.mapDbCampaignToCampaign(data) : null;
     } catch (error) {
       console.error('Error updating campaign:', error);
-      return null;
+      throw error;
     }
   }
 
   /**
-   * Delete campaign
+   * Delete a campaign
    */
-  async deleteCampaign(id: string): Promise<boolean> {
+  async deleteCampaign(id: string): Promise<void> {
     try {
       const { error } = await supabase
         .from('newsletter_campaigns')
@@ -170,353 +212,42 @@ class NewsletterCampaignAPI {
         .eq('id', id);
 
       if (error) throw error;
-      return true;
     } catch (error) {
       console.error('Error deleting campaign:', error);
-      return false;
+      throw error;
     }
   }
 
   /**
-   * Generate fresh content for campaign
+   * Send a campaign
    */
-  async regenerateContent(id: string): Promise<NewsletterCampaign | null> {
+  async sendCampaign(id: string): Promise<void> {
     try {
-      const content = await newsletterContentApi.generateCuratedContent({ force_refresh: true });
-      if (!content) return null;
-
-      return await this.updateCampaign(id, { content });
-    } catch (error) {
-      console.error('Error regenerating content:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Preview campaign email
-   */
-  async previewCampaign(id: string): Promise<EmailPreview | null> {
-    try {
-      const campaign = await this.getCampaign(id);
-      if (!campaign) return null;
-
-      // Get template
-      const { data: template, error: templateError } = await supabase
-        .from('newsletter_templates')
-        .select('*')
-        .eq('id', campaign.template_id)
-        .single();
-
-      if (templateError) throw templateError;
-
-      // Create template data
-      const templateData: TemplateData = {
-        branding: campaign.branding,
-        content: campaign.content,
-        custom_message: campaign.custom_message,
-        unsubscribe_url: '{{unsubscribe_url}}',
-        web_view_url: '{{web_view_url}}',
-        subscriber: {
-          email: 'preview@example.com',
-          name: 'Preview User',
-          preferences: {
-            frequency: 'weekly',
-            content_types: ['events', 'news', 'opportunities'],
-            format: 'digest',
-            location_filter: true,
-            language: 'en'
-          }
-        }
-      };
-
-      // Render template based on type
-      let html: string;
-      if (template.type === 'mjml') {
-        html = await this.renderMJMLTemplate(template.template_content, templateData);
-      } else {
-        html = await this.renderReactTemplate(template.template_content, templateData);
-      }
-
-      return {
-        html,
-        text: this.htmlToText(html),
-        subject: campaign.subject,
-        preview_url: `/admin/newsletter/campaigns/${id}/preview`
-      };
-    } catch (error) {
-      console.error('Error previewing campaign:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Send test emails
-   */
-  async sendTestEmail(request: SendTestEmailRequest): Promise<boolean> {
-    try {
-      const campaign = await this.getCampaign(request.campaign_id);
-      if (!campaign) return false;
-
-      // Use Resend service to send test email
-      return await resendService.sendTestEmail(campaign, request.test_emails);
-    } catch (error) {
-      console.error('Error sending test email:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Schedule campaign for future sending
-   */
-  async scheduleCampaign(id: string, scheduledAt: Date): Promise<boolean> {
-    try {
-      const { error } = await supabase
-        .from('newsletter_campaigns')
-        .update({
-          status: 'scheduled',
-          scheduled_at: scheduledAt.toISOString()
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error('Error scheduling campaign:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send campaign immediately
-   */
-  async sendCampaign(id: string): Promise<SendResult> {
-    try {
-      const campaign = await this.getCampaign(id);
-      if (!campaign) {
-        return { success: false, error: 'Campaign not found', sent_count: 0, failed_count: 0, failed_emails: [] };
-      }
-
-      if (campaign.status !== 'draft' && campaign.status !== 'scheduled') {
-        return { success: false, error: 'Campaign already sent', sent_count: 0, failed_count: 0, failed_emails: [] };
-      }
-
-      // Update status to sending
+      // Update campaign status to sending
       await this.updateCampaign(id, { status: 'sending' });
 
-      // Get active subscribers
-      const subscribers = await newsletterSubscriptionApi.getActiveSubscribers();
-      
-      if (subscribers.length === 0) {
-        await this.updateCampaign(id, { status: 'draft' });
-        return { success: false, error: 'No active subscribers', sent_count: 0, failed_count: 0, failed_emails: [] };
-      }
-
-      // Use Resend service to send the campaign
-      const sendResult = await resendService.sendNewsletterCampaign(campaign, subscribers);
-      
-      if (!sendResult.success) {
-        await this.updateCampaign(id, { status: 'draft' });
-        return sendResult;
-      }
-
-      // Update campaign status and stats
-      await this.updateCampaign(id, {
-        status: 'sent',
-        sent_at: new Date().toISOString(),
-        recipient_count: sendResult.sent_count,
-        delivery_stats: {
-          sent: sendResult.sent_count,
-          delivered: 0, // Will be updated via webhooks
-          bounced: 0,
-          opened: 0,
-          clicked: 0
-        }
-      });
-
-      // Update subscriber last_sent_at for successfully sent emails
-      const successfulSubscribers = subscribers.filter(s => 
-        !sendResult.failed_emails?.includes(s.email)
-      );
-      if (successfulSubscribers.length > 0) {
-        await newsletterSubscriptionApi.updateLastSent(successfulSubscribers.map(s => s.id));
-      }
-
-      // Record analytics for each sent email
-      for (const subscriber of successfulSubscribers) {
-        await this.recordAnalytics(id, subscriber.id, 'sent');
-      }
-
-      console.log(`Campaign ${id} sent to ${sendResult.sent_count} subscribers`);
-
-      return sendResult;
+      // The actual sending would be handled by a background job or edge function
+      // This is just updating the status
     } catch (error) {
       console.error('Error sending campaign:', error);
-      
-      // Reset campaign status on error
-      await this.updateCampaign(id, { status: 'draft' });
-      
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        sent_count: 0, 
-        failed_count: 0, 
-        failed_emails: [] 
-      };
+      throw error;
     }
   }
 
   /**
-   * Get campaign analytics
+   * Schedule a campaign
    */
-  async getCampaignAnalytics(id: string): Promise<CampaignAnalytics | null> {
+  async scheduleCampaign(id: string, scheduledAt: string): Promise<void> {
     try {
-      const campaign = await this.getCampaign(id);
-      if (!campaign) return null;
-
-      // Get analytics data
-      const { data: analytics, error } = await supabase
-        .from('newsletter_analytics')
-        .select('*')
-        .eq('campaign_id', id);
-
-      if (error) throw error;
-
-      const stats = campaign.delivery_stats;
-      const totalSent = stats.sent || 0;
-
-      const result: CampaignAnalytics = {
-        campaign_id: id,
-        total_sent: stats.sent || 0,
-        total_delivered: stats.delivered || 0,
-        total_bounced: stats.bounced || 0,
-        total_opened: stats.opened || 0,
-        total_clicked: stats.clicked || 0,
-        total_unsubscribed: analytics?.filter(a => a.event_type === 'unsubscribed').length || 0,
-        total_complained: analytics?.filter(a => a.event_type === 'complained').length || 0,
-        open_rate: totalSent > 0 ? ((stats.opened || 0) / totalSent) * 100 : 0,
-        click_rate: (stats.opened || 0) > 0 ? ((stats.clicked || 0) / (stats.opened || 1)) * 100 : 0,
-        bounce_rate: totalSent > 0 ? ((stats.bounced || 0) / totalSent) * 100 : 0,
-        unsubscribe_rate: totalSent > 0 ? ((analytics?.filter(a => a.event_type === 'unsubscribed').length || 0) / totalSent) * 100 : 0,
-        top_links: [], // TODO: Implement link tracking
-        engagement_timeline: [] // TODO: Implement timeline tracking
-      };
-
-      return result;
+      await this.updateCampaign(id, {
+        status: 'scheduled',
+        scheduled_at: scheduledAt
+      });
     } catch (error) {
-      console.error('Error getting campaign analytics:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Duplicate campaign
-   */
-  async duplicateCampaign(id: string): Promise<NewsletterCampaign | null> {
-    try {
-      const original = await this.getCampaign(id);
-      if (!original) return null;
-
-      const duplicateData = {
-        title: `${original.title} (Copy)`,
-        subject: original.subject,
-        template_id: original.template_id,
-        template_data: original.template_data,
-        content: original.content,
-        custom_message: original.custom_message,
-        branding: original.branding,
-        status: 'draft' as const,
-        send_type: original.send_type,
-        created_by: original.created_by
-      };
-
-      const { data, error } = await supabase
-        .from('newsletter_campaigns')
-        .insert(duplicateData)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error duplicating campaign:', error);
-      return null;
-    }
-  }
-
-  // Private helper methods
-
-  private async renderMJMLTemplate(templateContent: string, data: TemplateData): Promise<string> {
-    // TODO: Implement MJML rendering
-    // This would use the mjml library to compile MJML to HTML
-    // For now, return a placeholder
-    return `
-      <html>
-        <body>
-          <h1>${data.branding.footer_text} Newsletter</h1>
-          <p>${data.custom_message || 'Welcome to our newsletter!'}</p>
-          
-          ${data.content.events.length > 0 ? `
-            <h2>Upcoming Events</h2>
-            ${data.content.events.map(event => `
-              <div>
-                <h3>${event.title}</h3>
-                <p>${event.description}</p>
-                <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
-                <p>Location: ${event.location}</p>
-              </div>
-            `).join('')}
-          ` : ''}
-          
-          ${data.content.news.length > 0 ? `
-            <h2>Latest News</h2>
-            ${data.content.news.map(article => `
-              <div>
-                <h3>${article.title}</h3>
-                <p>${article.excerpt}</p>
-                <a href="${article.read_more_url}">Read More</a>
-              </div>
-            `).join('')}
-          ` : ''}
-          
-          <p><a href="${data.unsubscribe_url}">Unsubscribe</a> | <a href="${data.web_view_url}">View in browser</a></p>
-        </body>
-      </html>
-    `;
-  }
-
-  private async renderReactTemplate(templateContent: string, data: TemplateData): Promise<string> {
-    // TODO: Implement React Email rendering
-    // This would use react-email to render React components to HTML
-    return this.renderMJMLTemplate(templateContent, data);
-  }
-
-  private htmlToText(html: string): string {
-    // Simple HTML to text conversion
-    return html
-      .replace(/<[^>]*>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  private async recordAnalytics(
-    campaignId: string, 
-    subscriptionId: string, 
-    eventType: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained',
-    eventData?: Record<string, unknown>
-  ): Promise<void> {
-    try {
-      await supabase
-        .from('newsletter_analytics')
-        .insert({
-          campaign_id: campaignId,
-          subscription_id: subscriptionId,
-          event_type: eventType,
-          event_data: eventData
-        });
-    } catch (error) {
-      console.error('Error recording analytics:', error);
+      console.error('Error scheduling campaign:', error);
+      throw error;
     }
   }
 }
 
-export const newsletterCampaignApi = new NewsletterCampaignAPI();
+export const newsletterCampaignsApi = new NewsletterCampaignsApi();
