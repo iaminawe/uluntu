@@ -29,6 +29,8 @@ export default defineConfig({
       '@tanstack/react-query',
       '@supabase/supabase-js',
     ],
+    // Force rebuild optimization cache after component cleanup
+    force: process.env.NODE_ENV === 'development',
   },
   build: {
     // Enable source maps for production debugging
