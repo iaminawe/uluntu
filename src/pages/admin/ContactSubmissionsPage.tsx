@@ -147,7 +147,7 @@ export default function ContactSubmissionsPage() {
           <div className="flex items-center">
             <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
             <span className="text-red-700 dark:text-red-300">
-              Failed to load contact submissions: {error}
+              Failed to load contact submissions: {error?.message || String(error)}
             </span>
           </div>
         </div>

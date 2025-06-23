@@ -120,7 +120,4 @@ const DirectoryFilters = ({
   );
 };
 
-// Add missing imports
-import { useState, useEffect } from 'react';
-
 export default DirectoryFilters;

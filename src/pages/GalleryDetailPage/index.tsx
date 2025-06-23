@@ -154,7 +154,7 @@ const GalleryDetailPage: React.FC = () => {
     return (
       <ContentContainer>
         <div className="text-center py-12">
-          <p className="text-red-600 mb-4">{error || 'Gallery not found'}</p>
+          <p className="text-red-600 mb-4">{error?.message || 'Gallery not found'}</p>
           <button
             onClick={() => navigate('/galleries')}
             className="text-blue-600 hover:text-blue-700"

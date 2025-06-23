@@ -42,7 +42,7 @@ const DirectListings = () => {
     return (
       <div className="p-4 bg-red-50 text-red-800 rounded-md">
         <h3 className="font-bold">Error</h3>
-        <p>{error}</p>
+        <p>{error?.message || String(error)}</p>
       </div>
     );
   }

@@ -94,7 +94,7 @@ const NewsArticlesList = ({
                      rounded-lg p-6 text-center">
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading News</h3>
-        <p className="text-red-600 dark:text-red-400">{String(error)}</p>
+        <p className="text-red-600 dark:text-red-400">{error?.message || String(error)}</p>
         <button 
           onClick={() => refetch()} 
           className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-300 

@@ -85,7 +85,7 @@ const EntityTable = <T extends { id: string } = any>({
       const { data, error, count } = await query;
       if (error) throw error;
 
-      return { items: (data || []) as T[], total: count || 0 };
+      return { items: (data || []) as unknown as T[], total: count || 0 };
     }
   });
 
@@ -285,7 +285,7 @@ const EntityTable = <T extends { id: string } = any>({
                   </td>
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {column.render ? column.render((item as unknown)[column.key], item) : (item as unknown)[column.key]}
+                      {column.render ? column.render((item as any)[column.key], item) : (item as any)[column.key]}
                     </td>
                   ))}
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
