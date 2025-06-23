@@ -1,5 +1,6 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
 import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
@@ -11,6 +12,34 @@ jest.mock('@/hooks/useMemberByUserId');
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
+
+// Helper to create a mock UseQueryResult
+const createMockQueryResult = <T,>(data: T) => ({
+  data,
+  isLoading: false,
+  isError: false,
+  error: null,
+  isPending: false,
+  isSuccess: true,
+  refetch: jest.fn(),
+  isRefetching: false,
+  isFetching: false,
+  isStale: false,
+  isFetched: true,
+  isFetchedAfterMount: true,
+  isInitialLoading: false,
+  isLoadingError: false,
+  isPlaceholderData: false,
+  isPreviousData: false,
+  isRefetchError: false,
+  dataUpdatedAt: Date.now(),
+  errorUpdatedAt: 0,
+  status: 'success' as const,
+  fetchStatus: 'idle' as const,
+  errorUpdateCount: 0,
+  failureCount: 0,
+  failureReason: null,
+});
 
 // Mock window.matchMedia for responsive tests
 const mockMatchMedia = (query: string) => ({
@@ -63,11 +92,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should render properly on mobile screens', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       const { container } = renderUserMenu();
       
@@ -82,11 +111,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should have proper touch targets on mobile', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
@@ -102,11 +131,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should handle tap events on mobile', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -121,11 +150,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should position dropdown correctly on mobile', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
@@ -137,11 +166,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should not cause horizontal scrolling on mobile', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       const { container } = renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
@@ -173,11 +202,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should render properly on desktop screens', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       
@@ -187,11 +216,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should support hover interactions on desktop', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -206,11 +235,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should have proper spacing on desktop', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
@@ -233,11 +262,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should render properly on tablet screens', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       
@@ -250,11 +279,11 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should handle both touch and mouse events on tablet', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       const button = screen.getByRole('button');
@@ -275,11 +304,11 @@ describe('UserMenu Responsive Tests', () => {
   describe('Viewport Orientation Changes', () => {
     it('should handle orientation changes', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       
@@ -315,11 +344,11 @@ describe('UserMenu Responsive Tests', () => {
       });
 
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       const { container } = renderUserMenu();
       
@@ -334,12 +363,13 @@ describe('UserMenu Responsive Tests', () => {
       mockUseAuth.mockReturnValue({
         user: { 
           id: 'user123', 
-          email: 'very.long.email.address.that.might.overflow@example.com' 
+          email: 'very.long.email.address.that.might.overflow@example.com',
+          user_metadata: { name: 'Long Email User' }
         },
-        signOut: jest.fn(),
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ data: null });
+      mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
@@ -354,13 +384,13 @@ describe('UserMenu Responsive Tests', () => {
     it('should handle varying number of menu items', () => {
       // Test with admin user (more menu items)
       mockUseAuth.mockReturnValue({
-        user: { id: 'user123', email: 'admin@example.com' },
-        signOut: jest.fn(),
+        user: { id: 'user123', email: 'admin@example.com', user_metadata: { name: 'Admin User' } },
+        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: true,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Admin User' } 
-      });
+      mockUseMemberByUserId.mockReturnValue(
+        createMockQueryResult({ id: 'member123', name: 'Admin User' }) as any
+      );
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));

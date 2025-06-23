@@ -6,6 +6,8 @@ import { ProfileOnboarding } from '../ProfileOnboarding';
 import { useProfileCompletion, getFieldDisplayName } from '../../../hooks/useProfileCompletion';
 
 // Mock all the hook dependencies
+import { createMockQueryResult } from '@/test-utils/react-query-mocks';
+
 jest.mock('../../../hooks/useCurrentMember', () => ({
   useCurrentMember: jest.fn(),
 }));
@@ -75,11 +77,13 @@ describe('ProfileOnboarding', () => {
     jest.clearAllMocks();
     
     // Setup mocks
-    mockUseCurrentMember.mockReturnValue({
-      data: mockMember,
-      isLoading: false,
-      error: null,
-    });
+    mockUseCurrentMember.mockReturnValue(
+      createMockQueryResult({
+        data: mockMember,
+        isLoading: false,
+        error: null,
+      })
+    );
     
     mockUseProfilePrivacy.mockReturnValue(mockPrivacySettings);
     
@@ -256,11 +260,13 @@ describe('ProfileOnboarding', () => {
         title: 'Developer',
       };
 
-      mockUseCurrentMember.mockReturnValue({
-        data: completeMember,
-        isLoading: false,
-        error: null,
-      } as any);
+      mockUseCurrentMember.mockReturnValue(
+        createMockQueryResult({
+          data: completeMember,
+          isLoading: false,
+          error: null,
+        })
+      );
 
       // Mock complete profile
       mockUseProfileCompletion.mockReturnValue({
@@ -285,11 +291,13 @@ describe('ProfileOnboarding', () => {
 
   describe('Loading State', () => {
     it('shows loading spinner when data is loading', () => {
-      mockUseCurrentMember.mockReturnValue({
-        data: null,
-        isLoading: true,
-        error: null,
-      } as any);
+      mockUseCurrentMember.mockReturnValue(
+        createMockQueryResult({
+          data: null,
+          isLoading: true,
+          error: null,
+        })
+      );
 
       render(
         <TestWrapper>
@@ -311,11 +319,13 @@ describe('ProfileOnboarding', () => {
         title: 'Developer',
       };
 
-      mockUseCurrentMember.mockReturnValue({
-        data: completeMember,
-        isLoading: false,
-        error: null,
-      } as any);
+      mockUseCurrentMember.mockReturnValue(
+        createMockQueryResult({
+          data: completeMember,
+          isLoading: false,
+          error: null,
+        })
+      );
 
       // Mock complete profile
       mockUseProfileCompletion.mockReturnValue({
