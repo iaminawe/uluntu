@@ -7,7 +7,6 @@ import NewsList from '@/features/news/components/NewsList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useNewsArticlesRedux } from '@/features/news/hooks/useNewsRedux';
-import { NewsFilters } from '../../types/news';
 
 export default function NewsPage() {
   // State for filters
@@ -21,9 +20,9 @@ export default function NewsPage() {
   useEffect(() => {
     console.log('[NewsPage] Loading news via Redux...');
     loadArticles();
-  }, [loadArticles]);
+  }, [loadArticles]); // Now safe since loadArticles is memoized
   
-  const hasArticles = articles.length > 0;
+  const hasArticles = articles && articles.length > 0;
   
   return (
     <>

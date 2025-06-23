@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminModerationApi } from '@/api/admin/moderation';
+import { adminModerationApi } from '@/features/admin/api/moderation';
 import {
   FileCheck,
   Clock,

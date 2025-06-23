@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEventRedux } from '@/features/events/hooks/useEventsRedux';
-import { eventsApi, EventInput } from '@/features/events/api/eventsApi';
+import { useEventHybrid, useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
+import { EventInput } from '@/features/events/api/eventsApi';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { format } from 'date-fns';
@@ -45,20 +45,9 @@ export default function EventEditPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   
-  // Use Redux-based hook for a single event
-  const { 
-    event, 
-    isLoading: eventLoading,
-    getEvent,
-    updateEventData
-  } = useEventRedux(isEditMode ? eventIdString : undefined); // Only provide ID if in edit mode
-  
-  // Fetch event when in edit mode and component mounts
-  useEffect(() => {
-    if (isEditMode) {
-      getEvent();
-    }
-  }, [isEditMode, getEvent]);
+  // Use hybrid approach for event data
+  const { event, isLoading: eventLoading, updateEvent } = useEventHybrid(isEditMode ? id : undefined);
+  const { createEvent } = useEventsHybrid();
   
   // Populate form with event data when in edit mode
   useEffect(() => {
@@ -165,17 +154,17 @@ export default function EventEditPage() {
       }
       
       if (isEditMode && id) {
-        // Update existing event using Redux action
-        await updateEventData({
+        // Update existing event using hybrid hook
+        await updateEvent({
           title: formData.title,
           description: formData.description,
           date: formData.date,
-          end_date: formData.endDate,
+          endDate: formData.endDate,
           location: formData.location,
           image: finalImageUrl,
           type: formData.type,
           url: formData.url || null,
-          organizer_id: formData.organizerId
+          organizerId: formData.organizerId
         });
       } else {
         // Create new event using events API
@@ -198,10 +187,7 @@ export default function EventEditPage() {
           featured: false
         };
 
-        const result = await eventsApi.create(eventData);
-        if (!result) {
-          throw new Error('Failed to create event');
-        }
+        await createEvent(eventData);
       }
       
       setSubmitSuccess(true);

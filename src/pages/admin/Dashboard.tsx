@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { adminStatsApi } from '@/api/admin/stats';
+import { adminStatsApi } from '@/features/admin/api/stats';
 import {
   Users,
   Building2,

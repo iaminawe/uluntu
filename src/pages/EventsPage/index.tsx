@@ -8,22 +8,23 @@ import EventsList from '@/features/events/components/EventsList';
 import EventsCalendar from '@/features/events/components/EventsCalendar';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useEventsRedux } from '@/features/events/hooks/useEventsRedux';
+import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-  const [searchTerm, setSearchTerm] = useState('');
   
-  // Use Redux for events data
-  const { events, isLoading, isError, error, getAllEvents } = useEventsRedux();
+  // Use hybrid approach: React Query for data, Redux for UI state
+  const {
+    events,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    setSearchTerm
+  } = useEventsHybrid();
   
-  // Load events on mount
-  useEffect(() => {
-    console.log('[EventsPage] Loading events via Redux...');
-    getAllEvents();
-  }, [getAllEvents]);
-  
-  const hasEvents = events.length > 0;
+  const hasEvents = events && events.length > 0;
+
   
   return (
     <>
@@ -46,7 +47,7 @@ export default function EventsPage() {
         ) : isError ? (
           <QueryError 
             error={error ? new Error(String(error)) : new Error('Failed to load events')} 
-            retry={getAllEvents} 
+            retry={refetch} 
             message="We couldn't load the events. Please try again."
           />
         ) : !hasEvents ? (
@@ -61,10 +62,16 @@ export default function EventsPage() {
           />
         ) : viewMode === 'list' ? (
           <EventsList 
-            initialSearch={searchTerm}
+            parentEvents={events}
+            parentLoading={isLoading}
+            parentError={error}
           />
         ) : (
-          <EventsCalendar />
+          <EventsCalendar 
+            events={events}
+            isLoading={isLoading}
+            error={error}
+          />
         )}
       </ContentContainer>
     </>

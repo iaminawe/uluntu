@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { adminAuditApi } from '@/api/admin/audit';
+import { adminAuditApi } from '@/features/admin/api/audit';
 import {
   FileText,
   Calendar,

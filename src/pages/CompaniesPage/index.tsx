@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
@@ -6,36 +5,20 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import { Link } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { Company } from '../../types';
-import { useCompaniesRedux } from '@/features/companies/hooks/useCompaniesRedux';
+import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
 
 export default function CompaniesPage() {
-  // State for search and filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  
-  // Use Redux for companies data
-  const { companies, isLoading, isError, error, loadCompanies } = useCompaniesRedux();
-  
-  // Load companies on mount
-  useEffect(() => {
-    console.log('[CompaniesPage] Loading companies via Redux...');
-    loadCompanies();
-  }, [loadCompanies]);
-  
-  // Filter companies based on search term and selected industries
-  const filteredCompanies = companies.filter(company => {
-    // Filter by search term
-    const matchesSearch = searchTerm === '' || 
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      (company.description && company.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Filter by industries
-    const matchesIndustry = selectedIndustries.length === 0 || 
-      (company.industry && selectedIndustries.some(industry => company.industry.includes(industry)));
-    
-    return matchesSearch && matchesIndustry;
-  });
+  // Use hybrid approach: React Query for data, Redux for UI state
+  const {
+    companies,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    filters,
+    setSearchTerm,
+    setIndustries
+  } = useCompaniesHybrid();
   
   return (
     <>
@@ -48,21 +31,21 @@ export default function CompaniesPage() {
       
       <ContentContainer>
         <ActionBar 
-          searchTerm={searchTerm}
+          searchTerm={filters.search || ''}
           onSearch={setSearchTerm}
-          selectedIndustries={selectedIndustries}
-          onIndustryChange={setSelectedIndustries}
+          selectedIndustries={filters.industries || []}
+          onIndustryChange={setIndustries}
         />
         
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
           <QueryError 
-            error={error ? new Error(String(error)) : new Error('Failed to load companies')} 
-            retry={loadCompanies} 
+            error={error || new Error('Failed to load companies')} 
+            retry={refetch} 
             message="We couldn't load the companies. Please try again."
           />
-        ) : companies.length === 0 ? (
+        ) : !companies || companies.length === 0 ? (
           <EmptyState
             title="No Companies Listed"
             description="There are no companies in the directory yet."
@@ -75,7 +58,7 @@ export default function CompaniesPage() {
         ) : (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {filteredCompanies.map(company => (
+              {(companies || []).map(company => (
                 <Link 
                   to={`/companies/${company.id}`} 
                   key={company.id} 
@@ -125,8 +108,8 @@ export default function CompaniesPage() {
               ))}
             </div>
             <div className="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
-              Showing {filteredCompanies.length} of {companies.length} {companies.length === 1 ? 'company' : 'companies'}
-              {(searchTerm || selectedIndustries.length > 0) && ' matching your filters'}
+              Showing {(companies || []).length} {(companies || []).length === 1 ? 'company' : 'companies'}
+              {(filters?.search || (filters?.industries && filters.industries.length > 0)) && ' matching your filters'}
             </div>
           </div>
         )}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
@@ -6,19 +6,28 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import ResourcesList from '@/features/resources/components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useResourcesRedux } from '@/features/resources/hooks/useResourcesRedux';
+import { useResourcesWithFilters } from '@/hooks/useResourceQueries';
 
 // Resource type is already defined in the types.ts file
 
 export default function ResourcesPage() {
-  // Use the Redux-based hook to fetch resources data
-  const { resources, loadResources, isLoading, isError, error } = useResourcesRedux();
+  const [filters, setFilters] = useState<{ search?: string; types?: string[] }>({});
+  
+  // Use React Query with filters
+  const { data: resources = [], isLoading, isError, error, refetch } = useResourcesWithFilters(filters);
   const hasResources = resources.length > 0;
   
-  // Load resources on component mount
-  useEffect(() => {
-    loadResources();
-  }, []);
+  const handleSearch = (searchTerm: string) => {
+    setFilters(prev => ({ ...prev, search: searchTerm || undefined }));
+  };
+  
+  const handleTypeChange = (type: string) => {
+    if (type === 'all') {
+      setFilters(prev => ({ ...prev, types: undefined }));
+    } else {
+      setFilters(prev => ({ ...prev, types: [type] }));
+    }
+  };
   
   return (
     <>
@@ -30,14 +39,18 @@ export default function ResourcesPage() {
       <PageHeader />
       
       <ContentContainer>
-        <ActionBar />
+        <ActionBar 
+          onSearch={handleSearch}
+          onTypeChange={handleTypeChange}
+          currentFilters={filters}
+        />
         
         {isLoading ? (
           <SkeletonGrid count={9} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : isError ? (
           <QueryError 
-            error={error ? new Error(error) : new Error('Failed to load resources')} 
-            retry={() => loadResources()} 
+            error={error || new Error('Failed to load resources')} 
+            retry={() => refetch()} 
             message="We couldn't load the resources. Please try again."
           />
         ) : !hasResources ? (
@@ -48,7 +61,7 @@ export default function ResourcesPage() {
             primaryActionUrl="/resources/create"
           />
         ) : (
-          <ResourcesList resources={resources} useRedux={true} />
+          <ResourcesList resources={resources} />
         )}
       </ContentContainer>
     </>

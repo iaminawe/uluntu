@@ -6,48 +6,46 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import MembersList from '@/features/directory/components/MembersList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useMembersRedux } from '../../hooks/useMembersRedux';
-import { Member as ReduxMember } from '@/features/directory/store/membersSlice';
-import { FilterOptions } from '@/features/directory/components/MembersList/types';
+import { useMembersHybrid } from '@/features/directory/hooks/useMembersHybrid';
+import { type Member as QueryMember } from '@/hooks/useMemberQueries';
 import { Member as UITypeMember } from '../../types';
 import Pagination from '@/components/Pagination';
 
-// We need to adapt between the Member type from Redux and the one in types.ts
-const adaptMemberForUI = (reduxMember: ReduxMember): UITypeMember => {
+// Adapt between the Member type from React Query and the one in types.ts
+const adaptMemberForUI = (queryMember: QueryMember): UITypeMember => {
   return {
-    id: reduxMember.id,
-    name: reduxMember.name,
-    title: reduxMember.title || reduxMember.role || '', // Map title or role to title field
-    image: reduxMember.image || '',
-    bio: reduxMember.bio,
-    skills: reduxMember.skills,
-    joinDate: reduxMember.joinDate || reduxMember.joinedDate || reduxMember.created_at || new Date().toISOString(),
-    status: reduxMember.status || 'published',
-    featured: reduxMember.featured,
-    company: reduxMember.company
+    id: queryMember.id,
+    name: queryMember.name,
+    title: queryMember.role || '', // Map role to title field
+    image: queryMember.image || '',
+    bio: queryMember.bio,
+    skills: queryMember.skills,
+    joinDate: queryMember.joinDate || queryMember.joinedDate || queryMember.created_at || new Date().toISOString(),
+    status: queryMember.status || 'published',
+    featured: queryMember.featured,
+    company: ''  // Not available in the query member type
   };
 };
 
 const ITEMS_PER_PAGE = 12; // Adjust as needed for the main directory
 
 export default function DirectoryPage() {
-  // Use the Redux-based hook to fetch members data
-  const { members: allMembers = [], isLoading, error, getAllMembers } = useMembersRedux();
+  // Use hybrid approach: React Query for data, Redux for UI state
+  const {
+    members: allMembers = [],
+    isLoading,
+    error,
+    refetch,
+    filters,
+    setSearchTerm,
+    setSkills
+  } = useMembersHybrid();
   
-  // Fetch members when component mounts
-  useEffect(() => {
-    getAllMembers();
-  }, [getAllMembers]);
-  
-  // State for search and filters that will be passed to ActionBar
-  const [filters, setFilters] = useState<FilterOptions>({
-    search: '',
-    skills: undefined
-  });
+  // Local state for pagination
   const [currentPage, setCurrentPage] = useState(1);
 
   // Convert all members to the UI type expected by MembersList
-  const adaptedMembers = allMembers.map(adaptMemberForUI);
+  const adaptedMembers = (allMembers || []).map(adaptMemberForUI);
   
   // TODO: Implement filtering logic here if ActionBar doesn't handle it before pagination
   // For now, we assume 'adaptedMembers' is the list to be paginated.
@@ -68,8 +66,18 @@ export default function DirectoryPage() {
   };
   
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters/data change
-  }, [allMembers, isLoading, error, filters]); // Consider if filters should reset page
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filters]); // Only reset when filters change, not on every data update
+
+  // Debug logging to help troubleshoot intermittent loading
+  useEffect(() => {
+    console.log('DirectoryPage - Data state:', {
+      membersCount: allMembers?.length || 0,
+      isLoading,
+      hasError: !!error,
+      filtersActive: Object.keys(filters || {}).length > 0
+    });
+  }, [allMembers, isLoading, error, filters]);
   
   return (
     <>
@@ -82,19 +90,32 @@ export default function DirectoryPage() {
       
       <ContentContainer>
         <ActionBar 
-          filters={filters}
-          setFilters={setFilters} // This might need to interact with pagination state if filters change
+          filters={{
+            search: filters.search || '',
+            skills: filters.skills
+          }}
+          setFilters={(newFilters) => {
+            if (typeof newFilters === 'function') {
+              const currentFilters = { search: filters.search || '', skills: filters.skills };
+              const updatedFilters = newFilters(currentFilters);
+              setSearchTerm(updatedFilters.search);
+              setSkills(updatedFilters.skills);
+            } else {
+              setSearchTerm(newFilters.search);
+              setSkills(newFilters.skills);
+            }
+          }}
         />
         
         {isLoading ? (
           <SkeletonGrid count={ITEMS_PER_PAGE} columns={{ sm: 1, md: 2, lg: 4 }} />
         ) : error ? (
           <QueryError 
-            error={error || 'Error loading members'} 
-            retry={() => getAllMembers()} 
+            error={error || new Error('Error loading members')} 
+            retry={refetch} 
             message="We couldn't load the directory. Please try again."
           />
-        ) : !hasMembers && !isLoading ? (
+        ) : !hasMembers ? (
           <div className="py-12 text-center">
             <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">No members found</h3>
             <p className="text-slate-500 dark:text-slate-400 mb-6">Try adjusting your search or filters, or be the first to join!</p>
