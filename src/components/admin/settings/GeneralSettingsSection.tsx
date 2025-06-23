@@ -40,7 +40,8 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category
+        category: setting.category,
+        data_type: setting.data_type
       });
       
       // Remove from local state after successful save

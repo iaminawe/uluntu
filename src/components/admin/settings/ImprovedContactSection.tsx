@@ -221,11 +221,13 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
+        const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
         
         updates.push({
           setting_key: settingKey,
           setting_value: value,
-          category: category as any
+          category: category as any,
+          data_type: setting?.data_type || 'string'
         });
       }
       
