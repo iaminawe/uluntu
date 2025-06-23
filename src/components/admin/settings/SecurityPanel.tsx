@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import type { SettingCategory, SettingDataType } from '@/types/settings';
 import { 
   Shield, 
   Lock, 
@@ -113,23 +114,23 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
     try {
       // Save each security setting to the database
       const updates = [
-        { category: 'security', setting_key: 'two_factor_enabled', setting_value: localSettings.two_factor_enabled, data_type: 'boolean' },
-        { category: 'security', setting_key: 'password_min_length', setting_value: localSettings.password_requirements.min_length, data_type: 'number' },
-        { category: 'security', setting_key: 'require_uppercase', setting_value: localSettings.password_requirements.require_uppercase, data_type: 'boolean' },
-        { category: 'security', setting_key: 'require_lowercase', setting_value: localSettings.password_requirements.require_lowercase, data_type: 'boolean' },
-        { category: 'security', setting_key: 'require_numbers', setting_value: localSettings.password_requirements.require_numbers, data_type: 'boolean' },
-        { category: 'security', setting_key: 'require_symbols', setting_value: localSettings.password_requirements.require_symbols, data_type: 'boolean' },
-        { category: 'security', setting_key: 'session_timeout', setting_value: localSettings.session_timeout, data_type: 'number' },
-        { category: 'security', setting_key: 'max_login_attempts', setting_value: localSettings.max_login_attempts, data_type: 'number' },
-        { category: 'security', setting_key: 'lockout_duration', setting_value: localSettings.lockout_duration, data_type: 'number' },
-        { category: 'security', setting_key: 'require_email_verification', setting_value: localSettings.require_email_verification, data_type: 'boolean' },
+        { category: 'security' as const, setting_key: 'two_factor_enabled', setting_value: localSettings.two_factor_enabled, data_type: 'boolean' as const },
+        { category: 'security' as const, setting_key: 'password_min_length', setting_value: localSettings.password_requirements.min_length, data_type: 'number' as const },
+        { category: 'security' as const, setting_key: 'require_uppercase', setting_value: localSettings.password_requirements.require_uppercase, data_type: 'boolean' as const },
+        { category: 'security' as const, setting_key: 'require_lowercase', setting_value: localSettings.password_requirements.require_lowercase, data_type: 'boolean' as const },
+        { category: 'security' as const, setting_key: 'require_numbers', setting_value: localSettings.password_requirements.require_numbers, data_type: 'boolean' as const },
+        { category: 'security' as const, setting_key: 'require_symbols', setting_value: localSettings.password_requirements.require_symbols, data_type: 'boolean' as const },
+        { category: 'security' as const, setting_key: 'session_timeout', setting_value: localSettings.session_timeout, data_type: 'number' as const },
+        { category: 'security' as const, setting_key: 'max_login_attempts', setting_value: localSettings.max_login_attempts, data_type: 'number' as const },
+        { category: 'security' as const, setting_key: 'lockout_duration', setting_value: localSettings.lockout_duration, data_type: 'number' as const },
+        { category: 'security' as const, setting_key: 'require_email_verification', setting_value: localSettings.require_email_verification, data_type: 'boolean' as const },
         { category: 'security', setting_key: 'api_rate_limiting_enabled', setting_value: localSettings.api_rate_limiting.enabled, data_type: 'boolean' },
         { category: 'security', setting_key: 'api_rate_limit', setting_value: localSettings.api_rate_limiting.requests_per_minute, data_type: 'number' },
         { category: 'security', setting_key: 'content_security_policy', setting_value: localSettings.content_security_policy, data_type: 'boolean' },
         { category: 'security', setting_key: 'https_only', setting_value: localSettings.https_only, data_type: 'boolean' },
-        { category: 'security', setting_key: 'secure_cookies', setting_value: localSettings.secure_cookies, data_type: 'boolean' },
-        { category: 'security', setting_key: 'ip_whitelist', setting_value: localSettings.ip_whitelist, data_type: 'array' },
-        { category: 'security', setting_key: 'suspicious_activity_monitoring', setting_value: localSettings.suspicious_activity_monitoring, data_type: 'boolean' },
+        { category: 'security' as SettingCategory, setting_key: 'secure_cookies', setting_value: localSettings.secure_cookies, data_type: 'boolean' as SettingDataType },
+        { category: 'security' as SettingCategory, setting_key: 'ip_whitelist', setting_value: localSettings.ip_whitelist, data_type: 'array' as SettingDataType },
+        { category: 'security' as SettingCategory, setting_key: 'suspicious_activity_monitoring', setting_value: localSettings.suspicious_activity_monitoring, data_type: 'boolean' as SettingDataType },
       ];
 
       for (const update of updates) {
@@ -220,14 +221,14 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
           <div className="flex items-center space-x-3">
             <button
               className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              disabled={loading}
+              disabled={saving || settingsLoading}
             >
               <RefreshCw className="h-4 w-4 mr-1" />
               Reset
             </button>
             
             <button
-              disabled={loading}
+              disabled={saving || settingsLoading}
               className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
             >
               <Save className="h-4 w-4 mr-1" />
