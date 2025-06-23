@@ -1,12 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EditableText } from '@/shared/components/ContentEditor';
-import { useContent } from '@/shared/contexts/ContentContext';
 import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 
 const HeroSection: React.FC = () => {
-  const { getPageContent } = useContent();
-  const homeContent = getPageContent('home');
 
   const actionButtons = (
     <div className="flex flex-wrap gap-4 mt-8">
@@ -36,21 +32,12 @@ const HeroSection: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <EditableText
-            pageId="home"
-            field="title"
-            content={homeContent?.title || { en: "Connecting Kootenay Tech Professionals" }}
-            as="h1"
-            className="text-4xl md:text-6xl font-bold text-white mb-6"
-          />
-          <EditableText
-            pageId="home"
-            field="description"
-            content={homeContent?.description || { en: "Join our growing tech community to connect, collaborate, and grow together." }}
-            as="p"
-            className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto"
-            multiline
-          />
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            Connecting Kootenay Tech Professionals
+          </h1>
+          <p className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+            Join our growing tech community to connect, collaborate, and grow together.
+          </p>
           {actionButtons}
         </div>
       </div>

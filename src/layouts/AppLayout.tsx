@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Header from '@/shared/components/layout/Header';
 import Footer from '@/shared/components/layout/Footer';
-// import { ContentManagementPanel } from '@/shared/components/ContentEditor';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useState, useEffect } from 'react';
 
@@ -41,7 +40,6 @@ export default function AppLayout() {
           <Outlet />
         </main>
         <Footer />
-        {/* <ContentManagementPanel /> */}
       </div>
     </HelmetProvider>
   );

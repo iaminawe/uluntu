@@ -10,10 +10,10 @@ import authReducer from '@/features/auth/store/authSlice';
 import contentReducer from '@/store/contentSlice';
 import membersUIReducer from '@/features/directory/store/membersUISlice';
 import eventsUIReducer from '@/features/events/store/eventsUISlice';
-import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
+import opportunitiesUIReducer from '@/features/opportunities/store/opportunitiesUISlice';
 import companiesUIReducer from '@/features/companies/store/companiesUISlice';
-import groupsReducer from '@/features/groups/store/groupsSlice';
-import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
+import groupsUIReducer from '@/features/groups/store/groupsUISlice';
+import marketplaceUIReducer from '@/features/marketplace/store/marketplaceUISlice';
 import newsUIReducer from '@/features/news/store/newsUISlice';
 
 // Create a custom render function that includes Redux provider
@@ -27,10 +27,10 @@ function render(
         content: contentReducer,
         membersUI: membersUIReducer,
         eventsUI: eventsUIReducer,
-        opportunities: opportunitiesReducer,
+        opportunitiesUI: opportunitiesUIReducer,
         companiesUI: companiesUIReducer,
-        groups: groupsReducer,
-        marketplace: marketplaceReducer,
+        groupsUI: groupsUIReducer,
+        marketplaceUI: marketplaceUIReducer,
         newsUI: newsUIReducer,
       },
       preloadedState,
