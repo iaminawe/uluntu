@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { membersApi } from '../api/membersApi';
+import { membersApi } from '@/features/directory/api/membersApi';
 import { Member, ContentStatus } from '../types';
 import { useAuth } from './useAuth';
 

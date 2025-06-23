@@ -12,6 +12,8 @@ import {
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { supabase } from '@/lib/supabase';
 import { sessionCache } from '@/lib/supabase';
+import { logger } from '@/utils/logger';
+import { logAndSanitizeError } from '@/utils/errorSanitization';
 
 // Optimized session conversion with caching
 const convertSession = (supabaseSession: SupabaseSession): Session => {
@@ -26,9 +28,9 @@ const convertSession = (supabaseSession: SupabaseSession): Session => {
   return converted;
 };
 
-const handleAuthError = (dispatch: ReturnType<typeof useAppDispatch>, error: unknown) => {
-  const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-  dispatch(setAuthError(errorMessage));
+const handleAuthError = (dispatch: ReturnType<typeof useAppDispatch>, error: unknown, context: string) => {
+  const sanitized = logAndSanitizeError(error, context);
+  dispatch(setAuthError(sanitized.userMessage));
 };
 
 export const useAuth = () => {
@@ -39,18 +41,12 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Log which Supabase client we're using
-      console.log('Using Supabase client from:', supabase);
-      
       // Add a safety check before calling signInWithPassword
       if (!supabase || !supabase.auth) {
-        console.error('Supabase client or auth is not properly initialized');
-        dispatch(setAuthError('Authentication service unavailable'));
+        const sanitized = logAndSanitizeError('Authentication service not initialized', 'Authentication - Service Check');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
-      
-      // Log the auth object to check its structure
-      console.log('Auth object:', supabase.auth);
       
       // Use a safer approach with explicit error handling
       const response = await supabase.auth.signInWithPassword({
@@ -58,26 +54,23 @@ export const useAuth = () => {
         password
       });
       
-      // Log the response to see its structure
-      console.log('Sign-in response:', response);
-      
       // Safely destructure with a check
       if (!response) {
-        console.error('Sign-in response is undefined or null');
-        dispatch(setAuthError('Invalid response from authentication service'));
+        const sanitized = logAndSanitizeError('Invalid authentication response', 'Authentication - Response Check');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
       
       const { data, error } = response;
 
       if (error) {
-        console.error('Sign-in error:', error);
-        dispatch(setAuthError(error.message));
+        const sanitized = logAndSanitizeError(error, 'Authentication - Sign In');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
 
       if (data?.user && data?.session) {
-        console.log('Sign-in successful, user:', data.user.id);
+        logger.authEvent('Sign-in successful', { userId: data.user.id });
         dispatch(signInWithSession({
           user: {
             id: data.user.id,
@@ -87,12 +80,11 @@ export const useAuth = () => {
           session: convertSession(data.session)
         }));
       } else {
-        console.error('Sign-in data incomplete:', data);
-        dispatch(setAuthError('Incomplete authentication data'));
+        const sanitized = logAndSanitizeError('Incomplete authentication data received', 'Authentication - Data Validation');
+        dispatch(setAuthError(sanitized.userMessage));
       }
     } catch (err) {
-      console.error('Sign-in exception:', err);
-      handleAuthError(dispatch, err);
+      handleAuthError(dispatch, err, 'Authentication - Sign In Exception');
     }
   };
 
@@ -104,7 +96,8 @@ export const useAuth = () => {
       });
 
       if (error) {
-        dispatch(setAuthError(error.message));
+        const sanitized = logAndSanitizeError(error, 'Authentication - Sign Up');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
 
@@ -119,7 +112,7 @@ export const useAuth = () => {
         }));
       }
     } catch (err) {
-      handleAuthError(dispatch, err);
+      handleAuthError(dispatch, err, 'Authentication - Sign Up Exception');
     }
   };
 
@@ -128,13 +121,14 @@ export const useAuth = () => {
       const { error } = await supabase.auth.signOut();
 
       if (error) {
-        dispatch(setAuthError(error.message));
+        const sanitized = logAndSanitizeError(error, 'Authentication - Sign Out');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
 
       dispatch(signOut());
     } catch (err) {
-      handleAuthError(dispatch, err);
+      handleAuthError(dispatch, err, 'Authentication - Sign Out Exception');
     }
   };
 
@@ -143,11 +137,12 @@ export const useAuth = () => {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
 
       if (error) {
-        dispatch(setAuthError(error.message));
+        const sanitized = logAndSanitizeError(error, 'Authentication - Password Reset');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
     } catch (err) {
-      handleAuthError(dispatch, err);
+      handleAuthError(dispatch, err, 'Authentication - Password Reset Exception');
     }
   };
 
@@ -156,7 +151,8 @@ export const useAuth = () => {
       const { data, error } = await supabase.auth.getSession();
 
       if (error) {
-        dispatch(setAuthError(error.message));
+        const sanitized = logAndSanitizeError(error, 'Authentication - Session Refresh');
+        dispatch(setAuthError(sanitized.userMessage));
         return;
       }
 
@@ -166,7 +162,7 @@ export const useAuth = () => {
         dispatch(signOut());
       }
     } catch (err) {
-      handleAuthError(dispatch, err);
+      handleAuthError(dispatch, err, 'Authentication - Session Refresh Exception');
     }
   };
 
