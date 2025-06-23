@@ -53,7 +53,17 @@ This directory contains comprehensive demo data for the Nelson Tech Community Pl
 - Resource thumbnail associations
 - Engagement analytics across platforms
 
-### 6. `validate_seeds.sql`
+### 6. `07_groups_seed_data.sql`
+**Extended groups data** featuring:
+- 10 additional diverse tech community groups
+- Technical focus groups: Blockchain, Mobile, Cloud/DevOps
+- Professional development: Tech Leadership, Freelance Network
+- Specialized interests: Game Development, Hardware/IoT
+- Community groups: Women Who Code, Tech for Good, Junior Developers
+- Realistic group memberships with existing members
+- Variety of visibility levels and group sizes
+
+### 7. `validate_seeds.sql`
 **Validation script** to verify:
 - Table existence and structure
 - Data counts and completeness
@@ -71,6 +81,7 @@ psql -d your_database -f database/seeds/02_additional_demo_relationships.sql
 psql -d your_database -f database/seeds/03_photo_gallery_seed_data.sql
 psql -d your_database -f database/seeds/04_newsletter_campaign_seed_data.sql
 psql -d your_database -f database/seeds/05_gallery_newsletter_relationships.sql
+psql -d your_database -f database/seeds/07_groups_seed_data.sql
 ```
 
 ### Validate Data
@@ -88,6 +99,7 @@ supabase db seed database/seeds/02_additional_demo_relationships.sql
 supabase db seed database/seeds/03_photo_gallery_seed_data.sql
 supabase db seed database/seeds/04_newsletter_campaign_seed_data.sql
 supabase db seed database/seeds/05_gallery_newsletter_relationships.sql
+supabase db seed database/seeds/07_groups_seed_data.sql
 ```
 
 ## Demo Data Features
@@ -106,6 +118,7 @@ supabase db seed database/seeds/05_gallery_newsletter_relationships.sql
 - **Career Mobility**: Job applications and opportunities
 
 ### Content Variety
+- **Groups**: 15 total groups spanning technical, professional, and community interests
 - **Events**: In-person workshops, online webinars, networking events
 - **News**: Tech growth, awards, mentorship programs, expansion
 - **Resources**: Courses, documentation, articles, frameworks
