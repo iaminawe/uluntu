@@ -4,14 +4,12 @@ import authReducer from '@/features/auth/store/authSlice';
 import eventsUIReducer from '@/features/events/store/eventsUISlice';
 import membersUIReducer from '@/features/directory/store/membersUISlice';
 import companiesUIReducer from '@/features/companies/store/companiesUISlice';
-import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
-import groupsReducer from '@/features/groups/store/groupsSlice';
+import opportunitiesUIReducer from '@/features/opportunities/store/opportunitiesUISlice';
 import groupsUIReducer from '@/features/groups/store/groupsUISlice';
 import newsUIReducer from '@/features/news/store/newsUISlice';
-import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
+import marketplaceUIReducer from '@/features/marketplace/store/marketplaceUISlice';
 import pagesReducer from '@/features/pages/store/pagesSlice';
 import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
-import contentReducer from '@/store/contentSlice';
 import galleryReducer from '@/features/gallery/store/gallerySlice';
 import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
 import unifiedSettingsUIReducer from '@/features/admin/store/unifiedSettingsUISlice';
@@ -32,14 +30,12 @@ export const store = configureStore({
     eventsUI: eventsUIReducer,
     membersUI: membersUIReducer,
     companiesUI: companiesUIReducer,
-    opportunities: opportunitiesReducer,
-    groups: groupsReducer,
+    opportunitiesUI: opportunitiesUIReducer,
     groupsUI: groupsUIReducer,
     newsUI: newsUIReducer,
-    marketplace: marketplaceReducer,
+    marketplaceUI: marketplaceUIReducer,
     pages: pagesReducer,
     onboarding: onboardingReducer,
-    content: contentReducer,
     gallery: galleryReducer,
     galleryUI: galleryUIReducer,
     unifiedSettingsUI: unifiedSettingsUIReducer,
