@@ -112,11 +112,10 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Interaction Performance', () => {
     it('should open dropdown quickly', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -132,11 +131,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should close dropdown quickly', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -155,11 +153,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle rapid clicks efficiently', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -187,11 +184,10 @@ describe('UserMenu Performance Tests', () => {
       const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
       const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { unmount } = renderUserMenu();
@@ -209,11 +205,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should not cause memory leaks with multiple mounts/unmounts', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       // Mount and unmount multiple times
@@ -236,11 +231,10 @@ describe('UserMenu Performance Tests', () => {
         return <UserMenu />;
       };
 
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(
         createMockQueryResult({ 
           data: { id: 'member123', name: 'Test User' } 
@@ -270,11 +264,10 @@ describe('UserMenu Performance Tests', () => {
       const mockSignOut = jest.fn();
       
       // Start with authenticated user
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: mockSignOut,
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { rerender } = renderUserMenu();
@@ -282,11 +275,10 @@ describe('UserMenu Performance Tests', () => {
       const start = performance.now();
 
       // Change to unauthenticated
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: null,
-        signOut: mockSignOut,
         isAdmin: false,
-      });
+      }));
 
       await act(async () => {
         rerender(
@@ -307,11 +299,10 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Large Scale Performance', () => {
     it('should handle admin users with many permissions efficiently', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'admin123', email: 'admin@example.com' },
-        signOut: jest.fn(),
         isAdmin: true,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(
         createMockQueryResult({ 
           data: { id: 'admin123', name: 'Admin User' } 
@@ -336,11 +327,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle concurrent interactions gracefully', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       renderUserMenu();
@@ -376,11 +366,10 @@ describe('UserMenu Performance Tests', () => {
     it('should import minimal dependencies', () => {
       // This test would ideally check bundle analysis
       // For now, we verify the component renders without heavy dependencies
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: null,
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const { container } = renderUserMenu();
