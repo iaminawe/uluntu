@@ -654,7 +654,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
-                      {feature.is_enabled && (
+                      {feature.enabled && (
                         <Badge variant="success" size="sm">Active</Badge>
                       )}
                     </div>
@@ -663,7 +663,7 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
                     )}
                   </div>
                   <Switch
-                    checked={feature.is_enabled}
+                    checked={feature.enabled}
                     onCheckedChange={(checked) => {
                       toast.success('Security feature toggle functionality coming soon');
                     }}

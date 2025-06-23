@@ -239,7 +239,7 @@ const EmailSection: React.FC<EmailSectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.is_enabled}
+                            checked={feature.enabled}
                             onCheckedChange={(checked) => {
                               toast.success('Email feature toggle functionality coming soon');
                             }}

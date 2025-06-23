@@ -239,7 +239,7 @@ const PerformanceSection: React.FC<PerformanceSectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.is_enabled}
+                            checked={feature.enabled}
                             onCheckedChange={(checked) => {
                               toast.success('Performance feature toggle functionality coming soon');
                             }}

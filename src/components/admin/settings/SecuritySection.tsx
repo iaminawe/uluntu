@@ -239,7 +239,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.is_enabled}
+                            checked={feature.enabled}
                             onCheckedChange={(checked) => {
                               toast.success('Security feature toggle functionality coming soon');
                             }}

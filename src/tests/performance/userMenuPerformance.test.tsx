@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { createMockQueryResult } from '@/test-utils/react-query-mocks';
+import { createMockQueryResult, createMockAuthContext } from '@/test-utils/react-query-mocks';
 import { BrowserRouter } from 'react-router-dom';
 import { performance } from 'perf_hooks';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
@@ -52,11 +52,10 @@ describe('UserMenu Performance Tests', () => {
 
   describe('Initial Render Performance', () => {
     it('should render quickly for unauthenticated users', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: null,
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult({ data: null }));
 
       const renderTime = await measureRenderTime(() => {
@@ -69,11 +68,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should render quickly for authenticated users', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(
         createMockQueryResult({ 
           data: { id: 'member123', name: 'Test User' } 
@@ -89,11 +87,10 @@ describe('UserMenu Performance Tests', () => {
     });
 
     it('should handle slow member data loading gracefully', async () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com' },
-        signOut: jest.fn(),
         isAdmin: false,
-      });
+      }));
 
       // Simulate slow loading
       mockUseMemberByUserId.mockReturnValue(
