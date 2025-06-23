@@ -18,7 +18,7 @@ type ResourceInput = {
 };
 
 // Define ResourceType for type checking
-type ResourceType = 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link';
+type ResourceType = 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link' | 'gallery';
 
 // Base Types from Supabase schema
 export type DBResource = Database['public']['Tables']['resources']['Row']; // This is DB-style Resource with string type/status
@@ -120,7 +120,7 @@ const frontendToDbResource = (fe: ResourceLike): DBResource => {
 
 // Helper to validate resource type
 function isValidResourceType(type: string): type is ResourceType {
-  const validTypes: ResourceType[] = ['guide', 'tool', 'article', 'video', 'document', 'link'];
+  const validTypes: ResourceType[] = ['guide', 'tool', 'article', 'video', 'document', 'link', 'gallery'];
   return validTypes.includes(type as ResourceType);
 }
 
