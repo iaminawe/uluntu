@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -13,7 +13,7 @@ interface AuthGuardProps {
  * Otherwise, it will redirect unauthenticated users to the sign-in page
  */
 export default function AuthGuard({ children, allowUnauthenticated = false }: AuthGuardProps) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSession();
   const location = useLocation();
 
   if (loading) {

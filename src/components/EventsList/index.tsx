@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Event, EventType, DateRangeFilter, adaptMainEventToLocal, EventsListProps } from '@/features/events/components/EventsList/types';
-import { useFilteredEventsRedux } from '@/features/events/hooks/useEventsRedux';
+import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 import EventCard from '@/features/events/components/EventsList/EventCard';
 import PastEventCard from '@/features/events/components/EventsList/PastEventCard';
 import Pagination from '@/components/Pagination';
@@ -30,30 +30,30 @@ const EventsList = ({
   // Determine if we should use parent props or Redux
   const useParentData = parentEvents.length > 0;
   
-  // Use Redux-based hook for filtered events if not using parent data
+  // Use hybrid hook for filtered events if not using parent data
   const { 
     events: reduxEvents = [], 
     isLoading: reduxLoading, 
     error: reduxError, 
-    applyFilters, 
+    setSearchTerm,
+    setTypes,
+    setDateRange: setDateRangeFilter,
     clearAllFilters 
-  } = useFilteredEventsRedux();
+  } = useEventsHybrid();
   
   // Combined state values
   const mainEvents = useParentData ? parentEvents : reduxEvents;
   const isLoading = useParentData ? parentLoading : reduxLoading;
   const error = useParentData ? parentError : reduxError;
   
-  // Apply filters when they change (only if using Redux)
+  // Apply filters when they change (only if using hybrid approach)
   useEffect(() => {
     if (!useParentData) {
-      applyFilters({
-        search: initialSearch,
-        types: selectedTypes.length > 0 ? selectedTypes : undefined,
-        dateRange: dateRange
-      });
+      setSearchTerm(initialSearch);
+      setTypes(selectedTypes.length > 0 ? selectedTypes : undefined);
+      setDateRangeFilter(dateRange);
     }
-  }, [initialSearch, selectedTypes, dateRange, applyFilters, useParentData]);
+  }, [initialSearch, selectedTypes, dateRange, setSearchTerm, setTypes, setDateRangeFilter, useParentData]);
 
   useEffect(() => {
     // Reset pages when filters change
