@@ -53,8 +53,8 @@ INSERT INTO "public"."photo_tags" ("id", "photo_id", "tag_id", "tagged_by", "cre
 	('b0000008-0008-0008-0008-000000000008', 'ffffffff-ffff-ffff-ffff-ffffffffffff', (SELECT id FROM tags WHERE slug = 'data-science' LIMIT 1), 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-22 09:36:00+00'),
 	
 	-- Amanda's brand photoshoot tags
-	('b0000009-0009-0009-0009-000000000009', 'iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii', (SELECT id FROM tags WHERE slug = 'marketing' LIMIT 1), '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 10:30:00+00'),
-	('b0000010-0010-0010-0010-000000000010', 'iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii', (SELECT id FROM tags WHERE slug = 'startup' LIMIT 1), '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 10:31:00+00');
+	('b0000009-0009-0009-0009-000000000009', '00000003-0003-0003-0003-000000000003', (SELECT id FROM tags WHERE slug = 'marketing' LIMIT 1), '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 10:30:00+00'),
+	('b0000010-0010-0010-0010-000000000010', '00000003-0003-0003-0003-000000000003', (SELECT id FROM tags WHERE slug = 'startup' LIMIT 1), '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 10:31:00+00');
 
 -- =====================================================
 -- GALLERY TAGS (connecting galleries to tag system)
@@ -95,7 +95,7 @@ SET template_data = template_data || jsonb_build_object('header_photo_id', 'cccc
 WHERE id = '70000002-0002-0002-0002-000000000002'; -- AI Summit featuring Emily's telemedicine setup
 
 UPDATE newsletter_campaigns 
-SET template_data = template_data || jsonb_build_object('hero_photo_id', 'iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii')
+SET template_data = template_data || jsonb_build_object('hero_photo_id', '00000003-0003-0003-0003-000000000003')
 WHERE id = '70000003-0003-0003-0003-000000000003'; -- June 22 digest featuring Amanda's brand shoot
 
 -- =====================================================
@@ -206,19 +206,19 @@ CREATE TABLE IF NOT EXISTS company_galleries (
 -- Associate member galleries with their companies
 INSERT INTO "public"."company_galleries" ("id", "company_id", "gallery_id", "showcase_type", "is_approved", "approved_by", "approved_at", "created_at") VALUES
 	-- TechFlow Solutions featuring Sarah's workspace
-	('g0000001-0001-0001-0001-000000000001', 'aa11bb22-cc33-dd44-ee55-ff6677889900', '11111111-1111-1111-1111-111111111111', 'portfolio', true, 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-20 15:00:00+00', '2025-06-20 14:45:00+00'),
+	('a0000001-0001-0001-0001-000000000001', 'aa11bb22-cc33-dd44-ee55-ff6677889900', '11111111-1111-1111-1111-111111111111', 'portfolio', true, 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2025-06-20 15:00:00+00', '2025-06-20 14:45:00+00'),
 	
 	-- HealthTech Innovations featuring Emily's telemedicine setup
-	('g0000002-0002-0002-0002-000000000002', 'cc33dd44-ee55-ff66-7788-99001122aabb', '22222222-2222-2222-2222-222222222222', 'featured', true, 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', '2025-06-18 12:00:00+00', '2025-06-18 11:50:00+00'),
+	('a0000002-0002-0002-0002-000000000002', 'cc33dd44-ee55-ff66-7788-99001122aabb', '22222222-2222-2222-2222-222222222222', 'featured', true, 'a75a33d8-aa13-42a9-a246-3a5c8e5c838f', '2025-06-18 12:00:00+00', '2025-06-18 11:50:00+00'),
 	
 	-- Design Collective featuring Alex's process
-	('g0000003-0003-0003-0003-000000000003', 'ff667788-9900-1122-aabb-ccddeeff0011', '33333333-3333-3333-3333-333333333333', 'portfolio', true, '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-15 17:00:00+00', '2025-06-15 16:45:00+00'),
+	('a0000003-0003-0003-0003-000000000003', 'ff667788-9900-1122-aabb-ccddeeff0011', '33333333-3333-3333-3333-333333333333', 'portfolio', true, '7131f030-4431-4dbf-816b-9cb4ebd2d54d', '2025-06-15 17:00:00+00', '2025-06-15 16:45:00+00'),
 	
 	-- DataWise Analytics featuring Jennifer's visualization work
-	('g0000004-0004-0004-0004-000000000004', 'ee55ff66-7788-9900-1122-aabbccddeeff', '55555555-5555-5555-5555-555555555555', 'featured', true, 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-22 10:00:00+00', '2025-06-22 09:45:00+00'),
+	('a0000004-0004-0004-0004-000000000004', 'ee55ff66-7788-9900-1122-aabbccddeeff', '55555555-5555-5555-5555-555555555555', 'featured', true, 'b62e36e4-11a4-4567-979e-3f3ebbc9232d', '2025-06-22 10:00:00+00', '2025-06-22 09:45:00+00'),
 	
 	-- Growth Marketing Co featuring Amanda's brand work
-	('g0000005-0005-0005-0005-000000000005', '00112233-aabb-ccdd-eeff-001122aabbcc', '88888888-8888-8888-8888-888888888888', 'portfolio', true, '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 11:00:00+00', '2025-06-21 10:45:00+00');
+	('a0000005-0005-0005-0005-000000000005', '00112233-aabb-ccdd-eeff-001122aabbcc', '88888888-8888-8888-8888-888888888888', 'portfolio', true, '4c6aca02-ccd6-46b6-ae8f-3969e32cb873', '2025-06-21 11:00:00+00', '2025-06-21 10:45:00+00');
 
 -- =====================================================
 -- GROUP PHOTO SHOWCASES
@@ -274,7 +274,7 @@ INSERT INTO "public"."newsletter_photo_features" ("id", "campaign_id", "photo_id
 	('f0000003-0003-0003-0003-000000000003', '70000002-0002-0002-0002-000000000002', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'featured', 8, '2025-06-08 14:25:00+00'),
 	
 	-- Welcome campaign featuring Amanda's brand work as inspiration
-	('f0000004-0004-0004-0004-000000000004', '70000004-0004-0004-0004-000000000004', 'iiiiiiii-iiii-iiii-iiii-iiiiiiiiiiii', 'thumbnail', 2, '2025-06-20 13:20:00+00');
+	('f0000004-0004-0004-0004-000000000004', '70000004-0004-0004-0004-000000000004', '00000003-0003-0003-0003-000000000003', 'thumbnail', 2, '2025-06-20 13:20:00+00');
 
 COMMIT;
 
