@@ -40,7 +40,8 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category
+        category: setting.category,
+        data_type: setting.data_type
       });
       
       setLocalSettings(prev => {
@@ -269,7 +270,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
               <div className="text-sm text-gray-600">User Features</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{userFeatures.filter(f => f.is_enabled).length}</div>
+              <div className="text-2xl font-bold text-purple-600">{userFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Enabled Features</div>
             </div>
           </div>
