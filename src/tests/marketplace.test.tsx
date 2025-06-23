@@ -125,7 +125,7 @@ describe('Marketplace Components', () => {
       </TestWrapper>
     );
     
-    expect(screen.getByTestId('marketplace-list')).toBeInTheDocument();
+    expect(screen.getByTestId('marketplace-list')).toBeTruthy();
     
     render(
       <TestWrapper>
@@ -133,6 +133,6 @@ describe('Marketplace Components', () => {
       </TestWrapper>
     );
     
-    expect(screen.getByTestId('marketplace-detail')).toBeInTheDocument();
+    expect(screen.getByTestId('marketplace-detail')).toBeTruthy();
   });
 });

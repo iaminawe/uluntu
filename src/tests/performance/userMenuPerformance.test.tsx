@@ -64,7 +64,7 @@ describe('UserMenu Performance Tests', () => {
 
       // Should render within 50ms for simple unauthenticated state
       expect(renderTime).toBeLessThan(50);
-      expect(screen.getByText('Account')).toBeInTheDocument();
+      expect(screen.getByText('Account')).toBeTruthy();
     });
 
     it('should render quickly for authenticated users', async () => {
@@ -127,7 +127,7 @@ describe('UserMenu Performance Tests', () => {
 
       // Dropdown should open within 16ms (60fps target)
       expect(interactionTime).toBeLessThan(16);
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      expect(screen.getByText('Edit Profile')).toBeTruthy();
     });
 
     it('should close dropdown quickly', async () => {
@@ -142,7 +142,7 @@ describe('UserMenu Performance Tests', () => {
       
       // Open dropdown first
       fireEvent.click(button);
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      expect(screen.getByText('Edit Profile')).toBeTruthy();
 
       const interactionTime = await measureInteractionTime(() => {
         fireEvent.click(button);
@@ -293,7 +293,7 @@ describe('UserMenu Performance Tests', () => {
 
       // Auth state change should re-render quickly
       expect(reRenderTime).toBeLessThan(50);
-      expect(screen.getByText('Account')).toBeInTheDocument();
+      expect(screen.getByText('Account')).toBeTruthy();
     });
   });
 
@@ -319,11 +319,11 @@ describe('UserMenu Performance Tests', () => {
       fireEvent.click(screen.getByRole('button'));
       
       // Should show all menu items
-      expect(screen.getByText('Your Profile')).toBeInTheDocument();
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
-      expect(screen.getByText('Settings')).toBeInTheDocument();
-      expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('Sign out')).toBeInTheDocument();
+      expect(screen.getByText('Your Profile')).toBeTruthy();
+      expect(screen.getByText('Edit Profile')).toBeTruthy();
+      expect(screen.getByText('Settings')).toBeTruthy();
+      expect(screen.getByText('Admin Dashboard')).toBeTruthy();
+      expect(screen.getByText('Sign out')).toBeTruthy();
     });
 
     it('should handle concurrent interactions gracefully', async () => {
