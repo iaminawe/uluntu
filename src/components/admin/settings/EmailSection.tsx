@@ -241,7 +241,7 @@ const EmailSection: React.FC<EmailSectionProps> = ({
                           <Switch
                             checked={feature.is_enabled}
                             onCheckedChange={(checked) => {
-                              toast.info('Email feature toggle functionality coming soon');
+                              toast.success('Email feature toggle functionality coming soon');
                             }}
                             disabled={isLoading}
                           />
@@ -283,7 +283,7 @@ const EmailSection: React.FC<EmailSectionProps> = ({
               <div className="text-sm text-gray-600">Integrations</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{emailFeatures.filter(f => f.is_enabled).length}</div>
+              <div className="text-2xl font-bold text-purple-600">{emailFeatures.filter(f => f.enabled).length}</div>
               <div className="text-sm text-gray-600">Active Features</div>
             </div>
           </div>

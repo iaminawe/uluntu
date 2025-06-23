@@ -287,7 +287,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const renderField = (category: string, field: SettingField) => {

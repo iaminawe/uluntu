@@ -217,7 +217,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const handleTestEmail = async () => {
@@ -529,7 +529,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
               <Mail className="h-5 w-5 text-purple-600" />
               <span>Email Features</span>
               <Badge variant="secondary">
-                {emailFeatures.filter(f => f.is_enabled).length}/{emailFeatures.length} enabled
+                {emailFeatures.filter(f => f.enabled).length}/{emailFeatures.length} enabled
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -553,7 +553,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                   <Switch
                     checked={feature.is_enabled}
                     onCheckedChange={(checked) => {
-                      toast.info('Email feature toggle functionality coming soon');
+                      toast.success('Email feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
                   />
@@ -617,7 +617,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {emailFeatures.filter(f => f.is_enabled).length}
+                {emailFeatures.filter(f => f.enabled).length}
               </div>
               <div className="text-sm text-gray-600">Email Features</div>
             </div>

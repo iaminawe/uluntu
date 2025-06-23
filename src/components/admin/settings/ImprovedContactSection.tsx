@@ -250,7 +250,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
     });
     setFormData(resetData);
     setChangedFields(new Set());
-    toast.info('Changes reset');
+    toast.success('Changes reset');
   };
 
   const renderField = (category: string, field: SettingField) => {
@@ -668,7 +668,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
               <Mail className="h-5 w-5 text-orange-600" />
               <span>Contact Features</span>
               <Badge variant="secondary">
-                {contactFeatures.filter(f => f.is_enabled).length}/{contactFeatures.length} enabled
+                {contactFeatures.filter(f => f.enabled).length}/{contactFeatures.length} enabled
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -692,7 +692,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                   <Switch
                     checked={feature.is_enabled}
                     onCheckedChange={(checked) => {
-                      toast.info('Contact feature toggle functionality coming soon');
+                      toast.success('Contact feature toggle functionality coming soon');
                     }}
                     disabled={isLoading}
                   />
