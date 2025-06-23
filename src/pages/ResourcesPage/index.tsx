@@ -6,26 +6,33 @@ import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import ResourcesList from '@/features/resources/components/ResourcesList';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
-import { useResourcesWithFilters } from '@/hooks/useResourceQueries';
+import { useResourcesHybrid } from '@/features/resources/hooks/useResourcesHybrid';
 
 // Resource type is already defined in the types.ts file
 
 export default function ResourcesPage() {
-  const [filters, setFilters] = useState<{ search?: string; types?: string[] }>({});
+  // Use hybrid hook for consistent pattern
+  const { 
+    resources, 
+    isLoading, 
+    error, 
+    refetch, 
+    setSearchTerm, 
+    setTypes, 
+    filters 
+  } = useResourcesHybrid();
   
-  // Use React Query with filters
-  const { data: resources = [], isLoading, isError, error, refetch } = useResourcesWithFilters(filters);
   const hasResources = resources.length > 0;
   
   const handleSearch = (searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm || undefined }));
+    setSearchTerm(searchTerm || undefined);
   };
   
   const handleTypeChange = (type: string) => {
     if (type === 'all') {
-      setFilters(prev => ({ ...prev, types: undefined }));
+      setTypes(undefined);
     } else {
-      setFilters(prev => ({ ...prev, types: [type] }));
+      setTypes([type]);
     }
   };
   
@@ -47,7 +54,7 @@ export default function ResourcesPage() {
         
         {isLoading ? (
           <SkeletonGrid count={9} columns={{ sm: 1, md: 2, lg: 3 }} />
-        ) : isError ? (
+        ) : error ? (
           <QueryError 
             error={error || new Error('Failed to load resources')} 
             retry={() => refetch()} 

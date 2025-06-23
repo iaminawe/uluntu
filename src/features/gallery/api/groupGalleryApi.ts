@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Gallery, CreateGalleryInput, GalleryFilters } from '../types';
 import { galleryApi } from './galleryApi';
+import { entityPermissions } from '@/utils/entityPermissions';
 
 export const groupGalleryApi = {
   /**
@@ -18,26 +19,10 @@ export const groupGalleryApi = {
    * Create a new gallery for a group
    */
   async createGroupGallery(groupId: string, galleryData: Omit<CreateGalleryInput, 'owner_type' | 'owner_id'>): Promise<Gallery> {
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-      .single();
-
-    if (!member) {
-      throw new Error('Member not found');
-    }
-
-    // Check if user is a group admin
-    const { data: membership } = await supabase
-      .from('group_members')
-      .select('role')
-      .eq('group_id', groupId)
-      .eq('member_id', member.id)
-      .eq('status', 'active')
-      .single();
-
-    if (!membership || membership.role !== 'admin') {
+    // Check if user is a group admin using the new permission system
+    const isGroupAdmin = await entityPermissions.isGroupAdmin(groupId);
+    
+    if (!isGroupAdmin) {
       throw new Error('Only group administrators can create galleries');
     }
 
@@ -52,31 +37,7 @@ export const groupGalleryApi = {
    * Check if current user can manage group galleries
    */
   async canManageGroupGalleries(groupId: string): Promise<boolean> {
-    try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return false;
-
-      const { data: member } = await supabase
-        .from('members')
-        .select('id')
-        .eq('user_id', user.user.id)
-        .single();
-
-      if (!member) return false;
-
-      const { data: membership } = await supabase
-        .from('group_members')
-        .select('role')
-        .eq('group_id', groupId)
-        .eq('member_id', member.id)
-        .eq('status', 'active')
-        .single();
-
-      return membership?.role === 'admin';
-    } catch (error) {
-      console.error('Error checking group gallery permissions:', error);
-      return false;
-    }
+    return entityPermissions.isGroupAdmin(groupId);
   },
 
   /**

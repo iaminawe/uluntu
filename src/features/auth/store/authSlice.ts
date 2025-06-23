@@ -94,7 +94,6 @@ const authSlice = createSlice({
 
     // Optimized role management
     setRoles(state, action: PayloadAction<string[]>) {
-      console.log('AUTH SLICE: setRoles called with:', action.payload);
       const isAdmin = action.payload.includes('admin') || action.payload.includes('superadmin');
       // Only update if roles actually changed
       if (state.roles.isAdmin !== isAdmin || !arrayEquals(state.roles.list, action.payload)) {
@@ -103,7 +102,6 @@ const authSlice = createSlice({
       }
       state.roles.loading = false;
       state.roles.error = null;
-      console.log('AUTH SLICE: Roles updated, new state:', { list: state.roles.list, isAdmin: state.roles.isAdmin });
     },
 
     setRolesError(state, action: PayloadAction<string>) {

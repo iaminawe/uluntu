@@ -2,14 +2,15 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Edit, LogOut } from 'lucide-react';
 import { getVisibilityIcon, getVisibilityLabel } from './VisibilityHelper';
 import { PageHeaderProps } from './types';
-import { useGroupMembership, useGroupMemberRole, useJoinGroup, useLeaveGroup } from '../../hooks/useGroupQueries';
+import { useGroupMembership, useJoinGroup, useLeaveGroup } from '../../hooks/useGroupQueries';
 import { useCurrentMember } from '../../hooks/useCurrentMember';
+import { useIsGroupAdmin } from '@/hooks/useEntityPermissions';
 import { useState } from 'react';
 
 const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
   const { data: currentMember } = useCurrentMember();
   const { data: isMember } = useGroupMembership(group.id, currentMember?.id);
-  const { data: memberRole } = useGroupMemberRole(group.id, currentMember?.id);
+  const { data: isGroupAdmin = false } = useIsGroupAdmin(group.id);
   const joinGroup = useJoinGroup();
   const leaveGroup = useLeaveGroup();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -97,15 +98,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
                 {isMember && (
                   <button
                     onClick={handleLeave}
-                    disabled={isProcessing || memberRole === 'admin'}
+                    disabled={isProcessing || isGroupAdmin}
                     className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                    title={memberRole === 'admin' ? 'Admins cannot leave the group' : ''}
+                    title={isGroupAdmin ? 'Admins cannot leave the group' : ''}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     {isProcessing ? 'Processing...' : 'Leave Group'}
                   </button>
                 )}
-                {memberRole === 'admin' && (
+                {isGroupAdmin && (
                   <Link
                     to={`/groups/${group.id}/edit`}
                     className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors border border-white/20 flex items-center"

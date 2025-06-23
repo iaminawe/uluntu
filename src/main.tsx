@@ -48,8 +48,9 @@ createRoot(document.getElementById('root')!).render(
                       },
                     }}
                   />
+                  {/* Debug components disabled */}
                   {/* <DebugUserRoles /> */}
-                  <SettingsDebugger />
+                  {/* <SettingsDebugger /> */}
                 </ThemeProvider>
               </SettingsProvider>
             </QueryClientProvider>

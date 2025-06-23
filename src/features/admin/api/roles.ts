@@ -275,53 +275,89 @@ export const adminRolesApi = {
     try {
       const roles: (Role & { type: 'system' | 'custom' })[] = [];
 
-      // Get system roles
-      const { data: systemRoles, error: systemError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId);
+      // Get system roles from user_roles table
+      try {
+        const { data: systemRoles, error: systemError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
 
-      if (systemError) {
-        logger.apiError('getUserRoles - system', systemError);
-      } else if (systemRoles) {
-        // Convert system role names to Role objects
-        const systemRoleObjects = systemRoles.map(sr => ({
-          id: sr.role,
-          name: sr.role.charAt(0).toUpperCase() + sr.role.slice(1).replace(/_/g, ' '),
-          description: null,
-          permissions: {},
-          is_system: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          type: 'system' as const
-        }));
-        roles.push(...systemRoleObjects);
-      }
-
-      // Get custom roles
-      const { data: customRoles, error: customError } = await supabase
-        .from('user_custom_roles')
-        .select('role_id, custom_roles(*)')
-        .eq('user_id', userId);
-
-      if (customError) {
-        // If table doesn't exist, just return system roles
-        if (customError.code === '42P01') {
-          logger.warn('user_custom_roles table not found, migration may be needed', 'ROLES');
-        } else {
-          logger.apiError('getUserRoles - custom', customError);
-        }
-      } else if (customRoles) {
-        const customRoleObjects = customRoles
-          .map(cr => cr.custom_roles)
-          .filter(Boolean)
-          .map(role => ({
-            ...role,
-            type: 'custom' as const
+        if (systemError) {
+          // If user_roles table doesn't exist, that's a problem
+          if (systemError.code === '42P01') {
+            logger.error('user_roles table not found - this is required for basic auth', 'ROLES');
+          } else {
+            logger.apiError('getUserRoles - system', systemError);
+          }
+        } else if (systemRoles && systemRoles.length > 0) {
+          // Convert system role names to Role objects
+          const systemRoleObjects = systemRoles.map(sr => ({
+            id: sr.role,
+            name: sr.role.charAt(0).toUpperCase() + sr.role.slice(1).replace(/_/g, ' '),
+            description: `System role: ${sr.role}`,
+            permissions: {},
+            is_system: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            type: 'system' as const
           }));
-        roles.push(...customRoleObjects);
+          roles.push(...systemRoleObjects);
+          logger.debug(`Found ${systemRoleObjects.length} system roles for user`, 'ROLES', { userId, roles: systemRoles.map(r => r.role) });
+        }
+      } catch (systemError) {
+        logger.error('Failed to fetch system roles', 'ROLES', systemError);
       }
 
+      // Try to get custom roles - but don't fail if tables don't exist
+      try {
+        // First check if custom roles tables exist by trying a simple query
+        const { data: customRolesTableCheck, error: tableCheckError } = await supabase
+          .from('custom_roles')
+          .select('id')
+          .limit(1);
+
+        if (tableCheckError) {
+          if (tableCheckError.code === '42P01') {
+            logger.debug('custom_roles table not found - custom roles not available', 'ROLES');
+            return roles; // Return only system roles
+          } else {
+            logger.warn('Error checking custom_roles table', 'ROLES', tableCheckError);
+            return roles; // Return only system roles
+          }
+        }
+
+        // Tables exist, now get user's custom roles
+        const { data: userCustomRoles, error: userCustomError } = await supabase
+          .from('user_custom_roles')
+          .select('role_id')
+          .eq('user_id', userId);
+
+        if (userCustomError) {
+          logger.warn('Error fetching user custom roles', 'ROLES', userCustomError);
+        } else if (userCustomRoles && userCustomRoles.length > 0) {
+          // Get the actual role objects
+          const roleIds = userCustomRoles.map(ucr => ucr.role_id);
+          const { data: customRoleObjects, error: roleError } = await supabase
+            .from('custom_roles')
+            .select('*')
+            .in('id', roleIds);
+            
+          if (!roleError && customRoleObjects && customRoleObjects.length > 0) {
+            const mappedRoles = customRoleObjects.map(role => ({
+              ...role,
+              type: 'custom' as const
+            }));
+            roles.push(...mappedRoles);
+            logger.debug(`Found ${mappedRoles.length} custom roles for user`, 'ROLES', { userId, roles: customRoleObjects.map(r => r.name) });
+          }
+        } else {
+          logger.debug('No custom roles assigned to user', 'ROLES', { userId });
+        }
+      } catch (customError) {
+        logger.debug('Custom roles functionality not available', 'ROLES', customError);
+      }
+
+      logger.debug(`Total roles for user: ${roles.length}`, 'ROLES', { userId, totalRoles: roles.length });
       return roles;
     } catch (error) {
       logger.apiError('getUserRoles', error);

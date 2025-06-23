@@ -15,7 +15,8 @@ export default function UserMenu() {
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
   
-  // Debug logging for admin access
+  // Debug logging for admin access (disabled)
+  /*
   console.log('🔍 UserMenu Debug:', {
     user: user?.email,
     isAdmin,
@@ -23,6 +24,7 @@ export default function UserMenu() {
     hasUser: !!user,
     shouldShowAdmin: !!user && isAdmin
   });
+  */
   
   // Get the member profile for the current user
   const { data: member } = useMemberByUserId(user?.id);

@@ -5,7 +5,7 @@ import {
   MarketplaceItemsQueryOptions
 } from '@/adapters/marketplaceAdapters';
 import { MarketplaceItem } from '../types';
-import { ContentStatus } from '../types/common';
+import { ContentStatus } from '@/types/common';
 
 
 // Define the input type for marketplace item data passed from the application
@@ -28,10 +28,13 @@ export const marketplaceApi = {
   async getAll(filters?: MarketplaceItemsQueryOptions): Promise<MarketplaceItem[]> {
     try {
       console.log('[MarketplaceAPI] getAll called with filters:', filters);
+      console.log('[MarketplaceAPI] Using resources table as marketplace data source');
       
+      // Use resources table instead of non-existent marketplace_listings
       let query = supabase
-        .from('marketplace_listings')
-        .select('*');
+        .from('resources')
+        .select('*')
+        .eq('status', 'published');
 
       // Apply filters if provided
       if (filters) {
@@ -75,11 +78,27 @@ export const marketplaceApi = {
         throw handleSupabaseError(error);
       }
 
-      // Use our helper function with type assertion to avoid compatibility issues
-      const adapted = adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as any));
-      console.log('[MarketplaceAPI] Adapted items:', adapted.length);
-      console.log('[MarketplaceAPI] First adapted item:', adapted[0]);
-      return adapted;
+      // Transform resources data to marketplace format
+      const marketplaceItems: MarketplaceItem[] = (data || []).map(resource => ({
+        id: resource.id,
+        title: resource.title,
+        description: resource.description || '',
+        type: resource.type || 'service',
+        price: 0, // Resources don't have prices
+        condition: 'new',
+        images: resource.image ? [resource.image] : [],
+        location: 'Nelson, BC',
+        tags: resource.tags || [],
+        sellerId: resource.contributor_id || '',
+        status: resource.status as ContentStatus,
+        featured: resource.featured || false,
+        createdAt: resource.created_at,
+        updatedAt: resource.created_at
+      }));
+      
+      console.log('[MarketplaceAPI] Transformed resources to marketplace items:', marketplaceItems.length);
+      console.log('[MarketplaceAPI] First marketplace item:', marketplaceItems[0]);
+      return marketplaceItems;
     } catch (error) {
       console.error('Error fetching marketplace items:', error);
       throw error;
@@ -104,7 +123,7 @@ export const marketplaceApi = {
       
       // First try a basic query to see if the item exists
       const { data: checkData, error: checkError } = await supabase
-        .from('marketplace_listings')
+        .from('resources')
         .select('id')
         .eq('id', formattedId)
         .maybeSingle();
@@ -117,7 +136,7 @@ export const marketplaceApi = {
       
       // Now perform the full query
       const { data, error } = await supabase
-        .from('marketplace_listings')
+        .from('resources')
         .select('*')
         .eq('id', formattedId)
         .single();
@@ -130,8 +149,27 @@ export const marketplaceApi = {
       
       console.log('MarketplaceAPI: Successfully retrieved item data:', data);
       
-      // Use type assertion to avoid type compatibility issues
-      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
+      // Transform resource to marketplace item format
+      if (!data) return null;
+      
+      const marketplaceItem: MarketplaceItem = {
+        id: data.id,
+        title: data.title,
+        description: data.description || '',
+        type: data.type || 'service',
+        price: 0,
+        condition: 'new',
+        images: data.image ? [data.image] : [],
+        location: 'Nelson, BC',
+        tags: data.tags || [],
+        sellerId: data.contributor_id || '',
+        status: data.status as ContentStatus,
+        featured: data.featured || false,
+        createdAt: data.created_at,
+        updatedAt: data.created_at
+      };
+      
+      return marketplaceItem;
     } catch (error) {
       console.error('MarketplaceAPI: Exception in getById:', error);
       handleSupabaseError(error, 'fetching marketplace item by id');
@@ -143,7 +181,7 @@ export const marketplaceApi = {
     try {
       // Get current item details
       const { data: currentItem } = await supabase
-        .from('marketplace_listings')
+        .from('resources')
         .select('type')
         .eq('id', itemId)
         .single();
@@ -152,7 +190,7 @@ export const marketplaceApi = {
 
       // Find related items
       const { data, error } = await supabase
-        .from('marketplace_listings')
+        .from('resources')
         .select('*')
         .eq('status', 'published')
         .neq('id', itemId)
@@ -161,12 +199,29 @@ export const marketplaceApi = {
         .limit(limit);
 
       if (error) {
-        handleSupabaseError(error, 'fetching marketplace items by seller');
+        handleSupabaseError(error, 'fetching related marketplace items');
         return [];
       }
       
-      // Use our helper function instead of adaptListFromSupabase
-      return adaptItemsList(data || [], (item) => adaptMarketplaceItemFromSupabase(item as unknown));
+      // Transform resources to marketplace items
+      const marketplaceItems: MarketplaceItem[] = (data || []).map(resource => ({
+        id: resource.id,
+        title: resource.title,
+        description: resource.description || '',
+        type: resource.type || 'service',
+        price: 0,
+        condition: 'new',
+        images: resource.image ? [resource.image] : [],
+        location: 'Nelson, BC',
+        tags: resource.tags || [],
+        sellerId: resource.contributor_id || '',
+        status: resource.status as ContentStatus,
+        featured: resource.featured || false,
+        createdAt: resource.created_at,
+        updatedAt: resource.created_at
+      }));
+      
+      return marketplaceItems;
     } catch (error) {
       handleSupabaseError(error, 'fetching marketplace items by seller');
       return []; // Return empty array on error
@@ -175,10 +230,22 @@ export const marketplaceApi = {
 
   async create(itemData: MarketplaceItemInput): Promise<MarketplaceItem | null> {
     try {
-      const supabaseData = adaptMarketplaceItemToSupabase(itemData);
+      // Transform marketplace item to resource format
+      const resourceData = {
+        title: itemData.title,
+        description: itemData.description || '',
+        type: itemData.type,
+        url: '', // Resources require a URL field
+        image: itemData.images?.[0] || '',
+        status: itemData.status || 'published',
+        featured: itemData.featured || false,
+        contributor_id: itemData.sellerId,
+        tags: itemData.tags || []
+      };
+      
       const { data, error } = await supabase
-        .from('marketplace_listings')
-        .insert(supabaseData)
+        .from('resources')
+        .insert(resourceData)
         .select()
         .single();
 
@@ -187,7 +254,27 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
+      // Transform created resource back to marketplace item
+      if (!data) return null;
+      
+      const marketplaceItem: MarketplaceItem = {
+        id: data.id,
+        title: data.title,
+        description: data.description || '',
+        type: data.type || 'service',
+        price: 0,
+        condition: 'new',
+        images: data.image ? [data.image] : [],
+        location: 'Nelson, BC',
+        tags: data.tags || [],
+        sellerId: data.contributor_id || '',
+        status: data.status as ContentStatus,
+        featured: data.featured || false,
+        createdAt: data.created_at,
+        updatedAt: data.created_at
+      };
+      
+      return marketplaceItem;
     } catch (error) {
       handleSupabaseError(error, 'creating marketplace item');
       return null;
@@ -196,10 +283,20 @@ export const marketplaceApi = {
 
   async update(id: string, itemData: Partial<MarketplaceItemInput>): Promise<MarketplaceItem | null> {
     try {
-      const supabaseData = adaptMarketplaceItemToSupabase(itemData);
+      // Transform marketplace updates to resource format
+      const resourceData: any = {};
+      if (itemData.title) resourceData.title = itemData.title;
+      if (itemData.description !== undefined) resourceData.description = itemData.description;
+      if (itemData.type) resourceData.type = itemData.type;
+      if (itemData.images) resourceData.image = itemData.images[0] || '';
+      if (itemData.status) resourceData.status = itemData.status;
+      if (itemData.featured !== undefined) resourceData.featured = itemData.featured;
+      if (itemData.sellerId) resourceData.contributor_id = itemData.sellerId;
+      if (itemData.tags) resourceData.tags = itemData.tags;
+      
       const { data, error } = await supabase
-        .from('marketplace_listings')
-        .update(supabaseData)
+        .from('resources')
+        .update(resourceData)
         .eq('id', id)
         .select()
         .single();
@@ -209,7 +306,27 @@ export const marketplaceApi = {
         return null;
       }
       
-      return data ? adaptMarketplaceItemFromSupabase(data as unknown) : null;
+      // Transform updated resource back to marketplace item
+      if (!data) return null;
+      
+      const marketplaceItem: MarketplaceItem = {
+        id: data.id,
+        title: data.title,
+        description: data.description || '',
+        type: data.type || 'service',
+        price: 0,
+        condition: 'new',
+        images: data.image ? [data.image] : [],
+        location: 'Nelson, BC',
+        tags: data.tags || [],
+        sellerId: data.contributor_id || '',
+        status: data.status as ContentStatus,
+        featured: data.featured || false,
+        createdAt: data.created_at,
+        updatedAt: data.created_at
+      };
+      
+      return marketplaceItem;
     } catch (error) {
       handleSupabaseError(error, 'updating marketplace item');
       return null;
@@ -219,7 +336,7 @@ export const marketplaceApi = {
   async delete(id: string): Promise<boolean> {
     try {
       const { error } = await supabase
-        .from('marketplace_listings')
+        .from('resources')
         .delete()
         .eq('id', id);
 

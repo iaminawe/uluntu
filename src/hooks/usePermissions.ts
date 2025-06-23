@@ -123,6 +123,20 @@ export const usePermissions = () => {
     return hasRole('group_member');
   };
 
+  // Enhanced debug logging with custom roles info
+  const debugInfo = {
+    user: user?.email,
+    systemRoles: reduxRoles.list,
+    rolesLoading: reduxRoles.loading,
+    hasRoles: reduxRoles.list.length > 0,
+    isSuperAdmin: reduxRoles.list.includes('superadmin'),
+    isAdmin: reduxRoles.list.includes('admin') || reduxRoles.list.includes('superadmin'),
+    customRolesCount: customRoles.length,
+    customRolesLoading: false, // TODO: Get loading state
+    allRolesCount: allRoles.length,
+    effectiveRoles: effectiveRoles
+  };
+
   // Role assignment helpers
   const canUserAssignRole = (targetRole: string): boolean => {
     const userRoleIds = allRoles.map(role => role.id);
@@ -134,14 +148,8 @@ export const usePermissions = () => {
     return getAssignableRoles(userRoleIds);
   };
 
-  // Debug logging
-  console.log('🔑 usePermissions Debug:', {
-    user: user?.email,
-    systemRoles: reduxRoles.list,
-    rolesLoading: reduxRoles.loading,
-    hasRoles: reduxRoles.list.length > 0,
-    isSuperAdmin: reduxRoles.list.includes('superadmin')
-  });
+  // Debug logging (disabled)
+  // console.log('🔑 usePermissions Debug:', debugInfo);
 
   return {
     // Role checks

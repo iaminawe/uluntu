@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Gallery, CreateGalleryInput, GalleryFilters } from '../types';
 import { galleryApi } from './galleryApi';
+import { entityPermissions } from '@/utils/entityPermissions';
 
 export const companyGalleryApi = {
   /**
@@ -18,26 +19,10 @@ export const companyGalleryApi = {
    * Create a new gallery for a company
    */
   async createCompanyGallery(companyId: string, galleryData: Omit<CreateGalleryInput, 'owner_type' | 'owner_id'>): Promise<Gallery> {
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-      .single();
-
-    if (!member) {
-      throw new Error('Member not found');
-    }
-
-    // Check if user is a company admin
-    const { data: membership } = await supabase
-      .from('company_members')
-      .select('role')
-      .eq('company_id', companyId)
-      .eq('member_id', member.id)
-      .eq('is_verified', true)
-      .single();
-
-    if (!membership || membership.role !== 'admin') {
+    // Check if user is a company admin using the new permission system
+    const isCompanyAdmin = await entityPermissions.isCompanyAdmin(companyId);
+    
+    if (!isCompanyAdmin) {
       throw new Error('Only verified company administrators can create galleries');
     }
 
@@ -52,31 +37,7 @@ export const companyGalleryApi = {
    * Check if current user can manage company galleries
    */
   async canManageCompanyGalleries(companyId: string): Promise<boolean> {
-    try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return false;
-
-      const { data: member } = await supabase
-        .from('members')
-        .select('id')
-        .eq('user_id', user.user.id)
-        .single();
-
-      if (!member) return false;
-
-      const { data: membership } = await supabase
-        .from('company_members')
-        .select('role')
-        .eq('company_id', companyId)
-        .eq('member_id', member.id)
-        .eq('is_verified', true)
-        .single();
-
-      return membership?.role === 'admin';
-    } catch (error) {
-      console.error('Error checking company gallery permissions:', error);
-      return false;
-    }
+    return entityPermissions.isCompanyAdmin(companyId);
   },
 
   /**

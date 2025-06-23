@@ -70,7 +70,7 @@ class NewsletterCampaignAPI {
     try {
       let query = supabase
         .from('newsletter_campaigns')
-        .select('*, created_by_user:auth.users!created_by(email)', { count: 'exact' });
+        .select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.status) {

@@ -14,35 +14,53 @@ const LISTINGS_PER_PAGE = 9;
 const MarketplaceList = ({ 
   initialType = 'all', 
   initialSearch = '', 
-  sellerId
+  sellerId,
+  listings: parentListings,
+  loading: parentLoading,
+  error: parentError,
+  searchTerm,
+  selectedType,
+  selectedCondition
 }: MarketplaceListProps) => {
   const { navigateToListing } = useMarketplaceNavigation();
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Use hybrid hook for marketplace data
+  const useParentData = parentListings !== undefined;
+  
+  // Use hybrid hook for marketplace data only if no parent data
   const { listings, isLoading, error } = useMarketplaceHybrid();
+  
+  // Use parent data if provided, otherwise use hybrid hook data
+  const finalListings = useParentData ? parentListings : listings;
+  const finalLoading = useParentData ? parentLoading : isLoading;
+  const finalError = useParentData ? parentError : error;
   
   // Filter listings based on props
   const filteredListings = useMemo(() => {
-    return listings.filter((listing) => {
-      // Type filter
-      if (initialType !== 'all' && listing.type !== initialType) return false;
+    return finalListings.filter((listing) => {
+      // Type filter - use MarketplacePage props if available, otherwise initialType
+      const typeFilter = selectedType || initialType;
+      if (typeFilter !== 'all' && listing.type !== typeFilter) return false;
       
-      // Search filter
-      if (initialSearch) {
-        const searchLower = initialSearch.toLowerCase();
+      // Search filter - use MarketplacePage props if available, otherwise initialSearch
+      const searchFilter = searchTerm || initialSearch;
+      if (searchFilter) {
+        const searchLower = searchFilter.toLowerCase();
         const matchesSearch = 
           listing.title?.toLowerCase().includes(searchLower) ||
           listing.description?.toLowerCase().includes(searchLower);
         if (!matchesSearch) return false;
       }
       
+      // Condition filter (if provided)
+      if (selectedCondition && selectedCondition !== 'all' && listing.condition !== selectedCondition) return false;
+      
       // Seller filter
       if (sellerId && listing.seller_id !== sellerId) return false;
       
       return true;
     });
-  }, [listings, initialType, initialSearch, sellerId]);
+  }, [finalListings, selectedType, initialType, searchTerm, initialSearch, selectedCondition, sellerId]);
   
   // Raw listings are already filtered by the hybrid hook
   
@@ -137,7 +155,7 @@ const MarketplaceList = ({
   }, [navigateToListing]);
   
   // Render loading skeleton
-  if (isLoading) {
+  if (finalLoading) {
     return (
       <div className="animate-fade-in">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -172,13 +190,13 @@ const MarketplaceList = ({
   }
   
   // Render error state
-  if (error) {
+  if (finalError) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
                     rounded-lg p-6 text-center">
         <AlertTriangle className="h-10 w-10 text-red-500 dark:text-red-400 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-2">Error Loading Listings</h3>
-        <p className="text-red-600 dark:text-red-400">{error?.message || 'Failed to load marketplace listings'}</p>
+        <p className="text-red-600 dark:text-red-400">{finalError?.message || 'Failed to load marketplace listings'}</p>
       </div>
     );
   }

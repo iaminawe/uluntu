@@ -6,6 +6,7 @@ import { eventsApi } from '@/features/events/api/eventsApi';
 import { useMembersHybrid } from '@/features/directory/hooks/useMembersHybrid';
 import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
+import RoleDebugUtility from '@/components/RoleDebugUtility';
 
 export default function DebugPage() {
   const [directData, setDirectData] = useState<any>({});
@@ -66,8 +67,17 @@ export default function DebugPage() {
   }, []);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Debug Dashboard</h1>
+      
+      {/* Role Debug Section */}
+      <div className="mb-8">
+        <RoleDebugUtility />
+      </div>
+      
+      <hr className="my-8" />
+      
+      <h2 className="text-xl font-bold mb-4">API & Data Debug</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Environment Info */}
