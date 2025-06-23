@@ -1,4 +1,4 @@
-import { contactSubmissionsAPI } from '../features/contact/api/contactSubmissionsApi';
+// import { contactSubmissionsAPI } from '../../features/contact/api/contactSubmissionsApi';
 import { supabase } from '@/lib/supabase';
 
 // Mock admin roles API
@@ -91,7 +91,7 @@ class ContactSubmissionsAPI {
     }
   }
   
-  async list(filters?: any) {
+  async list(_filters?: any) {
     // Check admin permissions
     const hasPermission = await adminRolesApi.checkPermission('contact_submissions', 'read');
     if (!hasPermission) {
@@ -168,7 +168,7 @@ class ContactSubmissionsAPI {
     };
   }
   
-  async export(filters?: any) {
+  async export(_filters?: any) {
     return {
       success: true,
       data: [
@@ -181,7 +181,7 @@ class ContactSubmissionsAPI {
   }
 }
 
-const contactSubmissionsApi = new ContactSubmissionsAPI();
+const _contactSubmissionsApi = new ContactSubmissionsAPI();
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({

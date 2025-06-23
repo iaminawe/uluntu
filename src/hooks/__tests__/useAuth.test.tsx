@@ -13,7 +13,7 @@ jest.mock('@/config/env', () => ({
 }));
 
 import React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer, { User, Session } from '@/features/auth/store/authSlice';

@@ -10,7 +10,7 @@ interface AuditSectionProps {
   isLoading: boolean;
 }
 
-const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading }) => {
+const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoading }) => {
   const recentChanges = history.slice(0, 20); // Show last 20 changes
 
   const getChangeTypeColor = (changeType: string) => {

@@ -198,9 +198,7 @@ export async function sendContactAutoReply(
         footer_text: 'Kootenay Tech Community',
       },
     },
-    options: {
-      submission_id: submission.id,
-    },
+    // Note: submission_id removed as it's not a valid sendEmail option
   });
 }
 

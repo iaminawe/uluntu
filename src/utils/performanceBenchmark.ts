@@ -195,10 +195,16 @@ export function withBenchmark<P extends object>(
   Component: React.ComponentType<P>,
   benchmarkName: string
 ): React.ComponentType<P> {
-  return React.forwardRef<any, P>((props, ref) => {
+  // Create a wrapper component that handles benchmarking
+  const WrappedComponent = (props: P) => {
     useBenchmark(benchmarkName);
-    return React.createElement(Component, { ...props, ref });
-  }) as React.ComponentType<P>;
+    return React.createElement(Component, props);
+  };
+  
+  // Set display name for debugging
+  WrappedComponent.displayName = `withBenchmark(${Component.displayName || Component.name || 'Component'})`;
+  
+  return WrappedComponent;
 }
 
 /**

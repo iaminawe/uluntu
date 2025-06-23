@@ -1,5 +1,8 @@
 import { supabase } from '@/lib/supabase';
 
+// Export supabase for other modules that need it
+export { supabase };
+
 /**
  * Utility function to check Supabase connection and table data
  * This can be imported and called from any component or run directly

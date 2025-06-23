@@ -7,10 +7,10 @@ import {
   Tablet,
   Save,
   RefreshCw,
-  Brush,
+  // Brush, - unused
   Type,
   Layout,
-  Image as ImageIcon,
+  // Image as ImageIcon, - unused
   Info
 } from 'lucide-react';
 import type { ApplicationSetting, UpdateSettingRequest } from '@/types/settings';
