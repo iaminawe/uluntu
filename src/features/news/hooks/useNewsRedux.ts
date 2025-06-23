@@ -40,10 +40,10 @@ export function useNewsArticlesRedux() {
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
   
-  // Load articles
-  const loadArticles = () => {
+  // Load articles - memoized to prevent infinite re-renders
+  const loadArticles = useCallback(() => {
     dispatch(fetchNewsArticles());
-  };
+  }, [dispatch]);
 
   return {
     articles,
@@ -52,9 +52,9 @@ export function useNewsArticlesRedux() {
     isError,
     error,
     loadArticles,
-    createArticle: (article: NewsArticleInput) => dispatch(createNewsArticle(article)),
-    updateArticle: (id: string, data: Partial<NewsArticleInput>) => dispatch(updateNewsArticle({ id, data })),
-    deleteArticle: (id: string) => dispatch(deleteNewsArticle(id)),
+    createArticle: useCallback((article: NewsArticleInput) => dispatch(createNewsArticle(article)), [dispatch]),
+    updateArticle: useCallback((id: string, data: Partial<NewsArticleInput>) => dispatch(updateNewsArticle({ id, data })), [dispatch]),
+    deleteArticle: useCallback((id: string) => dispatch(deleteNewsArticle(id)), [dispatch]),
   };
 }
 

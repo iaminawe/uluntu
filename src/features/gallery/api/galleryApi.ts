@@ -1,21 +1,40 @@
 import { supabase } from '@/lib/supabase';
 import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
+import { logger } from '@/utils/logger';
+
+export interface GalleriesResponse {
+  galleries: Gallery[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
 
 export const galleryApi = {
   // Gallery CRUD operations
-  async getAllGalleries(filters?: GalleryFilters): Promise<Gallery[]> {
+  async getAllGalleries(filters?: GalleryFilters & { page?: number; limit?: number }): Promise<GalleriesResponse> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 12;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
     let query = supabase
       .from('user_galleries')
       .select(`
         *,
-        gallery_photos!gallery_photos_gallery_id_fkey (*),
-        owner:members!user_id (
+        cover_photo:gallery_photos!user_galleries_cover_photo_fkey (
           id,
-          name,
-          image
+          thumbnail_path,
+          storage_path
+        ),
+        gallery_photos!gallery_photos_gallery_id_fkey (
+          id,
+          thumbnail_path,
+          storage_path
         )
-      `)
-      .order('created_at', { ascending: false });
+      `, { count: 'exact' })
+      .eq('privacy_level', 'public')
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (filters?.search) {
       query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
@@ -48,27 +67,67 @@ export const galleryApi = {
         .lte('created_at', filters.dateRange.end);
     }
 
-    const { data, error } = await query;
+    const { data, error, count } = await query;
 
     if (error) {
-      console.error('Error fetching galleries:', error);
+      logger.apiError('getAllGalleries', error);
       throw error;
     }
 
     // Transform data to match interface
-    const galleries = (data || []).map(gallery => ({
-      ...gallery,
-      photos: gallery.gallery_photos || [],
-      createdAt: gallery.created_at,
-      updatedAt: gallery.updated_at,
-      ownerId: gallery.user_id,
-      privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level
-    }));
+    const galleries = (data || []).map(gallery => {
+      // Get cover photo URL from the joined data
+      let coverPhotoUrl = null;
+      
+      // Helper function to get public URL from storage path
+      const getPublicUrl = (path: string) => {
+        if (!path) return null;
+        // If it's already a full URL, return as is
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+          return path;
+        }
+        // Otherwise, construct the public URL
+        return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
+      };
+      
+      // First try to use the explicit cover photo
+      if (gallery.cover_photo?.thumbnail_path) {
+        coverPhotoUrl = getPublicUrl(gallery.cover_photo.thumbnail_path);
+      } else if (gallery.cover_photo?.storage_path) {
+        coverPhotoUrl = getPublicUrl(gallery.cover_photo.storage_path);
+      }
+      // If no cover photo set, use the first photo from gallery_photos
+      else if (gallery.gallery_photos && gallery.gallery_photos.length > 0) {
+        const firstPhoto = gallery.gallery_photos[0];
+        const path = firstPhoto.thumbnail_path || firstPhoto.storage_path;
+        coverPhotoUrl = getPublicUrl(path);
+      }
+      
+      return {
+        ...gallery,
+        photos: [],
+        gallery_photos: [],
+        cover_photo_url: coverPhotoUrl,
+        createdAt: gallery.created_at,
+        updatedAt: gallery.updated_at,
+        ownerId: gallery.user_id,
+        privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level,
+        photo_count: gallery.gallery_photos ? gallery.gallery_photos.length : 0
+      };
+    });
     
-    return galleries;
+    const totalCount = count || 0;
+    const totalPages = Math.ceil(totalCount / limit);
+    
+    return {
+      galleries,
+      totalCount,
+      totalPages,
+      currentPage: page
+    };
   },
 
-  async getGalleryById(id: string): Promise<Gallery | null> {
+  async getGallery(id: string): Promise<Gallery | null> {
     const { data, error } = await supabase
       .from('user_galleries')
       .select(`
@@ -84,16 +143,70 @@ export const galleryApi = {
       .single();
 
     if (error) {
-      console.error('Error fetching gallery:', error);
+      logger.apiError('getGallery', error);
       throw error;
     }
 
     if (!data) return null;
     
+    // Helper function to get public URL from storage path
+    const getPublicUrl = (path: string) => {
+      if (!path) return null;
+      // If it's already a full URL, return as is
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+      }
+      // Otherwise, construct the public URL
+      return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
+    };
+    
+    // Transform photos to include public URLs
+    const photos = (data.gallery_photos || []).map(photo => {
+      // Generate public URLs for all path fields
+      const processedPhoto = { ...photo };
+      
+      // Convert paths to URLs if they're not already
+      if (photo.thumbnail_path && !photo.thumbnail_url) {
+        processedPhoto.thumbnail_url = getPublicUrl(photo.thumbnail_path);
+      }
+      if (photo.small_path && !photo.small_url) {
+        processedPhoto.small_url = getPublicUrl(photo.small_path);
+      }
+      if (photo.medium_path && !photo.medium_url) {
+        processedPhoto.medium_url = getPublicUrl(photo.medium_path);
+      }
+      if (photo.large_path && !photo.large_url) {
+        processedPhoto.large_url = getPublicUrl(photo.large_path);
+      }
+      if (photo.original_path && !photo.original_url) {
+        processedPhoto.original_url = getPublicUrl(photo.original_path);
+      }
+      if (photo.storage_path && !photo.url) {
+        processedPhoto.url = getPublicUrl(photo.storage_path);
+      }
+      
+      return processedPhoto;
+    });
+    
+    // Get cover photo URL
+    let coverPhotoUrl = null;
+    if (data.cover_photo_id && photos.length > 0) {
+      const coverPhoto = photos.find(p => p.id === data.cover_photo_id);
+      if (coverPhoto) {
+        coverPhotoUrl = coverPhoto.thumbnail_url || coverPhoto.small_url || coverPhoto.url;
+      }
+    }
+    // Fallback to first photo if no cover photo set
+    if (!coverPhotoUrl && photos.length > 0) {
+      coverPhotoUrl = photos[0].thumbnail_url || photos[0].small_url || photos[0].url;
+    }
+    
     // Transform data to match interface
     return {
       ...data,
-      photos: data.gallery_photos || [],
+      photos: photos,
+      gallery_photos: photos,
+      cover_photo_url: coverPhotoUrl,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       ownerId: data.user_id,
@@ -109,7 +222,7 @@ export const galleryApi = {
       .single();
 
     if (error) {
-      console.error('Error creating gallery:', error);
+      logger.apiError('createGallery', error);
       throw error;
     }
 
@@ -125,7 +238,7 @@ export const galleryApi = {
       .single();
 
     if (error) {
-      console.error('Error updating gallery:', error);
+      logger.apiError('updateGallery', error);
       throw error;
     }
 
@@ -139,23 +252,32 @@ export const galleryApi = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting gallery:', error);
+      logger.apiError('deleteGallery', error);
       throw error;
     }
 
     return true;
   },
 
-  async getGalleryPhotos(galleryId: string): Promise<Photo[]> {
-    const { data, error } = await supabase
+  async getGalleryPhotos(galleryId: string, options?: { page?: number; limit?: number }): Promise<Photo[]> {
+    let query = supabase
       .from('gallery_photos')
       .select('*')
       .eq('gallery_id', galleryId)
       .eq('visibility', 'visible')
       .order('sort_order', { ascending: true });
 
+    // Add pagination if provided
+    if (options?.page && options?.limit) {
+      const from = (options.page - 1) * options.limit;
+      const to = from + options.limit - 1;
+      query = query.range(from, to);
+    }
+
+    const { data, error } = await query;
+
     if (error) {
-      console.error('Error fetching gallery photos:', error);
+      logger.apiError('getGalleryPhotos', error);
       throw error;
     }
 
@@ -229,7 +351,7 @@ export const galleryApi = {
             .upload(sizePath, file);
 
           if (error) {
-            console.warn(`Failed to upload ${sizeType} variant:`, error);
+            logger.warn(`Failed to upload ${sizeType} variant`, 'GALLERY', error);
             return;
           }
 
@@ -290,7 +412,7 @@ export const galleryApi = {
         .single();
 
       if (error) {
-        console.error('Error creating photo record:', error);
+        logger.apiError('uploadPhoto - createPhotoRecord', error);
         // Clean up uploaded files
         const pathsToClean = Object.values(uploadedPaths);
         if (pathsToClean.length > 0) {
@@ -305,7 +427,7 @@ export const galleryApi = {
       return data;
 
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      logger.apiError('uploadPhoto', error);
       // Clean up any uploaded files
       const pathsToClean = Object.values(uploadedPaths);
       if (pathsToClean.length > 0) {
@@ -324,7 +446,7 @@ export const galleryApi = {
       .single();
 
     if (error) {
-      console.error('Error updating photo:', error);
+      logger.apiError('updatePhoto', error);
       throw error;
     }
 
@@ -340,7 +462,7 @@ export const galleryApi = {
       .single();
 
     if (fetchError) {
-      console.error('Error fetching photo:', fetchError);
+      logger.apiError('deletePhoto - fetchPhoto', fetchError);
       throw fetchError;
     }
 
@@ -353,7 +475,7 @@ export const galleryApi = {
       .remove([filePath]);
 
     if (storageError) {
-      console.error('Error deleting photo file:', storageError);
+      logger.error('Error deleting photo file', 'GALLERY', storageError);
     }
 
     // Delete record
@@ -363,7 +485,7 @@ export const galleryApi = {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting photo record:', error);
+      logger.apiError('deletePhoto - deleteRecord', error);
       throw error;
     }
 
@@ -378,7 +500,7 @@ export const galleryApi = {
       .in('id', photoIds);
 
     if (fetchError) {
-      console.error('Error fetching photos:', fetchError);
+      logger.apiError('batchDeletePhotos - fetchPhotos', fetchError);
       throw fetchError;
     }
 
@@ -392,7 +514,7 @@ export const galleryApi = {
         .remove(filePaths);
 
       if (storageError) {
-        console.error('Error deleting photo files:', storageError);
+        logger.error('Error deleting photo files', 'GALLERY', storageError);
       }
     }
 
@@ -403,7 +525,7 @@ export const galleryApi = {
       .in('id', photoIds);
 
     if (error) {
-      console.error('Error deleting photo records:', error);
+      logger.apiError('batchDeletePhotos - deleteRecords', error);
       throw error;
     }
 
@@ -423,7 +545,7 @@ export const galleryApi = {
     const hasError = results.some(result => result.error);
 
     if (hasError) {
-      console.error('Error reordering photos');
+      logger.error('Error reordering photos', 'GALLERY');
       throw new Error('Failed to reorder photos');
     }
 
@@ -446,7 +568,7 @@ export const galleryApi = {
         .eq('id', galleryId);
         
       if (error) {
-        console.error('Error incrementing view count:', error);
+        logger.error('Error incrementing view count', 'GALLERY', error);
       }
     }
   },
@@ -477,6 +599,43 @@ export const galleryApi = {
 
       if (error) throw error;
       return true;
+    }
+  },
+
+  async likePhoto(photoId: string): Promise<boolean> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: existing } = await supabase
+        .from('photo_likes')
+        .select()
+        .eq('photo_id', photoId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existing) {
+        // Unlike
+        const { error } = await supabase
+          .from('photo_likes')
+          .delete()
+          .eq('photo_id', photoId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        return false;
+      } else {
+        // Like
+        const { error } = await supabase
+          .from('photo_likes')
+          .insert([{ photo_id: photoId, user_id: user.id }]);
+
+        if (error) throw error;
+        return true;
+      }
+    } catch (error) {
+      logger.apiError('likePhoto', error);
+      throw error;
     }
   }
 };

@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import {
   adaptMarketplaceItemFromSupabase,
   adaptMarketplaceItemToSupabase,
@@ -7,10 +7,6 @@ import {
 import { MarketplaceItem } from '../types';
 import { ContentStatus } from '../types/common';
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 // Define the input type for marketplace item data passed from the application
 // Make compatible with MarketplaceItemFormInput from adapters

@@ -4,10 +4,8 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import { eventsApi, EventInput as EventsApiEventInput } from '../api/eventsApi';
-import { events as mockEvents } from '@/data/mock/events';
 import { Event as FrontendEvent } from '../../types';
 import { Database } from '../../types/supabase';
-import { getIsSupabaseEnabled } from '@/config/env';
 
 export interface EventFilters {
   search?: string;
@@ -38,33 +36,16 @@ export const fetchEvents = createAsyncThunk(
   'events/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        console.log('[EventsSlice] Fetching from Supabase...');
-        try {
-          const events = await eventsApi.getAll();
-          console.log('[EventsSlice] Received events:', {
-            count: events?.length || 0,
-            isArray: Array.isArray(events),
-            sample: events?.slice(0, 2) || 'No events',
-            events: events
-          });
-          
-          // If Supabase returned empty results, fall back to mock data
-          if (!events || events.length === 0) {
-            console.warn('[EventsSlice] No events returned from API, falling back to mock data');
-            return mockEvents || [];
-          }
-          
-          return events;
-        } catch (apiError) {
-          console.error('[EventsSlice] API error in fetchEvents:', apiError);
-          return rejectWithValue('Failed to fetch events: ' + (apiError?.message || String(apiError)));
-        }
-      } else {
-        console.log('[EventsSlice] Using mock data...');
-        // Use mock data
-        return Promise.resolve(mockEvents || []);
-      }
+      console.log('[EventsSlice] Fetching from Supabase...');
+      const events = await eventsApi.getAll();
+      console.log('[EventsSlice] Received events:', {
+        count: events?.length || 0,
+        isArray: Array.isArray(events),
+        sample: events?.slice(0, 2) || 'No events',
+        events: events
+      });
+      
+      return events || [];
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch events');
     }
@@ -79,15 +60,8 @@ export const fetchEventById = createAsyncThunk(
         return undefined;
       }
 
-      if (getIsSupabaseEnabled()) {
-        const event = await eventsApi.getById(id);
-        return event || undefined;
-      } else {
-        // Find in mock data
-        const events = mockEvents || [];
-        const event = events.find((e) => String(e.id) === id);
-        return event || undefined;
-      }
+      const event = await eventsApi.getById(id);
+      return event || undefined;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch event with ID ${id}`);
     }

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
 import { Member } from './types';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 
 interface ProfileHeaderProps {
   member: Member;
@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useSession();
   
   // Debug: Check if we can show edit button
   console.log('ProfileHeader Debug:', {

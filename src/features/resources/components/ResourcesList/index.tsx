@@ -1,41 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Resource } from '../../types';
 import { getTypeIcon } from './utils';
 import ResourceCard from './ResourceCard';
 import ResourceModal from './ResourceModal';
-import { useFilteredResourcesRedux } from '../../hooks/useResourcesRedux';
-import { ResourceFilters } from '../../store/resourcesSlice';
 
 interface ResourcesListProps {
-  resources?: Resource[];
-  useRedux?: boolean;
-  initialFilters?: ResourceFilters;
+  resources: Resource[];
 }
 
-const ResourcesList = ({ resources: propResources, useRedux = false, initialFilters }: ResourcesListProps) => {
+const ResourcesList = ({ resources }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Connect to Redux if useRedux is true
-  const {
-    resources: reduxResources,
-    updateFilters,
-    getPaginatedResources,
-    totalResources
-  } = useFilteredResourcesRedux(initialFilters);
-  
-  // Determine which resources to use - props or redux
-  const resources = useRedux ? reduxResources : propResources || [];
-  // Use Resource['type'] for selectedType state and update available types
-  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>((initialFilters?.types?.[0] as Resource['type']) || 'all');
+  const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
 
   // Define resource types based on the main application's Resource type
   const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article', 'link'];
 
-  // Apply client-side filtering if not using Redux
-  const filteredResources = useRedux ? resources : resources.filter(resource => {
+  // Apply client-side filtering
+  const filteredResources = resources.filter(resource => {
     const matchesSearch = !searchQuery || 
                          resource.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          resource.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -44,13 +28,11 @@ const ResourcesList = ({ resources: propResources, useRedux = false, initialFilt
   });
 
   // Get pagination details
-  const totalItems = useRedux ? totalResources : filteredResources.length;
+  const totalItems = filteredResources.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   
-  // Get paginated resources (either from Redux hook or locally)
-  const paginatedResources = useRedux 
-    ? getPaginatedResources(currentPage, itemsPerPage) 
-    : filteredResources.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // Get paginated resources
+  const paginatedResources = filteredResources.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -59,23 +41,6 @@ const ResourcesList = ({ resources: propResources, useRedux = false, initialFilt
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
-  
-  // Update Redux filters when local state changes (if using Redux)
-  useEffect(() => {
-    if (useRedux) {
-      const newFilters: ResourceFilters = {};
-      
-      if (searchQuery) {
-        newFilters.search = searchQuery;
-      }
-      
-      if (selectedType !== 'all') {
-        newFilters.types = [selectedType];
-      }
-      
-      updateFilters(newFilters);
-    }
-  }, [useRedux, searchQuery, selectedType]);
 
   return (
     <div>

@@ -77,6 +77,7 @@ export interface Gallery {
   description?: string;
   slug: string;
   cover_photo_id?: string;
+  cover_photo_url?: string; // Computed cover photo URL
   coverImage?: string; // For compatibility
   privacy_level: 'public' | 'members_only' | 'private';
   privacy?: 'public' | 'private' | 'unlisted'; // For backward compatibility

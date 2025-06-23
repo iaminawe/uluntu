@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { Opportunity } from '../types';
 import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
-import * as mockQueries from '@/hooks/useQueries';
-import { getIsSupabaseEnabled } from '@/config/env';
 
 // Define type for opportunity filters to match the API interface
 export interface OpportunityFilters {
@@ -44,16 +42,10 @@ export const fetchOpportunities = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       
-      if (getIsSupabaseEnabled()) {
-        console.log('[OpportunitiesSlice] Fetching from Supabase...');
-        const opportunities = await opportunitiesApi.getAll();
-        console.log('[OpportunitiesSlice] Received opportunities:', opportunities.length);
-        return opportunities;
-      } else {
-        console.log('[OpportunitiesSlice] Using mock data...');
-        const result = mockQueries.useOpportunities();
-        return result?.data || [];
-      }
+      console.log('[OpportunitiesSlice] Fetching from Supabase...');
+      const opportunities = await opportunitiesApi.getAll();
+      console.log('[OpportunitiesSlice] Received opportunities:', opportunities.length);
+      return opportunities;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch opportunities');
     }
@@ -64,13 +56,8 @@ export const fetchOpportunityById = createAsyncThunk(
   'opportunities/fetchOpportunityById',
   async (id: string, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const opportunity = await opportunitiesApi.getById(id);
-        return opportunity || null;
-      } else {
-        const result = mockQueries.useOpportunity(id);
-        return result?.data || null;
-      }
+      const opportunity = await opportunitiesApi.getById(id);
+      return opportunity || null;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch opportunity with ID: ${id}`);
     }
@@ -81,12 +68,7 @@ export const fetchFilteredOpportunities = createAsyncThunk(
   'opportunities/fetchFilteredOpportunities',
   async (filters: OpportunityFilters, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        return await opportunitiesApi.getAll(filters);
-      } else {
-        const result = mockQueries.useOpportunities(filters);
-        return result?.data || [];
-      }
+      return await opportunitiesApi.getAll(filters);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch filtered opportunities');
     }
@@ -97,12 +79,7 @@ export const fetchFeaturedOpportunities = createAsyncThunk(
   'opportunities/fetchFeaturedOpportunities',
   async (limit: number = 3, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        return await opportunitiesApi.getFeatured(limit);
-      } else {
-        const result = mockQueries.useFeaturedOpportunities(limit);
-        return result?.data || [];
-      }
+      return await opportunitiesApi.getFeatured(limit);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch featured opportunities');
     }
@@ -113,12 +90,7 @@ export const fetchCompanyOpportunities = createAsyncThunk(
   'opportunities/fetchCompanyOpportunities',
   async (companyId: string, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        return await opportunitiesApi.getByCompany(companyId);
-      } else {
-        const result = mockQueries.useCompanyOpportunities(companyId);
-        return result?.data || [];
-      }
+      return await opportunitiesApi.getByCompany(companyId);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch opportunities for company ID: ${companyId}`);
     }
@@ -129,14 +101,8 @@ export const createOpportunity = createAsyncThunk(
   'opportunities/createOpportunity',
   async (opportunityData: OpportunityInput, { rejectWithValue }) => {
     try {
-      if (getIsSupabaseEnabled()) {
-        const newOpportunity = await opportunitiesApi.create(opportunityData);
-        return newOpportunity;
-      } else {
-        // Create a mock opportunity with the data provided
-        const mockResult = mockQueries.useCreateOpportunity().mutateAsync(opportunityData);
-        return mockResult;
-      }
+      const newOpportunity = await opportunitiesApi.create(opportunityData);
+      return newOpportunity;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create opportunity');
     }

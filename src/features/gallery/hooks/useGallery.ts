@@ -126,6 +126,25 @@ export const useGallery = () => {
   };
 };
 
+// Hook specifically for loading galleries with filters
+export const useGalleries = (filters?: GalleryFilters) => {
+  const dispatch = useAppDispatch();
+  const galleries = useAppSelector(selectAllGalleries);
+  const status = useAppSelector(selectGalleryStatus);
+  const error = useAppSelector(selectGalleryError);
+
+  useEffect(() => {
+    dispatch(fetchGalleries(filters));
+  }, [dispatch, JSON.stringify(filters)]); // Use JSON.stringify for deep comparison of filters object
+
+  return {
+    galleries,
+    loading: status === 'loading',
+    error,
+    refetch: () => dispatch(fetchGalleries(filters))
+  };
+};
+
 // Hook for drag and drop functionality
 export const usePhotoDragDrop = (onDrop: (files: File[]) => void) => {
   const handleDragOver = useCallback((e: React.DragEvent) => {

@@ -129,4 +129,14 @@ export const {
   resetAuthState
 } = authSlice.actions;
 
+// Selectors
+export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectCurrentSession = (state: { auth: AuthState }) => state.auth.session;
+export const selectAuthStatus = (state: { auth: AuthState }) => state.auth.status;
+export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
+export const selectUserRoles = (state: { auth: AuthState }) => state.auth.roles.list;
+export const selectIsAdmin = (state: { auth: AuthState }) => state.auth.roles.isAdmin;
+export const selectRolesLoading = (state: { auth: AuthState }) => state.auth.roles.loading;
+export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.status === 'authenticated';
+
 export default authSlice.reducer;

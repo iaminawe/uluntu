@@ -62,10 +62,10 @@ export const sortPhotos = (photos: Photo[], sortBy: string = 'date', order: 'asc
       case 'title':
         return (a.title || '').localeCompare(b.title || '');
       case 'size':
-        return a.fileSize - b.fileSize;
+        return a.file_size - b.file_size;
       case 'date':
       default:
-        return new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     }
   });
 
@@ -113,7 +113,7 @@ export const calculateGridLayout = (
   let currentRowWidth = 0;
 
   photos.forEach(photo => {
-    const aspectRatio = photo.width / photo.height;
+    const aspectRatio = (photo.width || 1) / (photo.height || 1);
     const scaledWidth = targetHeight * aspectRatio;
 
     if (currentRowWidth + scaledWidth + margin * currentRow.length > containerWidth && currentRow.length > 0) {
@@ -140,7 +140,7 @@ export const calculateGridLayout = (
   rows.forEach(row => {
     let x = 0;
     row.photos.forEach((photo, index) => {
-      const aspectRatio = photo.width / photo.height;
+      const aspectRatio = (photo.width || 1) / (photo.height || 1);
       const width = row.height * aspectRatio;
       
       layout.push({
@@ -164,14 +164,13 @@ export const getPhotoUrl = (photo: Photo, size: 'thumbnail' | 'medium' | 'large'
   // based on your image processing service
   switch (size) {
     case 'thumbnail':
-      return photo.thumbnailUrl || photo.url;
+      return photo.thumbnail_path || photo.storage_path;
     case 'medium':
-      // You might append query params or use a different URL pattern
-      return photo.url;
+      return photo.medium_path || photo.storage_path;
     case 'large':
-      return photo.url;
+      return photo.storage_path;
     case 'original':
     default:
-      return photo.url;
+      return photo.storage_path;
   }
 };

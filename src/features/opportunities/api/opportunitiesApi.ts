@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError } from '@/api/supabaseUtils';
+import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import {
   adaptOpportunityFromDatabase,
   adaptOpportunityToDatabase,
@@ -6,12 +6,14 @@ import {
   adaptExtendedOpportunityFromDatabase,
   ExtendedOpportunity
 } from '../utils/opportunityAdapter';
-import { Opportunity } from '../types';
+import { 
+  Opportunity, 
+  OpportunityGallery, 
+  AttachGalleryInput, 
+  UpdateGalleryAttachmentInput,
+  AttachableGallery
+} from '../types';
 
-// Helper function to adapt a list of items
-function adaptItemsList<T, R>(items: T[], adapter: (item: T) => R): R[] {
-  return items.map(item => adapter(item));
-}
 
 // Define the input type for opportunity data passed from the application
 export interface OpportunityInput {
@@ -254,6 +256,180 @@ export const opportunitiesApi = {
     } catch (error) {
       handleSupabaseError(error, `fetching opportunities for company ${companyId}`);
       return [];
+    }
+  },
+
+  // Gallery-related operations
+  async getOpportunityGalleries(opportunityId: string): Promise<OpportunityGallery[]> {
+    try {
+      const { data, error } = await supabase.rpc('get_opportunity_galleries', {
+        opportunity_uuid: opportunityId
+      });
+
+      if (error) {
+        handleSupabaseError(error, `fetching galleries for opportunity ${opportunityId}`);
+        return [];
+      }
+      
+      return (data || []).map((item: any) => ({
+        id: item.id,
+        opportunity_id: opportunityId,
+        gallery_id: item.gallery_id,
+        display_order: item.display_order,
+        featured: item.featured,
+        caption: item.caption,
+        attached_by: item.attached_by,
+        created_at: item.created_at,
+        gallery: {
+          id: item.gallery_id,
+          title: item.gallery_title,
+          description: item.gallery_description,
+          slug: item.gallery_slug,
+          cover_photo_id: item.gallery_cover_photo_id,
+          photo_count: item.gallery_photo_count,
+          privacy_level: item.gallery_privacy_level,
+          owner_name: item.gallery_owner_name,
+          owner_image: item.gallery_owner_image
+        }
+      }));
+    } catch (error) {
+      handleSupabaseError(error, `fetching galleries for opportunity ${opportunityId}`);
+      return [];
+    }
+  },
+
+  async getAttachableGalleries(opportunityId: string): Promise<AttachableGallery[]> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
+      const { data, error } = await supabase.rpc('get_attachable_galleries', {
+        opportunity_uuid: opportunityId,
+        user_uuid: userId
+      });
+
+      if (error) {
+        handleSupabaseError(error, `fetching attachable galleries for opportunity ${opportunityId}`);
+        return [];
+      }
+      
+      return (data || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        slug: item.slug,
+        cover_photo_id: item.cover_photo_id,
+        photo_count: item.photo_count,
+        privacy_level: item.privacy_level,
+        owner_name: item.owner_name,
+        owner_image: item.owner_image,
+        created_at: item.created_at,
+        is_attached: item.is_attached,
+        // Required Gallery fields
+        user_id: '', // Will be filled from owner data
+        visibility: 'visible',
+        sort_order: 0,
+        view_count: 0,
+        is_featured: false,
+        updated_at: item.created_at
+      }));
+    } catch (error) {
+      handleSupabaseError(error, `fetching attachable galleries for opportunity ${opportunityId}`);
+      return [];
+    }
+  },
+
+  async attachGallery(input: AttachGalleryInput): Promise<OpportunityGallery | null> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase
+        .from('opportunity_galleries')
+        .insert({
+          opportunity_id: input.opportunity_id,
+          gallery_id: input.gallery_id,
+          display_order: input.display_order || 0,
+          featured: input.featured || false,
+          caption: input.caption,
+          attached_by: user?.id
+        })
+        .select()
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, 'attaching gallery to opportunity');
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, 'attaching gallery to opportunity');
+      return null;
+    }
+  },
+
+  async updateGalleryAttachment(attachmentId: string, updates: UpdateGalleryAttachmentInput): Promise<OpportunityGallery | null> {
+    try {
+      const { data, error } = await supabase
+        .from('opportunity_galleries')
+        .update(updates)
+        .eq('id', attachmentId)
+        .select()
+        .single();
+
+      if (error) {
+        handleSupabaseError(error, `updating gallery attachment ${attachmentId}`);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      handleSupabaseError(error, `updating gallery attachment ${attachmentId}`);
+      return null;
+    }
+  },
+
+  async detachGallery(attachmentId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('opportunity_galleries')
+        .delete()
+        .eq('id', attachmentId);
+
+      if (error) {
+        handleSupabaseError(error, `detaching gallery attachment ${attachmentId}`);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, `detaching gallery attachment ${attachmentId}`);
+      return false;
+    }
+  },
+
+  async reorderOpportunityGalleries(opportunityId: string, galleryOrders: { id: string; order: number }[]): Promise<boolean> {
+    try {
+      const updates = galleryOrders.map(({ id, order }) => 
+        supabase
+          .from('opportunity_galleries')
+          .update({ display_order: order })
+          .eq('id', id)
+          .eq('opportunity_id', opportunityId)
+      );
+
+      const results = await Promise.all(updates);
+      const hasError = results.some(result => result.error);
+
+      if (hasError) {
+        console.error('Error reordering opportunity galleries');
+        throw new Error('Failed to reorder opportunity galleries');
+      }
+
+      return true;
+    } catch (error) {
+      handleSupabaseError(error, 'reordering opportunity galleries');
+      return false;
     }
   }
 };
