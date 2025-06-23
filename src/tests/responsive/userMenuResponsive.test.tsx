@@ -266,11 +266,10 @@ describe('UserMenu Responsive Tests', () => {
 
   describe('Viewport Orientation Changes', () => {
     it('should handle orientation changes', () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
-        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
@@ -306,11 +305,10 @@ describe('UserMenu Responsive Tests', () => {
         value: 2,
       });
 
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'test@example.com', user_metadata: { name: 'Test User' } },
-        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       const { container } = renderUserMenu();
@@ -323,15 +321,14 @@ describe('UserMenu Responsive Tests', () => {
 
   describe('Dynamic Content Sizing', () => {
     it('should handle long email addresses', () => {
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { 
           id: 'user123', 
           email: 'very.long.email.address.that.might.overflow@example.com',
           user_metadata: { name: 'Long Email User' }
         },
-        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: false,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(createMockQueryResult(null) as any);
 
       renderUserMenu();
@@ -346,11 +343,10 @@ describe('UserMenu Responsive Tests', () => {
 
     it('should handle varying number of menu items', () => {
       // Test with admin user (more menu items)
-      mockUseAuth.mockReturnValue({
+      mockUseAuth.mockReturnValue(createMockAuthContext({
         user: { id: 'user123', email: 'admin@example.com', user_metadata: { name: 'Admin User' } },
-        signOut: jest.fn().mockResolvedValue({ error: null }),
         isAdmin: true,
-      });
+      }));
       mockUseMemberByUserId.mockReturnValue(
         createMockQueryResult({ id: 'member123', name: 'Admin User' }) as any
       );

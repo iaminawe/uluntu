@@ -224,7 +224,7 @@ const UserManagementSection: React.FC<UserManagementSectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.is_enabled}
+                            checked={feature.enabled}
                             onCheckedChange={(checked) => {
                               // Feature toggle update logic would go here
                               toast.success('Feature toggle functionality coming soon');

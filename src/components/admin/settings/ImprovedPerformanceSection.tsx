@@ -648,7 +648,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
-                      {feature.is_enabled && (
+                      {feature.enabled && (
                         <Badge variant="success" size="sm">Active</Badge>
                       )}
                     </div>
@@ -657,7 +657,7 @@ const ImprovedPerformanceSection: React.FC<ImprovedPerformanceSectionProps> = ({
                     )}
                   </div>
                   <Switch
-                    checked={feature.is_enabled}
+                    checked={feature.enabled}
                     onCheckedChange={(checked) => {
                       toast.success('Performance feature toggle functionality coming soon');
                     }}

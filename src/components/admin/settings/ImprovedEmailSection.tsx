@@ -542,7 +542,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                       <h4 className="font-medium text-gray-900 text-sm">
                         {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </h4>
-                      {feature.is_enabled && (
+                      {feature.enabled && (
                         <Badge variant="success" size="sm">Active</Badge>
                       )}
                     </div>
@@ -551,7 +551,7 @@ const ImprovedEmailSection: React.FC<ImprovedEmailSectionProps> = ({
                     )}
                   </div>
                   <Switch
-                    checked={feature.is_enabled}
+                    checked={feature.enabled}
                     onCheckedChange={(checked) => {
                       toast.success('Email feature toggle functionality coming soon');
                     }}
