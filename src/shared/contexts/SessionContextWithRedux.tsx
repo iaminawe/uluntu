@@ -32,36 +32,21 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
   // Function to fetch user roles from the database
   const fetchUserRoles = async (userId: string) => {
     try {
-      console.log('🔍 Fetching roles for user:', userId);
       const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
-      console.log('🔍 Expected super admin user ID configured:', !!superAdminId);
-      console.log('🔍 User is super admin:', superAdminId && userId === superAdminId);
-      
-      // Skip session check and go directly to role query
-      console.log('🔍 Attempting direct role query...');
       
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId);
       
-      console.log('🔍 Raw supabase response:', { data, error });
       
       if (error) {
-        console.error('❌ Error fetching user roles:', error);
-        console.error('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
+        console.error('Error fetching user roles:', error.message);
         
         // If it's an RLS issue, try a fallback approach
         if (error.message?.includes('permission') || error.code === 'PGRST301') {
-          console.log('🔍 RLS issue detected, checking if this is the super admin user...');
           const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
           if (superAdminId && userId === superAdminId) {
-            console.log('✅ Super admin user detected, returning superadmin role');
             return ['superadmin'];
           }
         }
@@ -69,20 +54,14 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
         return [];
       }
       
-      console.log('✅ Fetched roles data:', data);
       const roles = data?.map(r => r.role) || [];
-      console.log('✅ Processed roles array:', roles);
-      console.log('✅ Has admin role:', roles.includes('admin') || roles.includes('superadmin'));
-      
       return roles;
     } catch (err) {
-      console.error('❌ Exception fetching user roles:', err);
-      console.error('❌ Exception details:', err);
+      console.error('Exception fetching user roles:', err);
       
       // Fallback for the known super admin user
       const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
       if (superAdminId && userId === superAdminId) {
-        console.log('✅ Exception occurred but this is super admin user, returning superadmin role');
         return ['superadmin'];
       }
       
@@ -91,9 +70,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    console.log('SessionProvider: Checking for existing session...');
     supabase.auth.getSession().then(async ({ data, error }) => {
-      console.log('SessionProvider: getSession result:', { session: !!data.session, error, expiresAt: data.session?.expires_at });
       const currentSession = data.session;
       
       // Check if session is expired
@@ -102,10 +79,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
         const expiresAt = currentSession.expires_at || 0;
         
         // expires_at from Supabase is already in seconds, not milliseconds
-        console.log('SessionProvider: Session expiry check:', { now, expiresAt, isExpired: now >= expiresAt });
-        
         if (now >= expiresAt) {
-          console.log('SessionProvider: Session is expired, clearing...');
           setSession(null);
           return;
         }
@@ -115,7 +89,6 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
       
       // Sync with Redux store
       if (currentSession) {
-        console.log('SessionProvider: Session found, syncing with Redux');
         dispatch(signInWithSession({
           user: {
             id: currentSession.user.id,
@@ -133,7 +106,6 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           const rolePromise = fetchUserRoles(currentSession.user.id);
           const timeoutPromise = new Promise<string[]>((resolve) => {
             setTimeout(() => {
-              console.log('⏰ Role fetching timed out, using fallback');
               const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
               if (superAdminId && currentSession.user.id === superAdminId) {
                 resolve(['superadmin']);
@@ -145,18 +117,14 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           
           const roles = await Promise.race([rolePromise, timeoutPromise]);
           dispatch(setRoles(roles));
-          console.log('SessionProvider: Roles fetched and dispatched:', roles);
         } catch (err) {
-          console.error('❌ Error in role fetching process:', err);
+          console.error('Error in role fetching process:', err);
           // Fallback for super admin
           const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
           if (superAdminId && currentSession.user.id === superAdminId) {
             dispatch(setRoles(['superadmin']));
-            console.log('✅ Used fallback superadmin role');
           }
         }
-      } else {
-        console.log('SessionProvider: No session found');
       }
       
       // Only set loading to false AFTER roles are fetched (or no session exists)
@@ -165,21 +133,12 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, currentSession) => {
-        console.log('SessionProvider: Auth state changed, event:', _event);
-        console.log('SessionProvider: Auth state change session details:', { 
-          hasSession: !!currentSession, 
-          expiresAt: currentSession?.expires_at,
-          userId: currentSession?.user?.id 
-        });
         
         // Check if session is expired before setting it
         if (currentSession) {
           const now = Math.floor(Date.now() / 1000);
           const expiresAt = currentSession.expires_at || 0;
-          console.log('SessionProvider: Auth state change expiry check:', { now, expiresAt, isExpired: now >= expiresAt });
-          
           if (now >= expiresAt) {
-            console.log('SessionProvider: Auth state change - session is expired, not setting');
             setSession(null);
             dispatch(reduxSignOut());
             setLoading(false);
@@ -208,7 +167,6 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             const rolePromise = fetchUserRoles(currentSession.user.id);
             const timeoutPromise = new Promise<string[]>((resolve) => {
               setTimeout(() => {
-                console.log('⏰ Role fetching timed out in auth state change, using fallback');
                 const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
                 if (superAdminId && currentSession.user.id === superAdminId) {
                   resolve(['superadmin']);
@@ -220,14 +178,12 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             
             const roles = await Promise.race([rolePromise, timeoutPromise]);
             dispatch(setRoles(roles));
-            console.log('SessionProvider: Auth state change - roles fetched and dispatched:', roles);
           } catch (err) {
-            console.error('❌ Error in auth state change role fetching:', err);
+            console.error('Error in auth state change role fetching:', err);
             // Fallback for super admin
             const superAdminId = import.meta.env.VITE_SUPER_ADMIN_USER_ID;
             if (superAdminId && currentSession.user.id === superAdminId) {
               dispatch(setRoles(['superadmin']));
-              console.log('✅ Used fallback superadmin role in auth state change');
             }
           }
         } else {

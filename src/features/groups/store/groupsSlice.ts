@@ -158,6 +158,11 @@ const groupsSlice = createSlice({
       state.filteredGroups = [];
       state.currentGroup = null;
       state.status = 'idle';
+    },
+    clearCurrentGroup(state) {
+      state.currentGroup = null;
+      state.status = 'idle';
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
@@ -262,7 +267,7 @@ const groupsSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { setFilters, clearFilters, clearGroups } = groupsSlice.actions;
+export const { setFilters, clearFilters, clearGroups, clearCurrentGroup } = groupsSlice.actions;
 export default groupsSlice.reducer;
 
 // Selectors
