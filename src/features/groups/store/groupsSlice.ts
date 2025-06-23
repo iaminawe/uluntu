@@ -51,9 +51,12 @@ export const fetchGroupById = createAsyncThunk(
   'groups/fetchGroupById',
   async (id: string, { rejectWithValue }) => {
     try {
+      console.log('[fetchGroupById] Thunk called with ID:', id);
       const group = await groupsApi.getById(id);
+      console.log('[fetchGroupById] API returned:', group);
       return group || null;
     } catch (error) {
+      console.error('[fetchGroupById] Error:', error);
       return rejectWithValue(error instanceof Error ? error.message : `Failed to fetch group with ID: ${id}`);
     }
   }
@@ -177,14 +180,17 @@ const groupsSlice = createSlice({
       
       // Handle fetchGroupById
       .addCase(fetchGroupById.pending, (state) => {
+        console.log('[groupsSlice] fetchGroupById.pending');
         state.status = 'loading';
       })
       .addCase(fetchGroupById.fulfilled, (state, action) => {
+        console.log('[groupsSlice] fetchGroupById.fulfilled:', action.payload);
         state.status = 'succeeded';
         state.currentGroup = action.payload;
         state.error = null;
       })
       .addCase(fetchGroupById.rejected, (state, action) => {
+        console.log('[groupsSlice] fetchGroupById.rejected:', action.payload);
         state.status = 'failed';
         state.error = action.payload as string;
       })

@@ -64,6 +64,8 @@ export function useGroupRedux(id?: string) {
   const status = useAppSelector(selectGroupsStatus);
   const error = useAppSelector(selectGroupsError);
   
+  console.log('[useGroupRedux] Hook called with:', { id, group, status, error });
+  
   const isLoading = status === 'loading';
   const isSuccess = status === 'succeeded';
   const isError = status === 'failed';
