@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom"
-import { useSession } from '@/shared/contexts/SessionContext'
+import { useSession } from '@/shared/contexts/SessionContextWithRedux'
 
 const AuthProtectedRoute = () => {
   const { session, loading } = useSession()

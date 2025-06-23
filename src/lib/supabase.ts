@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/supabase';
 import { AuthError } from '@supabase/supabase-js';
+import { logger } from '@/utils/logger';
 
 // Get environment variables from Vite's import.meta.env
 const getEnvVar = (key: string): string | undefined => {
@@ -15,7 +16,7 @@ const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
 const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
 
 // Log Supabase configuration for debugging
-console.log('[Supabase] Configuration:', { 
+logger.debug('Supabase configuration loaded', 'SUPABASE', { 
   url: supabaseUrl,
   hasAnonKey: !!supabaseAnonKey,
   anonKeyLength: supabaseAnonKey?.length
@@ -23,41 +24,40 @@ console.log('[Supabase] Configuration:', {
 
 // Validate environment variables
 if (!supabaseUrl) {
-  console.error('[Supabase] Missing VITE_SUPABASE_URL environment variable');
+  logger.error('Missing VITE_SUPABASE_URL environment variable', 'SUPABASE');
   throw new Error('VITE_SUPABASE_URL environment variable is required');
 }
 
 if (!supabaseAnonKey) {
-  console.error('[Supabase] Missing VITE_SUPABASE_ANON_KEY environment variable');
+  logger.error('Missing VITE_SUPABASE_ANON_KEY environment variable', 'SUPABASE');
   throw new Error('VITE_SUPABASE_ANON_KEY environment variable is required');
 }
 
-// Create Supabase client with minimal configuration to debug hanging issue
+// Create Supabase client with enhanced session persistence
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    flowType: 'pkce',
+    // Enhanced storage key to avoid conflicts
+    storageKey: 'sb-auth-token',
+    // Debug mode for development
+    debug: import.meta.env.DEV
+  },
+  // Global headers for better debugging
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web/2.x'
+    }
   }
 });
 
 // Log when client is created
-console.log('[Supabase] Client created successfully');
+logger.info('Supabase client created successfully', 'SUPABASE');
 
-// Test the client immediately
-(async () => {
-  try {
-    console.log('[Supabase] Testing client with simple query...');
-    const { data, error } = await supabase.from('news').select('id').limit(1);
-    if (error) {
-      console.error('[Supabase] Initial test query error:', error);
-    } else {
-      console.log('[Supabase] Initial test query success:', data);
-    }
-  } catch (err) {
-    console.error('[Supabase] Initial test query exception:', err);
-  }
-})();
+// Supabase client is ready for use
+logger.info('Supabase client initialized', 'SUPABASE');
 
 // Cache for session conversions using WeakMap
 export const sessionCache = new WeakMap();
@@ -65,45 +65,44 @@ export const sessionCache = new WeakMap();
 // Check Supabase connection status
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
-    console.log('Checking Supabase connection...');
-    // Log the Supabase URL (but not the key for security reasons)
-    console.log('Using Supabase URL:', supabaseUrl);
+    logger.debug('Checking Supabase connection', 'SUPABASE');
+    logger.debug('Using Supabase URL', 'SUPABASE', { url: supabaseUrl });
     
     // Simple query to check if we can connect to Supabase
     // Using 'members' table as it should exist in most Supabase instances
-    console.log('Attempting to query members table...');
+    logger.debug('Attempting to query members table', 'SUPABASE');
     const { data, error } = await supabase.from('members').select('count').limit(1);
     
     // If there's a permission error, that's still a successful connection
     // We just don't have access to the table
     if (error) {
-      console.error('Supabase connection check error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      console.error('Error details:', error.details);
+      logger.error('Supabase connection check error', 'SUPABASE', {
+        code: error.code,
+        message: error.message,
+        details: error.details
+      });
       
       if (error.message.includes('permission denied')) {
-        console.log('Permission denied, but connection successful');
+        logger.info('Permission denied, but connection successful', 'SUPABASE');
         return true;
       }
       
       if (error.message.includes('relation "members" does not exist')) {
-        console.error('Schema error: "members" table does not exist');
+        logger.error('Schema error: "members" table does not exist', 'SUPABASE');
         return false;
       }
       
       return false;
     }
     
-    console.log('Supabase connection successful:', data);
+    logger.info('Supabase connection successful', 'SUPABASE', data);
     return true;
   } catch (err) {
-    console.error('Exception checking Supabase connection:', err);
-    if (err instanceof Error) {
-      console.error('Error name:', err.name);
-      console.error('Error message:', err.message);
-      console.error('Error stack:', err.stack);
-    }
+    logger.error('Exception checking Supabase connection', 'SUPABASE', {
+      name: err instanceof Error ? err.name : 'Unknown',
+      message: err instanceof Error ? err.message : 'Unknown error',
+      stack: err instanceof Error ? err.stack : undefined
+    });
     return false;
   }
 };
@@ -119,20 +118,20 @@ export const signUp = async (email: string, password: string) => {
 
 export const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
   try {
-    console.log('Starting sign-in process...');
+    logger.debug('Starting sign-in process', 'AUTH');
     
     // First check connection to avoid unexpected errors
-    console.log('Checking Supabase connection before sign-in...');
+    logger.debug('Checking Supabase connection before sign-in', 'AUTH');
     const isConnected = await checkSupabaseConnection();
     if (!isConnected) {
-      console.error('Supabase connection check failed before sign-in');
+      logger.error('Supabase connection check failed before sign-in', 'AUTH');
       return {
         data: null,
         error: new Error('Unable to connect to authentication service. Please check your network connection.')
       };
     }
     
-    console.log('Connection check passed, attempting sign-in...');
+    logger.debug('Connection check passed, attempting sign-in', 'AUTH');
     
     // Attempt sign in
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -148,18 +147,19 @@ export const signIn = async (email: string, password: string, rememberMe: boolea
     
     // Handle specific error cases
     if (error) {
-      console.error('Sign-in error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      console.error('Error status:', error.status);
+      logger.error('Sign-in error', 'AUTH', {
+        code: error.code,
+        message: error.message,
+        status: error.status
+      });
       
       if (error.status === 500 && error.message.includes('unexpected_failure')) {
-        console.warn('Encountered unexpected auth failure, attempting fallback authentication...');
+        logger.warn('Encountered unexpected auth failure, attempting fallback authentication', 'AUTH');
         
         // Wait a moment and try again - sometimes this helps with transient errors
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        console.log('Attempting second sign-in...');
+        logger.debug('Attempting second sign-in', 'AUTH');
         
         // Second attempt
         const secondAttempt = await supabase.auth.signInWithPassword({
@@ -168,15 +168,15 @@ export const signIn = async (email: string, password: string, rememberMe: boolea
         });
         
         if (secondAttempt.error) {
-          console.error('Second sign-in attempt failed:', secondAttempt.error);
+          logger.error('Second sign-in attempt failed', 'AUTH', secondAttempt.error);
         } else {
-          console.log('Second sign-in attempt succeeded');
+          logger.info('Second sign-in attempt succeeded', 'AUTH');
         }
         
         return secondAttempt;
       }
       if (error.message.includes('schema')) {
-        console.error('Database schema error during sign-in:', error);
+        logger.error('Database schema error during sign-in', 'AUTH', error);
         // Return a user-friendly error instead of letting the schema error propagate
         return {
           data: null,
@@ -186,16 +186,15 @@ export const signIn = async (email: string, password: string, rememberMe: boolea
       
       return { data, error };
     } else {
-      console.log('Sign-in successful');
+      logger.info('Sign-in successful', 'AUTH');
       return { data, error };
     }
   } catch (err) {
-    console.error('Exception during sign in:', err);
-    if (err instanceof Error) {
-      console.error('Error name:', err.name);
-      console.error('Error message:', err.message);
-      console.error('Error stack:', err.stack);
-    }
+    logger.error('Exception during sign in', 'AUTH', {
+      name: err instanceof Error ? err.name : 'Unknown',
+      message: err instanceof Error ? err.message : 'Unknown error',
+      stack: err instanceof Error ? err.stack : undefined
+    });
     return {
       data: null,
       error: new Error('An unexpected error occurred during sign in. Please try again later.')
@@ -237,7 +236,7 @@ export const uploadProfileImage = async (file: File, userId: string): Promise<{ 
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading profile image:', error);
+    logger.error('Error uploading profile image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -260,7 +259,7 @@ export const uploadCoverImage = async (file: File, userId: string): Promise<{ ur
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading cover image:', error);
+    logger.error('Error uploading cover image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -284,7 +283,7 @@ export const uploadOpportunityImage = async (file: File, opportunityId: string):
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading opportunity image:', error);
+    logger.error('Error uploading opportunity image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -307,7 +306,7 @@ export const uploadNewsImage = async (file: File, newsId: string): Promise<{ url
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading news image:', error);
+    logger.error('Error uploading news image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -330,7 +329,7 @@ export const uploadGroupImage = async (file: File, groupId: string, imageType: '
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error(`Error uploading group ${imageType} image:`, error);
+    logger.error(`Error uploading group ${imageType} image`, 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -353,7 +352,7 @@ export const uploadEventImage = async (file: File, eventId: string): Promise<{ u
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading event image:', error);
+    logger.error('Error uploading event image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -376,7 +375,7 @@ export const uploadDirectoryImage = async (file: File, directoryId: string): Pro
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading directory image:', error);
+    logger.error('Error uploading directory image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -399,7 +398,7 @@ export const uploadBackgroundImage = async (file: File, contentId: string): Prom
     
     return { url: data.publicUrl, error: null };
   } catch (error) {
-    console.error('Error uploading background image:', error);
+    logger.error('Error uploading background image', 'STORAGE', error);
     return { url: null, error: error as Error };
   }
 };
@@ -414,12 +413,12 @@ export const forgotPassword = async (email: string): Promise<{
   error: Error | AuthError | null 
 }> => {
   try {
-    console.log('Initiating password reset for:', email);
+    logger.debug('Initiating password reset', 'AUTH', { email });
     
     // First check connection to avoid unexpected errors
     const isConnected = await checkSupabaseConnection();
     if (!isConnected) {
-      console.error('Supabase connection check failed before password reset');
+      logger.error('Supabase connection check failed before password reset', 'AUTH');
       return {
         success: false,
         error: new Error('Unable to connect to authentication service. Please check your network connection.')
@@ -432,14 +431,14 @@ export const forgotPassword = async (email: string): Promise<{
     });
     
     if (error) {
-      console.error('Password reset error:', error);
+      logger.error('Password reset error', 'AUTH', error);
       return { success: false, error };
     }
     
-    console.log('Password reset email sent successfully');
+    logger.info('Password reset email sent successfully', 'AUTH');
     return { success: true, error: null };
   } catch (err) {
-    console.error('Exception during password reset:', err);
+    logger.error('Exception during password reset', 'AUTH', err);
     return {
       success: false,
       error: err instanceof Error ? err : new Error('An unexpected error occurred')
@@ -457,12 +456,12 @@ export const resetPassword = async (newPassword: string): Promise<{
   error: Error | AuthError | null 
 }> => {
   try {
-    console.log('Attempting to update password');
+    logger.debug('Attempting to update password', 'AUTH');
     
     // First check connection to avoid unexpected errors
     const isConnected = await checkSupabaseConnection();
     if (!isConnected) {
-      console.error('Supabase connection check failed before password update');
+      logger.error('Supabase connection check failed before password update', 'AUTH');
       return {
         success: false,
         error: new Error('Unable to connect to authentication service. Please check your network connection.')
@@ -475,14 +474,14 @@ export const resetPassword = async (newPassword: string): Promise<{
     });
     
     if (error) {
-      console.error('Password update error:', error);
+      logger.error('Password update error', 'AUTH', error);
       return { success: false, error };
     }
     
-    console.log('Password updated successfully');
+    logger.info('Password updated successfully', 'AUTH');
     return { success: true, error: null };
   } catch (err) {
-    console.error('Exception during password update:', err);
+    logger.error('Exception during password update', 'AUTH', err);
     return {
       success: false,
       error: err instanceof Error ? err : new Error('An unexpected error occurred')

@@ -3,15 +3,32 @@ import { HelmetProvider } from 'react-helmet-async';
 import Header from '@/shared/components/layout/Header';
 import Footer from '@/shared/components/layout/Footer';
 import { ContentManagementPanel } from '@/shared/components/ContentEditor';
-import { useAuth } from '@/shared/contexts/AuthContextWithRedux';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useState, useEffect } from 'react';
 
 export default function AppLayout() {
-  const { loading } = useAuth();
+  const { loading } = useSession();
+  const [showContent, setShowContent] = useState(false);
 
-  if (loading) {
+  // Show content after a short delay to prevent flash of loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show minimal loading only for initial auth check
+  if (loading && !showContent) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        {/* Show header skeleton immediately */}
+        <div className="h-16 bg-gradient-to-r from-orange-500 to-red-500"></div>
+        
+        <div className="flex flex-col justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-3"></div>
+          <p className="text-slate-600 dark:text-slate-300 text-sm">Initializing...</p>
+        </div>
       </div>
     );
   }

@@ -5,6 +5,7 @@ export interface NavLinkItem {
   href: string;
   children?: NavLinkItem[];
   description?: string;
+  feature?: string; // Feature toggle key for conditional rendering
 }
 
 export interface HeaderProps {

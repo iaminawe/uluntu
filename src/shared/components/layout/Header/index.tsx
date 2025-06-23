@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { HeaderProps } from "./types";
@@ -6,34 +6,37 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
+import { useEnabledFeatures, useSettings } from "@/hooks/useSettings";
+import { useTheme } from "@/providers/ThemeProvider";
 
 const Header: React.FC<HeaderProps> = ({
-  logo = "Nelson Tech",
+  logo,
   navLinks = [
     { 
       text: "Community", 
       href: "/community",
       children: [
-        { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks" },
-        { text: "Directory", href: "/directory", description: "Connect with tech professionals" },
-        { text: "Groups", href: "/groups", description: "Join communities of interest" },
-        { text: "News", href: "/news", description: "Latest tech news and articles" },
-        { text: "Galleries", href: "/galleries", description: "Browse community photo galleries" }
+        { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks", feature: "events_system" },
+        { text: "Directory", href: "/directory", description: "Connect with tech professionals", feature: "members_directory" },
+        { text: "Groups", href: "/groups", description: "Join communities of interest", feature: "groups_communities" },
+        { text: "News", href: "/news", description: "Latest tech news and articles", feature: "news_blog" },
+        { text: "Galleries", href: "/galleries", description: "Browse community photo galleries", feature: "photo_galleries" }
       ]
     },
     { 
       text: "Business", 
       href: "/business",
       children: [
-        { text: "Companies", href: "/companies", description: "Explore local tech companies" },
-        { text: "Opportunities", href: "/opportunities", description: "Find jobs and volunteer roles" },
-        { text: "Marketplace", href: "/marketplace", description: "Buy and sell tech items" }
+        { text: "Companies", href: "/companies", description: "Explore local tech companies", feature: "companies_listing" },
+        { text: "Opportunities", href: "/opportunities", description: "Find jobs and volunteer roles", feature: "opportunities_board" },
+        { text: "Marketplace", href: "/marketplace", description: "Buy and sell tech items", feature: "marketplace" }
       ]
     },
     { 
       text: "Resources", 
       href: "/resources", 
-      description: "Educational content and guides" 
+      description: "Educational content and guides",
+      feature: "resources_library"
     },
     { 
       text: "About", 
@@ -48,9 +51,50 @@ const Header: React.FC<HeaderProps> = ({
     }
   ]
 }) => {
+  const { features, isFeatureEnabled } = useEnabledFeatures();
+  const { settings } = useSettings();
+  const { theme, toggleTheme, primaryColor, secondaryColor } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  
+  // Get site settings with fallbacks
+  const siteName = settings?.site?.site_name?.value || "Nelson Tech";
+  const siteLogo = settings?.site?.site_logo?.value;
+  const displayLogo = logo || siteLogo || siteName;
+
+  // Filter navigation links based on feature toggles
+  const filteredNavLinks = useMemo(() => {
+    // If features are still loading, show all nav links to prevent blank header
+    if (!features || Object.keys(features).length === 0) {
+      return navLinks;
+    }
+
+    return navLinks.map(link => {
+      // If the main link has a feature requirement, check it
+      if (link.feature && !isFeatureEnabled(link.feature)) {
+        return null;
+      }
+
+      // Filter children based on their feature requirements
+      if (link.children) {
+        const filteredChildren = link.children.filter(child => {
+          return !child.feature || isFeatureEnabled(child.feature);
+        });
+
+        // If no children remain after filtering, hide the parent
+        if (filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          ...link,
+          children: filteredChildren
+        };
+      }
+
+      return link;
+    }).filter(Boolean); // Remove null entries
+  }, [navLinks, isFeatureEnabled, features]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -59,29 +103,21 @@ const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Initialize dark mode from system preference or localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    document.documentElement.classList.toggle("dark");
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-  };
+  const isDark = theme === 'dark';
+  const toggleDarkMode = toggleTheme;
 
   const closeMobileMenu = () => setIsOpen(false);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-gradient-to-r from-orange-500/90 to-red-500/90 backdrop-blur-sm shadow-sm"
-          : "bg-gradient-to-r from-orange-500 to-red-500"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`}
+      style={{
+        background: isScrolled
+          ? `linear-gradient(to right, ${primaryColor}e6, ${secondaryColor}e6)`
+          : `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`,
+        backdropFilter: isScrolled ? 'blur(4px)' : 'none',
+        boxShadow: isScrolled ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+      }}
     >
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -90,12 +126,20 @@ const Header: React.FC<HeaderProps> = ({
             to="/"
             className="text-white font-bold text-xl flex items-center"
           >
-            {logo}
+            {typeof displayLogo === 'string' && displayLogo.includes('http') ? (
+              <img 
+                src={displayLogo} 
+                alt={siteName} 
+                className="h-8 w-auto"
+              />
+            ) : (
+              displayLogo
+            )}
           </Link>
 
           {/* Desktop Navigation */}
           <DesktopNav 
-            navLinks={navLinks} 
+            navLinks={filteredNavLinks} 
             isDark={isDark} 
             toggleDarkMode={toggleDarkMode} 
           />
@@ -103,7 +147,6 @@ const Header: React.FC<HeaderProps> = ({
           {/* Mobile Menu Controls */}
           <div className="md:hidden flex items-center">
             <ThemeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
-            <UserMenu />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white p-2 ml-2"
@@ -122,7 +165,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Navigation */}
         <MobileNav 
           isOpen={isOpen} 
-          navLinks={navLinks} 
+          navLinks={filteredNavLinks} 
           onLinkClick={closeMobileMenu} 
         />
       </div>

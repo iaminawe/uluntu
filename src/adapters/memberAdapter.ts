@@ -12,7 +12,7 @@ export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
     location: dbMember.location || undefined,
     image: dbMember.image || '/placeholder-avatar.png',
     bio: dbMember.bio || undefined,
-    intro: dbMember.intro || undefined,
+    intro: (dbMember as any).intro || undefined, // Type assertion for intro field
     skills: [], // This would need to be populated from member_skills table
     joinDate: dbMember.created_at || new Date().toISOString(),
     social: dbMember.website ? { website: dbMember.website } : undefined,
@@ -23,7 +23,7 @@ export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
 }
 
 export function adaptMemberToDatabase(member: Partial<Member>): Partial<SupabaseMember> {
-  return {
+  const result: any = {
     name: member.name,
     title: member.title || undefined,
     location: member.location || undefined,
@@ -34,6 +34,7 @@ export function adaptMemberToDatabase(member: Partial<Member>): Partial<Supabase
     status: member.status || 'draft',
     featured: member.featured || undefined
   };
+  return result;
 }
 
 // Profile-specific adapter function
@@ -111,7 +112,7 @@ export function adaptMemberFromSupabase(member: SupabaseMember): AdaptedMember {
     id: member.id,
     name: member.name,
     title: member.title || '',
-    intro: member.intro || '',
+    intro: (member as any).intro || '', // Type assertion for intro field
     bio: member.bio || '',
     location: member.location || '',
     image: member.image || '',

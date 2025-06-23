@@ -6,15 +6,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '@/redux/slices/authSlice';
-import { AuthContext } from '@/contexts/AuthContext';
+import { AuthContext } from '@/shared/contexts/AuthContext';
 import AdminLayout from '@/pages/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/Dashboard';
 import UsersPage from '@/pages/admin/UsersPage';
 import RolesPage from '@/pages/admin/RolesPage';
 import ModerationPage from '@/pages/admin/ModerationPage';
-import { adminFeaturesApi } from '@/api/admin/features';
-import { adminRolesApi } from '@/api/admin/roles';
-import { adminStatsApi } from '@/api/admin/stats';
+import { adminFeaturesApi } from '@/features/admin/api/features';
+import { adminRolesApi } from '@/features/admin/api/roles';
+import { adminStatsApi } from '@/features/admin/api/stats';
 import { supabase } from '@/lib/supabase';
 
 // Mock Supabase

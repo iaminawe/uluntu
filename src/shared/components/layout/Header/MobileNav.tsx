@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLinkItem } from './types';
 import Dropdown from './Dropdown';
+import UserMenu from './UserMenu';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -26,6 +27,10 @@ const MobileNav: React.FC<MobileNavProps> = ({
             onLinkClick={onLinkClick}
           />
         ))}
+        {/* User Menu for Mobile */}
+        <div className="pt-2 border-t border-orange-500/30">
+          <UserMenu />
+        </div>
       </div>
     </div>
   );

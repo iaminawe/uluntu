@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Edit3, Check, X } from 'lucide-react';
-import { useContent } from '../../contexts/ContentContext';
+import { useContent } from '@/shared/contexts/ContentContext';
 
 interface EditableTextProps {
   pageId?: string;

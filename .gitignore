@@ -1,5 +1,32 @@
+# =====================================================
+# Dependencies
+# =====================================================
+node_modules/
+.pnp
+.pnp.js
+
+# =====================================================
+# Build Outputs
+# =====================================================
+dist/
+dist-ssr/
+build/
+out/
+.next/
+*.local
+
+# =====================================================
+# Environment Files
+# =====================================================
+.env
+.env.*
+!.env.example
+!.env.template
+
+# =====================================================
 # Logs
-logs
+# =====================================================
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,101 +34,226 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependencies
-node_modules
-
-# Build output
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# =====================================================
+# Editor/IDE Files
+# =====================================================
+# VS Code
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json.example
+
+# IntelliJ/WebStorm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.swn
+*.sw?
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Other editors
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
 
-# Environment files
-.env
-.env.dev
-.env.local
-.env.prod
-.env.production
-.env.test
+# =====================================================
+# OS Files
+# =====================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
 
-# Claude-flow
-.memory
-memory/
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
 
-# Archives and temporary files
-.archive/
+# Linux
+.directory
+.Trash-*
+
+# =====================================================
+# Debug/Temporary Files
+# =====================================================
+# Debug files
+debug.html
+*.debug
+debug-*.ts
+debug-*.js
+*.stackdump
+
+# Temporary files
 *.tmp
 *.temp
 temp.*
-test_output.txt
-migration-log.txt
-*.tsbuildinfo
+tmp/
+temp/
+.temp/
+.tmp/
 
-# Development artifacts
-.bolt/
+# Backup files
+*.backup
+*.bak
+*.orig
+*.rej
+*~
+
+# Cache
+.cache/
+*.cache
+
+# =====================================================
+# Documentation Drafts and Temporary Docs
+# =====================================================
+# Auto-generated documentation
+*-auto-centralized-*.md
+*-auto-*.md
+*_auto_*.md
+
+# QA and test results
+*-qa-results.md
+*_qa_results.md
+QA_*.md
+qa-*.md
+
+# Implementation summaries and reports
+*_IMPLEMENTATION.md
+*_IMPLEMENTATION_SUMMARY.md
+*_VALIDATION_REPORT.md
+*_REQUIREMENTS_ANALYSIS.md
+*_INTEGRATION_SUMMARY.md
+*_RESEARCH_REPORT.md
+
+# Temporary migration instructions
+MIGRATION_INSTRUCTIONS.md
+SAFE_MIGRATION_INSTRUCTIONS.md
+
+# Temporary documentation in root
+/*.md
+!README.md
+!CONTRIBUTING.md
+!LICENSE.md
+!CHANGELOG.md
+!CODE_OF_CONDUCT.md
+
+# =====================================================
+# Test Artifacts
+# =====================================================
+# Test outputs
+test_output.txt
+test-results/
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary test files
+test-*.ts
+test-*.js
+check-*.ts
+check-*.js
+*-test.ts
+*-test.js
+test-*-connection.ts
+test-*-connection.js
+
+# =====================================================
+# TypeScript
+# =====================================================
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# =====================================================
+# Project-Specific
+# =====================================================
+# Claude-flow
+.memory
+memory/
+.docsregistry
 .claude/
+.bolt/
 .roo/
 .roomodes
-.next/
+
+# Swarm directories
+swarm-*/
+swarm-auto-centralized-*/
+
+# Development artifacts
 .project
 codereport/
 coordination/
 research/
 config/
-
-# OS files
-Thumbs.db
-.DS_Store
-
-# Claude-flow registry
-.docsregistry
-
-# Swarm directories
-swarm-auto-centralized-*
-
-# Temporary test files
-test-*.ts
-check-*.ts
-debug-*.ts
-*-test.ts
-test-*-connection.ts
-
-# Database backups and exports
-database/backups/
-database/production_export/
-database/archive/
-*.sql.bak
-
-# Development files
-dev.log
-*.dev
-*.local
-.env.development
-
-# TypeScript build info
-tsconfig.tsbuildinfo
-
-# Reports and docs
+.archive/
 reports/
 docs/archive/
 
 # Scripts output
 scripts/output/
+run_*.sh
+!run_tests.sh
+!run_dev.sh
 
-# Public uploads
+# Database
+database/backups/
+database/production_export/
+database/archive/
+*.sql.bak
+*.sql.backup
+database/seeds/*.backup
+
+# Public uploads (user-generated content)
 public/uploads/
 
-# Temporary markdown files
-*-auto-*.md
-marketplace_navigation_implementation.md
-NOVEL_EDITOR_INTEGRATION_SUMMARY.md
+# Migration logs
+migration-log.txt
+migration-*.log
+
+# Development files
+dev.log
+*.dev
+
+# =====================================================
+# Miscellaneous
+# =====================================================
+# Package manager files
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Certificates
+*.pem
+*.key
+*.crt
+
+# Compressed files (unless needed)
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Generated API files (if applicable)
+src/api/generated/
+src/types/generated/

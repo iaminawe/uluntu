@@ -21,4 +21,48 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    // Enable source maps for debugging
+    sourcemap: true,
+    // Increase chunk warning limit
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        // Manual chunks for better caching
+        manualChunks: {
+          // React core libraries
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // State management
+          'vendor-state': ['@reduxjs/toolkit', 'react-redux'],
+          // Data fetching
+          'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
+          // UI libraries
+          'vendor-ui': ['framer-motion', '@heroicons/react', 'lucide-react'],
+          // Editor
+          'vendor-editor': ['novel'],
+          // Utilities
+          'vendor-utils': ['date-fns', 'uuid', 'slugify'],
+          // Supabase
+          'vendor-supabase': ['@supabase/supabase-js'],
+          // Form libraries
+          'vendor-forms': ['react-select', 'react-datepicker'],
+        },
+        // Better chunk naming
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
+          return `js/[name]-${facadeModuleId}-[hash].js`;
+        },
+        assetFileNames: (assetInfo) => {
+          const extType = assetInfo.name?.split('.').pop() || 'asset';
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+            return `images/[name]-[hash][extname]`;
+          }
+          if (/woff|woff2|eot|ttf|otf/i.test(extType)) {
+            return `fonts/[name]-[hash][extname]`;
+          }
+          return `[ext]/[name]-[hash][extname]`;
+        },
+      },
+    },
+  },
 })

@@ -27,7 +27,7 @@ import eventsReducer, {
 import { Event } from '../../types';
 
 // Mock the API calls
-jest.mock('../../api/eventsApi', () => ({
+jest.mock('../../features/events/api/eventsApi', () => ({
   eventsApi: {
     getAll: jest.fn(),
     getById: jest.fn(),

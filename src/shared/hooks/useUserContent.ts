@@ -5,7 +5,6 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 interface UserGroup {
   id: string;
   name: string;
-  slug: string;
   member_count: number;
 }
 
@@ -63,7 +62,6 @@ export function useUserGroups() {
             group:groups (
               id,
               name,
-              slug,
               member_count
             )
           `)

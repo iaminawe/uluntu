@@ -1,11 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createLogger } from 'redux-logger';
 import authReducer from '@/features/auth/store/authSlice';
-import eventsReducer from '@/features/events/store/eventsSlice';
-import membersReducer from '@/features/directory/store/membersSlice';
-import companiesReducer from '@/features/companies/store/companiesSlice';
+import eventsUIReducer from '@/features/events/store/eventsUISlice';
+import membersUIReducer from '@/features/directory/store/membersUISlice';
+import companiesUIReducer from '@/features/companies/store/companiesUISlice';
 import opportunitiesReducer from '@/features/opportunities/store/opportunitiesSlice';
-import resourcesReducer from '@/features/resources/store/resourcesSlice';
 import groupsReducer from '@/features/groups/store/groupsSlice';
 import newsReducer from '@/features/news/store/newsSlice';
 import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
@@ -13,6 +12,8 @@ import pagesReducer from '@/features/pages/store/pagesSlice';
 import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
 import contentReducer from '@/store/contentSlice';
 import galleryReducer from '@/features/gallery/store/gallerySlice';
+import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
+import unifiedSettingsUIReducer from '@/features/admin/store/unifiedSettingsUISlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';
 
@@ -27,11 +28,10 @@ const _logger = createLogger({
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    events: eventsReducer,
-    members: membersReducer,
-    companies: companiesReducer,
+    eventsUI: eventsUIReducer,
+    membersUI: membersUIReducer,
+    companiesUI: companiesUIReducer,
     opportunities: opportunitiesReducer,
-    resources: resourcesReducer,
     groups: groupsReducer,
     news: newsReducer,
     marketplace: marketplaceReducer,
@@ -39,6 +39,8 @@ export const store = configureStore({
     onboarding: onboardingReducer,
     content: contentReducer,
     gallery: galleryReducer,
+    galleryUI: galleryUIReducer,
+    unifiedSettingsUI: unifiedSettingsUIReducer,
     // Other reducers will be added as they are implemented
   },
   middleware: (getDefaultMiddleware) => 
