@@ -19,18 +19,19 @@ services:
       
       # Backend/API environment variables (if you have any API routes)
       - NODE_ENV=production
-      - PORT=${PORT:-3000}
+      - PORT=${PORT:-80}
       
       # Optional features
       - VITE_RESEND_API_KEY=${VITE_RESEND_API_KEY}
       - VITE_FROM_EMAIL=${VITE_FROM_EMAIL}
       - VITE_FROM_NAME=${VITE_FROM_NAME}
     
-    ports:
-      - "${PORT:-3000}:3000"
+    # Remove ports mapping - Coolify proxy handles this
+    # ports:
+    #   - "${PORT:-3000}:3000"
     
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
