@@ -70,7 +70,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
       }
       
       filtered = filtered.filter(entry => 
-        new Date(entry.changed_at) >= cutoff
+        entry.changed_at && new Date(entry.changed_at) >= cutoff
       );
     }
 
@@ -85,9 +85,11 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
       );
     }
 
-    return filtered.sort((a, b) => 
-      new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime()
-    );
+    return filtered.sort((a, b) => {
+      const aTime = a.changed_at ? new Date(a.changed_at).getTime() : 0;
+      const bTime = b.changed_at ? new Date(b.changed_at).getTime() : 0;
+      return bTime - aTime;
+    });
   }, [history, filterType, dateRange, searchTerm, categoryFilter]);
 
   const getChangeIcon = (changeType: string) => {
@@ -308,7 +310,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
                 <div key={entry.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1">
-                      {getChangeIcon(entry.change_type)}
+                      {getChangeIcon(entry.change_type || 'updated')}
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
@@ -349,7 +351,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
                         <div className="mt-3 flex items-center space-x-4 text-xs text-gray-500">
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(entry.changed_at).toLocaleString()}
+                            {entry.changed_at ? new Date(entry.changed_at).toLocaleString() : 'Unknown time'}
                           </div>
                           
                           {entry.changed_by && (
@@ -419,7 +421,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
                   
                   <div>
                     <span className="font-medium text-gray-700">Changed At:</span>
-                    <p className="mt-1">{new Date(selectedEntry.changed_at).toLocaleString()}</p>
+                    <p className="mt-1">{selectedEntry.changed_at ? new Date(selectedEntry.changed_at).toLocaleString() : 'Unknown time'}</p>
                   </div>
                   
                   {selectedEntry.changed_by && (

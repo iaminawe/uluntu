@@ -256,7 +256,7 @@ const CommunityEngagementStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
             ].map((option) => (
               <div
                 key={option.value}
-                onClick={() => setMentorshipInterest(option.value)}
+                onClick={() => setMentorshipInterest(option.value as 'mentor' | 'mentee' | 'both' | 'none')}
                 className={`p-3 border rounded-lg cursor-pointer transition-all ${
                   mentorshipInterest === option.value
                     ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
@@ -333,7 +333,7 @@ const CommunityEngagementStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
             ].map((option) => (
               <div
                 key={option.value}
-                onClick={() => setCommunicationFreq(option.value)}
+                onClick={() => setCommunicationFreq(option.value as 'daily' | 'weekly' | 'monthly' | 'never')}
                 className={`p-3 border rounded-lg cursor-pointer transition-all ${
                   communicationFreq === option.value
                     ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'

@@ -1,32 +1,28 @@
 // Gallery API Exports
 export { galleryApi } from './galleryApi';
-export { photoApi } from './photoApi';
-export { uploadApi } from './uploadApi';
-export { promotionApi } from './promotionApi';
-export { pageHeaderAssignmentApi } from './pageHeaderApi';
+export { galleryApiNew } from './galleryApiNew';
 export { groupGalleryApi } from './groupGalleryApi';
 export { companyGalleryApi } from './companyGalleryApi';
+
+// Note: Some APIs may need to be implemented
+// export { photoApi } from './photoApi';
+// export { uploadApi } from './uploadApi';
+// export { promotionApi } from './promotionApi';
+// export { pageHeaderAssignmentApi } from './pageHeaderApi';
 
 // Re-export types for convenience
 export type {
   Gallery,
   Photo,
-  PhotoUpload,
-  BatchUpload,
-  PhotoPromotionRequest,
-  PageHeaderAssignment,
+  PhotoUploadInput,
   GalleryFilters,
-  PhotoFilters,
-  CreateGalleryData,
-  UpdateGalleryData,
-  CreatePhotoData,
-  UpdatePhotoData,
-  CreatePromotionRequestData,
-  CreatePageHeaderAssignmentData,
-  UploadOptions,
-  ImageProcessingOptions,
-  PhotosResponse,
-  GalleriesResponse,
-  PromotionRequestsResponse,
-  PageHeaderAssignmentsResponse,
+  CreateGalleryInput,
+  UpdateGalleryInput,
+  BatchUploadFile,
+  BatchUploadConfig,
+  BatchUploadProgress,
+  BatchUploadQueue,
+  FileValidationResult,
+  BatchUploadHooks,
+  BatchUploadResult
 } from '../types';

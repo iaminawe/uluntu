@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Users, ChevronDown, ChevronUp, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useEventAttendees, useUpdateAttendeeStatus } from '../../hooks/useEventQueries';
-import { useUserProfile } from '../../hooks/useProfileQueries';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 import { format } from 'date-fns';
 
 interface AttendeesListProps {
@@ -26,7 +26,7 @@ interface Attendee {
 const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { data: attendees = [], isLoading, error } = useEventAttendees(eventId);
-  const { data: userProfile } = useUserProfile();
+  const { user } = useAuth();
   const updateStatusMutation = useUpdateAttendeeStatus();
 
   const handleStatusUpdate = async (memberId: string, newStatus: string) => {
@@ -113,7 +113,7 @@ const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) =
         <div className="space-y-3">
           {visibleAttendees.map((attendee: Attendee) => {
             const member = attendee.members;
-            const isCurrentUser = userProfile?.id === member.id;
+            const isCurrentUser = user?.id === member.id;
             
             return (
               <div

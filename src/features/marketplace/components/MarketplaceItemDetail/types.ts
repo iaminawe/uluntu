@@ -35,9 +35,9 @@ export const adaptMainMarketplaceItemToDetail = (item: MainMarketplaceItem): Par
     description: item.description,
     type: item.type as ListingType,
     price: item.price || 0,
-    condition: item.category as ListingCondition, // Using category as condition
-    images: item.image ? [item.image] : [],
-    createdAt: item.datePosted,
+    condition: (item as any).condition || (item as any).category as ListingCondition, // Using category as condition
+    images: (item as any).images || [item.image] || [],
+    createdAt: (item as any).createdAt || item.datePosted,
     seller: {
       id: typeof item.seller.id === 'string' ? parseInt(item.seller.id) : item.seller.id as number,
       name: item.seller.name,
@@ -46,8 +46,8 @@ export const adaptMainMarketplaceItemToDetail = (item: MainMarketplaceItem): Par
       title: '',
       bio: ''
     },
-    location: '', // This field doesn't exist in the main type
-    tags: [item.category], // Using category as a tag
+    location: (item as any).location || '', // This field doesn't exist in the main type
+    tags: (item as any).tags || [item.category] || [], // Using category as a tag
     status: item.status
   };
 };

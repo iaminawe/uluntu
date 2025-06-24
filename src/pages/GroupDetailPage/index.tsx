@@ -62,7 +62,7 @@ export default function GroupDetailPage() {
     return <LoadingState />;
   }
 
-  if (isError || !group) {
+  if (error || !group) {
     return <ErrorState />;
   }
 
@@ -74,7 +74,7 @@ export default function GroupDetailPage() {
         <meta name="description" content={group.description?.substring(0, 160)} />
       </Helmet>
       
-      <PageHeader group={group} setShowJoinModal={setShowJoinModal} />
+      <PageHeader group={group as any} setShowJoinModal={setShowJoinModal} />
       
       <ContentContainer>
         <Card className="overflow-hidden">
@@ -82,12 +82,12 @@ export default function GroupDetailPage() {
             <Tabs 
               selectedTab={selectedTab} 
               setSelectedTab={setSelectedTab} 
-              group={group}
+              group={group as any}
             />
             
             <div className="mt-6">
               {selectedTab === 'about' && (
-                <AboutTab group={group} />
+                <AboutTab group={group as any} />
               )}
               {selectedTab === 'events' && (
                 <EventsTab 
@@ -105,14 +105,14 @@ export default function GroupDetailPage() {
               )}
               {selectedTab === 'resources' && (
                 <ResourcesTab 
-                  resources={group.resources || []} 
+                  resources={(group as any).resources || []} 
                   isLoading={false}
                   groupId={group.id}
                 />
               )}
               {selectedTab === 'posts' && (
                 <PostsTab 
-                  posts={group.posts || []} 
+                  posts={(group as any).posts || []} 
                   isLoading={false}
                 />
               )}

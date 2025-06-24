@@ -57,7 +57,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ listing, onClose }) => {
         </div>
         
         {/* Show contact information if available */}
-        {listing.showContactInfo && (listing.contactEmail || listing.contactPhone) ? (
+        {(listing as any).showContactInfo && (listing.contactEmail || listing.contactPhone) ? (
           <div className="space-y-4">
             <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
               <h4 className="font-medium text-slate-900 dark:text-white mb-3 flex items-center">

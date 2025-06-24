@@ -1,6 +1,7 @@
 // Export all public APIs from the groups feature
-export * from './components';
-export * from './hooks';
-export * from './api';
-export * from './store';
-export * from './types';
+// Selective exports to avoid conflicts
+export { GroupCard, adaptMainGroupToLocalGroup } from './components';
+export { useGroupsHybrid } from './hooks';
+export { groupsApi, type GroupInput as ApiGroupInput } from './api';
+export { groupsStore } from './store';
+export { type Group, type GroupMember, type GroupInput } from './types';

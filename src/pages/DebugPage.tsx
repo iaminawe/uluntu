@@ -8,9 +8,16 @@ import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
 import RoleDebugUtility from '@/components/RoleDebugUtility';
 
+interface DirectData {
+  supabaseMembers?: any;
+  membersApi?: number;
+  newsApi?: number;
+  eventsApi?: number;
+}
+
 export default function DebugPage() {
-  const [directData, setDirectData] = useState<any>({});
-  const [errors, setErrors] = useState<any>({});
+  const [directData, setDirectData] = useState<DirectData>({});
+  const [errors, setErrors] = useState<Record<string, any>>({});
   
   // Test hybrid hooks
   const { members, isLoading: membersLoading, error: membersError } = useMembersHybrid();
@@ -25,41 +32,41 @@ export default function DebugPage() {
       try {
         const { data: membersCount, error } = await supabase.from('members').select('count');
         if (error) throw error;
-        setDirectData(prev => ({ ...prev, supabaseMembers: membersCount }));
+        setDirectData((prev: DirectData) => ({ ...prev, supabaseMembers: membersCount }));
         console.log('✅ Direct Supabase members:', membersCount);
       } catch (err) {
         console.error('❌ Direct Supabase error:', err);
-        setErrors(prev => ({ ...prev, supabase: err }));
+        setErrors((prev: Record<string, any>) => ({ ...prev, supabase: err }));
       }
 
       // Test 2: Members API
       try {
         const members = await membersApi.getAll();
-        setDirectData(prev => ({ ...prev, membersApi: members.length }));
+        setDirectData((prev: DirectData) => ({ ...prev, membersApi: members.length }));
         console.log('✅ Members API:', members.length, 'members');
       } catch (err) {
         console.error('❌ Members API error:', err);
-        setErrors(prev => ({ ...prev, membersApi: err }));
+        setErrors((prev: Record<string, any>) => ({ ...prev, membersApi: err }));
       }
 
       // Test 3: News API
       try {
         const news = await newsApi.getAll();
-        setDirectData(prev => ({ ...prev, newsApi: news.length }));
+        setDirectData((prev: DirectData) => ({ ...prev, newsApi: news.length }));
         console.log('✅ News API:', news.length, 'articles');
       } catch (err) {
         console.error('❌ News API error:', err);
-        setErrors(prev => ({ ...prev, newsApi: err }));
+        setErrors((prev: Record<string, any>) => ({ ...prev, newsApi: err }));
       }
 
       // Test 4: Events API
       try {
         const events = await eventsApi.getAll();
-        setDirectData(prev => ({ ...prev, eventsApi: events.length }));
+        setDirectData((prev: DirectData) => ({ ...prev, eventsApi: events.length }));
         console.log('✅ Events API:', events.length, 'events');
       } catch (err) {
         console.error('❌ Events API error:', err);
-        setErrors(prev => ({ ...prev, eventsApi: err }));
+        setErrors((prev: Record<string, any>) => ({ ...prev, eventsApi: err }));
       }
     };
 

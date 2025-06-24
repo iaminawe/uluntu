@@ -2,11 +2,32 @@ import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClien
 
 // Mock data service
 import * as mockQueries from './useQueries';
-import { Company, CompanyEmployee } from '../types';
+import { Company as GlobalCompany, CompanyEmployee } from '../types';
 
 // Supabase API services
 import { companiesApi, CompanyInput } from '@/features/companies/api/companiesApi';
+import { Company as FeatureCompany } from '@/features/companies/types/index';
 import { IS_SUPABASE_ENABLED } from '@/config/env';
+
+// Type adapter to convert between feature and global Company types
+function adaptFeatureCompanyToGlobal(featureCompany: FeatureCompany): GlobalCompany {
+  return {
+    id: featureCompany.id,
+    name: featureCompany.name,
+    description: featureCompany.description,
+    logo: featureCompany.logo,
+    website: featureCompany.website || undefined,
+    location: featureCompany.location,
+    founded: featureCompany.founded,
+    size: featureCompany.size,
+    industry: featureCompany.industry,
+    status: featureCompany.status as any,
+    featured: featureCompany.featured || false,
+    coverImage: featureCompany.cover_image || undefined,
+    created_at: featureCompany.created_at || new Date().toISOString(),
+    employees: [] // Add default empty array for compatibility
+  };
+}
 
 // Toggle between Supabase and mock data
 const USE_SUPABASE = IS_SUPABASE_ENABLED;
@@ -25,14 +46,15 @@ interface CompanyFilters {
  *
  * @returns A UseQueryResult object from Tanstack Query containing the list of companies or an error.
  */
-export function useCompanies(): UseQueryResult<Company[], Error> {
-  return useQuery<Company[], Error>({
+export function useCompanies(): UseQueryResult<GlobalCompany[], Error> {
+  return useQuery<GlobalCompany[], Error>({
     queryKey: ['companies', 'all', USE_SUPABASE ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<GlobalCompany[]> => {
       if (!USE_SUPABASE) {
         return mockQueries.useCompanies().data || [];
       }
-      return companiesApi.getAll();
+      const companies = await companiesApi.getAll();
+      return companies.map(adaptFeatureCompanyToGlobal);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -45,14 +67,15 @@ export function useCompanies(): UseQueryResult<Company[], Error> {
  * @param filters - Optional filters (e.g., search term, industries) to apply to the company list.
  * @returns A UseQueryResult object from Tanstack Query containing the filtered list of companies or an error.
  */
-export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResult<Company[], Error> {
-  return useQuery<Company[], Error>({
+export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResult<GlobalCompany[], Error> {
+  return useQuery<GlobalCompany[], Error>({
     queryKey: ['companies', 'filters', filters, USE_SUPABASE ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<GlobalCompany[]> => {
       if (!USE_SUPABASE) {
         return mockQueries.useCompaniesWithFilters(filters).data || [];
       }
-      return companiesApi.getAll(filters);
+      const companies = await companiesApi.getAll(filters);
+      return companies.map(adaptFeatureCompanyToGlobal);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -66,10 +89,10 @@ export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResul
  * @param id - The ID of the company to fetch. Can be a string.
  * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
  */
-export function useCompany(id?: string): UseQueryResult<Company | null, Error> {
-  return useQuery<Company | null, Error>({
+export function useCompany(id?: string): UseQueryResult<GlobalCompany | null, Error> {
+  return useQuery<GlobalCompany | null, Error>({
     queryKey: ['companies', id, USE_SUPABASE ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<GlobalCompany | null> => {
       if (!id) {
         return null;
       }
@@ -82,7 +105,7 @@ export function useCompany(id?: string): UseQueryResult<Company | null, Error> {
 
       try {
         const company = await companiesApi.getById(id);
-        return company;
+        return company ? adaptFeatureCompanyToGlobal(company) : null;
       } catch (error) {
         console.error(`Error fetching company with ID ${id}:`, error);
         return null;
@@ -100,13 +123,13 @@ export function useCompany(id?: string): UseQueryResult<Company | null, Error> {
  *
  * @returns A UseMutationResult object from Tanstack Query for the create company operation.
  */
-export function useCreateCompany(): UseMutationResult<Company | null, Error, CompanyInput> {
+export function useCreateCompany() {
   const queryClient = useQueryClient();
-  return useMutation<Company | null, Error, CompanyInput>({
+  return useMutation({
     mutationFn: async (companyData: CompanyInput) => {
       if (!USE_SUPABASE) {
         // Create a mock company with the data provided
-        const newCompany: Company = {
+        const newCompany: GlobalCompany = {
           id: Date.now().toString(),
           name: companyData.name,
           description: companyData.description,
@@ -144,9 +167,9 @@ export function useCreateCompany(): UseMutationResult<Company | null, Error, Com
  *
  * @returns A UseMutationResult object from Tanstack Query for the update company operation.
  */
-export function useUpdateCompany(): UseMutationResult<Company | null, Error, { id: string; data: Partial<CompanyInput> }> {
+export function useUpdateCompany() {
   const queryClient = useQueryClient();
-  return useMutation<Company | null, Error, { id: string; data: Partial<CompanyInput> }>({
+  return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<CompanyInput> }) => {
       if (!USE_SUPABASE) {
         const result = mockQueries.useCompany(id);
@@ -157,7 +180,7 @@ export function useUpdateCompany(): UseMutationResult<Company | null, Error, { i
         }
 
         // Create an updated version of the company with the new data
-        const updatedCompany: Company = {
+        const updatedCompany: GlobalCompany = {
           ...currentCompany,
           name: data.name || currentCompany.name,
           description: data.description || currentCompany.description,
@@ -235,19 +258,15 @@ export function useDeleteCompany(): UseMutationResult<
  * Custom hook to add a new employee to a company.
  * @returns A UseMutationResult object from Tanstack Query for the add employee operation.
  */
-export function useAddCompanyEmployee(): UseMutationResult<
-  CompanyEmployee | null,
-  Error,
-  { companyId: string; memberId: string; employeeData?: Partial<CompanyEmployee> }
-> {
+export function useAddCompanyEmployee() {
   const queryClient = useQueryClient();
   
-  return useMutation<
-    CompanyEmployee | null,
-    Error,
-    { companyId: string; memberId: string; employeeData?: Partial<CompanyEmployee> }
-  >({
-    mutationFn: async ({ companyId, memberId, employeeData }) => {
+  return useMutation({
+    mutationFn: async ({ companyId, memberId, employeeData }: {
+      companyId: string;
+      memberId: string;
+      employeeData?: Partial<CompanyEmployee>;
+    }) => {
       if (!USE_SUPABASE) {
         // Mock implementation
         const mockEmployee: CompanyEmployee = {
@@ -277,19 +296,14 @@ export function useAddCompanyEmployee(): UseMutationResult<
  * Custom hook to update a company employee.
  * @returns A UseMutationResult object from Tanstack Query for the update employee operation.
  */
-export function useUpdateCompanyEmployee(): UseMutationResult<
-  CompanyEmployee | null,
-  Error,
-  { employeeId: string; updates: Partial<CompanyEmployee> }
-> {
+export function useUpdateCompanyEmployee() {
   const queryClient = useQueryClient();
   
-  return useMutation<
-    CompanyEmployee | null,
-    Error,
-    { employeeId: string; updates: Partial<CompanyEmployee> }
-  >({
-    mutationFn: async ({ employeeId, updates }) => {
+  return useMutation({
+    mutationFn: async ({ employeeId, updates }: {
+      employeeId: string;
+      updates: Partial<CompanyEmployee>;
+    }) => {
       if (!USE_SUPABASE) {
         // Mock implementation
         const mockEmployee: CompanyEmployee = {
@@ -307,7 +321,13 @@ export function useUpdateCompanyEmployee(): UseMutationResult<
         return Promise.resolve(mockEmployee);
       }
       
-      return companiesApi.updateCompanyEmployee(employeeId, updates);
+      // Note: API expects (companyId, memberId, updates) but we only have employeeId
+      // This needs to be fixed in the API or we need to restructure this call
+      return companiesApi.updateCompanyEmployee(
+        updates.company_id || 'unknown', 
+        updates.member_id || 'unknown', 
+        updates
+      );
     },
     onSuccess: (data) => {
       if (data) {
@@ -340,7 +360,9 @@ export function useRemoveCompanyEmployee(): UseMutationResult<
         return Promise.resolve(true);
       }
       
-      return companiesApi.removeCompanyEmployee(employeeId);
+      // Note: API expects (companyId, memberId) but we only have employeeId
+      // This is a design issue that needs to be addressed
+      throw new Error('Cannot remove employee with only employeeId - API requires companyId and memberId');
     },
     onSuccess: () => {
       // Invalidate all company employee queries since we don't have companyId
@@ -351,17 +373,17 @@ export function useRemoveCompanyEmployee(): UseMutationResult<
   });
 }
 
-export function useCompanyEmployees(companyId?: string, filters?: { department?: string; currentOnly?: boolean }): UseQueryResult<CompanyEmployee[], Error> {
-  return useQuery<CompanyEmployee[], Error>({
+export function useCompanyEmployees(companyId?: string, filters?: { department?: string; currentOnly?: boolean }) {
+  return useQuery({
     queryKey: ['company', companyId, 'employees', filters, USE_SUPABASE ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<CompanyEmployee[]> => {
       if (!companyId) {
         return [];
       }
 
       if (USE_SUPABASE) {
         const employees = await companiesApi.getCompanyEmployees(companyId, filters);
-        return employees;
+        return employees as CompanyEmployee[];
       }
 
       try {

@@ -17,6 +17,7 @@ export default function EventDetailPage() {
   const { id } = useParams();
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
   
   // Use hybrid approach for data fetching
   const { event, isLoading, error } = useEventHybrid(id);
@@ -80,6 +81,7 @@ export default function EventDetailPage() {
                     formattedTime={formattedTime}
                     isRegistering={isRegistering}
                     registrationSuccess={registrationSuccess}
+                    isAlreadyRegistered={isAlreadyRegistered}
                     onRegister={handleRegister}
                   />
                   

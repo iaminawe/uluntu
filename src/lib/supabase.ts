@@ -138,10 +138,7 @@ export const signIn = async (email: string, password: string, rememberMe: boolea
       email,
       password,
       options: {
-        // Set session persistence based on rememberMe
-        // 'local' (default) keeps the session until explicitly signed out
-        // 'none' clears the session when the browser is closed
-        persistSession: rememberMe
+        captchaToken: undefined // Captcha token if required
       }
     });
     

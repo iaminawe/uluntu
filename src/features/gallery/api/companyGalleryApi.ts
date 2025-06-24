@@ -8,11 +8,11 @@ export const companyGalleryApi = {
    * Get all galleries for a specific company
    */
   async getCompanyGalleries(companyId: string, filters?: Omit<GalleryFilters, 'ownerId' | 'ownerType'>): Promise<Gallery[]> {
-    return galleryApi.getAllGalleries({
+    return (galleryApi.getAllGalleries({
       ...filters,
       ownerType: 'company',
       ownerId: companyId
-    });
+    }) as any) as Gallery[];
   },
 
   /**
@@ -52,17 +52,16 @@ export const companyGalleryApi = {
     try {
       const { data, error } = await supabase
         .rpc('get_gallery_stats', {
-          p_owner_type: 'company',
-          p_owner_id: companyId
-        });
+          gallery_uuid: companyId
+        } as any);
 
       if (error) throw error;
 
       return {
-        totalGalleries: data?.total_galleries || 0,
-        totalPhotos: data?.total_photos || 0,
-        totalViews: data?.total_views || 0,
-        totalLikes: data?.total_likes || 0
+        totalGalleries: (data as any)?.total_galleries || 0,
+        totalPhotos: (data as any)?.total_photos || 0,
+        totalViews: (data as any)?.total_views || 0,
+        totalLikes: (data as any)?.total_likes || 0
       };
     } catch (error) {
       console.error('Error fetching company gallery stats:', error);

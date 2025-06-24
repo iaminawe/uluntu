@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, ExternalLink } from 'lucide-react';
 import { Member } from './types';
 import { getTypeIcon } from './utils';
-import { MemberContributions } from '../../hooks/useMemberContributions';
+// import { MemberContributions } from '../../hooks/useMemberContributions';
 
 interface ProfileContentProps {
   member: Member;
-  contributions?: MemberContributions;
+  contributions?: any;
 }
 
 const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
@@ -32,7 +32,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
   };
 
   // Adapt marketplace listings to match the expected structure with dateAdded
-  const marketplaceListings = (contributions?.marketplaceListings || member.marketplaceListings || []).map(listing => ({
+  const marketplaceListings = (contributions?.marketplaceListings || member.marketplaceListings || []).map((listing: any) => ({
     ...listing,
     // Map createdAt to dateAdded if needed
     dateAdded: hasDateAdded(listing) ? listing.dateAdded : 
@@ -60,7 +60,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No groups joined yet</p>
           ) : (
             <div className="space-y-5">
-              {groups.map(group => (
+              {groups.map((group: any) => (
                 <div key={group.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
@@ -95,7 +95,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No resources shared yet</p>
           ) : (
             <div className="space-y-5">
-              {resources.map(resource => (
+              {resources.map((resource: any) => (
                 <div key={resource.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
@@ -141,7 +141,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No events or presentations yet</p>
           ) : (
             <div className="space-y-5">
-              {events.map(event => (
+              {events.map((event: any) => (
                 <div key={event.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
@@ -230,7 +230,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No marketplace listings yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {marketplaceListings.map(listing => (
+            {marketplaceListings.map((listing: any) => (
               <Link
                 key={listing.id}
                 to={`/marketplace/${listing.id}`}
@@ -263,7 +263,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       if ('dateAdded' in listing && typeof listing.dateAdded === 'string') {
                         dateStr = listing.dateAdded;
                       } else if ('createdAt' in listing && typeof listing.createdAt === 'string') {
-                        dateStr = (listing as unknown).createdAt;
+                        dateStr = (listing as any).createdAt;
                       } else {
                         dateStr = new Date().toISOString();
                       }
@@ -291,7 +291,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No posts or contributions yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {posts.map(post => (
+            {posts.map((post: any) => (
               <div key={post.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
                 <Link
                   to={`/groups/${post.group.id}/posts/${post.id}`}
@@ -332,7 +332,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No opportunities posted yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {opportunities.map((opportunity) => (
+            {opportunities.map((opportunity: any) => (
               <div key={opportunity.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-medium text-slate-900 dark:text-white">{opportunity.title}</h3>

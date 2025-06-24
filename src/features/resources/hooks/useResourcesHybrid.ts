@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { resourcesApi } from '../api/resourcesApi';
+import { resourcesApi, ResourceInput } from '../api/resourcesApi';
 import { 
   selectResourcesFilters,
   selectSelectedResourceId,
@@ -31,13 +31,13 @@ export function useResourcesHybrid() {
   
   // React Query for server state
   const resourcesQuery = useQuery({
-    queryKey: queryKeys.resourcesWithFilters(filters),
+    queryKey: [...queryKeys.resources.list(filters)],
     queryFn: () => resourcesApi.getAll(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
   const featuredQuery = useQuery({
-    queryKey: queryKeys.featuredResources,
+    queryKey: [...queryKeys.resources.list({ featured: true })],
     queryFn: () => resourcesApi.getAll({ featured: true }),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -45,7 +45,7 @@ export function useResourcesHybrid() {
   // Get single resource by ID
   const getResource = (id: string) => {
     return useQuery({
-      queryKey: queryKeys.resource(id),
+      queryKey: [...queryKeys.resources.detail(id)],
       queryFn: () => resourcesApi.getById(id),
       enabled: !!id,
     });
@@ -62,9 +62,9 @@ export function useResourcesHybrid() {
   
   // Mutations
   const createResource = useMutation({
-    mutationFn: (data: Partial<Resource>) => resourcesApi.create(data),
+    mutationFn: (data: ResourceInput) => resourcesApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.resources });
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
     },
   });
   
@@ -72,15 +72,15 @@ export function useResourcesHybrid() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Resource> }) => 
       resourcesApi.update(id, data),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.resources });
-      queryClient.invalidateQueries({ queryKey: queryKeys.resource(id) });
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.detail(id)] });
     },
   });
   
   const deleteResource = useMutation({
     mutationFn: (id: string) => resourcesApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.resources });
+      queryClient.invalidateQueries({ queryKey: [...queryKeys.resources.all] });
     },
   });
   

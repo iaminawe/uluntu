@@ -63,23 +63,29 @@ export const galleryApiNew = {
         photos: await Promise.all((gallery.gallery_photos || []).map(async photo => ({
           ...photo,
           url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-          thumbnailUrl: photo.thumbnail_path 
+          thumbnail_url: photo.thumbnail_path 
             ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
             : undefined,
-          mediumUrl: photo.medium_path
+          medium_url: photo.medium_path
             ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+            : undefined,
+          small_url: (photo as any).small_path
+            ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+            : undefined,
+          original_url: (photo as any).original_path
+            ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
             : undefined
         }))),
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         ownerId: gallery.user_id,
-        privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level
+        privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as 'public' | 'private' | 'unlisted'
       };
 
       return transformedGallery;
     }));
     
-    return galleries;
+    return galleries as Gallery[];
   },
 
   async getGallery(id: string): Promise<Gallery | null> {
@@ -110,20 +116,26 @@ export const galleryApiNew = {
       photos: await Promise.all((data.gallery_photos || []).map(async photo => ({
         ...photo,
         url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-        thumbnailUrl: photo.thumbnail_path 
+        thumbnail_url: photo.thumbnail_path 
           ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
           : undefined,
-        mediumUrl: photo.medium_path
+        medium_url: photo.medium_path
           ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+          : undefined,
+        small_url: (photo as any).small_path
+          ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+          : undefined,
+        original_url: (photo as any).original_path
+          ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
           : undefined
       }))),
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       ownerId: data.user_id,
-      privacy: data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level
+      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as 'public' | 'private' | 'unlisted'
     };
 
-    return transformedGallery;
+    return transformedGallery as Gallery;
   },
 
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
@@ -141,7 +153,7 @@ export const galleryApiNew = {
 
     const { data, error } = await supabase
       .from('user_galleries')
-      .insert([galleryData])
+      .insert([galleryData as any])
       .select()
       .single();
 
@@ -150,7 +162,7 @@ export const galleryApiNew = {
       throw error;
     }
 
-    return data;
+    return data as Gallery;
   },
 
   async updateGallery(id: string, updates: Partial<Gallery>): Promise<Gallery> {
@@ -163,7 +175,7 @@ export const galleryApiNew = {
     // Update with ownership verification
     const { data, error } = await supabase
       .from('user_galleries')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .eq('user_id', user.id)
       .select()
@@ -174,7 +186,7 @@ export const galleryApiNew = {
       throw error;
     }
 
-    return data;
+    return data as Gallery;
   },
 
   async deleteGallery(id: string): Promise<boolean> {
@@ -231,15 +243,21 @@ export const galleryApiNew = {
     const photosWithUrls = (data || []).map(photo => ({
       ...photo,
       url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-      thumbnailUrl: photo.thumbnail_path 
+      thumbnail_url: photo.thumbnail_path 
         ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
         : undefined,
-      mediumUrl: photo.medium_path
+      medium_url: photo.medium_path
         ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+        : undefined,
+      small_url: (photo as any).small_path
+        ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+        : undefined,
+      original_url: (photo as any).original_path
+        ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
         : undefined
     }));
 
-    return photosWithUrls;
+    return photosWithUrls as Photo[];
   },
 
   // Photo operations with new storage structure
@@ -307,7 +325,7 @@ export const galleryApiNew = {
 
     const { data, error } = await supabase
       .from('gallery_photos')
-      .insert([photoData])
+      .insert([photoData as any])
       .select()
       .single();
 
@@ -322,9 +340,11 @@ export const galleryApiNew = {
     return {
       ...data,
       url: publicUrl,
-      thumbnailUrl: storageService.getPublicUrl('gallery-thumbnails', thumbnailPath),
-      mediumUrl: storageService.getPublicUrl('gallery-thumbnails', mediumPath)
-    };
+      thumbnail_url: storageService.getPublicUrl('gallery-thumbnails', thumbnailPath),
+      medium_url: storageService.getPublicUrl('gallery-thumbnails', mediumPath),
+      small_url: undefined,
+      original_url: publicUrl
+    } as Photo;
   },
 
   async updatePhoto(id: string, updates: Partial<Photo>): Promise<Photo> {
@@ -351,13 +371,19 @@ export const galleryApiNew = {
     return {
       ...data,
       url: storageService.getPublicUrl('gallery-photos', data.storage_path),
-      thumbnailUrl: data.thumbnail_path 
+      thumbnail_url: data.thumbnail_path 
         ? storageService.getPublicUrl('gallery-thumbnails', data.thumbnail_path)
         : undefined,
-      mediumUrl: data.medium_path
+      medium_url: data.medium_path
         ? storageService.getPublicUrl('gallery-thumbnails', data.medium_path)
+        : undefined,
+      small_url: (data as any).small_path
+        ? storageService.getPublicUrl('gallery-thumbnails', (data as any).small_path)
+        : undefined,
+      original_url: (data as any).original_path
+        ? storageService.getPublicUrl('gallery-photos', (data as any).original_path)
         : undefined
-    };
+    } as Photo;
   },
 
   async deletePhoto(id: string): Promise<boolean> {
@@ -546,7 +572,7 @@ export const galleryApiNew = {
   },
 
   async toggleLike(galleryId: string, userId: string): Promise<boolean> {
-    const { data: existing } = await supabase
+    const { data: existing } = await (supabase as any)
       .from('gallery_likes')
       .select()
       .eq('gallery_id', galleryId)
@@ -555,7 +581,7 @@ export const galleryApiNew = {
 
     if (existing) {
       // Unlike
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('gallery_likes')
         .delete()
         .eq('gallery_id', galleryId)
@@ -565,7 +591,7 @@ export const galleryApiNew = {
       return false;
     } else {
       // Like
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('gallery_likes')
         .insert([{ gallery_id: galleryId, user_id: userId }]);
 

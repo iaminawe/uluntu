@@ -37,13 +37,13 @@ export function useMarketplaceHybrid() {
   // React Query for server state
   const listingsQuery = useQuery({
     queryKey: queryKeys.marketplaceWithFilters(filters),
-    queryFn: () => marketplaceApi.getAll(filters),
+    queryFn: () => marketplaceApi.getAll(filters as any),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
   const featuredQuery = useQuery({
     queryKey: ['marketplace', 'featured'],
-    queryFn: () => marketplaceApi.getAll({ featured: true }),
+    queryFn: () => marketplaceApi.getAll({ featured: true } as any),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
   
@@ -60,14 +60,39 @@ export function useMarketplaceHybrid() {
   const getListingsBySeller = (sellerId: string) => {
     return useQuery({
       queryKey: ['marketplace', 'seller', sellerId],
-      queryFn: () => marketplaceApi.getAll({ seller_id: sellerId }),
+      queryFn: () => marketplaceApi.getAll({ sellerId: sellerId } as any),
       enabled: !!sellerId,
+    });
+  };
+  
+  // Get related listings
+  const getRelatedListings = (id: string, limit = 3) => {
+    return useQuery({
+      queryKey: ['marketplace', 'related', id],
+      queryFn: async () => {
+        // Get the current listing first
+        const currentListing = await marketplaceApi.getById(id);
+        if (!currentListing) return [];
+        
+        // Get all listings and filter similar ones
+        const allListings = await marketplaceApi.getAll({} as any);
+        
+        return allListings
+          .filter((listing: any) => listing.id !== id) // Exclude current listing
+          .filter((listing: any) => 
+            listing.type === currentListing.type || // Same type
+            (listing as any).category === (currentListing as any).category // Same category
+          )
+          .slice(0, limit);
+      },
+      enabled: !!id,
+      staleTime: 10 * 60 * 1000, // 10 minutes
     });
   };
   
   // Mutations
   const createListing = useMutation({
-    mutationFn: (data: Partial<MarketplaceListing>) => marketplaceApi.create(data),
+    mutationFn: (data: Partial<MarketplaceListing>) => marketplaceApi.create(data as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.marketplace });
     },
@@ -124,8 +149,8 @@ export function useMarketplaceHybrid() {
     
     switch (sortBy) {
       case 'date':
-        comparison = new Date(a.createdAt || '').getTime() - 
-                    new Date(b.createdAt || '').getTime();
+        comparison = new Date((a as any).createdAt || a.datePosted || '').getTime() - 
+                    new Date((b as any).createdAt || b.datePosted || '').getTime();
         break;
       case 'price':
         comparison = (a.price || 0) - (b.price || 0);
@@ -134,7 +159,7 @@ export function useMarketplaceHybrid() {
         comparison = (a.title || '').localeCompare(b.title || '');
         break;
       case 'condition':
-        comparison = (a.condition || '').localeCompare(b.condition || '');
+        comparison = ((a as any).condition || '').localeCompare((b as any).condition || '');
         break;
     }
     
@@ -175,6 +200,7 @@ export function useMarketplaceHybrid() {
     // Queries
     getListing,
     getListingsBySeller,
+    getRelatedListings,
     refetch: listingsQuery.refetch,
     
     // Mutations

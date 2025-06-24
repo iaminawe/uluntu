@@ -64,7 +64,7 @@ export function adaptMemberForUI(supabaseMember: SupabaseMember): Member {
     location: supabaseMember.location || undefined,
     image: supabaseMember.image || '',
     bio: supabaseMember.bio || undefined,
-    intro: supabaseMember.intro || undefined,
+    intro: (supabaseMember as any).intro || undefined,
     skills: [], // Not in the Supabase schema, provide empty array
     joinDate: supabaseMember.created_at || new Date().toISOString(), // Use created_at as joinDate
     social: {} as SocialLinks, // Not in the Supabase schema

@@ -1,11 +1,13 @@
 import { ResourcesTabProps } from './types';
 import { Plus, ExternalLink, Trash2 } from 'lucide-react';
 import { useIsGroupAdmin } from '@/hooks/useEntityPermissions';
+import { useCurrentMember } from '@/hooks/useCurrentMember';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading, groupId }) => {
   const { data: isAdmin = false } = useIsGroupAdmin(groupId);
+  const { data: currentMember } = useCurrentMember();
   const [removingResource, setRemovingResource] = useState<string | null>(null);
   return (
     <div>

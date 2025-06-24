@@ -1,2 +1,3 @@
 // Re-export Member type from main types
-export { Member } from '@/types';
+export type { Member } from '@/types';
+export type { ContentStatus } from '@/types/common';

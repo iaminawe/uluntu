@@ -20,10 +20,10 @@ import { useContactSubmissions, useContactSubmissionStats } from '@/hooks/useCon
 import { ContactSubmission } from '@/services/emailNotificationService';
 
 const STATUS_COLORS = {
-  new: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+  open: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   in_progress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-  resolved: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  closed: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+  closed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+  spam: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
 };
 
 const PRIORITY_COLORS = {
@@ -82,7 +82,7 @@ export default function ContactSubmissionsPage() {
     updateSubmission,
     deleteSubmission 
   } = useContactSubmissions({ 
-    filters: apiFilters, 
+    filters: apiFilters as any, 
     page, 
     limit: 25 
   });
@@ -147,7 +147,7 @@ export default function ContactSubmissionsPage() {
           <div className="flex items-center">
             <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
             <span className="text-red-700 dark:text-red-300">
-              Failed to load contact submissions: {error?.message || String(error)}
+              Failed to load contact submissions: {(error as any)?.message || String(error)}
             </span>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function ContactSubmissionsPage() {
               <MessageSquare className="h-8 w-8 text-blue-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).total || 0}</p>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function ContactSubmissionsPage() {
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats.by_status.new + stats.by_status.in_progress}
+                  {((stats as any).by_status?.new || 0) + ((stats as any).by_status?.in_progress || 0)}
                 </p>
               </div>
             </div>
@@ -222,7 +222,7 @@ export default function ContactSubmissionsPage() {
               <User className="h-8 w-8 text-orange-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Unassigned</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.unassigned_count}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).unassigned_count || 0}</p>
               </div>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function ContactSubmissionsPage() {
               <AlertTriangle className="h-8 w-8 text-red-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Overdue</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.overdue_count}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).overdue_count || 0}</p>
               </div>
             </div>
           </div>
@@ -416,7 +416,7 @@ export default function ContactSubmissionsPage() {
                     
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
-                        {TYPE_LABELS[submission.type]}
+                        {TYPE_LABELS[submission.type as keyof typeof TYPE_LABELS] || submission.type}
                       </span>
                     </td>
                     
@@ -439,9 +439,10 @@ export default function ContactSubmissionsPage() {
                         onChange={(e) => handleStatusChange(submission.id, e.target.value)}
                         className={`text-xs font-medium px-2.5 py-0.5 rounded-full border-0 ${STATUS_COLORS[submission.status]}`}
                       >
-                        <option value="new">New</option>
+                        <option value="open">Open</option>
                         <option value="in_progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                        <option value="spam">Spam</option>
                         <option value="closed">Closed</option>
                       </select>
                     </td>
@@ -456,7 +457,7 @@ export default function ContactSubmissionsPage() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <button
-                          onClick={() => setSelectedSubmission(submission)}
+                          onClick={() => setSelectedSubmission(submission as ContactSubmission)}
                           className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                         >
                           <Eye className="h-4 w-4" />
@@ -548,7 +549,7 @@ export default function ContactSubmissionsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2">Status</h4>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[selectedSubmission.status]}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[selectedSubmission.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.open}`}>
                       {selectedSubmission.status.replace('_', ' ')}
                     </span>
                   </div>

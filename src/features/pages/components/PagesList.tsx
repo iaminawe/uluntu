@@ -60,12 +60,12 @@ const PageCard: React.FC<PageCardProps> = ({ page, onSelect, isSelected, depth =
     >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3 flex-1">
-          {getTemplateIcon(page.template)}
+          {getTemplateIcon((page as any).template)}
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
               <h3 className="text-lg font-medium text-gray-900 truncate">
                 {page.title}
-                {page.is_home && (
+                {(page as any).is_home && (
                   <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     Home
                   </span>
@@ -80,13 +80,13 @@ const PageCard: React.FC<PageCardProps> = ({ page, onSelect, isSelected, depth =
             )}
             
             <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-              <span className={getStatusColor(page.status, page.is_published)}>
-                {getStatusText(page.status, page.is_published)}
+              <span className={getStatusColor(page.status, (page as any).is_published)}>
+                {getStatusText(page.status, (page as any).is_published)}
               </span>
               
-              {page.template && (
+              {(page as any).template && (
                 <span>
-                  Template: {page.template}
+                  Template: {(page as any).template}
                 </span>
               )}
               

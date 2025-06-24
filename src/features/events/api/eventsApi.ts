@@ -112,9 +112,9 @@ export const eventsApi = {
       console.log('[EventsAPI] Executing Supabase query...', query);
       
       // Log the SQL query being executed (if available)
-      if (typeof query.toSQL === 'function') {
+      if (typeof (query as any).toSQL === 'function') {
         try {
-          const sqlQuery = query.toSQL();
+          const sqlQuery = (query as any).toSQL();
           console.log('[EventsAPI] SQL Query:', sqlQuery);
         } catch (e) {
           console.log('[EventsAPI] Could not get SQL query:', e);
@@ -165,12 +165,13 @@ export const eventsApi = {
           description: item.description || '',
           date: item.date || new Date().toISOString(),
           location: item.location || '',
-          type: item.type || 'other',
-          status: item.status || 'draft',
+          type: (item.type as any) || 'in-person',
+          status: (item.status as any) || 'draft',
           featured: item.featured || false,
           image: item.image || '',
+          organizer: (item as any).organizer || { id: 'system', name: 'System' },
           // Add any other fields that might be needed
-        };
+        } as any;
         
         return event;
       });

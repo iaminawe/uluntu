@@ -219,7 +219,7 @@ class ResendService {
       if (!campaignId) return;
 
       // Map Resend event types to our analytics event types
-      const eventTypeMap: Record<string, string> = {
+      const eventTypeMap: Record<string, 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained'> = {
         'email.sent': 'sent',
         'email.delivered': 'delivered',
         'email.bounced': 'bounced',
@@ -232,15 +232,15 @@ class ResendService {
       if (!eventType) return;
 
       // Store analytics data
-      await this.recordAnalytics(campaignId, subscriptionId, eventType as unknown, {
+      await this.recordAnalytics(campaignId, subscriptionId, eventType, {
         resend_message_id: data.email_id,
         timestamp: data.created_at,
         event_data: data
       });
 
       // Handle bounces
-      if (eventType === 'bounced' && data.bounce_type) {
-        await this.handleBounce(data.email, data.bounce_type);
+      if (eventType === 'bounced' && data.bounce_type && typeof data.bounce_type === 'string' && data.email && typeof data.email === 'string') {
+        await this.handleBounce(data.email, data.bounce_type as 'hard' | 'soft');
       }
 
     } catch (error) {
@@ -515,8 +515,8 @@ class ResendService {
   private async handleBounce(email: string, bounceType: 'hard' | 'soft'): Promise<void> {
     try {
       // Use the subscription API to handle bounces
-      const { newsletterSubscriptionApi } = await import('@/api/newsletter/subscriptions');
-      await newsletterSubscriptionApi.recordBounce(email, bounceType);
+      const { newsletterSubscriptionsApi } = await import('@/api/newsletter/subscriptions');
+      await newsletterSubscriptionsApi.recordBounce(email, bounceType);
     } catch (error) {
       console.error('Error handling bounce:', error);
     }

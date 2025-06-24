@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface ResourceFilters {
   search?: string;
   types?: string[];
+  tags?: string[];
   category?: string;
   featured?: boolean;
 }

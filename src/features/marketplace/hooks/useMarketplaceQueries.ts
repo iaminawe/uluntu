@@ -1,27 +1,29 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
-import { marketplaceApi, MarketplaceItemInput } from '../api/marketplaceApi';
+import { marketplaceApi } from '../api/marketplaceApi';
 import mockData from '@/data/mock/mockData';
 import { ContentStatus } from '../types/common';
-import { MarketplaceItem } from '../types';
-import { MarketplaceListing, MarketplaceItemsQueryOptions, MockMarketplaceListing } from '../types/marketplace';
+import { MarketplaceFilters, MarketplaceListingInput } from '../types';
+import { MarketplaceItem, MarketplaceItemsQueryOptions, MockMarketplaceItem } from '../types/marketplace';
 import { IS_SUPABASE_ENABLED } from '@/config/env';
 
-// Extending the centralized MarketplaceListing type for internal use
+// Extending the centralized MarketplaceItem type for internal use
 interface InternalMarketplaceFields {
   // Add API-specific fields that may not be in the UI model
   created_at: string;
   updated_at: string;
-  seller_id: string;
+  sellerId: string;
 }
 
 // Combined type for internal use
-type InternalMarketplaceListing = MarketplaceListing & InternalMarketplaceFields;
+type InternalMarketplaceItem = MarketplaceItem & InternalMarketplaceFields;
+
+// Use MarketplaceListingInput directly from imports
 
 /**
- * Helper function to adapt a MarketplaceItem from the API to our MarketplaceListing type
+ * Helper function to adapt a MarketplaceItem from the API to our MarketplaceItem type
  * Uses type assertion to safely handle potential differences between API and local types
  */
-function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListing {
+function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceItem {
   // Use type assertion with a more specific interface to safely access properties
   // This helps avoid using 'any' while still providing flexibility
   const apiItem = item as unknown as {
@@ -31,7 +33,7 @@ function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListin
     type?: 'product' | 'service';
     price?: number | null;
     condition?: string | undefined;
-    seller_id: string;
+    sellerId: string;
     status: 'draft' | 'published' | 'archived';
     created_at?: string;
     updated_at?: string;
@@ -42,7 +44,7 @@ function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListin
     featured?: boolean;
   };
   
-  const seller_id = apiItem.seller_id || '';
+  const sellerId = apiItem.sellerId || '';
   
   // Convert to our standardized format
   return {
@@ -51,12 +53,15 @@ function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListin
     description: item.description || '',
     type: item.type || 'product',
     price: apiItem.price !== undefined ? apiItem.price : null,
+    category: item.category || 'general',
+    datePosted: item.datePosted || apiItem.created_at || new Date().toISOString(),
+    image: item.image,
     condition: apiItem.condition || null,
     images: Array.isArray(apiItem.images) ? apiItem.images : 
             (apiItem.image ? [apiItem.image] : []),
     createdAt: apiItem.created_at || new Date().toISOString(),
     seller: {
-      id: String(seller_id),
+      id: String(sellerId),
       name: 'Seller', // We might need to fetch the actual seller name separately
       image: '/placeholder-avatar.png'
     },
@@ -68,8 +73,8 @@ function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListin
     // Include API-specific fields for internal use
     created_at: apiItem.created_at || new Date().toISOString(),
     updated_at: apiItem.updated_at || new Date().toISOString(),
-    seller_id: seller_id
-  } as MarketplaceListing & InternalMarketplaceListing;
+    sellerId: sellerId
+  } as unknown as MarketplaceItem & InternalMarketplaceItem;
 }
 
 // MarketplaceItemsQueryOptions is now imported from '../types/marketplace'
@@ -77,11 +82,11 @@ function adaptMarketplaceItemToListing(item: MarketplaceItem): MarketplaceListin
 type MarketplaceItemsQueryKey = readonly ['marketplaceListings', 'filters', MarketplaceItemsQueryOptions | undefined];
 
 /**
- * Maps a mock marketplace item to the expected MarketplaceListing format
+ * Maps a mock marketplace item to the expected MarketplaceItem format
  * This ensures consistent data structure between mock and database sources
  */
-function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): MarketplaceListing {
-  const seller_id = String(mockItem.seller?.id || mockItem.seller_id || '1');
+function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceItem): MarketplaceItem {
+  const sellerId = String(mockItem.seller?.id || mockItem.seller_id || '1');
   
   return {
     id: String(mockItem.id),
@@ -94,7 +99,7 @@ function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): Mark
            (mockItem.image ? [mockItem.image] : []),
     createdAt: mockItem.created_at || new Date().toISOString(),
     seller: {
-      id: seller_id,
+      id: sellerId,
       name: 'Seller', // We might need to fetch the actual seller name separately
       image: '/placeholder-avatar.png'
     },
@@ -106,8 +111,8 @@ function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): Mark
     // Include API-specific fields for internal use
     created_at: mockItem.created_at || new Date().toISOString(),
     updated_at: mockItem.updated_at || new Date().toISOString(),
-    seller_id: seller_id
-  } as MarketplaceListing & InternalMarketplaceListing;
+    sellerId: sellerId
+  } as unknown as MarketplaceItem & InternalMarketplaceItem;
 }
 
 
@@ -115,7 +120,7 @@ function mapMockMarketplaceItemToListing(mockItem: MockMarketplaceListing): Mark
 const USE_SUPABASE = IS_SUPABASE_ENABLED;
 
 // Define input types based on Database schema
-export type MarketplaceListingInput = {
+export type MarketplaceItemInput = {
   title: string;
   description?: string;
   price?: number | null;
@@ -125,28 +130,28 @@ export type MarketplaceListingInput = {
   location?: string | null;
   featured?: boolean;
   tags?: string[];
-  seller_id?: string;
+  sellerId?: string;
   type?: string;
 };
 
-export type MarketplaceListingUpdateInput = Partial<MarketplaceListingInput>;
+export type MarketplaceItemUpdateInput = Partial<MarketplaceItemInput>;
 
 // Export query key type
 export type { MarketplaceItemsQueryKey };
 
 
-// Use marketplaceListings from mockData and cast to MockMarketplaceListing[] to avoid type errors
-const mockMarketplaceItems = (mockData.marketplaceListings || []) as unknown as MockMarketplaceListing[];
+// Use marketplaceListings from mockData and cast to MockMarketplaceItem[] to avoid type errors
+const mockMarketplaceItems = (mockData.marketplaceListings || []) as unknown as MockMarketplaceItem[];
 
 // Hooks
 
-export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOptions): UseQueryResult<MarketplaceListing[], Error> {
+export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOptions): UseQueryResult<MarketplaceItem[], Error> {
   console.log('useMarketplaceItemsWithFilters: Starting query with filters:', filters);
   const queryKey: MarketplaceItemsQueryKey = ['marketplaceListings', 'filters', filters];
   
-  return useQuery<MarketplaceListing[], Error>({
+  return useQuery<MarketplaceItem[], Error>({
     queryKey: queryKey,
-    queryFn: async (): Promise<MarketplaceListing[]> => {
+    queryFn: async (): Promise<MarketplaceItem[]> => {
       // Use Supabase or mock data based on environment variable
       if (USE_SUPABASE) {
         try {
@@ -183,15 +188,15 @@ export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOp
           mockListings = mockListings.filter((listing) => listing.type && filters.types?.includes(listing.type));
         }
         if (filters?.condition && filters.condition !== 'all') {
-          mockListings = mockListings.filter((listing) => listing.condition === filters.condition);
+          mockListings = mockListings.filter((listing) => (listing as any).condition === filters.condition);
         }
-        if (filters && filters.seller_id) {
+        if (filters && (filters as any).sellerId) {
           mockListings = mockListings.filter(item => {
             // Get seller id from internal property or the standard seller object
-            const itemSellerId = 'seller_id' in item ? 
-              (item as unknown as { seller_id: string }).seller_id : 
+            const itemSellerId = 'sellerId' in item ? 
+              (item as unknown as { sellerId: string }).sellerId : 
               item.seller?.id;
-            return itemSellerId === filters.seller_id;
+            return itemSellerId === (filters as any).sellerId;
           });
         }
         if (filters?.featured !== undefined) {
@@ -204,10 +209,10 @@ export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOp
   });
 }
 
-export function useMarketplaceItems(): UseQueryResult<MarketplaceListing[], Error> {
-  return useQuery<MarketplaceListing[], Error>({
+export function useMarketplaceItems(): UseQueryResult<MarketplaceItem[], Error> {
+  return useQuery<MarketplaceItem[], Error>({
     queryKey: ['marketplaceItems'],
-    queryFn: async (): Promise<MarketplaceListing[]> => {
+    queryFn: async (): Promise<MarketplaceItem[]> => {
       if (USE_SUPABASE) {
         try {
           const fetchedItems = await marketplaceApi.getAll();
@@ -223,11 +228,11 @@ export function useMarketplaceItems(): UseQueryResult<MarketplaceListing[], Erro
   });
 }
 
-export function useMarketplaceItem(id: string | undefined): UseQueryResult<MarketplaceListing | null, Error> {
-  return useQuery<MarketplaceListing | null, Error>({
+export function useMarketplaceItem(id: string | undefined): UseQueryResult<MarketplaceItem | null, Error> {
+  return useQuery<MarketplaceItem | null, Error>({
     queryKey: ['marketplaceItem', id],
     enabled: !!id, // Only run if id is provided
-    queryFn: async (): Promise<MarketplaceListing | null> => {
+    queryFn: async (): Promise<MarketplaceItem | null> => {
       if (!id) return null;
       if (USE_SUPABASE) {
         try {
@@ -245,11 +250,11 @@ export function useMarketplaceItem(id: string | undefined): UseQueryResult<Marke
   });
 }
 
-export function useRelatedMarketplaceItems(itemId?: string, limit: number = 3): UseQueryResult<MarketplaceListing[], Error> {
-  return useQuery<MarketplaceListing[], Error>({
+export function useRelatedMarketplaceItems(itemId?: string, limit: number = 3): UseQueryResult<MarketplaceItem[], Error> {
+  return useQuery<MarketplaceItem[], Error>({
     queryKey: ['relatedMarketplaceItems', itemId, limit],
     enabled: !!itemId, // Only run if itemId is provided
-    queryFn: async (): Promise<MarketplaceListing[]> => {
+    queryFn: async (): Promise<MarketplaceItem[]> => {
       if (!itemId) return [];
       if (USE_SUPABASE) {
         try {
@@ -278,13 +283,13 @@ export function useRelatedMarketplaceItems(itemId?: string, limit: number = 3): 
   });
 }
 
-export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing | null, Error, MarketplaceListingInput> {
+export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceItem | null, Error, MarketplaceItemInput> {
   const queryClient = useQueryClient();
-  return useMutation<MarketplaceListing | null, Error, MarketplaceListingInput>({
-    mutationFn: async (itemData: MarketplaceListingInput): Promise<MarketplaceListing | null> => {
+  return useMutation<MarketplaceItem | null, Error, MarketplaceItemInput>({
+    mutationFn: async (itemData: MarketplaceItemInput): Promise<MarketplaceItem | null> => {
       if (USE_SUPABASE) {
         try {
-          const newItem = await marketplaceApi.create(itemData);
+          const newItem = await marketplaceApi.create(itemData as any);
           return newItem ? adaptMarketplaceItemToListing(newItem) : null;
         } catch (error) {
           console.error('Error creating marketplace item:', error);
@@ -295,15 +300,15 @@ export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing
         const newId = String(mockMarketplaceItems.length + 1);
         const now = new Date().toISOString();
         
-        const newMockItem: MockMarketplaceListing = {
+        const newMockItem: MockMarketplaceItem = {
           id: newId,
           title: itemData.title,
           description: itemData.description || '',
           type: itemData.type || 'product',
           price: itemData.price !== undefined ? itemData.price : null,
-          condition: itemData.condition || null,
+          condition: itemData.condition || undefined,
           images: itemData.images || [],
-          seller_id: itemData.seller_id || '1',
+          seller_id: itemData.sellerId || '1',
           status: itemData.status || 'published',
           created_at: now,
           updated_at: now,
@@ -324,7 +329,7 @@ export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing
   });
 }
 
-export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing | null, Error, { id: string; data: Partial<MarketplaceListingUpdateInput> }> {
+export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceItem | null, Error, { id: string; data: Partial<MarketplaceItemUpdateInput> }> {
   const queryClient = useQueryClient();
   
   // For update mutations, we'll need a helper function to avoid type errors with undefined/null
@@ -342,8 +347,8 @@ export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing
     return value === null ? undefined : value;
   }
   
-  return useMutation<MarketplaceListing | null, Error, { id: string; data: Partial<MarketplaceListingUpdateInput> }>({
-    mutationFn: async ({ id, data }): Promise<MarketplaceListing | null> => {
+  return useMutation<MarketplaceItem | null, Error, { id: string; data: Partial<MarketplaceItemUpdateInput> }>({
+    mutationFn: async ({ id, data }): Promise<MarketplaceItem | null> => {
       if (USE_SUPABASE) {
         // Create an API-compatible update data object
         const apiUpdateData: Partial<MarketplaceItemInput> = {};
@@ -357,12 +362,12 @@ export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing
         if (data.images !== undefined) apiUpdateData.images = data.images === null ? [] : data.images;
         if (data.location !== undefined) apiUpdateData.location = data.location === null ? undefined : data.location;
         if (data.tags !== undefined) apiUpdateData.tags = data.tags === null ? [] : data.tags;
-        // Handle seller_id, ensuring it's a string or undefined (not null)
-        if (data.seller_id !== undefined) apiUpdateData.sellerId = data.seller_id === null ? undefined : data.seller_id;
+        // Handle sellerId, ensuring it's a string or undefined (not null)
+        if (data.sellerId !== undefined) apiUpdateData.sellerId = data.sellerId === null ? undefined : data.sellerId;
         if (data.status !== undefined) apiUpdateData.status = data.status === null ? undefined : (data.status as ContentStatus);
         if (data.featured !== undefined) apiUpdateData.featured = handleNullValue(data.featured);
         
-        const updatedItem = await marketplaceApi.update(id, apiUpdateData);
+        const updatedItem = await marketplaceApi.update(id, apiUpdateData as any);
         return updatedItem ? adaptMarketplaceItemToListing(updatedItem) : null;
       } else {
         const itemIndex = mockMarketplaceItems.findIndex((item) => String(item.id) === id);
@@ -372,7 +377,7 @@ export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing
         }
         const originalMockItem = mockMarketplaceItems[itemIndex];
         // Create a new object for the updated mock item to avoid direct mutation
-        const updatedMockItemData: MockMarketplaceListing = {
+        const updatedMockItemData: MockMarketplaceItem = {
           ...originalMockItem,
           title: data.title !== undefined ? data.title : originalMockItem.title,
           description: data.description !== undefined ? data.description : originalMockItem.description,
@@ -384,7 +389,7 @@ export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing
           tags: data.tags !== undefined ? data.tags : originalMockItem.tags,
           condition: data.condition !== undefined ? (data.condition === null ? undefined : data.condition) : originalMockItem.condition,
           location: data.location !== undefined ? (data.location === null ? undefined : data.location) : originalMockItem.location,
-          seller_id: data.seller_id !== undefined ? data.seller_id : originalMockItem.seller_id,
+          seller_id: data.sellerId !== undefined ? data.sellerId : (originalMockItem as any).seller_id,
           updated_at: new Date().toISOString(),
         };
         mockMarketplaceItems[itemIndex] = updatedMockItemData;

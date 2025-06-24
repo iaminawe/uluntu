@@ -37,6 +37,10 @@ export interface MarketplaceListing {
 }
 
 // Mock data type matching Supabase schema
+// Re-export MarketplaceItem for compatibility
+export type { MarketplaceItem } from '../index';
+export type MockMarketplaceItem = MockMarketplaceListing;
+
 export interface MockMarketplaceListing {
   id: string;
   title: string;

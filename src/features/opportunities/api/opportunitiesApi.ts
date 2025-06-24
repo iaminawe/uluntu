@@ -41,7 +41,10 @@ export const opportunitiesApi = {
     search?: string; 
     type?: string[]; 
     remote?: boolean; 
-    location?: string[] 
+    location?: string[];
+    status?: string;
+    featured?: boolean;
+    company_id?: string;
   }): Promise<Opportunity[]> {
     try {
       console.log('[OpportunitiesAPI] Fetching opportunities with filters:', filters);
@@ -81,7 +84,7 @@ export const opportunitiesApi = {
         return [];
       }
       
-      const adapted = adaptItemsList(data || [], adaptOpportunityFromDatabase);
+      const adapted = adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
       console.log('[OpportunitiesAPI] Adapted opportunities:', adapted.length);
       return adapted;
     } catch (error) {
@@ -103,7 +106,7 @@ export const opportunitiesApi = {
         return null;
       }
       
-      return data ? adaptOpportunityFromDatabase(data) : null;
+      return data ? adaptOpportunityFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `fetching opportunity with id ${id}`);
       return null;
@@ -145,7 +148,7 @@ export const opportunitiesApi = {
         return null;
       }
       
-      return data ? adaptOpportunityFromDatabase(data) : null;
+      return data ? adaptOpportunityFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating opportunity');
       return null;
@@ -187,7 +190,7 @@ export const opportunitiesApi = {
         return null;
       }
       
-      return data ? adaptOpportunityFromDatabase(data) : null;
+      return data ? adaptOpportunityFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `updating opportunity with id ${id}`);
       return null;
@@ -231,7 +234,7 @@ export const opportunitiesApi = {
         return [];
       }
       
-      return adaptItemsList(data || [], adaptOpportunityFromDatabase);
+      return adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
     } catch (error) {
       handleSupabaseError(error, 'fetching featured opportunities');
       return [];
@@ -252,7 +255,7 @@ export const opportunitiesApi = {
         return [];
       }
       
-      return adaptItemsList(data || [], adaptOpportunityFromDatabase);
+      return adaptItemsList(data || [], (item: any) => adaptOpportunityFromDatabase(item));
     } catch (error) {
       handleSupabaseError(error, `fetching opportunities for company ${companyId}`);
       return [];
@@ -262,7 +265,7 @@ export const opportunitiesApi = {
   // Gallery-related operations
   async getOpportunityGalleries(opportunityId: string): Promise<OpportunityGallery[]> {
     try {
-      const { data, error } = await supabase.rpc('get_opportunity_galleries', {
+      const { data, error } = await (supabase as any).rpc('get_opportunity_galleries', {
         opportunity_uuid: opportunityId
       });
 
@@ -271,27 +274,34 @@ export const opportunitiesApi = {
         return [];
       }
       
-      return (data || []).map((item: any) => ({
+      return ((data as any[]) || []).map((item: any) => ({
         id: item.id,
         opportunity_id: opportunityId,
         gallery_id: item.gallery_id,
-        display_order: item.display_order,
-        featured: item.featured,
+        display_order: item.display_order || 0,
+        featured: item.featured || false,
         caption: item.caption,
         attached_by: item.attached_by,
-        created_at: item.created_at,
-        gallery: {
+        created_at: item.created_at || new Date().toISOString(),
+        updated_at: item.updated_at,
+        gallery: item.gallery_id ? {
           id: item.gallery_id,
-          title: item.gallery_title,
-          description: item.gallery_description,
-          slug: item.gallery_slug,
+          title: item.gallery_title || '',
+          description: item.gallery_description || '',
+          slug: item.gallery_slug || '',
           cover_photo_id: item.gallery_cover_photo_id,
-          photo_count: item.gallery_photo_count,
-          privacy_level: item.gallery_privacy_level,
+          photo_count: item.gallery_photo_count || 0,
+          privacy_level: item.gallery_privacy_level || 'public',
+          visibility: 'visible' as const,
+          owner_type: 'user' as const,
+          owner_id: '',
           owner_name: item.gallery_owner_name,
-          owner_image: item.gallery_owner_image
-        }
-      }));
+          owner_image: item.gallery_owner_image,
+          photos: [],
+          created_at: item.created_at || new Date().toISOString(),
+          updated_at: item.updated_at || new Date().toISOString()
+        } : undefined
+      } as OpportunityGallery));
     } catch (error) {
       handleSupabaseError(error, `fetching galleries for opportunity ${opportunityId}`);
       return [];
@@ -303,7 +313,7 @@ export const opportunitiesApi = {
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
 
-      const { data, error } = await supabase.rpc('get_attachable_galleries', {
+      const { data, error } = await (supabase as any).rpc('get_attachable_galleries', {
         opportunity_uuid: opportunityId,
         user_uuid: userId
       });
@@ -313,7 +323,7 @@ export const opportunitiesApi = {
         return [];
       }
       
-      return (data || []).map((item: any) => ({
+      return ((data as any[]) || []).map((item: any) => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -343,7 +353,7 @@ export const opportunitiesApi = {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('opportunity_galleries')
         .insert({
           opportunity_id: input.opportunity_id,
@@ -361,7 +371,10 @@ export const opportunitiesApi = {
         return null;
       }
       
-      return data;
+      return data ? {
+        ...data,
+        created_at: (data as any).created_at || new Date().toISOString()
+      } as unknown as OpportunityGallery : null;
     } catch (error) {
       handleSupabaseError(error, 'attaching gallery to opportunity');
       return null;
@@ -370,7 +383,7 @@ export const opportunitiesApi = {
 
   async updateGalleryAttachment(attachmentId: string, updates: UpdateGalleryAttachmentInput): Promise<OpportunityGallery | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('opportunity_galleries')
         .update(updates)
         .eq('id', attachmentId)
@@ -382,7 +395,10 @@ export const opportunitiesApi = {
         return null;
       }
       
-      return data;
+      return data ? {
+        ...data,
+        created_at: (data as any).created_at || new Date().toISOString()
+      } as unknown as OpportunityGallery : null;
     } catch (error) {
       handleSupabaseError(error, `updating gallery attachment ${attachmentId}`);
       return null;
@@ -391,7 +407,7 @@ export const opportunitiesApi = {
 
   async detachGallery(attachmentId: string): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('opportunity_galleries')
         .delete()
         .eq('id', attachmentId);
@@ -411,7 +427,7 @@ export const opportunitiesApi = {
   async reorderOpportunityGalleries(opportunityId: string, galleryOrders: { id: string; order: number }[]): Promise<boolean> {
     try {
       const updates = galleryOrders.map(({ id, order }) => 
-        supabase
+        (supabase as any)
           .from('opportunity_galleries')
           .update({ display_order: order })
           .eq('id', id)

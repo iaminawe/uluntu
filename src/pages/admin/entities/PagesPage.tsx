@@ -164,7 +164,7 @@ const PagesPage: React.FC = () => {
           <h2 className="text-lg font-medium text-gray-900">All Pages</h2>
         </div>
         <div className="p-6">
-          <PagesList showActions={true} />
+          <PagesList />
         </div>
       </div>
     </div>

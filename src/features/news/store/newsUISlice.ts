@@ -7,7 +7,8 @@ export interface NewsFilters {
   search?: string;
   tags?: string[];
   featured?: boolean;
-  status?: ContentStatus;
+  status?: string;
+  limit?: number;
 }
 
 export interface NewsUIState {

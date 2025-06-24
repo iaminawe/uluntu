@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 
 // Define type for event filters
-export interface EventFilters {
+interface EventFilters {
   search?: string;
   types?: ('in-person' | 'online' | 'hybrid')[];
   dateRange?: 'upcoming' | 'month' | 'three-months' | 'all';

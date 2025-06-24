@@ -1,18 +1,45 @@
 import { supabase } from '@/lib/supabase';
 
+// Since contact_submissions table doesn't exist in our types yet,
+// we'll use 'any' type casting until the database is updated
+const contactDb = supabase as any;
+
+// Helper function to adapt Supabase data to our types
+function adaptSubmission(data: any): ContactSubmission {
+  if (!data) return data;
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    message: data.message,
+    status: data.status,
+    priority: data.priority || 'normal',
+    subject: data.subject,
+    referrer: data.referrer,
+    tags: data.tags,
+    assigned_to: data.assigned_to,
+    assigned_by: data.assigned_by,
+    resolved_at: data.resolved_at,
+    ip_address: data.ip_address,
+    user_agent: data.user_agent,
+    created_at: data.created_at,
+    updated_at: data.updated_at
+  };
+}
+
 export interface ContactSubmission {
   id: string;
   name: string;
   email: string;
-  subject?: string;
+  subject: string;
   message: string;
-  volunteer_type?: 'attend' | 'present' | 'organize' | 'sponsor';
-  status: 'unread' | 'read' | 'responded' | 'archived';
-  priority: 'low' | 'normal' | 'high' | 'urgent';
+  status: string;
+  priority: string;
   assigned_to?: string;
-  responded_at?: string;
-  response?: string;
-  source: string;
+  assigned_by?: string;
+  resolved_at?: string;
+  referrer?: string;
+  tags?: string[];
   ip_address?: string;
   user_agent?: string;
   created_at: string;
@@ -104,9 +131,9 @@ export class ContactSubmissionsAPI {
       if (error) throw error;
 
       // Send notification email if configured
-      await this.sendNewSubmissionNotification(submission as ContactSubmission);
+      await this.sendNewSubmissionNotification(adaptSubmission(submission));
 
-      return submission;
+      return adaptSubmission(submission);
     } catch (error) {
       console.error('Error submitting contact form:', error);
       throw error;
@@ -124,7 +151,7 @@ export class ContactSubmissionsAPI {
     volunteer_type?: string
   ): Promise<{ data: ContactSubmission[]; count: number }> {
     try {
-      let query = supabase
+      let query = (supabase as any)
         .from('contact_submissions')
         .select('*, assigned_user:assigned_to(id, full_name, email)', { count: 'exact' })
         .order('created_at', { ascending: false });
@@ -149,7 +176,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      return { data: data || [], count: count || 0 };
+      return { data: (data || []).map(adaptSubmission), count: count || 0 };
     } catch (error) {
       console.error('Error fetching contact submissions:', error);
       throw error;
@@ -161,7 +188,7 @@ export class ContactSubmissionsAPI {
    */
   async getSubmissionById(id: string): Promise<ContactSubmission & { notes: ContactSubmissionNote[] }> {
     try {
-      const { data: submission, error: submissionError } = await supabase
+      const { data: submission, error: submissionError } = await (supabase as any)
         .from('contact_submissions')
         .select('*, assigned_user:assigned_to(id, full_name, email)')
         .eq('id', id)
@@ -169,7 +196,7 @@ export class ContactSubmissionsAPI {
 
       if (submissionError) throw submissionError;
 
-      const { data: notes, error: notesError } = await supabase
+      const { data: notes, error: notesError } = await contactDb
         .from('contact_submission_notes')
         .select('*, user:user_id(id, full_name, email)')
         .eq('submission_id', id)
@@ -195,7 +222,7 @@ export class ContactSubmissionsAPI {
         updateData.responded_at = new Date().toISOString();
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await contactDb
         .from('contact_submissions')
         .update(updateData)
         .eq('id', id)
@@ -216,7 +243,7 @@ export class ContactSubmissionsAPI {
    */
   async markAsRead(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase.rpc('mark_submission_as_read', { 
+      const { error } = await contactDb.rpc('mark_submission_as_read', { 
         submission_id: id 
       });
 
@@ -233,7 +260,7 @@ export class ContactSubmissionsAPI {
    */
   async assignToUser(id: string, userId: string): Promise<boolean> {
     try {
-      const { error } = await supabase.rpc('assign_submission', { 
+      const { error } = await contactDb.rpc('assign_submission', { 
         submission_id: id,
         assignee_id: userId
       });
@@ -251,11 +278,11 @@ export class ContactSubmissionsAPI {
    */
   async addNote(data: CreateNoteRequest): Promise<ContactSubmissionNote> {
     try {
-      const { data: note, error } = await supabase
+      const { data: note, error } = await contactDb
         .from('contact_submission_notes')
         .insert({
           submission_id: data.submission_id,
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: (await contactDb.auth.getUser()).data.user?.id,
           note: data.note,
           is_internal: data.is_internal ?? true,
         })
@@ -276,7 +303,7 @@ export class ContactSubmissionsAPI {
    */
   async deleteSubmission(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const { error } = await contactDb
         .from('contact_submissions')
         .delete()
         .eq('id', id);
@@ -294,11 +321,11 @@ export class ContactSubmissionsAPI {
    */
   async getStats(): Promise<ContactSubmissionStats> {
     try {
-      const { data, error } = await supabase.rpc('get_contact_submission_stats');
+      const { data, error } = await (supabase as any).rpc('get_contact_submission_stats');
 
       if (error) throw error;
 
-      return data;
+      return data as ContactSubmissionStats;
     } catch (error) {
       console.error('Error fetching contact submission stats:', error);
       throw error;
@@ -330,7 +357,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      return { data: data || [], count: count || 0 };
+      return { data: (data || []).map(adaptSubmission), count: count || 0 };
     } catch (error) {
       console.error('Error searching contact submissions:', error);
       throw error;
@@ -342,7 +369,7 @@ export class ContactSubmissionsAPI {
    */
   async getUnreadCount(): Promise<number> {
     try {
-      const { count, error } = await supabase
+      const { count, error } = await contactDb
         .from('contact_submissions')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'unread');
@@ -368,7 +395,7 @@ export class ContactSubmissionsAPI {
         name: submission.name,
         email: submission.email,
         subject: submission.subject,
-        volunteer_type: submission.volunteer_type,
+        volunteer_type: (submission as any).volunteer_type,
       });
 
       // TODO: Implement actual email sending logic
@@ -388,7 +415,7 @@ export class ContactSubmissionsAPI {
     status?: string
   ): Promise<string> {
     try {
-      let query = supabase
+      let query = (supabase as any)
         .from('contact_submissions')
         .select('*')
         .order('created_at', { ascending: false });
@@ -419,7 +446,7 @@ export class ContactSubmissionsAPI {
 
       const csvRows = [
         headers.join(','),
-        ...data.map(row => [
+        ...data.map((row: any) => [
           row.id,
           `"${row.name}"`,
           row.email,
@@ -427,10 +454,10 @@ export class ContactSubmissionsAPI {
           `"${row.message.replace(/"/g, '""')}"`,
           row.volunteer_type || '',
           row.status,
-          row.priority,
-          row.source,
-          row.created_at,
-          row.updated_at
+          row.priority || 'normal',
+          row.source || 'contact_page',
+          row.created_at || row.submitted_at,
+          row.updated_at || row.submitted_at
         ].join(','))
       ];
 

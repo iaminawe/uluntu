@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
+import { MarketplaceItem } from '@/features/marketplace/types';
 
 interface RelatedListingsProps {
   id: string;
@@ -31,16 +32,16 @@ export default function RelatedListings({ id }: RelatedListingsProps) {
 
   return (
     <div className="space-y-4">
-      {listings.map(listing => (
+      {listings.map((listing: MarketplaceItem) => (
         <Link 
           key={listing.id}
           to={`/marketplace/${listing.id}`}
           className="block"
         >
           <div className="flex items-start p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            {listing.images && listing.images.length > 0 ? (
+            {listing.image ? (
               <img 
-                src={listing.images[0]} 
+                src={listing.image} 
                 alt={listing.title} 
                 className="w-16 h-16 object-cover rounded mr-3"
               />

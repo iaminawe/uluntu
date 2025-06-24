@@ -9,7 +9,7 @@ export function buildPageTree(pages: Page[]): PageTreeNode[] {
 
   // First pass: create all nodes
   pages.forEach(page => {
-    pageMap.set(page.id, { ...page, children: [] });
+    pageMap.set(page.id, { page, children: [], depth: 0 });
   });
 
   // Second pass: build the tree
@@ -34,17 +34,15 @@ export function buildPageTree(pages: Page[]): PageTreeNode[] {
     }
   });
 
-  // Sort by order
-  const sortByOrder = (a: PageTreeNode, b: PageTreeNode) => {
-    const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
-    const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
-    return orderA - orderB;
+  // Sort by creation date since Page doesn't have order field
+  const sortByCreated = (a: PageTreeNode, b: PageTreeNode) => {
+    return new Date(a.page.created_at).getTime() - new Date(b.page.created_at).getTime();
   };
 
-  rootPages.sort(sortByOrder);
+  rootPages.sort(sortByCreated);
   rootPages.forEach(page => {
     if (page.children) {
-      page.children.sort(sortByOrder);
+      page.children.sort(sortByCreated);
     }
   });
 
@@ -243,7 +241,7 @@ export function validatePage(page: Partial<Page>, existingPages: Page[] = []): P
 /**
  * Sort pages by various criteria
  */
-export type PageSortField = 'title' | 'created_at' | 'updated_at' | 'order' | 'status';
+export type PageSortField = keyof Pick<Page, 'title' | 'created_at' | 'updated_at' | 'status'>;
 export type SortDirection = 'asc' | 'desc';
 
 export function sortPages(
@@ -254,12 +252,6 @@ export function sortPages(
   return [...pages].sort((a, b) => {
     let aValue: any = a[field];
     let bValue: any = b[field];
-
-    // Handle special cases
-    if (field === 'order') {
-      aValue = aValue ?? Number.MAX_SAFE_INTEGER;
-      bValue = bValue ?? Number.MAX_SAFE_INTEGER;
-    }
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       aValue = aValue.toLowerCase();

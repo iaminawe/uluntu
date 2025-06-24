@@ -14,6 +14,17 @@ import {
 import { newsletterAnalyticsApi } from '@/api/newsletter/analytics';
 import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 
+interface TopLink {
+  url: string;
+  clicks: number;
+}
+
+interface EngagementDay {
+  opens: number;
+  clicks: number;
+  date: string;
+}
+
 const AnalyticsDashboard: React.FC = () => {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<number>(30);
@@ -21,13 +32,13 @@ const AnalyticsDashboard: React.FC = () => {
   // Fetch overall stats
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['newsletter-stats'],
-    queryFn: () => newsletterAnalyticsApi.getNewsletterStats()
+    queryFn: () => (newsletterAnalyticsApi as any).getNewsletterStats()
   });
 
   // Fetch engagement metrics
   const { data: engagement, isLoading: engagementLoading } = useQuery({
     queryKey: ['newsletter-engagement', timeRange],
-    queryFn: () => newsletterAnalyticsApi.getEngagementMetrics(timeRange)
+    queryFn: () => (newsletterAnalyticsApi as any).getEngagementMetrics(timeRange)
   });
 
   // Fetch campaigns for dropdown
@@ -149,12 +160,12 @@ const AnalyticsDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Daily Opens</h3>
             <div className="h-64 flex items-end space-x-2">
-              {engagement?.daily_opens.map((day, index) => (
+              {engagement?.daily_opens.map((day: any, index: number) => (
                 <div key={index} className="flex-1 flex flex-col items-center">
                   <div 
                     className="w-full bg-blue-500 rounded-t"
                     style={{ 
-                      height: `${Math.max(4, (day.count / Math.max(...engagement.daily_opens.map(d => d.count))) * 100)}%` 
+                      height: `${Math.max(4, (day.count / Math.max(...engagement.daily_opens.map((d: any) => d.count))) * 100)}%` 
                     }}
                   ></div>
                   <span className="text-xs text-gray-500 mt-1 transform -rotate-45 origin-center">
@@ -169,12 +180,12 @@ const AnalyticsDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Daily Clicks</h3>
             <div className="h-64 flex items-end space-x-2">
-              {engagement?.daily_clicks.map((day, index) => (
+              {engagement?.daily_clicks.map((day: any, index: number) => (
                 <div key={index} className="flex-1 flex flex-col items-center">
                   <div 
                     className="w-full bg-green-500 rounded-t"
                     style={{ 
-                      height: `${Math.max(4, (day.count / Math.max(...engagement.daily_clicks.map(d => d.count))) * 100)}%` 
+                      height: `${Math.max(4, (day.count / Math.max(...engagement.daily_clicks.map((d: any) => d.count))) * 100)}%` 
                     }}
                   ></div>
                   <span className="text-xs text-gray-500 mt-1 transform -rotate-45 origin-center">
@@ -191,7 +202,7 @@ const AnalyticsDashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Top Performing Campaigns</h3>
         <div className="space-y-4">
-          {engagement?.top_campaigns.slice(0, 5).map((campaign, index) => (
+          {engagement?.top_campaigns.slice(0, 5).map((campaign: any, index: number) => (
             <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
               <div className="flex-1">
                 <h4 className="font-medium text-gray-900">{campaign.title}</h4>
@@ -253,7 +264,7 @@ const AnalyticsDashboard: React.FC = () => {
                 {/* Campaign Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-4 border border-gray-200 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-blue-600">{campaignAnalytics.total_sent}</div>
+                    <div className="text-2xl font-bold text-blue-600">{(campaignAnalytics as any).total_sent}</div>
                     <div className="text-sm text-gray-600">Sent</div>
                   </div>
                   <div className="p-4 border border-gray-200 rounded-lg text-center">
@@ -271,11 +282,11 @@ const AnalyticsDashboard: React.FC = () => {
                 </div>
 
                 {/* Top Links */}
-                {campaignAnalytics.top_links.length > 0 && (
+                {(campaignAnalytics as any).top_links?.length > 0 && (
                   <div>
                     <h4 className="text-md font-medium text-gray-900 mb-3">Top Clicked Links</h4>
                     <div className="space-y-2">
-                      {campaignAnalytics.top_links.slice(0, 5).map((link, index) => (
+                      {(campaignAnalytics as any).top_links.slice(0, 5).map((link: TopLink, index: number) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                           <span className="text-sm text-gray-700 truncate flex-1">{link.url}</span>
                           <span className="text-sm font-medium text-gray-900 ml-4">{link.clicks} clicks</span>
@@ -286,24 +297,24 @@ const AnalyticsDashboard: React.FC = () => {
                 )}
 
                 {/* Engagement Timeline */}
-                {campaignAnalytics.engagement_timeline.length > 0 && (
+                {(campaignAnalytics as any).engagement_timeline?.length > 0 && (
                   <div>
                     <h4 className="text-md font-medium text-gray-900 mb-3">Engagement Over Time</h4>
                     <div className="h-32 flex items-end space-x-1">
-                      {campaignAnalytics.engagement_timeline.map((day, index) => (
+                      {(campaignAnalytics as any).engagement_timeline.map((day: EngagementDay, index: number) => (
                         <div key={index} className="flex-1 flex flex-col items-center">
                           <div className="w-full flex flex-col">
                             <div 
                               className="w-full bg-blue-400 rounded-t"
                               style={{ 
-                                height: `${Math.max(2, (day.opens / Math.max(...campaignAnalytics.engagement_timeline.map(d => d.opens))) * 60)}px` 
+                                height: `${Math.max(2, (day.opens / Math.max(...(campaignAnalytics as any).engagement_timeline.map((d: EngagementDay) => d.opens))) * 60)}px` 
                               }}
                               title={`${day.opens} opens`}
                             ></div>
                             <div 
                               className="w-full bg-green-400"
                               style={{ 
-                                height: `${Math.max(2, (day.clicks / Math.max(...campaignAnalytics.engagement_timeline.map(d => d.clicks))) * 30)}px` 
+                                height: `${Math.max(2, (day.clicks / Math.max(...(campaignAnalytics as any).engagement_timeline.map((d: EngagementDay) => d.clicks))) * 30)}px` 
                               }}
                               title={`${day.clicks} clicks`}
                             ></div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ApplicationSetting, UpdateSettingRequest } from '@/types/settings';
+import { ApplicationSetting, UpdateSettingRequest, SettingDataType } from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -264,7 +264,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: setting?.data_type || 'string'
+          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType)
         });
       }
       

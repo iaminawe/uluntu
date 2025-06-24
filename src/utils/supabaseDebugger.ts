@@ -9,7 +9,7 @@ interface TableTestResult {
   sample?: Record<string, unknown> | null;
 }
 
-interface DebugResult {
+export interface DebugResult {
   connection: {
     url: string;
     hasAnonKey: boolean;

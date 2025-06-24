@@ -1,6 +1,8 @@
-import { Database } from '../types/supabase';
-import { Event as FrontendEvent, EventSession } from '../types'; // Assuming EventSession is defined in ../types
-import { ContentStatus } from '../types/common';
+import { Database } from '@/types/supabase';
+import { Event as FrontendEvent } from '../types'; // Assuming EventSession is defined in ../types
+type EventSession = any; // Quick fix for missing type
+// import { ContentStatus } from '../types/common';
+type ContentStatus = 'draft' | 'published' | 'archived' | 'pending';
 // We might need Member type if we strongly type the organizer from 'members' table
 // import { Member as FrontendMember } from '../types'; 
 

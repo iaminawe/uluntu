@@ -97,7 +97,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
             <h4 className="text-sm font-medium truncate mb-1">{photo.title}</h4>
           )}
           <div className="flex items-center justify-between text-xs text-white/80">
-            <span>{formatFileSize(photo.fileSize)}</span>
+            <span>{formatFileSize(photo.file_size)}</span>
             <div className="flex items-center gap-3">
               {photo.metadata?.camera && (
                 <span className="truncate max-w-[100px]">{photo.metadata.camera}</span>

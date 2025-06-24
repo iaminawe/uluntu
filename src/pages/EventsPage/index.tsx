@@ -64,7 +64,7 @@ export default function EventsPage() {
           <EventsList 
             parentEvents={events}
             parentLoading={isLoading}
-            parentError={error}
+            parentError={error?.message || null}
           />
         ) : (
           <EventsCalendar 

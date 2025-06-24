@@ -18,7 +18,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
       {/* Cover Image Section */}
       <div className="h-40 w-full relative">
         <img
-          src={company.coverImage || defaultCoverImage}
+          src={company.cover_image || defaultCoverImage}
           alt={`${company.name} cover`}
           className="w-full h-full object-cover"
         />
@@ -55,12 +55,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
             <span>{company.location}</span>
           </div>
           
-          {company.employees && (
-            <div className="flex items-center justify-center text-sm text-slate-500 dark:text-slate-400">
-              <Users className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span>{formatEmployeeCount(company.employees)}</span>
-            </div>
-          )}
+          {/* Employee count removed - would need separate API call */}
         </div>
         
         {company.industry && company.industry.length > 0 && (

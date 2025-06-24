@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
 import { NewsArticle, ContentStatus } from '@/types';
 import { newsApi } from '../api/newsApi';
+import { getIsSupabaseEnabled } from '@/config/env';
+import mockData from '@/data/mock/mockData';
 
 // Define the input type for news article data
 export interface NewsArticleInput {
@@ -286,7 +288,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchNewsArticles.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.articles = action.payload;
+        state.articles = action.payload as any;
         state.error = null;
       })
       .addCase(fetchNewsArticles.rejected, (state, action) => {
@@ -300,7 +302,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchNewsArticleById.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.currentArticle = action.payload;
+        state.currentArticle = action.payload as any;
         state.error = null;
       })
       .addCase(fetchNewsArticleById.rejected, (state, action) => {
@@ -314,7 +316,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchNewsArticleBySlug.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.currentArticle = action.payload;
+        state.currentArticle = action.payload as any;
         state.error = null;
       })
       .addCase(fetchNewsArticleBySlug.rejected, (state, action) => {
@@ -328,7 +330,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchFilteredNewsArticles.fulfilled, (state, action) => {
         state.filteredStatus = 'succeeded';
-        state.filteredArticles = action.payload;
+        state.filteredArticles = action.payload as any;
         state.error = null;
       })
       .addCase(fetchFilteredNewsArticles.rejected, (state, action) => {
@@ -342,7 +344,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchRelatedNewsArticles.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.relatedArticles = action.payload;
+        state.relatedArticles = action.payload as any;
         state.error = null;
       })
       .addCase(fetchRelatedNewsArticles.rejected, (state, action) => {
@@ -356,7 +358,7 @@ const newsSlice = createSlice({
       })
       .addCase(fetchFeaturedNewsArticles.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.featuredArticles = action.payload;
+        state.featuredArticles = action.payload as any;
         state.error = null;
       })
       .addCase(fetchFeaturedNewsArticles.rejected, (state, action) => {
@@ -397,7 +399,7 @@ const newsSlice = createSlice({
           
           // Update currentArticle if it's the same as the updated one
           if (state.currentArticle?.id === action.payload.id) {
-            state.currentArticle = action.payload;
+            state.currentArticle = action.payload as any;
           }
         }
         state.error = null;
@@ -425,6 +427,7 @@ const newsSlice = createSlice({
 
 // Export actions and reducer
 export const { setFilters, mergeFilters, clearFilters, clearNews } = newsSlice.actions;
+export { newsSlice };
 export default newsSlice.reducer;
 
 // Selectors

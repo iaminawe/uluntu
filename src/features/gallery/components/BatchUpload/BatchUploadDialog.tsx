@@ -103,7 +103,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="Batch Photo Upload"
-      size="large"
+      size="xl"
       className="max-w-4xl"
     >
       <div className="space-y-6">

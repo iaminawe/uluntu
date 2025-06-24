@@ -8,8 +8,8 @@ import { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 export function createMockQueryResult<TData = any, TError = any>(
   overrides: Partial<UseQueryResult<TData, TError>> = {}
 ): UseQueryResult<TData, TError> {
-  const defaults: UseQueryResult<TData, TError> = {
-    data: undefined,
+  const defaults = {
+    data: undefined as TData | undefined,
     error: null,
     isError: false,
     isLoading: false,
@@ -58,7 +58,7 @@ export function createMockQueryResult<TData = any, TError = any>(
     result.status = 'success';
   }
 
-  return result;
+  return result as UseQueryResult<TData, TError>;
 }
 
 /**
@@ -69,8 +69,8 @@ export function createMockQueryResult<TData = any, TError = any>(
 export function createMockMutationResult<TData = any, TError = any, TVariables = any, TContext = any>(
   overrides: Partial<UseMutationResult<TData, TError, TVariables, TContext>> = {}
 ): UseMutationResult<TData, TError, TVariables, TContext> {
-  const defaults: UseMutationResult<TData, TError, TVariables, TContext> = {
-    data: undefined,
+  const defaults = {
+    data: undefined as TData | undefined,
     error: null,
     isError: false,
     isIdle: true,
@@ -85,9 +85,10 @@ export function createMockMutationResult<TData = any, TError = any, TVariables =
     submittedAt: 0,
     mutate: jest.fn(),
     mutateAsync: jest.fn().mockResolvedValue(undefined),
+    context: undefined as TContext | undefined,
   };
 
-  return { ...defaults, ...overrides };
+  return { ...defaults, ...overrides } as UseMutationResult<TData, TError, TVariables, TContext>;
 }
 
 /**

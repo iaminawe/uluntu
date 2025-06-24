@@ -22,9 +22,14 @@ export interface Listing {
     title?: string;
     bio?: string;
   };
-  location: string;
+  location?: string;
   tags: string[];
   status?: ContentStatus;
+  // Contact information fields
+  contactEmail?: string;
+  contactPhone?: string;
+  contactMethod?: 'email' | 'phone' | 'both';
+  showContactInfo?: boolean;
 }
 
 // Adapter function to convert from main MarketplaceItem type to local Listing type

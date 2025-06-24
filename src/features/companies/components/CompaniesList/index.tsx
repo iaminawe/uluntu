@@ -4,6 +4,7 @@ import { AlertTriangle } from 'lucide-react';
 import CompanyCard from './CompanyCard';
 import { CompaniesListProps } from './types';
 import { useCompaniesHybrid } from '../../hooks/useCompaniesHybrid';
+import { Company } from '../../types';
 import Pagination from '@/components/Pagination';
 
 const ITEMS_PER_PAGE = 9; // Number of companies per page
@@ -142,7 +143,7 @@ const CompaniesList = ({
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentCompaniesToDisplay.map(company => (
+            {currentCompaniesToDisplay.map((company: Company) => (
               <CompanyCard key={company.id} company={company} />
             ))}
           </div>

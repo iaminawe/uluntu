@@ -13,7 +13,7 @@ type NewsTableInsert = Database['public']['Tables']['news']['Insert'];
 type NewsTableUpdate = Database['public']['Tables']['news']['Update'];
 
 export const newsApi = {
-  async getAll(filters: { search?: string; tags?: string[]; featured?: boolean; status?: string } = {}): Promise<NewsArticle[]> {
+  async getAll(filters: { search?: string; tags?: string[]; featured?: boolean; status?: string; limit?: number } = {}): Promise<NewsArticle[]> {
     try {
       console.log('[NewsAPI] getAll called with filters:', filters);
       

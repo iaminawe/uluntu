@@ -49,6 +49,7 @@ export default function UserMenu() {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
+    return undefined;
   }, [isOpen]);
 
   const handleSignOut = async () => {

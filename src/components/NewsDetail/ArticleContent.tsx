@@ -7,13 +7,13 @@ interface ArticleContentProps {
 const ArticleContent = ({ article }: ArticleContentProps) => {
   // Function to render paragraphs from content
   const renderContent = () => {
-    return article.content.split('\n\n').map((paragraph, index) => {
+    return article.content.split('\n\n').map((paragraph: string, index: number) => {
       // Handle bullet points
       if (paragraph.startsWith('- ')) {
-        const items = paragraph.split('\n- ').map(item => item.replace('- ', ''));
+        const items = paragraph.split('\n- ').map((item: string) => item.replace('- ', ''));
         return (
           <ul key={index} className="list-disc pl-5 mb-6 text-slate-700 dark:text-slate-300">
-            {items.map((item, itemIndex) => (
+            {items.map((item: string, itemIndex: number) => (
               <li key={itemIndex} className="mb-1">{item}</li>
             ))}
           </ul>

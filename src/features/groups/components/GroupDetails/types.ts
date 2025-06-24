@@ -65,18 +65,18 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
   return {
     id: parseInt(mainGroup.id), // Convert string ID to number
     name: mainGroup.name,
-    description: mainGroup.description,
+    description: mainGroup.description || '',
     longDescription: mainGroup.longDescription,
-    heroImage: mainGroup.heroImage,
+    heroImage: (mainGroup as any).heroImage || '',
     coverImage: mainGroup.coverImage,
-    visibility: mainGroup.visibility,
-    memberCount: mainGroup.memberCount,
+    visibility: mainGroup.visibility === 'public' ? 'open' : (mainGroup.visibility === 'private' ? 'secret' : 'closed'),
+    memberCount: (mainGroup as any).memberCount || 0,
     eventCount: mainGroup.eventCount,
     resourceCount: mainGroup.resourceCount,
     postCount: mainGroup.postCount,
     lastActive: mainGroup.lastActive,
     // Convert members, events, resources, and posts as needed
-    members: mainGroup.members.map(member => ({
+    members: ((mainGroup as any).members || []).map((member: any) => ({
       id: parseInt(member.id),
       name: member.name,
       image: member.image,
@@ -84,14 +84,14 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
       joinedDate: member.joinedDate,
       title: member.title
     })),
-    events: mainGroup.events?.map(event => ({
+    events: (mainGroup.events || []).map((event: any) => ({
       id: parseInt(event.id),
       title: event.title,
       date: event.date,
       description: event.description,
       image: event.image
     })) || [],
-    resources: mainGroup.resources?.map(resource => ({
+    resources: ((mainGroup as any).resources || []).map((resource: any) => ({
       id: parseInt(resource.id),
       title: resource.title,
       type: resource.type,
@@ -99,7 +99,7 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
       addedDate: resource.dateAdded,
       description: resource.description
     })) || [],
-    posts: mainGroup.posts?.map(post => ({
+    posts: ((mainGroup as any).posts || []).map((post: any) => ({
       id: parseInt(post.id),
       title: post.title,
       excerpt: post.excerpt,

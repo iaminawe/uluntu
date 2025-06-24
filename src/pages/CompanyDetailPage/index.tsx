@@ -95,7 +95,7 @@ export default function CompanyDetailPage() {
                 </h1>
                 {company.industry && company.industry.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {company.industry.map((ind, index) => (
+                    {company.industry.map((ind: string, index: number) => (
                       <span 
                         key={index}
                         className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full"

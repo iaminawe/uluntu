@@ -8,11 +8,12 @@ export const groupGalleryApi = {
    * Get all galleries for a specific group
    */
   async getGroupGalleries(groupId: string, filters?: Omit<GalleryFilters, 'ownerId' | 'ownerType'>): Promise<Gallery[]> {
-    return galleryApi.getAllGalleries({
+    const result = await galleryApi.getAllGalleries({
       ...filters,
       ownerType: 'group',
       ownerId: groupId
     });
+    return result.galleries;
   },
 
   /**
@@ -50,19 +51,19 @@ export const groupGalleryApi = {
     totalLikes: number;
   }> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .rpc('get_gallery_stats', {
-          p_owner_type: 'group',
-          p_owner_id: groupId
+          gallery_uuid: groupId
         });
 
       if (error) throw error;
 
+      const result = data as any;
       return {
-        totalGalleries: data?.total_galleries || 0,
-        totalPhotos: data?.total_photos || 0,
-        totalViews: data?.total_views || 0,
-        totalLikes: data?.total_likes || 0
+        totalGalleries: result?.total_galleries || 0,
+        totalPhotos: result?.total_photos || 0,
+        totalViews: result?.total_views || 0,
+        totalLikes: result?.total_likes || 0
       };
     } catch (error) {
       console.error('Error fetching group gallery stats:', error);

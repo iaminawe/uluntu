@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { resourcesApi } from '@/features/resources/api/resourcesApi';
 import type { Resource } from '@/types';
 
@@ -7,14 +7,16 @@ import type { Resource } from '@/types';
  * Hook to get all gallery resources
  */
 export const useGalleryResources = () => {
-  return useQuery<Resource[]>('gallery-resources', async () => {
+  return useQuery<Resource[]>({
+    queryKey: ['gallery-resources'],
+    queryFn: async () => {
     // This would need to be implemented in the resourcesApi
     // For now, we'll fetch all resources and filter client-side
-    const allResources = await resourcesApi.getAllResources();
-    return allResources.filter(resource => resource.type === 'gallery');
-  }, {
+    const allResources = await resourcesApi.getAll();
+      return allResources.filter((resource: any) => resource.type === 'gallery');
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
@@ -29,10 +31,10 @@ export const useIsGalleryResource = (galleryId: string) => {
     const checkIfResource = async () => {
       try {
         setLoading(true);
-        const allResources = await resourcesApi.getAllResources();
+        const allResources = await resourcesApi.getAll();
         const galleryUrl = `/galleries/${galleryId}`;
         const exists = allResources.some(
-          resource => resource.type === 'gallery' && resource.url === galleryUrl
+          (resource: any) => resource.type === 'gallery' && resource.url === galleryUrl
         );
         setIsResource(exists);
       } catch (error) {
@@ -70,7 +72,7 @@ export const useAddGalleryResource = () => {
       setLoading(true);
       setError(null);
 
-      await resourcesApi.createResource({
+      await resourcesApi.create({
         title,
         description: description || `Photo gallery: ${title}`,
         type: 'gallery',

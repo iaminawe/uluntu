@@ -427,9 +427,7 @@ const DirectHomePage = () => {
                         slug: article.slug || `article-${article.id}`,
                         excerpt: nullToUndefined(article.excerpt) || 'No excerpt available',
                         content: article.content || 'No content available',
-                        date: article.published_date || article.created_at || new Date().toISOString(),
-                        image: nullToUndefined(article.hero_image) || nullToUndefined(article.image) || '/placeholder-news.png',
-                        url: `/news/${article.slug || `article-${article.id}`}`,
+                        image: (nullToUndefined(article.hero_image) || nullToUndefined(article.image) || '/placeholder-news.png') as string,
                         // Add required publishedAt property
                         publishedAt: article.published_date || article.created_at || new Date().toISOString(),
                         // Add required author property
@@ -473,10 +471,11 @@ const DirectHomePage = () => {
                         name: group.name,
                         description: group.description,
                         heroImage: group.hero_image,
-                        visibility: group.visibility as 'open' | 'closed' | 'secret',
+                        visibility: (group.visibility === 'open' ? 'public' : group.visibility === 'closed' ? 'private' : group.visibility === 'secret' ? 'members_only' : 'public') as 'public' | 'private' | 'members_only',
                         memberCount: group.member_count || 0,
                         lastActive: new Date().toISOString(),
                         members: [],
+                        created_at: group.created_at || new Date().toISOString(),
                         // Omit status as it's not in the Group interface
                         // status: group.status
                       }}

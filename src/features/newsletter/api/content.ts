@@ -10,7 +10,8 @@ import {
   MarketplaceContent,
   MemberContent,
   CompanyContent,
-  DateRange
+  DateRange,
+  SelectionCriteria
 } from '@/types/newsletter';
 
 class NewsletterContentAPI {
@@ -122,7 +123,19 @@ class NewsletterContentAPI {
         .order('priority', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(rule => ({
+        ...rule,
+        id: rule.id,
+        name: rule.name,
+        description: rule.description || '',
+        content_type: rule.content_type || 'events' as ContentType,
+        selection_criteria: rule.selection_criteria || {} as SelectionCriteria,
+        max_items: rule.max_items || 5,
+        priority: rule.priority || 0,
+        is_active: rule.is_active || false,
+        created_at: rule.created_at || new Date().toISOString(),
+        updated_at: rule.updated_at || new Date().toISOString()
+      })) as ContentRule[];
     } catch (error) {
       console.error('Error getting content rules:', error);
       return [];
@@ -136,13 +149,25 @@ class NewsletterContentAPI {
     try {
       const { data, error } = await supabase
         .from('newsletter_content_rules')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return data ? {
+        ...data,
+        id: data.id,
+        name: data.name,
+        description: data.description || '',
+        content_type: data.content_type || 'events' as ContentType,
+        selection_criteria: data.selection_criteria || {} as SelectionCriteria,
+        max_items: data.max_items || 5,
+        priority: data.priority || 0,
+        is_active: data.is_active || false,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      } as ContentRule : null;
     } catch (error) {
       console.error('Error updating content rule:', error);
       return null;
@@ -239,20 +264,25 @@ class NewsletterContentAPI {
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data || []).map(event => ({
-        id: event.id,
-        title: event.title,
-        description: event.description || '',
-        date: event.date,
-        end_date: event.end_date,
-        location: event.location,
-        type: event.type,
-        url: event.url,
-        registration_url: `/events/${event.id}`,
-        attendee_count: event.current_attendees,
-        max_attendees: event.max_attendees,
-        featured: event.featured || false
-      }));
+      return (data || []).map(event => {
+        const result: EventContent = {
+          id: event.id,
+          title: event.title,
+          description: event.description || '',
+          date: event.date,
+          location: event.location,
+          type: (event.type as 'in-person' | 'online' | 'hybrid') || 'in-person',
+          featured: event.featured || false
+        };
+        if (event.end_date) result.end_date = event.end_date;
+        if (event.url) result.url = event.url;
+        if ((event as any).hero_image) result.image = (event as any).hero_image;
+        else if ((event as any).image) result.image = (event as any).image;
+        result.registration_url = `/events/${event.id}`;
+        if (event.current_attendees !== null) result.attendee_count = event.current_attendees;
+        if (event.max_attendees !== null) result.max_attendees = event.max_attendees;
+        return result;
+      });
     } catch (error) {
       console.error('Error curating events:', error);
       return [];
@@ -277,10 +307,10 @@ class NewsletterContentAPI {
           excerpt,
           content,
           hero_image,
-          published_at,
+          created_at,
           featured,
           tags,
-          author:members(name)
+          author:member_id!inner(name)
         `);
 
       // Status filter
@@ -294,7 +324,7 @@ class NewsletterContentAPI {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - maxDaysOld);
         
-        query = query.gte('published_at', cutoffDate.toISOString());
+        query = query.gte('created_at', cutoffDate.toISOString());
       }
 
       // Featured first
@@ -302,8 +332,8 @@ class NewsletterContentAPI {
         query = query.order('featured', { ascending: false });
       }
 
-      // Sort by published date
-      const sortBy = criteria.sort_by || 'published_at';
+      // Sort by created date
+      const sortBy = criteria.sort_by === 'published_at' ? 'created_at' : (criteria.sort_by || 'created_at');
       query = query.order(sortBy, { ascending: false });
 
       // Limit results
@@ -312,18 +342,21 @@ class NewsletterContentAPI {
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data || []).map(article => ({
-        id: article.id,
-        title: article.title,
-        excerpt: article.excerpt || '',
-        content: article.content,
-        hero_image: article.hero_image,
-        author: article.author?.name || 'Community',
-        published_at: article.published_at,
-        read_more_url: `/news/${article.id}`,
-        tags: article.tags || [],
-        featured: article.featured || false
-      }));
+      return (data || []).map(article => {
+        const result: NewsContent = {
+          id: article.id,
+          title: article.title,
+          content: article.content,
+          author: (article as any).author?.name || 'Community',
+          published_at: article.created_at || new Date().toISOString(),
+          read_more_url: `/news/${article.id}`,
+          tags: article.tags || [],
+          featured: article.featured || false
+        };
+        if (article.excerpt) result.excerpt = article.excerpt;
+        if (article.hero_image) result.hero_image = article.hero_image;
+        return result;
+      });
     } catch (error) {
       console.error('Error curating news:', error);
       return [];
@@ -351,7 +384,7 @@ class NewsletterContentAPI {
           remote,
           deadline,
           featured,
-          company:companies(name, logo)
+          created_at
         `);
 
       // Status filter  
@@ -389,20 +422,22 @@ class NewsletterContentAPI {
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data || []).map(opp => ({
-        id: opp.id,
-        title: opp.title,
-        company: opp.company?.name || 'Community',
-        company_logo: opp.company?.logo,
-        type: opp.title.toLowerCase().includes('volunteer') ? 'volunteer' : 'job',
-        location: opp.location,
-        remote: opp.remote || false,
-        description: opp.description || '',
-        requirements: opp.requirements || [],
-        application_url: `/opportunities/${opp.id}`,
-        deadline: opp.deadline,
-        featured: opp.featured || false
-      }));
+      return (data || []).map(opp => {
+        const result: OpportunityContent = {
+          id: opp.id,
+          title: opp.title,
+          company: 'Community', // TODO: Add company lookup
+          type: opp.title.toLowerCase().includes('volunteer') ? 'volunteer' : 'job',
+          remote: opp.remote || false,
+          description: opp.description || '',
+          requirements: opp.requirements || [],
+          application_url: `/opportunities/${opp.id}`,
+          featured: opp.featured || false
+        };
+        if (opp.location) result.location = opp.location;
+        if (opp.deadline) result.deadline = opp.deadline;
+        return result;
+      });
     } catch (error) {
       console.error('Error curating opportunities:', error);
       return [];
@@ -430,7 +465,7 @@ class NewsletterContentAPI {
           images,
           location,
           featured,
-          seller:members(name)
+          seller_id
         `);
 
       // Status filter
@@ -438,8 +473,8 @@ class NewsletterContentAPI {
         query = query.eq('status', criteria.status);
       }
 
-      // Featured only
-      if (criteria.featured_only) {
+      // Featured only (check if property exists in criteria)
+      if ((criteria as any).featured_only) {
         query = query.eq('featured', true);
       }
 
@@ -462,18 +497,21 @@ class NewsletterContentAPI {
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data || []).map(listing => ({
-        id: listing.id,
-        title: listing.title,
-        description: listing.description || '',
-        price: listing.price,
-        condition: listing.condition,
-        images: listing.images || [],
-        seller: listing.seller?.name || 'Seller',
-        contact_url: `/marketplace/${listing.id}`,
-        location: listing.location,
-        featured: listing.featured || false
-      }));
+      return (data || []).map(listing => {
+        const result: MarketplaceContent = {
+          id: listing.id,
+          title: listing.title,
+          description: listing.description || '',
+          images: listing.images || [],
+          seller: 'Seller', // TODO: Add seller lookup
+          contact_url: `/marketplace/${listing.id}`,
+          featured: listing.featured || false
+        };
+        if (listing.price !== null) result.price = listing.price;
+        if (listing.condition) result.condition = listing.condition;
+        if (listing.location) result.location = listing.location;
+        return result;
+      });
     } catch (error) {
       console.error('Error curating marketplace:', error);
       return [];
@@ -498,7 +536,6 @@ class NewsletterContentAPI {
           bio,
           image,
           location,
-          skills,
           featured
         `);
 
@@ -507,8 +544,8 @@ class NewsletterContentAPI {
         query = query.eq('status', criteria.status);
       }
 
-      // Featured only
-      if (criteria.featured_only) {
+      // Featured only (check if property exists in criteria)
+      if ((criteria as any).featured_only) {
         query = query.eq('featured', true);
       }
 
@@ -536,11 +573,11 @@ class NewsletterContentAPI {
       return (data || []).map(member => ({
         id: member.id,
         name: member.name,
-        title: member.title || '',
+        title: member.title || undefined,
         bio: member.bio || '',
-        image: member.image,
-        location: member.location || '',
-        skills: member.skills || [],
+        image: member.image || undefined,
+        location: member.location || undefined,
+        skills: [],
         profile_url: `/directory/${member.id}`,
         featured: member.featured || false
       }));
@@ -568,7 +605,6 @@ class NewsletterContentAPI {
           industry,
           logo,
           website,
-          employee_count,
           featured
         `);
 
@@ -577,8 +613,8 @@ class NewsletterContentAPI {
         query = query.eq('status', criteria.status);
       }
 
-      // Featured only
-      if (criteria.featured_only) {
+      // Featured only (check if property exists in criteria)
+      if ((criteria as any).featured_only) {
         query = query.eq('featured', true);
       }
 
@@ -595,10 +631,10 @@ class NewsletterContentAPI {
         id: company.id,
         name: company.name,
         description: company.description || '',
-        industry: company.industry || '',
-        logo: company.logo,
-        website: company.website,
-        employee_count: company.employee_count,
+        industry: Array.isArray(company.industry) ? company.industry.join(', ') : (company.industry || ''),
+        logo: company.logo || undefined,
+        website: company.website || undefined,
+        employee_count: (company as any).employee_count || undefined,
         profile_url: `/directory/companies/${company.id}`,
         featured: company.featured || false
       }));
@@ -619,7 +655,19 @@ class NewsletterContentAPI {
         .order('priority', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(rule => ({
+        ...rule,
+        id: rule.id,
+        name: rule.name,
+        description: rule.description || '',
+        content_type: rule.content_type || 'events' as ContentType,
+        selection_criteria: rule.selection_criteria || {} as SelectionCriteria,
+        max_items: rule.max_items || 5,
+        priority: rule.priority || 0,
+        is_active: rule.is_active || false,
+        created_at: rule.created_at || new Date().toISOString(),
+        updated_at: rule.updated_at || new Date().toISOString()
+      })) as ContentRule[];
     } catch (error) {
       console.error('Error getting active content rules:', error);
       return [];
@@ -650,7 +698,7 @@ class NewsletterContentAPI {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
-      return data?.content || null;
+      return (data?.content as unknown) as CuratedContent || null;
     } catch (error) {
       console.error('Error getting cached content:', error);
       return null;
@@ -669,7 +717,7 @@ class NewsletterContentAPI {
           content_type: cacheKey,
           date_range_start: dateRange.start.split('T')[0],
           date_range_end: dateRange.end.split('T')[0],
-          content,
+          content: content as any,
           expires_at: expiresAt.toISOString()
         });
     } catch (error) {

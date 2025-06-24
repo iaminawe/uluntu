@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { opportunitiesApi } from '../api/opportunitiesApi';
+import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
 import { 
   selectOpportunityFilters,
   selectSelectedOpportunityId,
@@ -67,14 +67,14 @@ export function useOpportunitiesHybrid() {
   
   // Mutations
   const createOpportunity = useMutation({
-    mutationFn: (data: Partial<Opportunity>) => opportunitiesApi.create(data),
+    mutationFn: (data: OpportunityInput) => opportunitiesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities });
     },
   });
   
   const updateOpportunity = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Opportunity> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<OpportunityInput> }) => 
       opportunitiesApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities });

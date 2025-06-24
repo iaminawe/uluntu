@@ -133,7 +133,7 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
   ].filter(category => category.features.length > 0);
 
   const totalFeatures = features.length;
-  const enabledFeatures = features.filter(f => f.enabled).length;
+  const enabledFeatures = features.filter(f => f.enabled || false).length;
   const enabledPercentage = totalFeatures > 0 ? Math.round((enabledFeatures / totalFeatures) * 100) : 0;
 
   return (
@@ -176,7 +176,7 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                   <Icon className={`h-5 w-5 text-${category.color}-600`} />
                   <span>{category.title}</span>
                   <Badge variant="secondary">
-                    {category.features.filter(f => f.enabled).length}/{category.features.length}
+                    {category.features.filter(f => f.enabled || false).length}/{category.features.length}
                   </Badge>
                 </CardTitle>
                 <p className="text-sm text-gray-600">{category.description}</p>
@@ -193,7 +193,7 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                             <h4 className="font-medium text-gray-900">
                               {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </h4>
-                            {feature.enabled && (
+                            {(feature.enabled || false) && (
                               <Badge variant="success" size="sm">
                                 Active
                               </Badge>
@@ -202,15 +202,15 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                           {feature.description && (
                             <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
                           )}
-                          {feature.rollout_percentage < 100 && feature.rollout_percentage > 0 && (
+                          {((feature.rollout_percentage ?? 0) < 100) && ((feature.rollout_percentage ?? 0) > 0) && (
                             <p className="text-xs text-orange-600 mt-1">
-                              Rollout: {feature.rollout_percentage}%
+                              Rollout: {feature.rollout_percentage ?? 0}%
                             </p>
                           )}
                         </div>
                         <div className="ml-4">
                           <Switch
-                            checked={feature.enabled}
+                            checked={feature.enabled || false}
                             onCheckedChange={(checked) => handleToggleFeature(feature.feature_key, checked)}
                             disabled={isUpdating || isLoading}
                           />

@@ -1,5 +1,6 @@
-import { Database } from '../types/supabase';
-import { Member, SocialLinks, ContentStatus } from '../types'; // Added SocialLinks and ContentStatus
+import { Database } from '@/types/supabase';
+import { Member, ContentStatus } from '../types';
+import { SocialLinks } from '@/types/common';
 
 type SupabaseMember = Database['public']['Tables']['members']['Row'];
 
@@ -12,7 +13,7 @@ export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
     location: dbMember.location || undefined,
     image: dbMember.image || '/placeholder-avatar.png',
     bio: dbMember.bio || undefined,
-    intro: dbMember.intro || undefined,
+    intro: (dbMember as any).intro || undefined,
     skills: [], // This would need to be populated from member_skills table
     joinDate: dbMember.created_at || new Date().toISOString(),
     social: dbMember.website ? { website: dbMember.website } : undefined,
@@ -29,11 +30,11 @@ export function adaptMemberToDatabase(member: Partial<Member>): Partial<Supabase
     location: member.location || undefined,
     image: member.image || undefined,
     bio: member.bio || undefined,
-    intro: member.intro || undefined,
     website: member.social?.website || undefined,
     status: member.status || 'draft',
-    featured: member.featured || undefined
-  };
+    featured: member.featured || undefined,
+    ...((member as any).intro && { intro: (member as any).intro })
+  } as any;
 }
 
 // Profile-specific adapter function
@@ -111,7 +112,7 @@ export function adaptMemberFromSupabase(member: SupabaseMember): AdaptedMember {
     id: member.id,
     name: member.name,
     title: member.title || '',
-    intro: member.intro || '',
+    intro: (member as any).intro || '',
     bio: member.bio || '',
     location: member.location || '',
     image: member.image || '',

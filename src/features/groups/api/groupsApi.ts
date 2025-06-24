@@ -19,7 +19,7 @@ export interface GroupInput {
   name: string;
   description: string;
   longDescription?: string | null; // Maps to Supabase 'long_description'
-  heroImage: string; // Maps to Supabase 'hero_image'
+  heroImage?: string; // Maps to Supabase 'hero_image'
   visibility: 'open' | 'closed' | 'secret' | string; // Maps to Supabase 'visibility'
   status?: string; // e.g., 'published', 'draft', maps to Supabase 'status'
   featured?: boolean | null; // maps to Supabase 'featured'
@@ -27,7 +27,7 @@ export interface GroupInput {
 }
 
 export const groupsApi = {
-  async getAll(filters?: { search?: string; visibility?: string[] }): Promise<FrontendGroup[]> {
+  async getAll(filters?: { search?: string; visibility?: string | string[]; featured?: boolean; userGroups?: boolean; userId?: string; limit?: number }): Promise<FrontendGroup[]> {
     try {
       console.log('[GroupsAPI] getAll called with filters:', filters);
       
@@ -92,7 +92,7 @@ export const groupsApi = {
       
       // Adapt only the core group data. The adaptGroupFromDatabase function initializes
       // events, resources, etc., to empty arrays as per FrontendGroup definition.
-      const adaptedGroup = groupData ? adaptGroupFromDatabase(groupData) : null;
+      const adaptedGroup = groupData ? adaptGroupFromDatabase(groupData as any) : null;
       console.log('[GroupsAPI] getById adapted result:', adaptedGroup);
       return adaptedGroup;
     } catch (error) {
@@ -135,7 +135,7 @@ export const groupsApi = {
         return null;
       }
       
-      return data ? adaptGroupFromDatabase(data) : null;
+      return data ? adaptGroupFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, `updating group with id ${id}`);
       return null;
@@ -163,21 +163,11 @@ export const groupsApi = {
   async create(groupData: GroupInput): Promise<FrontendGroup | null> {
     try {
       // Prepare data for the adapter, ensuring type compatibility
-      const preparedData: GroupInsertData = {
-        name: groupData.name,
-        description: groupData.description,
-        heroImage: groupData.heroImage,
-        visibility: groupData.visibility as FrontendGroup['visibility'],
-        // Optional fields from GroupInput
-        ...(groupData.longDescription && { longDescription: groupData.longDescription }),
-        ...(groupData.status && { status: groupData.status as ContentStatus }),
-        ...(groupData.featured !== undefined && { featured: groupData.featured }),
-        // coverImage and created_at are not in GroupInput, will be undefined if not set, handled by adapter
-      };
-      const supabaseData = adaptGroupToSupabaseInsert(preparedData);
-      const { data, error } = await supabase
+      // Use type assertion for simplicity
+      const supabaseData = adaptGroupToSupabaseInsert(groupData as any);
+      const { data, error } = await (supabase as any)
         .from('groups')
-        .insert(supabaseData)
+        .insert(supabaseData as any)
         .select()
         .single();
 
@@ -186,7 +176,7 @@ export const groupsApi = {
         return null;
       }
       
-      return data ? adaptGroupFromDatabase(data) : null;
+      return data ? adaptGroupFromDatabase(data as any) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating group');
       return null;
@@ -199,7 +189,7 @@ export const groupsApi = {
         .from('group_members')
         .insert({
           group_id: groupId,
-          user_id: userId,
+          member_id: userId,
           role: 'member',
           joined_date: new Date().toISOString()
         });

@@ -63,7 +63,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
   // Fetch stats using React Query
   const { data: stats = {} } = useQuery({
     queryKey: ['contact-submission-stats'],
-    queryFn: () => contactSubmissionsAPI.getStats()
+    queryFn: () => (contactSubmissionsAPI as any).getStats()
   });
 
   // Update submission mutation
@@ -80,7 +80,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
   const handleSubmissionClick = async (submission: ContactSubmission) => {
     setSelectedSubmission(submission);
     
-    if (submission.status === 'new') {
+    if (submission.status === 'open') {
       try {
         await updateSubmissionMutation.mutateAsync({
           id: submission.id,
@@ -100,7 +100,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
         id,
         updates: { status: status as any }
       });
-      if (result.success && selectedSubmission?.id === id) {
+      if ((result as any).success && selectedSubmission?.id === id) {
         setSelectedSubmission({ ...selectedSubmission, status: status as any });
       }
     } catch (error) {
@@ -114,7 +114,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
         id,
         updates: { priority: priority as any }
       });
-      if (result.success && selectedSubmission?.id === id) {
+      if ((result as any).success && selectedSubmission?.id === id) {
         setSelectedSubmission({ ...selectedSubmission, priority: priority as any });
       }
     } catch (error) {
@@ -282,7 +282,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
                     selectedSubmission?.id === submission.id 
                       ? 'bg-blue-50 dark:bg-blue-900/20 border-r-2 border-blue-500' 
                       : ''
-                  } ${submission.status === 'new' ? 'bg-blue-25 dark:bg-blue-950' : ''}`}
+                  } ${submission.status === 'open' ? 'bg-blue-25 dark:bg-blue-950' : ''}`}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-2">
@@ -441,7 +441,7 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
                 )}
 
                 {/* Response Form */}
-                {selectedSubmission.status !== 'resolved' && selectedSubmission.status !== 'closed' && (
+                {selectedSubmission.status !== 'closed' && selectedSubmission.status !== 'spam' && (
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                       Send Response

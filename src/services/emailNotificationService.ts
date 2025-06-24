@@ -5,7 +5,7 @@ import { sendTransactionalEmail, sendContactAutoReply } from '@/api/newsletter/t
 // Browser-compatible UUID generation
 const generateUUID = (): string => {
   if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
-    return window.generateUUID();
+    return window.crypto.randomUUID();
   }
   // Fallback for environments without crypto.randomUUID
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

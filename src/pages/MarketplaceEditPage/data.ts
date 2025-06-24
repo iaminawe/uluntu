@@ -25,5 +25,9 @@ export const initialFormData: FormData = {
   location: '',
   tags: [],
   newTag: '',
-  featured: false
+  featured: false,
+  contactEmail: '',
+  contactPhone: '',
+  contactMethod: '',
+  showContactInfo: false
 };

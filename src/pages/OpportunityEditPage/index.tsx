@@ -212,7 +212,7 @@ export default function OpportunityEditPage() {
           return;
         }
         
-        finalImageUrl = url;
+        finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
       
@@ -235,7 +235,7 @@ export default function OpportunityEditPage() {
         requirements: formData.requirements,
         responsibilities: formData.responsibilities,
         benefits: formData.benefits,
-        status: formData.status,
+        status: formData.status as "draft" | "published" | "archived" | null | undefined,
         featured: formData.featured,
         postedBy: member.id
       };

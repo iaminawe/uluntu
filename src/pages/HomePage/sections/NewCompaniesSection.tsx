@@ -1,6 +1,24 @@
 import { useMemo } from 'react';
 import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
+import { Company } from '@/features/companies/types';
 import { DetailedCard } from '@/shared/components/visual';
+
+interface MappedCompany {
+  id: string;
+  title: string;
+  excerpt: string;
+  image?: string;
+  date?: string;
+  category: string;
+  readTime: string;
+  link: string;
+  type: 'company';
+  author: {
+    id: string;
+    name: string;
+    image: string;
+  };
+}
 
 export default function NewCompaniesSection() {
   const { companies, isLoading } = useCompaniesHybrid();
@@ -8,12 +26,12 @@ export default function NewCompaniesSection() {
   const newCompanies = useMemo(() => {
     return companies
       .slice(0, 6)
-      .map(company => ({
+      .map((company: Company) => ({
         id: company.id,
         title: company.name,
         excerpt: company.description || 'Discover this innovative tech company',
-        image: company.logo || company.coverImage,
-        date: company.created_at,
+        image: company.logo || company.cover_image || undefined,
+        date: company.created_at || undefined,
         category: company.industry?.join(', ') || 'Technology',
         readTime: company.size || 'Learn more',
         link: `/companies/${company.id}`,

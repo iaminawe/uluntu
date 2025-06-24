@@ -86,7 +86,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             <h1 className="text-2xl font-bold text-gray-900 truncate">
               {page.title}
             </h1>
-            {page.is_home && (
+            {page.slug === 'home' && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 Home Page
               </span>
@@ -111,14 +111,14 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             {page.author && (
               <div className="flex items-center">
                 <UserIcon className="w-4 h-4 mr-1" />
-                {page.author.name}
+                {`${page.author.first_name} ${page.author.last_name}`}
               </div>
             )}
           </div>
 
           <div className="flex items-center space-x-2">
-            {getStatusBadge(page.status, page.is_published)}
-            {getTemplateBadge(page.template)}
+            {getStatusBadge(page.status, (page as any).is_published)}
+            {getTemplateBadge((page as any).template)}
           </div>
 
           {page.excerpt && (
@@ -176,11 +176,11 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
   return (
     <div className="bg-white">
       {/* Cover Image */}
-      {page.cover_image && (
+      {(page as any).cover_image && (
         <div className="relative h-64 bg-gray-200">
           <img
-            src={page.cover_image}
-            alt={page.cover_image_alt || page.title}
+            src={(page as any).cover_image}
+            alt={(page as any).cover_image_alt || page.title}
             className="w-full h-full object-cover"
           />
         </div>
@@ -215,13 +215,13 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
         </div>
 
         {/* SEO Keywords */}
-        {page.seo_keywords && page.seo_keywords.length > 0 && (
+        {(page as any).seo_keywords && (page as any).seo_keywords.length > 0 && (
           <div className="mt-8 pt-6 border-t border-gray-200">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               SEO Keywords
             </label>
             <div className="flex flex-wrap gap-2">
-              {page.seo_keywords.map((keyword, index) => (
+              {(page as any).seo_keywords.map((keyword: string, index: number) => (
                 <span
                   key={index}
                   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
@@ -241,10 +241,10 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
                 Page Information
               </label>
               <div className="space-y-1 text-gray-600">
-                <div>Template: {page.template || 'default'}</div>
+                <div>Template: {(page as any).template || 'default'}</div>
                 <div>Status: {page.status}</div>
-                <div>Published: {page.is_published ? 'Yes' : 'No'}</div>
-                {page.order && <div>Order: {page.order}</div>}
+                <div>Published: {(page as any).is_published ? 'Yes' : 'No'}</div>
+                {(page as any).order && <div>Order: {(page as any).order}</div>}
               </div>
             </div>
 

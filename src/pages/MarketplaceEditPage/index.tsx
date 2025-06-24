@@ -10,7 +10,7 @@ import FormHeader from './FormHeader';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import { FormData } from './types';
+import { FormData, ListingCondition, ListingType } from './types';
 
 export default function MarketplaceEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +28,11 @@ export default function MarketplaceEditPage() {
     status: 'draft',
     featured: false,
     tags: [],
-    newTag: ''
+    newTag: '',
+    contactEmail: '',
+    contactPhone: '',
+    contactMethod: '',
+    showContactInfo: false
   });
   
   // Use hybrid hook for marketplace data and actions
@@ -53,13 +57,17 @@ export default function MarketplaceEditPage() {
         title: listing.title || '',
         description: listing.description || '',
         price: typeof listing.price === 'number' ? String(listing.price) : '0',
-        condition: listing.condition || 'new',
+        condition: (listing.condition || 'new') as ListingCondition,
         location: listing.location || '',
-        type: listing.type || 'product',
+        type: (listing.type || 'product') as ListingType,
         status: listing.status || 'draft',
         featured: listing.featured || false,
         tags: listing.tags || [],
-        newTag: ''
+        newTag: '',
+        contactEmail: '',
+        contactPhone: '',
+        contactMethod: '',
+        showContactInfo: false
       });
     }
   }, [listing, isEditing]);
@@ -88,10 +96,10 @@ export default function MarketplaceEditPage() {
       
       if (isEditing && id) {
         // Update existing listing
-        await updateListing(listingData);
+        await updateListing.mutateAsync({ id, data: listingData as any });
       } else {
         // Create new listing
-        await createListing(listingData);
+        await createListing.mutateAsync(listingData as any);
       }
       
       // Navigate back to marketplace on success
@@ -144,7 +152,7 @@ export default function MarketplaceEditPage() {
     setIsSubmitting(true);
     
     try {
-      await deleteListing();
+      await deleteListing.mutateAsync(id);
       navigate('/marketplace');
     } catch (error) {
       console.error('Error deleting marketplace listing:', error);

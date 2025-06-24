@@ -5,14 +5,14 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 interface UserGroup {
   id: string;
   name: string;
-  member_count: number;
+  member_count: number | null;
 }
 
 interface UserResource {
   id: string;
   title: string;
   type: string;
-  created_at: string;
+  created_at: string | null;
 }
 
 interface UserMarketplaceItem {

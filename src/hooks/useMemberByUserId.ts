@@ -1,6 +1,7 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Member } from './useMemberQueries';
+import { ContentStatus } from '@/types/common';
 
 // Helper function to convert between API Member and our UI Member
 function adaptMember(data: unknown): Member {
@@ -19,26 +20,26 @@ function adaptMember(data: unknown): Member {
   
   // Safe property access with type checking
   return {
-    id: typeof member.id === 'string' ? member.id : String(member.id),
+    id: typeof member.id === 'string' ? member.id : String(member.id || ''),
     name: typeof member.name === 'string' ? member.name : '',
-    email: typeof member.email === 'string' ? member.email : undefined,
-    bio: typeof member.bio === 'string' ? member.bio : undefined,
-    image: typeof member.image === 'string' ? member.image : undefined,
+    email: typeof member.email === 'string' ? member.email : '',
+    bio: typeof member.bio === 'string' ? member.bio : '',
+    image: typeof member.image === 'string' ? member.image : '',
     role: typeof member.title === 'string' ? member.title : 
           typeof member.role === 'string' ? member.role : undefined,
     skills: Array.isArray(member.skills) ? 
             (member.skills as unknown[]).filter(s => typeof s === 'string') as string[] : [],
     joinDate: typeof member.joinDate === 'string' ? member.joinDate :
               typeof member.joinedDate === 'string' ? member.joinedDate :
-              typeof member.joined_date === 'string' ? member.joined_date : undefined,
+              typeof member.joined_date === 'string' ? member.joined_date : '',
     joinedDate: typeof member.joinedDate === 'string' ? member.joinedDate :
                typeof member.joined_date === 'string' ? member.joined_date :
                typeof member.joinDate === 'string' ? member.joinDate : undefined,
     created_at: typeof member.created_at === 'string' ? member.created_at : undefined,
-    status: typeof member.status === 'string' ? member.status as unknown : undefined,
+    status: typeof member.status === 'string' ? member.status as ContentStatus : 'published',
     featured: typeof member.featured === 'boolean' ? member.featured : undefined,
     // Include additional fields from the database
-    title: typeof member.title === 'string' ? member.title : undefined,
+    title: typeof member.title === 'string' ? member.title : '',
     location: typeof member.location === 'string' ? member.location : undefined,
     intro: typeof member.intro === 'string' ? member.intro : undefined,
     website: typeof member.website === 'string' ? member.website : undefined,

@@ -169,8 +169,9 @@ class NewsletterAnalyticsAPI {
       return {
         data: (data || []).map(item => ({
           ...item,
-          event_type: item.event_type as NewsletterAnalytics['event_type']
-        })),
+          event_type: item.event_type as NewsletterAnalytics['event_type'],
+          event_data: item.event_data as Record<string, unknown> | null | undefined
+        })) as NewsletterAnalytics[],
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,

@@ -159,22 +159,24 @@ export function useAuth() {
   // In development mode, provide a bypass for authentication
   if (DEV_BYPASS_AUTH && import.meta.env.DEV) {
     // Create a safe context object that handles the undefined case
-    const safeContext: AuthContextType = context || {
+    const safeContext: AuthContextType = context || ({
       session: null,
       user: null,
       loading: false,
       error: null,
-      signIn: async () => ({ data: null, error: null }),
-      signUp: async () => ({ data: null, error: null }),
+      signIn: async (_email: string, _password: string, _rememberMe?: boolean) => ({ data: null, error: null }),
+      signUp: async (_email: string, _password: string) => ({ data: null, error: null }),
       signOut: async () => ({ error: null }),
+      forgotPassword: async (_email: string) => ({ success: false, error: null }),
+      resetPassword: async (_password: string) => ({ success: false, error: null }),
       userRoles: [],
       isAdmin: false
-    };
+    } as AuthContextType);
     
     return {
       ...safeContext,
       // Override sign-in to always succeed in development
-      signIn: async (_email, _password, _rememberMe) => ({
+      signIn: async (_email: string, _password: string, _rememberMe?: boolean) => ({
         data: { session: { user: DEV_USER }, user: DEV_USER },
         error: null
       }),

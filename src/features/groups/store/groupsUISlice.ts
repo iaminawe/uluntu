@@ -4,9 +4,12 @@ import { RootState } from '@/store';
 // UI-only state for groups feature
 export interface GroupsFilters {
   search?: string;
-  visibility?: 'open' | 'closed' | 'all';
+  visibility?: string | string[];
   featured?: boolean;
   memberStatus?: 'member' | 'not-member' | 'all';
+  userGroups?: boolean;
+  userId?: string;
+  limit?: number;
 }
 
 export interface GroupsUIState {

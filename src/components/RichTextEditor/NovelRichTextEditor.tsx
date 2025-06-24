@@ -157,7 +157,7 @@ const NovelRichTextEditor = ({
       >
         <EditorRoot>
           <EditorContent
-            initialValue={editorContent}
+            initialContent={editorContent}
             onUpdate={handleUpdate}
             className="min-h-full"
             editorProps={{

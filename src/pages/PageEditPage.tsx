@@ -1,22 +1,23 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PageForm, usePagesRedux } from '@/features/pages';
+import { PageForm } from '@/features/pages';
+import { usePages } from '@/features/pages/hooks/usePages';
 import type { Page } from '@/features/pages';
 
 const PageEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentPage, loading, error, fetchPageById, clearCurrentPage } = usePagesRedux();
+  const { currentPage, isLoading: loading, error, loadPageById, setPage } = usePages();
 
   useEffect(() => {
     if (id) {
-      fetchPageById(id);
+      loadPageById(id);
     }
 
     return () => {
-      clearCurrentPage();
+      setPage(null);
     };
-  }, [id, fetchPageById, clearCurrentPage]);
+  }, [id, loadPageById, setPage]);
 
   const handleSuccess = (page: Page) => {
     navigate(`/admin/pages`);
@@ -40,7 +41,7 @@ const PageEditPage: React.FC = () => {
         <div className="max-w-md w-full">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             <h2 className="text-lg font-semibold mb-2">Error Loading Page</h2>
-            <p>{error?.message || String(error)}</p>
+            <p>{typeof error === 'string' ? error : (error as any)?.message || 'An error occurred'}</p>
           </div>
           
           <div className="mt-6 text-center">

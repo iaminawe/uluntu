@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../api/supabaseUtils';
+import { supabase } from '../../lib/supabase';
 
 // Simple, direct component that queries the database without any complex logic
 const DirectListings = () => {
@@ -42,7 +42,7 @@ const DirectListings = () => {
     return (
       <div className="p-4 bg-red-50 text-red-800 rounded-md">
         <h3 className="font-bold">Error</h3>
-        <p>{error?.message || String(error)}</p>
+        <p>{typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : String(error)}</p>
       </div>
     );
   }

@@ -23,7 +23,7 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
     }, 1000);
   };
 
-  const _isOpenGroup = group.visibility === 'open';
+  const _isOpenGroup = group.visibility === 'public'; // 'public' maps to 'open'
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

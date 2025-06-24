@@ -26,7 +26,7 @@ const initialState: GalleryState = {
 // Async thunks
 export const fetchGalleries = createAsyncThunk(
   'gallery/fetchGalleries',
-  async (filters?: GalleryFilters, { rejectWithValue }) => {
+  async (filters: GalleryFilters = {}, { rejectWithValue }) => {
     try {
       const galleries = await galleryApi.getAllGalleries(filters);
       return { galleries, filters };
@@ -40,7 +40,7 @@ export const fetchGalleryById = createAsyncThunk(
   'gallery/fetchGalleryById',
   async (id: string, { rejectWithValue }) => {
     try {
-      const gallery = await galleryApi.getGalleryById(id);
+      const gallery = await galleryApi.getGallery(id);
       if (!gallery) {
         throw new Error('Gallery not found');
       }
@@ -230,7 +230,7 @@ const gallerySlice = createSlice({
     },
     selectAllPhotos: (state) => {
       if (state.currentGallery) {
-        state.selectedPhotos = state.currentGallery.photos.map(p => p.id);
+        state.selectedPhotos = (state.currentGallery.photos || []).map(p => p.id);
       }
     },
     clearSelection: (state) => {
@@ -256,7 +256,7 @@ const gallerySlice = createSlice({
       })
       .addCase(fetchGalleries.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.galleries = action.payload.galleries;
+        state.galleries = (action.payload.galleries as any).galleries || action.payload.galleries;
         state.filters = action.payload.filters || {};
       })
       .addCase(fetchGalleries.rejected, (state, action) => {
@@ -309,15 +309,15 @@ const gallerySlice = createSlice({
       
       // uploadPhoto
       .addCase(uploadPhoto.fulfilled, (state, action) => {
-        if (state.currentGallery && action.payload.galleryId === state.currentGallery.id) {
-          state.currentGallery.photos.push(action.payload);
+        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
+          (state.currentGallery.photos || []).push(action.payload);
         }
       })
       
       // deletePhoto
       .addCase(deletePhoto.fulfilled, (state, action) => {
-        if (state.currentGallery && action.payload.galleryId === state.currentGallery.id) {
-          state.currentGallery.photos = state.currentGallery.photos.filter(
+        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
+          state.currentGallery.photos = (state.currentGallery.photos || []).filter(
             p => p.id !== action.payload.photoId
           );
         }
@@ -328,7 +328,7 @@ const gallerySlice = createSlice({
       // batchOperation
       .addCase(batchOperation.fulfilled, (state, action) => {
         if (action.payload.type === 'delete' && state.currentGallery) {
-          state.currentGallery.photos = state.currentGallery.photos.filter(
+          state.currentGallery.photos = (state.currentGallery.photos || []).filter(
             p => !action.payload.photoIds.includes(p.id)
           );
           state.selectedPhotos = [];
@@ -337,26 +337,26 @@ const gallerySlice = createSlice({
       
       // reorderPhotos
       .addCase(reorderPhotos.fulfilled, (state, action) => {
-        if (state.currentGallery && action.payload.galleryId === state.currentGallery.id) {
+        if (state.currentGallery && ((action.payload as any).gallery_id || (action.payload as any).galleryId) === state.currentGallery.id) {
           // Update photo order in current gallery
           action.payload.photoOrders.forEach(({ id, order }) => {
-            const photo = state.currentGallery!.photos.find(p => p.id === id);
+            const photo = (state.currentGallery!.photos || []).find(p => p.id === id);
             if (photo) {
               photo.order = order;
             }
           });
           // Sort photos by order
-          state.currentGallery.photos.sort((a, b) => (a.order || 0) - (b.order || 0));
+          (state.currentGallery.photos || []).sort((a, b) => (a.order || 0) - (b.order || 0));
         }
       })
       
       // toggleLike
       .addCase(toggleLike.fulfilled, (state, action) => {
-        const gallery = state.galleries.find(g => g.id === action.payload.galleryId);
+        const gallery = state.galleries.find(g => g.id === ((action.payload as any).gallery_id || (action.payload as any).galleryId));
         if (gallery && gallery.stats) {
           gallery.stats.likeCount += action.payload.liked ? 1 : -1;
         }
-        if (state.currentGallery?.id === action.payload.galleryId && state.currentGallery.stats) {
+        if (state.currentGallery?.id === ((action.payload as any).gallery_id || (action.payload as any).galleryId) && state.currentGallery?.stats) {
           state.currentGallery.stats.likeCount += action.payload.liked ? 1 : -1;
         }
       });

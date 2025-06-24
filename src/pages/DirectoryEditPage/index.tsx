@@ -50,6 +50,7 @@ export default function DirectoryEditPage() {
         image: typeof member.image === 'string' ? member.image : '',
         bio: typeof member.bio === 'string' ? member.bio : '',
         skills: Array.isArray(member.skills) ? member.skills : [],
+        interests: [], // Add missing interests field
         joinDate: member.joinDate || '',
         social: {
           linkedin: typeof memberSocial.linkedin === 'string' ? memberSocial.linkedin : '',
@@ -171,7 +172,7 @@ export default function DirectoryEditPage() {
           return;
         }
         
-        finalImageUrl = url;
+        finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
       

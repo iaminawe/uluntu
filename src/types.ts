@@ -32,7 +32,7 @@ export interface EventPresenter {
 
 export interface Member extends BaseEntity {
   name: string;
-  title: string;
+  title?: string; // Make optional to match useMemberQueries type
   company?: string;
   location?: string;
   image: string;
@@ -169,6 +169,10 @@ export interface MarketplaceItem extends BaseEntity {
     image: string;
   };
   datePosted: string;
+  // Additional marketplace fields
+  condition?: string;
+  location?: string;
+  tags?: string[];
   // Contact information fields
   contactEmail?: string;
   contactPhone?: string;
@@ -212,6 +216,30 @@ export interface Opportunity extends BaseEntity {
   salary?: string;
   postedDate: string;
   deadline?: string;
+}
+
+// Groups
+export interface GroupInput {
+  name: string;
+  description: string;
+  visibility: 'public' | 'private' | 'members_only';
+  heroImage?: string;
+  longDescription?: string;
+  status?: 'published' | 'draft';
+  featured?: boolean;
+}
+
+// News
+export interface NewsArticleInput {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  date: string;
+  image?: string;
+  author_id: string;
+  tags?: string[];
+  status?: 'published' | 'draft';
 }
 
 // Export types from subdirectories

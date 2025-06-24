@@ -288,8 +288,8 @@ export const generateFileId = (): string => {
  */
 export const hasFiles = (event: DragEvent): boolean => {
   return (
-    event.dataTransfer?.types.includes('Files') ||
-    event.dataTransfer?.types.includes('application/x-moz-file')
+    (event.dataTransfer?.types.includes('Files') ?? false) ||
+    (event.dataTransfer?.types.includes('application/x-moz-file') ?? false)
   );
 };
 

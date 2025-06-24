@@ -40,8 +40,8 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <Badge variant={getChangeTypeColor(change.change_type) as any}>
-                          {change.change_type}
+                        <Badge variant={getChangeTypeColor(change.change_type || '') as any}>
+                          {change.change_type || 'unknown'}
                         </Badge>
                         <span className="font-medium text-gray-900">
                           {change.category}.{change.setting_key}
@@ -74,7 +74,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>
-                          {formatDistanceToNow(new Date(change.changed_at), { addSuffix: true })}
+                          {change.changed_at ? formatDistanceToNow(new Date(change.changed_at), { addSuffix: true }) : 'Unknown time'}
                         </span>
                       </div>
                       {change.changed_by && (

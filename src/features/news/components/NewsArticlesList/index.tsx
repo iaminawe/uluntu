@@ -13,6 +13,7 @@ const NewsArticlesList = ({
   initialTag = '', 
   initialSearch = '' 
 }: NewsArticlesListProps) => {
+  type NewsArticle = any; // Temporary type alias
   const [currentPage, setCurrentPage] = useState(1);
 
   const filters: FilterOptions = {

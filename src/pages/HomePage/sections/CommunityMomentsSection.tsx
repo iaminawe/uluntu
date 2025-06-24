@@ -58,7 +58,7 @@ export default function CommunityMomentsSection() {
       });
     
     return [...newsItems, ...galleryItems]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime())
       .slice(0, 6);
   }, [news, galleries]);
 

@@ -263,7 +263,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                       if ('dateAdded' in listing && typeof listing.dateAdded === 'string') {
                         dateStr = listing.dateAdded;
                       } else if ('createdAt' in listing && typeof listing.createdAt === 'string') {
-                        dateStr = (listing as unknown).createdAt;
+                        dateStr = listing.createdAt;
                       } else {
                         dateStr = new Date().toISOString();
                       }

@@ -46,17 +46,17 @@ export function useSettings(): UseSettingsReturn {
  */
 export function useEnabledFeatures() {
   // Default all features to enabled
-  const features: Record<FeatureKey, boolean> = {
-    galleries: true,
-    events: true,
-    resources: true,
-    newsletter: true,
+  const features: Record<string, boolean> = {
+    photo_galleries: true,
+    events_system: true,
+    resources_library: true,
+    newsletter_system: true,
     marketplace: true,
-    opportunities: true,
-    groups: true,
-    companies: true,
-    members: true,
-    news: true,
+    opportunities_board: true,
+    groups_communities: true,
+    companies_listing: true,
+    members_directory: true,
+    news_blog: true,
     contact: true,
     about: true,
     privacy: true,

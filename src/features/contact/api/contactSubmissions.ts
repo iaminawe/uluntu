@@ -100,7 +100,7 @@ export class ContactSubmissionsAPI {
       };
 
       // Insert into database
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contact_submissions')
         .insert(submissionData)
         .select()
@@ -108,7 +108,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      const submission = data as ContactSubmission;
+      const submission = data as any as ContactSubmission;
 
       // Send notification emails
       try {
@@ -204,7 +204,7 @@ export class ContactSubmissionsAPI {
       if (error) throw error;
 
       return {
-        submissions: data || [],
+        submissions: (data || []) as any as ContactSubmission[],
         total: count || 0,
         page,
         limit,
@@ -236,7 +236,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      return data as ContactSubmission;
+      return data as any as ContactSubmission;
 
     } catch (error) {
       console.error('Error fetching contact submission:', error);
@@ -277,7 +277,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      const updatedSubmission = data as ContactSubmission;
+      const updatedSubmission = data as any as ContactSubmission;
 
       // Send notifications for status changes
       if (request.status && request.status !== currentSubmission.status) {
@@ -390,26 +390,29 @@ export class ContactSubmissionsAPI {
 
       // Group by status, type, and priority
       submissions.forEach(submission => {
-        stats.by_status[submission.status] = (stats.by_status[submission.status] || 0) + 1;
-        stats.by_type[submission.type] = (stats.by_type[submission.type] || 0) + 1;
-        stats.by_priority[submission.priority] = (stats.by_priority[submission.priority] || 0) + 1;
+        const submissionAny = submission as any;
+        stats.by_status[submissionAny.status] = (stats.by_status[submissionAny.status] || 0) + 1;
+        const submissionType = submissionAny.type || submissionAny.submission_type || 'general';
+        stats.by_type[submissionType] = (stats.by_type[submissionType] || 0) + 1;
+        stats.by_priority[submissionAny.priority] = (stats.by_priority[submissionAny.priority] || 0) + 1;
 
-        if (!submission.assigned_to) {
+        if (!submissionAny.assigned_to) {
           stats.unassigned_count++;
         }
 
         // Check if overdue (more than 48 hours old and not resolved/closed)
-        const hoursOld = (new Date().getTime() - new Date(submission.created_at).getTime()) / (1000 * 60 * 60);
-        if (hoursOld > 48 && !['resolved', 'closed'].includes(submission.status)) {
+        const hoursOld = (new Date().getTime() - new Date(submissionAny.created_at).getTime()) / (1000 * 60 * 60);
+        if (hoursOld > 48 && !['resolved', 'closed'].includes(submissionAny.status)) {
           stats.overdue_count++;
         }
       });
 
       // Calculate average response time for resolved/closed submissions
-      const resolvedSubmissions = submissions.filter(s => ['resolved', 'closed'].includes(s.status));
+      const resolvedSubmissions = submissions.filter(s => ['resolved', 'closed'].includes((s as any).status));
       if (resolvedSubmissions.length > 0) {
         const totalResponseTime = resolvedSubmissions.reduce((sum, submission) => {
-          const responseTime = (new Date(submission.updated_at).getTime() - new Date(submission.created_at).getTime()) / (1000 * 60 * 60);
+          const submissionAny = submission as any;
+          const responseTime = (new Date(submissionAny.updated_at).getTime() - new Date(submissionAny.created_at).getTime()) / (1000 * 60 * 60);
           return sum + responseTime;
         }, 0);
         stats.avg_response_time_hours = totalResponseTime / resolvedSubmissions.length;
@@ -446,7 +449,7 @@ export class ContactSubmissionsAPI {
 
       if (error) throw error;
 
-      return data || [];
+      return (data || []) as any as ContactSubmission[];
 
     } catch (error) {
       console.error('Error fetching recent submissions:', error);
@@ -582,7 +585,7 @@ export class ContactSubmissionsAPI {
         submission.name,
         submission.email,
         submission.subject,
-        submission.type,
+        (submission as any).type || 'general',
         submission.status,
         submission.priority,
         submission.assigned_to || '',

@@ -1,0 +1,15 @@
+// Common types for groups
+export interface ApiResponse<T> {
+  data: T;
+  success: boolean;
+  message?: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type ContentStatus = 'draft' | 'published';

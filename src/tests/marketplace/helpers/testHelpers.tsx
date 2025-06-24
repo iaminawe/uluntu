@@ -3,8 +3,21 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import React, { ReactElement } from 'react';
-import marketplaceReducer from '@/features/marketplace/store/marketplaceSlice';
 import authReducer from '@/features/auth/store/authSlice';
+import eventsUIReducer from '@/features/events/store/eventsUISlice';
+import membersUIReducer from '@/features/directory/store/membersUISlice';
+import companiesUIReducer from '@/features/companies/store/companiesUISlice';
+import opportunitiesUIReducer from '@/features/opportunities/store/opportunitiesUISlice';
+import groupsUIReducer from '@/features/groups/store/groupsUISlice';
+import newsUIReducer from '@/features/news/store/newsUISlice';
+import newsReducer from '@/features/news/store/newsSlice';
+import marketplaceUIReducer from '@/features/marketplace/store/marketplaceUISlice';
+import resourcesUIReducer from '@/features/resources/store/resourcesUISlice';
+import pagesReducer from '@/features/pages/store/pagesSlice';
+import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
+import galleryReducer from '@/features/gallery/store/gallerySlice';
+import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
+import adminSettingsUIReducer from '@/features/admin/store/adminSettingsUISlice';
 import type { RootState } from '@/store/index';
 
 // Mock implementations
@@ -49,8 +62,21 @@ export const renderWithProviders = (
     preloadedState = {},
     store = configureStore({
       reducer: {
-        marketplace: marketplaceReducer,
-        auth: authReducer
+        auth: authReducer as any,
+        eventsUI: eventsUIReducer as any,
+        membersUI: membersUIReducer as any,
+        companiesUI: companiesUIReducer as any,
+        opportunitiesUI: opportunitiesUIReducer as any,
+        groupsUI: groupsUIReducer as any,
+        news: newsReducer as any,
+        newsUI: newsUIReducer as any,
+        marketplaceUI: marketplaceUIReducer as any,
+        resourcesUI: resourcesUIReducer as any,
+        pages: pagesReducer as any,
+        onboarding: onboardingReducer as any,
+        gallery: galleryReducer as any,
+        galleryUI: galleryUIReducer as any,
+        adminSettingsUI: adminSettingsUIReducer as any,
       },
       preloadedState
     }),
@@ -231,7 +257,7 @@ export class TestErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div data-testid="error-boundary">

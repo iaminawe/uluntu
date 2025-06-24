@@ -60,7 +60,10 @@ export const adminRolesApi = {
         return [];
       }
 
-      return data || [];
+      return (data || []).map(role => ({
+        ...role,
+        permissions: role.permissions as Record<string, string[]> || {}
+      })) as Role[];
     } catch (error) {
       logger.apiError('getRoles', error);
       return [];
@@ -81,7 +84,10 @@ export const adminRolesApi = {
         return null;
       }
 
-      return data;
+      return {
+        ...data,
+        permissions: data.permissions as Record<string, string[]> || {}
+      } as Role;
     } catch (error) {
       logger.apiError('getRole', error);
       return null;
@@ -107,7 +113,10 @@ export const adminRolesApi = {
         throw error;
       }
 
-      return data;
+      return {
+        ...data,
+        permissions: data.permissions as Record<string, string[]> || {}
+      } as Role;
     } catch (error) {
       logger.apiError('createRole', error);
       throw error;
@@ -141,7 +150,10 @@ export const adminRolesApi = {
         throw error;
       }
 
-      return data;
+      return {
+        ...data,
+        permissions: data.permissions as Record<string, string[]> || {}
+      } as Role;
     } catch (error) {
       logger.apiError('updateRole', error);
       throw error;
@@ -183,11 +195,11 @@ export const adminRolesApi = {
       
       if (isCustomRole) {
         // It's a custom role, store in user_custom_roles
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_custom_roles')
           .insert({
             user_id: userId,
-            role_id: roleId
+            custom_role_id: roleId
           })
           .select();
 
@@ -230,12 +242,12 @@ export const adminRolesApi = {
       
       if (isCustomRole) {
         // It's a custom role, remove from user_custom_roles
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_custom_roles')
           .delete()
           .match({
             user_id: userId,
-            role_id: roleId
+            custom_role_id: roleId
           });
 
         if (error) {
@@ -327,23 +339,23 @@ export const adminRolesApi = {
         }
 
         // Tables exist, now get user's custom roles
-        const { data: userCustomRoles, error: userCustomError } = await supabase
+        const { data: userCustomRoles, error: userCustomError } = await (supabase as any)
           .from('user_custom_roles')
-          .select('role_id')
+          .select('custom_role_id')
           .eq('user_id', userId);
 
         if (userCustomError) {
           logger.warn('Error fetching user custom roles', 'ROLES', userCustomError);
         } else if (userCustomRoles && userCustomRoles.length > 0) {
           // Get the actual role objects
-          const roleIds = userCustomRoles.map(ucr => ucr.role_id);
+          const roleIds = userCustomRoles.map((ucr: any) => ucr.custom_role_id);
           const { data: customRoleObjects, error: roleError } = await supabase
             .from('custom_roles')
             .select('*')
             .in('id', roleIds);
             
           if (!roleError && customRoleObjects && customRoleObjects.length > 0) {
-            const mappedRoles = customRoleObjects.map(role => ({
+            const mappedRoles = customRoleObjects.map((role: any) => ({
               ...role,
               type: 'custom' as const
             }));

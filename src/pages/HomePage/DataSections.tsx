@@ -34,7 +34,7 @@ export default function DataSections() {
   // Get featured groups
   const featuredGroups = useMemo(() => {
     return groups
-      .filter(group => group.visibility === 'open')
+      .filter(group => group.visibility === 'public')
       .slice(0, 3);
   }, [groups]);
 
@@ -105,8 +105,8 @@ export default function DataSections() {
                   key={group.id}
                   id={group.id}
                   title={group.name}
-                  excerpt={group.description}
-                  image={group.heroImage || group.coverImage}
+                  excerpt={group.description || ''}
+                  image={group.heroImage || group.coverImage || '/placeholder-group.png'}
                   category="Community Group"
                   readTime={`${group.memberCount || 0} members`}
                   link={`/groups/${group.id}`}

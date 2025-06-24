@@ -15,7 +15,7 @@ const JoinRequestForm: React.FC<JoinRequestFormProps> = ({
     onSubmit(message);
   };
   
-  const isOpenGroup = group.visibility === 'open';
+  const isOpenGroup = group.visibility === 'public'; // 'public' maps to 'open'
   
   return (
     <form onSubmit={handleSubmit} className="p-4">

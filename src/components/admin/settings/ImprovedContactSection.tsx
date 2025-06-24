@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest } from '@/types/settings';
+import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingDataType } from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -227,7 +227,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: setting?.data_type || 'string'
+          data_type: setting?.data_type as SettingDataType || 'string' as SettingDataType
         });
       }
       
@@ -692,7 +692,7 @@ const ImprovedContactSection: React.FC<ImprovedContactSectionProps> = ({
                     )}
                   </div>
                   <Switch
-                    checked={feature.enabled}
+                    checked={feature.enabled || false}
                     onCheckedChange={(checked) => {
                       toast.success('Contact feature toggle functionality coming soon');
                     }}

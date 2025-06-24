@@ -1,4 +1,19 @@
 import type { MarketplaceListing } from '../../../types/marketplace';
+import type { ContentStatus } from '../../../types/common';
+
+// Define MarketplaceFilters for tests
+export interface MarketplaceFilters {
+  search?: string;
+  type?: string;
+  condition?: string;
+  priceRange?: string;
+  location?: string;
+  seller?: string;
+  status?: ContentStatus;
+  minPrice?: number;
+  maxPrice?: number;
+  tags?: string[];
+}
 
 // Test users
 export const testUsers = {
@@ -31,13 +46,16 @@ export const createTestListing = (overrides: Partial<MarketplaceListing> = {}): 
   type: 'product',
   condition: 'new',
   images: ['https://example.com/image1.jpg'],
-  seller_id: testUsers.seller.id,
+  seller: {
+    id: testUsers.seller.id,
+    name: testUsers.seller.full_name,
+    image: 'https://example.com/avatar.jpg'
+  },
   location: 'Test City',
   tags: ['test', 'product'],
-  status: 'active',
+  status: 'published' as ContentStatus,
   featured: false,
-  created_at: '2024-01-01T00:00:00Z',
-  updated_at: '2024-01-01T00:00:00Z',
+  createdAt: '2024-01-01T00:00:00Z',
   ...overrides
 });
 
@@ -91,7 +109,7 @@ export const testListings: MarketplaceListing[] = [
     condition: 'used',
     tags: ['garden', 'tools', 'outdoor'],
     location: 'West Side',
-    status: 'sold'
+    status: 'archived' as ContentStatus
   })
 ];
 
@@ -102,7 +120,7 @@ export const defaultFilters: MarketplaceFilters = {
   condition: '',
   minPrice: 0,
   maxPrice: 0,
-  seller_id: '',
+  seller: '',
   tags: []
 };
 
@@ -190,12 +208,12 @@ export const filterListings = (
     }
 
     // Seller filter
-    if (filters.seller_id && listing.seller_id !== filters.seller_id) {
+    if (filters.seller && listing.seller.id !== filters.seller) {
       return false;
     }
 
     // Tags filter
-    if (filters.tags.length > 0) {
+    if (filters.tags && filters.tags.length > 0) {
       const hasMatchingTag = filters.tags.some((filterTag: string) =>
         listing.tags.includes(filterTag)
       );

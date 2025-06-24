@@ -326,6 +326,28 @@ class NewsletterSubscriptionsApi {
       throw new Error(sanitized.userMessage);
     }
   }
+
+  async recordBounce(email: string, bounceType: 'hard' | 'soft'): Promise<void> {
+    try {
+      console.log(`Recording ${bounceType} bounce for email: ${email}`);
+      
+      const { error } = await supabase
+        .from('newsletter_subscriptions')
+        .update({ 
+          status: bounceType === 'hard' ? 'bounced' : 'active',
+          updated_at: new Date().toISOString()
+        })
+        .eq('email', email);
+
+      if (error) {
+        console.error('Error recording bounce:', error);
+        throw error;
+      }
+    } catch (error) {
+      const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Record Bounce');
+      throw new Error(sanitized.userMessage);
+    }
+  }
 }
 
 export const newsletterSubscriptionsApi = new NewsletterSubscriptionsApi();

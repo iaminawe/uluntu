@@ -113,12 +113,12 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
     loading,
     error: queryError ? logAndSanitizeError(queryError, 'Contact Submissions - Fetch').userMessage : null,
     total: data?.total || 0,
-    totalPages: data?.totalPages || 0,
+    totalPages: (data as any)?.totalPages || 0,
     currentPage: page,
-    refetch,
-    createSubmission,
-    updateSubmission,
-    deleteSubmission,
+    refetch: () => refetch().then(() => void 0),
+    createSubmission: createSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
+    updateSubmission: updateSubmission as (id: string, data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
+    deleteSubmission: deleteSubmission as (id: string) => Promise<{ success: boolean; error?: string | undefined; }>,
   };
 }
 
@@ -154,7 +154,7 @@ export function useContactSubmissionStats(dateRange?: { start: string; end: stri
     stats: stats || null,
     loading,
     error: queryError ? (queryError instanceof Error ? queryError.message : 'Failed to fetch stats') : null,
-    refetch,
+    refetch: () => refetch().then(() => void 0),
   };
 }
 
@@ -226,9 +226,9 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     submission: submission || null,
     loading,
     error: queryError ? (queryError instanceof Error ? queryError.message : 'Failed to fetch submission') : null,
-    refetch,
-    update: updateSubmission,
-    delete: deleteSubmission,
+    refetch: () => refetch().then(() => void 0),
+    update: updateSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
+    delete: deleteSubmission as () => Promise<{ success: boolean; error?: string | undefined; }>,
   };
 }
 
@@ -303,6 +303,6 @@ export function useNotificationPreferences(): UseNotificationPreferencesReturn {
     loading,
     error: queryError ? (queryError instanceof Error ? queryError.message : 'Failed to fetch preferences') : null,
     updatePreferences,
-    refetch,
+    refetch: () => refetch().then(() => void 0),
   };
 }

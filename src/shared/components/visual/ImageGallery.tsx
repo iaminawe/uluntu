@@ -63,14 +63,14 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setFilter(category)}
+              onClick={() => setFilter(category || 'all')}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                 filter === category
                   ? 'bg-orange-500 text-white shadow-lg'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
+              {(category || 'all').charAt(0).toUpperCase() + (category || 'all').slice(1)}
             </button>
           ))}
         </div>

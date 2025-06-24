@@ -289,7 +289,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
             <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
               <div className="flex items-start space-x-4">
-                <Link href={`/directory/${listing.seller.id}`}>
+                <Link to={`/directory/${listing.seller.id}`}>
                   <img
                     src={listing.seller.image}
                     alt={listing.seller.name}
@@ -298,7 +298,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
                 </Link>
                 <div>
                   <Link
-                    href={`/directory/${listing.seller.id}`}
+                    to={`/directory/${listing.seller.id}`}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {listing.seller.name}

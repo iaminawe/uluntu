@@ -56,7 +56,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
           <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-500">
             {meta.map((item, index) => (
               <div key={index} className="flex items-center gap-1">
-                {item.icon && <item.icon className="w-4 h-4" />}
+                {item.icon && <item.icon className="w-4 h-4" {...{} as any} />}
                 <span>{item.text}</span>
               </div>
             ))}

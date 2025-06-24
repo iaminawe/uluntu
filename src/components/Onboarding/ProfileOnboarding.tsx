@@ -13,7 +13,7 @@ interface ProfileOnboardingProps {
 export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }: ProfileOnboardingProps) {
   const { data: member, isLoading } = useCurrentMember();
   const { isComplete, completionPercentage, requiredFields, suggestedFields } = useProfileCompletion(member);
-  const { currentSettings, togglePublicVisibility, isUpdating } = useProfilePrivacy(member);
+  const { currentSettings, togglePublicVisibility, isUpdating } = useProfilePrivacy(member || null);
   const [step, setStep] = useState<'welcome' | 'privacy' | 'complete'>('welcome');
 
   const privacyDisplay = getPrivacyStatusDisplay(currentSettings.status);

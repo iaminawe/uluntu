@@ -116,8 +116,8 @@ export function useNewsHybrid() {
     
     switch (sortBy) {
       case 'date':
-        comparison = new Date(a.publish_date || '').getTime() - 
-                    new Date(b.publish_date || '').getTime();
+        comparison = new Date((a as any).publish_date || a.date || '').getTime() - 
+                    new Date((b as any).publish_date || b.date || '').getTime();
         break;
       case 'title':
         comparison = (a.title || '').localeCompare(b.title || '');

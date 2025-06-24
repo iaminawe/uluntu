@@ -7,6 +7,7 @@ import companiesUIReducer from '@/features/companies/store/companiesUISlice';
 import opportunitiesUIReducer from '@/features/opportunities/store/opportunitiesUISlice';
 import groupsUIReducer from '@/features/groups/store/groupsUISlice';
 import newsUIReducer from '@/features/news/store/newsUISlice';
+import newsReducer from '@/features/news/store/newsSlice';
 import marketplaceUIReducer from '@/features/marketplace/store/marketplaceUISlice';
 import resourcesUIReducer from '@/features/resources/store/resourcesUISlice';
 import pagesReducer from '@/features/pages/store/pagesSlice';
@@ -33,6 +34,7 @@ export const store = configureStore({
     companiesUI: companiesUIReducer,
     opportunitiesUI: opportunitiesUIReducer,
     groupsUI: groupsUIReducer,
+    news: newsReducer,
     newsUI: newsUIReducer,
     marketplaceUI: marketplaceUIReducer,
     resourcesUI: resourcesUIReducer,
