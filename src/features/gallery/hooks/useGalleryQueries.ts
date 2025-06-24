@@ -88,9 +88,6 @@ export function useGalleries(filters?: GalleryFilters & { page?: number; limit?:
       return galleryApi.getAllGalleries(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
-    onError: (error) => {
-      GalleryErrorHandler.showError(error, 'GALLERY_LOAD');
-    }
   });
 }
 
@@ -140,9 +137,6 @@ export function useGallery(id?: string): UseQueryResult<Gallery | null, Error> {
       return gallery;
     },
     enabled: !!id,
-    onError: (error) => {
-      GalleryErrorHandler.showError(error, 'GALLERY_LOAD');
-    }
   });
 }
 
@@ -220,9 +214,6 @@ export function useCreateGallery(): UseMutationResult<Gallery, Error, CreateGall
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       GalleryErrorHandler.showSuccess(`Gallery "${data.title}" created successfully!`);
-    },
-    onError: (error) => {
-      GalleryErrorHandler.showError(error, 'UPLOAD');
     }
   });
 }
@@ -263,9 +254,6 @@ export function useUpdateGallery(): UseMutationResult<Gallery, Error, { id: stri
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.detail(data.id) });
       GalleryErrorHandler.showSuccess('Gallery updated successfully!');
-    },
-    onError: (error) => {
-      GalleryErrorHandler.showError(error, 'UPLOAD');
     }
   });
 }
@@ -288,9 +276,6 @@ export function useDeleteGallery(): UseMutationResult<boolean, Error, string> {
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       queryClient.removeQueries({ queryKey: galleryQueryKeys.detail(id) });
       GalleryErrorHandler.showSuccess('Gallery deleted successfully!');
-    },
-    onError: (error) => {
-      GalleryErrorHandler.showError(error, 'DELETE');
     }
   });
 }

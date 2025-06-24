@@ -51,13 +51,6 @@ const RolesPage: React.FC = () => {
         message: 'Role created successfully!'
       });
       setTimeout(() => setNotification(null), 5000);
-    },
-    onError: (error: any) => {
-      setNotification({
-        type: 'error',
-        message: error?.message || 'Failed to create role. Please try again.'
-      });
-      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -74,13 +67,6 @@ const RolesPage: React.FC = () => {
         message: 'Role updated successfully!'
       });
       setTimeout(() => setNotification(null), 5000);
-    },
-    onError: (error: any) => {
-      setNotification({
-        type: 'error',
-        message: error?.message || 'Failed to update role. Please try again.'
-      });
-      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -92,13 +78,6 @@ const RolesPage: React.FC = () => {
       setNotification({
         type: 'success',
         message: 'Role deleted successfully!'
-      });
-      setTimeout(() => setNotification(null), 5000);
-    },
-    onError: (error: any) => {
-      setNotification({
-        type: 'error',
-        message: error?.message || 'Failed to delete role. Please try again.'
       });
       setTimeout(() => setNotification(null), 5000);
     }
@@ -171,9 +150,25 @@ const RolesPage: React.FC = () => {
     };
 
     if (editingRole) {
-      updateRoleMutation.mutate({ id: editingRole.id, data });
+      updateRoleMutation.mutate({ id: editingRole.id, data }, {
+        onError: (error: any) => {
+          setNotification({
+            type: 'error',
+            message: error?.message || 'Failed to update role. Please try again.'
+          });
+          setTimeout(() => setNotification(null), 5000);
+        }
+      });
     } else {
-      createRoleMutation.mutate(data);
+      createRoleMutation.mutate(data, {
+        onError: (error: any) => {
+          setNotification({
+            type: 'error',
+            message: error?.message || 'Failed to create role. Please try again.'
+          });
+          setTimeout(() => setNotification(null), 5000);
+        }
+      });
     }
   };
 
@@ -273,7 +268,15 @@ const RolesPage: React.FC = () => {
                   <button
                     onClick={() => {
                       if (confirm(`Are you sure you want to delete the "${role.name}" role?`)) {
-                        deleteRoleMutation.mutate(role.id);
+                        deleteRoleMutation.mutate(role.id, {
+                          onError: (error: any) => {
+                            setNotification({
+                              type: 'error',
+                              message: error?.message || 'Failed to delete role. Please try again.'
+                            });
+                            setTimeout(() => setNotification(null), 5000);
+                          }
+                        });
                       }
                     }}
                     className="flex-1 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 flex items-center justify-center"
