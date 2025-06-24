@@ -1,21 +1,58 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
 import { groupsApi, type GroupInput } from '@/features/groups/api/groupsApi';
 import { Group as FrontendGroupType } from '../types'; // Import the main frontend Group type
-import { Group as MockGroup } from '@/features/groups/components/GroupsList/types';
-import { Group } from '../data/mock/groups'; // This is the mock data's Group type
+import { Group as FeatureGroupType } from '@/features/groups/types/index';
+import { Group as MockGroup } from '../data/mock/groups'; // This is the mock data's Group type
 import { Event as MockEvent } from '../data/mock/events';
 import { IS_SUPABASE_ENABLED } from '@/config/env';
 
+// Type adapter to convert between different Group types
+function adaptMockGroupToFeature(mockGroup: MockGroup): FeatureGroupType {
+  // Map visibility values from mock format to feature format
+  const mapVisibility = (vis: string): 'public' | 'private' | 'members_only' => {
+    if (vis === 'open' || vis === 'public') return 'public';
+    if (vis === 'closed' || vis === 'private') return 'private';
+    if (vis === 'secret' || vis === 'members_only') return 'members_only';
+    return 'public'; // default fallback
+  };
+
+  return {
+    id: mockGroup.id,
+    name: mockGroup.name,
+    description: mockGroup.description || '',
+    longDescription: mockGroup.longDescription,
+    visibility: mapVisibility(mockGroup.visibility),
+    heroImage: mockGroup.heroImage,
+    coverImage: mockGroup.coverImage,
+    status: mockGroup.status === 'published' ? 'published' : 'draft',
+    featured: Boolean(mockGroup.featured),
+    memberCount: mockGroup.memberCount,
+    eventCount: mockGroup.eventCount,
+    resourceCount: mockGroup.resourceCount,
+    postCount: mockGroup.postCount,
+    lastActive: mockGroup.lastActive,
+    members: mockGroup.members || [],
+    events: mockGroup.events || [],
+    created_at: mockGroup.created_at || new Date().toISOString(),
+    updated_at: mockGroup.updated_at || undefined
+  };
+}
+
 // Interface for the mockQueries object structure
 interface MockQueries {
-  useGroups: () => UseQueryResult<MockGroup[], Error>;
-  useGroupsWithFilters: (filters?: GroupFilters) => UseQueryResult<MockGroup[], Error>;
-  useGroup: (id?: string) => UseQueryResult<MockGroup | null, Error>;
+  useGroups: () => UseQueryResult<FeatureGroupType[], Error>;
+  useGroupsWithFilters: (filters?: GroupFilters) => UseQueryResult<FeatureGroupType[], Error>;
+  useGroup: (id?: string) => UseQueryResult<FeatureGroupType | null, Error>;
 }
 
 // Mock queries implementation
 const mockQueries: MockQueries = {
-  useGroups: () => ({ data: mockData.groups as MockGroup[], isLoading: false, error: null, isSuccess: true } as UseQueryResult<MockGroup[], Error>),
+  useGroups: () => ({ 
+    data: (mockData.groups as MockGroup[]).map(adaptMockGroupToFeature), 
+    isLoading: false, 
+    error: null, 
+    isSuccess: true 
+  } as UseQueryResult<FeatureGroupType[], Error>),
   useGroupsWithFilters: (filters?: GroupFilters) => {
     let filteredData = mockData.groups as MockGroup[];
     if (filters) {
@@ -27,12 +64,35 @@ const mockQueries: MockQueries = {
         );
       }
       if (filters.visibility && filters.visibility.length > 0) {
-        filteredData = filteredData.filter((group) => filters.visibility!.includes(group.visibility));
+        filteredData = filteredData.filter((group) => {
+          // Map visibility values from mock format to feature format
+          const mapMockVisibility = (vis: string): 'public' | 'private' | 'members_only' => {
+            if (vis === 'open' || vis === 'public') return 'public';
+            if (vis === 'closed' || vis === 'private') return 'private';
+            if (vis === 'secret' || vis === 'members_only') return 'members_only';
+            return 'public'; // default fallback
+          };
+          const groupVisibility = mapMockVisibility(group.visibility);
+          return filters.visibility!.includes(groupVisibility);
+        });
       }
     }
-    return { data: filteredData, isLoading: false, error: null, isSuccess: true } as UseQueryResult<MockGroup[], Error>;
+    return { 
+      data: filteredData.map(adaptMockGroupToFeature), 
+      isLoading: false, 
+      error: null, 
+      isSuccess: true 
+    } as UseQueryResult<FeatureGroupType[], Error>;
   },
-  useGroup: (id?: string) => ({ data: mockData.groups.find((group) => group.id.toString() === id) || null, isLoading: false, error: null, isSuccess: true }) as UseQueryResult<MockGroup | null, Error>,
+  useGroup: (id?: string) => {
+    const group = mockData.groups.find((group) => group.id.toString() === id);
+    return { 
+      data: group ? adaptMockGroupToFeature(group as MockGroup) : null, 
+      isLoading: false, 
+      error: null, 
+      isSuccess: true 
+    } as UseQueryResult<FeatureGroupType | null, Error>;
+  },
 };
 // Mock data and types
 import mockData from '../data/mock/mockData';
@@ -73,56 +133,52 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
 // Group specific types
 export interface GroupFilters {
   search?: string;
-  visibility?: ('open' | 'closed' | 'secret')[];
+  visibility?: ('public' | 'private' | 'members_only')[];
 }
 
 // Groups hooks
-export function useGroups(): UseQueryResult<FrontendGroupType[], Error> {
-  const supabaseQuery = useQuery<FrontendGroupType[], Error>({
+export function useGroups() {
+  const supabaseQuery = useQuery({
     queryKey: ['supabase', 'groups', 'all'],
-    queryFn: () => groupsApi.getAll(), // groupsApi.getAll() returns Promise<FrontendGroupType[]>
-    select: (data: FrontendGroupType[]) => data, // Explicit select
+    queryFn: (): Promise<FeatureGroupType[]> => groupsApi.getAll() as Promise<FeatureGroupType[]>,
+    select: (data: FeatureGroupType[]) => data,
     staleTime: 5 * 60 * 1000,
     enabled: IS_SUPABASE_ENABLED,
   });
   const mockQuery = mockQueries.useGroups();
 
   if (!IS_SUPABASE_ENABLED) {
-    // Assuming MockGroup is compatible enough or this path needs its own specific typing
-    return mockQuery as unknown as UseQueryResult<FrontendGroupType[], Error>; 
+    return mockQuery;
   }
   return supabaseQuery;
 }
 
-export function useGroupsWithFilters(filters?: GroupFilters): UseQueryResult<FrontendGroupType[], Error> {
-  const supabaseQuery = useQuery<FrontendGroupType[], Error>({
+export function useGroupsWithFilters(filters?: GroupFilters) {
+  const supabaseQuery = useQuery({
     queryKey: ['supabase', 'groups', 'filters', filters],
-    queryFn: () => groupsApi.getAll(filters ? { ...filters, visibility: filters.visibility as string[] } : undefined), // Returns Promise<FrontendGroupType[]>
-    select: (data: FrontendGroupType[]) => data, // Explicit select to reinforce type
+    queryFn: (): Promise<FeatureGroupType[]> => groupsApi.getAll(filters ? { ...filters, visibility: filters.visibility as string[] } : undefined) as Promise<FeatureGroupType[]>,
+    select: (data: FeatureGroupType[]) => data,
     staleTime: 5 * 60 * 1000,
     enabled: IS_SUPABASE_ENABLED,
   });
   const mockQuery = mockQueries.useGroupsWithFilters(filters);
 
   if (!IS_SUPABASE_ENABLED) {
-    return mockQuery as unknown as UseQueryResult<FrontendGroupType[], Error>;
+    return mockQuery;
   }
   return supabaseQuery;
 }
 
-export function useGroup(id?: string): UseQueryResult<FrontendGroupType | null, Error> {
-  const supabaseQuery = useQuery<FrontendGroupType | null, Error>({
+export function useGroup(id?: string) {
+  const supabaseQuery = useQuery({
     queryKey: ['supabase', 'groups', id],
-    queryFn: () => { // groupsApi.getById(id) returns Promise<FrontendGroupType | null>
+    queryFn: (): Promise<FeatureGroupType | null> => {
       if (id === undefined) {
-        // Tanstack Query expects queryFn to not throw for 'enabled: false' cases,
-        // but returning a rejected promise is fine if it's genuinely an error state for an enabled query.
-        // Or, ensure 'enabled' correctly handles this scenario to prevent queryFn execution.
-        return Promise.resolve(null); // Or handle appropriately if id must be present when enabled
+        return Promise.resolve(null);
       }
-      return groupsApi.getById(id);
+      return groupsApi.getById(id) as Promise<FeatureGroupType | null>;
     },
-    select: (data: FrontendGroupType | null) => data, // Explicit select
+    select: (data: FeatureGroupType | null) => data,
     enabled: IS_SUPABASE_ENABLED && id !== undefined,
     staleTime: 5 * 60 * 1000,
   });
@@ -130,23 +186,19 @@ export function useGroup(id?: string): UseQueryResult<FrontendGroupType | null, 
   const mockQuery = mockQueries.useGroup(numericId === undefined || isNaN(numericId) ? undefined : String(numericId));
 
   if (!IS_SUPABASE_ENABLED) {
-    return mockQuery as unknown as UseQueryResult<FrontendGroupType | null, Error>;
+    return mockQuery;
   }
   return supabaseQuery;
 }
 
-export function useCreateGroup(): UseMutationResult<
-  FrontendGroupType | null, // Updated return type
-  Error,
-  GroupInput
-> {
+export function useCreateGroup() {
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (data: GroupInput) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
-    mutateAsync: async (data: GroupInput) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutate: async (data: GroupInput) => { return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null; },
+    mutateAsync: async (data: GroupInput) => { return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null; },
     status: 'success' as const,
-    data: (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null,
+    data: mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null,
     error: null,
     isPending: false,
     isSuccess: true, 
@@ -155,11 +207,7 @@ export function useCreateGroup(): UseMutationResult<
     reset: () => {},
   } as unknown as UseMutationResult<FrontendGroupType | null, Error, GroupInput, unknown>;
 
-  const supabaseMutation = useMutation<
-    FrontendGroupType | null, // Updated return type
-    Error,
-    GroupInput
-  >({
+  const supabaseMutation = useMutation({
     mutationFn: (groupData: GroupInput) => groupsApi.create(groupData), // groupsApi.create returns Promise<FrontendGroupType | null>
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
@@ -172,11 +220,7 @@ export function useCreateGroup(): UseMutationResult<
   return supabaseMutation;
 }
 
-export function useUpdateGroup(): UseMutationResult<
-  FrontendGroupType | null, // Updated return type
-  Error,
-  { id: string; data: Partial<GroupInput> }
-> {
+export function useUpdateGroup() {
   const queryClient = useQueryClient();
 
   const mockMutation = {
@@ -192,11 +236,7 @@ export function useUpdateGroup(): UseMutationResult<
     reset: () => {},
   } as unknown as UseMutationResult<FrontendGroupType | null, Error, { id: string; data: Partial<GroupInput> }, unknown>;
 
-  const supabaseMutation = useMutation<
-    FrontendGroupType | null, // Updated return type
-    Error,
-    { id: string; data: Partial<GroupInput> }
-  >({
+  const supabaseMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<GroupInput> }) => groupsApi.update(id, data), // groupsApi.update returns Promise<FrontendGroupType | null>
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
@@ -247,7 +287,7 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
             }
 
             if (!IS_SUPABASE_ENABLED) {
-                const groupData = mockData.groups.find((g: Group) => g.id.toString() === validNumericId.toString());
+                const groupData = mockData.groups.find((g: MockGroup) => g.id.toString() === validNumericId.toString());
                 return groupData?.members || [];
             }
             
@@ -304,7 +344,7 @@ export function useGroupMembership(groupId?: string, memberId?: string): UseQuer
       if (!IS_SUPABASE_ENABLED) {
         return false; // Mock always returns false
       }
-      return groupsApi.isMember(groupId, memberId);
+      return (groupsApi as any).isMember(groupId, memberId);
     },
     enabled: !!groupId && !!memberId,
   });
@@ -318,7 +358,7 @@ export function useGroupMemberRole(groupId?: string, memberId?: string): UseQuer
       if (!IS_SUPABASE_ENABLED) {
         return null; // Mock always returns null
       }
-      return groupsApi.getMemberRole(groupId, memberId);
+      return (groupsApi as any).getMemberRole(groupId, memberId);
     },
     enabled: !!groupId && !!memberId,
   });
@@ -337,7 +377,7 @@ export function useUpdateMemberRole(): UseMutationResult<
         // Mock update member role
         return Promise.resolve(true);
       }
-      return groupsApi.updateMemberRole(groupId, memberId, role);
+      return (groupsApi as any).updateMemberRole(groupId, memberId, role);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
@@ -359,7 +399,7 @@ export function useRemoveMember(): UseMutationResult<
         // Mock remove member
         return Promise.resolve(true);
       }
-      return groupsApi.removeMember(groupId, memberId);
+      return (groupsApi as any).removeMember(groupId, memberId);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
@@ -377,7 +417,7 @@ export function useGroupActivities(groupId?: string): UseQueryResult<any[], Erro
       if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
-      return groupsApi.getActivities(groupId);
+      return (groupsApi as any).getActivities(groupId);
     },
     enabled: !!groupId,
   });
@@ -391,7 +431,7 @@ export function useGroupAnnouncements(groupId?: string): UseQueryResult<any[], E
       if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
-      return groupsApi.getAnnouncements(groupId);
+      return (groupsApi as any).getAnnouncements(groupId);
     },
     enabled: !!groupId,
   });
@@ -406,7 +446,7 @@ export function useCreateActivity(): UseMutationResult<any, Error, { groupId: st
         // Mock create activity
         return Promise.resolve(data);
       }
-      return groupsApi.createActivity(groupId, data);
+      return (groupsApi as any).createActivity(groupId, data);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupActivities', variables.groupId] });
@@ -423,7 +463,7 @@ export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId
         // Mock create announcement
         return Promise.resolve(data);
       }
-      return groupsApi.createAnnouncement(groupId, data);
+      return (groupsApi as any).createAnnouncement(groupId, data);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupAnnouncements', variables.groupId] });
@@ -440,7 +480,7 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Err
       if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
-      return groupsApi.getInvitations(groupId);
+      return (groupsApi as any).getInvitations(groupId);
     },
     enabled: !!groupId,
   });
@@ -455,7 +495,7 @@ export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: 
         // Mock create invitation
         return Promise.resolve(data);
       }
-      return groupsApi.createInvitation(groupId, data);
+      return (groupsApi as any).createInvitation(groupId, data);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
@@ -472,7 +512,7 @@ export function useCancelInvitation(): UseMutationResult<boolean, Error, string>
         // Mock cancel invitation
         return Promise.resolve(true);
       }
-      return groupsApi.cancelInvitation(invitationId);
+      return (groupsApi as any).cancelInvitation(invitationId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groupInvitations'] });
@@ -489,7 +529,7 @@ export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token
         // Mock accept invitation
         return Promise.resolve(true);
       }
-      return groupsApi.acceptInvitation(token, memberId);
+      return (groupsApi as any).acceptInvitation(token, memberId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] });
@@ -506,7 +546,7 @@ export function useInvitationByToken(token?: string): UseQueryResult<any, Error>
       if (!IS_SUPABASE_ENABLED) {
         return null; // Mock returns null
       }
-      return groupsApi.getInvitationByToken(token);
+      return (groupsApi as any).getInvitationByToken(token);
     },
     enabled: !!token,
   });

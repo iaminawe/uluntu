@@ -107,7 +107,7 @@ export const companiesApi = {
           name: item.name || '',
           description: item.description || '',
           logo: item.logo || '',
-          coverImage: item.cover_image || '',
+          cover_image: item.cover_image || '',
           industry: Array.isArray(item.industry) ? item.industry : [],
           size: item.size || '',
           founded: item.founded || '',
@@ -115,7 +115,7 @@ export const companiesApi = {
           website: item.website || '',
           status: (item.status as ContentStatus) || 'draft',
           featured: item.featured || false,
-          // Add any other fields that might be needed
+          created_at: item.created_at || null
         };
         
         return company;
@@ -279,14 +279,12 @@ export const companiesApi = {
   async addCompanyEmployee(companyId: string, memberId: string, employeeData?: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .insert({
           company_id: companyId,
           member_id: memberId,
           role: employeeData?.role || null,
-          department: employeeData?.department || null,
-          start_date: employeeData?.start_date || new Date().toISOString().split('T')[0],
-          is_current: employeeData?.is_current ?? true
+          joined_date: new Date().toISOString()
         })
         .select('*')
         .single();
@@ -299,17 +297,11 @@ export const companiesApi = {
       if (!data) return null;
 
       return {
-        id: data.id,
         company_id: data.company_id,
         member_id: data.member_id,
-        role: data.role || undefined,
-        department: data.department || undefined,
-        start_date: data.start_date || undefined,
-        end_date: data.end_date || undefined,
-        is_current: data.is_current ?? true,
-        created_at: data.created_at,
-        updated_at: data.updated_at || undefined,
-        member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
+        role: data.role,
+        joined_date: data.joined_date,
+        member: undefined
       };
     } catch (error) {
       logger.apiError('addCompanyEmployee', error);
@@ -317,19 +309,15 @@ export const companiesApi = {
     }
   },
 
-  async updateCompanyEmployee(employeeId: string, updates: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
+  async updateCompanyEmployee(companyId: string, memberId: string, updates: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .update({
-          role: updates.role,
-          department: updates.department,
-          start_date: updates.start_date,
-          end_date: updates.end_date,
-          is_current: updates.is_current,
-          updated_at: new Date().toISOString()
+          role: updates.role
         })
-        .eq('id', employeeId)
+        .eq('company_id', companyId)
+        .eq('member_id', memberId)
         .select('*')
         .single();
 
@@ -341,17 +329,11 @@ export const companiesApi = {
       if (!data) return null;
 
       return {
-        id: data.id,
         company_id: data.company_id,
         member_id: data.member_id,
-        role: data.role || undefined,
-        department: data.department || undefined,
-        start_date: data.start_date || undefined,
-        end_date: data.end_date || undefined,
-        is_current: data.is_current ?? true,
-        created_at: data.created_at,
-        updated_at: data.updated_at || undefined,
-        member: undefined // Member data removed to prevent timeout - can be fetched separately if needed
+        role: data.role,
+        joined_date: data.joined_date,
+        member: undefined
       };
     } catch (error) {
       logger.apiError('updateCompanyEmployee', error);
@@ -359,12 +341,13 @@ export const companiesApi = {
     }
   },
 
-  async removeCompanyEmployee(employeeId: string): Promise<boolean> {
+  async removeCompanyEmployee(companyId: string, memberId: string): Promise<boolean> {
     try {
       const { error } = await supabase
-        .from('company_employees')
+        .from('company_members')
         .delete()
-        .eq('id', employeeId);
+        .eq('company_id', companyId)
+        .eq('member_id', memberId);
 
       if (error) {
         handleSupabaseError(error, 'removing company employee');
@@ -383,7 +366,7 @@ export const companiesApi = {
       logger.debug('Fetching company employees', 'COMPANIES', { companyId });
       
       let query = supabase
-        .from('company_employees')
+        .from('company_members')
         .select('*')
         .eq('company_id', companyId);
 
@@ -410,32 +393,18 @@ export const companiesApi = {
       if (!data) return [];
       
       return data.map(employee => ({
-        id: employee.id,
         company_id: employee.company_id,
         member_id: employee.member_id,
-        role: employee.role || undefined,
-        department: employee.department || undefined,
-        start_date: employee.start_date || undefined,
-        end_date: employee.end_date || undefined,
-        is_current: employee.is_current ?? true,
-        created_at: employee.created_at,
-        updated_at: employee.updated_at || undefined,
-        member: employee.member ? {
-          id: employee.member.id,
-          name: employee.member.name,
-          title: employee.member.title || '',
-          company: employee.member.company || undefined,
-          location: employee.member.location || undefined,
-          image: employee.member.image || '',
-          bio: employee.member.bio || undefined,
-          intro: employee.member.intro || undefined,
-          skills: employee.member.skills || undefined,
-          joinDate: employee.member.join_date || employee.member.created_at,
-          social: employee.member.social || undefined,
-          status: employee.member.status || 'published',
-          created_at: employee.member.created_at,
-          updated_at: employee.member.updated_at || undefined,
-          featured: employee.member.featured || false
+        role: employee.role,
+        joined_date: employee.joined_date,
+        member: (employee as any).member ? {
+          id: (employee as any).member.id,
+          name: (employee as any).member.name,
+          full_name: (employee as any).member.name,
+          bio: (employee as any).member.bio,
+          location: (employee as any).member.location,
+          image: (employee as any).member.image,
+          avatar_url: (employee as any).member.image
         } : undefined
       }));
     } catch (error) {

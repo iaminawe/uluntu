@@ -64,6 +64,12 @@ const GalleryEditPage: React.FC = () => {
       setLoading(true);
       const gallery = await galleryApi.getGallery(id);
       
+      // Check if gallery was found
+      if (!gallery) {
+        navigate('/404');
+        return;
+      }
+      
       // Check ownership
       if (gallery.owner_id !== user?.id) {
         navigate('/unauthorized');
@@ -74,7 +80,7 @@ const GalleryEditPage: React.FC = () => {
         title: gallery.title,
         description: gallery.description || '',
         privacy_level: gallery.privacy_level,
-        visibility: gallery.visibility,
+        visibility: gallery.visibility === 'archived' ? 'hidden' : gallery.visibility as 'hidden' | 'visible',
         tags: gallery.tags || [],
         owner_type: gallery.owner_type || 'user',
         owner_id: gallery.owner_id
@@ -158,8 +164,9 @@ const GalleryEditPage: React.FC = () => {
 
   const handleAddTag = () => {
     const tag = tagInput.trim().toLowerCase();
-    if (tag && !formData.tags.includes(tag) && formData.tags.length < 10) {
-      setFormData({ ...formData, tags: [...formData.tags, tag] });
+    const tags = formData.tags || [];
+    if (tag && !tags.includes(tag) && tags.length < 10) {
+      setFormData({ ...formData, tags: [...tags, tag] });
       setTagInput('');
     }
   };
@@ -167,7 +174,7 @@ const GalleryEditPage: React.FC = () => {
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
+      tags: (formData.tags || []).filter(tag => tag !== tagToRemove)
     });
   };
 
@@ -175,7 +182,7 @@ const GalleryEditPage: React.FC = () => {
     if (!id) return;
     
     try {
-      await uploadApi.uploadPhotos(files);
+      await uploadApi.uploadBatch(files, { galleryId: id });
       navigate(`/galleries/${id}`);
     } catch (err) {
       console.error('Error uploading photos:', err);
@@ -225,10 +232,11 @@ const GalleryEditPage: React.FC = () => {
           {/* Gallery Owner Selector */}
           {!isEditing && (
             <GallerySelector
-              value={galleryOwner}
-              onChange={setGalleryOwner}
-              userGroups={userGroups.map(g => ({ id: g.id, name: g.name, role: g.role || 'member' }))}
-              userCompanies={userCompanies}
+              ownerType={galleryOwner.type}
+              ownerId={galleryOwner.id}
+              onOwnerChange={(type, id) => setGalleryOwner({ type, id, name: '' })}
+              userGroups={userGroups.map(g => ({ id: g.id, name: g.name }))}
+              userCompanies={userCompanies.map(c => ({ id: c.id, name: c.name }))}
             />
           )}
           {/* Title */}
@@ -272,7 +280,7 @@ const GalleryEditPage: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
             )}
             <p className="mt-1 text-sm text-gray-500">
-              {formData.description.length}/500 characters
+              {(formData.description || '').length}/500 characters
             </p>
           </div>
 
@@ -367,9 +375,9 @@ const GalleryEditPage: React.FC = () => {
                 Add
               </button>
             </div>
-            {formData.tags.length > 0 && (
+            {(formData.tags || []).length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag) => (
+                {(formData.tags || []).map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"

@@ -37,7 +37,7 @@ export const useGallery = () => {
   const error = useAppSelector(selectGalleryError);
 
   const loadGalleries = useCallback((galleryFilters?: GalleryFilters) => {
-    return dispatch(fetchGalleries(galleryFilters));
+    return dispatch(fetchGalleries(galleryFilters || {}));
   }, [dispatch]);
 
   const loadGalleryById = useCallback((id: string) => {
@@ -134,14 +134,14 @@ export const useGalleries = (filters?: GalleryFilters) => {
   const error = useAppSelector(selectGalleryError);
 
   useEffect(() => {
-    dispatch(fetchGalleries(filters));
+    dispatch(fetchGalleries(filters || {}));
   }, [dispatch, JSON.stringify(filters)]); // Use JSON.stringify for deep comparison of filters object
 
   return {
     galleries,
     loading: status === 'loading',
     error,
-    refetch: () => dispatch(fetchGalleries(filters))
+    refetch: () => dispatch(fetchGalleries(filters || {}))
   };
 };
 

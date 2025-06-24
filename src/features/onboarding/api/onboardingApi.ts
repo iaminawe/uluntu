@@ -16,12 +16,12 @@ export const onboardingApi = {
       if (error) throw error;
 
       return {
-        currentStep: data.onboarding_current_step || 1,
+        currentStep: (data as any).onboarding_current_step || 1,
         completedSteps: [], // Will be calculated based on current step
-        skippedSteps: data.onboarding_skipped_steps || [],
-        completionPercentage: data.profile_completion_percentage || 0,
-        isCompleted: !!data.onboarding_completed_at,
-        lastUpdated: data.onboarding_completed_at || new Date().toISOString(),
+        skippedSteps: (data as any).onboarding_skipped_steps || [],
+        completionPercentage: (data as any).profile_completion_percentage || 0,
+        isCompleted: !!(data as any).onboarding_completed_at,
+        lastUpdated: (data as any).onboarding_completed_at || new Date().toISOString(),
       };
     } catch (error) {
       console.error('Failed to get onboarding progress:', error);
@@ -138,17 +138,9 @@ export const onboardingApi = {
    */
   async needsOnboarding(userId: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
-        .from('members')
-        .select('onboarding_completed_at, onboarding_current_step')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) throw error;
-
-      // User needs onboarding if they haven't completed it
-      // or if they're still on an early step
-      return !data.onboarding_completed_at || (data.onboarding_current_step || 1) < 5;
+      // Get current progress to check if completed
+      const progress = await this.getProgress(userId);
+      return !progress?.isCompleted;
     } catch (error) {
       console.error('Failed to check onboarding status:', error);
       // If we can't determine, assume they need onboarding

@@ -72,10 +72,10 @@ export const galleryApi = {
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         ownerId: gallery.user_id,
-        privacy: gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level,
+        privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as 'public' | 'private' | 'unlisted',
         photo_count: gallery.photo_count || 0
-      };
-    });
+      } as any;
+    }) as Gallery[];
     
     const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -130,20 +130,20 @@ export const galleryApi = {
       if (photo.thumbnail_path && !photo.thumbnail_url) {
         processedPhoto.thumbnail_url = getPublicUrl(photo.thumbnail_path);
       }
-      if (photo.small_path && !photo.small_url) {
-        processedPhoto.small_url = getPublicUrl(photo.small_path);
+      if ((photo as any).small_path && !(photo as any).small_url) {
+        (processedPhoto as any).small_url = getPublicUrl((photo as any).small_path);
       }
       if (photo.medium_path && !photo.medium_url) {
         processedPhoto.medium_url = getPublicUrl(photo.medium_path);
       }
-      if (photo.large_path && !photo.large_url) {
-        processedPhoto.large_url = getPublicUrl(photo.large_path);
+      if ((photo as any).large_path && !(photo as any).large_url) {
+        (processedPhoto as any).large_url = getPublicUrl((photo as any).large_path);
       }
-      if (photo.original_path && !photo.original_url) {
-        processedPhoto.original_url = getPublicUrl(photo.original_path);
+      if ((photo as any).original_path && !(photo as any).original_url) {
+        (processedPhoto as any).original_url = getPublicUrl((photo as any).original_path);
       }
-      if (photo.storage_path && !photo.url) {
-        processedPhoto.url = getPublicUrl(photo.storage_path);
+      if ((photo as any).storage_path && !(photo as any).url) {
+        (processedPhoto as any).url = getPublicUrl((photo as any).storage_path);
       }
       
       return processedPhoto;
@@ -154,31 +154,31 @@ export const galleryApi = {
     if (data.cover_photo_id && processedPhotos.length > 0) {
       const coverPhoto = processedPhotos.find(p => p.id === data.cover_photo_id);
       if (coverPhoto) {
-        coverPhotoUrl = coverPhoto.thumbnail_url || coverPhoto.small_url || coverPhoto.url;
+        coverPhotoUrl = coverPhoto.thumbnail_url || (coverPhoto as any).small_url || (coverPhoto as any).url;
       }
     }
     // Fallback to first photo if no cover photo set
     if (!coverPhotoUrl && processedPhotos.length > 0) {
-      coverPhotoUrl = processedPhotos[0].thumbnail_url || processedPhotos[0].small_url || processedPhotos[0].url;
+      coverPhotoUrl = processedPhotos[0].thumbnail_url || (processedPhotos[0] as any).small_url || (processedPhotos[0] as any).url;
     }
     
     // Transform data to match interface
     return {
       ...data,
-      photos: processedPhotos,
-      gallery_photos: processedPhotos,
+      photos: processedPhotos as Photo[],
+      gallery_photos: processedPhotos as Photo[],
       cover_photo_url: coverPhotoUrl,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       ownerId: data.user_id,
-      privacy: data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level
-    };
+      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as 'public' | 'private' | 'unlisted'
+    } as Gallery;
   },
 
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
     const { data, error } = await supabase
       .from('user_galleries')
-      .insert([gallery])
+      .insert([gallery as any])
       .select()
       .single();
 
@@ -187,13 +187,13 @@ export const galleryApi = {
       throw error;
     }
 
-    return data;
+    return data as Gallery;
   },
 
   async updateGallery(id: string, updates: Partial<Gallery>): Promise<Gallery> {
     const { data, error } = await supabase
       .from('user_galleries')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single();
@@ -203,7 +203,7 @@ export const galleryApi = {
       throw error;
     }
 
-    return data;
+    return data as Gallery;
   },
 
   async deleteGallery(id: string): Promise<boolean> {
@@ -242,7 +242,7 @@ export const galleryApi = {
       throw error;
     }
 
-    return data || [];
+    return (data || []) as Photo[];
   },
 
   // Photo operations
@@ -368,7 +368,7 @@ export const galleryApi = {
 
       const { data, error } = await supabase
         .from('gallery_photos')
-        .insert([photoData])
+        .insert([photoData as any])
         .select()
         .single();
 
@@ -383,9 +383,9 @@ export const galleryApi = {
       }
 
       // Set the main URL for backward compatibility
-      data.url = data.medium_url || data.original_url;
+      (data as any).url = (data as any).medium_url || (data as any).original_url;
 
-      return data;
+      return data as Photo;
 
     } catch (error) {
       logger.apiError('uploadPhoto', error);
@@ -401,7 +401,7 @@ export const galleryApi = {
   async updatePhoto(id: string, updates: Partial<Photo>): Promise<Photo> {
     const { data, error } = await supabase
       .from('gallery_photos')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single();
@@ -411,7 +411,7 @@ export const galleryApi = {
       throw error;
     }
 
-    return data;
+    return data as Photo;
   },
 
   async deletePhoto(id: string): Promise<boolean> {
@@ -535,7 +535,7 @@ export const galleryApi = {
   },
 
   async toggleLike(galleryId: string, userId: string): Promise<boolean> {
-    const { data: existing } = await supabase
+    const { data: existing } = await (supabase as any)
       .from('gallery_likes')
       .select()
       .eq('gallery_id', galleryId)
@@ -544,7 +544,7 @@ export const galleryApi = {
 
     if (existing) {
       // Unlike
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('gallery_likes')
         .delete()
         .eq('gallery_id', galleryId)
@@ -554,7 +554,7 @@ export const galleryApi = {
       return false;
     } else {
       // Like
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('gallery_likes')
         .insert([{ gallery_id: galleryId, user_id: userId }]);
 
@@ -568,7 +568,7 @@ export const galleryApi = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('photo_likes')
         .select()
         .eq('photo_id', photoId)
@@ -577,7 +577,7 @@ export const galleryApi = {
 
       if (existing) {
         // Unlike
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('photo_likes')
           .delete()
           .eq('photo_id', photoId)
@@ -587,7 +587,7 @@ export const galleryApi = {
         return false;
       } else {
         // Like
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('photo_likes')
           .insert([{ photo_id: photoId, user_id: user.id }]);
 

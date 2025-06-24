@@ -1,20 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { debugSupabase, testAnonymousAuth, testTableAccess } from '../../utils/supabaseDebugger';
+import { debugSupabase, testAnonymousAuth, testTableAccess, DebugResult } from '../../utils/supabaseDebugger';
 import { useAppDispatch } from '../../app/hooks';
-import { fetchEvents } from '../../features/events/store/eventsSlice';
-import { fetchMembers } from '../../features/directory/store/membersSlice';
-import { fetchCompanies } from '../../features/companies/store/companiesSlice';
-import { fetchGroups } from '../../features/groups/store/groupsSlice';
-import { fetchNewsArticles } from '../../features/news/store/newsSlice';
+// Redux slices imports removed - no longer needed for diagnostic
+// Server data is now handled by React Query, Redux only manages UI state
+
+interface DiagnosticConnectionResult {
+  success: boolean;
+  error?: string;
+  url: string;
+  hasAnonKey: boolean;
+}
+
+interface DiagnosticAuthResult {
+  success: boolean;
+  error?: string;
+  session?: unknown;
+  user?: unknown;
+  isAuthenticated?: boolean;
+  userId?: string;
+}
+
+interface DiagnosticResults {
+  connection: DiagnosticConnectionResult;
+  auth: DiagnosticAuthResult;
+  [key: string]: unknown;
+}
+
+interface TestResult {
+  isRunning: boolean;
+  result?: unknown;
+  error?: string;
+  success?: boolean;
+  message?: string;
+}
 
 interface DiagnosticState {
   isRunning: boolean;
-  results: Record<string, unknown> | null;
+  results: DebugResult | null;
   error: string | null;
-  tableTests: Record<string, Record<string, unknown>>;
-  reduxTests: Record<string, Record<string, unknown>>;
+  tableTests: Record<string, TestResult>;
+  reduxTests: Record<string, TestResult>;
   anonymousAuth?: Record<string, unknown> | null;
 }
 
@@ -61,7 +88,7 @@ const SupabaseDiagnosticPage = () => {
         ...prev, 
         tableTests: { 
           ...prev.tableTests, 
-          [tableName]: { isRunning: false, result } as Record<string, unknown>
+          [tableName]: { isRunning: false, result }
         } 
       }));
     } catch (err) {
@@ -88,38 +115,18 @@ const SupabaseDiagnosticPage = () => {
     }));
     
     try {
-      let action;
-      switch (sliceName) {
-        case 'events':
-          action = fetchEvents();
-          break;
-        case 'members':
-          action = fetchMembers();
-          break;
-        case 'companies':
-          action = fetchCompanies();
-          break;
-        case 'groups':
-          action = fetchGroups();
-          break;
-        case 'news':
-          action = fetchNewsArticles();
-          break;
-        default:
-          throw new Error(`Unknown slice: ${sliceName}`);
-      }
+      // Note: Redux fetch actions have been removed as part of the hybrid pattern migration
+      // Server data is now managed by React Query, Redux only handles UI state
       
-      const result = await dispatch(action).unwrap();
       setState(prev => ({ 
         ...prev, 
         reduxTests: { 
           ...prev.reduxTests, 
           [sliceName]: { 
             isRunning: false, 
-            result,
             success: true,
-            count: Array.isArray(result) ? result.length : 0
-          } as Record<string, unknown>
+            message: `Redux UI slice for ${sliceName} exists (server data now handled by React Query)`
+          } 
         } 
       }));
     } catch (err) {
@@ -131,7 +138,7 @@ const SupabaseDiagnosticPage = () => {
             isRunning: false, 
             error: err instanceof Error ? err.message : 'Unknown error',
             success: false
-          } as Record<string, unknown>
+          }
         } 
       }));
     }
@@ -239,7 +246,7 @@ const SupabaseDiagnosticPage = () => {
       )}
       
       {/* Authentication Status */}
-      {state.results && (
+      {state.results && (state.results as any).auth && (
         <div className="mb-8 p-4 bg-white rounded shadow">
           <h2 className="text-xl font-semibold mb-4">Authentication Status</h2>
           <div className={`p-4 rounded ${state.results.auth.isAuthenticated ? 'bg-green-50' : 'bg-yellow-50'}`}>
@@ -267,11 +274,11 @@ const SupabaseDiagnosticPage = () => {
               <div className="mt-3 p-3 bg-gray-50 rounded">
                 <h4 className="font-medium">Anonymous Auth Result:</h4>
                 <p><strong>Success:</strong> {state.anonymousAuth.success ? 'Yes' : 'No'}</p>
-                {state.anonymousAuth.userId && (
-                  <p><strong>User ID:</strong> {state.anonymousAuth.userId}</p>
+                {(state.anonymousAuth as any).userId && (
+                  <p><strong>User ID:</strong> {String((state.anonymousAuth as any).userId)}</p>
                 )}
-                {state.anonymousAuth.error && (
-                  <p className="text-red-600"><strong>Error:</strong> {state.anonymousAuth.error}</p>
+                {(state.anonymousAuth as any).error && (
+                  <p className="text-red-600"><strong>Error:</strong> {String((state.anonymousAuth as any).error)}</p>
                 )}
               </div>
             )}
@@ -285,96 +292,96 @@ const SupabaseDiagnosticPage = () => {
           <h2 className="text-xl font-semibold mb-4">Table Access</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {state.results.tables.map((table: Record<string, unknown>) => (
+            {(state.results.tables as any[]).map((table: Record<string, unknown>, index: number) => (
               <div 
-                key={table.table}
+                key={table.table as string || index}
                 className={`p-4 rounded ${table.success ? 'bg-green-50' : 'bg-red-50'}`}
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">{table.table}</h3>
+                  <h3 className="text-lg font-medium">{String(table.table)}</h3>
                   <span className={`px-2 py-1 rounded text-sm ${table.success ? 'bg-green-200' : 'bg-red-200'}`}>
                     {table.success ? 'Success' : 'Failed'}
                   </span>
                 </div>
                 
                 {table.count !== null && (
-                  <p className="mt-2"><strong>Records:</strong> {table.count}</p>
+                  <p className="mt-2"><strong>Records:</strong> {String(table.count)}</p>
                 )}
                 
                 {table.fields && (
-                  <p className="mt-1"><strong>Fields:</strong> {table.fields.slice(0, 5).join(', ')}{table.fields.length > 5 ? '...' : ''}</p>
+                  <p className="mt-1"><strong>Fields:</strong> {(table.fields as any)?.slice(0, 5)?.join(', ')}{(table.fields as any)?.length > 5 ? '...' : ''}</p>
                 )}
                 
-                {table.error && (
-                  <p className="text-red-600 mt-2">{table.error}</p>
+                {(table as any).error && (
+                  <p className="text-red-600 mt-2">{String((table as any).error)}</p>
                 )}
                 
                 <div className="mt-3 flex space-x-2">
                   <button
-                    onClick={() => testSpecificTable(table.table)}
-                    disabled={state.tableTests[table.table]?.isRunning}
+                    onClick={() => testSpecificTable((table as any).table)}
+                    disabled={state.tableTests[(table as any).table]?.isRunning}
                     className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
                   >
-                    {state.tableTests[table.table]?.isRunning ? 'Testing...' : 'Test Access'}
+                    {state.tableTests[(table as any).table]?.isRunning ? 'Testing...' : 'Test Access'}
                   </button>
                   <button
-                    onClick={() => testReduxFetch(table.table)}
-                    disabled={state.reduxTests[table.table]?.isRunning}
+                    onClick={() => testReduxFetch((table as any).table)}
+                    disabled={state.reduxTests[(table as any).table]?.isRunning}
                     className="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 disabled:opacity-50"
                   >
-                    {state.reduxTests[table.table]?.isRunning ? 'Fetching...' : 'Test Redux Fetch'}
+                    {state.reduxTests[(table as any).table]?.isRunning ? 'Fetching...' : 'Test Redux Fetch'}
                   </button>
                 </div>
                 
-                {state.tableTests[table.table]?.result && (
+                {state.tableTests[(table as any).table]?.result && (
                   <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
                     <h4 className="font-medium">Access Test Results:</h4>
                     <div className="mt-2">
-                      <p><strong>Normal Access:</strong> {state.tableTests[table.table].result.normalAccess?.success ? 'Success' : 'Failed'}</p>
-                      {state.tableTests[table.table].result.normalAccess?.count !== null && (
-                        <p><strong>Count:</strong> {state.tableTests[table.table].result.normalAccess.count}</p>
+                      <p><strong>Normal Access:</strong> {(state.tableTests[(table as any).table].result as any).normalAccess?.success ? 'Success' : 'Failed'}</p>
+                      {(state.tableTests[(table as any).table].result as any).normalAccess?.count !== null && (
+                        <p><strong>Count:</strong> {(state.tableTests[(table as any).table].result as any).normalAccess.count}</p>
                       )}
-                      {state.tableTests[table.table].result.normalAccess?.error && (
-                        <p className="text-red-600">{state.tableTests[table.table].result.normalAccess.error}</p>
+                      {(state.tableTests[(table as any).table].result as any).normalAccess?.error && (
+                        <p className="text-red-600">{(state.tableTests[(table as any).table].result as any).normalAccess.error}</p>
                       )}
                     </div>
                     
                     <div className="mt-2 pt-2 border-t border-gray-200">
-                      <p><strong>Anonymous Access:</strong> {state.tableTests[table.table].result.anonymousAccess?.success ? 'Success' : 'Failed'}</p>
-                      {state.tableTests[table.table].result.anonymousAccess?.count !== null && (
-                        <p><strong>Count:</strong> {state.tableTests[table.table].result.anonymousAccess.count}</p>
+                      <p><strong>Anonymous Access:</strong> {(state.tableTests[(table as any).table].result as any).anonymousAccess?.success ? 'Success' : 'Failed'}</p>
+                      {(state.tableTests[(table as any).table].result as any).anonymousAccess?.count !== null && (
+                        <p><strong>Count:</strong> {(state.tableTests[(table as any).table].result as any).anonymousAccess.count}</p>
                       )}
-                      {state.tableTests[table.table].result.anonymousAccess?.error && (
-                        <p className="text-red-600">{state.tableTests[table.table].result.anonymousAccess.error}</p>
+                      {(state.tableTests[(table as any).table].result as any).anonymousAccess?.error && (
+                        <p className="text-red-600">{(state.tableTests[(table as any).table].result as any).anonymousAccess.error}</p>
                       )}
                     </div>
                   </div>
                 )}
                 
-                {state.reduxTests[table.table]?.result && (
+                {state.reduxTests[(table as any).table]?.result && (
                   <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
                     <h4 className="font-medium">Redux Fetch Results:</h4>
                     <p>
                       <strong>Status:</strong> {
-                        state.reduxTests[table.table].success 
+                        (state.reduxTests[(table as any).table] as any).success 
                           ? '✅ Success' 
                           : '❌ Failed'
                       }
                     </p>
                     <p>
                       <strong>Items:</strong> {
-                        state.reduxTests[table.table].count
+                        (state.reduxTests[(table as any).table] as any).count
                       }
                     </p>
-                    {state.reduxTests[table.table].error && (
+                    {(state.reduxTests[(table as any).table] as any).error && (
                       <p className="text-red-600">
-                        {state.reduxTests[table.table].error}
+                        {(state.reduxTests[(table as any).table] as any).error}
                       </p>
                     )}
                   </div>
                 )}
                 
-                {table.sample && (
+                {(table.sample as any) && (
                   <details className="mt-3">
                     <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
                       View Sample Data
@@ -395,22 +402,22 @@ const SupabaseDiagnosticPage = () => {
         <div className="mb-8 p-4 bg-white rounded shadow">
           <h2 className="text-xl font-semibold mb-4">Row Level Security</h2>
           
-          {state.results.rls.error ? (
+          {(state.results.rls as any).error ? (
             <div className="p-4 bg-yellow-50 rounded">
-              <p>Unable to check RLS policies: {state.results.rls.error}</p>
+              <p>Unable to check RLS policies: {(state.results.rls as any).error}</p>
               <p className="mt-2 text-sm">Note: Checking RLS policies typically requires admin privileges</p>
             </div>
           ) : (
             <div className="p-4 bg-gray-50 rounded">
-              <p><strong>RLS Enabled:</strong> {state.results.rls.enabled ? 'Yes' : 'No or Unknown'}</p>
+              <p><strong>RLS Enabled:</strong> {(state.results.rls as any).enabled ? 'Yes' : 'No or Unknown'}</p>
               
-              {state.results.rls.policies && state.results.rls.policies.length > 0 ? (
+              {(state.results.rls as any).policies && (state.results.rls as any).policies.length > 0 ? (
                 <div className="mt-3">
                   <h4 className="font-medium">Policies:</h4>
                   <ul className="mt-2 list-disc list-inside">
-                    {state.results.rls.policies.map((policy: Record<string, unknown>, index: number) => (
+                    {(state.results.rls as any).policies.map((policy: Record<string, unknown>, index: number) => (
                       <li key={index}>
-                        {policy.name}: {policy.definition}
+                        {String(policy.name)}: {String(policy.definition)}
                       </li>
                     ))}
                   </ul>

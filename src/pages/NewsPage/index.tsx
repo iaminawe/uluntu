@@ -32,7 +32,7 @@ export default function NewsPage() {
           searchTerm={searchTerm}
           onSearch={(term) => {
             setSearchTerm(term);
-            setFilterSearch(term);
+            setFilterSearch(typeof term === 'string' ? term : '');
           }}
           selectedTags={selectedTags}
           onTagsChange={setSelectedTags}

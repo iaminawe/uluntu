@@ -239,8 +239,8 @@ export class ImageProcessingService {
         // For other sizes, resize with smart cropping
         const processedImage = await this.resizeAndCrop(
           file,
-          sizeConfig.width,
-          sizeConfig.height,
+          (sizeConfig as any).width,
+          (sizeConfig as any).height,
           sizeConfig.quality,
           true
         );

@@ -1,9 +1,41 @@
 import { supabase, handleSupabaseError } from '@/shared/api/client';
-import {
-  PageHeaderAssignment,
-  PageHeaderAssignmentsResponse,
-  CreatePageHeaderAssignmentData
-} from '../types';
+
+// Define minimal types for page header functionality
+interface PageHeaderAssignment {
+  id: string;
+  page_path: string;
+  photo_id: string;
+  priority: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface PageHeaderAssignmentsResponse {
+  assignments: PageHeaderAssignment[];
+  totalCount: number;
+  data?: any; // For compatibility
+  page?: any; // For pagination compatibility
+  limit?: number;
+  total?: number;
+  totalPages?: number;
+}
+
+interface CreatePageHeaderAssignmentData {
+  page_path: string;
+  photo_id: string;
+  priority?: number;
+  is_active?: boolean;
+  page_title?: string;
+  start_date?: string;
+  end_date?: string;
+  // Legacy property names for compatibility
+  pagePath?: string;
+  photoId?: string;
+  pageTitle?: string;
+  startDate?: string;
+  endDate?: string;
+}
 
 class PageHeaderAssignmentApi {
   private tableName = 'page_header_assignments';
@@ -24,7 +56,7 @@ class PageHeaderAssignmentApi {
         photoId,
       } = params || {};
 
-      let query = supabase
+      let query = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -90,6 +122,8 @@ class PageHeaderAssignmentApi {
       const totalPages = Math.ceil((count || 0) / limit);
 
       return {
+        assignments: data as PageHeaderAssignment[],
+        totalCount: count || 0,
         data: data as PageHeaderAssignment[],
         page,
         limit,
@@ -104,7 +138,7 @@ class PageHeaderAssignmentApi {
 
   async getAssignmentById(id: string): Promise<PageHeaderAssignment> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -149,7 +183,7 @@ class PageHeaderAssignmentApi {
     try {
       const now = new Date().toISOString();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -197,7 +231,7 @@ class PageHeaderAssignmentApi {
       }
 
       // Check if there's already an active assignment for this page with higher priority
-      const existingAssignment = await this.getActiveAssignmentForPage(assignmentData.pagePath);
+      const existingAssignment = await this.getActiveAssignmentForPage(assignmentData.page_path || assignmentData.pagePath || '');
       
       let priority = assignmentData.priority || 1;
       if (existingAssignment && existingAssignment.priority >= priority) {
@@ -205,17 +239,17 @@ class PageHeaderAssignmentApi {
       }
 
       const newAssignment = {
-        photo_id: assignmentData.photoId,
-        page_path: assignmentData.pagePath,
-        page_title: assignmentData.pageTitle,
-        start_date: assignmentData.startDate,
-        end_date: assignmentData.endDate,
+        photo_id: assignmentData.photo_id || assignmentData.photoId,
+        page_path: assignmentData.page_path || assignmentData.pagePath,
+        page_title: assignmentData.page_title || assignmentData.pageTitle,
+        start_date: assignmentData.start_date || assignmentData.startDate,
+        end_date: assignmentData.end_date || assignmentData.endDate,
         priority,
         is_active: true,
         created_by: user.id,
-      };
+      } as any;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newAssignment)
         .select(`
@@ -254,7 +288,7 @@ class PageHeaderAssignmentApi {
     }
   ): Promise<PageHeaderAssignment> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           ...updates,
@@ -291,7 +325,7 @@ class PageHeaderAssignmentApi {
 
   async deleteAssignment(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(this.tableName)
         .delete()
         .eq('id', id);
@@ -308,11 +342,11 @@ class PageHeaderAssignmentApi {
   }
 
   async activateAssignment(id: string): Promise<PageHeaderAssignment> {
-    return this.updateAssignment(id, { isActive: true });
+    return this.updateAssignment(id, { is_active: true } as any);
   }
 
   async deactivateAssignment(id: string): Promise<PageHeaderAssignment> {
-    return this.updateAssignment(id, { isActive: false });
+    return this.updateAssignment(id, { is_active: false } as any);
   }
 
   async scheduleAssignment(
@@ -321,10 +355,10 @@ class PageHeaderAssignmentApi {
     endDate?: string
   ): Promise<PageHeaderAssignment> {
     return this.updateAssignment(id, {
-      startDate,
-      endDate,
-      isActive: true,
-    });
+      start_date: startDate,
+      end_date: endDate,
+      is_active: true,
+    } as any);
   }
 
   async getScheduledAssignments(
@@ -332,7 +366,7 @@ class PageHeaderAssignmentApi {
     endDate?: string
   ): Promise<PageHeaderAssignment[]> {
     try {
-      let query = supabase
+      let query = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -377,7 +411,7 @@ class PageHeaderAssignmentApi {
   async updatePriorities(assignments: Array<{ id: string; priority: number }>): Promise<boolean> {
     try {
       const updates = assignments.map(({ id, priority }) =>
-        supabase
+        (supabase as any)
           .from(this.tableName)
           .update({ priority })
           .eq('id', id)
@@ -400,7 +434,7 @@ class PageHeaderAssignmentApi {
 
   async getPageList(): Promise<Array<{ path: string; title: string; activeAssignments: number }>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .select('page_path, page_title, is_active')
         .order('page_path');
@@ -412,7 +446,7 @@ class PageHeaderAssignmentApi {
       // Group by page path and count active assignments
       const pageMap = new Map<string, { title: string; activeCount: number }>();
       
-      data.forEach(assignment => {
+      (data as any[]).forEach((assignment: any) => {
         const existing = pageMap.get(assignment.page_path);
         if (existing) {
           if (assignment.is_active) {
@@ -441,7 +475,7 @@ class PageHeaderAssignmentApi {
     try {
       const now = new Date().toISOString();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           is_active: false,
@@ -466,7 +500,7 @@ class PageHeaderAssignmentApi {
     try {
       const now = new Date().toISOString();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           is_active: true,

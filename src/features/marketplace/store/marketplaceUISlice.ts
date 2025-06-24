@@ -97,4 +97,5 @@ export const selectMarketplaceSortOrder = (state: RootState) => state.marketplac
 export const selectMarketplacePriceRange = (state: RootState) => state.marketplaceUI.priceRange;
 export const selectExpandedListings = (state: RootState) => state.marketplaceUI.expandedListings;
 
+export { marketplaceUISlice };
 export default marketplaceUISlice.reducer;

@@ -1,4 +1,4 @@
-import { Database } from '../types/supabase';
+import { Database } from '@/types/supabase';
 import { Opportunity } from '../types';
 
 type SupabaseOpportunity = Database['public']['Tables']['opportunities']['Row'];
@@ -79,21 +79,21 @@ export function adaptOpportunityToDatabase(opportunity: Partial<Opportunity>): D
   
   return {
     title: opportunity.title ?? '',
-    description: opportunity.description ?? null,
-    type: opportunity.type ?? null,
-    location: opportunity.location ?? null,
-    remote: opportunity.remote === undefined ? null : opportunity.remote,
-    compensation: opportunity.salary ?? null,
-    deadline: opportunity.deadline ?? null,
-    contact_email: null, // Not available in FrontendOpportunity
-    website: null, // Not available in FrontendOpportunity
-    image: opportunity.company?.logo ?? null,
-    organization: organization,
-    posted_by: opportunity.company?.id ?? null,
+    description: opportunity.description || '',
+    type: opportunity.type || '',
+    location: opportunity.location || '',
+    remote: opportunity.remote === undefined ? false : opportunity.remote,
+    compensation: opportunity.salary || '',
+    deadline: opportunity.deadline || '',
+    contact_email: '', // Not available in FrontendOpportunity
+    website: '', // Not available in FrontendOpportunity
+    image: opportunity.company?.logo || '',
+    organization: organization || '',
+    posted_by: opportunity.company?.id || '',
     requirements: null, // Not available in FrontendOpportunity
     responsibilities: null, // Not available in FrontendOpportunity
     benefits: null, // Not available in FrontendOpportunity
-    status: opportunity.status ?? null,
+    status: opportunity.status || undefined,
     featured: opportunity.featured === undefined ? null : opportunity.featured
   };
 }
@@ -120,21 +120,21 @@ export function adaptOpportunityInputToDatabase(input: {
 }): Database['public']['Tables']['opportunities']['Insert'] {
   return {
     title: input.title,
-    description: input.description ?? null,
-    type: input.type ?? null,
-    organization: input.organization ?? null,
-    location: input.location ?? null,
-    remote: input.remote ?? null,
-    compensation: input.compensation ?? null,
-    deadline: input.deadline ?? null,
-    contact_email: input.contactEmail ?? null,
-    website: input.website ?? null,
-    image: input.image ?? null,
+    description: input.description || '',
+    type: input.type || '',
+    organization: input.organization || '',
+    location: input.location || '',
+    remote: input.remote || undefined,
+    compensation: input.compensation || '',
+    deadline: input.deadline || '',
+    contact_email: input.contactEmail || '',
+    website: input.website || '',
+    image: input.image || '',
     requirements: input.requirements ?? null,
     responsibilities: input.responsibilities ?? null,
     benefits: input.benefits ?? null,
-    posted_by: input.postedBy ?? null,
-    status: input.status ?? null,
+    posted_by: input.postedBy || '',
+    status: input.status || undefined,
     featured: input.featured ?? null
   };
 }

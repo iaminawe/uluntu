@@ -59,7 +59,7 @@ export class SettingsAPI {
   async isFeatureEnabled(featureKey: string): Promise<boolean> {
     try {
       const { data, error } = await supabase.rpc('is_feature_enabled', {
-        feature_name: featureKey,
+        feature_key_param: featureKey,
       });
       
       if (error) {
@@ -439,12 +439,12 @@ export class SettingsAPI {
       for (const setting of importData.settings) {
         try {
           const result = await this.upsertSetting({
-            category: setting.category,
+            category: setting.category as any,
             setting_key: setting.setting_key,
             setting_value: setting.setting_value,
-            data_type: setting.data_type,
-            is_public: setting.is_public,
-            description: setting.description,
+            data_type: setting.data_type as any,
+            is_public: setting.is_public ?? undefined,
+            description: setting.description ?? undefined,
           });
           
           if (result.success) {
@@ -464,12 +464,12 @@ export class SettingsAPI {
         try {
           const result = await this.updateFeatureToggle({
             feature_key: feature.feature_key,
-            enabled: feature.enabled,
-            config: feature.config,
-            rollout_percentage: feature.rollout_percentage,
-            enabled_for_users: feature.enabled_for_users,
-            enabled_for_roles: feature.enabled_for_roles,
-            description: feature.description,
+            enabled: feature.enabled ?? undefined,
+            config: feature.config ?? undefined,
+            rollout_percentage: feature.rollout_percentage ?? undefined,
+            enabled_for_users: feature.enabled_for_users ?? undefined,
+            enabled_for_roles: feature.enabled_for_roles ?? undefined,
+            description: feature.description ?? undefined,
           });
           
           if (result.success) {

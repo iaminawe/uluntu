@@ -23,7 +23,7 @@ class PagesApi {
       limit = 12,
     } = params || {};
 
-    let query = supabase
+    let query = (supabase as any)
       .from(this.tableName)
       .select(`
         *,
@@ -80,7 +80,7 @@ class PagesApi {
   }
 
   async getPageById(id: string): Promise<Page> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .select(`
         *,
@@ -102,7 +102,7 @@ class PagesApi {
   }
 
   async getPageBySlug(slug: string): Promise<Page> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .select(`
         *,
@@ -138,7 +138,7 @@ class PagesApi {
       published_at: pageData.status === 'published' ? new Date().toISOString() : null,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .insert(newPage)
       .select(`
@@ -167,7 +167,7 @@ class PagesApi {
       updates.published_at = new Date().toISOString();
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .update({
         ...updates,
@@ -193,7 +193,7 @@ class PagesApi {
   }
 
   async deletePage(id: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from(this.tableName)
       .delete()
       .eq('id', id);
@@ -215,12 +215,12 @@ class PagesApi {
     return this.updatePage({
       id,
       status: 'draft',
-      published_at: null,
+      published_at: undefined,
     });
   }
 
   async getHomePage(): Promise<Page | null> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .select(`
         *,
@@ -239,11 +239,11 @@ class PagesApi {
       throw new Error(error.message);
     }
 
-    return data;
+    return data as Page;
   }
 
   async getChildPages(parentId: string): Promise<Page[]> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from(this.tableName)
       .select(`
         *,
@@ -259,7 +259,7 @@ class PagesApi {
       throw new Error(error.message);
     }
 
-    return data || [];
+    return (data || []) as Page[];
   }
 
   async generateSlug(title: string): Promise<string> {
@@ -274,7 +274,7 @@ class PagesApi {
     let counter = 1;
 
     while (true) {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from(this.tableName)
         .select('id')
         .eq('slug', slug)

@@ -15,7 +15,7 @@ export const OpenTracker: React.FC = () => {
     queryKey: ['track-open', campaignId, subscriptionId],
     queryFn: async () => {
       if (campaignId && subscriptionId) {
-        await newsletterAnalyticsApi.trackOpen(
+        await (newsletterAnalyticsApi as any).trackOpen(
           campaignId,
           subscriptionId,
           // In a real app, you'd get these from request headers
@@ -50,7 +50,7 @@ export const ClickTracker: React.FC = () => {
     queryKey: ['track-click', campaignId, subscriptionId, url],
     queryFn: async () => {
       if (campaignId && subscriptionId && url) {
-        await newsletterAnalyticsApi.trackClick(
+        await (newsletterAnalyticsApi as any).trackClick(
           campaignId,
           subscriptionId,
           decodeURIComponent(url),

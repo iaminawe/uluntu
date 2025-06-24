@@ -10,15 +10,15 @@ export type Member = {
   name: string;
   email?: string;
   bio?: string;
-  image?: string;
-  title?: string; // Job title/role
+  image: string;
+  title: string; // Job title/role
   role?: string; // Maps to title in the API (for backwards compatibility)
   skills?: string[];
   interests?: string[];
-  joinDate?: string; // Standard property name for API
+  joinDate: string; // Standard property name for API
   joinedDate?: string; // Used in mock data
   created_at?: string;
-  status?: ContentStatus;
+  status: ContentStatus;
   featured?: boolean;
   location?: string;
   company?: string;
@@ -52,11 +52,11 @@ function adaptMember(data: unknown): Member {
     name: isString(member.name) ? member.name : '',
     email: isString(member.email) ? member.email : undefined,
     bio: isString(member.bio) ? member.bio : undefined,
-    title: isString(member.title) ? member.title : isString(member.role) ? member.role : undefined,
+    title: isString(member.title) ? member.title : isString(member.role) ? member.role : '',
     location: isString(member.location) ? member.location : undefined,
     company: isString(member.company) ? member.company : undefined,
     social: member.social || undefined,
-    image: isString(member.image) ? member.image : undefined,
+    image: isString(member.image) ? member.image : 'https://via.placeholder.com/150',
     role: isString(member.title) ? member.title : 
           isString(member.role) ? member.role : undefined,
     skills: isArray(member.skills) ? 
@@ -64,12 +64,12 @@ function adaptMember(data: unknown): Member {
     // Support both joinDate (API) and joinedDate (mock)
     joinDate: isString(member.joinDate) ? member.joinDate :
               isString(member.joinedDate) ? member.joinedDate :
-              isString(member.joined_date) ? member.joined_date : undefined,
+              isString(member.joined_date) ? member.joined_date : new Date().toISOString(),
     joinedDate: isString(member.joinedDate) ? member.joinedDate :
                isString(member.joined_date) ? member.joined_date :
                isString(member.joinDate) ? member.joinDate : undefined,
     created_at: isString(member.created_at) ? member.created_at : undefined,
-    status: isString(member.status) ? member.status as ContentStatus : undefined,
+    status: isString(member.status) ? member.status as ContentStatus : 'published' as ContentStatus,
     featured: isBoolean(member.featured) ? member.featured : undefined
   };
 }

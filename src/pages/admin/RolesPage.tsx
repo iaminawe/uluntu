@@ -117,7 +117,7 @@ const RolesPage: React.FC = () => {
       ...formData,
       permissions: {
         ...formData.permissions,
-        [resource]: newActions.length > 0 ? newActions : undefined
+        [resource]: newActions.length > 0 ? newActions : []
       }
     });
   };
@@ -235,7 +235,9 @@ const RolesPage: React.FC = () => {
                   </div>
                 </div>
                 {role.is_system && (
-                  <Lock className="h-5 w-5 text-gray-400" title="System role" />
+                  <div title="System role">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
                 )}
               </div>
 

@@ -36,7 +36,7 @@ const MarketplaceList = ({
       }
       
       // Seller filter
-      if (sellerId && listing.seller_id !== sellerId) return false;
+      if (sellerId && listing.seller?.id !== sellerId) return false;
       
       return true;
     });
@@ -68,7 +68,7 @@ const MarketplaceList = ({
       featured?: boolean;
     }
     
-    const formatted = filteredListings.map((item: RawListing) => {
+    const formatted = filteredListings.map((item: any) => {
       // Make sure we have an item to work with
       if (!item || typeof item !== 'object') {
         return null;

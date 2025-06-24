@@ -12,7 +12,7 @@ export default function ActiveGroupsSection() {
   
   const recentActiveGroups = useMemo(() => {
     return groups
-      .filter(group => group.visibility === 'open')
+      .filter(group => group.visibility === 'public')
       .slice(0, 6)
       .map(group => ({
         id: group.id,

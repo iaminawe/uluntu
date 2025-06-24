@@ -19,6 +19,16 @@ export interface Page {
   published_at?: string | null;
   created_at: string;
   updated_at: string;
+  template?: string;
+  parent_id?: string | null;
+  is_homepage?: boolean;
+  is_home?: boolean;
+}
+
+export interface PageTreeNode {
+  page: Page;
+  children: PageTreeNode[];
+  depth: number;
 }
 
 export interface CreatePageData {
@@ -43,6 +53,8 @@ export interface PageFilters {
   search?: string;
   author_id?: string;
   is_featured?: boolean;
+  is_published?: boolean;
+  template?: string;
   sort_by?: 'created_at' | 'updated_at' | 'title' | 'published_at';
   sort_order?: 'asc' | 'desc';
 }

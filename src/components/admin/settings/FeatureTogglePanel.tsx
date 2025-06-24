@@ -90,12 +90,12 @@ export const FeatureTogglePanel: React.FC<FeatureTogglePanelProps> = ({
     setEditingFeature(feature.id);
     setEditForm({
       feature_key: feature.feature_key,
-      enabled: feature.enabled,
-      config: feature.config,
-      rollout_percentage: feature.rollout_percentage,
-      enabled_for_users: feature.enabled_for_users,
-      enabled_for_roles: feature.enabled_for_roles,
-      description: feature.description,
+      enabled: feature.enabled || false,
+      config: feature.config || undefined,
+      rollout_percentage: feature.rollout_percentage ?? undefined,
+      enabled_for_users: feature.enabled_for_users || undefined,
+      enabled_for_roles: feature.enabled_for_roles || undefined,
+      description: feature.description || undefined,
     });
   };
 
@@ -252,7 +252,7 @@ export const FeatureTogglePanel: React.FC<FeatureTogglePanelProps> = ({
                                     type="number"
                                     min="0"
                                     max="100"
-                                    value={editForm.rollout_percentage || 0}
+                                    value={editForm.rollout_percentage ?? 0}
                                     onChange={(e) => setEditForm({ ...editForm, rollout_percentage: parseInt(e.target.value) })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                   />
@@ -304,16 +304,16 @@ export const FeatureTogglePanel: React.FC<FeatureTogglePanelProps> = ({
                               </p>
                               
                               {/* Feature Config */}
-                              {feature.rollout_percentage > 0 && (
+                              {((feature.rollout_percentage ?? 0) > 0) && (
                                 <div className="mt-2 flex items-center text-xs text-amber-600">
                                   <AlertCircle className="h-3 w-3 mr-1" />
-                                  Gradual rollout: {feature.rollout_percentage}%
+                                  Gradual rollout: {feature.rollout_percentage ?? 0}%
                                 </div>
                               )}
                               
-                              {feature.enabled_for_roles.length > 0 && (
+                              {((feature.enabled_for_roles || []).length > 0) && (
                                 <div className="mt-2 flex flex-wrap gap-1">
-                                  {feature.enabled_for_roles.map(role => (
+                                  {(feature.enabled_for_roles || []).map(role => (
                                     <span key={role} className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
                                       {role}
                                     </span>
@@ -322,7 +322,7 @@ export const FeatureTogglePanel: React.FC<FeatureTogglePanelProps> = ({
                               )}
                               
                               <div className="mt-2 text-xs text-gray-400">
-                                Last updated: {new Date(feature.updated_at).toLocaleDateString()}
+                                Last updated: {feature.updated_at ? new Date(feature.updated_at).toLocaleDateString() : 'Never'}
                               </div>
                             </>
                           )}
@@ -348,17 +348,17 @@ export const FeatureTogglePanel: React.FC<FeatureTogglePanelProps> = ({
                           </button>
                           
                           <button
-                            onClick={() => handleToggle(feature.feature_key, !feature.enabled)}
+                            onClick={() => handleToggle(feature.feature_key, !(feature.enabled || false))}
                             disabled={isLoading}
                             className={`p-2 rounded-lg transition-colors ${
-                              feature.enabled 
+                              (feature.enabled || false) 
                                 ? 'text-green-600 hover:bg-green-50' 
                                 : 'text-gray-400 hover:bg-gray-100'
                             }`}
                           >
                             {isLoading ? (
                               <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
-                            ) : feature.enabled ? (
+                            ) : (feature.enabled || false) ? (
                               <ToggleRight className="h-6 w-6" />
                             ) : (
                               <ToggleLeft className="h-6 w-6" />

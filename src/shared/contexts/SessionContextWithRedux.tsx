@@ -100,7 +100,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
           },
           session: {
             access_token: currentSession.access_token,
-            expires_at: new Date(currentSession.expires_at * 1000).toISOString()
+            expires_at: new Date((currentSession.expires_at || 0) * 1000).toISOString()
           }
         }));
         
@@ -152,7 +152,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
             },
             session: {
               access_token: currentSession.access_token,
-              expires_at: new Date(currentSession.expires_at * 1000).toISOString()
+              expires_at: new Date((currentSession.expires_at || 0) * 1000).toISOString()
             }
           }));
           

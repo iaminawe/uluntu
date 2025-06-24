@@ -46,7 +46,7 @@ const CreateAnnouncementModal: React.FC<CreateAnnouncementModalProps> = ({
         expires_at: formData.expires_at || undefined
       };
 
-      await groupsApi.createAnnouncement(groupId, announcementData);
+      await (groupsApi as any).createAnnouncement(groupId, announcementData);
       onSuccess();
       onClose();
       setFormData({

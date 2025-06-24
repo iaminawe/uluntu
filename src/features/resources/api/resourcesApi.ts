@@ -55,7 +55,7 @@ export interface ResourceInput {
 }
 
 export const resourcesApi = {
-  async getAll(filters?: { search?: string; types?: string[]; tags?: string[] }): Promise<Resource[]> {
+  async getAll(filters?: { search?: string; types?: string[]; tags?: string[]; featured?: boolean; category?: string }): Promise<Resource[]> {
     try {
       let query = supabase
         .from('resources')
@@ -201,6 +201,33 @@ export const resourcesApi = {
     } catch (error) {
       handleSupabaseError(error, 'deleting resource');
       return false;
+    }
+  },
+
+  async getRelated(id: string, limit: number = 3): Promise<Resource[]> {
+    try {
+      // Get the current resource to find related ones
+      const currentResource = await this.getById(id);
+      if (!currentResource) return [];
+
+      // Find resources with similar type or tags
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .neq('id', id)
+        .eq('status', 'published')
+        .or(`type.eq.${currentResource.type}`)
+        .limit(limit);
+
+      if (error) {
+        handleSupabaseError(error, 'fetching related resources');
+        return [];
+      }
+
+      return adaptItemsList(data || [], (item: any) => adaptResourceFromDatabase(item));
+    } catch (error) {
+      handleSupabaseError(error, 'fetching related resources');
+      return [];
     }
   }
 };

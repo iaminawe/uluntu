@@ -37,16 +37,16 @@ export const adaptMainMarketplaceItemToListing = (item: MainMarketplaceItem): Li
     description: item.description,
     type: item.type as ListingType,
     price: item.price || 0,
-    condition: item.category as ListingCondition, // Using category as condition
-    images: item.image ? [item.image] : [],
-    createdAt: item.datePosted,
+    condition: (item as any).condition || (item as any).category as ListingCondition, // Using category as condition
+    images: (item as any).images || [item.image] || [],
+    createdAt: (item as any).createdAt || item.datePosted,
     seller: {
       id: String(item.seller.id), // Always use string ID
       name: item.seller.name,
       image: item.seller.image
     },
-    location: '', // This field doesn't exist in the main type
-    tags: [item.category] // Using category as a tag
+    location: (item as any).location || '', // This field doesn't exist in the main type
+    tags: (item as any).tags || [item.category] || [] // Using category as a tag
   };
 };
 

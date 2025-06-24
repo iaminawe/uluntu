@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { HeaderProps } from "./types";
+import { HeaderProps, NavLinkItem } from "./types";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ThemeToggle from "./ThemeToggle";
@@ -71,14 +71,14 @@ const Header: React.FC<HeaderProps> = ({
 
     return navLinks.map(link => {
       // If the main link has a feature requirement, check it
-      if (link.feature && !isFeatureEnabled(link.feature)) {
+      if (link.feature && !isFeatureEnabled(link.feature as any)) {
         return null;
       }
 
       // Filter children based on their feature requirements
       if (link.children) {
         const filteredChildren = link.children.filter(child => {
-          return !child.feature || isFeatureEnabled(child.feature);
+          return !child.feature || isFeatureEnabled(child.feature as any);
         });
 
         // If no children remain after filtering, hide the parent
@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <DesktopNav 
-            navLinks={filteredNavLinks} 
+            navLinks={filteredNavLinks.filter(Boolean) as NavLinkItem[]} 
             isDark={isDark} 
             toggleDarkMode={toggleDarkMode} 
           />
@@ -165,7 +165,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Navigation */}
         <MobileNav 
           isOpen={isOpen} 
-          navLinks={filteredNavLinks} 
+          navLinks={filteredNavLinks.filter(Boolean) as NavLinkItem[]} 
           onLinkClick={closeMobileMenu} 
         />
       </div>

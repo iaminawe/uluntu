@@ -20,7 +20,7 @@ const SubscriberManager: React.FC = () => {
   const queryClient = useQueryClient();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'subscribed' | 'unsubscribed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'unsubscribed'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
 
@@ -32,7 +32,7 @@ const SubscriberManager: React.FC = () => {
       limit: pageSize,
       offset: (currentPage - 1) * pageSize
     }],
-    queryFn: () => newsletterSubscriptionApi.getSubscriptions({
+    queryFn: () => newsletterSubscriptionApi.getAllSubscriptions({
       search: searchTerm || undefined,
       status: statusFilter === 'all' ? undefined : statusFilter,
       limit: pageSize,
@@ -48,7 +48,7 @@ const SubscriberManager: React.FC = () => {
 
   // Update subscription status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: ({ email, status }: { email: string; status: 'subscribed' | 'unsubscribed' }) =>
+    mutationFn: ({ email, status }: { email: string; status: 'active' | 'unsubscribed' }) =>
       newsletterSubscriptionApi.updateSubscriptionStatus(email, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-subscribers'] });
@@ -65,7 +65,7 @@ const SubscriberManager: React.FC = () => {
     }
   });
 
-  const handleStatusUpdate = (email: string, newStatus: 'subscribed' | 'unsubscribed') => {
+  const handleStatusUpdate = (email: string, newStatus: 'active' | 'unsubscribed') => {
     updateStatusMutation.mutate({ email, status: newStatus });
   };
 
@@ -79,11 +79,11 @@ const SubscriberManager: React.FC = () => {
     const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
     
     switch (status) {
-      case 'subscribed':
+      case 'active':
         return (
           <span className={`${baseClasses} bg-green-100 text-green-800`}>
             <UserCheck className="w-3 h-3 mr-1" />
-            Subscribed
+            Active
           </span>
         );
       case 'unsubscribed':
@@ -141,7 +141,7 @@ const SubscriberManager: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Subscribers</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.totalSubscribers}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{stats?.total_subscribers || 0}</dd>
                 </dl>
               </div>
             </div>
@@ -155,7 +155,7 @@ const SubscriberManager: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Active</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.activeSubscribers}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{stats?.active_subscribers || 0}</dd>
                 </dl>
               </div>
             </div>
@@ -169,7 +169,7 @@ const SubscriberManager: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Unsubscribed</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.unsubscribedCount}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{(stats as any).unsubscribedCount}</dd>
                 </dl>
               </div>
             </div>
@@ -183,7 +183,7 @@ const SubscriberManager: React.FC = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">This Month</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.newThisMonth}</dd>
+                  <dd className="text-lg font-medium text-gray-900">{(stats as any).newThisMonth}</dd>
                 </dl>
               </div>
             </div>
@@ -209,11 +209,11 @@ const SubscriberManager: React.FC = () => {
           <div className="sm:w-48">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'subscribed' | 'unsubscribed')}
+              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'unsubscribed')}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
             >
               <option value="all">All Status</option>
-              <option value="subscribed">Subscribed</option>
+              <option value="active">Active</option>
               <option value="unsubscribed">Unsubscribed</option>
             </select>
           </div>
@@ -254,8 +254,8 @@ const SubscriberManager: React.FC = () => {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{subscriber.email}</div>
-                      {subscriber.name && (
-                        <div className="text-sm text-gray-500">{subscriber.name}</div>
+                      {(subscriber as any).name && (
+                        <div className="text-sm text-gray-500">{(subscriber as any).name}</div>
                       )}
                     </div>
                   </div>
@@ -264,14 +264,14 @@ const SubscriberManager: React.FC = () => {
                   {getStatusBadge(subscriber.status)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(subscriber.subscribedAt).toLocaleDateString()}
+                  {new Date(subscriber.subscribed_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(subscriber.updatedAt).toLocaleDateString()}
+                  {new Date(subscriber.updated_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center space-x-2">
-                    {subscriber.status === 'subscribed' ? (
+                    {subscriber.status === 'active' ? (
                       <button
                         onClick={() => handleStatusUpdate(subscriber.email, 'unsubscribed')}
                         className="text-red-600 hover:text-red-900"
@@ -281,7 +281,7 @@ const SubscriberManager: React.FC = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleStatusUpdate(subscriber.email, 'subscribed')}
+                        onClick={() => handleStatusUpdate(subscriber.email, 'active')}
                         className="text-green-600 hover:text-green-900"
                         title="Resubscribe"
                       >

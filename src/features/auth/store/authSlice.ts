@@ -11,6 +11,8 @@ export interface User {
   id: string;
   email: string;
   role?: string;
+  name?: string;
+  image?: string;
 }
 
 export interface Session {

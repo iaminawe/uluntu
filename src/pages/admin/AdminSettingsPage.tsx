@@ -4,6 +4,7 @@ import AdminSettingsLayout from '@/components/admin/settings/AdminSettingsLayout
 import { useUnifiedSettings } from '@/features/admin/hooks/useUnifiedSettings';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorAlert } from '@/components/ui/ErrorAlert';
+import { ErrorCode } from '@/utils/errorSanitization';
 
 // Lazy load section components for performance
 const GeneralSettingsSection = lazy(() => import('@/components/admin/settings/GeneralSettingsSection'));
@@ -143,9 +144,9 @@ const AdminSettingsPage: React.FC = () => {
     return (
       <div className="p-6">
         <ErrorAlert
-          title="Failed to load settings"
-          message={error}
+          error={{ userMessage: error, errorCode: ErrorCode.GENERIC_UNKNOWN, debugId: Date.now().toString(), timestamp: new Date().toISOString() }}
           onRetry={refetch}
+          canRetry={true}
         />
       </div>
     );

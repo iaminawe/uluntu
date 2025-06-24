@@ -110,6 +110,54 @@ export type Database = {
         }
         Relationships: []
       }
+      application_settings: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          data_type: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          is_system: boolean | null
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+          validation_rules: Json | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          data_type: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          is_system?: boolean | null
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+          validation_rules?: Json | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          data_type?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          is_system?: boolean | null
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+          validation_rules?: Json | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           cover_image: string | null
@@ -157,6 +205,68 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      company_galleries: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string | null
+          gallery_id: string
+          id: string
+          is_approved: boolean | null
+          showcase_type: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string | null
+          gallery_id: string
+          id?: string
+          is_approved?: boolean | null
+          showcase_type: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          gallery_id?: string
+          id?: string
+          is_approved?: boolean | null
+          showcase_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_galleries_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_galleries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_galleries_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "public_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_galleries_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "user_galleries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       company_members: {
         Row: {
@@ -230,6 +340,104 @@ export type Database = {
           },
         ]
       }
+      contact_submission_notes: {
+        Row: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          submission_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          submission_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          submission_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submission_notes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "contact_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_submissions: {
+        Row: {
+          assigned_by: string | null
+          assigned_to: string | null
+          created_at: string
+          email: string
+          id: string
+          ip_address: unknown | null
+          message: string
+          name: string
+          priority: string
+          referrer: string | null
+          resolved_at: string | null
+          status: string
+          subject: string
+          tags: string[] | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          assigned_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: unknown | null
+          message: string
+          name: string
+          priority?: string
+          referrer?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          tags?: string[] | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          assigned_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: unknown | null
+          message?: string
+          name?: string
+          priority?: string
+          referrer?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       custom_roles: {
         Row: {
           created_at: string | null
@@ -292,6 +500,55 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_photos: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          photo_id: string
+          photo_type: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          photo_id: string
+          photo_type: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          photo_id?: string
+          photo_type?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_photos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
             referencedColumns: ["id"]
           },
         ]
@@ -534,6 +791,261 @@ export type Database = {
           },
         ]
       }
+      feature_toggles: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          enabled: boolean | null
+          enabled_for_roles: string[] | null
+          enabled_for_users: string[] | null
+          feature_key: string
+          id: string
+          rollout_percentage: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          enabled_for_roles?: string[] | null
+          enabled_for_users?: string[] | null
+          feature_key: string
+          id?: string
+          rollout_percentage?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          enabled_for_roles?: string[] | null
+          enabled_for_users?: string[] | null
+          feature_key?: string
+          id?: string
+          rollout_percentage?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      gallery_photos: {
+        Row: {
+          alt_text: string | null
+          aperture: string | null
+          camera_make: string | null
+          camera_model: string | null
+          caption: string | null
+          comment_count: number | null
+          created_at: string | null
+          description: string | null
+          exif_data: Json | null
+          featured_at: string | null
+          featured_by: string | null
+          file_name: string
+          file_size: number
+          focal_length: string | null
+          gallery_id: string
+          height: number | null
+          id: string
+          is_featured: boolean | null
+          iso_speed: number | null
+          latitude: number | null
+          like_count: number | null
+          location_name: string | null
+          longitude: number | null
+          medium_path: string | null
+          medium_url: string | null
+          mime_type: string
+          moderation_status: string | null
+          original_file_name: string
+          processing_status: string | null
+          shutter_speed: string | null
+          sort_order: number | null
+          storage_path: string
+          tags: string[] | null
+          taken_at: string | null
+          thumbnail_path: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+          visibility: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          aperture?: string | null
+          camera_make?: string | null
+          camera_model?: string | null
+          caption?: string | null
+          comment_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          exif_data?: Json | null
+          featured_at?: string | null
+          featured_by?: string | null
+          file_name: string
+          file_size: number
+          focal_length?: string | null
+          gallery_id: string
+          height?: number | null
+          id?: string
+          is_featured?: boolean | null
+          iso_speed?: number | null
+          latitude?: number | null
+          like_count?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          medium_path?: string | null
+          medium_url?: string | null
+          mime_type: string
+          moderation_status?: string | null
+          original_file_name: string
+          processing_status?: string | null
+          shutter_speed?: string | null
+          sort_order?: number | null
+          storage_path: string
+          tags?: string[] | null
+          taken_at?: string | null
+          thumbnail_path?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+          visibility?: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          aperture?: string | null
+          camera_make?: string | null
+          camera_model?: string | null
+          caption?: string | null
+          comment_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          exif_data?: Json | null
+          featured_at?: string | null
+          featured_by?: string | null
+          file_name?: string
+          file_size?: number
+          focal_length?: string | null
+          gallery_id?: string
+          height?: number | null
+          id?: string
+          is_featured?: boolean | null
+          iso_speed?: number | null
+          latitude?: number | null
+          like_count?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          medium_path?: string | null
+          medium_url?: string | null
+          mime_type?: string
+          moderation_status?: string | null
+          original_file_name?: string
+          processing_status?: string | null
+          shutter_speed?: string | null
+          sort_order?: number | null
+          storage_path?: string
+          tags?: string[] | null
+          taken_at?: string | null
+          thumbnail_path?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+          visibility?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_photos_featured_by_fkey"
+            columns: ["featured_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "public_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "user_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_tags: {
+        Row: {
+          created_at: string | null
+          gallery_id: string
+          id: string
+          tag_id: string | null
+          tagged_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          gallery_id: string
+          id?: string
+          tag_id?: string | null
+          tagged_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          gallery_id?: string
+          id?: string
+          tag_id?: string | null
+          tagged_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_tags_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "public_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_tags_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "user_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
@@ -566,6 +1078,55 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_photos: {
+        Row: {
+          created_at: string | null
+          group_id: string
+          id: string
+          is_approved: boolean | null
+          photo_id: string
+          photo_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          group_id: string
+          id?: string
+          is_approved?: boolean | null
+          photo_id: string
+          photo_type: string
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          is_approved?: boolean | null
+          photo_id?: string
+          photo_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_photos_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
             referencedColumns: ["id"]
           },
         ]
@@ -849,10 +1410,15 @@ export type Database = {
           image: string | null
           location: string | null
           name: string
+          onboarding_completed_at: string | null
+          onboarding_current_step: number | null
+          onboarding_skipped_steps: Json | null
           open_to_volunteering: boolean | null
+          profile_completion_percentage: number | null
           social: Json | null
           status: string
           title: string | null
+          updated_at: string | null
           user_id: string | null
           website: string | null
         }
@@ -867,10 +1433,15 @@ export type Database = {
           image?: string | null
           location?: string | null
           name: string
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: number | null
+          onboarding_skipped_steps?: Json | null
           open_to_volunteering?: boolean | null
+          profile_completion_percentage?: number | null
           social?: Json | null
           status?: string
           title?: string | null
+          updated_at?: string | null
           user_id?: string | null
           website?: string | null
         }
@@ -885,10 +1456,15 @@ export type Database = {
           image?: string | null
           location?: string | null
           name?: string
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: number | null
+          onboarding_skipped_steps?: Json | null
           open_to_volunteering?: boolean | null
+          profile_completion_percentage?: number | null
           social?: Json | null
           status?: string
           title?: string | null
+          updated_at?: string | null
           user_id?: string | null
           website?: string | null
         }
@@ -1245,6 +1821,55 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_photo_features: {
+        Row: {
+          campaign_id: string
+          click_count: number | null
+          created_at: string | null
+          feature_type: string
+          id: string
+          photo_id: string
+        }
+        Insert: {
+          campaign_id: string
+          click_count?: number | null
+          created_at?: string | null
+          feature_type: string
+          id?: string
+          photo_id: string
+        }
+        Update: {
+          campaign_id?: string
+          click_count?: number | null
+          created_at?: string | null
+          feature_type?: string
+          id?: string
+          photo_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_photo_features_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_photo_features_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_photo_features_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscriptions: {
         Row: {
           bounce_count: number | null
@@ -1453,6 +2078,455 @@ export type Database = {
           },
         ]
       }
+      page_headers: {
+        Row: {
+          background_color: string | null
+          blur_background: boolean | null
+          created_at: string | null
+          created_by: string
+          custom_css: string | null
+          darken_image: boolean | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          mobile_photo_id: string | null
+          overlay_opacity: number | null
+          overlay_position: string | null
+          overlay_text: string | null
+          page_slug: string
+          photo_id: string | null
+          priority: number | null
+          start_date: string | null
+          subtitle: string | null
+          tablet_photo_id: string | null
+          text_color: string | null
+          title: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          background_color?: string | null
+          blur_background?: boolean | null
+          created_at?: string | null
+          created_by: string
+          custom_css?: string | null
+          darken_image?: boolean | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          mobile_photo_id?: string | null
+          overlay_opacity?: number | null
+          overlay_position?: string | null
+          overlay_text?: string | null
+          page_slug: string
+          photo_id?: string | null
+          priority?: number | null
+          start_date?: string | null
+          subtitle?: string | null
+          tablet_photo_id?: string | null
+          text_color?: string | null
+          title?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          background_color?: string | null
+          blur_background?: boolean | null
+          created_at?: string | null
+          created_by?: string
+          custom_css?: string | null
+          darken_image?: boolean | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          mobile_photo_id?: string | null
+          overlay_opacity?: number | null
+          overlay_position?: string | null
+          overlay_text?: string | null
+          page_slug?: string
+          photo_id?: string | null
+          priority?: number | null
+          start_date?: string | null
+          subtitle?: string | null
+          tablet_photo_id?: string | null
+          text_color?: string | null
+          title?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_headers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_mobile_photo_id_fkey"
+            columns: ["mobile_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_mobile_photo_id_fkey"
+            columns: ["mobile_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_tablet_photo_id_fkey"
+            columns: ["tablet_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_tablet_photo_id_fkey"
+            columns: ["tablet_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photo_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          edited_at: string | null
+          id: string
+          is_edited: boolean | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_status: string | null
+          parent_comment_id: string | null
+          photo_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string
+          is_edited?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_status?: string | null
+          parent_comment_id?: string | null
+          photo_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string
+          is_edited?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_status?: string | null
+          parent_comment_id?: string | null
+          photo_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_comments_moderated_by_fkey"
+            columns: ["moderated_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "photo_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_comments_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_comments_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photo_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          photo_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          photo_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          photo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_likes_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_likes_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photo_promotions: {
+        Row: {
+          auto_expire: boolean | null
+          click_count: number | null
+          context_data: Json | null
+          context_id: string | null
+          context_type: string | null
+          created_at: string | null
+          end_date: string | null
+          id: string
+          impression_count: number | null
+          photo_id: string
+          priority: number | null
+          promoted_by: string
+          promotion_status: string | null
+          promotion_type: string
+          rejection_reason: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_expire?: boolean | null
+          click_count?: number | null
+          context_data?: Json | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          impression_count?: number | null
+          photo_id: string
+          priority?: number | null
+          promoted_by: string
+          promotion_status?: string | null
+          promotion_type: string
+          rejection_reason?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_expire?: boolean | null
+          click_count?: number | null
+          context_data?: Json | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          impression_count?: number | null
+          photo_id?: string
+          priority?: number | null
+          promoted_by?: string
+          promotion_status?: string | null
+          promotion_type?: string
+          rejection_reason?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_promotions_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_promotions_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_promotions_promoted_by_fkey"
+            columns: ["promoted_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_promotions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photo_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          photo_id: string
+          tag_id: string | null
+          tagged_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          photo_id: string
+          tag_id?: string | null
+          tagged_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          photo_id?: string
+          tag_id?: string | null
+          tagged_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_tags_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_tags_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_photos: {
+        Row: {
+          created_at: string | null
+          id: string
+          photo_id: string
+          photo_type: string
+          resource_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          photo_id: string
+          photo_type: string
+          resource_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          photo_id?: string
+          photo_type?: string
+          resource_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_photos_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_photos_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resource_tags: {
         Row: {
           resource_id: string
@@ -1536,6 +2610,48 @@ export type Database = {
           },
         ]
       }
+      settings_history: {
+        Row: {
+          category: string
+          change_type: string | null
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          ip_address: unknown | null
+          new_value: Json | null
+          old_value: Json | null
+          setting_id: string | null
+          setting_key: string
+          user_agent: string | null
+        }
+        Insert: {
+          category: string
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          setting_id?: string | null
+          setting_key: string
+          user_agent?: string | null
+        }
+        Update: {
+          category?: string
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          setting_id?: string | null
+          setting_key?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           category: string | null
@@ -1586,6 +2702,82 @@ export type Database = {
           },
         ]
       }
+      user_galleries: {
+        Row: {
+          cover_photo_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          photo_count: number | null
+          privacy_level: string
+          slug: string
+          sort_order: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+          visibility: string
+        }
+        Insert: {
+          cover_photo_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          photo_count?: number | null
+          privacy_level?: string
+          slug: string
+          sort_order?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+          visibility?: string
+        }
+        Update: {
+          cover_photo_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          photo_count?: number | null
+          privacy_level?: string
+          slug?: string
+          sort_order?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_galleries_cover_photo_fkey"
+            columns: ["cover_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_galleries_cover_photo_fkey"
+            columns: ["cover_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_galleries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -1606,7 +2798,219 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      active_page_headers: {
+        Row: {
+          alt_text: string | null
+          background_color: string | null
+          blur_background: boolean | null
+          created_at: string | null
+          created_by: string | null
+          custom_css: string | null
+          darken_image: boolean | null
+          end_date: string | null
+          height: number | null
+          id: string | null
+          is_active: boolean | null
+          mobile_photo_id: string | null
+          overlay_opacity: number | null
+          overlay_position: string | null
+          overlay_text: string | null
+          page_slug: string | null
+          photo_id: string | null
+          photo_path: string | null
+          priority: number | null
+          start_date: string | null
+          subtitle: string | null
+          tablet_photo_id: string | null
+          text_color: string | null
+          thumbnail_path: string | null
+          title: string | null
+          updated_at: string | null
+          updated_by: string | null
+          width: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_headers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_mobile_photo_id_fkey"
+            columns: ["mobile_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_mobile_photo_id_fkey"
+            columns: ["mobile_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_tablet_photo_id_fkey"
+            columns: ["tablet_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_tablet_photo_id_fkey"
+            columns: ["tablet_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "page_headers_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      featured_photos: {
+        Row: {
+          alt_text: string | null
+          aperture: string | null
+          camera_make: string | null
+          camera_model: string | null
+          caption: string | null
+          comment_count: number | null
+          created_at: string | null
+          description: string | null
+          exif_data: Json | null
+          featured_at: string | null
+          featured_by: string | null
+          file_name: string | null
+          file_size: number | null
+          focal_length: string | null
+          gallery_id: string | null
+          gallery_slug: string | null
+          gallery_title: string | null
+          height: number | null
+          id: string | null
+          is_featured: boolean | null
+          iso_speed: number | null
+          latitude: number | null
+          like_count: number | null
+          location_name: string | null
+          longitude: number | null
+          medium_path: string | null
+          mime_type: string | null
+          moderation_status: string | null
+          original_file_name: string | null
+          processing_status: string | null
+          shutter_speed: string | null
+          sort_order: number | null
+          storage_path: string | null
+          tags: string[] | null
+          taken_at: string | null
+          thumbnail_path: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+          user_image: string | null
+          user_name: string | null
+          view_count: number | null
+          visibility: string | null
+          width: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_photos_featured_by_fkey"
+            columns: ["featured_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "public_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "user_galleries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_photos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_galleries: {
+        Row: {
+          cover_image_path: string | null
+          cover_photo_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_featured: boolean | null
+          photo_count: number | null
+          privacy_level: string | null
+          slug: string | null
+          sort_order: number | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+          user_image: string | null
+          user_name: string | null
+          view_count: number | null
+          visibility: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_galleries_cover_photo_fkey"
+            columns: ["cover_photo_id"]
+            isOneToOne: false
+            referencedRelation: "featured_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_galleries_cover_photo_fkey"
+            columns: ["cover_photo_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_galleries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_member_profile: {
@@ -1617,8 +3021,36 @@ export type Database = {
         Args: { tag_name: string }
         Returns: string
       }
+      get_contact_submission_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_gallery_stats: {
+        Args: { gallery_uuid: string }
+        Returns: Json
+      }
+      get_public_settings: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          key: string
+          value: string
+        }[]
+      }
+      get_user_photo_stats: {
+        Args: { user_uuid: string }
+        Returns: Json
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_admin_of_group: {
         Args: { p_user_id: string; p_group_id: string }
+        Returns: boolean
+      }
+      is_feature_enabled: {
+        Args: { feature_key_param: string }
         Returns: boolean
       }
       is_member_of_group: {
@@ -1628,6 +3060,17 @@ export type Database = {
       is_superadmin_direct: {
         Args: { check_user_id: string }
         Returns: boolean
+      }
+      update_setting_with_history: {
+        Args: {
+          p_category: string
+          p_setting_key: string
+          p_new_value: Json
+          p_data_type?: string
+          p_is_public?: boolean
+          p_description?: string
+        }
+        Returns: string
       }
     }
     Enums: {

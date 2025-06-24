@@ -16,7 +16,7 @@ export const filterMembers = (
     if (filterOptions.search) {
       const searchLower = filterOptions.search.toLowerCase();
       const nameMatches = member.name.toLowerCase().includes(searchLower);
-      const titleMatches = member.title.toLowerCase().includes(searchLower);
+      const titleMatches = member.title ? member.title.toLowerCase().includes(searchLower) : false;
       const companyMatches = member.company ? member.company.toLowerCase().includes(searchLower) : false;
       const locationMatches = member.location ? member.location.toLowerCase().includes(searchLower) : false;
       

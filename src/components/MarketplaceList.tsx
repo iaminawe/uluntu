@@ -124,7 +124,7 @@ export default function MarketplaceList() {
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
           </div>
           <Link
-            href="/marketplace/create"
+            to="/marketplace/create"
             className="ml-4 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center"
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -176,7 +176,7 @@ export default function MarketplaceList() {
         {filteredListings.map(listing => (
           <Link
             key={listing.id}
-            href={`/marketplace/${listing.id}`}
+            to={`/marketplace/${listing.id}`}
             className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="h-48 overflow-hidden">

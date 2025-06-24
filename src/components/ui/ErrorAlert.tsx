@@ -170,6 +170,7 @@ export function ErrorToast({ error, onClose, duration = 5000 }: ErrorToastProps)
       const timer = setTimeout(onClose, duration);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [duration, onClose]);
 
   return (

@@ -74,8 +74,8 @@ export const adaptMainCompanyToLocal = (mainCompany: MainCompany): Partial<Compa
     location: mainCompany.location,
     website: mainCompany.website || '',
     // Map social from main type to socialLinks in local type
-    socialLinks: mainCompany.social ? [
-      ...Object.entries(mainCompany.social).map(([platform, url]) => ({
+    socialLinks: (mainCompany as any).social ? [
+      ...Object.entries((mainCompany as any).social).map(([platform, url]: [string, any]) => ({
         platform,
         url: url || ''
       }))

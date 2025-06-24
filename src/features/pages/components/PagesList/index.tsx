@@ -36,7 +36,7 @@ export const PagesList: React.FC<PagesListProps> = ({
   };
 
   const handleStatusFilter = (status: string) => {
-    setSelectedStatus(status);
+    setSelectedStatus(status as 'draft' | 'published' | 'archived' | 'all');
     dispatch(setFilters({ 
       status: status === 'all' ? undefined : status as PageFilters['status']
     }));

@@ -37,7 +37,7 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
       setError(null);
 
       // Create the resource entry
-      await resourcesApi.createResource({
+      await resourcesApi.create({
         title: galleryTitle,
         description: galleryDescription || `Photo gallery: ${galleryTitle}`,
         type: 'gallery',

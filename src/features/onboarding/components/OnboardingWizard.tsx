@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
+import { selectIsAuthenticated } from '@/features/auth/store/authSlice';
 import { useOnboarding } from '../hooks/useOnboarding';
 import OnboardingLayout from './OnboardingLayout';
 import type { OnboardingStepProps } from '../types';
@@ -21,7 +22,7 @@ const stepComponents: Record<number, React.ComponentType<OnboardingStepProps>> =
 };
 
 const OnboardingWizard: React.FC = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { currentStep, isCompleted, handleNext, handleBack, handleSkip, isFirstStep, isLastStep } = useOnboarding();
 
   // Redirect if not authenticated

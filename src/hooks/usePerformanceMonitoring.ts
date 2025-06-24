@@ -52,9 +52,11 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
       const interval = setInterval(() => {
         console.log(performanceMonitor.generateReport());
       }, 60000); // Every minute
-
+      
       return () => clearInterval(interval);
     }
+    // No return needed when condition is false
+    return undefined;
   }, []);
 
   return {

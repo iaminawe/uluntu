@@ -5,10 +5,10 @@ import { Listing, SAMPLE_LISTING, adaptMainMarketplaceItemToDetail } from './typ
 import { getTypeIcon } from './utils';
 import ContactModal from './ContactModal';
 import { marketplaceApi } from '../../api/marketplaceApi';
-import { QueryError } from '../ui/ErrorDisplay';
+import QueryError from '@/shared/components/ui/ErrorDisplay/QueryError';
 import { useMarketplaceItem } from '../../hooks/useMarketplaceQueries';
-import SkeletonText from '../ui/Skeleton/SkeletonText';
-import SkeletonImage from '../ui/Skeleton/SkeletonImage';
+import { SkeletonText } from '../ui/Skeleton/SkeletonText';
+import { SkeletonImage } from '../ui/Skeleton/SkeletonImage';
 import { MarketplaceItem } from '../../types';
 
 interface MarketplaceItemDetailProps {
@@ -42,7 +42,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
           if (item) {
             console.log('Using React Query data for marketplace item:', item);
             // Convert the item to the expected format
-            const adaptedItem = adaptMainMarketplaceItemToDetail(item as unknown as MarketplaceItem) as Listing;
+            const adaptedItem = adaptMainMarketplaceItemToDetail(item as any) as Listing;
             setListing(adaptedItem);
             setIsLoading(false);
             return;
@@ -245,12 +245,12 @@ const MarketplaceItemSkeleton = () => {
         {/* Left column - Image gallery skeleton */}
         <div>
           <div className="mb-4 overflow-hidden rounded-lg">
-            <SkeletonImage height="h-96" width="w-full" rounded="rounded-lg" />
+            <SkeletonImage height="24rem" width="100%" className="rounded-lg" />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
             {[1, 2, 3].map((index) => (
               <div key={index} className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden">
-                <SkeletonImage height="h-full" width="w-full" rounded="rounded-md" />
+                <SkeletonImage height="5rem" width="5rem" className="rounded-md" />
               </div>
             ))}
           </div>
@@ -261,8 +261,8 @@ const MarketplaceItemSkeleton = () => {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-3 w-full">
-                <SkeletonText height="h-8" width="w-3/4" />
-                <SkeletonText height="h-6" width="w-1/3" />
+                <SkeletonText className="h-8 w-3/4" />
+                <SkeletonText className="h-6 w-1/3" />
               </div>
               <div className="p-2 bg-slate-200 dark:bg-slate-700 w-10 h-10 rounded-lg"></div>
             </div>
@@ -270,17 +270,17 @@ const MarketplaceItemSkeleton = () => {
             <div className="space-y-4 mb-6">
               <div className="flex items-center">
                 <div className="h-5 w-5 mr-2 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
-                <SkeletonText height="h-5" width="w-1/3" />
+                <SkeletonText className="h-5 w-1/3" />
               </div>
               <div className="flex items-center">
                 <div className="h-5 w-5 mr-2 bg-slate-200 dark:bg-slate-700 rounded-md"></div>
-                <SkeletonText height="h-5" width="w-1/2" />
+                <SkeletonText className="h-5 w-1/2" />
               </div>
-              <SkeletonText height="h-5" width="w-1/3" />
+              <SkeletonText className="h-5 w-1/3" />
             </div>
 
             <div className="mb-6">
-              <SkeletonText lines={5} varyWidth />
+              <SkeletonText lines={5} className="" />
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
@@ -292,13 +292,13 @@ const MarketplaceItemSkeleton = () => {
             <div className="w-full px-6 py-3 bg-slate-200 dark:bg-slate-700 rounded-lg h-12"></div>
 
             <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-              <SkeletonText height="h-6" width="w-1/3" className="mb-4" />
+              <SkeletonText className="h-6 w-1/3 mb-4" />
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
                 <div className="space-y-2">
-                  <SkeletonText height="h-5" width="w-40" />
-                  <SkeletonText height="h-4" width="w-32" />
-                  <SkeletonText height="h-4" width="w-64" />
+                  <SkeletonText className="h-5 w-40" />
+                  <SkeletonText className="h-4 w-32" />
+                  <SkeletonText className="h-4 w-64" />
                 </div>
               </div>
             </div>

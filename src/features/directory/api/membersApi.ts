@@ -62,10 +62,11 @@ export const membersApi = {
           bio: item.bio || '',
           location: item.location || '',
           image: item.image || '',
-          social: item.social || {},
-          intro: item.intro || '',
-          status: item.status || 'draft',
+          social: (item.social as any) || {},
+          intro: (item as any).intro || '',
+          status: (item.status as ContentStatus) || 'draft',
           featured: item.featured || false,
+          joinDate: item.created_at || new Date().toISOString(),
           // Add any other fields that might be needed
         };
         
@@ -132,7 +133,7 @@ export const membersApi = {
         location: supabaseData.location,
         image: supabaseData.image,
         website: supabaseData.website,
-        intro: supabaseData.intro,
+        intro: (supabaseData as any).intro,
         status: supabaseData.status || 'draft',
         featured: supabaseData.featured
       };
@@ -180,7 +181,7 @@ export const membersApi = {
       if (supabaseData.location !== undefined) updateData.location = supabaseData.location;
       if (supabaseData.image !== undefined) updateData.image = supabaseData.image;
       if (supabaseData.website !== undefined) updateData.website = supabaseData.website;
-      if (supabaseData.intro !== undefined) updateData.intro = supabaseData.intro;
+      if ((supabaseData as any).intro !== undefined) (updateData as any).intro = (supabaseData as any).intro;
       if (supabaseData.status !== undefined) updateData.status = supabaseData.status;
       if (supabaseData.featured !== undefined) updateData.featured = supabaseData.featured;
       

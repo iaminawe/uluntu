@@ -1,5 +1,5 @@
 // Types for OpportunityDetailPage components
-import { Opportunity as MainOpportunity } from '../../types';
+import { Opportunity as MainOpportunity } from '@/features/opportunities/types';
 import { ContentStatus } from '../../types/common';
 
 // Define a local Opportunity interface for the OpportunityDetailPage component
@@ -51,11 +51,14 @@ export const adaptMainOpportunityToDetailPage = (opportunity: MainOpportunity): 
 
 // Helper function to map main Opportunity type to local type
 function mapMainTypeToLocalType(mainType: MainOpportunity['type']): Opportunity['type'] {
-  const typeMap: Record<MainOpportunity['type'], Opportunity['type']> = {
+  const typeMap: Partial<Record<MainOpportunity['type'], Opportunity['type']>> = {
     'full-time': 'job',
     'part-time': 'job',
     'contract': 'job',
-    'volunteer': 'volunteer'
+    'volunteer': 'volunteer',
+    'job': 'job',
+    'funding': 'funding',
+    'community': 'community'
   };
   
   return typeMap[mainType] || 'job';

@@ -83,7 +83,7 @@ export function useUnifiedSettings() {
     };
 
     const categories = categoryMap[uiState.activeSection] || [];
-    return settings.filter(setting => categories.includes(setting.category));
+    return settings.filter(setting => categories.includes(setting.category as any));
   };
 
   // Filter features for current section

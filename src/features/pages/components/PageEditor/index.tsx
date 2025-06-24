@@ -79,22 +79,24 @@ export const PageEditor: React.FC<PageEditorProps> = ({
     <div className={`novel-editor-wrapper ${className}`}>
       <EditorRoot>
         <EditorContent
-          initialValue={editorContent}
-          onUpdate={handleUpdate}
-          className="min-h-96 w-full"
-          editorProps={{
-            attributes: {
-              class: 'prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full',
+          {...{
+            initialContent: editorContent,
+            onUpdate: handleUpdate,
+            className: "min-h-96 w-full",
+            editorProps: {
+              attributes: {
+                class: 'prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full',
+              },
             },
-          }}
-          storageKey="page-editor"
-          disableLocalStorage={false}
-          onImageUpload={handleImageUpload}
-          editable={editable}
+            storageKey: "page-editor",
+            disableLocalStorage: false,
+            onImageUpload: handleImageUpload,
+            editable: editable,
+          } as any}
         />
       </EditorRoot>
       
-      <style jsx global>{`
+      <style>{`
         .novel-editor-wrapper .ProseMirror {
           outline: none;
           border: 1px solid #e5e7eb;

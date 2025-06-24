@@ -14,6 +14,12 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
+interface RenderMetric {
+  componentName: string;
+  renderCount: number;
+  renderTime: number;
+}
+
 export default function PerformanceMetricsPage() {
   const [metrics, setMetrics] = useState(performanceMonitor.getMetrics());
   const [queryMetrics, setQueryMetrics] = useState(queryPerformanceMonitor.getMetrics());
@@ -209,12 +215,12 @@ export default function PerformanceMetricsPage() {
             <BarChart3 className="w-5 h-5" />
             Component Performance
           </h2>
-          {metrics.renderMetrics && metrics.renderMetrics.length > 0 ? (
+          {(metrics as any).renderMetrics && Array.isArray((metrics as any).renderMetrics) && (metrics as any).renderMetrics.length > 0 ? (
             <div className="space-y-3">
-              {metrics.renderMetrics
-                .sort((a, b) => b.renderCount - a.renderCount)
+              {(metrics as any).renderMetrics
+                .sort((a: RenderMetric, b: RenderMetric) => b.renderCount - a.renderCount)
                 .slice(0, 5)
-                .map((component, i) => {
+                .map((component: RenderMetric, i: number) => {
                   const avgTime = component.renderTime / component.renderCount;
                   return (
                     <div key={i} className="space-y-1">

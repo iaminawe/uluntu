@@ -45,6 +45,16 @@ interface SubmissionTag {
   created_at: string;
 }
 
+interface AdminUser {
+  user_id: string;
+  users?: { email: string };
+}
+
+interface MappedAdminUser {
+  id: string;
+  email: string;
+}
+
 const ContactInboxDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -60,7 +70,8 @@ const ContactInboxDetailPage: React.FC = () => {
   const { data: submission, isLoading } = useQuery({
     queryKey: ['contact-submission', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { data, error } = await (supabase as any)
         .from('contact_submissions')
         .select(`
           *,
@@ -80,7 +91,8 @@ const ContactInboxDetailPage: React.FC = () => {
   const { data: notes } = useQuery({
     queryKey: ['contact-submission-notes', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { data, error } = await (supabase as any)
         .from('contact_submission_notes')
         .select(`
           *,
@@ -99,7 +111,8 @@ const ContactInboxDetailPage: React.FC = () => {
   const { data: tags } = useQuery({
     queryKey: ['contact-submission-tags', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { data, error } = await (supabase as any)
         .from('contact_submission_tags')
         .select('*')
         .eq('submission_id', id)
@@ -115,7 +128,7 @@ const ContactInboxDetailPage: React.FC = () => {
   const { data: adminUsers } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_roles')
         .select(`
           user_id,
@@ -124,7 +137,7 @@ const ContactInboxDetailPage: React.FC = () => {
         .in('role', ['admin', 'superadmin']);
       
       if (error) throw error;
-      return data?.map(item => ({
+      return data?.map((item: AdminUser) => ({
         id: item.user_id,
         email: item.users?.email
       })) || [];
@@ -134,7 +147,8 @@ const ContactInboxDetailPage: React.FC = () => {
   // Update submission mutation
   const updateSubmissionMutation = useMutation({
     mutationFn: async (updates: Partial<ContactSubmission>) => {
-      const { error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { error } = await (supabase as any)
         .from('contact_submissions')
         .update(updates)
         .eq('id', id);
@@ -149,7 +163,8 @@ const ContactInboxDetailPage: React.FC = () => {
   // Add note mutation
   const addNoteMutation = useMutation({
     mutationFn: async (noteText: string) => {
-      const { error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { error } = await (supabase as any)
         .from('contact_submission_notes')
         .insert({
           submission_id: id,
@@ -168,7 +183,8 @@ const ContactInboxDetailPage: React.FC = () => {
   // Add tag mutation
   const addTagMutation = useMutation({
     mutationFn: async (tag: { name: string; color: string }) => {
-      const { error } = await supabase
+      if (!id) throw new Error('Submission ID is required');
+      const { error } = await (supabase as any)
         .from('contact_submission_tags')
         .insert({
           submission_id: id,
@@ -187,7 +203,7 @@ const ContactInboxDetailPage: React.FC = () => {
   // Remove tag mutation
   const removeTagMutation = useMutation({
     mutationFn: async (tagId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contact_submission_tags')
         .delete()
         .eq('id', tagId);
@@ -228,7 +244,7 @@ const ContactInboxDetailPage: React.FC = () => {
 
   const handleAssignmentSave = () => {
     updateSubmissionMutation.mutate({ 
-      assigned_to: selectedAssignee || null 
+      assigned_to: selectedAssignee || undefined 
     });
     setIsEditingAssignment(false);
   };
@@ -516,7 +532,7 @@ const ContactInboxDetailPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Unassigned</option>
-                  {adminUsers?.map(user => (
+                  {adminUsers?.map((user: MappedAdminUser) => (
                     <option key={user.id} value={user.id}>{user.email}</option>
                   ))}
                 </select>

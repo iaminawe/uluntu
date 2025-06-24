@@ -74,10 +74,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userRoles = authState.roles?.list || [];
   const isAdmin = authState.roles?.isAdmin || false;
 
-  // Forward Redux auth functions to maintain the same API
-  const signIn = reduxAuth.signIn;
-  const signUp = reduxAuth.signUp;
-  const signOut = reduxAuth.signOut;
+  // Wrap Redux auth functions to maintain the same API
+  const signIn = async (email: string, password: string, rememberMe?: boolean) => {
+    await reduxAuth.signIn(email, password);
+    return { data: { session, user }, error: null };
+  };
+  
+  const signUp = async (email: string, password: string) => {
+    await reduxAuth.signUp(email, password);
+    return { data: { session, user }, error: null };
+  };
+  const signOut = async () => {
+    await reduxAuth.signOut();
+    return { error: null };
+  };
   
   // Implement missing functions for compatibility
   const forgotPassword = async (email: string) => {
@@ -112,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdmin
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value as AuthContextType}>{children}</AuthContext.Provider>;
 }
 
 /**

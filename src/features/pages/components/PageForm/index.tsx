@@ -42,7 +42,7 @@ export const PageForm: React.FC<PageFormProps> = ({
     content: page?.content || '',
     excerpt: page?.excerpt || '',
     hero_image: page?.hero_image || '',
-    status: page?.status || 'draft',
+    status: (page?.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
     meta_title: page?.meta_title || '',
     meta_description: page?.meta_description || '',
     is_featured: page?.is_featured || false,

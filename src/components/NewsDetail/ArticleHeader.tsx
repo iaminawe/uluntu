@@ -53,7 +53,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
       {/* Tags and actions */}
       <div className="flex flex-wrap items-center justify-between">
         <div className="flex flex-wrap gap-2 mb-3 sm:mb-0">
-          {article.tags?.map((tag) => (
+          {article.tags?.map((tag: string) => (
             <Link
               key={tag}
               to={`/news?tag=${tag}`}

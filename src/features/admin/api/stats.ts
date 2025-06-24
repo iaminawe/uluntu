@@ -12,7 +12,7 @@ export const adminStatsApi = {
       totalNews: 0,
       totalGroups: 0,
       totalResources: 0,
-      totalMarketplace: 0,
+      totalMarketplaceListings: 0,
       totalOpportunities: 0,
       pendingModeration: 0,
       recentActivity: []

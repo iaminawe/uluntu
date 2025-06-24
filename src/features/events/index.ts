@@ -1,6 +1,6 @@
 // Export all public APIs from the events feature
 export * from './components';
 export * from './hooks';
-export * from './api';
 export * from './store';
-export * from './types';
+export type { EventInput, EventFilters } from './types';
+export { eventsApi } from './api';

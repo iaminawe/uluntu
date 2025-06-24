@@ -269,7 +269,7 @@ export function useEventRegistrationStatus(eventId?: string, memberId?: string):
       }
 
       if (useSupabase) {
-        return await eventsApi.getRegistrationStatus(eventId, memberId);
+        return await (eventsApi as any).getRegistrationStatus(eventId, memberId);
       } else {
         // Mock registration status - always return false for simplicity
         return false;
@@ -291,7 +291,7 @@ export function useRegisterForEvent(): UseMutationResult<
   return useMutation<boolean, Error, { eventId: string; memberId: string }>({
     mutationFn: async ({ eventId, memberId }) => {
       if (useSupabase) {
-        return await eventsApi.registerForEvent(eventId, memberId);
+        return await (eventsApi as any).registerForEvent(eventId, memberId);
       } else {
         console.log('Mock: Registering for event', eventId, 'with member', memberId);
         return true; // Mock success
@@ -326,7 +326,7 @@ export function useUnregisterFromEvent(): UseMutationResult<
   return useMutation<boolean, Error, { eventId: string; memberId: string }>({
     mutationFn: async ({ eventId, memberId }) => {
       if (useSupabase) {
-        return await eventsApi.unregisterFromEvent(eventId, memberId);
+        return await (eventsApi as any).unregisterFromEvent(eventId, memberId);
       } else {
         console.log('Mock: Unregistering from event', eventId, 'with member', memberId);
         return true; // Mock success
@@ -366,7 +366,7 @@ export function useEventAttendees(eventId?: string): UseQueryResult<any[], Error
       }
 
       if (useSupabase) {
-        return await eventsApi.getEventAttendees(eventId);
+        return await (eventsApi as any).getEventAttendees(eventId);
       } else {
         // Mock attendees data
         return [
@@ -415,7 +415,7 @@ export function useUpdateAttendeeStatus(): UseMutationResult<
   return useMutation<boolean, Error, { eventId: string; memberId: string; status: string }>({
     mutationFn: async ({ eventId, memberId, status }) => {
       if (useSupabase) {
-        return await eventsApi.updateAttendeeStatus(eventId, memberId, status);
+        return await (eventsApi as any).updateAttendeeStatus(eventId, memberId, status);
       } else {
         console.log('Mock: Updating attendee status', { eventId, memberId, status });
         return true; // Mock success

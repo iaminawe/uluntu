@@ -108,7 +108,7 @@ export const useAuth = () => {
 
       if (error) {
         dispatch(setAuthError(error.message));
-        return;
+        return { error };
       }
 
       if (data?.user && data?.session) {
@@ -121,8 +121,11 @@ export const useAuth = () => {
           session: convertSession(data.session)
         }));
       }
+      
+      return { data };
     } catch (err) {
       handleAuthError(dispatch, err);
+      return { error: err };
     }
   };
 
@@ -147,10 +150,13 @@ export const useAuth = () => {
 
       if (error) {
         dispatch(setAuthError(error.message));
-        return;
+        return { error };
       }
+      
+      return { success: true };
     } catch (err) {
       handleAuthError(dispatch, err);
+      return { error: err };
     }
   };
 
@@ -197,6 +203,7 @@ export const useAuth = () => {
     signIn,
     signUp,
     signOut: signOutUser,
+    forgotPassword: resetPassword,
     resetPassword,
     refreshSession,
     hasRole,

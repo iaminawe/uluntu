@@ -157,18 +157,20 @@ const NovelRichTextEditor = ({
       >
         <EditorRoot>
           <EditorContent
-            id={id}
-            initialValue={editorContent}
-            onUpdate={handleUpdate}
-            className="min-h-full"
-            editorProps={{
-              attributes: {
-                class: 'prose prose-sm dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full p-4',
-                'data-placeholder': placeholder,
+            {...{
+              id: id,
+              initialValue: editorContent,
+              onUpdate: handleUpdate,
+              className: "min-h-full",
+              editorProps: {
+                attributes: {
+                  class: 'prose prose-sm dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full p-4',
+                  'data-placeholder': placeholder,
+                },
               },
-            }}
-            editable={!disabled}
-            immediatelyRender={false}
+              editable: !disabled,
+              immediatelyRender: false,
+            } as any}
           />
           {!disabled && (
             <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
@@ -204,7 +206,7 @@ const NovelRichTextEditor = ({
         </EditorRoot>
       </div>
       
-      <style jsx global>{`
+      <style>{`
         .novel-rich-text-editor .ProseMirror {
           outline: none;
           min-height: ${height};

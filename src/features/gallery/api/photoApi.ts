@@ -27,7 +27,7 @@ class PhotoApi {
         limit = 24,
       } = params || {};
 
-      let query = supabase
+      let query = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -65,7 +65,7 @@ class PhotoApi {
       }
 
       if (filters.tags && filters.tags.length > 0) {
-        filters.tags.forEach(tag => {
+        filters.tags.forEach((tag: string) => {
           query = query.contains('tags', [tag]);
         });
       }
@@ -95,6 +95,9 @@ class PhotoApi {
       const totalPages = Math.ceil((count || 0) / limit);
 
       return {
+        photos: data as Photo[],
+        totalCount: count || 0,
+        hasMore: (page * limit) < (count || 0),
         data: data as Photo[],
         page,
         limit,
@@ -109,7 +112,7 @@ class PhotoApi {
 
   async getPhotoById(id: string): Promise<Photo> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -157,7 +160,7 @@ class PhotoApi {
         downloads: 0,
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newPhoto)
         .select(`
@@ -190,7 +193,7 @@ class PhotoApi {
     try {
       const { id, ...updates } = photoData;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           ...updates,
@@ -229,7 +232,7 @@ class PhotoApi {
       const photo = await this.getPhotoById(id);
       
       // Delete files from storage
-      const filePaths = [photo.url, photo.thumbnailUrl, photo.originalUrl].filter(Boolean);
+      const filePaths = [photo.url, photo.thumbnail_url, photo.original_url].filter(Boolean);
       if (filePaths.length > 0) {
         const { error: storageError } = await supabase.storage
           .from('photos')
@@ -241,7 +244,7 @@ class PhotoApi {
       }
 
       // Delete photo record
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(this.tableName)
         .delete()
         .eq('id', id);
@@ -278,7 +281,7 @@ class PhotoApi {
         order_index: index,
       }));
 
-      const { error } = await supabase.rpc('batch_update_photo_order', {
+      const { error } = await (supabase as any).rpc('batch_update_photo_order', {
         updates
       });
 
@@ -297,7 +300,7 @@ class PhotoApi {
     try {
       const { query, filters, facets, highlight } = searchParams;
 
-      let supabaseQuery = supabase
+      let supabaseQuery = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -327,7 +330,7 @@ class PhotoApi {
           supabaseQuery = supabaseQuery.eq('status', filters.status);
         }
         if (filters.tags && filters.tags.length > 0) {
-          filters.tags.forEach(tag => {
+          filters.tags.forEach((tag: string) => {
             supabaseQuery = supabaseQuery.contains('tags', [tag]);
           });
         }
@@ -339,11 +342,15 @@ class PhotoApi {
         throw handleSupabaseError(error);
       }
 
+      const facetFields = facets === true ? ['tags', 'gallery_id'] : (Array.isArray(facets) ? facets : []);
+      
       return {
-        items: data as Photo[],
+        photos: data as Photo[],
         totalCount: count || 0,
-        facets: facets ? await this.getFacets(facets, filters) : undefined,
-        suggestions: query ? await this.getSuggestions(query) : undefined,
+        facets: facetFields.length > 0 ? {
+          tags: await this.getFacets(['tags'], filters).then(f => f.tags?.map(item => ({ name: item.value, count: item.count })) || []),
+          galleries: await this.getFacets(['gallery_id'], filters).then(f => f.gallery_id?.map(item => ({ name: item.value, count: item.count })) || [])
+        } : undefined,
       };
     } catch (error) {
       console.error('Error searching photos:', error);
@@ -353,7 +360,7 @@ class PhotoApi {
 
   async incrementViewCount(photoId: string): Promise<void> {
     try {
-      const { error } = await supabase.rpc('increment_photo_views', {
+      const { error } = await (supabase as any).rpc('increment_photo_views', {
         photo_id: photoId
       });
 
@@ -367,7 +374,7 @@ class PhotoApi {
 
   async incrementDownloadCount(photoId: string): Promise<void> {
     try {
-      const { error } = await supabase.rpc('increment_photo_downloads', {
+      const { error } = await (supabase as any).rpc('increment_photo_downloads', {
         photo_id: photoId
       });
 
@@ -381,7 +388,7 @@ class PhotoApi {
 
   async getPhotoAnalytics(photoId: string): Promise<PhotoAnalytics> {
     try {
-      const { data, error } = await supabase.rpc('get_photo_analytics', {
+      const { data, error } = await (supabase as any).rpc('get_photo_analytics', {
         photo_id: photoId
       });
 
@@ -407,15 +414,15 @@ class PhotoApi {
           };
 
           // Try to extract EXIF data if available
-          if (window.ExifReader) {
+          if ((window as any).ExifReader) {
             const reader = new FileReader();
             reader.onload = (e) => {
               try {
                 const arrayBuffer = e.target?.result as ArrayBuffer;
-                const tags = window.ExifReader.load(arrayBuffer);
+                const tags = (window as any).ExifReader.load(arrayBuffer);
                 
                 if (tags.DateTime) {
-                  metadata.capturedAt = new Date(tags.DateTime.description).toISOString();
+                  (metadata as any).capturedAt = new Date(tags.DateTime.description).toISOString();
                 }
                 if (tags.Make) {
                   metadata.camera = tags.Make.description;
@@ -445,13 +452,13 @@ class PhotoApi {
                   };
                 }
                 if (tags.Keywords) {
-                  metadata.keywords = tags.Keywords.description.split(',').map((k: string) => k.trim());
+                  (metadata as any).keywords = tags.Keywords.description.split(',').map((k: string) => k.trim());
                 }
                 if (tags.Copyright) {
-                  metadata.copyright = tags.Copyright.description;
+                  (metadata as any).copyright = tags.Copyright.description;
                 }
                 if (tags.Artist) {
-                  metadata.artist = tags.Artist.description;
+                  (metadata as any).artist = tags.Artist.description;
                 }
               } catch (exifError) {
                 console.warn('Could not extract EXIF data:', exifError);
@@ -476,13 +483,13 @@ class PhotoApi {
 
     for (const field of facetFields) {
       try {
-        const { data, error } = await supabase.rpc('get_photo_facets', {
+        const { data, error } = await (supabase as any).rpc('get_photo_facets', {
           field_name: field,
           filters: filters || {}
         });
 
         if (!error && data) {
-          facets[field] = data;
+          facets[field] = data as Array<{ value: string; count: number }>;
         }
       } catch (error) {
         console.error(`Error getting facets for ${field}:`, error);
@@ -494,7 +501,7 @@ class PhotoApi {
 
   private async getSuggestions(query: string): Promise<string[]> {
     try {
-      const { data, error } = await supabase.rpc('get_search_suggestions', {
+      const { data, error } = await (supabase as any).rpc('get_search_suggestions', {
         query_text: query,
         suggestion_limit: 5
       });
@@ -503,7 +510,7 @@ class PhotoApi {
         return [];
       }
 
-      return data || [];
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error('Error getting search suggestions:', error);
       return [];

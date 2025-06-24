@@ -61,6 +61,10 @@ export interface PhotoMetadata {
   shutterSpeed?: string;
   focalLength?: string;
   takenAt?: string;
+  capturedAt?: string; // Alias for takenAt
+  keywords?: string[];
+  copyright?: string;
+  artist?: string;
   location?: {
     latitude: number;
     longitude: number;
@@ -287,4 +291,131 @@ export interface BatchUploadResult {
   errorCount: number;
   uploadedPhotos: Photo[];
   errors: { fileId: string; fileName: string; error: string }[];
+}
+
+// Additional types for photo API
+export interface PhotoFilters {
+  search?: string;
+  tags?: string[];
+  gallery?: string;
+  galleryId?: string; // Alias for gallery
+  status?: string;
+  uploadedBy?: string;
+  featured?: boolean;
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+  sortBy?: 'date' | 'title' | 'views' | 'likes';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PhotosResponse {
+  photos: Photo[];
+  totalCount: number;
+  hasMore: boolean;
+  data?: any; // For compatibility
+  page?: any; // For pagination compatibility
+  total?: number;
+  limit?: number;
+  totalPages?: number;
+}
+
+export interface CreatePhotoData {
+  gallery_id: string;
+  galleryId?: string; // Compatibility alias
+  file_name: string;
+  original_file_name: string;
+  file_size: number;
+  mime_type: string;
+  storage_path: string;
+  url?: string; // For image URLs
+  title?: string;
+  description?: string;
+  alt_text?: string;
+  caption?: string;
+  tags?: string[];
+  sort_order?: number;
+  visibility?: 'visible' | 'hidden';
+  metadata?: PhotoMetadata;
+  isPublic?: boolean;
+  featured?: boolean;
+}
+
+export interface UpdatePhotoData {
+  id?: string; // For compatibility
+  title?: string;
+  description?: string;
+  alt_text?: string;
+  caption?: string;
+  tags?: string[];
+  sort_order?: number;
+  visibility?: 'visible' | 'hidden';
+  metadata?: PhotoMetadata;
+  status?: string; // For compatibility
+}
+
+export interface PhotoAnalytics {
+  photoId: string;
+  viewCount: number;
+  downloadCount: number;
+  likeCount: number;
+  shareCount: number;
+  lastViewed?: string;
+}
+
+export interface SearchResult<T = Photo> {
+  photos: T[];
+  totalCount: number;
+  facets?: {
+    tags: Array<{ name: string; count: number }>;
+    galleries: Array<{ name: string; count: number }>;
+  };
+}
+
+export interface PhotoSearch {
+  query: string;
+  filters?: PhotoFilters;
+  page?: number;
+  limit?: number;
+  facets?: boolean;
+  highlight?: boolean;
+}
+
+// Promotion types
+export type PromotionStatus = 'pending' | 'approved' | 'rejected' | 'expired';
+export type PromotionType = 'featured' | 'homepage' | 'newsletter' | 'social';
+
+export interface PhotoPromotionRequest {
+  id: string;
+  photo_id: string;
+  promotion_type: PromotionType;
+  status: PromotionStatus;
+  requested_at: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+  notes?: string;
+}
+
+export interface CreatePromotionRequestData {
+  photo_id: string;
+  promotion_type: PromotionType;
+  notes?: string;
+}
+
+export interface PromotionRequestsResponse {
+  requests: PhotoPromotionRequest[];
+  total: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+  data?: PhotoPromotionRequest[]; // Compatibility
+}
+
+
+export interface PageHeaderAssignmentsResponse {
+  assignments: any[];
+  total: number;
+  page?: number;
+  limit?: number;
 }

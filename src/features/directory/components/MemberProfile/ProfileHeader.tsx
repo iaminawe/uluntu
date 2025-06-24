@@ -15,8 +15,8 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
   // Debug: Check if we can show edit button
   console.log('ProfileHeader Debug:', {
     currentUserId: user?.id,
-    memberUserId: (member as unknown).user_id,
-    shouldShowEdit: user?.id && (member as unknown).user_id && user.id === (member as unknown).user_id
+    memberUserId: (member as any).user_id,
+    shouldShowEdit: user?.id && (member as any).user_id && user.id === (member as any).user_id
   });
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 md:p-8">
@@ -48,7 +48,7 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
                 Contact
               </button>
               {/* Only show edit button if this is the current user's profile */}
-              {user?.id && (member as unknown).user_id && user.id === (member as unknown).user_id && (
+              {user?.id && (member as any).user_id && user.id === (member as any).user_id && (
                 <button
                   onClick={() => navigate('/profile/edit')}
                   className="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white rounded-md hover:bg-slate-50 dark:hover:bg-slate-700"

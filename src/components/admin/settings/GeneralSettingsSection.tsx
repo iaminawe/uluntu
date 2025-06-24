@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest } from '@/types/settings';
+import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingCategory, SettingDataType } from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -40,8 +40,8 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category,
-        data_type: setting.data_type
+        category: setting.category as SettingCategory,
+        data_type: setting.data_type as SettingDataType
       });
       
       // Remove from local state after successful save

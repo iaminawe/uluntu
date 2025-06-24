@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+// import { useDropzone } from 'react-dropzone'; // TODO: Add react-dropzone dependency
 import { galleryApiNew } from '../api/galleryApiNew';
 import { storageService } from '@/services/storageService';
 import { PhotoUploadInput, UploadProgress } from '../types';
@@ -127,7 +127,12 @@ export function PhotoUploadNew({
     }
   }, [uploading, maxFiles, processFile, uploadedPhotos, onUploadComplete]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  // TODO: Implement proper dropzone once react-dropzone is added
+  const getRootProps = () => ({});
+  const getInputProps = () => ({});
+  const isDragActive = false;
+  
+  /* const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     accept: {
       'image/jpeg': ['.jpg', '.jpeg'],
@@ -139,7 +144,7 @@ export function PhotoUploadNew({
     },
     maxFiles,
     disabled: uploading
-  });
+  }); */
 
   const completedUploads = uploadProgress.filter(p => p.status === 'completed').length;
   const failedUploads = uploadProgress.filter(p => p.status === 'error').length;

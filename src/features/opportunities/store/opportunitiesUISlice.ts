@@ -8,6 +8,8 @@ export interface OpportunityFilters {
   remote?: boolean;
   location?: string[];
   status?: string;
+  featured?: boolean;
+  company_id?: string;
 }
 
 export interface OpportunitiesUIState {

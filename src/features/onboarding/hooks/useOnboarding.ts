@@ -73,6 +73,10 @@ export const useOnboarding = () => {
   const handleComplete = useCallback(async () => {
     dispatch(setSaving(true));
     try {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+      
       const { professional, company, privacy, engagement } = onboarding.formData;
 
       // Update member profile with all onboarding data
@@ -96,7 +100,7 @@ export const useOnboarding = () => {
       const { error: memberError } = await supabase
         .from('members')
         .update(updateData)
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id);
 
       if (memberError) throw memberError;
 
@@ -106,11 +110,11 @@ export const useOnboarding = () => {
         await supabase
           .from('member_skills')
           .delete()
-          .eq('member_id', user?.id);
+          .eq('member_id', user.id);
 
         // Then insert new skills
         const skillsData = professional.skills.map(skill => ({
-          member_id: user?.id,
+          member_id: user.id,
           skill: skill,
           level: 'intermediate', // Default level
         }));
@@ -130,7 +134,7 @@ export const useOnboarding = () => {
           .from('company_members')
           .insert({
             company_id: company.companyId,
-            member_id: user?.id,
+            member_id: user.id,
             role: company.role,
             verified: false,
           });
@@ -144,7 +148,7 @@ export const useOnboarding = () => {
       if (engagement.groupIds && engagement.groupIds.length > 0) {
         const groupMemberships = engagement.groupIds.map(groupId => ({
           group_id: groupId,
-          member_id: user?.id,
+          member_id: user.id,
           role: 'member',
           status: 'active',
         }));

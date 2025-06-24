@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
+import { Company } from '@/features/companies/types';
 
 export default function CompaniesPage() {
   // Use hybrid approach: React Query for data, Redux for UI state
@@ -58,7 +59,7 @@ export default function CompaniesPage() {
         ) : (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {(companies || []).map(company => (
+              {(companies || []).map((company: Company) => (
                 <Link 
                   to={`/companies/${company.id}`} 
                   key={company.id} 
@@ -95,7 +96,7 @@ export default function CompaniesPage() {
                     </p>
                   )}
                   <div className="flex flex-wrap gap-2">
-                    {company.industry && company.industry.slice(0, 3).map((tag, index) => (
+                    {company.industry && company.industry.slice(0, 3).map((tag: string, index: number) => (
                       <span 
                         key={index}
                         className="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100"

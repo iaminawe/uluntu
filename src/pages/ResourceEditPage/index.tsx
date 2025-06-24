@@ -80,7 +80,7 @@ export default function ResourceEditPage() {
           tags: resource.tags || [],
           groupId: resource.groupId || '',
           newTag: '',
-          status: resource.status,
+          status: resource.status || 'draft',
           featured: resource.featured || false
         });
       }

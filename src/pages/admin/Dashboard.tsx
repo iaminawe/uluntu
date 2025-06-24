@@ -122,16 +122,16 @@ const AdminDashboard: React.FC = () => {
             ) : (
               <div className="space-y-3">
                 {stats.recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start text-sm">
+                  <div key={(activity as any).id} className="flex items-start text-sm">
                     <Activity className="h-4 w-4 text-gray-400 mt-0.5 mr-2" />
                     <div>
                       <p className="text-gray-900">
-                        <span className="font-medium">{activity.admin?.email || 'Unknown'}</span>
+                        <span className="font-medium">{(activity as any).admin?.email || 'Unknown'}</span>
                         {' '}
-                        {activity.action} {activity.entity_type}
+                        {(activity as any).action} {(activity as any).entity_type}
                       </p>
                       <p className="text-gray-500">
-                        {new Date(activity.created_at).toLocaleString()}
+                        {new Date((activity as any).created_at).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -171,7 +171,7 @@ const AdminDashboard: React.FC = () => {
             <div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Active Users (24h)</span>
-                <span className="text-gray-900 font-medium">{stats?.totalUsers || 0}</span>
+                <span className="text-gray-900 font-medium">{(stats as any)?.totalUsers || 0}</span>
               </div>
             </div>
           </div>

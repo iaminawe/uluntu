@@ -54,12 +54,12 @@ const UsersPage: React.FC = () => {
     queryKey: ['admin-users', searchTerm, selectedRole],
     queryFn: async () => {
       try {
-        // Try using the database function first
-        const { data: adminUsersData, error: functionError } = await supabase
-          .rpc('get_admin_users');
+        // Try using the database function first (disabled - function not available)
+        // const { data: adminUsersData, error: functionError } = await supabase
+        //   .rpc('get_admin_users');
 
-        if (functionError) {
-          console.warn('Database function failed, falling back to manual query:', functionError);
+        // if (functionError) {
+        //   console.warn('Database function failed, falling back to manual query:', functionError);
           
           // Fallback: Get all user roles
           const { data: userRoles, error: rolesError } = await supabase
@@ -111,36 +111,36 @@ const UsersPage: React.FC = () => {
           }
 
           return usersArray;
-        }
+        // }
 
-        // Convert database function results to UserWithRoles format
-        const usersArray: UserWithRoles[] = adminUsersData?.map(user => ({
-          id: user.user_id,
-          email: user.email || `user-${user.user_id.substring(0, 8)}@example.com`,
-          created_at: user.created_at,
-          last_sign_in_at: user.last_sign_in_at,
-          app_metadata: {},
-          user_metadata: { name: user.name || 'Unknown User' },
-          roles: (user.roles || []).map(role => ({ id: role, name: formatRoleName(role) }))
-        })) || [];
+        // Convert database function results to UserWithRoles format (disabled)
+        // const usersArray: UserWithRoles[] = adminUsersData?.map(user => ({
+        //   id: user.user_id,
+        //   email: user.email || `user-${user.user_id.substring(0, 8)}@example.com`,
+        //   created_at: user.created_at,
+        //   last_sign_in_at: user.last_sign_in_at,
+        //   app_metadata: {},
+        //   user_metadata: { name: user.name || 'Unknown User' },
+        //   roles: Array.isArray(user.roles) ? user.roles.map(role => ({ id: role, name: formatRoleName(role) })) : []
+        // })) || [];
 
         // Apply filters
-        let filteredUsers = usersArray;
+        // let filteredUsers = usersArray;
 
-        if (searchTerm) {
-          filteredUsers = filteredUsers.filter(user =>
-            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.user_metadata?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-        }
+        // if (searchTerm) {
+        //   filteredUsers = filteredUsers.filter(user =>
+        //     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        //     user.user_metadata?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        //   );
+        // }
 
-        if (selectedRole !== 'all') {
-          filteredUsers = filteredUsers.filter(user =>
-            user.roles.some(r => r.id === selectedRole)
-          );
-        }
+        // if (selectedRole !== 'all') {
+        //   filteredUsers = filteredUsers.filter(user =>
+        //     user.roles.some(r => r.id === selectedRole)
+        //   );
+        // }
 
-        return filteredUsers;
+        // return filteredUsers;
       } catch (error) {
         console.error('Error fetching users:', error);
         return [];
@@ -316,7 +316,7 @@ const UsersPage: React.FC = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input
                   type="checkbox"
-                  checked={users?.length > 0 && selectedUsers.size === users.length}
+                  checked={(users?.length ?? 0) > 0 && selectedUsers.size === (users?.length ?? 0)}
                   onChange={(e) => handleSelectAll(e.target.checked)}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />

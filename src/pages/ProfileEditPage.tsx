@@ -51,7 +51,7 @@ export default function ProfileEditPage() {
         image: member.image || '',
         bio: member.bio || '',
         skills: Array.isArray(member.skills) ? member.skills : [],
-        interests: Array.isArray((member as unknown).interests) ? (member as unknown).interests : [],
+        interests: [], // Member type doesn't have interests field, defaulting to empty array
         joinDate: member.joinDate || new Date().toISOString().split('T')[0],
         social: {
           linkedin: socialData.linkedin || '',

@@ -26,7 +26,7 @@ class PromotionApi {
         requestedBy,
       } = params || {};
 
-      let query = supabase
+      let query = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -83,11 +83,12 @@ class PromotionApi {
       const totalPages = Math.ceil((count || 0) / limit);
 
       return {
-        data: data as PhotoPromotionRequest[],
+        requests: data as PhotoPromotionRequest[],
+        total: count || 0,
         page,
         limit,
-        total: count || 0,
         totalPages,
+        data: data as PhotoPromotionRequest[],
       };
     } catch (error) {
       console.error('Error fetching promotion requests:', error);
@@ -97,7 +98,7 @@ class PromotionApi {
 
   async getPromotionRequestById(id: string): Promise<PhotoPromotionRequest> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -153,11 +154,11 @@ class PromotionApi {
       }
 
       // Check if there's already a pending request for this photo and promotion type
-      const { data: existingRequest } = await supabase
+      const { data: existingRequest } = await (supabase as any)
         .from(this.tableName)
         .select('id')
-        .eq('photo_id', requestData.photoId)
-        .eq('promotion_type', requestData.promotionType)
+        .eq('photo_id', requestData.photo_id)
+        .eq('promotion_type', requestData.promotion_type)
         .eq('status', 'pending')
         .single();
 
@@ -172,7 +173,7 @@ class PromotionApi {
         status: 'pending' as PromotionStatus,
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newRequest)
         .select(`
@@ -217,14 +218,14 @@ class PromotionApi {
       // Get the promotion request to check promotion type
       const request = await this.getPromotionRequestById(id);
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           status: 'approved' as PromotionStatus,
           reviewed_by: user.id,
           reviewed_at: new Date().toISOString(),
           review_notes: reviewNotes,
-          metadata: metadata || request.metadata,
+          metadata: metadata || (request as any).metadata,
         })
         .eq('id', id)
         .select(`
@@ -270,7 +271,7 @@ class PromotionApi {
         throw new Error('User not authenticated');
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           status: 'rejected' as PromotionStatus,
@@ -320,7 +321,7 @@ class PromotionApi {
       }
 
       // Check if user owns the request
-      const { data: request } = await supabase
+      const { data: request } = await (supabase as any)
         .from(this.tableName)
         .select('requested_by, status')
         .eq('id', id)
@@ -330,15 +331,15 @@ class PromotionApi {
         throw new Error('Promotion request not found');
       }
 
-      if (request.requested_by !== user.id) {
+      if ((request as any).requested_by !== user.id) {
         throw new Error('You can only cancel your own promotion requests');
       }
 
-      if (request.status !== 'pending') {
+      if ((request as any).status !== 'pending') {
         throw new Error('Can only cancel pending promotion requests');
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(this.tableName)
         .update({
           status: 'cancelled' as PromotionStatus,
@@ -358,7 +359,7 @@ class PromotionApi {
 
   async getActivePromotions(promotionType?: PromotionType): Promise<PhotoPromotionRequest[]> {
     try {
-      let query = supabase
+      let query = (supabase as any)
         .from(this.tableName)
         .select(`
           *,
@@ -397,7 +398,7 @@ class PromotionApi {
     try {
       const now = new Date().toISOString();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(this.tableName)
         .update({
           status: 'expired' as PromotionStatus,
@@ -420,7 +421,7 @@ class PromotionApi {
 
   private async executePromotion(request: PhotoPromotionRequest): Promise<void> {
     try {
-      switch (request.promotionType) {
+      switch ((request as any).promotion_type) {
         case 'page_header':
           await this.executePageHeaderPromotion(request);
           break;
@@ -434,11 +435,11 @@ class PromotionApi {
           await this.executeSocialMediaPromotion(request);
           break;
         default:
-          console.warn(`Unknown promotion type: ${request.promotionType}`);
+          console.warn(`Unknown promotion type: ${(request as any).promotion_type}`);
       }
 
       // Update status to active
-      await supabase
+      await (supabase as any)
         .from(this.tableName)
         .update({
           status: 'active' as PromotionStatus,
@@ -456,32 +457,32 @@ class PromotionApi {
     const { pageHeaderAssignmentApi } = await import('./pageHeaderApi');
     
     await pageHeaderAssignmentApi.createAssignment({
-      photoId: request.photoId,
-      pagePath: request.targetLocation,
-      pageTitle: request.metadata?.pageTitle || 'Page Header',
-      startDate: request.scheduledStart,
-      endDate: request.scheduledEnd,
-      priority: request.metadata?.priority || 1,
+      photo_id: (request as any).photo_id,
+      page_path: (request as any).target_location || '/',
+      page_title: (request as any).metadata?.pageTitle || 'Page Header',
+      start_date: (request as any).scheduled_start,
+      end_date: (request as any).scheduled_end,
+      priority: (request as any).metadata?.priority || 1,
     });
   }
 
   private async executeFeaturedGalleryPromotion(request: PhotoPromotionRequest): Promise<void> {
     // Mark photo as featured in its gallery
-    await supabase
+    await (supabase as any)
       .from('photos')
       .update({ featured: true })
-      .eq('id', request.photoId);
+      .eq('id', (request as any).photo_id);
   }
 
   private async executeHomepageHeroPromotion(request: PhotoPromotionRequest): Promise<void> {
     // This would integrate with homepage hero management
-    console.log('Executing homepage hero promotion for photo:', request.photoId);
+    console.log('Executing homepage hero promotion for photo:', (request as any).photo_id);
     // Implementation would depend on how homepage heroes are managed
   }
 
   private async executeSocialMediaPromotion(request: PhotoPromotionRequest): Promise<void> {
     // This would integrate with social media posting APIs
-    console.log('Executing social media promotion for photo:', request.photoId);
+    console.log('Executing social media promotion for photo:', (request as any).photo_id);
     // Implementation would depend on social media integration
   }
 }

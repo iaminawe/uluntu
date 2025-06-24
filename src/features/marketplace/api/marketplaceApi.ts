@@ -62,7 +62,7 @@ export const marketplaceApi = {
         if (filters.tags && filters.tags.length > 0) {
           // This assumes the tags column is an array type in Supabase
           // For each tag in the filters.tags array, check if it's contained in the tags column
-          filters.tags.forEach(tag => {
+          filters.tags.forEach((tag: any) => {
             query = query.contains('tags', [tag]);
           });
         }
@@ -79,26 +79,27 @@ export const marketplaceApi = {
       }
 
       // Transform resources data to marketplace format
-      const marketplaceItems: MarketplaceItem[] = (data || []).map(resource => ({
+      const marketplaceItems = (data || []).map(resource => ({
         id: resource.id,
         title: resource.title,
         description: resource.description || '',
-        type: resource.type || 'service',
-        price: 0, // Resources don't have prices
-        condition: 'new',
-        images: resource.image ? [resource.image] : [],
-        location: 'Nelson, BC',
-        tags: resource.tags || [],
-        sellerId: resource.contributor_id || '',
+        type: (resource.type || 'service') as any,
+        price: 0,
+        category: resource.type || 'service',
+        image: resource.image || undefined,
+        seller: {
+          id: resource.contributor_id || '1',
+          name: (resource as any).contributor?.name || 'Community Member',
+          image: (resource as any).contributor?.image || ''
+        },
+        datePosted: resource.created_at || new Date().toISOString(),
         status: resource.status as ContentStatus,
-        featured: resource.featured || false,
-        createdAt: resource.created_at,
-        updatedAt: resource.created_at
+        featured: resource.featured || false
       }));
       
       console.log('[MarketplaceAPI] Transformed resources to marketplace items:', marketplaceItems.length);
       console.log('[MarketplaceAPI] First marketplace item:', marketplaceItems[0]);
-      return marketplaceItems;
+      return marketplaceItems as any;
     } catch (error) {
       console.error('Error fetching marketplace items:', error);
       throw error;
@@ -156,17 +157,18 @@ export const marketplaceApi = {
         id: data.id,
         title: data.title,
         description: data.description || '',
-        type: data.type || 'service',
+        type: (data.type || 'service') as any,
         price: 0,
-        condition: 'new',
-        images: data.image ? [data.image] : [],
-        location: 'Nelson, BC',
-        tags: data.tags || [],
-        sellerId: data.contributor_id || '',
+        category: data.type || 'service',
+        image: data.image || undefined,
+        seller: {
+          id: data.contributor_id || '1',
+          name: (data as any).contributor?.name || 'Community Member',
+          image: (data as any).contributor?.image || ''
+        },
+        datePosted: data.created_at || new Date().toISOString(),
         status: data.status as ContentStatus,
-        featured: data.featured || false,
-        createdAt: data.created_at,
-        updatedAt: data.created_at
+        featured: data.featured || false
       };
       
       return marketplaceItem;
@@ -204,24 +206,25 @@ export const marketplaceApi = {
       }
       
       // Transform resources to marketplace items
-      const marketplaceItems: MarketplaceItem[] = (data || []).map(resource => ({
+      const marketplaceItems = (data || []).map(resource => ({
         id: resource.id,
         title: resource.title,
         description: resource.description || '',
-        type: resource.type || 'service',
+        type: (resource.type || 'service') as any,
         price: 0,
-        condition: 'new',
-        images: resource.image ? [resource.image] : [],
-        location: 'Nelson, BC',
-        tags: resource.tags || [],
-        sellerId: resource.contributor_id || '',
+        category: resource.type || 'service',
+        image: resource.image || undefined,
+        seller: {
+          id: resource.contributor_id || '1',
+          name: (resource as any).contributor?.name || 'Community Member',
+          image: (resource as any).contributor?.image || ''
+        },
+        datePosted: resource.created_at || new Date().toISOString(),
         status: resource.status as ContentStatus,
-        featured: resource.featured || false,
-        createdAt: resource.created_at,
-        updatedAt: resource.created_at
+        featured: resource.featured || false
       }));
       
-      return marketplaceItems;
+      return marketplaceItems as any;
     } catch (error) {
       handleSupabaseError(error, 'fetching marketplace items by seller');
       return []; // Return empty array on error
@@ -234,7 +237,7 @@ export const marketplaceApi = {
       const resourceData = {
         title: itemData.title,
         description: itemData.description || '',
-        type: itemData.type,
+        type: itemData.type as any,
         url: '', // Resources require a URL field
         image: itemData.images?.[0] || '',
         status: itemData.status || 'published',
@@ -261,17 +264,18 @@ export const marketplaceApi = {
         id: data.id,
         title: data.title,
         description: data.description || '',
-        type: data.type || 'service',
+        type: (data.type || 'service') as any,
         price: 0,
-        condition: 'new',
-        images: data.image ? [data.image] : [],
-        location: 'Nelson, BC',
-        tags: data.tags || [],
-        sellerId: data.contributor_id || '',
+        category: data.type || 'service',
+        image: data.image || undefined,
+        seller: {
+          id: data.contributor_id || '1',
+          name: (data as any).contributor?.name || 'Community Member',
+          image: (data as any).contributor?.image || ''
+        },
+        datePosted: data.created_at || new Date().toISOString(),
         status: data.status as ContentStatus,
-        featured: data.featured || false,
-        createdAt: data.created_at,
-        updatedAt: data.created_at
+        featured: data.featured || false
       };
       
       return marketplaceItem;
@@ -313,17 +317,18 @@ export const marketplaceApi = {
         id: data.id,
         title: data.title,
         description: data.description || '',
-        type: data.type || 'service',
+        type: (data.type || 'service') as any,
         price: 0,
-        condition: 'new',
-        images: data.image ? [data.image] : [],
-        location: 'Nelson, BC',
-        tags: data.tags || [],
-        sellerId: data.contributor_id || '',
+        category: data.type || 'service',
+        image: data.image || undefined,
+        seller: {
+          id: data.contributor_id || '1',
+          name: (data as any).contributor?.name || 'Community Member',
+          image: (data as any).contributor?.image || ''
+        },
+        datePosted: data.created_at || new Date().toISOString(),
         status: data.status as ContentStatus,
-        featured: data.featured || false,
-        createdAt: data.created_at,
-        updatedAt: data.created_at
+        featured: data.featured || false
       };
       
       return marketplaceItem;

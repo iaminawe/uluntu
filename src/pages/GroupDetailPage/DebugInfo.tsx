@@ -9,6 +9,8 @@ export default function DebugInfo() {
   useEffect(() => {
     async function fetchDebugInfo() {
       try {
+        if (!id) return;
+        
         // Test 1: Direct group fetch
         const { data: groupData, error: groupError } = await supabase
           .from('groups')

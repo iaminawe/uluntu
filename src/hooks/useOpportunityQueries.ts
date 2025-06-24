@@ -129,7 +129,7 @@ export function useOpportunities(filters?: OpportunityFilters): UseQueryResult<F
         }
         
         // Call the real API
-        return await opportunitiesApi.getAll(apiFilters);
+        return await opportunitiesApi.getAll(apiFilters) as any;
       } catch (error) {
         console.error('Error fetching opportunities:', error);
         throw error;
@@ -183,7 +183,7 @@ export function useOpportunity(id: string): UseQueryResult<FrontendOpportunity |
       
       try {
         // Call the real API to get a single opportunity by ID
-        return await opportunitiesApi.getById(id);
+        return await opportunitiesApi.getById(id) as any;
       } catch (error) {
         console.error(`Error fetching opportunity with id ${id}:`, error);
         throw error;
@@ -249,25 +249,23 @@ export function useCreateOpportunity(): UseMutationResult<FrontendOpportunity | 
       
       try {
         // Convert from Supabase OpportunityInput to our API's OpportunityInput format
-        const opportunityData: import('../api/opportunitiesApi').OpportunityInput = {
+        const opportunityData: import('../features/opportunities/api/opportunitiesApi').OpportunityInput = {
           title: data.title,
           description: data.description === undefined ? null : data.description,
-          type: data.type === undefined ? null : data.type as 'full-time' | 'part-time' | 'contract' | 'volunteer',
+          type: data.type === undefined ? null : data.type as 'job' | 'volunteer' | 'funding' | 'community',
           location: data.location === undefined ? null : data.location,
           remote: data.remote === undefined ? null : data.remote,
-          salary: data.compensation === undefined ? null : data.compensation,
+          compensation: data.compensation === undefined ? null : data.compensation,
           deadline: data.deadline === undefined ? null : data.deadline,
-          company: {
-            id: data.posted_by || '1',
-            name: data.organization || 'Unknown Company',
-            logo: data.image || '/placeholder-company.png'
-          },
+          postedBy: data.posted_by || '1',
+          organization: data.organization || 'Unknown Company',
+          image: data.image || '/placeholder-company.png',
           status: data.status === undefined ? null : data.status as 'draft' | 'published' | 'archived',
           featured: data.featured === undefined ? null : data.featured
         };
         
         // Call the real API
-        return await opportunitiesApi.create(opportunityData);
+        return await opportunitiesApi.create(opportunityData) as any;
       } catch (error) {
         console.error('Error creating opportunity:', error);
         throw error;
@@ -344,34 +342,32 @@ export function useUpdateOpportunity(): UseMutationResult<FrontendOpportunity | 
       
       try {
         // Convert from Supabase OpportunityUpdateInput to our API's OpportunityInput format
-        const opportunityData: Partial<import('../api/opportunitiesApi').OpportunityInput> = {};
+        const opportunityData: Partial<import('../features/opportunities/api/opportunitiesApi').OpportunityInput> = {};
         
         // Only include defined properties to avoid overwriting with null/undefined
         if (data.title !== undefined) opportunityData.title = data.title;
         if (data.description !== undefined) opportunityData.description = data.description;
-        if (data.type !== undefined) opportunityData.type = data.type as OpportunityType;
+        if (data.type !== undefined) opportunityData.type = data.type as 'job' | 'volunteer' | 'funding' | 'community';
         if (data.location !== undefined) opportunityData.location = data.location;
         if (data.remote !== undefined) opportunityData.remote = data.remote;
-        if (data.compensation !== undefined) opportunityData.salary = data.compensation;
+        if (data.compensation !== undefined) opportunityData.compensation = data.compensation;
         if (data.deadline !== undefined) opportunityData.deadline = data.deadline;
         // Handle company information: only include if posted_by (company_id) is present
         if (data.posted_by !== undefined && data.posted_by !== null) {
-          opportunityData.company = {
-            id: String(data.posted_by), // Ensure ID is a string
-            name: data.organization === null ? '' : (data.organization || ''), // Ensure it's always a string
-            logo: data.image === null ? '' : (data.image || '') // Ensure it's always a string
-          };
-        } else if (data.organization !== undefined || data.image !== undefined) {
-          // If there's a name or logo but no ID, this might be an issue or a new company scenario not handled here.
-          // For now, we won't pass a partial company object without an ID to avoid potential errors.
-          // Consider logging a warning if this case is important.
-          console.warn('Opportunity update: Company name/logo provided without a company ID (posted_by). Company data will not be updated.');
+          opportunityData.postedBy = String(data.posted_by);
         }
+        if (data.organization !== undefined) {
+          opportunityData.organization = data.organization;
+        }
+        if (data.image !== undefined) {
+          opportunityData.image = data.image;
+        }
+        // Organization and image are handled above
         if (data.status !== undefined) opportunityData.status = data.status as OpportunityStatus;
         if (data.featured !== undefined) opportunityData.featured = data.featured;
         
         // Call the real API
-        return await opportunitiesApi.update(id, opportunityData);
+        return await opportunitiesApi.update(id, opportunityData) as any;
       } catch (error) {
         console.error(`Error updating opportunity with id ${id}:`, error);
         throw error;

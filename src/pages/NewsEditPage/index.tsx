@@ -12,6 +12,7 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { ContentStatus } from '../../types/common';
+import { NewsArticle } from '@/types';
 import { uploadNewsImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
@@ -136,12 +137,12 @@ export default function NewsEditPage() {
           return;
         }
         
-        finalImageUrl = url;
+        finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
       
       // Prepare data for API
-      const newsArticleData = {
+      const newsArticleData: Partial<NewsArticle> = {
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
@@ -149,11 +150,21 @@ export default function NewsEditPage() {
         tags: formData.tags,
         status: formData.status,
         featured: formData.featured,
-        // Use current user as author for new articles
-        ...(isEditMode ? {} : { author: { id: user?.id, name: user?.name || 'Unknown', image: user?.image || '' } }),
-        // Use current date as publish date for new articles
-        ...(isEditMode ? {} : { date: new Date().toISOString() })
       };
+      
+      // Add author for new articles
+      if (!isEditMode && user?.id) {
+        newsArticleData.author = {
+          id: user.id,
+          name: user.name || 'Unknown',
+          image: user.image || ''
+        };
+      }
+      
+      // Add date for new articles
+      if (!isEditMode) {
+        newsArticleData.date = new Date().toISOString();
+      }
 
       let result;
       if (isEditMode && id) {

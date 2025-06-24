@@ -9,7 +9,8 @@ import OpportunityInfo from './OpportunityInfo';
 import ApplySidebar from './ApplySidebar';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
-import { Opportunity } from './types';
+import { Opportunity as FeatureOpportunity } from '@/features/opportunities/types';
+import { Opportunity as PageOpportunity, adaptMainOpportunityToDetailPage } from './types';
 import { useOpportunitiesHybrid } from '@/features/opportunities/hooks/useOpportunitiesHybrid';
 
 // Sample opportunity data has been replaced with data from the Redux store
@@ -21,7 +22,26 @@ export default function OpportunityDetailPage() {
   
   // Use the hybrid hook to fetch opportunity data
   const { getOpportunity } = useOpportunitiesHybrid();
-  const { data: opportunity, isLoading, error } = getOpportunity(id || '');
+  const { data: rawOpportunity, isLoading, error } = getOpportunity(id || '');
+  
+  // Adapt the opportunity data to match the page's expected interface
+  const opportunity: PageOpportunity | undefined = rawOpportunity ? {
+    ...adaptMainOpportunityToDetailPage(rawOpportunity),
+    // Add required fields that might be missing
+    postedAt: rawOpportunity.postedDate,
+    postedBy: {
+      name: rawOpportunity.postedBy || rawOpportunity.company.name,
+      image: rawOpportunity.company.logo || '',
+      title: 'Organization',
+      bio: ''
+    },
+    requirements: rawOpportunity.requirements || [],
+    responsibilities: rawOpportunity.responsibilities || [],
+    benefits: rawOpportunity.benefits || [],
+    contactEmail: rawOpportunity.contactEmail || '',
+    website: rawOpportunity.website || '',
+    image: rawOpportunity.image || ''
+  } as PageOpportunity : undefined;
   
   const handleApply = () => {
     setIsApplying(true);

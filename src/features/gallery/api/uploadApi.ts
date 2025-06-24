@@ -1,14 +1,37 @@
 import { supabase, handleSupabaseError } from '@/shared/api/client';
 import { photoApi } from './photoApi';
 import {
-  PhotoUpload,
-  BatchUpload,
-  UploadOptions,
-  ImageProcessingOptions,
+  PhotoUploadInput,
+  BatchUploadConfig,
+  BatchUploadFile,
+  BatchUploadResult,
   CreatePhotoData,
   Photo,
   PhotoMetadata
 } from '../types';
+
+// Compatibility types
+type PhotoUpload = PhotoUploadInput;
+type BatchUpload = {
+  id: string;
+  files: Array<{
+    file: File;
+    progress: number;
+    status: string;
+    photoId?: string;
+    thumbnailUrl?: string;
+    error?: string;
+  }>;
+  totalFiles: number;
+  completedFiles: number;
+  failedFiles: number;
+  status: string;
+  startedAt: string;
+  completedAt?: string;
+  galleryId?: string;
+};
+type UploadOptions = any;
+type ImageProcessingOptions = any;
 
 class UploadApi {
   private storageBucket = 'photos';
@@ -82,27 +105,27 @@ class UploadApi {
 
       // Create photo record
       const photoData: CreatePhotoData = {
-        title: options.title || file.name.split('.')[0],
-        description: options.description,
-        tags: options.tags || [],
-        isPublic: options.isPublic ?? true,
-        galleryId: options.galleryId,
-        featured: options.featured ?? false,
+        gallery_id: (options as any).galleryId || (options as any).gallery_id || '',
+        file_name: file.name,
+        original_file_name: file.name,
+        file_size: file.size,
+        mime_type: file.type,
+        url: publicUrl,
+        storage_path: filePath,
+        title: (options as any).title || file.name.split('.')[0],
+        description: (options as any).description,
+        tags: (options as any).tags || [],
         metadata,
       };
 
       // Create photo in database with file information
       const photo = await photoApi.createPhoto({
         ...photoData,
-        url: publicUrl,
-        thumbnailUrl,
-        originalUrl: publicUrl,
-        filename: file.name,
-        fileSize: file.size,
-        mimeType: file.type,
-        width: metadata?.width,
-        height: metadata?.height,
-      });
+        thumbnail_url: thumbnailUrl,
+        original_url: publicUrl,
+        width: (metadata as any)?.width,
+        height: (metadata as any)?.height,
+      } as any);
 
       if (onProgress) {
         onProgress(100);
@@ -163,7 +186,7 @@ class UploadApi {
 
           batchUpload.files[index].status = 'completed';
           batchUpload.files[index].photoId = photo.id;
-          batchUpload.files[index].thumbnailUrl = photo.thumbnailUrl;
+          batchUpload.files[index].thumbnailUrl = photo.thumbnail_url;
           batchUpload.completedFiles++;
 
           if (onBatchProgress) {
@@ -216,13 +239,13 @@ class UploadApi {
   }
 
   async retryFailedUploads(batchUpload: BatchUpload, options: UploadOptions = {}): Promise<BatchUpload> {
-    const failedFiles = batchUpload.files.filter(upload => upload.status === 'failed');
+    const failedFiles = batchUpload.files.filter((upload: any) => upload.status === 'failed');
     
     if (failedFiles.length === 0) {
       return batchUpload;
     }
 
-    const retryFiles = failedFiles.map(upload => upload.file);
+    const retryFiles = failedFiles.map((upload: any) => upload.file);
     return this.uploadBatch(retryFiles, options);
   }
 

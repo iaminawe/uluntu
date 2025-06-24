@@ -26,7 +26,7 @@ import {
   selectPagesError,
   selectPagesFilters
 } from '../store/pagesSlice';
-import type { Page, PageInput, PageFilters } from '../types';
+import type { Page, CreatePageData, UpdatePageData, PageFilters } from '../types';
 
 export const usePages = () => {
   const dispatch = useAppDispatch();
@@ -68,12 +68,13 @@ export const usePages = () => {
     return dispatch(fetchChildPages(parentId));
   }, [dispatch]);
 
-  const createNewPage = useCallback((pageData: PageInput) => {
+  const createNewPage = useCallback((pageData: CreatePageData) => {
     return dispatch(createPage(pageData));
   }, [dispatch]);
 
-  const updateExistingPage = useCallback((id: string, data: Partial<PageInput>) => {
-    return dispatch(updatePage({ id, data }));
+  const updateExistingPage = useCallback((id: string, data: Partial<UpdatePageData>) => {
+    const updateData: UpdatePageData = { id, ...data };
+    return dispatch(updatePage(updateData));
   }, [dispatch]);
 
   const removepágina = useCallback((id: string) => {
@@ -117,11 +118,11 @@ export const usePages = () => {
   }, [pages]);
 
   const getPublishedPages = useCallback((): Page[] => {
-    return pages.filter(page => page.status === 'published' && page.is_published);
+    return pages.filter(page => page.status === 'published' && !!(page as any).is_published);
   }, [pages]);
 
   const getDraftPages = useCallback((): Page[] => {
-    return pages.filter(page => page.status === 'draft' || !page.is_published);
+    return pages.filter(page => page.status === 'draft' || !(page as any).is_published);
   }, [pages]);
 
   const getPagesByTemplate = useCallback((template: string): Page[] => {

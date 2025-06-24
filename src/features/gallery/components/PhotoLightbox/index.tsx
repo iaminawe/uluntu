@@ -221,12 +221,12 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               }`}
             >
               <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-              <span className="text-sm">{currentPhoto?.like_count || 0}</span>
+              <span className="text-sm">{(currentPhoto as any)?.like_count || 0}</span>
             </button>
             
             <button className="flex items-center gap-2 hover:text-blue-400 transition-colors">
               <MessageCircle className="w-5 h-5" />
-              <span className="text-sm">{currentPhoto?.comment_count || 0}</span>
+              <span className="text-sm">{(currentPhoto as any)?.comment_count || 0}</span>
             </button>
             
             <span className="text-sm text-gray-300">
@@ -295,12 +295,12 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
             </p>
           </div>
           
-          {currentPhoto.metadata?.exif && (
+          {(currentPhoto.metadata as any)?.exif && (
             <div className="mb-4">
               <h4 className="text-gray-400 text-sm mb-1">Camera Settings</h4>
               <p className="text-white text-sm flex items-center gap-2">
                 <Camera className="w-4 h-4" />
-                {formatExifData(currentPhoto.metadata.exif)}
+                {formatExifData((currentPhoto.metadata as any).exif)}
               </p>
             </div>
           )}

@@ -1,4 +1,4 @@
-import { Database } from '../types/supabase';
+import { Database } from '@/types/supabase';
 import { Company } from '../types';
 import { ContentStatus } from '../types/common';
 
@@ -42,7 +42,7 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
     name: dbCompany.name,
     description: dbCompany.description,
     logo: dbCompany.logo,
-    coverImage: dbCompany.cover_image ?? undefined, // Use nullish coalescing for clearer intent
+    cover_image: dbCompany.cover_image ?? undefined, // Use nullish coalescing for clearer intent
     industry: dbCompany.industry ?? [], // Use nullish coalescing for clearer intent
     size: dbCompany.size,
     founded: dbCompany.founded,
@@ -50,9 +50,7 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
     website: dbCompany.website ?? undefined, // Use nullish coalescing for clearer intent
     status: dbCompany.status as ContentStatus, // We've validated this above
     featured: dbCompany.featured ?? false, // Use nullish coalescing for clearer intent
-    created_at: dbCompany.created_at,
-    social: undefined, // social_links not directly on companies table
-    employees: [], // employees_list not directly on companies table, default to empty array
+    created_at: dbCompany.created_at
   };
 }
 
@@ -68,7 +66,7 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
   if (company.name !== undefined) supabaseCompany.name = company.name;
   if (company.description !== undefined) supabaseCompany.description = company.description;
   if (company.logo !== undefined) supabaseCompany.logo = company.logo;
-  if (company.coverImage !== undefined) supabaseCompany.cover_image = company.coverImage ?? null;
+  if (company.cover_image !== undefined) supabaseCompany.cover_image = company.cover_image ?? null;
   if (company.industry !== undefined) supabaseCompany.industry = company.industry;
   if (company.size !== undefined) supabaseCompany.size = company.size;
   if (company.founded !== undefined) supabaseCompany.founded = company.founded;
@@ -104,7 +102,7 @@ export function adaptCompanyToSupabaseInsert(company: Partial<Omit<Company, 'id'
     name: company.name ?? '', // Provide a default for required fields
     description: company.description ?? '', // Provide a default for required fields
     logo: company.logo ?? '', // Provide a default for required fields
-    cover_image: company.coverImage ?? null, // Optional in DB, explicitly set to null if undefined
+    cover_image: company.cover_image ?? null, // Optional in DB, explicitly set to null if undefined
     industry: company.industry ?? [],
     size: company.size ?? '', // Required in DB
     founded: company.founded ?? '', // Required in DB

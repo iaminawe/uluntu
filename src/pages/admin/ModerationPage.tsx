@@ -145,11 +145,14 @@ const ModerationPage: React.FC = () => {
                 {stats.totalPending} items pending review
               </p>
               <div className="mt-1 text-xs text-yellow-700">
-                {Object.entries(stats.byType).map(([type, counts]) => (
-                  <span key={type} className="mr-4">
-                    {type}: {counts.pending} pending
-                  </span>
-                ))}
+                {Object.entries(stats.byType).map(([type, counts]) => {
+                  const countsObj = counts as { pending: number; total: number };
+                  return (
+                    <span key={type} className="mr-4">
+                      {type}: {countsObj.pending} pending
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -160,7 +163,7 @@ const ModerationPage: React.FC = () => {
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <select
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value as unknown)}
+          onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'pending' | 'approved' | 'rejected')}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Status</option>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest } from '@/types/settings';
+import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingDataType, SettingCategory } from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -40,8 +40,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
-        category: setting.category,
-        data_type: setting.data_type
+        category: setting.category as SettingCategory,
+        data_type: setting.data_type as SettingDataType
       });
       
       setLocalSettings(prev => {
@@ -166,7 +166,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
                               {/* Interactive Control */}
                               {typeof setting.setting_value === 'boolean' ? (
                                 <Switch
-                                  checked={currentValue}
+                                  checked={currentValue || false}
                                   onCheckedChange={(checked) => handleSettingChange(setting.id, checked)}
                                   disabled={isUpdating}
                                 />
@@ -240,7 +240,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({
                           </div>
                           
                           <Switch
-                            checked={feature.enabled}
+                            checked={feature.enabled || false}
                             onCheckedChange={(checked) => {
                               toast.success('Security feature toggle functionality coming soon');
                             }}

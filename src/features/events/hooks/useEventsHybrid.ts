@@ -14,9 +14,9 @@ import {
   clearFilters,
   updateFilters,
   selectEventsFilters,
-  EventFilters
+  // EventFilters
 } from '../store/eventsUISlice';
-import { EventInput } from '../api/eventsApi';
+import { EventInput, EventFilters } from '../types';
 import { queryKeys, invalidationHelpers } from '@/config/queryClient';
 
 /**
@@ -43,7 +43,10 @@ export function useEventsHybrid() {
   // Enhanced createEvent with better success handling
   const createEvent = useCallback(async (eventData: EventInput) => {
     try {
-      const result = await createMutation.mutateAsync(eventData);
+      const result = await createMutation.mutateAsync({ 
+        ...eventData, 
+        organizer_id: (eventData as any).organizer_id || 'system' 
+      } as any);
       // Invalidate related queries
       invalidationHelpers.invalidateRelatedData(queryClient, 'event', '');
       return result;
@@ -54,7 +57,7 @@ export function useEventsHybrid() {
 
   // Filter actions (Redux) - memoized to prevent infinite loops
   const updateFiltersAction = useCallback((newFilters: Partial<EventFilters>) => {
-    dispatch(updateFilters(newFilters));
+    dispatch(updateFilters(newFilters as any));
   }, [dispatch]);
 
   const setSearchTerm = useCallback((search?: string) => {
@@ -62,11 +65,11 @@ export function useEventsHybrid() {
   }, [updateFiltersAction]);
 
   const setTypes = useCallback((types?: ('in-person' | 'online' | 'hybrid')[]) => {
-    updateFiltersAction({ types });
+    updateFiltersAction({ types } as any);
   }, [updateFiltersAction]);
 
   const setDateRange = useCallback((dateRange?: 'upcoming' | 'month' | 'three-months' | 'all') => {
-    updateFiltersAction({ dateRange });
+    updateFiltersAction({ dateRange } as any);
   }, [updateFiltersAction]);
 
   const clearAllFilters = useCallback(() => {

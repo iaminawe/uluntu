@@ -221,8 +221,8 @@ export function extractPublicSettings(
       }
       
       publicSettings[setting.category][setting.setting_key] = {
-        value: castValue(setting.setting_value, setting.data_type),
-        type: setting.data_type,
+        value: castValue(setting.setting_value, setting.data_type as SettingDataType),
+        type: setting.data_type as SettingDataType,
       };
     });
 

@@ -284,7 +284,7 @@ export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing
     mutationFn: async (itemData: MarketplaceListingInput): Promise<MarketplaceListing | null> => {
       if (USE_SUPABASE) {
         try {
-          const newItem = await marketplaceApi.create(itemData);
+          const newItem = await marketplaceApi.create(itemData as MarketplaceItemInput);
           return newItem ? adaptMarketplaceItemToListing(newItem) : null;
         } catch (error) {
           console.error('Error creating marketplace item:', error);
@@ -301,7 +301,7 @@ export function useCreateMarketplaceItem(): UseMutationResult<MarketplaceListing
           description: itemData.description || '',
           type: itemData.type || 'product',
           price: itemData.price !== undefined ? itemData.price : null,
-          condition: itemData.condition || null,
+          condition: itemData.condition || undefined,
           images: itemData.images || [],
           seller_id: itemData.seller_id || '1',
           status: itemData.status || 'published',

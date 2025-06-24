@@ -1,0 +1,1 @@
+export { default as companiesUIReducer } from './companiesUISlice';

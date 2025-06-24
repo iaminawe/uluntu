@@ -99,8 +99,8 @@ export default function MarketplaceDetailPage() {
         type: (sourceData.type as ListingType) || 'product',
         price: sourceData.price || 0,
         condition: sourceData.condition as ListingCondition,
-        images: sourceData.images || ['/placeholder-image.png'],
-        createdAt: sourceData.createdAt || new Date().toISOString(),
+        images: sourceData.image ? [sourceData.image] : ['/placeholder-image.png'],
+        createdAt: sourceData.datePosted || new Date().toISOString(),
         seller: {
           id: sourceData.seller?.id || 'unknown',
           name: sourceData.seller?.name || 'Unknown Seller',

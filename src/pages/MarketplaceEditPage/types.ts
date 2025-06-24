@@ -49,7 +49,11 @@ export const adaptMainMarketplaceItemToFormData = (item: MainMarketplaceItem): F
     location: '', // This field doesn't exist in the main type
     tags: item.category ? [item.category] : [],
     newTag: '',
-    featured: item.featured || false
+    featured: item.featured || false,
+    contactEmail: '',
+    contactPhone: '',
+    contactMethod: '',
+    showContactInfo: false
   };
 };
 

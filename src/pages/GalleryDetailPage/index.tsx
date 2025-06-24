@@ -79,8 +79,8 @@ const GalleryDetailPage: React.FC = () => {
           ? { 
               ...photo, 
               like_count: isLiked 
-                ? (photo.like_count || 0) + 1 
-                : Math.max((photo.like_count || 0) - 1, 0),
+                ? ((photo as any).like_count || 0) + 1 
+                : Math.max(((photo as any).like_count || 0) - 1, 0),
               is_liked: isLiked
             }
           : photo
@@ -154,7 +154,7 @@ const GalleryDetailPage: React.FC = () => {
     return (
       <ContentContainer>
         <div className="text-center py-12">
-          <p className="text-red-600 mb-4">{error?.message || 'Gallery not found'}</p>
+          <p className="text-red-600 mb-4">{(error as any)?.message || 'Gallery not found'}</p>
           <button
             onClick={() => navigate('/galleries')}
             className="text-blue-600 hover:text-blue-700"
@@ -310,11 +310,11 @@ const GalleryDetailPage: React.FC = () => {
                     <div className="flex items-center gap-3 text-xs">
                       <span className="flex items-center gap-1">
                         <Heart className="w-3 h-3" />
-                        {photo.like_count || 0}
+                        {(photo as any).like_count || 0}
                       </span>
                       <span className="flex items-center gap-1">
                         <MessageCircle className="w-3 h-3" />
-                        {photo.comment_count || 0}
+                        {(photo as any).comment_count || 0}
                       </span>
                     </div>
                   </div>

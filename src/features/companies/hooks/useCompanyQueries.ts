@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 
 // Mock data service
-import * as mockQueries from '@/hooks/useQueries';
+import { mockData } from '@/hooks/useQueries';
 import { Company, CompanyEmployee } from '../types';
 
 // Supabase API services
@@ -30,7 +30,7 @@ export function useCompanies(): UseQueryResult<Company[], Error> {
     queryKey: ['companies', 'all', USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!USE_SUPABASE) {
-        return mockQueries.useCompanies().data || [];
+        return mockData.companies || [];
       }
       return companiesApi.getAll();
     },
@@ -50,7 +50,20 @@ export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResul
     queryKey: ['companies', 'filters', filters, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!USE_SUPABASE) {
-        return mockQueries.useCompaniesWithFilters(filters).data || [];
+        // Apply filters to mock data
+        let companies = mockData.companies || [];
+        if (filters?.search) {
+          companies = companies.filter(company => 
+            company.name.toLowerCase().includes(filters.search!.toLowerCase()) ||
+            company.description.toLowerCase().includes(filters.search!.toLowerCase())
+          );
+        }
+        if (filters?.industries && filters.industries.length > 0) {
+          companies = companies.filter(company => 
+            filters.industries!.some(industry => company.industry?.includes(industry))
+          );
+        }
+        return companies;
       }
       return companiesApi.getAll(filters);
     },
@@ -75,8 +88,8 @@ export function useCompany(id?: string): UseQueryResult<Company | null, Error> {
       }
 
       if (!USE_SUPABASE) {
-        // For mock data, convert any null to undefined for proper type compatibility
-        const result = mockQueries.useCompany(id).data;
+        // For mock data, find company by ID
+        const result = mockData.companies?.find(company => company.id === id);
         return result || null;
       }
 
@@ -116,6 +129,7 @@ export function useCreateCompany(): UseMutationResult<Company | null, Error, Com
           founded: companyData.founded,
           location: companyData.location || '',
           website: companyData.website || undefined, // Convert null to undefined for type compatibility
+          status: 'published', // Add default status property
           featured: companyData.featured || false,
           created_at: new Date().toISOString(),
         };
@@ -149,8 +163,7 @@ export function useUpdateCompany(): UseMutationResult<Company | null, Error, { i
   return useMutation<Company | null, Error, { id: string; data: Partial<CompanyInput> }>({
     mutationFn: async ({ id, data }: { id: string; data: Partial<CompanyInput> }) => {
       if (!USE_SUPABASE) {
-        const result = mockQueries.useCompany(id);
-        const currentCompany = result.data;
+        const currentCompany = mockData.companies?.find(company => company.id === id);
 
         if (!currentCompany) {
           return null;
@@ -166,6 +179,7 @@ export function useUpdateCompany(): UseMutationResult<Company | null, Error, { i
           size: data.size || currentCompany.size,
           logo: data.logo !== undefined ? data.logo : currentCompany.logo,
           website: data.website !== undefined ? data.website : (currentCompany.website || undefined), // Convert null to undefined
+          status: data.status || currentCompany.status || 'published', // Add required status property
           featured: data.featured !== undefined ? data.featured : currentCompany.featured,
           location: data.location !== undefined ? data.location : currentCompany.location,
         };
@@ -251,14 +265,10 @@ export function useAddCompanyEmployee(): UseMutationResult<
       if (!USE_SUPABASE) {
         // Mock implementation
         const mockEmployee: CompanyEmployee = {
-          id: Date.now().toString(),
           company_id: companyId,
           member_id: memberId,
-          role: employeeData?.role,
-          department: employeeData?.department,
-          start_date: employeeData?.start_date || new Date().toISOString().split('T')[0],
-          is_current: employeeData?.is_current ?? true,
-          created_at: new Date().toISOString()
+          role: employeeData?.role || null,
+          joined_date: new Date().toISOString()
         };
         return Promise.resolve(mockEmployee);
       }
@@ -280,34 +290,28 @@ export function useAddCompanyEmployee(): UseMutationResult<
 export function useUpdateCompanyEmployee(): UseMutationResult<
   CompanyEmployee | null,
   Error,
-  { employeeId: string; updates: Partial<CompanyEmployee> }
+  { companyId: string; memberId: string; updates: Partial<CompanyEmployee> }
 > {
   const queryClient = useQueryClient();
   
   return useMutation<
     CompanyEmployee | null,
     Error,
-    { employeeId: string; updates: Partial<CompanyEmployee> }
+    { companyId: string; memberId: string; updates: Partial<CompanyEmployee> }
   >({
-    mutationFn: async ({ employeeId, updates }) => {
+    mutationFn: async ({ companyId, memberId, updates }) => {
       if (!USE_SUPABASE) {
         // Mock implementation
         const mockEmployee: CompanyEmployee = {
-          id: employeeId,
           company_id: updates.company_id || 'company-1',
           member_id: updates.member_id || 'member-1',
-          role: updates.role,
-          department: updates.department,
-          start_date: updates.start_date,
-          end_date: updates.end_date,
-          is_current: updates.is_current ?? true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          role: updates.role || null,
+          joined_date: updates.joined_date || new Date().toISOString()
         };
         return Promise.resolve(mockEmployee);
       }
       
-      return companiesApi.updateCompanyEmployee(employeeId, updates);
+      return companiesApi.updateCompanyEmployee(companyId, memberId, updates);
     },
     onSuccess: (data) => {
       if (data) {
@@ -326,21 +330,21 @@ export function useUpdateCompanyEmployee(): UseMutationResult<
 export function useRemoveCompanyEmployee(): UseMutationResult<
   boolean,
   Error,
-  string
+  { companyId: string; memberId: string }
 > {
   const queryClient = useQueryClient();
   
   return useMutation<
     boolean,
     Error,
-    string
+    { companyId: string; memberId: string }
   >({
-    mutationFn: async (employeeId) => {
+    mutationFn: async ({ companyId, memberId }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
       
-      return companiesApi.removeCompanyEmployee(employeeId);
+      return companiesApi.removeCompanyEmployee(companyId, memberId);
     },
     onSuccess: () => {
       // Invalidate all company employee queries since we don't have companyId
@@ -351,7 +355,7 @@ export function useRemoveCompanyEmployee(): UseMutationResult<
   });
 }
 
-export function useCompanyEmployees(companyId?: string, filters?: { department?: string; currentOnly?: boolean }): UseQueryResult<CompanyEmployee[], Error> {
+export function useCompanyEmployees(companyId?: string, filters?: { currentOnly?: boolean; department?: string }): UseQueryResult<CompanyEmployee[], Error> {
   return useQuery<CompanyEmployee[], Error>({
     queryKey: ['company', companyId, 'employees', filters, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async () => {
@@ -369,62 +373,39 @@ export function useCompanyEmployees(companyId?: string, filters?: { department?:
         // since the mock queries might return a different format
         let mockEmployees: CompanyEmployee[] = [
           {
-            id: '1',
             company_id: companyId,
             member_id: 'member-1',
             role: 'Software Engineer',
-            department: 'Engineering',
-            start_date: '2023-01-15',
-            is_current: true,
-            created_at: new Date().toISOString(),
+            joined_date: '2023-01-15',
             member: {
               id: 'member-1',
               name: 'John Doe',
-              title: 'Senior Software Engineer',
-              company: 'Tech Innovators',
+              full_name: 'John Doe',
               location: 'Nelson, BC',
               image: 'https://via.placeholder.com/150',
-              bio: 'Experienced software engineer with a passion for building scalable applications.',
-              skills: ['JavaScript', 'TypeScript', 'React', 'Node.js'],
-              joinDate: '2023-01-15',
-              status: 'published',
-              created_at: new Date().toISOString(),
-              featured: false
+              avatar_url: 'https://via.placeholder.com/150',
+              bio: 'Experienced software engineer with a passion for building scalable applications.'
             }
           },
           {
-            id: '2',
             company_id: companyId,
             member_id: 'member-2',
             role: 'Product Manager',
-            department: 'Product',
-            start_date: '2022-06-01',
-            is_current: true,
-            created_at: new Date().toISOString(),
+            joined_date: '2022-06-01',
             member: {
               id: 'member-2',
               name: 'Jane Smith',
-              title: 'Product Manager',
-              company: 'Tech Innovators',
+              full_name: 'Jane Smith',
               location: 'Vancouver, BC',
               image: 'https://via.placeholder.com/150',
-              intro: 'Product leader focused on user-centric design and agile methodologies.',
-              skills: ['Product Strategy', 'Agile', 'User Research'],
-              joinDate: '2022-06-01',
-              status: 'published',
-              created_at: new Date().toISOString(),
-              featured: false
+              avatar_url: 'https://via.placeholder.com/150',
+              bio: 'Product leader focused on user-centric design and agile methodologies.'
             }
           }
         ];
         
-        // Apply filters
-        if (filters?.currentOnly) {
-          mockEmployees = mockEmployees.filter(emp => emp.is_current);
-        }
-        if (filters?.department) {
-          mockEmployees = mockEmployees.filter(emp => emp.department === filters.department);
-        }
+        // Apply filters - note: currentOnly and department filters are not applicable with the new CompanyEmployee structure
+        // Filters can be applied here if needed based on actual CompanyEmployee properties
         
         return mockEmployees;
       } catch (error) {

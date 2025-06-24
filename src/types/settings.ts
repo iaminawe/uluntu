@@ -15,47 +15,47 @@ export type SettingCategory =
 
 export interface ApplicationSetting {
   id: string;
-  category: SettingCategory;
+  category: string;
   setting_key: string;
   setting_value: any;
-  data_type: SettingDataType;
-  is_public: boolean;
-  is_system: boolean;
-  validation_rules: Record<string, any>;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-  created_by?: string;
-  updated_by?: string;
+  data_type: string;
+  is_public: boolean | null;
+  is_system: boolean | null;
+  validation_rules: any | null;
+  description?: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
 }
 
 export interface FeatureToggle {
   id: string;
   feature_key: string;
-  enabled: boolean;
-  config: Record<string, any>;
-  rollout_percentage: number;
-  enabled_for_users: string[];
-  enabled_for_roles: string[];
-  description?: string;
-  created_at: string;
-  updated_at: string;
-  created_by?: string;
-  updated_by?: string;
+  enabled: boolean | null;
+  config: any | null;
+  rollout_percentage: number | null;
+  enabled_for_users: string[] | null;
+  enabled_for_roles: string[] | null;
+  description?: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  created_by?: string | null;
+  updated_by?: string | null;
 }
 
 export interface SettingsHistory {
   id: string;
-  setting_id?: string;
-  category: SettingCategory;
+  setting_id?: string | null;
+  category: string;
   setting_key: string;
-  old_value?: any;
-  new_value?: any;
-  change_type: 'created' | 'updated' | 'deleted';
-  changed_by?: string;
-  changed_at: string;
-  ip_address?: string;
-  user_agent?: string;
+  old_value?: any | null;
+  new_value?: any | null;
+  change_type: string | null;
+  changed_by?: string | null;
+  changed_at: string | null;
+  ip_address?: any | null;
+  user_agent?: string | null;
 }
 
 // Settings form interfaces
@@ -215,11 +215,11 @@ export interface SettingsExport {
 }
 
 export interface SettingsImport {
-  file: File;
-  overwrite_existing: boolean;
-  import_settings: boolean;
-  import_feature_toggles: boolean;
-  validate_only: boolean;
+  version: string;
+  exported_at: string;
+  settings: ApplicationSetting[];
+  feature_toggles: FeatureToggle[];
+  checksum: string;
 }
 
 // Settings context types

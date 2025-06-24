@@ -150,15 +150,15 @@ export const useConditionalUI = () => {
       items.push('members', 'groups', 'events');
     }
     
-    if (ui.showCreateContent('news')) {
+    if (ui.canCreateContent('news')) {
       items.push('create-news');
     }
     
-    if (ui.showCreateContent('resources')) {
+    if (ui.canCreateContent('resources')) {
       items.push('create-resources');
     }
     
-    if (ui.showCreateContent('marketplace')) {
+    if (ui.canCreateContent('marketplace')) {
       items.push('create-listing');
     }
     

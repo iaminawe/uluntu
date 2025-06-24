@@ -38,7 +38,11 @@ const AuditPage: React.FC = () => {
 
   // Export audit logs
   const handleExport = async () => {
-    const csv = await adminAuditApi.exportAuditLogs(filters);
+    const csv = await adminAuditApi.exportAuditLogs({
+      ...filters,
+      startDate: filters.startDate ? new Date(filters.startDate) : undefined,
+      endDate: filters.endDate ? new Date(filters.endDate) : undefined
+    });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

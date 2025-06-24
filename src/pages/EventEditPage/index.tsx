@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEventHybrid, useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
-import { EventInput } from '@/features/events/api/eventsApi';
+import { EventInput } from '@/features/events/types';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { format } from 'date-fns';
@@ -149,7 +149,7 @@ export default function EventEditPage() {
           return;
         }
         
-        finalImageUrl = url;
+        finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
       
@@ -159,12 +159,11 @@ export default function EventEditPage() {
           title: formData.title,
           description: formData.description,
           date: formData.date,
-          endDate: formData.endDate,
+          end_date: formData.endDate,
           location: formData.location,
           image: finalImageUrl,
-          type: formData.type,
-          url: formData.url || null,
-          organizerId: formData.organizerId
+          url: formData.url || undefined,
+          organizer_id: formData.organizerId || member?.id || ''
         });
       } else {
         // Create new event using events API
@@ -177,14 +176,12 @@ export default function EventEditPage() {
           title: formData.title,
           description: formData.description,
           date: formData.date,
-          endDate: formData.endDate,
+          end_date: formData.endDate,
           location: formData.location,
           image: finalImageUrl,
-          type: formData.type,
-          url: formData.url || null,
-          organizerId: member.id,
-          status: 'published',
-          featured: false
+          url: formData.url || undefined,
+          organizer_id: member.id,
+          status: 'published'
         };
 
         await createEvent(eventData);

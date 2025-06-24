@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Users } from 'lucide-react';
-import { type Group } from './types'; // Fix the import path
+import { type Group, GroupVisibility } from './types'; // Fix the import path
 import { getVisibilityLabel } from './utils';
+
+// Map main Group visibility to local component visibility
+const mapVisibility = (visibility: 'public' | 'private' | 'members_only'): GroupVisibility => {
+  switch (visibility) {
+    case 'public': return 'open';
+    case 'private': return 'secret';
+    case 'members_only': return 'closed';
+    default: return 'open';
+  }
+};
 
 interface GroupCardProps {
   group: Group;
@@ -15,7 +25,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
   const safeName = group?.name ?? 'Unnamed Group';
   const safeHeroImage = group?.heroImage ?? '/placeholder-image.jpg';
   const safeDescription = group?.description ?? 'No description available';
-  const safeVisibility = group?.visibility ?? 'open';
+  const safeVisibility = mapVisibility(group?.visibility ?? 'public');
   const safeMemberCount = group?.memberCount ?? 0;
   const safeLastActive = group?.lastActive ?? '';
 
@@ -73,3 +83,11 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
 };
 
 export default GroupCard;
+
+// Adapter function for component compatibility  
+export const adaptMainGroupToLocalGroup = (mainGroup: any): Group => {
+  return {
+    ...mainGroup,
+    visibility: mapVisibility(mainGroup.visibility)
+  };
+};

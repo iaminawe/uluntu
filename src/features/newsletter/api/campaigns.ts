@@ -24,7 +24,7 @@ class NewsletterCampaignAPI {
       // Generate content if not provided
       let content = request.content;
       if (!content || Object.keys(content).length === 0) {
-        content = await newsletterContentApi.generateCuratedContent();
+        content = await newsletterContentApi.generateCuratedContent() || undefined;
         if (!content) {
           throw new Error('Failed to generate newsletter content');
         }
@@ -51,12 +51,12 @@ class NewsletterCampaignAPI {
 
       const { data, error } = await supabase
         .from('newsletter_campaigns')
-        .insert(campaignData)
+        .insert(campaignData as any)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, template_id: data.template_id || '' } as any;
     } catch (error) {
       console.error('Error creating campaign:', error);
       return null;
@@ -108,7 +108,7 @@ class NewsletterCampaignAPI {
       if (error) throw error;
 
       return {
-        data: data || [],
+        data: (data || []).map(d => ({ ...d, template_id: d.template_id || '' })) as any,
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
@@ -132,7 +132,7 @@ class NewsletterCampaignAPI {
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, template_id: data.template_id || '' } as any;
     } catch (error) {
       console.error('Error getting campaign:', error);
       return null;
@@ -146,13 +146,13 @@ class NewsletterCampaignAPI {
     try {
       const { data, error } = await supabase
         .from('newsletter_campaigns')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, template_id: data.template_id || '' } as any;
     } catch (error) {
       console.error('Error updating campaign:', error);
       return null;
@@ -322,7 +322,6 @@ class NewsletterCampaignAPI {
       // Update campaign status and stats
       await this.updateCampaign(id, {
         status: 'sent',
-        sent_at: new Date().toISOString(),
         recipient_count: sendResult.sent_count,
         delivery_stats: {
           sent: sendResult.sent_count,
@@ -331,7 +330,13 @@ class NewsletterCampaignAPI {
           opened: 0,
           clicked: 0
         }
-      });
+      } as UpdateCampaignRequest);
+      
+      // Update sent_at separately since it's not in UpdateCampaignRequest
+      await supabase
+        .from('newsletter_campaigns')
+        .update({ sent_at: new Date().toISOString() })
+        .eq('id', id);
 
       // Update subscriber last_sent_at for successfully sent emails
       const successfulSubscribers = subscribers.filter(s => 
@@ -431,12 +436,12 @@ class NewsletterCampaignAPI {
 
       const { data, error } = await supabase
         .from('newsletter_campaigns')
-        .insert(duplicateData)
+        .insert(duplicateData as any)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, template_id: data.template_id || '' } as any;
     } catch (error) {
       console.error('Error duplicating campaign:', error);
       return null;
@@ -511,7 +516,7 @@ class NewsletterCampaignAPI {
           campaign_id: campaignId,
           subscription_id: subscriptionId,
           event_type: eventType,
-          event_data: eventData
+          event_data: eventData as any
         });
     } catch (error) {
       console.error('Error recording analytics:', error);

@@ -34,13 +34,13 @@ export function useGroupsHybrid() {
   // React Query for server state
   const groupsQuery = useQuery({
     queryKey: queryKeys.groupsWithFilters(filters),
-    queryFn: () => groupsApi.getFilteredGroups(filters),
+    queryFn: () => groupsApi.getAll(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
   const featuredQuery = useQuery({
     queryKey: queryKeys.featuredGroups,
-    queryFn: () => groupsApi.getFeaturedGroups(),
+    queryFn: () => groupsApi.getAll({ featured: true }),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
   
@@ -48,7 +48,7 @@ export function useGroupsHybrid() {
   const getGroup = (id: string) => {
     return useQuery({
       queryKey: queryKeys.group(id),
-      queryFn: () => groupsApi.getGroupById(id),
+      queryFn: () => groupsApi.getById(id),
       enabled: !!id,
     });
   };
@@ -56,13 +56,13 @@ export function useGroupsHybrid() {
   // Get user's groups
   const userGroupsQuery = useQuery({
     queryKey: queryKeys.userGroups,
-    queryFn: () => groupsApi.getUserGroups(),
+    queryFn: () => groupsApi.getAll({ userGroups: true }),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
   
   // Mutations
   const createGroup = useMutation({
-    mutationFn: (data: GroupInput) => groupsApi.createGroup(data),
+    mutationFn: (data: GroupInput) => groupsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
     },
@@ -70,7 +70,7 @@ export function useGroupsHybrid() {
   
   const updateGroup = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<GroupInput> }) => 
-      groupsApi.updateGroup(id, data),
+      groupsApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
       queryClient.invalidateQueries({ queryKey: queryKeys.group(id) });
@@ -78,14 +78,14 @@ export function useGroupsHybrid() {
   });
   
   const deleteGroup = useMutation({
-    mutationFn: (id: string) => groupsApi.deleteGroup(id),
+    mutationFn: (id: string) => groupsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
     },
   });
   
   const joinGroup = useMutation({
-    mutationFn: (groupId: string) => groupsApi.joinGroup(groupId),
+    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) => groupsApi.joinGroup(groupId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
       queryClient.invalidateQueries({ queryKey: queryKeys.userGroups });
@@ -93,7 +93,7 @@ export function useGroupsHybrid() {
   });
   
   const leaveGroup = useMutation({
-    mutationFn: (groupId: string) => groupsApi.leaveGroup(groupId),
+    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) => groupsApi.leaveGroup(groupId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
       queryClient.invalidateQueries({ queryKey: queryKeys.userGroups });
@@ -130,7 +130,7 @@ export function useGroupsHybrid() {
         comparison = (a.name || '').localeCompare(b.name || '');
         break;
       case 'members':
-        comparison = (a.member_count || 0) - (b.member_count || 0);
+        comparison = ((a as any).memberCount || 0) - ((b as any).memberCount || 0);
         break;
       case 'created':
         comparison = new Date(a.created_at || '').getTime() - 

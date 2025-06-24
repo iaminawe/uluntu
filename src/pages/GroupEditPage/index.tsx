@@ -19,7 +19,8 @@ const initialFormData: FormData = {
   longDescription: '',
   heroImage: '',
   coverImage: '',
-  visibility: 'open'
+  visibility: 'open',
+  interests: []
 };
 
 export default function GroupEditPage() {
@@ -43,13 +44,14 @@ export default function GroupEditPage() {
     if (isEditMode && group) {
       setFormData({
         name: group.name,
-        description: group.description,
+        description: group.description || '',
         longDescription: group.longDescription || '',
         heroImage: group.heroImage || '',
         coverImage: group.coverImage || '',
         visibility: (['open', 'closed', 'secret'].includes(group.visibility as string)
           ? (group.visibility as 'open' | 'closed' | 'secret')
-          : 'open')
+          : 'open'),
+        interests: []
       });
     }
   }, [isEditMode, group]);
@@ -61,6 +63,30 @@ export default function GroupEditPage() {
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleHeroImageChange = (file: File | null) => {
+    // Handle hero image upload
+    if (file) {
+      // In a real app, you'd upload the file and get back a URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, heroImage: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverImageChange = (file: File | null) => {
+    // Handle cover image upload
+    if (file) {
+      // In a real app, you'd upload the file and get back a URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, coverImage: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
     }
   };
   
@@ -101,7 +127,7 @@ export default function GroupEditPage() {
         heroImage: formData.heroImage,
         visibility: formData.visibility,
         status: 'published',
-        featured: formData.featured
+        featured: (formData as any).featured
       };
 
       let result;
@@ -184,6 +210,8 @@ export default function GroupEditPage() {
                 <ImageUpload 
                   formData={formData}
                   handleChange={handleChange}
+                  onHeroImageChange={handleHeroImageChange}
+                  onCoverImageChange={handleCoverImageChange}
                   errors={errors}
                 />
                 
