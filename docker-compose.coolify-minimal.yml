@@ -8,13 +8,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.minimal
+      args:
+        # IMPORTANT: Build-time arguments for Vite
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_APP_URL=${VITE_APP_URL}
+        - VITE_ENVIRONMENT=${VITE_ENVIRONMENT:-production}
     restart: unless-stopped
     environment:
-      # Frontend environment variables (passed to build)
-      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
-      - VITE_APP_URL=${VITE_APP_URL}
-      - VITE_ENVIRONMENT=${VITE_ENVIRONMENT:-production}
       
       # Backend/API environment variables (if you have any API routes)
       - NODE_ENV=production

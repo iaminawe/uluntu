@@ -208,6 +208,18 @@ research/
 reports/
 docs/archive/
 
+# Archived files
+archive/
+.archive/
+*.archived
+
+# Debug and test files
+docker-debug.sh
+test-docker-fix.sh
+Dockerfile.debug
+.env.coolify-minimal
+.env.test
+
 # Scripts output
 scripts/output/
 run_*.sh

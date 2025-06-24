@@ -8,13 +8,15 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_APP_URL=${VITE_APP_URL:-http://localhost:3000}
+        - VITE_ENVIRONMENT=${VITE_ENVIRONMENT:-production}
     container_name: nelson-tech-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     environment:
-      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
       - NODE_ENV=production
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
