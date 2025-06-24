@@ -87,12 +87,8 @@ export default defineConfig((): UserConfig => ({
           return `assets/[name]-[hash][extname]`;
         },
       },
-      // Tree shaking optimizations
-      treeshake: {
-        moduleSideEffects: false,
-        propertyReadSideEffects: false,
-        unknownGlobalSideEffects: false,
-      },
+      // Tree shaking optimizations - disabled to fix bundle issue
+      treeshake: false,
     },
     // Esbuild options for better minification
     esbuild: {

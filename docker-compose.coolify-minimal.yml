@@ -7,7 +7,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.minimal
+      dockerfile: Dockerfile.production
       args:
         # IMPORTANT: Build-time arguments for Vite
         - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}

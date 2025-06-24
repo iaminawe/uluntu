@@ -23,14 +23,46 @@ logger.debug('Supabase configuration loaded', 'SUPABASE', {
 });
 
 // Validate environment variables
-if (!supabaseUrl) {
-  logger.error('Missing VITE_SUPABASE_URL environment variable', 'SUPABASE');
-  throw new Error('VITE_SUPABASE_URL environment variable is required');
-}
-
-if (!supabaseAnonKey) {
-  logger.error('Missing VITE_SUPABASE_ANON_KEY environment variable', 'SUPABASE');
-  throw new Error('VITE_SUPABASE_ANON_KEY environment variable is required');
+if (!supabaseUrl || !supabaseAnonKey) {
+  const missingVars = [];
+  if (!supabaseUrl) missingVars.push('VITE_SUPABASE_URL');
+  if (!supabaseAnonKey) missingVars.push('VITE_SUPABASE_ANON_KEY');
+  
+  logger.error('Missing required environment variables', 'SUPABASE', { missingVars });
+  
+  // Show user-friendly error in the browser
+  if (typeof document !== 'undefined' && document.getElementById('root')) {
+    document.getElementById('root')!.innerHTML = `
+      <div style="padding: 40px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #dc2626; margin-bottom: 16px;">Configuration Error</h1>
+        <p style="color: #4b5563; margin-bottom: 24px;">The application is not properly configured. This usually happens when environment variables are not set during the build process.</p>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+          <h3 style="color: #991b1b; margin-top: 0;">Missing Environment Variables:</h3>
+          <ul style="color: #7f1d1d; margin: 8px 0;">
+            ${missingVars.map(v => `<li>${v}</li>`).join('')}
+          </ul>
+        </div>
+        <details style="margin-top: 24px;">
+          <summary style="cursor: pointer; color: #6b7280;">Technical Details for Developers</summary>
+          <div style="margin-top: 16px; padding: 16px; background: #f3f4f6; border-radius: 4px;">
+            <p style="margin: 0 0 8px 0;"><strong>Build Time Variables Required:</strong></p>
+            <pre style="background: #e5e7eb; padding: 12px; border-radius: 4px; overflow-x: auto;">
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here</pre>
+            <p style="margin: 16px 0 8px 0;"><strong>Current Values:</strong></p>
+            <pre style="background: #e5e7eb; padding: 12px; border-radius: 4px; overflow-x: auto;">
+VITE_SUPABASE_URL=${supabaseUrl || 'undefined'}
+VITE_SUPABASE_ANON_KEY=${supabaseAnonKey ? '[REDACTED]' : 'undefined'}</pre>
+            <p style="margin-top: 16px; color: #6b7280; font-size: 14px;">
+              These variables must be set as build arguments in your deployment platform (e.g., Coolify, Vercel, Netlify).
+            </p>
+          </div>
+        </details>
+      </div>
+    `;
+  }
+  
+  throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
 }
 
 // Create Supabase client with enhanced session persistence
