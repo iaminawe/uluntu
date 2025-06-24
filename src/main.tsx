@@ -12,10 +12,21 @@ import { SettingsProvider } from '@/providers/SettingsProvider';
 import { store } from '@/store/index';
 import { router } from './routes';
 import { createQueryClient, setupQueryPerformanceMonitoring } from './config/queryClient';
+import { setupGlobalErrorHandlers, checkRuntimeEnvironment } from './utils/globalErrorHandler';
 import './index.css';
 import { DebugUserRoles } from './components/DebugUserRoles';
 import { DynamicAppConfig } from './components/DynamicAppConfig';
 import { SettingsDebugger } from './components/SettingsDebugger';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Setup global error handlers
+setupGlobalErrorHandlers();
+
+// Check runtime environment
+const envIssues = checkRuntimeEnvironment();
+if (envIssues.length > 0 && import.meta.env.DEV) {
+  console.warn('Runtime environment issues:', envIssues);
+}
 
 // Create optimized query client
 const queryClient = createQueryClient();
@@ -27,35 +38,37 @@ if (import.meta.env.DEV) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ReduxProvider store={store}>
-      <HelmetProvider>
-        {/* SessionProvider syncs Supabase auth with Redux */}
-        <SessionProvider>
-          <QueryClientProvider client={queryClient}>
-              {/* SettingsProvider for global site configuration */}
-              <SettingsProvider>
-                <ThemeProvider>
-                  <DynamicAppConfig />
-                  <RouterProvider router={router} />
-                  <ReactQueryDevtools initialIsOpen={false} />
-                  <Toaster 
-                    position="top-right"
-                    toastOptions={{
-                      duration: 4000,
-                      style: {
-                        background: '#363636',
-                        color: '#fff',
-                      },
-                    }}
-                  />
-                  {/* Debug components disabled */}
-                  {/* <DebugUserRoles /> */}
-                  {/* <SettingsDebugger /> */}
-                </ThemeProvider>
-              </SettingsProvider>
-            </QueryClientProvider>
-        </SessionProvider>
-      </HelmetProvider>
-    </ReduxProvider>
+    <ErrorBoundary>
+      <ReduxProvider store={store}>
+        <HelmetProvider>
+          {/* SessionProvider syncs Supabase auth with Redux */}
+          <SessionProvider>
+            <QueryClientProvider client={queryClient}>
+                {/* SettingsProvider for global site configuration */}
+                <SettingsProvider>
+                  <ThemeProvider>
+                    <DynamicAppConfig />
+                    <RouterProvider router={router} />
+                    <ReactQueryDevtools initialIsOpen={false} />
+                    <Toaster 
+                      position="top-right"
+                      toastOptions={{
+                        duration: 4000,
+                        style: {
+                          background: '#363636',
+                          color: '#fff',
+                        },
+                      }}
+                    />
+                    {/* Debug components disabled */}
+                    {/* <DebugUserRoles /> */}
+                    {/* <SettingsDebugger /> */}
+                  </ThemeProvider>
+                </SettingsProvider>
+              </QueryClientProvider>
+          </SessionProvider>
+        </HelmetProvider>
+      </ReduxProvider>
+    </ErrorBoundary>
   </StrictMode>
 );

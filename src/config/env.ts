@@ -42,11 +42,7 @@ export function getIsSupabaseEnabled(): boolean {
   const envValue = getMetaEnvVariable('VITE_USE_SUPABASE');
   console.log('[config/env.ts] Dynamic check - VITE_USE_SUPABASE:', envValue);
   
-  // Temporary: force Supabase enabled for debugging
-  console.log('[config/env.ts] Forcing Supabase enabled for debugging');
-  return true;
-  
-  // return envValue === 'true';
+  return envValue === 'true';
 }
 
 // For backward compatibility, export a getter that checks dynamically
