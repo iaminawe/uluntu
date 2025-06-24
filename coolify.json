@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "buildpack": "dockerfile",
+  "dockerfile": "Dockerfile.production",
+  "build": {
+    "args": {
+      "VITE_SUPABASE_URL": "${VITE_SUPABASE_URL}",
+      "VITE_SUPABASE_ANON_KEY": "${VITE_SUPABASE_ANON_KEY}",
+      "VITE_APP_URL": "${VITE_APP_URL}",
+      "VITE_ENVIRONMENT": "${VITE_ENVIRONMENT}",
+      "VITE_FROM_EMAIL": "${VITE_FROM_EMAIL}",
+      "VITE_FROM_NAME": "${VITE_FROM_NAME}",
+      "VITE_RESEND_API_KEY": "${VITE_RESEND_API_KEY}",
+      "VITE_GOOGLE_ANALYTICS_ID": "${VITE_GOOGLE_ANALYTICS_ID}",
+      "VITE_SENTRY_DSN": "${VITE_SENTRY_DSN}",
+      "VITE_ENABLE_NEWSLETTER": "${VITE_ENABLE_NEWSLETTER}",
+      "VITE_ENABLE_GALLERY": "${VITE_ENABLE_GALLERY}",
+      "VITE_ENABLE_MARKETPLACE": "${VITE_ENABLE_MARKETPLACE}",
+      "VITE_ENABLE_GROUPS": "${VITE_ENABLE_GROUPS}",
+      "VITE_ENABLE_EVENTS": "${VITE_ENABLE_EVENTS}"
+    }
+  },
+  "healthcheck": {
+    "path": "/health",
+    "interval": "30s",
+    "timeout": "10s",
+    "retries": 3
+  }
+}
