@@ -1,0 +1,41 @@
+version: '3.8'
+
+# Minimal Docker Compose for Coolify with hosted Supabase
+# Single container serving both frontend and backend
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.minimal
+    restart: unless-stopped
+    environment:
+      # Frontend environment variables (passed to build)
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - VITE_APP_URL=${VITE_APP_URL}
+      - VITE_ENVIRONMENT=${VITE_ENVIRONMENT:-production}
+      
+      # Backend/API environment variables (if you have any API routes)
+      - NODE_ENV=production
+      - PORT=${PORT:-3000}
+      
+      # Optional features
+      - VITE_RESEND_API_KEY=${VITE_RESEND_API_KEY}
+      - VITE_FROM_EMAIL=${VITE_FROM_EMAIL}
+      - VITE_FROM_NAME=${VITE_FROM_NAME}
+    
+    ports:
+      - "${PORT:-3000}:3000"
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+    labels:
+      # Coolify will use these labels
+      - "coolify.managed=true"
+      - "coolify.type=application"
+      - "coolify.name=nelson-tech"

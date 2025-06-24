@@ -1,14 +1,17 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
-# Set working directory
+# Install dependencies for building
+RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with better caching
+RUN npm ci --only=production && \
+    npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -19,11 +22,17 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Copy built files from builder stage
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+# Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Add healthcheck endpoint
+RUN echo "OK" > /usr/share/nginx/html/health
 
 # Expose port
 EXPOSE 80
