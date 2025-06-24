@@ -240,10 +240,42 @@ npm run preview         # Preview production build locally
 ```
 
 ### Deployment Options
+
+#### 🚀 **Minimal Deployment (Easiest)**
+Single container with hosted Supabase:
+```bash
+# Perfect for getting started quickly
+docker-compose -f docker-compose.coolify-minimal.yml up -d
+
+# See guide: docs/COOLIFY_MINIMAL_DEPLOYMENT.md
+```
+
+#### 🐳 **Full-Stack Deployment (Self-Hosted)**
+Complete deployment with frontend and Supabase backend:
+```bash
+# Production deployment with all services
+docker-compose up -d
+
+# With custom environment
+docker-compose --env-file .env.production up -d
+```
+
+#### 🌐 **Coolify Deployment Options**
+1. **Minimal** - Single container + hosted Supabase
+   ```bash
+   # See guide: docs/COOLIFY_MINIMAL_DEPLOYMENT.md
+   ```
+
+2. **Full-Stack** - All services self-hosted
+   ```bash
+   # See guide: docs/COOLIFY_DEPLOYMENT.md
+   ```
+
+#### ☁️ **Cloud Platforms**
 - **Netlify** - `netlify deploy --prod --dir=dist`
 - **Vercel** - `vercel deploy --prod`
 - **Cloudflare Pages** - `wrangler pages deploy dist`
-- **Docker** - `docker build -t nelson-tech .`
+- **Railway** - One-click deploy with `railway up`
 
 ### Environment Variables
 ```bash

@@ -203,7 +203,7 @@ swarm-auto-centralized-*/
 codereport/
 coordination/
 research/
-config/
+/config/
 .archive/
 reports/
 docs/archive/
