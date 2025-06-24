@@ -28,9 +28,6 @@ const NewsletterSection: React.FC = () => {
       } else {
         setError('Failed to subscribe. Please try again.');
       }
-    },
-    onError: () => {
-      setError('Failed to subscribe. Please try again.');
     }
   });
   
@@ -38,7 +35,11 @@ const NewsletterSection: React.FC = () => {
     e.preventDefault();
     if (email) {
       setError('');
-      subscribeMutation.mutate(email);
+      subscribeMutation.mutate(email, {
+        onError: () => {
+          setError('Failed to subscribe. Please try again.');
+        }
+      });
     }
   };
 
