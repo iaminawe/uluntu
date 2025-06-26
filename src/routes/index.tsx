@@ -92,6 +92,7 @@ const CampaignManager = lazy(() => import('../pages/admin/newsletter/CampaignMan
 const SubscriberManager = lazy(() => import('../pages/admin/newsletter/SubscriberManager'));
 const AnalyticsDashboard = lazy(() => import('../pages/admin/newsletter/AnalyticsDashboard'));
 const UpdateNewsSlugs = lazy(() => import('../pages/admin/UpdateNewsSlugs'));
+const UpdateCompanySlugs = lazy(() => import('../pages/admin/UpdateCompanySlugs'));
 
 
 // Auth components
@@ -273,8 +274,10 @@ export const router = createBrowserRouter([
       { path: 'newsletter/subscribers', element: withSuspense(SubscriberManager) },
       { path: 'newsletter/analytics', element: withSuspense(AnalyticsDashboard) },
       { path: 'utils/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
-      // Temporary development access to slug updater
-      { path: 'dev/update-news-slugs', element: withSuspense(UpdateNewsSlugs) }
+      { path: 'utils/update-company-slugs', element: withSuspense(UpdateCompanySlugs) },
+      // Temporary development access to slug updaters
+      { path: 'dev/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
+      { path: 'dev/update-company-slugs', element: withSuspense(UpdateCompanySlugs) }
     ]
   }
 ]);

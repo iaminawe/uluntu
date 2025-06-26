@@ -6,6 +6,7 @@ import {
 } from '../utils/companyAdapter';
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
+import { parseCompanyParam } from '../utils/slugUtils';
 
 import { adaptItemsList } from '@/shared/api';
 import { logger } from '@/utils/logger';
@@ -31,22 +32,6 @@ export interface CompanyInput {
   featured?: boolean; // Simplified to match Company type
 }
 
-// Define mock company type for testing
-interface MockCompany {
-  id: string;
-  name: string;
-  description: string;
-  logo: string;
-  industry: string[];
-  size: string;
-  founded: string;
-  location: string;
-  website: string;
-  status: ContentStatus;
-  featured: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
 export const companiesApi = {
   async getAll(filters?: { search?: string; industries?: string[] }): Promise<Company[]> {
@@ -107,6 +92,7 @@ export const companiesApi = {
           name: item.name || '',
           description: item.description || '',
           logo: item.logo || '',
+          slug: item.slug || undefined, // Include slug field
           cover_image: item.cover_image || '',
           industry: Array.isArray(item.industry) ? item.industry : [],
           size: item.size || '',
@@ -115,7 +101,8 @@ export const companiesApi = {
           website: item.website || '',
           status: (item.status as ContentStatus) || 'draft',
           featured: item.featured || false,
-          created_at: item.created_at || null
+          created_at: item.created_at || null,
+          social: (item.social as any) || null
         };
         
         return company;
@@ -137,10 +124,11 @@ export const companiesApi = {
   // Mock data for testing when Supabase is not available or returns no data
   getMockCompanies(): Company[] {
     logger.debug('Returning mock companies data', 'COMPANIES');
-    const mockCompanies: MockCompany[] = [
+    const mockCompanies: Company[] = [
       {
         id: '1',
         name: 'Tech Innovators',
+        slug: 'tech-innovators',
         description: 'Leading technology solutions provider specializing in AI and machine learning.',
         logo: 'https://via.placeholder.com/150',
         industry: ['Technology', 'AI', 'Software'],
@@ -150,12 +138,12 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: true,
-        created_at: '2023-01-01T00:00:00.000Z',
-        updated_at: '2023-01-01T00:00:00.000Z'
+        created_at: '2023-01-01T00:00:00.000Z'
       },
       {
         id: '2',
         name: 'Green Solutions',
+        slug: 'green-solutions',
         description: 'Sustainable technology company focused on renewable energy solutions.',
         logo: 'https://via.placeholder.com/150',
         industry: ['CleanTech', 'Energy', 'Sustainability'],
@@ -165,12 +153,12 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: false,
-        created_at: '2023-02-01T00:00:00.000Z',
-        updated_at: '2023-02-01T00:00:00.000Z'
+        created_at: '2023-02-01T00:00:00.000Z'
       },
       {
         id: '3',
         name: 'Digital Creators',
+        slug: 'digital-creators',
         description: 'Digital agency specializing in web development and design.',
         logo: 'https://via.placeholder.com/150',
         industry: ['Design', 'Web Development', 'Marketing'],
@@ -180,13 +168,11 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: true,
-        created_at: '2023-03-01T00:00:00.000Z',
-        updated_at: '2023-03-01T00:00:00.000Z'
+        created_at: '2023-03-01T00:00:00.000Z'
       }
     ];
     
-    // Convert mock data to Company type
-    return mockCompanies as unknown as Company[];
+    return mockCompanies;
   },
 
   async getById(id: string): Promise<Company | null> {
@@ -211,6 +197,44 @@ export const companiesApi = {
     } catch (error) {
       logger.apiError('getById', error);
       // Return null instead of throwing an error to prevent app crashes
+      return null;
+    }
+  },
+
+  async getBySlug(slug: string): Promise<Company | null> {
+    try {
+      logger.debug('Fetching company by slug', 'COMPANIES', { slug });
+      
+      const { data, error } = await supabase
+        .from('companies')
+        .select(`*`)
+        .eq('slug', slug)
+        .single();
+
+      if (error) {
+        logger.apiError('getBySlug - company', error);
+        return null;
+      }
+      
+      logger.debug('Company fetched by slug', 'COMPANIES', { slug, found: !!data });
+      return data ? adaptCompanyFromDatabase(data) : null;
+    } catch (error) {
+      logger.apiError('getBySlug', error);
+      return null;
+    }
+  },
+
+  async getByIdOrSlug(idOrSlug: string): Promise<Company | null> {
+    try {
+      const { type, value } = parseCompanyParam(idOrSlug);
+      
+      if (type === 'id') {
+        return this.getById(value);
+      } else {
+        return this.getBySlug(value);
+      }
+    } catch (error) {
+      logger.apiError('getByIdOrSlug', error);
       return null;
     }
   },

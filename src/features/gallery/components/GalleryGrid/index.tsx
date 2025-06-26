@@ -10,9 +10,11 @@ import { ErrorDisplay } from '@/components/ui/ErrorDisplay';
 interface GalleryGridProps {
   galleryId: string;
   editable?: boolean;
+  onSetCover?: (photoId: string) => void;
+  coverPhotoId?: string;
 }
 
-export const GalleryGrid: React.FC<GalleryGridProps> = memo(({ galleryId, editable = false }) => {
+export const GalleryGrid: React.FC<GalleryGridProps> = memo(({ galleryId, editable = false, onSetCover, coverPhotoId }) => {
   const {
     // Data from React Query
     photos,
@@ -115,6 +117,10 @@ export const GalleryGrid: React.FC<GalleryGridProps> = memo(({ galleryId, editab
             isSelected={isPhotoSelected(photo.id)}
             onSelect={() => togglePhotoSelect(photo.id)}
             onClick={() => handlePhotoClick(photo, index)}
+            onDelete={editable ? handleDeletePhoto : undefined}
+            onSetCover={editable && onSetCover ? onSetCover : undefined}
+            isCover={photo.id === coverPhotoId || photo.is_cover}
+            showSelection={isBatchMode}
           />
         ))}
       </div>

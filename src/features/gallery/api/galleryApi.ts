@@ -19,7 +19,19 @@ export const galleryApi = {
 
     let query = supabase
       .from('user_galleries')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        gallery_photos!gallery_photos_gallery_id_fkey (
+          id,
+          thumbnail_url,
+          thumbnail_path,
+          medium_url,
+          medium_path,
+          storage_path,
+          sort_order,
+          visibility
+        )
+      `, { count: 'exact' })
       .eq('privacy_level', 'public')
       .order('created_at', { ascending: false })
       .range(from, to);
@@ -62,18 +74,61 @@ export const galleryApi = {
       throw error;
     }
 
+    // Helper function to get public URL from storage path
+    const getPublicUrl = (path: string | null | undefined): string | null => {
+      if (!path) return null;
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+      }
+      return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
+    };
+
     // Transform data to match interface
     const galleries = (data || []).map(gallery => {
+      const photos = gallery.gallery_photos || [];
+      
+      // Determine cover photo URL
+      let coverPhotoUrl = null;
+      let coverImage = null;
+      
+      if (photos.length > 0) {
+        // First priority: photo matching cover_photo_id
+        let coverPhoto = null;
+        if (gallery.cover_photo_id) {
+          coverPhoto = photos.find(p => p.id === gallery.cover_photo_id && p.visibility === 'visible');
+        }
+        
+        // Second priority: first visible photo
+        if (!coverPhoto) {
+          // Sort by sort_order and find first visible photo
+          const sortedPhotos = [...photos]
+            .filter(p => p.visibility === 'visible')
+            .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+          coverPhoto = sortedPhotos[0];
+        }
+        
+        if (coverPhoto) {
+          // Try different URL fields in order of preference
+          coverPhotoUrl = coverPhoto.thumbnail_url || 
+                         getPublicUrl(coverPhoto.thumbnail_path) ||
+                         coverPhoto.medium_url ||
+                         getPublicUrl(coverPhoto.medium_path) ||
+                         getPublicUrl(coverPhoto.storage_path);
+          coverImage = coverPhotoUrl; // For compatibility
+        }
+      }
+      
       return {
         ...gallery,
-        photos: [],
-        gallery_photos: [],
-        cover_photo_url: null, // Will be populated separately if needed
+        photos: photos,
+        gallery_photos: photos,
+        cover_photo_url: coverPhotoUrl,
+        coverImage: coverImage,
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         ownerId: gallery.user_id,
         privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as 'public' | 'private' | 'unlisted',
-        photo_count: gallery.photo_count || 0
+        photo_count: gallery.photo_count || photos.length || 0
       } as any;
     }) as Gallery[];
     
@@ -596,6 +651,29 @@ export const galleryApi = {
       }
     } catch (error) {
       logger.apiError('likePhoto', error);
+      throw error;
+    }
+  },
+
+  async setCoverPhoto(galleryId: string, photoId: string): Promise<boolean> {
+    try {
+      // Since gallery_photos doesn't have is_cover column,
+      // we only update the gallery's cover_photo_id
+
+      // Update the gallery's cover_photo_id
+      const { error: updateGalleryError } = await supabase
+        .from('user_galleries')
+        .update({ cover_photo_id: photoId })
+        .eq('id', galleryId);
+
+      if (updateGalleryError) {
+        logger.apiError('setCoverPhoto - update gallery', updateGalleryError);
+        throw updateGalleryError;
+      }
+
+      return true;
+    } catch (error) {
+      logger.apiError('setCoverPhoto', error);
       throw error;
     }
   }

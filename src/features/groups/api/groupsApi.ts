@@ -29,7 +29,6 @@ export interface GroupInput {
 export const groupsApi = {
   async getAll(filters?: { search?: string; visibility?: string | string[]; featured?: boolean; userGroups?: boolean; userId?: string; limit?: number }): Promise<FrontendGroup[]> {
     try {
-      console.log('[GroupsAPI] getAll called with filters:', filters);
       
       // Use direct REST API call to bypass Supabase client issues
       const url = import.meta.env.VITE_SUPABASE_URL;
@@ -42,7 +41,6 @@ export const groupsApi = {
       // Build query string
       let queryString = 'select=*&status=eq.published&order=created_at.desc';
       
-      console.log('[GroupsAPI] Using direct REST API call');
       
       const response = await fetch(`${url}/rest/v1/groups?${queryString}`, {
         headers: {
@@ -53,16 +51,13 @@ export const groupsApi = {
         }
       });
       
-      console.log('[GroupsAPI] Response status:', response.status);
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[GroupsAPI] Response error:', errorText);
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
       const data = await response.json();
-      console.log('[GroupsAPI] Response data:', data?.length, 'groups');
       
       // Use our helper function instead of adaptListFromSupabase
       return adaptItemsList(data || [], adaptGroupFromDatabase);
@@ -74,7 +69,6 @@ export const groupsApi = {
 
   async getById(id: string): Promise<FrontendGroup | null> {
     try {
-      console.log('[GroupsAPI] getById called with ID:', id);
       
       // First, get the basic group data without any joins
       const { data: groupData, error: groupError } = await supabase
@@ -83,7 +77,6 @@ export const groupsApi = {
         .eq('id', id)
         .single();
 
-      console.log('[GroupsAPI] getById response:', { groupData, groupError });
 
       if (groupError) {
         handleSupabaseError(groupError, `fetching group with id ${id}`);
@@ -93,10 +86,8 @@ export const groupsApi = {
       // Adapt only the core group data. The adaptGroupFromDatabase function initializes
       // events, resources, etc., to empty arrays as per FrontendGroup definition.
       const adaptedGroup = groupData ? adaptGroupFromDatabase(groupData as any) : null;
-      console.log('[GroupsAPI] getById adapted result:', adaptedGroup);
       return adaptedGroup;
     } catch (error) {
-      console.error('[GroupsAPI] getById error:', error);
       handleSupabaseError(error, `fetching group with id ${id}`);
       return null;
     }
@@ -228,7 +219,16 @@ export const groupsApi = {
     try {
       const { data, error } = await supabase
         .from('group_members')
-        .select('*')
+        .select(`
+          *,
+          member:member_id (
+            id,
+            name,
+            avatar_url,
+            title,
+            bio
+          )
+        `)
         .eq('group_id', groupId)
         .order('joined_date', { ascending: false });
 
@@ -240,6 +240,59 @@ export const groupsApi = {
       return data || [];
     } catch (error) {
       handleSupabaseError(error, 'fetching group members');
+      return [];
+    }
+  },
+
+  async getGroupEvents(groupId: string): Promise<unknown[]> {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('group_id', groupId)
+        .eq('status', 'published')
+        .order('date', { ascending: true });
+
+      if (error) {
+        handleSupabaseError(error, 'fetching group events');
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, 'fetching group events');
+      return [];
+    }
+  },
+
+  async getGroupResources(groupId: string): Promise<unknown[]> {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('group_id', groupId)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        handleSupabaseError(error, 'fetching group resources');
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      handleSupabaseError(error, 'fetching group resources');
+      return [];
+    }
+  },
+
+  async getGroupPosts(groupId: string): Promise<unknown[]> {
+    try {
+      // TODO: Implement group posts when the table structure is available
+      // For now, return empty array as news table doesn't have group_id
+      return [];
+    } catch (error) {
+      handleSupabaseError(error, 'fetching group posts');
       return [];
     }
   }

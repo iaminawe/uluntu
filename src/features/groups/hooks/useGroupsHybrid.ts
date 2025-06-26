@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { groupsApi } from '../api/groupsApi';
@@ -100,26 +101,26 @@ export function useGroupsHybrid() {
     },
   });
   
-  // UI actions
-  const setSearchTerm = (search?: string) => {
+  // UI actions - memoized to prevent infinite loops
+  const setSearchTerm = useCallback((search?: string) => {
     dispatch(updateFilters({ search }));
-  };
+  }, [dispatch]);
   
-  const setVisibilityFilter = (visibility?: 'open' | 'closed' | 'all') => {
+  const setVisibilityFilter = useCallback((visibility?: 'open' | 'closed' | 'all') => {
     dispatch(updateFilters({ visibility }));
-  };
+  }, [dispatch]);
   
-  const setFeaturedFilter = (featured?: boolean) => {
+  const setFeaturedFilter = useCallback((featured?: boolean) => {
     dispatch(updateFilters({ featured }));
-  };
+  }, [dispatch]);
   
-  const setMemberStatusFilter = (memberStatus?: 'member' | 'not-member' | 'all') => {
+  const setMemberStatusFilter = useCallback((memberStatus?: 'member' | 'not-member' | 'all') => {
     dispatch(updateFilters({ memberStatus }));
-  };
+  }, [dispatch]);
   
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     dispatch(clearFilters());
-  };
+  }, [dispatch]);
   
   // Sort groups
   const sortedGroups = [...(groupsQuery.data || [])].sort((a, b) => {

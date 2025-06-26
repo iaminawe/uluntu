@@ -5,6 +5,7 @@ import {
   useCompanies,
   useCompaniesWithFilters,
   useCompany,
+  useCompanyByIdOrSlug,
   useCreateCompany,
   useUpdateCompany,
   useDeleteCompany,
@@ -139,6 +140,72 @@ export function useCompanyHybrid(id?: string) {
     
     try {
       const result = await deleteMutation.mutateAsync(id);
+      // Invalidate related queries
+      invalidationHelpers.invalidateCompanies(queryClient);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return {
+    // Data from React Query
+    company: companyQuery.data,
+    isLoading: companyQuery.isLoading,
+    isError: companyQuery.isError,
+    error: companyQuery.error,
+    refetch: companyQuery.refetch,
+    
+    // Actions
+    updateCompany,
+    deleteCompany,
+    
+    // Mutation states
+    isUpdating: updateMutation.isPending,
+    updateError: updateMutation.error,
+    isDeleting: deleteMutation.isPending,
+    deleteError: deleteMutation.error,
+  };
+}
+
+/**
+ * Hybrid hook for a single company by ID or slug
+ * Automatically detects whether the parameter is an ID or slug
+ */
+export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
+  const queryClient = useQueryClient();
+  
+  // Use React Query for data fetching
+  const companyQuery = useCompanyByIdOrSlug(idOrSlug);
+  
+  // Mutations
+  const updateMutation = useUpdateCompany();
+  const deleteMutation = useDeleteCompany();
+
+  // Enhanced update with better error handling
+  const updateCompany = async (data: Partial<CompanyInput>) => {
+    if (!idOrSlug || !companyQuery.data) throw new Error('Company not found');
+    
+    const companyId = companyQuery.data.id;
+    
+    try {
+      const result = await updateMutation.mutateAsync({ id: companyId, data });
+      // Invalidate related queries
+      invalidationHelpers.invalidateCompany(queryClient, companyId);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Enhanced delete with better error handling
+  const deleteCompany = async () => {
+    if (!idOrSlug || !companyQuery.data) throw new Error('Company not found');
+    
+    const companyId = companyQuery.data.id;
+    
+    try {
+      const result = await deleteMutation.mutateAsync(companyId);
       // Invalidate related queries
       invalidationHelpers.invalidateCompanies(queryClient);
       return result;

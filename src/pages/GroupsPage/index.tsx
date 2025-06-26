@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
@@ -12,12 +12,38 @@ import { GroupVisibility } from '@/features/groups/components/GroupsList/types';
 
 export default function GroupsPage() {
   const navigate = useNavigate();
-  // State for filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [visibilityFilter, setVisibilityFilter] = useState<GroupVisibility[]>([]);
   
-  // Use hybrid hook for groups data
-  const { groups, isLoading, error, refetch } = useGroupsHybrid();
+  // Use hybrid hook for groups data and filter management
+  const { 
+    groups, 
+    isLoading, 
+    error, 
+    refetch,
+    filters,
+    setSearchTerm,
+    setVisibilityFilter 
+  } = useGroupsHybrid();
+  
+  // Convert visibility filter from hybrid hook to array format expected by ActionBar
+  const visibilityFilterArray: GroupVisibility[] = (() => {
+    if (!filters.visibility || filters.visibility === 'all') {
+      return [];
+    }
+    if (Array.isArray(filters.visibility)) {
+      return filters.visibility as GroupVisibility[];
+    }
+    return [filters.visibility as GroupVisibility];
+  })();
+  
+  // Handle visibility filter changes from ActionBar
+  const handleVisibilityChange = useCallback((visibilities: GroupVisibility[]) => {
+    if (visibilities.length === 0) {
+      setVisibilityFilter('all');
+    } else {
+      // Use the first selected visibility (since the hybrid hook only supports one)
+      setVisibilityFilter(visibilities[0] as 'open' | 'closed' | 'all');
+    }
+  }, [setVisibilityFilter]);
   
   const hasGroups = groups.length > 0;
 
@@ -34,10 +60,10 @@ export default function GroupsPage() {
         {/* ActionBar will handle the page actions */}
 
         <ActionBar 
-          searchTerm={searchTerm}
+          searchTerm={filters.search || ''}
           onSearch={setSearchTerm}
-          visibilityFilter={visibilityFilter}
-          onVisibilityChange={setVisibilityFilter}
+          visibilityFilter={visibilityFilterArray}
+          onVisibilityChange={handleVisibilityChange}
         />
         
         {isLoading ? (
@@ -60,8 +86,9 @@ export default function GroupsPage() {
           />
         ) : (
           <GroupsList 
-            searchTerm={searchTerm} 
-            visibilityFilter={visibilityFilter}
+            groups={groups}
+            searchTerm={filters.search || ''}
+            visibilityFilter={visibilityFilterArray}
           />
         )}
       </ContentContainer>

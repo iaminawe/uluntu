@@ -28,7 +28,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
         memberId: currentMember.id
       });
     } catch (error) {
-      console.error('Failed to join group:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -46,7 +45,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
         memberId: currentMember.id
       });
     } catch (error) {
-      console.error('Failed to leave group:', error);
     } finally {
       setIsProcessing(false);
     }

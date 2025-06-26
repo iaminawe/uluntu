@@ -34,7 +34,7 @@ export default function NewCompaniesSection() {
         date: company.created_at || undefined,
         category: company.industry?.join(', ') || 'Technology',
         readTime: company.size || 'Learn more',
-        link: `/companies/${company.id}`,
+        link: `/companies/${company.slug || company.id}`,
         type: 'company' as const,
         author: {
           id: '1',

@@ -18,7 +18,7 @@ export interface GroupFilters {
 
  
 export interface GroupsListProps {
-  searchTerm: string;
-  visibilityFilter: GroupVisibility[];
+  searchTerm?: string;
+  visibilityFilter?: GroupVisibility[];
   groups?: Group[]; // Optional groups prop to pass data directly
 }

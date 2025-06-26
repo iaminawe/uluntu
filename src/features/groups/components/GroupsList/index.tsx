@@ -8,29 +8,47 @@ import { useGroupsHybrid } from '../../hooks/useGroupsHybrid';
 
 const GROUPS_PER_PAGE = 8;
 
-const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups }: GroupsListProps) => {
+const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGroups }: GroupsListProps) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Use hybrid hook for data
+  // Use hybrid hook for data only when no groups are passed
   const { 
     groups: hybridGroups, 
     isLoading: hybridLoading, 
-    error: hybridError,
-    setSearchTerm,
-    setVisibilityFilter
+    error: hybridError
   } = useGroupsHybrid();
-
-  // Update filters when props change
-  useEffect(() => {
-    setSearchTerm(searchTerm);
-    setVisibilityFilter(visibilityFilter.length > 0 ? visibilityFilter[0] as 'open' | 'closed' | 'all' : 'all');
-  }, [searchTerm, visibilityFilter, setSearchTerm, setVisibilityFilter]);
   
   // Choose which data source to use
-  const filteredGroups = passedGroups || hybridGroups;
-  const isLoading = passedGroups ? false : hybridLoading;
-  const error = passedGroups ? null : hybridError;
+  const usePassedGroups = passedGroups !== undefined;
+  const groups = usePassedGroups ? passedGroups : hybridGroups;
+  const isLoading = usePassedGroups ? false : hybridLoading;
+  const error = usePassedGroups ? null : hybridError;
+  
+  // Apply client-side filtering if using passed groups
+  const filteredGroups = useMemo(() => {
+    if (!usePassedGroups) return groups;
+    
+    let filtered = groups;
+    
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(group => 
+        group.name?.toLowerCase().includes(searchLower) ||
+        group.description?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply visibility filter
+    if (visibilityFilter && Array.isArray(visibilityFilter) && visibilityFilter.length > 0) {
+      filtered = filtered.filter(group => 
+        visibilityFilter.includes(group.visibility as any)
+      );
+    }
+    
+    return filtered;
+  }, [groups, searchTerm, visibilityFilter, usePassedGroups]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -88,7 +106,7 @@ const GroupsList = ({ searchTerm, visibilityFilter, groups: passedGroups }: Grou
           <div className="bg-white dark:bg-slate-800 rounded-lg p-8 text-center shadow-md">
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No groups found</h3>
             <p className="text-slate-600 dark:text-slate-300">
-              {searchTerm || visibilityFilter.length > 0 
+              {searchTerm || (visibilityFilter && Array.isArray(visibilityFilter) && visibilityFilter.length > 0) 
                 ? 'No groups match your search criteria'
                 : 'There are no groups to display yet'}
             </p>
