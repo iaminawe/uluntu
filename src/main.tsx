@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { SessionProvider } from '@/shared/contexts/SessionContextWithRedux';
-import { ThemeProvider } from '@/providers/ThemeProvider';
+import { EnhancedThemeProvider } from '@/providers/EnhancedThemeProvider';
 import { SettingsProvider } from '@/providers/SettingsProvider';
 import { store } from '@/store/index';
 import { router } from './routes';
@@ -46,7 +46,7 @@ createRoot(document.getElementById('root')!).render(
             <QueryClientProvider client={queryClient}>
                 {/* SettingsProvider for global site configuration */}
                 <SettingsProvider>
-                  <ThemeProvider>
+                  <EnhancedThemeProvider>
                     <DynamicAppConfig />
                     <RouterProvider router={router} />
                     <ReactQueryDevtools initialIsOpen={false} />
@@ -63,7 +63,7 @@ createRoot(document.getElementById('root')!).render(
                     {/* Debug components disabled */}
                     {/* <DebugUserRoles /> */}
                     {/* <SettingsDebugger /> */}
-                  </ThemeProvider>
+                  </EnhancedThemeProvider>
                 </SettingsProvider>
               </QueryClientProvider>
           </SessionProvider>

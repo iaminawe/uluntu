@@ -37,6 +37,8 @@ export interface Opportunity {
   status?: ContentStatus;
   coverImage?: string;
   originalId?: string; // Preserve the original string ID for routing
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Adapter function to convert from main Opportunity type to local Opportunity type

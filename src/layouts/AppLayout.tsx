@@ -4,6 +4,7 @@ import Header from '@/shared/components/layout/Header';
 import Footer from '@/shared/components/layout/Footer';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useState, useEffect } from 'react';
+import { ThemePreviewIndicator } from '@/components/ThemePreviewIndicator';
 
 export default function AppLayout() {
   const { loading } = useSession();
@@ -40,6 +41,7 @@ export default function AppLayout() {
           <Outlet />
         </main>
         <Footer />
+        <ThemePreviewIndicator />
       </div>
     </HelmetProvider>
   );

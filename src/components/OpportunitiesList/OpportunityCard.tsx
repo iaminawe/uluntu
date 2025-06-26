@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { 
   MapPin, 
   Clock, 
-  Building
+  Building,
+  MessageCircle
 } from 'lucide-react';
 import { Opportunity } from '@/features/opportunities/components/OpportunitiesList/types';
 import { 
@@ -12,6 +13,7 @@ import {
   getOpportunityTypeLabel,
   getExperienceLevelLabel
 } from '@/features/opportunities/components/OpportunitiesList/utils';
+import { LikeButton } from '@/components/interactions';
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -109,19 +111,33 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
           </p>
           
           {/* Footer */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-700">
-            <div className="text-xs text-slate-500 dark:text-slate-400">
-              <span className="flex items-center">
-                <Clock className="h-3.5 w-3.5 mr-1" />
-                Posted {postedDate}
-              </span>
-            </div>
-            
-            {deadlineDate && (
-              <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="flex items-center">
+                  <Clock className="h-3.5 w-3.5 mr-1" />
+                  Posted {postedDate}
+                </span>
               </div>
-            )}
+              
+              {deadlineDate && (
+                <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+              <LikeButton
+                entityType="opportunity"
+                entityId={opportunity.id.toString()}
+                initialLikeCount={opportunity.like_count || 0}
+                size="sm"
+              />
+              <button className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                <MessageCircle className="h-4 w-4" />
+                <span>{opportunity.comment_count || 0}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -209,19 +225,33 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
           </p>
           
           {/* Footer */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-700">
-            <div className="text-xs text-slate-500 dark:text-slate-400">
-              <span className="flex items-center">
-                <Clock className="h-3.5 w-3.5 mr-1" />
-                Posted {postedDate}
-              </span>
-            </div>
-            
-            {deadlineDate && (
-              <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="flex items-center">
+                  <Clock className="h-3.5 w-3.5 mr-1" />
+                  Posted {postedDate}
+                </span>
               </div>
-            )}
+              
+              {deadlineDate && (
+                <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+              <LikeButton
+                entityType="opportunity"
+                entityId={opportunity.id.toString()}
+                initialLikeCount={opportunity.like_count || 0}
+                size="sm"
+              />
+              <button className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                <MessageCircle className="h-4 w-4" />
+                <span>{opportunity.comment_count || 0}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

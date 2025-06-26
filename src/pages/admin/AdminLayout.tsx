@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useSettings } from '@/hooks/useSettings';
-import { useTheme } from '@/providers/ThemeProvider';
+import { useTheme } from '@/providers/EnhancedThemeProvider';
 import {
   LayoutDashboard,
   Users,
@@ -25,7 +25,8 @@ import {
   Mail,
   TrendingUp,
   Inbox,
-  BarChart3
+  BarChart3,
+  Palette
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -140,6 +141,12 @@ const AdminLayout: React.FC = () => {
       href: '/admin/settings',
       icon: Settings,
       current: location.pathname.startsWith('/admin/settings')
+    },
+    {
+      name: 'Theme',
+      href: '/admin/theme',
+      icon: Palette,
+      current: location.pathname === '/admin/theme'
     }
   ];
 

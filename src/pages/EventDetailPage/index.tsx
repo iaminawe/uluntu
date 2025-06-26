@@ -5,6 +5,7 @@ import { useEventHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { format, parseISO } from 'date-fns';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { Card } from '@/shared/components/ui/Card';
+import { LikeButton, CommentsList } from '@/components/interactions';
 import PageHeader from './PageHeader';
 import EventHero from './EventHero';
 import EventInfo from './EventInfo';
@@ -71,6 +72,24 @@ export default function EventDetailPage() {
                 {/* Main Content */}
                 <div className="lg:col-span-2">
                   <EventInfo event={event} formattedDate={formattedDate} formattedTime={formattedTime} />
+                  
+                  {/* Like and Comment Section */}
+                  <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <div className="flex items-center gap-4 mb-6">
+                      <LikeButton
+                        entityType="event"
+                        entityId={event.id}
+                        initialLikeCount={event.like_count || 0}
+                      />
+                    </div>
+                    
+                    <CommentsList
+                      entityType="event"
+                      entityId={event.id}
+                      showToggle
+                      defaultExpanded={false}
+                    />
+                  </div>
                 </div>
                 
                 {/* Sidebar */}

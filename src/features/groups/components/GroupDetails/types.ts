@@ -58,6 +58,8 @@ export interface Group {
   events: GroupEvent[];
   resources: GroupResource[];
   posts: GroupPost[];
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Utility function to convert from main Group type to local Group type

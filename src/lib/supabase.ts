@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '../types/supabase';
+import { Database } from '../shared/types/supabase';
 import { AuthError } from '@supabase/supabase-js';
 import { logger } from '@/utils/logger';
 

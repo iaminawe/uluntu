@@ -480,3 +480,65 @@ export function useTogglePhotoLike(): UseMutationResult<boolean, Error, string> 
     },
   });
 }
+
+// Comment queries
+export function usePhotoComments(photoId: string | undefined) {
+  return useQuery({
+    queryKey: ['photo-comments', photoId],
+    queryFn: () => photoId ? galleryApi.getComments(photoId) : Promise.resolve([]),
+    enabled: !!photoId && USE_SUPABASE,
+  });
+}
+
+export function useAddPhotoComment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ photoId, content }: { photoId: string; content: string }) => {
+      if (!USE_SUPABASE) {
+        return Promise.resolve({ id: Date.now().toString(), content });
+      }
+      
+      return galleryApi.addComment(photoId, content);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['photo-comments', variables.photoId] });
+      queryClient.invalidateQueries({ queryKey: galleryQueryKeys.all });
+    },
+  });
+}
+
+export function useUpdatePhotoComment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ commentId, content }: { commentId: string; content: string }) => {
+      if (!USE_SUPABASE) {
+        return Promise.resolve({ id: commentId, content });
+      }
+      
+      return galleryApi.updateComment(commentId, content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photo-comments'] });
+    },
+  });
+}
+
+export function useDeletePhotoComment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (commentId: string) => {
+      if (!USE_SUPABASE) {
+        return Promise.resolve(true);
+      }
+      
+      return galleryApi.deleteComment(commentId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photo-comments'] });
+      queryClient.invalidateQueries({ queryKey: galleryQueryKeys.all });
+    },
+  });
+}

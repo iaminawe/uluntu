@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/lib/supabase';
+import { useGalleryFeatures } from '@/hooks/useConditionalFeatures';
+import { useAppSelector } from '@/store/hooks';
+import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import type { Photo } from '../../types';
 
 interface PhotoLightboxProps {
@@ -34,8 +37,12 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [commentText, setCommentText] = useState('');
   
   const currentPhoto = photos[currentIndex];
+  const user = useAppSelector(selectCurrentUser);
+  const { features } = useGalleryFeatures();
   
   // Helper function to get public URL from storage path
   const getPublicUrl = useCallback((path: string | undefined) => {
@@ -128,9 +135,33 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   }, [photos.length]);
 
   const handleLike = () => {
+    if (!user) {
+      // Redirect to login
+      window.location.href = `/login?redirect=${window.location.pathname}`;
+      return;
+    }
+    
     if (onLike && currentPhoto) {
       onLike(currentPhoto.id);
       setIsLiked(!isLiked);
+    }
+  };
+  
+  const handleComment = () => {
+    if (!user) {
+      // Redirect to login
+      window.location.href = `/login?redirect=${window.location.pathname}`;
+      return;
+    }
+    
+    setShowCommentModal(true);
+  };
+  
+  const submitComment = () => {
+    if (onComment && currentPhoto && commentText.trim()) {
+      onComment(currentPhoto.id, commentText);
+      setCommentText('');
+      setShowCommentModal(false);
     }
   };
 
@@ -214,20 +245,27 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
         <div className="flex items-center justify-between">
           {/* Photo Info */}
           <div className="flex items-center gap-6 text-white">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-2 hover:text-red-400 transition-colors ${
-                isLiked ? 'text-red-500' : ''
-              }`}
-            >
-              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-              <span className="text-sm">{(currentPhoto as any)?.like_count || 0}</span>
-            </button>
+            {features.likes && (
+              <button
+                onClick={handleLike}
+                className={`flex items-center gap-2 hover:text-red-400 transition-colors ${
+                  isLiked ? 'text-red-500' : ''
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                <span className="text-sm">{(currentPhoto as any)?.like_count || 0}</span>
+              </button>
+            )}
             
-            <button className="flex items-center gap-2 hover:text-blue-400 transition-colors">
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-sm">{(currentPhoto as any)?.comment_count || 0}</span>
-            </button>
+            {features.comments && (
+              <button 
+                onClick={handleComment}
+                className="flex items-center gap-2 hover:text-blue-400 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="text-sm">{(currentPhoto as any)?.comment_count || 0}</span>
+              </button>
+            )}
             
             <span className="text-sm text-gray-300">
               {currentPhoto?.created_at && 
@@ -341,6 +379,41 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               </div>
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Comment Modal */}
+      {showCommentModal && features.comments && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Add a Comment</h3>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Write your comment..."
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={4}
+            />
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setShowCommentModal(false)}
+                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 
+                         dark:hover:text-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitComment}
+                disabled={!commentText.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Post Comment
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
