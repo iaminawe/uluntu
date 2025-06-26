@@ -1,7 +1,9 @@
 // Types for DirectoryEditPage components
+import { ContentStatus } from '../../types/common';
 
 export interface FormData {
   name: string;
+  slug: string;
   title: string;
   company: string;
   location: string;
@@ -10,6 +12,8 @@ export interface FormData {
   skills: string[];
   interests: string[];
   joinDate: string;
+  status: ContentStatus;
+  featured: boolean;
   social: {
     linkedin?: string;
     twitter?: string;
