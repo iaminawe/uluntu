@@ -249,7 +249,7 @@ const UsersPage: React.FC = () => {
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20"
           >
             <option value="all">All Roles</option>
             {roles?.map(role => (
@@ -278,7 +278,7 @@ const UsersPage: React.FC = () => {
                 <select
                   value={bulkActionRole}
                   onChange={(e) => setBulkActionRole(e.target.value)}
-                  className="px-3 py-1 border border-blue-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20"
                 >
                   <option value="">Select role to assign</option>
                   {roles?.map(role => (

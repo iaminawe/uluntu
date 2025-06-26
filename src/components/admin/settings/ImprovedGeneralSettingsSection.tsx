@@ -358,8 +358,8 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           <select
             value={value || ''}
             onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-              hasChanged ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
+            className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
+              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
             }`}
           >
             <option value="">Select an option...</option>

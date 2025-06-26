@@ -76,7 +76,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onTypeChange, currentFi
             <select
               value={selectedType}
               onChange={handleTypeChange}
-              className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
+              className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Types</option>
               {resourceTypes.map(type => (
@@ -91,7 +91,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onTypeChange, currentFi
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
+              className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Categories</option>
               {categories.map(category => (

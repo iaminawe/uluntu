@@ -112,7 +112,7 @@ const CreateAnnouncementModal: React.FC<CreateAnnouncementModalProps> = ({
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'normal' | 'high' | 'urgent' })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20"
               >
                 <option value="normal">Normal</option>
                 <option value="high">High</option>

@@ -321,7 +321,7 @@ export const PageForm: React.FC<PageFormProps> = ({
               id="status"
               value={formData.status}
               onChange={(e) => handleInputChange('status', e.target.value as 'draft' | 'published')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
