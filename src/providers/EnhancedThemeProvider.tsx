@@ -227,7 +227,24 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       setThemes(transformedThemes);
       
       // Set the active theme
-      const active = transformedThemes.find(t => t.is_active);
+      let active = transformedThemes.find(t => t.is_active);
+      
+      // If no active theme, try to activate the default theme
+      if (!active && transformedThemes.length > 0) {
+        const defaultTheme = transformedThemes.find(t => t.is_default) || transformedThemes[0];
+        if (defaultTheme) {
+          console.log('No active theme found, activating default:', defaultTheme.name);
+          // Activate the default theme
+          await supabase
+            .from('themes')
+            .update({ is_active: true })
+            .eq('id', defaultTheme.id);
+          
+          defaultTheme.is_active = true;
+          active = defaultTheme;
+        }
+      }
+      
       if (active) {
         setCurrentTheme(active);
       }
