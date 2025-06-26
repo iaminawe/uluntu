@@ -93,6 +93,7 @@ const SubscriberManager = lazy(() => import('../pages/admin/newsletter/Subscribe
 const AnalyticsDashboard = lazy(() => import('../pages/admin/newsletter/AnalyticsDashboard'));
 const UpdateNewsSlugs = lazy(() => import('../pages/admin/UpdateNewsSlugs'));
 const UpdateCompanySlugs = lazy(() => import('../pages/admin/UpdateCompanySlugs'));
+const ThemeConfigPage = lazy(() => import('../pages/admin/ThemeStatusPage'));
 
 
 // Auth components
@@ -272,6 +273,10 @@ export const router = createBrowserRouter([
       { 
         path: 'settings', 
         element: withSuspense(AdminSettingsPage)
+      },
+      { 
+        path: 'theme', 
+        element: withSuspense(ThemeConfigPage)
       },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },

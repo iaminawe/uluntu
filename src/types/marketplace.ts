@@ -42,6 +42,8 @@ export interface MarketplaceListing {
   contactPhone?: string;
   contactMethod?: ContactMethod;
   showContactInfo?: boolean;
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Mock data type matching Supabase schema

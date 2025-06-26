@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Resource } from '../../types';
 import { getTypeIcon } from '@/features/resources/components/ResourcesList/utils';
+import { LikeButton } from '@/components/interactions';
+import { MessageCircle } from 'lucide-react';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -27,7 +29,7 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
           </div>
         </div>
 
-        <div className="flex items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-600 dark:text-slate-300">
             {resource.contributor?.name || 'Unknown'} - {
               resource.dateAdded ? 
@@ -37,11 +39,25 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
           </span>
         </div>
 
-        <div className="inline-flex items-center text-orange-500 hover:text-orange-600 font-medium">
-          View Details
-          <svg className="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
+        <div className="flex items-center justify-between">
+          <div className="inline-flex items-center text-orange-500 hover:text-orange-600 font-medium">
+            View Details
+            <svg className="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+            <LikeButton
+              entityType="resource"
+              entityId={resource.id}
+              initialLikeCount={resource.like_count || 0}
+              size="sm"
+            />
+            <button className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+              <MessageCircle className="h-4 w-4" />
+              <span>{resource.comment_count || 0}</span>
+            </button>
+          </div>
         </div>
       </div>
     </Link>

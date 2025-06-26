@@ -58,6 +58,8 @@ export interface Company {
   resources: CompanyResource[];
   posts: CompanyPost[];
   opportunities: CompanyOpportunity[];
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Utility function to convert from main Company type to local Company type

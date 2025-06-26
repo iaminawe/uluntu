@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
 import { getTypeIcon, getConditionDisplayName, formatPrice } from '@/features/marketplace/components/MarketplaceList/utils';
+import { LikeButton } from '@/components/interactions';
+import { MessageCircle } from 'lucide-react';
 
 interface ListingCardProps {
   listing: MarketplaceListing;
@@ -81,20 +83,34 @@ const ListingCard = ({ listing }: ListingCardProps) => {
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="w-6 h-6 rounded-full mr-2 bg-slate-300 dark:bg-slate-600 flex items-center justify-center">
-              <span className="text-xs text-slate-600 dark:text-slate-300">
-                {(listing.seller?.name?.charAt(0) || listing.seller?.id?.charAt(0) || 'U').toUpperCase()}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-6 h-6 rounded-full mr-2 bg-slate-300 dark:bg-slate-600 flex items-center justify-center">
+                <span className="text-xs text-slate-600 dark:text-slate-300">
+                  {(listing.seller?.name?.charAt(0) || listing.seller?.id?.charAt(0) || 'U').toUpperCase()}
+                </span>
+              </div>
+              <span className="text-sm text-slate-600 dark:text-slate-300">
+                {listing.seller?.name || `Seller ${listing.seller?.id?.substring(0, 5) || 'Unknown'}`}
               </span>
             </div>
-            <span className="text-sm text-slate-600 dark:text-slate-300">
-              {listing.seller?.name || `Seller ${listing.seller?.id?.substring(0, 5) || 'Unknown'}`}
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              {listing.location || 'Location not specified'}
             </span>
           </div>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
-            {listing.location || 'Location not specified'}
-          </span>
+          <div className="flex items-center gap-4 border-t border-slate-100 dark:border-slate-700 pt-3" onClick={(e) => e.preventDefault()}>
+            <LikeButton
+              entityType="marketplace"
+              entityId={listing.id}
+              initialLikeCount={listing.like_count || 0}
+              size="sm"
+            />
+            <button className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+              <MessageCircle className="h-4 w-4" />
+              <span>{listing.comment_count || 0}</span>
+            </button>
+          </div>
         </div>
       </div>
     </Link>

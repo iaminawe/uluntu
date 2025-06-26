@@ -2,9 +2,8 @@ import React, { memo, useCallback } from 'react';
 import { Photo } from '../../types';
 import { useGalleryHybrid } from '../../hooks/useGalleryHybrid';
 import PhotoCard from '../PhotoCard';
-// import { Lightbox } from '../Lightbox'; // TODO: Fix lightbox import
+import { PhotoLightbox } from '../PhotoLightbox';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-// import { EmptyState } from '@/components/ui/EmptyState'; // TODO: Fix EmptyState import
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay';
 
 interface GalleryGridProps {
@@ -34,6 +33,8 @@ export const GalleryGrid: React.FC<GalleryGridProps> = memo(({ galleryId, editab
     showLightbox,
     hideLightbox,
     deletePhoto,
+    togglePhotoLike,
+    addPhotoComment,
   } = useGalleryHybrid(galleryId);
   
   // Handle photo click
@@ -126,16 +127,26 @@ export const GalleryGrid: React.FC<GalleryGridProps> = memo(({ galleryId, editab
       </div>
       
       {/* Lightbox component */}
-      {lightbox.isOpen && (
-        <div className="lightbox-placeholder">
-          {/* TODO: Fix Lightbox import */}
-          <div>Lightbox placeholder</div>
-        </div>
-        /* <Lightbox
+      {lightbox.isOpen && lightbox.photos && (
+        <PhotoLightbox
           photos={lightbox.photos}
-          currentIndex={lightbox.currentPhotoIndex}
+          initialIndex={lightbox.currentPhotoIndex}
           onClose={hideLightbox}
-        /> */
+          onLike={async (photoId) => {
+            try {
+              await togglePhotoLike(photoId);
+            } catch (error) {
+              console.error('Failed to like photo:', error);
+            }
+          }}
+          onComment={async (photoId, comment) => {
+            try {
+              await addPhotoComment({ photoId, content: comment });
+            } catch (error) {
+              console.error('Failed to add comment:', error);
+            }
+          }}
+        />
       )}
     </>
   );

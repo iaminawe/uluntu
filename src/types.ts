@@ -124,6 +124,8 @@ export interface Group extends BaseEntity {
   resources?: Resource[];
   posts?: GroupPost[];
   interests?: string[]; // Added for interests/hobbies/goals
+  like_count?: number;
+  comment_count?: number;
 }
 
 export interface NewsArticle extends BaseEntity {
@@ -140,6 +142,8 @@ export interface NewsArticle extends BaseEntity {
     image: string;
   };
   tags?: string[];
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Re-export common types for backward compatibility
@@ -159,6 +163,8 @@ export interface Resource extends BaseEntity {
   };
   groupId?: string;
   tags?: string[]; // Added to align with ExtendedFrontendResource and common usage
+  like_count?: number;
+  comment_count?: number;
 }
 
 export interface MarketplaceItem extends BaseEntity {
@@ -184,6 +190,8 @@ export interface MarketplaceItem extends BaseEntity {
   contactPhone?: string;
   contactMethod?: 'email' | 'phone' | 'both';
   showContactInfo?: boolean;
+  like_count?: number;
+  comment_count?: number;
 }
 
 export interface CompanyMember {
@@ -223,6 +231,8 @@ export interface Opportunity extends BaseEntity {
   salary?: string;
   postedDate: string;
   deadline?: string;
+  like_count?: number;
+  comment_count?: number;
 }
 
 // Groups

@@ -46,6 +46,8 @@ import {
   useBatchDeletePhotos,
   useReorderPhotos,
   useToggleGalleryLike,
+  useTogglePhotoLike,
+  useAddPhotoComment,
 } from './useGalleryQueries';
 import { Photo, PhotoUploadInput, BatchUploadFile, BatchUploadProgress } from '../types';
 
@@ -71,6 +73,8 @@ export const useGalleryHybrid = (galleryId?: string) => {
   const batchDeleteMutation = useBatchDeletePhotos();
   const reorderPhotosMutation = useReorderPhotos();
   const toggleLikeMutation = useToggleGalleryLike();
+  const togglePhotoLikeMutation = useTogglePhotoLike();
+  const addCommentMutation = useAddPhotoComment();
   
   // Redux - UI State
   const selectedPhotos = useAppSelector(selectSelectedPhotos);
@@ -269,6 +273,8 @@ export const useGalleryHybrid = (galleryId?: string) => {
     performBatchDelete,
     reorderPhotos: reorderPhotosMutation.mutateAsync,
     toggleLike: toggleLikeMutation.mutateAsync,
+    togglePhotoLike: togglePhotoLikeMutation.mutateAsync,
+    addPhotoComment: addCommentMutation.mutateAsync,
     
     // Mutation states
     isCreating: createGalleryMutation.isPending,

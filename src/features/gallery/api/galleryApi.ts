@@ -655,6 +655,106 @@ export const galleryApi = {
     }
   },
 
+  async addComment(photoId: string, content: string): Promise<any> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await (supabase as any)
+        .from('photo_comments')
+        .insert([{ 
+          photo_id: photoId, 
+          user_id: user.id,
+          content: content.trim(),
+          moderation_status: 'approved' // Auto-approve for now
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      logger.apiError('addComment', error);
+      throw error;
+    }
+  },
+
+  async getComments(photoId: string, options?: { page?: number; limit?: number }): Promise<any[]> {
+    try {
+      let query = (supabase as any)
+        .from('photo_comments')
+        .select(`
+          *,
+          user:members(
+            id,
+            name,
+            avatar_url
+          )
+        `)
+        .eq('photo_id', photoId)
+        .eq('moderation_status', 'approved')
+        .order('created_at', { ascending: false });
+
+      if (options?.page && options?.limit) {
+        const from = (options.page - 1) * options.limit;
+        const to = from + options.limit - 1;
+        query = query.range(from, to);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      logger.apiError('getComments', error);
+      throw error;
+    }
+  },
+
+  async updateComment(commentId: string, content: string): Promise<any> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await (supabase as any)
+        .from('photo_comments')
+        .update({ 
+          content: content.trim(),
+          edited_at: new Date().toISOString(),
+          is_edited: true
+        })
+        .eq('id', commentId)
+        .eq('user_id', user.id) // Ensure user owns the comment
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      logger.apiError('updateComment', error);
+      throw error;
+    }
+  },
+
+  async deleteComment(commentId: string): Promise<boolean> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await (supabase as any)
+        .from('photo_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id); // Ensure user owns the comment
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      logger.apiError('deleteComment', error);
+      throw error;
+    }
+  },
+
   async setCoverPhoto(galleryId: string, photoId: string): Promise<boolean> {
     try {
       // Since gallery_photos doesn't have is_cover column,

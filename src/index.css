@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import theme integration styles */
+@import './styles/theme-integration.css';
+
 @layer base {
   :root {
     /* Dynamic color CSS variables - will be set by ThemeProvider */

@@ -1,19 +1,19 @@
-# hyperlocal.community - Investor Pitch Deck Outline
+# Uluntu - Investor Pitch Deck Outline
 
-## The AI-Powered Platform for Hyper-Local Communities of Practice
+## The Place Where Community Happens
 
 ---
 
 ## 📊 **Slide 1: Title Slide**
 
-**hyperlocal.community**  
-*The AI-Powered Platform for Hyper-Local Communities of Practice*
+**Uluntu**  
+*The Place Where Community Happens*
 
 **Series A Investment Opportunity: $2.5M**
 
 *Presented by: [Founder Name]*  
 *Date: [Presentation Date]*  
-*Contact: founder@hyperlocal.community*
+*Contact: founder@uluntu.com*
 
 ---
 
@@ -22,7 +22,7 @@
 
 ### The Crisis Facing Local Communities:
 - **500,000+ communities globally** scattered across 5-8 different platforms
-- **WhatsApp, Facebook, Slack, email chains** - no central professional hub
+- **WhatsApp, Facebook, Slack, email chains** - no central gathering place
 - **20+ hours/week** of manual admin work for community managers
 - **40% member churn** due to poor engagement and fragmented experience
 - **$2+ billion** wasted annually on ineffective community tools
@@ -36,9 +36,9 @@
 ---
 
 ## 💡 **Slide 3: The Solution**
-*"One intelligent platform replaces 5-8 scattered tools"*
+*"Transform scattered conversations into a thriving digital place"*
 
-### hyperlocal.community: Complete Community Infrastructure
+### Uluntu: Your Community's Digital Gathering Place
 
 **🧠 AI-Powered Intelligence:**
 - Smart member matching based on skills and proximity
@@ -47,10 +47,10 @@
 - 70% reduction in manual admin tasks
 
 **🏢 Professional-Grade Features:**
-- Privacy-first member networking
-- Integrated marketplace and job board
-- Event management with rich media
-- Knowledge sharing and resource libraries
+- The Directory - member networking space
+- The Market - integrated marketplace
+- The Calendar - event management hub  
+- The Library - knowledge sharing center
 
 **🌍 Hyper-Local Focus:**  
 - Geographic proximity algorithms
@@ -100,7 +100,7 @@
 - Economic activity integration
 
 **3. 📊 Proven Product-Market Fit**  
-- Nelson Tech Community: 300+ members, 75% engagement
+- Nelson Tech Uluntu: 300+ members, 75% engagement
 - $15K+ in marketplace transactions
 - 95% member satisfaction score
 
@@ -142,7 +142,7 @@
 
 ### **5-Year Growth Trajectory:**
 
-| Year | Communities | ARR | Revenue Growth | Key Milestones |
+| Year | Uluntus | ARR | Revenue Growth | Key Milestones |
 |------|-------------|-----|----------------|----------------|
 | **Year 1** | 25 | $180K | - | Product-market fit validation |
 | **Year 2** | 100 | $720K | 300% | Sales team scaling |
@@ -164,24 +164,24 @@
 ---
 
 ## 🏗️ **Slide 8: Product Demonstration**
-*"See the platform in action"*
+*"Experience your first Uluntu"*
 
 ### **Live Demo Highlights:**
 
-**🧠 AI Member Matching**  
-- Show intelligent networking recommendations
+**🧠 The Matchmaker in Action**  
+- Show intelligent member connections
 - Geographic proximity + skill matching
-- Automated introduction facilitation
+- Automated introductions in The Directory
 
-**📱 Community Dashboard**  
-- Real-time community health metrics
-- Engagement analytics and insights
-- Automated moderation in action
+**📱 Your Uluntu Dashboard**  
+- Real-time Uluntu Health Score
+- Engagement analytics from The Square
+- The Guardian (AI moderation) in action
 
-**💼 Economic Activity Integration**  
-- Marketplace with local transactions
-- Job board with AI-powered matching
-- Event ticketing and promotion
+**💼 The Market & The Board**  
+- The Market with local transactions
+- The Board with AI-powered job matching
+- The Calendar with event ticketing
 
 **⚡ Admin Efficiency**  
 - Demonstrate 70% reduction in manual tasks
@@ -205,7 +205,7 @@
 **📚 Content Marketing (30% of customers)**
 - SEO-optimized community building content
 - Weekly webinars and educational resources
-- Free community assessment tools
+- Free Uluntu readiness assessment
 
 **🤝 Partnerships (20% of customers)**
 - Economic development organizations
@@ -215,7 +215,7 @@
 **💬 Referrals (10% of customers)**
 - Customer advocacy program
 - Success story amplification
-- Community-to-community recommendations
+- Uluntu-to-Uluntu recommendations
 
 ### **Sales Metrics:**
 - **Sales Cycle**: 45-90 days average
@@ -249,7 +249,7 @@
 - Proven ability to drive engagement and retention
 
 ### **Advisory Board:**
-- Community platform veterans
+- Digital place-building veterans
 - Association management experts
 - AI/ML advisors
 - Go-to-market specialists
@@ -267,9 +267,9 @@
 - **3x growth** in local tech job placements
 
 ### **Early Traction Indicators:**
-- **50+ qualified prospects** in pipeline for launch
+- **50+ qualified prospects** ready to build their Uluntu
 - **5 LOIs** from professional associations
-- **3 pilot programs** ready to launch
+- **3 pilot Uluntus** ready to launch
 - **Media coverage** in community management publications
 
 ### **Technical Validation:**
@@ -286,34 +286,34 @@
 ---
 
 ## 💡 **Slide 12: AI Strategy Deep Dive**
-*"Intelligence that transforms community management"*
+*"Intelligence that makes your Uluntu come alive"*
 
 ### **Five Core AI Capabilities:**
 
-**🎯 Intelligent Member Connectivity**
+**🎯 The Matchmaker**
 - Skills-based matching with 85% accuracy
-- Geographic proximity optimization
-- Automated introduction workflows
+- Geographic proximity optimization  
+- Automated introductions in The Directory
 
-**📊 Community Health Analytics**
+**📊 Uluntu Health Analytics**
 - Predictive engagement modeling
-- Churn risk identification (90% accuracy)
-- Growth optimization recommendations
+- Member retention insights (90% accuracy)
+- Growth recommendations for your place
 
 **🔍 Content Intelligence**
 - Automated categorization and quality scoring
 - Personalized content recommendations
 - Smart feed optimization
 
-**🤖 Automated Management**
+**🤖 The Guardian & The Welcome Center**
 - 70% reduction in moderation tasks
-- Smart event promotion
-- Intelligent member onboarding
+- Smart event promotion in The Calendar
+- Intelligent onboarding at The Welcome Center
 
-**🎨 Personalization Engine**
-- Dynamic UI adaptation
-- Behavioral pattern recognition
-- Customized community experiences
+**🎨 Place Personalization**
+- Dynamic Uluntu adaptation
+- Member behavior recognition
+- Customized place experiences
 
 ### **Competitive Moat:**
 - **Community-specific training data** (not generic social media)
@@ -360,7 +360,7 @@
 ### **Use of Funds:**
 
 **📊 Product Development (40% - $1M)**
-- Multi-tenant platform completion (6 months)
+- Multi-Uluntu architecture completion (6 months)
 - Advanced AI feature development
 - Mobile application development
 - Enterprise security and compliance
@@ -421,7 +421,7 @@
 
 **📈 IPO Path:**
 - SaaS companies with $50M+ ARR regularly go public
-- Community platforms trading at 15-25x revenue
+- Community places trading at 15-25x revenue
 - Clear path to $100M+ ARR by Year 7
 
 ---
@@ -471,9 +471,9 @@
 
 ### **Contact Information:**
 
-**📧 Email**: founder@hyperlocal.community  
+**📧 Email**: founder@uluntu.com  
 **📱 Phone**: [Founder Phone Number]  
-**🌐 Website**: https://hyperlocal.community  
+**🌐 Website**: https://uluntu.com  
 **📅 Calendar**: [Calendly Link for Meetings]
 
 ### **Due Diligence Materials Available:**
@@ -513,14 +513,14 @@
 ## 🏆 **Slide 18: Closing Slide**
 *"Building the future of local communities"*
 
-### **hyperlocal.community**
-*The AI-Powered Platform for Hyper-Local Communities of Practice*
+### **Uluntu**
+*The Place Where Community Happens*
 
 **🎯 Vision**: Empower 500,000+ communities worldwide with intelligent, privacy-first tools that foster meaningful connections and economic opportunity.
 
-**💡 Mission**: Replace fragmented digital chaos with purposeful community infrastructure that brings people together locally while respecting privacy and human connection.
+**💡 Mission**: Transform scattered digital conversations into thriving community places where people gather locally with purpose and privacy.
 
-**🚀 Opportunity**: Join us in building the $100M+ revenue platform that transforms how communities connect, collaborate, and thrive.
+**🚀 Opportunity**: Join us in building 10,000+ Uluntus worldwide - the places where communities gather, grow, and thrive.
 
 ---
 
@@ -528,10 +528,10 @@
 
 *Questions & Discussion*
 
-**📧 founder@hyperlocal.community**  
-**🌐 hyperlocal.community**
+**📧 founder@uluntu.com**  
+**🌐 uluntu.com
 
-*"The future of community is local, intelligent, and human-centered."*
+*"The future of community is Uluntu - where Ubuntu becomes practice."*
 
 ---
 
