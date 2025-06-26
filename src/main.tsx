@@ -60,8 +60,8 @@ createRoot(document.getElementById('root')!).render(
                         },
                       }}
                     />
-                    {/* Debug components disabled */}
-                    {/* <DebugUserRoles /> */}
+                    {/* Debug components */}
+                    <DebugUserRoles />
                     {/* <SettingsDebugger /> */}
                   </EnhancedThemeProvider>
                 </SettingsProvider>

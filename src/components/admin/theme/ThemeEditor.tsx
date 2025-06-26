@@ -24,6 +24,7 @@ import { PresetTheme } from '@/types/theme';
 import { useTheme } from '@/providers/EnhancedThemeProvider';
 import { useAdminSettings } from '@/hooks/useSettings';
 import type { UpdateSettingRequest } from '@/types/settings';
+import { toast } from 'react-hot-toast';
 
 interface ThemeEditorProps {
   settings: any[];
@@ -161,28 +162,72 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
   const [savedThemes, setSavedThemes] = useState<Theme[]>([]);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
 
-  // Initialize theme from settings
+  // Initialize theme from active theme
   useEffect(() => {
-    const appearanceSettings = settings.filter(s => s.category === 'appearance');
-    if (appearanceSettings.length > 0) {
-      // Parse theme from settings
-      const themeData = appearanceSettings.find(s => s.setting_key === 'theme_data');
-      if (themeData && themeData.setting_value) {
-        try {
-          const parsedTheme = JSON.parse(themeData.setting_value);
-          setCurrentTheme({ ...defaultTheme, ...parsedTheme });
-        } catch (error) {
-          console.error('Failed to parse theme data:', error);
-        }
-      }
+    if (activeTheme) {
+      // Convert database theme format to local theme format
+      setCurrentTheme({
+        ...defaultTheme,
+        name: activeTheme.name,
+        colors: activeTheme.colors || defaultTheme.colors,
+        typography: {
+          fontFamily: activeTheme.typography?.font_family?.split(',')[0]?.trim() || defaultTheme.typography.fontFamily,
+          fontFallback: activeTheme.typography?.font_family || defaultTheme.typography.fontFallback,
+          fontSize: {
+            base: activeTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
+            xs: activeTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.xs,
+            sm: activeTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.sm,
+            md: activeTheme.typography?.font_size_base || defaultTheme.typography.fontSize.md,
+            lg: activeTheme.typography?.font_size_lg || defaultTheme.typography.fontSize.lg,
+            xl: activeTheme.typography?.font_size_xl || defaultTheme.typography.fontSize.xl,
+            '2xl': activeTheme.typography?.font_size_2xl || defaultTheme.typography.fontSize['2xl'],
+            '3xl': activeTheme.typography?.font_size_3xl || defaultTheme.typography.fontSize['3xl'],
+            '4xl': activeTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl']
+          },
+          fontWeight: defaultTheme.typography.fontWeight,
+          lineHeight: {
+            tight: parseFloat(activeTheme.typography?.line_height_tight || '1.25'),
+            normal: parseFloat(activeTheme.typography?.line_height_base || '1.5'),
+            relaxed: parseFloat(activeTheme.typography?.line_height_loose || '1.75')
+          }
+        },
+        spacing: activeTheme.spacing ? {
+          unit: 4,
+          scale: {
+            xs: parseInt(activeTheme.spacing.spacing_xs) / 4,
+            sm: parseInt(activeTheme.spacing.spacing_sm) / 4,
+            md: parseInt(activeTheme.spacing.spacing_md) / 4,
+            lg: parseInt(activeTheme.spacing.spacing_lg) / 4,
+            xl: parseInt(activeTheme.spacing.spacing_xl) / 4,
+            '2xl': parseInt(activeTheme.spacing.spacing_2xl) / 4,
+            '3xl': parseInt(activeTheme.spacing.spacing_3xl) / 4
+          }
+        } : defaultTheme.spacing,
+        layout: {
+          borderRadius: activeTheme.borders ? {
+            none: '0px',
+            sm: activeTheme.borders.radius_sm,
+            md: activeTheme.borders.radius_md,
+            lg: activeTheme.borders.radius_lg,
+            xl: activeTheme.borders.radius_xl,
+            full: activeTheme.borders.radius_full
+          } : defaultTheme.layout.borderRadius,
+          shadow: activeTheme.shadows ? {
+            none: 'none',
+            sm: activeTheme.shadows.shadow_sm,
+            md: activeTheme.shadows.shadow_md,
+            lg: activeTheme.shadows.shadow_lg,
+            xl: activeTheme.shadows.shadow_xl
+          } : defaultTheme.layout.shadow,
+          containerWidth: activeTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
+          sidebarWidth: defaultTheme.layout.sidebarWidth
+        },
+        darkMode: activeTheme.slug === 'dark-mode',
+        updatedAt: new Date().toISOString()
+      });
+      setIsDarkMode(activeTheme.slug === 'dark-mode');
     }
-
-    // Load saved themes
-    const savedThemesData = localStorage.getItem('saved_themes');
-    if (savedThemesData) {
-      setSavedThemes(JSON.parse(savedThemesData));
-    }
-  }, [settings]);
+  }, [activeTheme]);
 
   const handleThemeChange = useCallback((updates: Partial<Theme>) => {
     setCurrentTheme(prev => ({
@@ -293,38 +338,81 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
   }, []);
 
   const handleSaveTheme = useCallback(async () => {
+    if (!activeTheme) {
+      toast.error('No active theme selected. Please select a theme first.');
+      return;
+    }
+    
     setLoading(true);
     try {
-      const themeData = JSON.stringify(currentTheme);
-      
-      const update: UpdateSettingRequest = {
-        category: 'appearance',
-        setting_key: 'theme_data',
-        setting_value: themeData,
-        data_type: 'object',
-        is_public: true
-      };
-      
-      await updateSetting(update);
-      
-      // Also save individual CSS variables for immediate use
-      const cssVariables = generateCSSVariables(currentTheme, isDarkMode);
-      await updateSetting({
-        category: 'appearance',
-        setting_key: 'css_variables',
-        setting_value: cssVariables,
-        data_type: 'string',
-        is_public: true
+      // Convert the local theme format to the database format
+      const success = await updateTheme(activeTheme.id, {
+        name: currentTheme.name
       });
       
-      setHasChanges(false);
-      onRefresh();
+      if (success) {
+        // Update colors
+        await updateThemeColors(activeTheme.id, currentTheme.colors);
+        
+        // Update typography
+        await updateThemeTypography(activeTheme.id, {
+          font_family: `${currentTheme.typography.fontFamily}, ${currentTheme.typography.fontFallback}`,
+          font_family_heading: `${currentTheme.typography.fontFamily}, ${currentTheme.typography.fontFallback}`,
+          font_size_base: currentTheme.typography.fontSize.base,
+          font_size_sm: currentTheme.typography.fontSize.sm,
+          font_size_lg: currentTheme.typography.fontSize.lg,
+          font_size_xl: currentTheme.typography.fontSize.xl,
+          font_size_2xl: currentTheme.typography.fontSize['2xl'],
+          font_size_3xl: currentTheme.typography.fontSize['3xl'],
+          font_size_4xl: currentTheme.typography.fontSize['4xl'],
+          line_height_base: currentTheme.typography.lineHeight.normal.toString(),
+          line_height_tight: currentTheme.typography.lineHeight.tight.toString(),
+          line_height_loose: currentTheme.typography.lineHeight.relaxed.toString()
+        });
+        
+        // Update spacing
+        await updateThemeSpacing(activeTheme.id, {
+          spacing_xs: `${currentTheme.spacing.scale.xs * currentTheme.spacing.unit}px`,
+          spacing_sm: `${currentTheme.spacing.scale.sm * currentTheme.spacing.unit}px`,
+          spacing_md: `${currentTheme.spacing.scale.md * currentTheme.spacing.unit}px`,
+          spacing_lg: `${currentTheme.spacing.scale.lg * currentTheme.spacing.unit}px`,
+          spacing_xl: `${currentTheme.spacing.scale.xl * currentTheme.spacing.unit}px`,
+          spacing_2xl: `${currentTheme.spacing.scale['2xl'] * currentTheme.spacing.unit}px`,
+          spacing_3xl: `${currentTheme.spacing.scale['3xl'] * currentTheme.spacing.unit}px`,
+          container_max_width: currentTheme.layout.containerWidth,
+          container_padding: '1rem'
+        });
+        
+        // Update borders
+        await updateThemeBorders(activeTheme.id, {
+          radius_sm: currentTheme.layout.borderRadius.sm,
+          radius_md: currentTheme.layout.borderRadius.md,
+          radius_lg: currentTheme.layout.borderRadius.lg,
+          radius_xl: currentTheme.layout.borderRadius.xl,
+          radius_full: currentTheme.layout.borderRadius.full,
+          width_thin: '1px',
+          width_medium: '2px',
+          width_thick: '4px'
+        });
+        
+        // Update shadows
+        await updateThemeShadows(activeTheme.id, {
+          shadow_sm: currentTheme.layout.shadow.sm,
+          shadow_md: currentTheme.layout.shadow.md,
+          shadow_lg: currentTheme.layout.shadow.lg,
+          shadow_xl: currentTheme.layout.shadow.xl
+        });
+        
+        setHasChanges(false);
+        toast.success('Theme saved successfully');
+      }
     } catch (error) {
       console.error('Failed to save theme:', error);
+      toast.error('Failed to save theme');
     } finally {
       setLoading(false);
     }
-  }, [currentTheme, isDarkMode, updateSetting, onRefresh]);
+  }, [activeTheme, currentTheme, updateTheme, updateThemeColors, updateThemeTypography, updateThemeSpacing, updateThemeBorders, updateThemeShadows]);
 
   const handleResetTheme = useCallback(() => {
     setCurrentTheme(defaultTheme);
