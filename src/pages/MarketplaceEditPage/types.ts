@@ -8,6 +8,7 @@ export type ListingCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor';
 
 export interface FormData {
   title: string;
+  slug: string;
   description: string;
   type: ListingType;
   status: ContentStatus;
