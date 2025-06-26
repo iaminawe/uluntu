@@ -28,6 +28,8 @@ import {
 
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  console.log('[CompanyDetailPage] URL param slug:', slug);
+  console.log('[CompanyDetailPage] Full URL:', window.location.href);
   
   // Use hybrid approach for data fetching with slug support
   const {
@@ -37,6 +39,8 @@ export default function CompanyDetailPage() {
     error,
     refetch
   } = useCompanyByIdOrSlugHybrid(slug);
+  
+  console.log('[CompanyDetailPage] Hook result:', { company, isLoading, isError, error });
 
   const defaultCoverImage = 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=2';
 

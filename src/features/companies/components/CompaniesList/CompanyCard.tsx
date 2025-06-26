@@ -30,7 +30,7 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
       {/* Cover Image Section with Overlay */}
       <div className="h-48 w-full relative overflow-hidden">
         <img
-          src={company.cover_image || defaultCoverImage}
+          src={company.cover_image || (company as any).coverImage || defaultCoverImage}
           alt={`${company.name} cover`}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />

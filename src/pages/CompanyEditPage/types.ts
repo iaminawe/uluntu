@@ -5,6 +5,7 @@ import { ContentStatus } from '../../types/common';
 // FormData interface for the edit form
 export interface FormData {
   name: string;
+  slug: string;
   description: string;
   logo: string;
   coverImage: string; // Make required for the form
@@ -83,8 +84,8 @@ export const adaptCompanyDataToMainCompany = (companyData: CompanyData): MainCom
 };
 
 export interface BasicInfoSectionProps {
-  formData: Pick<FormData, 'name' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'website' | 'status' | 'featured'>;
-  errors: Partial<Record<keyof Pick<FormData, 'name' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'status' | 'featured'>, string>>;
+  formData: Pick<FormData, 'name' | 'slug' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'website' | 'status' | 'featured'>;
+  errors: Partial<Record<keyof Pick<FormData, 'name' | 'slug' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'status' | 'featured'>, string>>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   isSubmitting: boolean;
   logoFile: File | null;

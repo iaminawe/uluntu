@@ -3,13 +3,15 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useCompanyByIdOrSlug } from '@/hooks/useCompanyQueries';
 import { supabase } from '@/lib/supabase'; 
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
 import { FormData } from './types';
 import { initialFormData } from './data';
 import BasicInfoSection from './BasicInfoSection';
 import IndustrySection from './IndustrySection';
 import SocialSection from './SocialSection';
+import DeleteConfirmModal from './DeleteConfirmModal';
 import { convertFormDataToInsert, convertFormDataToUpdate } from './adapters';
+import { generateSlug } from '@/features/companies/utils/slugUtils';
 // Import ContentStatus for proper typing
 import { ContentStatus } from '../../types/common';
 
@@ -55,6 +57,7 @@ export default function CompanyEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const { 
     data: company,
@@ -88,6 +91,7 @@ export default function CompanyEditPage() {
       
       setFormData({
         name: typedCompany.name,
+        slug: company.slug || generateSlug(typedCompany.name),
         description: typedCompany.description,
         logo: typedCompany.logo || '',
         coverImage: typedCompany.coverImage || '',
@@ -122,6 +126,11 @@ export default function CompanyEditPage() {
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+      
+      // Auto-generate slug when name changes and slug is empty
+      if (name === 'name' && !formData.slug) {
+        setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
+      }
     }
     
     // Clear error when field is edited
@@ -186,6 +195,10 @@ export default function CompanyEditPage() {
     // Required fields
     if (!formData.name.trim()) {
       newErrors.name = 'Company name is required';
+    }
+    
+    if (!formData.slug.trim()) {
+      newErrors.slug = 'URL slug is required';
     }
     
     if (!formData.description.trim()) {
@@ -317,6 +330,34 @@ export default function CompanyEditPage() {
       setIsSubmitting(false);
     }
   };
+  
+  const handleDelete = async () => {
+    if (!slug) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .delete()
+        .eq('slug', slug);
+        
+      if (error) {
+        throw error;
+      }
+      
+      navigate('/companies');
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      setErrors(prev => ({ 
+        ...prev, 
+        form: error instanceof Error ? error.message : 'Failed to delete company' 
+      }));
+      setShowDeleteConfirm(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -325,7 +366,7 @@ export default function CompanyEditPage() {
       </Helmet>
       
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
-        <div className="max-w-3xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
+        <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
           <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
             <Link 
               to="/companies" 
@@ -422,10 +463,35 @@ export default function CompanyEditPage() {
                   {isEditMode && (
                     <button
                       type="button"
+                      onClick={() => setShowDeleteConfirm(true)}
                       className="px-6 py-2 border border-red-300 text-red-600 rounded-lg 
                                 hover:bg-red-50 transition-colors flex items-center gap-2"
                     >
                       <Trash2 className="h-5 w-5" />
+                      Delete
+                    </button>
+                  )}
+                  
+                  {formData.status === 'published' ? (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft' as ContentStatus }))}
+                      className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                                text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
+                                transition-colors flex items-center gap-2"
+                    >
+                      <EyeOff className="h-5 w-5" />
+                      Unpublish
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'published' as ContentStatus }))}
+                      className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
+                                hover:bg-green-50 transition-colors flex items-center gap-2"
+                    >
+                      <Eye className="h-5 w-5" />
+                      Publish
                     </button>
                   )}
                   
@@ -445,6 +511,14 @@ export default function CompanyEditPage() {
           )}
         </div>
       </div>
+      
+      <DeleteConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        isDeleting={isSubmitting}
+        entityName="Company"
+      />
     </>
   );
 }

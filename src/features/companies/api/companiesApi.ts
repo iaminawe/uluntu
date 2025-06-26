@@ -130,7 +130,8 @@ export const companiesApi = {
         name: 'Tech Innovators',
         slug: 'tech-innovators',
         description: 'Leading technology solutions provider specializing in AI and machine learning.',
-        logo: 'https://via.placeholder.com/150',
+        logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop&q=80',
+        cover_image: 'https://images.unsplash.com/photo-1497366754035-f200581a8e4a?w=1200&h=600&fit=crop&q=80',
         industry: ['Technology', 'AI', 'Software'],
         size: '50-100',
         founded: '2015',
@@ -145,7 +146,8 @@ export const companiesApi = {
         name: 'Green Solutions',
         slug: 'green-solutions',
         description: 'Sustainable technology company focused on renewable energy solutions.',
-        logo: 'https://via.placeholder.com/150',
+        logo: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=200&h=200&fit=crop&q=80',
+        cover_image: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1200&h=600&fit=crop&q=80',
         industry: ['CleanTech', 'Energy', 'Sustainability'],
         size: '10-50',
         founded: '2018',
@@ -160,7 +162,8 @@ export const companiesApi = {
         name: 'Digital Creators',
         slug: 'digital-creators',
         description: 'Digital agency specializing in web development and design.',
-        logo: 'https://via.placeholder.com/150',
+        logo: 'https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=200&h=200&fit=crop&q=80',
+        cover_image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop&q=80',
         industry: ['Design', 'Web Development', 'Marketing'],
         size: '1-10',
         founded: '2020',
@@ -177,6 +180,7 @@ export const companiesApi = {
 
   async getById(id: string): Promise<Company | null> {
     try {
+      console.log('[companiesApi.getById] Fetching company with ID:', id);
       logger.debug('Fetching company by ID', 'COMPANIES', { id });
       
       const { data, error } = await supabase
@@ -186,15 +190,21 @@ export const companiesApi = {
         // Removed status filter to show all companies
         .single();
 
+      console.log('[companiesApi.getById] Supabase response:', { data, error });
+
       if (error) {
+        console.error('[companiesApi.getById] Supabase error:', error);
         logger.apiError('getById - company', error);
         // Return null instead of throwing an error to prevent app crashes
         return null;
       }
       
       logger.debug('Company fetched', 'COMPANIES', { id, found: !!data });
-      return data ? adaptCompanyFromDatabase(data) : null;
+      const result = data ? adaptCompanyFromDatabase(data) : null;
+      console.log('[companiesApi.getById] Adapted result:', result);
+      return result;
     } catch (error) {
+      console.error('[companiesApi.getById] Catch error:', error);
       logger.apiError('getById', error);
       // Return null instead of throwing an error to prevent app crashes
       return null;
@@ -226,14 +236,21 @@ export const companiesApi = {
 
   async getByIdOrSlug(idOrSlug: string): Promise<Company | null> {
     try {
+      console.log('[companiesApi.getByIdOrSlug] Called with:', idOrSlug);
       const { type, value } = parseCompanyParam(idOrSlug);
+      console.log('[companiesApi.getByIdOrSlug] Parsed as:', { type, value });
       
       if (type === 'id') {
-        return this.getById(value);
+        const result = await this.getById(value);
+        console.log('[companiesApi.getByIdOrSlug] getById result:', result);
+        return result;
       } else {
-        return this.getBySlug(value);
+        const result = await this.getBySlug(value);
+        console.log('[companiesApi.getByIdOrSlug] getBySlug result:', result);
+        return result;
       }
     } catch (error) {
+      console.error('[companiesApi.getByIdOrSlug] Error:', error);
       logger.apiError('getByIdOrSlug', error);
       return null;
     }

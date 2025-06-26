@@ -3,6 +3,7 @@ import { FormData } from './types';
 // Initial form data state
 export const initialFormData: FormData = {
   name: '',
+  slug: '',
   description: '',
   logo: '',
   coverImage: '',

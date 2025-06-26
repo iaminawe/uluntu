@@ -173,10 +173,17 @@ export function useCompanyHybrid(id?: string) {
  * Automatically detects whether the parameter is an ID or slug
  */
 export function useCompanyByIdOrSlugHybrid(idOrSlug?: string) {
+  console.log('[useCompanyByIdOrSlugHybrid] Called with:', idOrSlug);
   const queryClient = useQueryClient();
   
   // Use React Query for data fetching
   const companyQuery = useCompanyByIdOrSlug(idOrSlug);
+  console.log('[useCompanyByIdOrSlugHybrid] Query result:', {
+    data: companyQuery.data,
+    isLoading: companyQuery.isLoading,
+    isError: companyQuery.isError,
+    error: companyQuery.error
+  });
   
   // Mutations
   const updateMutation = useUpdateCompany();

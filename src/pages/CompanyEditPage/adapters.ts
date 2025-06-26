@@ -8,6 +8,7 @@ import type { TablesInsert, TablesUpdate } from '../../types/supabase';
 export function convertFormDataToInsert(formData: FormData): TablesInsert<'companies'> {
   return {
     name: formData.name,
+    slug: formData.slug,
     description: formData.description,
     logo: formData.logo || '', // Ensure logo is a string as required by schema
     // Properly handle null for cover_image which can be null in schema
@@ -31,6 +32,7 @@ export function convertFormDataToInsert(formData: FormData): TablesInsert<'compa
 export function convertFormDataToUpdate(formData: FormData): TablesUpdate<'companies'> {
   return {
     name: formData.name,
+    slug: formData.slug,
     description: formData.description,
     logo: formData.logo || '', // Ensure logo is a string as required by schema
     // Properly handle null for cover_image which can be null in schema
