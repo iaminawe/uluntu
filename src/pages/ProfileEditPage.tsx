@@ -45,6 +45,7 @@ export default function ProfileEditPage() {
       
       const newFormData = {
         name: member.name || '',
+        slug: (member.slug && typeof member.slug === 'string') ? member.slug : '',
         title: typeof member.title === 'string' ? member.title : '',
         company: typeof member.company === 'string' ? member.company : '',
         location: typeof member.location === 'string' ? member.location : '',
@@ -53,6 +54,8 @@ export default function ProfileEditPage() {
         skills: Array.isArray(member.skills) ? member.skills : [],
         interests: [], // Member type doesn't have interests field, defaulting to empty array
         joinDate: member.joinDate || new Date().toISOString().split('T')[0],
+        status: member.status || 'published',
+        featured: member.featured || false,
         social: {
           linkedin: socialData.linkedin || '',
           twitter: socialData.twitter || '',

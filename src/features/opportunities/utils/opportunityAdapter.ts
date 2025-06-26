@@ -37,6 +37,7 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
 export interface ExtendedOpportunity {
   id: string;
   title: string;
+  slug?: string;
   description: string;
   type: string;
   organization: string;
@@ -61,6 +62,7 @@ export function adaptExtendedOpportunityFromDatabase(dbOpportunity: SupabaseOppo
   return {
     id: dbOpportunity.id,
     title: dbOpportunity.title,
+    slug: (dbOpportunity as any).slug ?? '',
     description: dbOpportunity.description ?? '',
     type: dbOpportunity.type ?? 'job',
     organization: dbOpportunity.organization ?? '',

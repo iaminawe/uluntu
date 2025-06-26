@@ -21,10 +21,11 @@ export interface GroupInput {
   description: string;
   longDescription?: string | null; // Maps to Supabase 'long_description'
   heroImage?: string; // Maps to Supabase 'hero_image'
+  coverImage?: string; // Maps to Supabase 'cover_image'
   visibility: 'open' | 'closed' | 'secret' | string; // Maps to Supabase 'visibility'
   status?: string; // e.g., 'published', 'draft', maps to Supabase 'status'
   featured?: boolean | null; // maps to Supabase 'featured'
-  // Note: cover_image and member_count are in Supabase schema but not handled by adaptGroupToSupabase currently.
+  // Note: member_count is in Supabase schema but not handled by adaptGroupToSupabase currently.
 }
 
 export const groupsApi = {
@@ -103,10 +104,11 @@ export const groupsApi = {
       // Convert null to undefined for properties that expect string | undefined or boolean | undefined
       if (groupData.longDescription !== undefined) preparedDataForAdapter.longDescription = groupData.longDescription === null ? undefined : groupData.longDescription;
       if (groupData.heroImage !== undefined) preparedDataForAdapter.heroImage = groupData.heroImage;
+      if (groupData.coverImage !== undefined) preparedDataForAdapter.coverImage = groupData.coverImage;
       if (groupData.visibility !== undefined) preparedDataForAdapter.visibility = groupData.visibility as FrontendGroup['visibility'];
       if (groupData.status !== undefined) preparedDataForAdapter.status = groupData.status as ContentStatus;
       if (groupData.featured !== undefined) preparedDataForAdapter.featured = groupData.featured === null ? undefined : groupData.featured;
-      // coverImage and created_at are not in GroupInput, will be undefined if not set, handled by adapter
+      // created_at is not in GroupInput, will be undefined if not set, handled by adapter
 
       // GroupUpdateData requires 'id'
       const updatePayload: GroupUpdateData = {

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera } from 'lucide-react';
+import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera, MessageCircle } from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shared/hooks/useUserContent';
+import { useFeatureToggle } from '@/utils/featureToggle';
+import { UnreadBadge } from '@/features/messaging/components/UnreadBadge';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +16,9 @@ export default function UserMenu() {
   const userRoles = authState.roles.list;
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
+  
+  // Check if messaging feature is enabled
+  const { enabled: isMessagingEnabled } = useFeatureToggle('user_messaging');
   
   // Debug logging for admin access (disabled)
   /*
@@ -135,6 +140,23 @@ export default function UserMenu() {
                   My Galleries
                 </div>
               </Link>
+              
+              {/* Messages - Only show if feature is enabled */}
+              {isMessagingEnabled && (
+                <Link
+                  to="/messages"
+                  className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Messages
+                    </div>
+                    <UnreadBadge className="h-5 w-5 min-w-[1.25rem] text-xs" />
+                  </div>
+                </Link>
+              )}
               
               {/* User's Groups Section */}
               {groups.length > 0 && !groupsLoading && (

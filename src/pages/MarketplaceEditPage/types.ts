@@ -42,6 +42,7 @@ export interface SampleListing {
 export const adaptMainMarketplaceItemToFormData = (item: MainMarketplaceItem): FormData => {
   return {
     title: item.title,
+    slug: item.slug || '',
     description: item.description,
     type: item.type as ListingType,
     status: item.status || 'draft',
@@ -63,6 +64,7 @@ export const adaptFormDataToMainMarketplaceItem = (formData: FormData, id?: stri
   return {
     id: id || '',
     title: formData.title,
+    slug: formData.slug,
     description: formData.description,
     type: formData.type as MainMarketplaceItem['type'],
     price: formData.price ? parseFloat(formData.price) : undefined,

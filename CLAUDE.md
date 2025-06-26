@@ -1,447 +1,268 @@
-# CLAUDE.md - Development Guidelines
+# Claude Code Configuration - SPARC Development Environment
 
-## Overview
-This document contains essential architectural patterns, coding guidelines, and project structure that must be followed when developing new features for the Kootenay Tech Community platform.
+## Project Overview
+This project uses the SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology for systematic Test-Driven Development with AI assistance through Claude-Flow orchestration.
 
-📖 **For comprehensive implementation details, see [HYBRID_PATTERN_GUIDE.md](./docs/HYBRID_PATTERN_GUIDE.md)**
+## SPARC Development Commands
 
-## 🏗️ Architecture Patterns
+### Core SPARC Commands
+- `./claude-flow sparc modes`: List all available SPARC development modes
+- `./claude-flow sparc run <mode> "<task>"`: Execute specific SPARC mode for a task
+- `./claude-flow sparc tdd "<feature>"`: Run complete TDD workflow using SPARC methodology
+- `./claude-flow sparc info <mode>`: Get detailed information about a specific mode
 
-### State Management: Hybrid Approach (MANDATORY)
-**✅ DO: Use React Query + Redux UI Slices**
-- **React Query**: For all server state (API data, caching, synchronization)
-- **Redux UI Slices**: For UI-only state (filters, selections, view modes, pagination)
+### Standard Build Commands
+- `npm run build`: Build the project
+- `npm run test`: Run the test suite
+- `npm run lint`: Run linter and format checks
+- `npm run typecheck`: Run TypeScript type checking
 
-**❌ DON'T: Use old patterns (ALL REMOVED ✅)**
-- Never use full Redux slices for server data
-- Never mix server state in Redux
-- ~~Never use deprecated Redux hooks~~ **ALL DEPRECATED HOOKS ELIMINATED ✅**
-  - ~~`useEventsRedux`~~ → `useEventsHybrid` ✅
-  - ~~`useCompaniesRedux`~~ → `useCompaniesHybrid` ✅
-  - ~~`useMembersRedux`~~ → `useMembersHybrid` ✅
-  - ~~`useNewsRedux`~~ → `useNewsHybrid` ✅
-  - ~~`useGroupsRedux`~~ → `useGroupsHybrid` ✅
-  - ~~`useOpportunitiesRedux`~~ → `useOpportunitiesHybrid` ✅
-  - ~~`useMarketplaceRedux`~~ → `useMarketplaceHybrid` ✅
+## SPARC Methodology Workflow
 
-### Example Implementation Pattern:
-
-```typescript
-// ✅ CORRECT: Hybrid Hook Pattern
-export function useEventsHybrid() {
-  const dispatch = useAppDispatch();
-  const filters = useAppSelector(selectEventsFilters);
-  
-  // React Query for server state
-  const eventsQuery = useEventsWithFilters(filters);
-  
-  // Redux actions for UI state
-  const setSearchTerm = (search?: string) => {
-    dispatch(updateFilters({ search }));
-  };
-
-  return {
-    // Data from React Query
-    events: eventsQuery.data || [],
-    isLoading: eventsQuery.isLoading,
-    error: eventsQuery.error,
-    refetch: eventsQuery.refetch,
-    
-    // UI state from Redux
-    filters,
-    
-    // Actions
-    setSearchTerm,
-  };
-}
-```
-
-## 📁 Project Structure
-
-### Feature Organization
-```
-src/features/{feature-name}/
-├── api/                    # API layer (React Query)
-├── components/             # Feature-specific components
-├── hooks/                  # Hybrid hooks
-├── store/                  # UI-only Redux slices
-├── types/                  # TypeScript types
-└── utils/                  # Feature utilities
-```
-
-### Global Structure
-```
-src/
-├── features/               # Feature modules
-├── shared/                 # Shared components/utilities
-├── hooks/                  # Global React Query hooks
-├── store/                  # Redux store configuration
-├── config/                 # Configuration (query client, etc.)
-└── utils/                  # Global utilities
-```
-
-## 🔧 Development Patterns
-
-### 1. Creating New Features
-
-When adding a new feature (e.g., "notifications"):
-
-1. **Create API layer** with React Query:
-```typescript
-// src/features/notifications/api/notificationsApi.ts
-export const useNotifications = () => {
-  return useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => notificationsApi.getAll(),
-  });
-};
-```
-
-2. **Create UI Redux slice**:
-```typescript
-// src/features/notifications/store/notificationsUISlice.ts
-export interface NotificationsUIState {
-  filters: { read?: boolean; type?: string };
-  selectedNotifications: string[];
-  viewMode: 'list' | 'compact';
-}
-```
-
-3. **Create hybrid hook**:
-```typescript
-// src/features/notifications/hooks/useNotificationsHybrid.ts
-export function useNotificationsHybrid() {
-  // Combine React Query + Redux patterns
-}
-```
-
-### 2. Component Patterns
-
-**Page Components:**
-```typescript
-// ✅ CORRECT: Use hybrid hooks in pages
-export default function NotificationsPage() {
-  const {
-    notifications,
-    isLoading,
-    filters,
-    setFilter
-  } = useNotificationsHybrid();
-  
-  // Component logic...
-}
-```
-
-**List Components:**
-```typescript
-// ✅ CORRECT: Accept both parent data and hybrid approach
-interface NotificationsListProps {
-  // Optional parent data
-  notifications?: Notification[];
-  loading?: boolean;
-  error?: Error;
-}
-
-export default function NotificationsList({ 
-  notifications: parentNotifications,
-  loading: parentLoading,
-  error: parentError 
-}: NotificationsListProps) {
-  const useParentData = parentNotifications !== undefined;
-  
-  // Use hybrid hook only if no parent data
-  const { notifications, isLoading, error } = useNotificationsHybrid();
-  
-  const finalNotifications = useParentData ? parentNotifications : notifications;
-  const finalLoading = useParentData ? parentLoading : isLoading;
-  const finalError = useParentData ? parentError : error;
-}
-```
-
-### 3. Code Splitting & Performance
-
-**Required for all new pages:**
-```typescript
-// ✅ CORRECT: Lazy load pages
-const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
-
-// In routes
-const withSuspense = (Component: React.LazyExoticComponent<any>) => (
-  <Suspense fallback={<LoadingSpinner />}>
-    <Component />
-  </Suspense>
-);
-```
-
-## 🎯 React Query Configuration
-
-### Query Keys Pattern
-```typescript
-// ✅ CORRECT: Standardized query keys
-export const queryKeys = {
-  notifications: ['notifications'] as const,
-  notification: (id: string) => ['notifications', id] as const,
-  notificationsWithFilters: (filters: NotificationFilters) => 
-    ['notifications', 'filtered', filters] as const,
-};
-```
-
-### Caching Strategy
-```typescript
-// ✅ CORRECT: Configure appropriate stale times
-const notificationsQuery = useQuery({
-  queryKey: queryKeys.notifications,
-  queryFn: notificationsApi.getAll,
-  staleTime: 2 * 60 * 1000, // 2 minutes for real-time data
-  gcTime: 5 * 60 * 1000,    // 5 minutes
-});
-```
-
-## 🚫 Anti-Patterns (DO NOT USE)
-
-### ❌ Deprecated Hooks
-```typescript
-// DON'T use these - they're deprecated
-useEventsRedux()
-useCompaniesRedux() 
-useMembersRedux()
-useFilteredEventsRedux()
-useFilteredCompaniesRedux()
-useFilteredMembersRedux()
-```
-
-### ❌ Wrong State Management
-```typescript
-// DON'T put server data in Redux
-const eventsSlice = createSlice({
-  name: 'events',
-  initialState: {
-    events: [], // ❌ Server data doesn't belong here
-    isLoading: false, // ❌ API states don't belong here
-  }
-});
-
-// DON'T mix server and UI state
-const someQuery = useQuery({
-  queryKey: ['data'],
-  queryFn: fetchData,
-  onSuccess: (data) => {
-    dispatch(setSomeUIState(data)); // ❌ Wrong pattern
-  }
-});
-```
-
-## 📋 Testing Patterns
-
-### Mock React Query
-```typescript
-// ✅ CORRECT: Mock React Query in tests
-const mockQueryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: false },
-    mutations: { retry: false },
-  },
-});
-
-test('component renders correctly', () => {
-  render(
-    <QueryClientProvider client={mockQueryClient}>
-      <Provider store={store}>
-        <NotificationsPage />
-      </Provider>
-    </QueryClientProvider>
-  );
-});
-```
-
-## 🛠️ Tools & Commands
-
-### Type Checking
-Always run before committing:
+### 1. Specification Phase
 ```bash
-npm run typecheck
+# Create detailed specifications and requirements
+./claude-flow sparc run spec-pseudocode "Define user authentication requirements"
 ```
+- Define clear functional requirements
+- Document edge cases and constraints
+- Create user stories and acceptance criteria
+- Establish non-functional requirements
 
-### Bundle Analysis
-Monitor bundle size:
+### 2. Pseudocode Phase
 ```bash
-npm run build
-npm run analyze
+# Develop algorithmic logic and data flows
+./claude-flow sparc run spec-pseudocode "Create authentication flow pseudocode"
+```
+- Break down complex logic into steps
+- Define data structures and interfaces
+- Plan error handling and edge cases
+- Create modular, testable components
+
+### 3. Architecture Phase
+```bash
+# Design system architecture and component structure
+./claude-flow sparc run architect "Design authentication service architecture"
+```
+- Create system diagrams and component relationships
+- Define API contracts and interfaces
+- Plan database schemas and data flows
+- Establish security and scalability patterns
+
+### 4. Refinement Phase (TDD Implementation)
+```bash
+# Execute Test-Driven Development cycle
+./claude-flow sparc tdd "implement user authentication system"
 ```
 
-### Performance Monitoring
-Use React Query DevTools in development:
-```typescript
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+**TDD Cycle:**
+1. **Red**: Write failing tests first
+2. **Green**: Implement minimal code to pass tests
+3. **Refactor**: Optimize and clean up code
+4. **Repeat**: Continue until feature is complete
 
-// In App.tsx (development only)
-{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+### 5. Completion Phase
+```bash
+# Integration, documentation, and validation
+./claude-flow sparc run integration "integrate authentication with user management"
+```
+- Integrate all components
+- Perform end-to-end testing
+- Create comprehensive documentation
+- Validate against original requirements
+
+## SPARC Mode Reference
+
+### Development Modes
+- **`architect`**: System design and architecture planning
+- **`code`**: Clean, modular code implementation
+- **`tdd`**: Test-driven development and testing
+- **`spec-pseudocode`**: Requirements and algorithmic planning
+- **`integration`**: System integration and coordination
+
+### Quality Assurance Modes
+- **`debug`**: Troubleshooting and bug resolution
+- **`security-review`**: Security analysis and vulnerability assessment
+- **`refinement-optimization-mode`**: Performance optimization and refactoring
+
+### Support Modes
+- **`docs-writer`**: Documentation creation and maintenance
+- **`devops`**: Deployment and infrastructure management
+- **`mcp`**: External service integration
+- **`swarm`**: Multi-agent coordination for complex tasks
+
+## Claude Code Slash Commands
+
+Claude Code slash commands are available in `.claude/commands/`:
+
+### Project Commands
+- `/sparc`: Execute SPARC methodology workflows
+- `/sparc-<mode>`: Run specific SPARC mode (e.g., /sparc-architect)
+- `/claude-flow-help`: Show all Claude-Flow commands
+- `/claude-flow-memory`: Interact with memory system
+- `/claude-flow-swarm`: Coordinate multi-agent swarms
+
+### Using Slash Commands
+1. Type `/` in Claude Code to see available commands
+2. Select a command or type its name
+3. Commands are context-aware and project-specific
+4. Custom commands can be added to `.claude/commands/`
+
+## Code Style and Best Practices
+
+### SPARC Development Principles
+- **Modular Design**: Keep files under 500 lines, break into logical components
+- **Environment Safety**: Never hardcode secrets or environment-specific values
+- **Test-First**: Always write tests before implementation (Red-Green-Refactor)
+- **Clean Architecture**: Separate concerns, use dependency injection
+- **Documentation**: Maintain clear, up-to-date documentation
+
+### Coding Standards
+- Use TypeScript for type safety and better tooling
+- Follow consistent naming conventions (camelCase for variables, PascalCase for classes)
+- Implement proper error handling and logging
+- Use async/await for asynchronous operations
+- Prefer composition over inheritance
+
+### Memory and State Management
+- Use claude-flow memory system for persistent state across sessions
+- Store progress and findings using namespaced keys
+- Query previous work before starting new tasks
+- Export/import memory for backup and sharing
+
+## SPARC Memory Integration
+
+### Memory Commands for SPARC Development
+```bash
+# Store project specifications
+./claude-flow memory store spec_auth "User authentication requirements and constraints"
+
+# Store architectural decisions
+./claude-flow memory store arch_decisions "Database schema and API design choices"
+
+# Store test results and coverage
+./claude-flow memory store test_coverage "Authentication module: 95% coverage, all tests passing"
+
+# Query previous work
+./claude-flow memory query auth_implementation
+
+# Export project memory
+./claude-flow memory export project_backup.json
 ```
 
-## 🔄 Migration Status
+### Memory Namespaces
+- **`spec`**: Requirements and specifications
+- **`arch`**: Architecture and design decisions
+- **`impl`**: Implementation notes and code patterns
+- **`test`**: Test results and coverage reports
+- **`debug`**: Bug reports and resolution notes
 
-### ✅ Completed Migrations (100% COMPLETE ✅)
-- **All major features migrated to hybrid pattern** ✅
-- **All 7 core features updated**: Events, Companies, Members, News, Groups, Opportunities, Marketplace ✅
-- **All pages updated to use hybrid hooks** ✅
-- **ALL deprecated Redux hooks completely eliminated** ✅
-  - 20+ production files migrated from deprecated patterns
-  - Infinite re-render loops fixed with stable useCallback functions
-  - Dual data source patterns simplified to single hybrid approach
-- **Code splitting implemented** ✅
-- **Bundle optimization completed** (4,122+ lines removed) ✅
-- **Test utilities updated for hybrid pattern** ✅
-- **Admin permissions system fixed** ✅
-  - Legacy `user.role` checks replaced with modern `usePermissions()` hook
-  - Two-level role system properly implemented (system + custom roles)
-  - Admin settings page permissions resolved
-- **🆕 Admin Settings Complete Overhaul** ✅
-  - All 6 admin settings sections enhanced with superior UI/UX
-  - Batch save operations implemented across all sections
-  - Live preview functionality for visual settings
-  - Interactive controls and toggles throughout
-  - Image upload capability with drag & drop
-  - Comprehensive theme system with typography controls
-  - Compact layout with optimized spacing (w-64 sidebar)
+## Workflow Examples
 
-### 🏆 Current Architecture Status: GRADE A+ 
-- **Hybrid Pattern Adoption**: 100% ✅ **PERFECT CONSISTENCY**
-- **Code Quality**: Excellent ✅ **ZERO DEPRECATED PATTERNS**
-- **Performance**: Optimized ✅ **NO INFINITE LOOPS**
-- **Maintainability**: World-class ✅ **SINGLE SOURCE OF TRUTH**
-- **Import Resolution**: 100% Clean ✅ **ZERO BROKEN IMPORTS**
-- **🆕 Admin Interface**: Enterprise-grade ✅ **PROFESSIONAL UI/UX**
-- **Permission System**: Unified ✅ **CONSISTENT MODERN APPROACH**
+### Feature Development Workflow
+```bash
+# 1. Start with specification
+./claude-flow sparc run spec-pseudocode "User profile management feature"
 
-### 🔐 Authentication & Authorization Architecture (Complete Migration ✅)
+# 2. Design architecture
+./claude-flow sparc run architect "Profile service architecture with data validation"
 
-#### Three-Level Permission System (Fully Implemented)
-```typescript
-// 1. System Roles (user_roles table) - Basic access control
-const systemRoles = ['authenticated', 'group_member', 'admin', 'superadmin'];
+# 3. Implement with TDD
+./claude-flow sparc tdd "user profile CRUD operations"
 
-// 2. Custom Roles (custom_roles + user_custom_roles tables) - Granular permissions
-const customRoles = {
-  id: 'uuid',
-  name: 'Content Manager',
-  permissions: {
-    news: ['read', 'create', 'update'],
-    events: ['read', 'create']
-  }
-};
+# 4. Security review
+./claude-flow sparc run security-review "profile data access and validation"
 
-// 3. Entity Permissions (entityPermissions utility) - Company/Group specific roles
-const entityPermissions = {
-  companyAdmin: 'admin role within specific company',
-  groupMember: 'member of specific group'
-};
+# 5. Integration testing
+./claude-flow sparc run integration "profile service with authentication system"
+
+# 6. Documentation
+./claude-flow sparc run docs-writer "profile service API documentation"
 ```
 
-#### Modern Permission Checks (MANDATORY)
-```typescript
-// ✅ CORRECT: Use usePermissions hook for system-wide permissions
-import { usePermissions } from '@/hooks/usePermissions';
+### Bug Fix Workflow
+```bash
+# 1. Debug and analyze
+./claude-flow sparc run debug "authentication token expiration issue"
 
-export function AdminComponent() {
-  const { isAdmin, isSuperAdmin, hasPermission } = usePermissions();
-  
-  // System role checks
-  if (!isAdmin()) return <AccessDenied />;
-  
-  // Granular permission checks
-  const canEditUsers = hasPermission({ resource: 'users', action: 'update' });
-}
+# 2. Write regression tests
+./claude-flow sparc run tdd "token refresh mechanism tests"
 
-// ✅ CORRECT: Use entity permission hooks for entity-specific checks
-import { useIsGroupAdmin, useIsCompanyMember } from '@/hooks/useEntityPermissions';
+# 3. Implement fix
+./claude-flow sparc run code "fix token refresh in authentication service"
 
-export function GroupComponent({ groupId }: { groupId: string }) {
-  const { data: isGroupAdmin = false } = useIsGroupAdmin(groupId);
-  const { data: isCompanyMember = false } = useIsCompanyMember(companyId);
-  
-  if (isGroupAdmin) {
-    // Show admin controls
-  }
-}
-
-// ❌ DEPRECATED: Legacy auth hooks (still functional but discouraged)
-const { hasRole } = useAuth(); // Will show deprecation warning
-const isAdmin = user?.role === 'admin'; // Will be undefined!
+# 4. Security review
+./claude-flow sparc run security-review "token handling security implications"
 ```
 
-#### Permission System Components
-1. **`usePermissions()` Hook**: System-wide role and permission management
-2. **`useEntityPermissions()` Hooks**: Entity-specific permission checking
-3. **`entityPermissions` Utility**: Server-side entity permission validation
-4. **`getUserRoles()` API**: Handles both role systems gracefully with debug logging
+## Configuration Files
 
-#### Migration Status
-- ✅ **All Gallery APIs migrated** to use entity permissions
-- ✅ **All UI components migrated** to use modern permission hooks
-- ✅ **Legacy auth hooks deprecated** with clear migration path
-- ✅ **Admin settings permissions fixed** to use modern system
-- ✅ **Entity permission system created** for company/group roles
-- ✅ **React Query integration** for entity permissions with caching
+### Claude Code Integration
+- **`.claude/commands/`**: Claude Code slash commands for all SPARC modes
+- **`.claude/logs/`**: Conversation and session logs
 
-### 🎯 Optional Future Enhancements
-- Server-side pagination with React Query
-- Advanced filtering systems
-- Calendar view improvements
-- Custom roles management UI
+### SPARC Configuration
+- **`.roomodes`**: SPARC mode definitions and configurations (auto-generated)
+- **`.roo/`**: SPARC templates and workflows (auto-generated)
 
-## 🔧 Admin Settings Architecture
+### Claude-Flow Configuration
+- **`memory/`**: Persistent memory and session data
+- **`coordination/`**: Multi-agent coordination settings
+- **`CLAUDE.md`**: Project instructions for Claude Code
 
-### Enhanced Admin Settings Pattern
-All admin settings sections now follow a sophisticated UI/UX pattern with:
+## Git Workflow Integration
 
-```typescript
-// ✅ CORRECT: Enhanced Admin Settings Pattern
-interface ImprovedSectionProps {
-  settings: ApplicationSetting[];
-  features?: FeatureToggle[];
-  onUpdateSetting: (request: UpdateSettingRequest) => Promise<void>;
-  onRefresh: () => Promise<void>;
-  isLoading: boolean;
-}
+### Commit Strategy with SPARC
+- **Specification commits**: After completing requirements analysis
+- **Architecture commits**: After design phase completion
+- **TDD commits**: After each Red-Green-Refactor cycle
+- **Integration commits**: After successful component integration
+- **Documentation commits**: After completing documentation updates
 
-// Key Features:
-// 1. Batch change tracking with Set<string>
-// 2. Live preview modes with real-time updates
-// 3. Interactive controls (switches, toggles, color pickers)
-// 4. Image upload with drag & drop
-// 5. Form validation and field-specific input types
-// 6. Professional visual hierarchy with icons and badges
+### Branch Strategy
+- **`feature/sparc-<feature-name>`**: Feature development with SPARC methodology
+- **`hotfix/sparc-<issue>`**: Bug fixes using SPARC debugging workflow
+- **`refactor/sparc-<component>`**: Refactoring using optimization mode
+
+## Troubleshooting
+
+### Common SPARC Issues
+- **Mode not found**: Check `.roomodes` file exists and is valid JSON
+- **Memory persistence**: Ensure `memory/` directory has write permissions
+- **Tool access**: Verify required tools are available for the selected mode
+- **Namespace conflicts**: Use unique memory namespaces for different features
+
+### Debug Commands
+```bash
+# Check SPARC configuration
+./claude-flow sparc modes
+
+# Verify memory system
+./claude-flow memory stats
+
+# Check system status
+./claude-flow status
+
+# View detailed mode information
+./claude-flow sparc info <mode-name>
 ```
 
-### Admin Settings Components Structure
-```
-src/components/admin/settings/
-├── AdminSettingsLayout.tsx           # Main layout (w-64 sidebar)
-├── ImprovedGeneralSettingsSection.tsx    # Site info + theme + typography
-├── ImprovedUserManagementSection.tsx     # User controls + registration
-├── ImprovedSecuritySection.tsx           # Security + auth + scoring
-├── ImprovedEmailSection.tsx              # SMTP + notifications + preview
-├── ImprovedContactSection.tsx            # Contact info + social + preview
-└── ImprovedPerformanceSection.tsx        # Performance + monitoring + metrics
-```
+## Project Architecture
 
-### Key UI/UX Patterns
-- **Batch Save Operations**: Track changes with `changedFields` Set
-- **Live Preview**: Real-time visual feedback for appearance settings
-- **Interactive Controls**: Switches, color pickers, select dropdowns
-- **Visual Hierarchy**: Icons, badges, color-coded sections
-- **Professional Polish**: Dashboards, scoring systems, guided workflows
+This SPARC-enabled project follows a systematic development approach:
+- **Clear separation of concerns** through modular design
+- **Test-driven development** ensuring reliability and maintainability
+- **Iterative refinement** for continuous improvement
+- **Comprehensive documentation** for team collaboration
+- **AI-assisted development** through specialized SPARC modes
 
-## 📖 References
+## Important Notes
 
-- **[📖 Hybrid Pattern Guide](./docs/HYBRID_PATTERN_GUIDE.md)** - Complete implementation guide
-- [React Query Docs](https://tanstack.com/query/latest)
-- [Redux Toolkit Docs](https://redux-toolkit.js.org/)
-- [Project Component Library](/src/shared/components/)
-- [API Layer Examples](/src/features/*/api/)
-- [Query Client Configuration](/src/config/queryClient.ts)
-- [Admin Settings Components](/src/components/admin/settings/)
+- Always run tests before committing (`npm run test`)
+- Use SPARC memory system to maintain context across sessions
+- Follow the Red-Green-Refactor cycle during TDD phases
+- Document architectural decisions in memory for future reference
+- Regular security reviews for any authentication or data handling code
+- Claude Code slash commands provide quick access to SPARC modes
 
----
-
-**🚨 IMPORTANT**: Always follow these patterns for consistency and maintainability. All major features now use the hybrid pattern. Refer to any feature in `/src/features/` as a reference example.
+For more information about SPARC methodology, see: https://github.com/ruvnet/claude-code-flow/docs/sparc.md

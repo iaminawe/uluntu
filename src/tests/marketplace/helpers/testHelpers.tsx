@@ -18,6 +18,7 @@ import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
 import galleryReducer from '@/features/gallery/store/gallerySlice';
 import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
 import adminSettingsUIReducer from '@/features/admin/store/adminSettingsUISlice';
+import messagingUIReducer from '@/features/messaging/store/messagingUISlice';
 import type { RootState } from '@/store/index';
 
 // Mock implementations
@@ -77,6 +78,7 @@ export const renderWithProviders = (
         gallery: galleryReducer as any,
         galleryUI: galleryUIReducer as any,
         adminSettingsUI: adminSettingsUIReducer as any,
+        messagingUI: messagingUIReducer as any,
       },
       preloadedState
     }),

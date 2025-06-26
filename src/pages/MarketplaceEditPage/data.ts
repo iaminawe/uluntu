@@ -17,6 +17,7 @@ export const SAMPLE_LISTING: SampleListing = {
 // Initial form data state
 export const initialFormData: FormData = {
   title: '',
+  slug: '',
   description: '',
   type: 'product',
   status: 'draft',
