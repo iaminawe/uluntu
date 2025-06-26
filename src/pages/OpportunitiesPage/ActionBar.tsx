@@ -98,7 +98,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
                 const value = e.target.value;
                 onRemoteFilterChange(value === 'all' ? 'all' : value === 'true');
               }}
-              className="appearance-none pl-10 pr-10 py-2 bg-white dark:bg-slate-800 rounded-lg text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 transition-colors font-medium"
+              className="appearance-none pl-10 pr-10 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Locations</option>
               <option value="true">Remote Only</option>

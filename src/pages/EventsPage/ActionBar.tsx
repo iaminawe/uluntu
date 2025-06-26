@@ -60,7 +60,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onFiltersChange, viewMo
             <select
               value={selectedType}
               onChange={(e) => handleTypeChange(e.target.value as EventType | 'all')}
-              className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
+              className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Event Types</option>
               <option value="in-person">In-Person</option>
@@ -79,7 +79,7 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onFiltersChange, viewMo
             <select
               value={dateRange}
               onChange={(e) => handleDateRangeChange(e.target.value as DateRangeFilter)}
-              className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
+              className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="upcoming">Upcoming</option>
               <option value="month">This Month</option>
