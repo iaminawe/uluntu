@@ -38,6 +38,7 @@ export const SAMPLE_OPPORTUNITY: OpportunityData = {
 // Initial form data state
 export const initialFormData: FormData = {
   title: '',
+  slug: '',
   description: '',
   type: 'job' as const,
   organization: '',

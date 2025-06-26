@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { opportunitiesApi, OpportunityInput } from '@/features/opportunities/api/opportunitiesApi';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { generateSlug } from '@/utils/slugUtils';
 import { Card } from '@/shared/components/ui/Card';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import BasicInfoSection from './BasicInfoSection';
@@ -50,6 +51,7 @@ export default function OpportunityEditPage() {
       if (opportunity) {
         setFormData({
           title: opportunity.title,
+          slug: opportunity.slug || generateSlug(opportunity.title),
           description: opportunity.description,
           type: opportunity.type as FormData['type'],
           organization: opportunity.organization,
@@ -293,7 +295,8 @@ export default function OpportunityEditPage() {
         <meta name="description" content={isEditMode ? 'Edit an existing opportunity' : 'Create a new opportunity listing'} />
       </Helmet>
       
-      <ContentContainer maxWidth="lg">
+      <div className="container mx-auto px-4 py-12">
+        <div className="w-4/5 max-w-[80%] mx-auto">
         {isLoading ? (
           <LoadingState />
         ) : (
@@ -371,6 +374,7 @@ export default function OpportunityEditPage() {
                     formData={formData}
                     id={id}
                     setShowDeleteConfirm={setShowDeleteConfirm}
+                    setFormData={setFormData}
                   />
                 </form>
               </Card>
@@ -383,7 +387,8 @@ export default function OpportunityEditPage() {
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={handleDelete}
         />
-      </ContentContainer>
+        </div>
+      </div>
     </>
   );
 }

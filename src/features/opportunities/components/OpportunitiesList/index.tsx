@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import OpportunityCard from './OpportunityCard';
+import OpportunityCardEnhanced from './OpportunityCardEnhanced';
 import Pagination from '@/components/Pagination';
 import { 
   Opportunity, 
@@ -153,11 +153,16 @@ const OpportunitiesList = ({
         <div className="space-y-6">
           {featuredOpportunities.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Featured Opportunities</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {featuredOpportunities.map(opportunity => (
-                  <OpportunityCard 
-                    key={opportunity.id} 
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
+                <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-transparent bg-clip-text">Featured Opportunities</span>
+                <span className="ml-2 text-xs bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded-full">
+                  {featuredOpportunities.length}
+                </span>
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {featuredOpportunities.map((opportunity, index) => (
+                  <OpportunityCardEnhanced 
+                    key={`featured-${opportunity.id}-${index}`} 
                     opportunity={opportunity} 
                     featured={true} 
                   />
@@ -168,11 +173,16 @@ const OpportunitiesList = ({
           
           {currentRegularOpportunitiesToDisplay.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">All Opportunities</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {currentRegularOpportunitiesToDisplay.map(opportunity => (
-                  <OpportunityCard 
-                    key={opportunity.id} 
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
+                <span className="bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-300 dark:to-slate-100 text-transparent bg-clip-text">All Opportunities</span>
+                <span className="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                  {regularOpportunities.length}
+                </span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentRegularOpportunitiesToDisplay.map((opportunity, index) => (
+                  <OpportunityCardEnhanced 
+                    key={`regular-${opportunity.id}-${index}`} 
                     opportunity={opportunity} 
                   />
                 ))}

@@ -8,6 +8,7 @@ export type OpportunityType = 'job' | 'volunteer' | 'funding' | 'community';
 
 export interface FormData {
   title: string;
+  slug: string;
   description: string;
   type: OpportunityType;
   organization: string;

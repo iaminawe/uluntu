@@ -62,13 +62,13 @@ const ActionBar: React.FC<ActionBarProps> = ({
           <div className="flex flex-wrap gap-2 mb-0">
             <button
               onClick={() => onTypeChange('all')}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm
                 ${selectedType === 'all'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
+                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                 }`}
             >
-              <Briefcase className="h-4 w-4 mr-2" />
+              <Briefcase className="h-4 w-4" />
               All Types
             </button>
             
@@ -76,10 +76,10 @@ const ActionBar: React.FC<ActionBarProps> = ({
               <button
                 key={type}
                 onClick={() => onTypeChange(type)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm
                   ${selectedType === type
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                   }`}
               >
                 {getTypeIcon(type)}
@@ -98,13 +98,13 @@ const ActionBar: React.FC<ActionBarProps> = ({
                 const value = e.target.value;
                 onRemoteFilterChange(value === 'all' ? 'all' : value === 'true');
               }}
-              className="appearance-none pl-9 pr-8 py-2 bg-slate-100 dark:bg-slate-700 rounded-md text-sm"
+              className="appearance-none pl-10 pr-10 py-2 bg-white dark:bg-slate-800 rounded-lg text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 transition-colors font-medium"
             >
               <option value="all">All Locations</option>
               <option value="true">Remote Only</option>
               <option value="false">On-site Only</option>
             </select>
-            <MapPin className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-500" />
           </div>
           
           {/* Additional filters can be added here in the future */}
