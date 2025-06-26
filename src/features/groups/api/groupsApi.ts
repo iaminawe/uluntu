@@ -17,6 +17,7 @@ import { ContentStatus } from '../types/common'; // For casting 'status'
 // Define the input type for group data passed from the application
 export interface GroupInput {
   name: string;
+  slug?: string;
   description: string;
   longDescription?: string | null; // Maps to Supabase 'long_description'
   heroImage?: string; // Maps to Supabase 'hero_image'
