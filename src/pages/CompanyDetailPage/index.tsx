@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export default function CompanyDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   
   // Use hybrid approach for data fetching with slug support
   const {
@@ -36,7 +36,7 @@ export default function CompanyDetailPage() {
     isError,
     error,
     refetch
-  } = useCompanyByIdOrSlugHybrid(id);
+  } = useCompanyByIdOrSlugHybrid(slug);
 
   const defaultCoverImage = 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=2';
 

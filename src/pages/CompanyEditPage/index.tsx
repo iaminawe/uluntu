@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useCompany } from '@/hooks/useCompanyQueries';
+import { useCompanyByIdOrSlug } from '@/hooks/useCompanyQueries';
 import { supabase } from '@/lib/supabase'; 
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import { FormData } from './types';
@@ -42,10 +42,10 @@ const validateContentStatus = (status: string | null | undefined): ContentStatus
 };
 
 export default function CompanyEditPage() {
-  const { id } = useParams<{ id: string }>();
-  const isEditMode = !!id;
-  // Use string ID consistently instead of converting to number
-  const companyId = id || undefined;
+  const { slug } = useParams<{ slug: string }>();
+  const isEditMode = !!slug;
+  // Use string slug consistently instead of converting to number
+  const companyId = slug || undefined;
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -59,7 +59,7 @@ export default function CompanyEditPage() {
   const { 
     data: company,
     isLoading: companyLoading
-  } = useCompany(id);
+  } = useCompanyByIdOrSlug(slug);
   
   // Populate form with company data when in edit mode
   useEffect(() => {
@@ -262,14 +262,14 @@ export default function CompanyEditPage() {
       let dbOperationError = null;
       let companyData = null;
       
-      if (isEditMode && id) {
+      if (isEditMode && slug) {
         // Use adapter function for update operations
         const updateData = convertFormDataToUpdate(currentFormData);
         
         const { data, error } = await supabase
           .from('companies')
           .update(updateData)
-          .eq('id', id)
+          .eq('slug', slug)
           .select()
           .single();
           
@@ -410,7 +410,7 @@ export default function CompanyEditPage() {
               <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
-                  onClick={() => navigate(isEditMode ? `/companies/${id}` : '/companies')}
+                  onClick={() => navigate(isEditMode ? `/companies/${slug}` : '/companies')}
                   className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                             text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                             transition-colors"
