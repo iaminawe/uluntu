@@ -2,6 +2,7 @@
 import { Event as MainEvent, EventSession } from '../../types';
 export interface FormData {
   title: string;
+  slug: string;
   date: string;
   endDate: string;
   location: string;
@@ -11,12 +12,14 @@ export interface FormData {
   url?: string;
   organizerId: string;
   sessions?: EventSession[];
+  status?: 'draft' | 'published';
 }
 
 // Adapter function to convert from main Event type to local FormData type
 export const adaptMainEventToFormData = (event: MainEvent): FormData => {
   return {
     title: event.title,
+    slug: event.slug || '',
     date: event.date,
     endDate: event.endDate || '',
     location: event.location,
@@ -34,6 +37,7 @@ export const adaptFormDataToMainEvent = (formData: FormData, id?: string): Parti
   return {
     id: id || '',
     title: formData.title,
+    slug: formData.slug,
     date: formData.date,
     endDate: formData.endDate || undefined,
     location: formData.location,
@@ -84,4 +88,6 @@ export interface FormActionsProps {
   isSubmitting: boolean;
   navigate: (path: string) => void;
   id?: string;
+  status?: 'draft' | 'published';
+  onStatusChange?: (status: 'draft' | 'published') => void;
 }

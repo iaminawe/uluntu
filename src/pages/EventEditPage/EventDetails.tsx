@@ -25,6 +25,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         placeholder="Enter event title"
       />
       
+      <FormInput
+        id="slug"
+        name="slug"
+        label="URL Slug"
+        required
+        value={formData.slug}
+        onChange={handleChange}
+        error={_errors.slug}
+        placeholder="event-url-slug"
+        helperText={`This will be used in the URL: /events/${formData.slug || 'your-slug'}`}
+      />
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormDatePicker
           id="date"
