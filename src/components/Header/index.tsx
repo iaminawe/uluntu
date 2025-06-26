@@ -7,7 +7,7 @@ import MobileNav from '@/shared/components/layout/Header/MobileNav';
 import ThemeToggle from '@/shared/components/layout/Header/ThemeToggle';
 import UserMenu from '@/shared/components/layout/Header/UserMenu';
 import { useSettings } from '@/hooks/useSettings';
-import { useTheme } from '@/providers/ThemeProvider';
+import { useTheme } from '@/providers/EnhancedThemeProvider';
 
 const Header: React.FC<HeaderProps> = ({
   logo,
@@ -23,16 +23,16 @@ const Header: React.FC<HeaderProps> = ({
   ]
 }) => {
   const { settings } = useSettings();
-  const { theme, toggleTheme, primaryColor, secondaryColor } = useTheme();
+  const { primaryColor, secondaryColor, theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  const isDark = theme === 'dark';
   
   // Get site settings with fallbacks
   const siteName = settings?.site?.site_name?.value || "Nelson Tech";
   const siteLogo = settings?.site?.site_logo?.value;
   const displayLogo = logo || siteLogo || siteName;
-  
-  const isDark = theme === 'dark';
 
   // Handle scroll effect
   useEffect(() => {
