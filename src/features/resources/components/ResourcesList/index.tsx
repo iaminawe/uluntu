@@ -11,20 +11,16 @@ interface ResourcesListProps {
 const ResourcesList = ({ resources }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<Resource['type'] | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
 
   // Define resource types based on the main application's Resource type
   const types: Resource['type'][] = ['document', 'video', 'guide', 'tool', 'article', 'link'];
 
-  // Apply client-side filtering
+  // Apply client-side filtering (search is handled by parent component)
   const filteredResources = resources.filter(resource => {
-    const matchesSearch = !searchQuery || 
-                         resource.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         resource.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = selectedType === 'all' || resource.type === selectedType;
-    return matchesSearch && matchesType;
+    return matchesType;
   });
 
   // Get pagination details
@@ -45,19 +41,7 @@ const ResourcesList = ({ resources }: ResourcesListProps) => {
   return (
     <div>
       {/* Resource filters */}
-
-      <div className="mb-6 space-y-4">
-        {/* Search input */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search resources..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-
+      <div className="mb-6">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedType('all')}
