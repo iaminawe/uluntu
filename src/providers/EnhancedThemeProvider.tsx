@@ -109,6 +109,11 @@ interface ThemeContextValue {
   themes: Theme[];
   loading: boolean;
   
+  // Backward compatibility
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  
   // Theme actions
   toggleTheme: () => void;
   setTheme: (themeId: string) => Promise<void>;
@@ -674,6 +679,10 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     currentTheme,
     themes,
     loading,
+    // Backward compatibility
+    primaryColor: activeTheme?.colors?.primary || '#F97316',
+    secondaryColor: activeTheme?.colors?.secondary || '#1F2937',
+    accentColor: activeTheme?.colors?.info || '#3B82F6',
     toggleTheme,
     setTheme,
     previewTheme,
