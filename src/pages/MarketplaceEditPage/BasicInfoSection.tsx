@@ -1,6 +1,7 @@
 import { DollarSign, MapPin } from 'lucide-react';
 import RichTextEditor from '@/shared/components/ui/RichTextEditor';
 import { FormInput, FormSelect, FormCheckbox } from '@/shared/components/ui/Form';
+import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 import { BasicInfoSectionProps, ListingType } from './types';
 
 const typeOptions = [
@@ -60,6 +61,15 @@ const BasicInfoSection = ({
         required
         disabled={isSubmitting}
         placeholder="Enter a descriptive title"
+      />
+      
+      <SlugField
+        value={formData.slug}
+        onChange={(value) => handleChange({ target: { name: 'slug', value } } as any)}
+        sourceValue={formData.title}
+        required
+        baseUrl="/marketplace/"
+        disabled={isSubmitting}
       />
       
       <div>

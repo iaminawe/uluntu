@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
+import { generateSlug } from '@/features/companies/utils/slugUtils';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';
@@ -20,6 +22,7 @@ export default function MarketplaceEditPage() {
   // State for form data
   const [formData, setFormData] = useState<FormData>({
     title: '',
+    slug: '',
     description: '',
     price: '0',
     condition: 'new',
@@ -55,6 +58,7 @@ export default function MarketplaceEditPage() {
     if (listing && isEditing) {
       setFormData({
         title: listing.title || '',
+        slug: listing.slug || generateSlug(listing.title || ''),
         description: listing.description || '',
         price: typeof listing.price === 'number' ? String(listing.price) : '0',
         condition: (listing.condition || 'new') as ListingCondition,
@@ -81,6 +85,7 @@ export default function MarketplaceEditPage() {
       // Convert form data to API input format
       const listingData = {
         title: formData.title,
+        slug: formData.slug || generateSlug(formData.title),
         description: formData.description,
         price: parseFloat(formData.price),
         condition: formData.condition,
@@ -178,48 +183,112 @@ export default function MarketplaceEditPage() {
         <title>{isEditing ? 'Edit Marketplace Listing' : 'Create New Listing'} | Nelson Tech</title>
       </Helmet>
       
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-            {/* Header */}
-            <FormHeader isEditing={isEditing} />
-            
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-8">
-                {/* Basic Info Section */}
-                <BasicInfoSection
-                  formData={formData}
-                  handleChange={handleBasicInfoChange}
-                  getTypeIcon={(type) => <span>{type}</span>}
-                  isSubmitting={isSubmitting}
-                />
-                
-                {/* Tags Section */}
-                <TagsSection
-                  tags={formData.tags}
-                  handleTagsChange={handleTagsChange}
-                  isSubmitting={isSubmitting}
-                />
-                
-                {/* Images Gallery Section */}
-                <ImagesGallerySection
-                  images={[]}
-                  handleImageChange={handleImageChange}
-                  handleRemoveImage={(index) => console.log('Remove image at index:', index)}
-                  isSubmitting={isSubmitting}
-                />
-                
-                {/* Form Actions */}
-                <FormActions
-                  isEditing={isEditing}
-                  isSubmitting={isSubmitting}
-                  formData={formData}
-                  setShowDeleteConfirm={setShowDeleteConfirm}
-                />
-              </div>
-            </form>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
+        <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
+          <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
+            <Link 
+              to="/marketplace" 
+              className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+            </Link>
+            <h1 className="text-xl font-semibold text-slate-800 dark:text-white">
+              {isEditing ? 'Edit Listing' : 'Create New Listing'}
+            </h1>
           </div>
+            
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="space-y-8">
+              {/* Basic Info Section */}
+              <BasicInfoSection
+                formData={formData}
+                handleChange={handleBasicInfoChange}
+                getTypeIcon={(type) => <span>{type}</span>}
+                isSubmitting={isSubmitting}
+              />
+              
+              <hr className="border-t border-slate-200 dark:border-slate-700" />
+              
+              {/* Tags Section */}
+              <TagsSection
+                tags={formData.tags}
+                handleTagsChange={handleTagsChange}
+                isSubmitting={isSubmitting}
+              />
+              
+              <hr className="border-t border-slate-200 dark:border-slate-700" />
+              
+              {/* Images Gallery Section */}
+              <ImagesGallerySection
+                images={[]}
+                handleImageChange={handleImageChange}
+                handleRemoveImage={(index) => console.log('Remove image at index:', index)}
+                isSubmitting={isSubmitting}
+              />
+              
+              {/* Form Actions */}
+              <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => navigate(isEditing ? `/marketplace/${id}` : '/marketplace')}
+                  className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                            text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
+                            transition-colors"
+                >
+                  Cancel
+                </button>
+                
+                <div className="flex gap-2">
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="px-6 py-2 border border-red-300 text-red-600 rounded-lg 
+                                hover:bg-red-50 transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      Delete
+                    </button>
+                  )}
+                  
+                  {formData.status === 'published' ? (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft' }))}
+                      className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                                text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
+                                transition-colors flex items-center gap-2"
+                    >
+                      <EyeOff className="h-5 w-5" />
+                      Unpublish
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'published' }))}
+                      className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
+                                hover:bg-green-50 transition-colors flex items-center gap-2"
+                    >
+                      <Eye className="h-5 w-5" />
+                      Publish
+                    </button>
+                  )}
+                  
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`px-6 py-2 bg-orange-500 text-white rounded-lg 
+                              hover:bg-orange-600 transition-colors flex items-center gap-2
+                              ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    <Save className="h-5 w-5" />
+                    {isSubmitting ? 'Saving...' : 'Save Listing'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       
