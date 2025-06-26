@@ -1,7 +1,6 @@
 import { useQuery, UseQueryResult, useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 
-// Mock data service
-import * as mockQueries from './useQueries';
+// Mock data imports are handled dynamically in query functions
 import { Company as GlobalCompany, CompanyEmployee } from '../types';
 
 // Supabase API services
@@ -52,7 +51,9 @@ export function useCompanies(): UseQueryResult<GlobalCompany[], Error> {
     queryKey: ['companies', 'all', USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async (): Promise<GlobalCompany[]> => {
       if (!USE_SUPABASE) {
-        return mockQueries.useCompanies().data || [];
+        // Import mock data directly instead of using hooks
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        return mockCompanies;
       }
       const companies = await companiesApi.getAll();
       return companies.map(adaptFeatureCompanyToGlobal);
@@ -73,7 +74,29 @@ export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResul
     queryKey: ['companies', 'filters', filters, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async (): Promise<GlobalCompany[]> => {
       if (!USE_SUPABASE) {
-        return mockQueries.useCompaniesWithFilters(filters).data || [];
+        // Import mock data directly and apply filters
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        let filteredCompanies = [...mockCompanies];
+        
+        // Apply search filter
+        if (filters?.search) {
+          const searchLower = filters.search.toLowerCase();
+          filteredCompanies = filteredCompanies.filter(company => 
+            company.name.toLowerCase().includes(searchLower) ||
+            company.description.toLowerCase().includes(searchLower)
+          );
+        }
+        
+        // Apply industry filter
+        if (filters?.industries && filters.industries.length > 0) {
+          filteredCompanies = filteredCompanies.filter(company =>
+            filters.industries!.some(industry => 
+              company.industry.includes(industry)
+            )
+          );
+        }
+        
+        return filteredCompanies;
       }
       const companies = await companiesApi.getAll(filters);
       return companies.map(adaptFeatureCompanyToGlobal);
@@ -99,9 +122,10 @@ export function useCompany(id?: string): UseQueryResult<GlobalCompany | null, Er
       }
 
       if (!USE_SUPABASE) {
-        // For mock data, convert any null to undefined for proper type compatibility
-        const result = mockQueries.useCompany(id).data;
-        return result || null;
+        // Import mock data directly
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        const company = mockCompanies.find(c => c.id === id);
+        return company || null;
       }
 
       try {
@@ -134,9 +158,9 @@ export function useCompanyBySlug(slug?: string): UseQueryResult<GlobalCompany | 
       }
 
       if (!USE_SUPABASE) {
-        // For mock data, we'll find the company by matching the slug
-        const allCompanies = mockQueries.useCompanies().data || [];
-        const company = allCompanies.find(c => 
+        // Import mock data directly
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        const company = mockCompanies.find(c => 
           c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === slug
         );
         return company || null;
@@ -165,31 +189,50 @@ export function useCompanyBySlug(slug?: string): UseQueryResult<GlobalCompany | 
  * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
  */
 export function useCompanyByIdOrSlug(idOrSlug?: string): UseQueryResult<GlobalCompany | null, Error> {
+  console.log('[useCompanyByIdOrSlug] Called with:', idOrSlug);
   return useQuery<GlobalCompany | null, Error>({
     queryKey: ['companies', 'id-or-slug', idOrSlug, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async (): Promise<GlobalCompany | null> => {
+      console.log('[useCompanyByIdOrSlug queryFn] idOrSlug:', idOrSlug);
       if (!idOrSlug) {
+        console.log('[useCompanyByIdOrSlug queryFn] No idOrSlug provided, returning null');
         return null;
       }
 
       if (!USE_SUPABASE) {
-        // For mock data, try ID first, then slug
-        const result = mockQueries.useCompany(idOrSlug).data;
-        if (result) return result;
+        console.log('[useCompanyByIdOrSlug queryFn] Using mock data');
+        // For mock data, directly access the mock companies array
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        
+        // Try ID first
+        const companyById = mockCompanies.find(c => c.id === idOrSlug);
+        if (companyById) {
+          console.log('[useCompanyByIdOrSlug queryFn] Found company by ID:', companyById);
+          return companyById;
+        }
         
         // Try as slug
-        const allCompanies = mockQueries.useCompanies().data || [];
-        const company = allCompanies.find(c => 
+        const companyBySlug = mockCompanies.find(c => 
           c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === idOrSlug
         );
-        return company || null;
+        if (companyBySlug) {
+          console.log('[useCompanyByIdOrSlug queryFn] Found company by slug:', companyBySlug);
+          return companyBySlug;
+        }
+        
+        console.log('[useCompanyByIdOrSlug queryFn] No company found in mock data');
+        return null;
       }
 
       try {
+        console.log('[useCompanyByIdOrSlug queryFn] Calling companiesApi.getByIdOrSlug');
         const company = await companiesApi.getByIdOrSlug(idOrSlug);
-        return company ? adaptFeatureCompanyToGlobal(company) : null;
+        console.log('[useCompanyByIdOrSlug queryFn] API returned:', company);
+        const result = company ? adaptFeatureCompanyToGlobal(company) : null;
+        console.log('[useCompanyByIdOrSlug queryFn] Adapted result:', result);
+        return result;
       } catch (error) {
-        console.error(`Error fetching company with ID or slug ${idOrSlug}:`, error);
+        console.error(`[useCompanyByIdOrSlug queryFn] Error fetching company with ID or slug ${idOrSlug}:`, error);
         return null;
       }
     },
@@ -254,8 +297,9 @@ export function useUpdateCompany() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<CompanyInput> }) => {
       if (!USE_SUPABASE) {
-        const result = mockQueries.useCompany(id);
-        const currentCompany = result.data;
+        // Import mock data directly
+        const { companies: mockCompanies } = await import('../data/mock/companies');
+        const currentCompany = mockCompanies.find(c => c.id === id);
 
         if (!currentCompany) {
           return null;

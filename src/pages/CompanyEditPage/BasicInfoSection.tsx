@@ -1,4 +1,4 @@
-import { Building, MapPin, Calendar, Globe, UploadCloud } from 'lucide-react';
+import { Building, MapPin, Calendar, Globe, UploadCloud, Link } from 'lucide-react';
 import { BasicInfoSectionProps } from './types';
 
 const BasicInfoSection = ({
@@ -35,6 +35,33 @@ const BasicInfoSection = ({
           />
         </div>
         {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="slug" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+          URL Slug <span className="text-red-500">*</span>
+        </label>
+        <div className="mt-1 relative rounded-md shadow-sm">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Link className="h-5 w-5 text-slate-400" />
+          </div>
+          <input
+            type="text"
+            id="slug"
+            name="slug"
+            value={formData.slug}
+            onChange={onChange}
+            disabled={isSubmitting}
+            className={`block w-full pl-10 pr-4 py-2 border ${
+              errors.slug ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'
+            } rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500`}
+            placeholder="company-url-slug"
+          />
+        </div>
+        {errors.slug && <p className="mt-1 text-sm text-red-500">{errors.slug}</p>}
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          This will be used in the URL: /companies/{formData.slug || 'your-slug'}
+        </p>
       </div>
 
       <div>

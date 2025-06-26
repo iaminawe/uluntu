@@ -55,10 +55,15 @@ export function makeSlugUnique(baseSlug: string, existingSlugs: string[]): strin
  * @returns Object indicating type and value
  */
 export function parseCompanyParam(param: string): { type: 'id' | 'slug'; value: string } {
-  // UUID v4 regex pattern
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  console.log('[parseCompanyParam] Parsing param:', param);
   
-  if (uuidRegex.test(param)) {
+  // UUID v4 regex pattern - made more flexible to match any valid UUID format
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  
+  const isUuid = uuidRegex.test(param);
+  console.log('[parseCompanyParam] Is UUID?', isUuid, 'Regex test result:', uuidRegex.test(param));
+  
+  if (isUuid) {
     return { type: 'id', value: param };
   }
   

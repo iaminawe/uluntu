@@ -18,6 +18,25 @@ export interface Company extends BaseEntity {
 // Companies data
 export const companies: Company[] = [
   {
+    id: '00112233-aabb-ccdd-eeff-001122aabbcc',
+    name: 'Test Company UUID',
+    description: 'A test company with a specific UUID for debugging purposes.',
+    logo: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg',
+    coverImage: 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg',
+    industry: ['Technology', 'Testing'],
+    size: '10-50 employees',
+    founded: '2023',
+    location: 'Nelson, BC',
+    website: 'https://testcompany.example.com',
+    status: 'published' as ContentStatus,
+    featured: true,
+    social: {
+      linkedin: 'https://linkedin.com/company/testcompany',
+      twitter: 'https://twitter.com/testcompany'
+    },
+    employees: []
+  },
+  {
     id: '1',
     name: 'Mountain Tech Solutions',
     description: 'A leading technology company in the Kootenays specializing in AI and machine learning solutions for environmental monitoring and sustainable resource management.',
