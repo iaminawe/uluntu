@@ -2,6 +2,7 @@ import { ContentStatus } from '../../types/common';
 
 export interface FormData {
   title: string;
+  slug: string;
   excerpt: string;
   content: string;
   image: string;
@@ -42,6 +43,7 @@ export interface FormActionsProps {
   navigate: (path: string) => void;
   id?: string;
   setShowDeleteConfirm: (show: boolean) => void;
+  setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
 }
 
 export interface DeleteConfirmModalProps {

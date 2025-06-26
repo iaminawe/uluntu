@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, Eye, EyeOff } from 'lucide-react';
 import { FormActionsProps } from './types';
 
 const FormActions: React.FC<FormActionsProps> = ({
@@ -7,7 +7,8 @@ const FormActions: React.FC<FormActionsProps> = ({
   isSubmitting,
   navigate,
   id,
-  setShowDeleteConfirm
+  setShowDeleteConfirm,
+  setFormData
 }) => {
   // Determine the submit button text based on the form state
   const getSubmitText = () => {
@@ -56,6 +57,43 @@ const FormActions: React.FC<FormActionsProps> = ({
         >
           Cancel
         </button>
+        
+        {/* Publish/Unpublish button */}
+        {formData.status === 'published' ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (setFormData) {
+                setFormData(prev => ({ ...prev, status: 'draft' }));
+              }
+            }}
+            disabled={isSubmitting}
+            className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 
+                     text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 rounded-md 
+                     hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 
+                     focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <EyeOff className="h-5 w-5 mr-2" />
+            Unpublish
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              if (setFormData) {
+                setFormData(prev => ({ ...prev, status: 'published' }));
+              }
+            }}
+            disabled={isSubmitting}
+            className="inline-flex items-center px-4 py-2 border border-green-600 
+                     text-green-600 bg-white dark:bg-slate-800 rounded-md 
+                     hover:bg-green-50 dark:hover:bg-green-900/20 focus:outline-none focus:ring-2 
+                     focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Eye className="h-5 w-5 mr-2" />
+            Publish
+          </button>
+        )}
         
         {/* Submit button */}
         <button
