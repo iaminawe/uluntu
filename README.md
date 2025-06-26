@@ -33,7 +33,7 @@ A sophisticated React-based community platform connecting tech professionals in 
 - **Privacy-First Onboarding** - 5-step guided wizard with draft/published profiles
 - **Advanced Role System** - Three-level permissions (system, custom, entity-specific)
 - **Modern UI/UX** - Responsive design with dark mode and accessibility
-- **Rich Content Editor** - Novel-based editor for blog-style content creation
+- **Rich Text Editor** - Tiptap-based editor with drag handles, slash commands, and image support
 - **Batch Operations** - Comprehensive batch upload with progress tracking
 - **Dynamic Settings** - Live-preview admin configuration system
 - **Professional Admin Dashboard** - Enterprise-grade management interface
@@ -168,7 +168,7 @@ Profiles are **private by default** - users choose when to appear in the directo
    - **Event Organizer** - Event-specific permissions
 
 ### Rich Content Management
-- **Novel Editor** - TipTap-based editor with advanced formatting
+- **Rich Text Editor** - Tiptap-based editor with drag handles and slash commands
 - **Batch Image Upload** - Multi-file upload with progress tracking
 - **Media Galleries** - Organized photo collections for events and groups
 - **Tag System** - Smart content categorization and discovery
@@ -389,6 +389,9 @@ npm test -- --updateSnapshot
 ## 📞 Support
 
 - **Documentation**: Comprehensive guides in `/docs`
+  - [Hybrid Pattern Guide](./docs/HYBRID_PATTERN_GUIDE.md) - State management architecture
+  - [Rich Text Editor Guide](./docs/RICH_TEXT_EDITOR_GUIDE.md) - Editor implementation details
+  - [Multi-Tenant Architecture](./docs/MULTI_TENANT_ARCHITECTURE_PLAN.md) - SaaS conversion plan
 - **Issue Tracker**: GitHub issues for bugs/features
 - **Development**: Follow SPARC methodology in CLAUDE.md
 - **Community**: Nelson Tech Community Slack/Discord
