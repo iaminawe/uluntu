@@ -137,9 +137,9 @@ export const router = createBrowserRouter([
         path: 'companies/create', 
         element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
       },
-      { path: 'companies/:id', element: withSuspense(CompanyDetailPage) },
+      { path: 'companies/:slug', element: withSuspense(CompanyDetailPage) },
       { 
-        path: 'companies/:id/edit', 
+        path: 'companies/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
       },
       { path: 'events', element: withSuspense(EventsPage) },
