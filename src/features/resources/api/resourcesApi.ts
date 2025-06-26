@@ -41,6 +41,7 @@ const mapFullResourceFromApi = (apiResource: SupabaseResourceWithJoins): Resourc
 // Define the input type for resource data passed from the application
 export interface ResourceInput {
   title: string;
+  slug?: string;
   description: string;
   type: string; // e.g., 'article', 'video', 'tool', 'course', maps to Supabase 'type'
   url: string; // maps to Supabase 'url'

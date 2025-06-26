@@ -210,25 +210,23 @@ const GalleryEditPage: React.FC = () => {
   }
 
   return (
-    <ContentContainer>
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">
+      <div className="w-4/5 max-w-[80%] mx-auto bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">
         {/* Header */}
-        <div className="mb-8">
+        <div className="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex items-center">
           <button
             onClick={() => navigate(isEditing ? `/galleries/${id}` : '/my-galleries')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            className="mr-3 p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
-            Back
+            <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
-          
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl font-semibold text-slate-800 dark:text-white">
             {isEditing ? 'Edit Gallery' : 'Create New Gallery'}
           </h1>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Gallery Owner Selector */}
           {!isEditing && (
             <GallerySelector
@@ -464,7 +462,7 @@ const GalleryEditPage: React.FC = () => {
           </div>
         )}
       </div>
-    </ContentContainer>
+    </div>
   );
 };
 
