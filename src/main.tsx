@@ -61,7 +61,7 @@ createRoot(document.getElementById('root')!).render(
                       }}
                     />
                     {/* Debug components */}
-                    <DebugUserRoles />
+                    {/* <DebugUserRoles /> */}
                     {/* <SettingsDebugger /> */}
                   </EnhancedThemeProvider>
                 </SettingsProvider>

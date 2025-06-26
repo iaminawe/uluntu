@@ -262,80 +262,153 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     });
   }, [currentTheme.images, handleThemeChange]);
 
-  const handlePresetSelect = useCallback((preset: PresetTheme) => {
-    // Convert PresetTheme configurations to Theme format
-    const { colors, typography, spacing, borders, shadows } = preset.configurations;
+  const handlePresetSelect = useCallback(async (preset: PresetTheme) => {
+    // Find the preset theme in the database
+    const dbTheme = themes.find(t => t.slug === preset.slug);
     
-    setCurrentTheme({
-      ...defaultTheme,
-      name: preset.name,
-      colors: {
-        ...defaultTheme.colors,
-        ...colors
-      },
-      typography: {
-        fontFamily: typography.font_family.split(',')[0].trim(),
-        fontFallback: typography.font_family,
-        fontSize: {
-          base: typography.font_size_base,
-          xs: typography.font_size_sm,
-          sm: typography.font_size_sm,
-          md: typography.font_size_base,
-          lg: typography.font_size_lg,
-          xl: typography.font_size_xl,
-          '2xl': typography.font_size_2xl,
-          '3xl': typography.font_size_3xl,
-          '4xl': typography.font_size_4xl
+    if (dbTheme) {
+      // Activate the preset theme
+      await setTheme(dbTheme.id);
+      toast.success(`Activated theme: ${preset.name}`);
+      
+      // Update local state to match
+      setCurrentTheme({
+        ...defaultTheme,
+        name: preset.name,
+        colors: dbTheme.colors || defaultTheme.colors,
+        typography: {
+          fontFamily: dbTheme.typography?.font_family?.split(',')[0]?.trim() || defaultTheme.typography.fontFamily,
+          fontFallback: dbTheme.typography?.font_family || defaultTheme.typography.fontFallback,
+          fontSize: {
+            base: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
+            xs: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.xs,
+            sm: dbTheme.typography?.font_size_sm || defaultTheme.typography.fontSize.sm,
+            md: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.md,
+            lg: dbTheme.typography?.font_size_lg || defaultTheme.typography.fontSize.lg,
+            xl: dbTheme.typography?.font_size_xl || defaultTheme.typography.fontSize.xl,
+            '2xl': dbTheme.typography?.font_size_2xl || defaultTheme.typography.fontSize['2xl'],
+            '3xl': dbTheme.typography?.font_size_3xl || defaultTheme.typography.fontSize['3xl'],
+            '4xl': dbTheme.typography?.font_size_4xl || defaultTheme.typography.fontSize['4xl']
+          },
+          fontWeight: defaultTheme.typography.fontWeight,
+          lineHeight: {
+            tight: parseFloat(dbTheme.typography?.line_height_tight || '1.25'),
+            normal: parseFloat(dbTheme.typography?.line_height_base || '1.5'),
+            relaxed: parseFloat(dbTheme.typography?.line_height_loose || '1.75')
+          }
         },
-        fontWeight: {
-          light: 300,
-          normal: 400,
-          medium: 500,
-          semibold: 600,
-          bold: 700
+        layout: {
+          borderRadius: dbTheme.borders ? {
+            none: '0px',
+            sm: dbTheme.borders.radius_sm,
+            md: dbTheme.borders.radius_md,
+            lg: dbTheme.borders.radius_lg,
+            xl: dbTheme.borders.radius_xl,
+            full: dbTheme.borders.radius_full
+          } : defaultTheme.layout.borderRadius,
+          shadow: dbTheme.shadows ? {
+            none: 'none',
+            sm: dbTheme.shadows.shadow_sm,
+            md: dbTheme.shadows.shadow_md,
+            lg: dbTheme.shadows.shadow_lg,
+            xl: dbTheme.shadows.shadow_xl
+          } : defaultTheme.layout.shadow,
+          containerWidth: dbTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
+          sidebarWidth: defaultTheme.layout.sidebarWidth
         },
-        lineHeight: {
-          tight: parseFloat(typography.line_height_tight),
-          normal: parseFloat(typography.line_height_base),
-          relaxed: parseFloat(typography.line_height_loose)
-        }
-      },
-      layout: {
-        borderRadius: {
-          none: borders.radius_sm,
-          sm: borders.radius_sm,
-          md: borders.radius_md,
-          lg: borders.radius_lg,
-          xl: borders.radius_xl,
-          full: borders.radius_full
+        spacing: dbTheme.spacing ? {
+          unit: 4,
+          scale: {
+            xs: parseInt(dbTheme.spacing.spacing_xs) / 4,
+            sm: parseInt(dbTheme.spacing.spacing_sm) / 4,
+            md: parseInt(dbTheme.spacing.spacing_md) / 4,
+            lg: parseInt(dbTheme.spacing.spacing_lg) / 4,
+            xl: parseInt(dbTheme.spacing.spacing_xl) / 4,
+            '2xl': parseInt(dbTheme.spacing.spacing_2xl) / 4,
+            '3xl': parseInt(dbTheme.spacing.spacing_3xl) / 4
+          }
+        } : defaultTheme.spacing,
+        darkMode: preset.name.toLowerCase().includes('dark'),
+        updatedAt: new Date().toISOString()
+      });
+      setHasChanges(false); // No changes needed since we just activated a preset
+    } else {
+      // If not found in database, just update local state for editing
+      toast.info('Preset theme not found in database. You can customize and save it.');
+      
+      const { colors, typography, spacing, borders, shadows } = preset.configurations;
+      
+      setCurrentTheme({
+        ...defaultTheme,
+        name: preset.name,
+        colors: {
+          ...defaultTheme.colors,
+          ...colors
         },
-        shadow: {
-          none: 'none',
-          sm: shadows.shadow_sm,
-          md: shadows.shadow_md,
-          lg: shadows.shadow_lg,
-          xl: shadows.shadow_xl
+        typography: {
+          fontFamily: typography.font_family.split(',')[0].trim(),
+          fontFallback: typography.font_family,
+          fontSize: {
+            base: typography.font_size_base,
+            xs: typography.font_size_sm,
+            sm: typography.font_size_sm,
+            md: typography.font_size_base,
+            lg: typography.font_size_lg,
+            xl: typography.font_size_xl,
+            '2xl': typography.font_size_2xl,
+            '3xl': typography.font_size_3xl,
+            '4xl': typography.font_size_4xl
+          },
+          fontWeight: {
+            light: 300,
+            normal: 400,
+            medium: 500,
+            semibold: 600,
+            bold: 700
+          },
+          lineHeight: {
+            tight: parseFloat(typography.line_height_tight),
+            normal: parseFloat(typography.line_height_base),
+            relaxed: parseFloat(typography.line_height_loose)
+          }
         },
-        containerWidth: spacing.container_max_width,
-        sidebarWidth: '256px'
-      },
-      spacing: {
-        unit: 4,
-        scale: {
-          xs: parseInt(spacing.spacing_xs) / 4,
-          sm: parseInt(spacing.spacing_sm) / 4,
-          md: parseInt(spacing.spacing_md) / 4,
-          lg: parseInt(spacing.spacing_lg) / 4,
-          xl: parseInt(spacing.spacing_xl) / 4,
-          '2xl': parseInt(spacing.spacing_2xl) / 4,
-          '3xl': parseInt(spacing.spacing_3xl) / 4
-        }
-      },
-      darkMode: preset.name.toLowerCase().includes('dark'),
-      updatedAt: new Date().toISOString()
-    });
-    setHasChanges(true);
-  }, []);
+        layout: {
+          borderRadius: {
+            none: borders.radius_sm,
+            sm: borders.radius_sm,
+            md: borders.radius_md,
+            lg: borders.radius_lg,
+            xl: borders.radius_xl,
+            full: borders.radius_full
+          },
+          shadow: {
+            none: 'none',
+            sm: shadows.shadow_sm,
+            md: shadows.shadow_md,
+            lg: shadows.shadow_lg,
+            xl: shadows.shadow_xl
+          },
+          containerWidth: spacing.container_max_width,
+          sidebarWidth: '256px'
+        },
+        spacing: {
+          unit: 4,
+          scale: {
+            xs: parseInt(spacing.spacing_xs) / 4,
+            sm: parseInt(spacing.spacing_sm) / 4,
+            md: parseInt(spacing.spacing_md) / 4,
+            lg: parseInt(spacing.spacing_lg) / 4,
+            xl: parseInt(spacing.spacing_xl) / 4,
+            '2xl': parseInt(spacing.spacing_2xl) / 4,
+            '3xl': parseInt(spacing.spacing_3xl) / 4
+          }
+        },
+        darkMode: preset.name.toLowerCase().includes('dark'),
+        updatedAt: new Date().toISOString()
+      });
+      setHasChanges(true);
+    }
+  }, [themes, setTheme]);
 
   const handleSaveTheme = useCallback(async () => {
     if (!activeTheme) {
@@ -561,6 +634,54 @@ ${theme.customCSS}
 
   return (
     <div className="space-y-6">
+      {/* Active Theme Selector */}
+      {themes.length > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-orange-900">Active Theme</p>
+              <p className="text-lg font-semibold text-orange-800">
+                {activeTheme ? activeTheme.name : 'No theme active'}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={activeTheme?.id || ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setTheme(e.target.value);
+                  }
+                }}
+                className="px-4 py-2 border border-orange-300 rounded-lg bg-white text-orange-800 font-medium focus:ring-2 focus:ring-orange-500"
+              >
+                <option value="">Select a theme</option>
+                {themes.map(theme => (
+                  <option key={theme.id} value={theme.id}>
+                    {theme.name} {theme.is_preset ? '(Preset)' : ''}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={async () => {
+                  const newTheme = await createTheme({
+                    name: 'Custom Theme ' + new Date().toLocaleString(),
+                    slug: 'custom-theme-' + Date.now(),
+                    description: 'A custom theme'
+                  });
+                  if (newTheme) {
+                    await setTheme(newTheme.id);
+                    toast.success('New theme created and activated');
+                  }
+                }}
+                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+              >
+                Create New Theme
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
