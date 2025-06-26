@@ -260,28 +260,33 @@ export default function CompanyEditPage() {
 
       // 3. Perform database operation using our adapter functions
       let dbOperationError = null;
+      let companyData = null;
       
       if (isEditMode && id) {
         // Use adapter function for update operations
         const updateData = convertFormDataToUpdate(currentFormData);
         
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('companies')
           .update(updateData)
           .eq('id', id)
-          .select();
+          .select()
+          .single();
           
         dbOperationError = error;
+        companyData = data;
       } else {
         // Use adapter function for insert operations
         const insertData = convertFormDataToInsert(currentFormData);
         
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('companies')
           .insert(insertData)
-          .select();
+          .select()
+          .single();
           
         dbOperationError = error;
+        companyData = data;
       }
 
       if (dbOperationError) {
@@ -293,7 +298,14 @@ export default function CompanyEditPage() {
       
       // Redirect after a short delay
       setTimeout(() => {
-        navigate('/companies');
+        // If we have a slug, navigate to the company detail page with slug
+        if (companyData?.slug) {
+          navigate(`/companies/${companyData.slug}`);
+        } else if (companyData?.id) {
+          navigate(`/companies/${companyData.id}`);
+        } else {
+          navigate('/companies');
+        }
       }, 2000);
     } catch (error) {
       console.error('Error submitting company:', error);

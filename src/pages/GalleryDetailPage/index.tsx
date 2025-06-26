@@ -20,6 +20,7 @@ import { selectCurrentUser } from '@/features/auth/store/authSlice';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { PhotoLightbox } from '@/features/gallery/components/PhotoLightbox';
 import { AddToResourcesButton } from '@/features/gallery/components/AddToResourcesButton';
+import { GalleryGrid } from '@/features/gallery/components/GalleryGrid';
 import { formatDistanceToNow } from 'date-fns';
 import type { Gallery, Photo } from '@/features/gallery/types';
 
@@ -32,7 +33,6 @@ const GalleryDetailPage: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   useEffect(() => {
@@ -61,9 +61,6 @@ const GalleryDetailPage: React.FC = () => {
     }
   };
 
-  const handlePhotoClick = (index: number) => {
-    setSelectedPhotoIndex(index);
-  };
 
   const handleLikePhoto = async (photoId: string) => {
     if (!user) {
@@ -105,6 +102,19 @@ const GalleryDetailPage: React.FC = () => {
     } catch (err) {
       console.error('Error deleting gallery:', err);
       alert('Failed to delete gallery');
+    }
+  };
+
+  const handleSetCoverPhoto = async (photoId: string) => {
+    if (!id || !isOwner) return;
+    
+    try {
+      await galleryApi.setCoverPhoto(id, photoId);
+      // Reload gallery to get updated cover photo
+      loadGallery();
+    } catch (err) {
+      console.error('Error setting cover photo:', err);
+      alert('Failed to set cover photo');
     }
   };
 
@@ -166,7 +176,7 @@ const GalleryDetailPage: React.FC = () => {
     );
   }
 
-  const isOwner = user?.id === gallery.owner_id;
+  const isOwner = user?.id === gallery.user_id || user?.id === gallery.owner_id;
 
   return (
     <ContentContainer>
@@ -286,53 +296,14 @@ const GalleryDetailPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {photos.map((photo, index) => (
-              <div
-                key={photo.id}
-                className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
-                onClick={() => handlePhotoClick(index)}
-              >
-                <img
-                  src={photo.thumbnail_path || photo.medium_path || photo.storage_path}
-                  alt={photo.alt_text || photo.title || 'Photo'}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                    {photo.title && (
-                      <p className="font-medium text-sm mb-1 line-clamp-1">
-                        {photo.title}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-3 h-3" />
-                        {(photo as any).like_count || 0}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle className="w-3 h-3" />
-                        {(photo as any).comment_count || 0}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Lightbox */}
-        {selectedPhotoIndex !== null && (
-          <PhotoLightbox
-            photos={photos}
-            initialIndex={selectedPhotoIndex}
-            onClose={() => setSelectedPhotoIndex(null)}
-            onLike={handleLikePhoto}
+          <GalleryGrid
+            galleryId={id!}
+            editable={isOwner}
+            onSetCover={handleSetCoverPhoto}
+            coverPhotoId={gallery.cover_photo_id}
           />
         )}
+
       </div>
     </ContentContainer>
   );

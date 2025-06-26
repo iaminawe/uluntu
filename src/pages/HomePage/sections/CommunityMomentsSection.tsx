@@ -40,8 +40,14 @@ export default function CommunityMomentsSection() {
       .slice(0, 2)
       .map(gallery => {
         const photos = gallery.photos || gallery.gallery_photos || [];
-        const firstPhoto = photos[0];
-        let imageUrl = gallery.coverImage || firstPhoto?.url || firstPhoto?.thumbnail_path;
+        // Use the cover photo URL if available (already determined by the API)
+        let imageUrl = gallery.cover_photo_url || gallery.coverImage;
+        
+        // Fallback to first photo if no cover photo URL from API
+        if (!imageUrl && photos.length > 0) {
+          const firstPhoto = photos[0];
+          imageUrl = firstPhoto?.thumbnail_url || firstPhoto?.url || firstPhoto?.thumbnail_path;
+        }
         
         return {
           id: gallery.id,
@@ -51,7 +57,7 @@ export default function CommunityMomentsSection() {
           date: gallery.created_at || gallery.createdAt,
           author: gallery.owner || { id: '1', name: 'Community', image: '' },
           category: 'Gallery',
-          readTime: `${photos.length} photos`,
+          readTime: `${gallery.photo_count || photos.length} photos`,
           link: `/galleries/${gallery.id}`,
           type: 'gallery' as const
         };

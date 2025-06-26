@@ -42,6 +42,7 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
     name: dbCompany.name,
     description: dbCompany.description,
     logo: dbCompany.logo,
+    slug: dbCompany.slug ?? undefined, // Include slug if present
     cover_image: dbCompany.cover_image ?? undefined, // Use nullish coalescing for clearer intent
     industry: dbCompany.industry ?? [], // Use nullish coalescing for clearer intent
     size: dbCompany.size,
@@ -50,7 +51,8 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
     website: dbCompany.website ?? undefined, // Use nullish coalescing for clearer intent
     status: dbCompany.status as ContentStatus, // We've validated this above
     featured: dbCompany.featured ?? false, // Use nullish coalescing for clearer intent
-    created_at: dbCompany.created_at
+    created_at: dbCompany.created_at,
+    social: (dbCompany.social as any) ?? undefined // Include social media links if present
   };
 }
 
@@ -66,6 +68,7 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
   if (company.name !== undefined) supabaseCompany.name = company.name;
   if (company.description !== undefined) supabaseCompany.description = company.description;
   if (company.logo !== undefined) supabaseCompany.logo = company.logo;
+  if (company.slug !== undefined) supabaseCompany.slug = company.slug ?? null;
   if (company.cover_image !== undefined) supabaseCompany.cover_image = company.cover_image ?? null;
   if (company.industry !== undefined) supabaseCompany.industry = company.industry;
   if (company.size !== undefined) supabaseCompany.size = company.size;
@@ -82,7 +85,7 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
   }
   
   if (company.featured !== undefined) supabaseCompany.featured = company.featured ?? null;
-  // social and employees are not updated directly on the companies table
+  if (company.social !== undefined) supabaseCompany.social = company.social ?? null;
 
   return supabaseCompany;
 }
@@ -110,6 +113,6 @@ export function adaptCompanyToSupabaseInsert(company: Partial<Omit<Company, 'id'
     website: company.website ?? null, // Optional in DB, explicitly set to null if undefined
     status: company.status ?? 'draft', // Default if not provided
     featured: company.featured ?? false,
-    // social_links and employees_list are not part of the companies table direct insert
+    social: company.social ?? null // Include social media links if provided
   };
 }

@@ -16,21 +16,24 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import JoinModal from '@/features/groups/components/JoinModal';
 import { useGroupsHybrid } from '@/features/groups/hooks/useGroupsHybrid';
+import { useGroupMembers, useGroupEvents, useGroupResources, useGroupPosts } from '@/hooks/useGroupQueries';
 import { TabType } from './types';
-import DebugInfo from './DebugInfo';
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [selectedTab, setSelectedTab] = useState<TabType>('about');
   const [showJoinModal, setShowJoinModal] = useState(false);
   
-  console.log('[GroupDetailPage] Rendering with ID:', id);
-  
   // Use the hybrid hook to fetch group data
   const { getGroup } = useGroupsHybrid();
   const { data: group, isLoading, error } = getGroup(id || '');
   
-  console.log('[GroupDetailPage] State:', { group, isLoading, error });
+  // Fetch associations
+  const { data: members = [], isLoading: membersLoading } = useGroupMembers(id);
+  const { data: events = [], isLoading: eventsLoading } = useGroupEvents(id);
+  const { data: resources = [], isLoading: resourcesLoading } = useGroupResources(id);
+  const { data: posts = [], isLoading: postsLoading } = useGroupPosts(id);
+  
   
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
     switch (visibility) {
@@ -68,7 +71,6 @@ export default function GroupDetailPage() {
 
   return (
     <>
-      <DebugInfo />
       <Helmet>
         <title>{group.name} - Kootenay Tech Community</title>
         <meta name="description" content={group.description?.substring(0, 160)} />
@@ -82,7 +84,13 @@ export default function GroupDetailPage() {
             <Tabs 
               selectedTab={selectedTab} 
               setSelectedTab={setSelectedTab} 
-              group={group as any}
+              group={{
+                ...group,
+                memberCount: members.length,
+                eventCount: events.length,
+                resourceCount: resources.length,
+                postCount: posts.length
+              } as any}
             />
             
             <div className="mt-6">
@@ -91,29 +99,29 @@ export default function GroupDetailPage() {
               )}
               {selectedTab === 'events' && (
                 <EventsTab 
-                  events={group.events || []} 
-                  isLoading={false}
+                  events={events} 
+                  isLoading={eventsLoading}
                 />
               )}
               {selectedTab === 'members' && (
                 <MembersTab 
-                  members={group.members || []} 
-                  isLoading={false}
+                  members={members} 
+                  isLoading={membersLoading}
                   groupId={group.id}
                   groupName={group.name}
                 />
               )}
               {selectedTab === 'resources' && (
                 <ResourcesTab 
-                  resources={(group as any).resources || []} 
-                  isLoading={false}
+                  resources={resources} 
+                  isLoading={resourcesLoading}
                   groupId={group.id}
                 />
               )}
               {selectedTab === 'posts' && (
                 <PostsTab 
-                  posts={(group as any).posts || []} 
-                  isLoading={false}
+                  posts={posts} 
+                  isLoading={postsLoading}
                 />
               )}
             </div>

@@ -48,6 +48,7 @@ export interface Company extends BaseEntity {
   name: string;
   description: string;
   logo: string;
+  slug?: string; // URL-friendly identifier
   coverImage?: string;
   industry: string[];
   size: string;

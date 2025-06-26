@@ -18,6 +18,18 @@ export interface SocialLinks {
   twitter?: string;
   github?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  discord?: string;
+  twitch?: string;
+  steam?: string;
+  medium?: string;
+  behance?: string;
+  dribbble?: string;
+  vimeo?: string;
+  producthunt?: string;
+  [key: string]: string | undefined; // Allow additional social platforms
 }
 
 // Common location interface

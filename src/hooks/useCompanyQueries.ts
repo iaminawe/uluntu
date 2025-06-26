@@ -16,6 +16,7 @@ function adaptFeatureCompanyToGlobal(featureCompany: FeatureCompany): GlobalComp
     name: featureCompany.name,
     description: featureCompany.description,
     logo: featureCompany.logo,
+    slug: featureCompany.slug,
     website: featureCompany.website || undefined,
     location: featureCompany.location,
     founded: featureCompany.founded,
@@ -112,6 +113,87 @@ export function useCompany(id?: string): UseQueryResult<GlobalCompany | null, Er
       }
     },
     enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * Custom hook to fetch a single company by its slug.
+ * Supports fetching from Supabase or mock data based on the VITE_USE_SUPABASE environment variable.
+ * The hook is disabled if the slug is not provided.
+ *
+ * @param slug - The slug of the company to fetch.
+ * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
+ */
+export function useCompanyBySlug(slug?: string): UseQueryResult<GlobalCompany | null, Error> {
+  return useQuery<GlobalCompany | null, Error>({
+    queryKey: ['companies', 'slug', slug, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<GlobalCompany | null> => {
+      if (!slug) {
+        return null;
+      }
+
+      if (!USE_SUPABASE) {
+        // For mock data, we'll find the company by matching the slug
+        const allCompanies = mockQueries.useCompanies().data || [];
+        const company = allCompanies.find(c => 
+          c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === slug
+        );
+        return company || null;
+      }
+
+      try {
+        const company = await companiesApi.getBySlug(slug);
+        return company ? adaptFeatureCompanyToGlobal(company) : null;
+      } catch (error) {
+        console.error(`Error fetching company with slug ${slug}:`, error);
+        return null;
+      }
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * Custom hook to fetch a single company by either ID or slug.
+ * Automatically detects whether the parameter is an ID (UUID) or a slug.
+ * Supports fetching from Supabase or mock data based on the VITE_USE_SUPABASE environment variable.
+ * The hook is disabled if the parameter is not provided.
+ *
+ * @param idOrSlug - The ID or slug of the company to fetch.
+ * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
+ */
+export function useCompanyByIdOrSlug(idOrSlug?: string): UseQueryResult<GlobalCompany | null, Error> {
+  return useQuery<GlobalCompany | null, Error>({
+    queryKey: ['companies', 'id-or-slug', idOrSlug, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<GlobalCompany | null> => {
+      if (!idOrSlug) {
+        return null;
+      }
+
+      if (!USE_SUPABASE) {
+        // For mock data, try ID first, then slug
+        const result = mockQueries.useCompany(idOrSlug).data;
+        if (result) return result;
+        
+        // Try as slug
+        const allCompanies = mockQueries.useCompanies().data || [];
+        const company = allCompanies.find(c => 
+          c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === idOrSlug
+        );
+        return company || null;
+      }
+
+      try {
+        const company = await companiesApi.getByIdOrSlug(idOrSlug);
+        return company ? adaptFeatureCompanyToGlobal(company) : null;
+      } catch (error) {
+        console.error(`Error fetching company with ID or slug ${idOrSlug}:`, error);
+        return null;
+      }
+    },
+    enabled: !!idOrSlug,
     staleTime: 5 * 60 * 1000,
   });
 }

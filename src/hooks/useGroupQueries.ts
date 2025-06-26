@@ -97,36 +97,53 @@ const mockQueries: MockQueries = {
 // Mock data and types
 import mockData from '../data/mock/mockData';
 
-// Define GroupMember type since it's not directly exported from mockData
-interface GroupMember {
-  id: string;
-  name: string;
-  role?: string;
-  joinDate?: string;
-}
-export type MockGroupMemberType = GroupMember;
+// Import the actual GroupMember type from main types
+import { GroupMember as MainGroupMember } from '@/types';
+
+// Use the main GroupMember type
+export type MockGroupMemberType = MainGroupMember;
 
 // useGroupEvents Hook
 
 export function useGroupEvents(groupId: number | string | undefined): UseQueryResult<MockEvent[], Error> {
-  const numericId = typeof groupId === 'string' ? parseInt(groupId, 10) : (typeof groupId === 'number' ? groupId : undefined);
-  const validNumericId = numericId !== undefined && !isNaN(numericId) ? numericId : undefined;
+  const stringId = typeof groupId === 'string' ? groupId : (typeof groupId === 'number' ? groupId.toString() : undefined);
 
   return useQuery<MockEvent[], Error>({
-    queryKey: ['groupEvents', validNumericId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
+    queryKey: ['groupEvents', stringId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
     queryFn: async (): Promise<MockEvent[]> => {
-      if (validNumericId === undefined) {
+      if (stringId === undefined) {
         return [];
       }
       if (!IS_SUPABASE_ENABLED) {
-        const groupEvents = mockData.events.filter((event) => String(event.group_id) === String(validNumericId));
+        const groupEvents = mockData.events.filter((event) => String(event.group_id) === stringId);
         return groupEvents as MockEvent[];
       }
-      // TODO: Implement Supabase fetch for group events, e.g., using an eventsApi
-      console.warn(`Supabase fetch for groupEvents with groupId: ${validNumericId} is not implemented. Returning empty array.`);
-      return []; // Placeholder for Supabase call
+      
+      const events = await groupsApi.getGroupEvents(stringId);
+      return events.map((e: any) => ({
+        id: e.id,
+        title: e.title || 'Untitled Event',
+        description: e.description || '',
+        date: e.date,
+        end_date: e.end_date,
+        location: e.location || '',
+        image: e.image,
+        status: e.status || 'active',
+        group_id: e.group_id,
+        type: e.type,
+        organizer_id: e.organizer_id,
+        organizer: { id: e.organizer_id, name: 'Organizer', image: '' }, // Add placeholder organizer
+        current_attendees: e.current_attendees || 0,
+        max_attendees: e.max_attendees,
+        url: e.url,
+        address: e.address,
+        latitude: e.latitude,
+        longitude: e.longitude,
+        featured: e.featured || false,
+        created_at: e.created_at
+      } as MockEvent));
     },
-    enabled: validNumericId !== undefined,
+    enabled: stringId !== undefined,
   });
 }
 
@@ -276,25 +293,32 @@ export function useDeleteGroup(): UseMutationResult<
 }
 
 export function useGroupMembers(groupId: number | string | undefined): UseQueryResult<MockGroupMemberType[], Error> {
-    const numericId = typeof groupId === 'string' ? parseInt(groupId, 10) : (typeof groupId === 'number' ? groupId : undefined);
-    const validNumericId = numericId !== undefined && !isNaN(numericId) ? numericId : undefined;
+    const stringId = typeof groupId === 'string' ? groupId : (typeof groupId === 'number' ? groupId.toString() : undefined);
 
     return useQuery<MockGroupMemberType[], Error>({
-        queryKey: ['groupMembers', validNumericId, !IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
+        queryKey: ['groupMembers', stringId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
         queryFn: async (): Promise<MockGroupMemberType[]> => {
-            if (validNumericId === undefined) {
+            if (stringId === undefined) {
                 return [];
             }
 
             if (!IS_SUPABASE_ENABLED) {
-                const groupData = mockData.groups.find((g: MockGroup) => g.id.toString() === validNumericId.toString());
+                const groupData = mockData.groups.find((g: MockGroup) => g.id.toString() === stringId);
                 return groupData?.members || [];
             }
             
-            console.warn(`Supabase fetch for group_members with groupId: ${validNumericId} is not implemented. Returning empty array as placeholder.`);
-            return [];
+            const members = await groupsApi.getGroupMembers(stringId);
+            return members.map((m: any) => ({
+                id: m.member?.id || m.member_id,
+                name: m.member?.name || 'Unknown',
+                role: m.role || 'member',
+                joinDate: m.joined_date,
+                image: m.member?.avatar_url,
+                joinedDate: m.joined_date,
+                title: m.member?.title
+            }));
         },
-        enabled: validNumericId !== undefined,
+        enabled: stringId !== undefined,
     });
 }
 
@@ -549,5 +573,61 @@ export function useInvitationByToken(token?: string): UseQueryResult<any, Error>
       return (groupsApi as any).getInvitationByToken(token);
     },
     enabled: !!token,
+  });
+}
+
+// Group Resources Hook
+export function useGroupResources(groupId: string | undefined): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupResources', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<any[]> => {
+      if (!groupId) {
+        return [];
+      }
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock returns empty array for now
+        return [];
+      }
+      
+      const resources = await groupsApi.getGroupResources(groupId);
+      return resources.map((r: any) => ({
+        id: r.id,
+        title: r.title || 'Untitled Resource',
+        description: r.description || '',
+        url: r.url || '',
+        type: r.type || 'link',
+        created_at: r.created_at,
+        category: r.category,
+        tags: r.tags
+      }));
+    },
+    enabled: !!groupId,
+  });
+}
+
+// Group Posts Hook
+export function useGroupPosts(groupId: string | undefined): UseQueryResult<any[], Error> {
+  return useQuery<any[], Error>({
+    queryKey: ['groupPosts', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<any[]> => {
+      if (!groupId) {
+        return [];
+      }
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock returns empty array for now
+        return [];
+      }
+      
+      const posts = await groupsApi.getGroupPosts(groupId);
+      return posts.map((p: any) => ({
+        id: p.post?.id || p.post_id,
+        title: p.post?.title || 'Untitled Post',
+        content: p.post?.content || '',
+        author_id: p.post?.author_id,
+        created_at: p.post?.created_at || p.created_at,
+        updated_at: p.post?.updated_at
+      }));
+    },
+    enabled: !!groupId,
   });
 }

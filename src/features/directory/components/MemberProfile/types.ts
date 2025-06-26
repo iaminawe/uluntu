@@ -91,7 +91,7 @@ export const adaptMainMemberToLocal = (mainMember: MainMember): Partial<Member> 
     socialLinks: mainMember.social ? [
       ...Object.entries(mainMember.social).map(([platform, url]) => ({
         platform,
-        url
+        url: url || ''
       }))
     ] : undefined,
     // These properties don't exist in the main type, so they would need to be added separately

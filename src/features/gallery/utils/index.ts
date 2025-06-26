@@ -160,17 +160,16 @@ export const calculateGridLayout = (
 };
 
 export const getPhotoUrl = (photo: Photo, size: 'thumbnail' | 'medium' | 'large' | 'original' = 'original'): string => {
-  // In a real implementation, this would return different sized images
-  // based on your image processing service
+  // Return the appropriate URL based on size preference
   switch (size) {
     case 'thumbnail':
-      return photo.thumbnail_path || photo.storage_path;
+      return photo.thumbnail_url || photo.thumbnail_path || photo.small_url || photo.medium_url || photo.url || photo.storage_path || '';
     case 'medium':
-      return photo.medium_path || photo.storage_path;
+      return photo.medium_url || photo.medium_path || photo.url || photo.large_url || photo.storage_path || '';
     case 'large':
-      return photo.storage_path;
+      return photo.large_url || photo.large_path || photo.original_url || photo.url || photo.storage_path || '';
     case 'original':
     default:
-      return photo.storage_path;
+      return photo.original_url || photo.original_path || photo.url || photo.storage_path || '';
   }
 };

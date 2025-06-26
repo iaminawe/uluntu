@@ -171,6 +171,8 @@ export type Database = {
           logo: string
           name: string
           size: string
+          slug: string | null
+          social: Json | null
           status: string
           website: string | null
         }
@@ -186,6 +188,8 @@ export type Database = {
           logo: string
           name: string
           size: string
+          slug?: string | null
+          social?: Json | null
           status?: string
           website?: string | null
         }
@@ -201,6 +205,8 @@ export type Database = {
           logo?: string
           name?: string
           size?: string
+          slug?: string | null
+          social?: Json | null
           status?: string
           website?: string | null
         }
