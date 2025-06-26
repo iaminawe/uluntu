@@ -1,12 +1,17 @@
+import { ContentStatus } from '../../types/common';
+
 // Types for GroupEditPage components
 export interface FormData {
   name: string;
+  slug: string;
   description: string;
   longDescription: string;
   heroImage: string;
   coverImage: string;
   visibility: 'open' | 'closed' | 'secret';
   interests: string[];
+  status: ContentStatus;
+  featured: boolean;
 }
 
 export type LoadingStateProps = Record<string, never>;

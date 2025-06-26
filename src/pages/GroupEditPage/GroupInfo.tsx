@@ -1,5 +1,6 @@
 import { GroupInfoProps } from './types';
 import { FormInput, FormTextarea } from '@/shared/components/ui/Form';
+import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 
 const GroupInfo: React.FC<GroupInfoProps> = ({ 
   formData, 
@@ -17,6 +18,15 @@ const GroupInfo: React.FC<GroupInfoProps> = ({
         error={errors.name}
         placeholder="Enter group name"
         required
+      />
+      
+      <SlugField
+        value={formData.slug}
+        onChange={(value) => handleChange({ target: { name: 'slug', value } } as any)}
+        sourceValue={formData.name}
+        error={errors.slug}
+        required
+        baseUrl="/groups/"
       />
       
       <FormInput
