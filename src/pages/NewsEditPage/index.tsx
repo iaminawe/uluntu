@@ -13,10 +13,12 @@ import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { ContentStatus } from '../../types/common';
 import { NewsArticle } from '@/types';
+import { generateSlug } from '@/utils/slugUtils';
 import { uploadNewsImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
   title: '',
+  slug: '',
   excerpt: '',
   content: '',
   image: '',
@@ -53,6 +55,7 @@ export default function NewsEditPage() {
     if (isEditMode && article) {
       setFormData({
         title: article.title,
+        slug: article.slug || generateSlug(article.title),
         excerpt: article.excerpt,
         content: article.content,
         image: article.image || '',
@@ -67,6 +70,11 @@ export default function NewsEditPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Auto-generate slug when title changes and slug is empty
+    if (name === 'title' && !formData.slug) {
+      setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
+    }
     
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
@@ -229,7 +237,7 @@ export default function NewsEditPage() {
       </Helmet>
       
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+        <div className="w-4/5 max-w-[80%] mx-auto">
           <FormHeader 
             isEditMode={isEditMode} 
             title={article?.title || ''} 
@@ -274,6 +282,7 @@ export default function NewsEditPage() {
                 navigate={navigate}
                 id={id}
                 setShowDeleteConfirm={setShowDeleteConfirm}
+                setFormData={setFormData}
               />
             </form>
           )}

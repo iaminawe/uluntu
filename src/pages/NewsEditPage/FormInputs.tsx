@@ -22,6 +22,18 @@ const FormInputs: React.FC<FormInputsProps> = ({
         required
       />
       
+      {/* Slug */}
+      <FormInput
+        id="slug"
+        name="slug"
+        label="URL Slug *"
+        value={formData.slug}
+        onChange={handleChange}
+        error={errors.slug}
+        required
+        helperText={`This will be used in the URL: /news/${formData.slug || 'your-slug'}`}
+      />
+      
       {/* Excerpt */}
       <FormTextarea
         id="excerpt"
