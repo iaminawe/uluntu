@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMemberById as useMember } from '@/hooks/useMemberQueries';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
+import { ContentStatus } from '@/shared/types/api';
+import { generateSlug } from '@/utils/slugUtils';
 import BasicInfoSection from './BasicInfoSection';
 import SkillsSection from './SkillsSection';
 import SocialSection from './SocialSection';
@@ -303,10 +305,35 @@ export default function DirectoryEditPage() {
                   {isEditMode && (
                     <button
                       type="button"
+                      onClick={() => console.log('Delete profile')}
                       className="px-6 py-2 border border-red-300 text-red-600 rounded-lg 
                                 hover:bg-red-50 transition-colors flex items-center gap-2"
                     >
                       <Trash2 className="h-5 w-5" />
+                      Delete
+                    </button>
+                  )}
+                  
+                  {formData.status === 'published' ? (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft'  }))}
+                      className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
+                                text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
+                                transition-colors flex items-center gap-2"
+                    >
+                      <EyeOff className="h-5 w-5" />
+                      Unpublish
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'published'  }))}
+                      className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
+                                hover:bg-green-50 transition-colors flex items-center gap-2"
+                    >
+                      <Eye className="h-5 w-5" />
+                      Publish
                     </button>
                   )}
                   

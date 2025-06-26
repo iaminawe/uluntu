@@ -1,5 +1,6 @@
 import { User, Briefcase, MapPin, Calendar } from 'lucide-react';
 import { FormImageUpload } from '@/shared/components/ui/Form/FormImageUpload';
+import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 import { BasicInfoSectionProps } from './types';
 
 const BasicInfoSection = ({
@@ -34,6 +35,16 @@ const BasicInfoSection = ({
         </div>
         {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
       </div>
+
+      <SlugField
+        value={formData.slug}
+        onChange={(value) => onChange({ target: { name: 'slug', value } } as any)}
+        sourceValue={formData.name}
+        error={errors.slug}
+        required
+        baseUrl="/directory/"
+        disabled={isSubmitting}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
