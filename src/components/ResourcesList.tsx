@@ -2,64 +2,13 @@
 
 import { useState } from 'react';
 import { Search, FileText, Video, Image, Link as LinkIcon, Presentation, Plus, X } from 'lucide-react';
+import { useResources } from '@/hooks/useResourceQueries';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import type { Resource } from '@/types';
 
-type ResourceType = 'document' | 'video' | 'image' | 'link' | 'presentation';
+type ResourceType = 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link' | 'gallery';
 
-interface Resource {
-  id: number;
-  title: string;
-  description: string;
-  type: ResourceType;
-  url: string;
-  createdAt: string;
-  createdBy: {
-    name: string;
-    image: string;
-  };
-  group?: {
-    id: number;
-    name: string;
-  };
-  event?: {
-    id: number;
-    name: string;
-  };
-}
-
-const SAMPLE_RESOURCES: Resource[] = [
-  {
-    id: 1,
-    title: 'Introduction to AI Ethics',
-    description: 'A comprehensive guide to ethical considerations in AI development.',
-    type: 'document',
-    url: '#',
-    createdAt: '2024-03-01',
-    createdBy: {
-      name: 'Sarah Johnson',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
-    },
-    group: {
-      id: 1,
-      name: 'AI Enthusiasts Kootenay'
-    }
-  },
-  {
-    id: 2,
-    title: 'Machine Learning Workshop Recording',
-    description: 'Recording of our February workshop on practical ML applications.',
-    type: 'video',
-    url: '#',
-    createdAt: '2024-02-15',
-    createdBy: {
-      name: 'Michael Chen',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
-    },
-    event: {
-      id: 1,
-      name: 'ML Workshop February 2024'
-    }
-  }
-];
+// Sample data removed - now using real database data
 
 interface ResourceModalProps {
   onClose: () => void;
@@ -230,6 +179,9 @@ export default function ResourcesList() {
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
   const isLoggedIn = true; // This would come from your auth context
+  
+  // Fetch resources from the database
+  const { data: resources = [], isLoading, error } = useResources();
 
   const getTypeIcon = (type: ResourceType) => {
     switch (type) {
@@ -237,23 +189,47 @@ export default function ResourcesList() {
         return <FileText className="h-5 w-5" />;
       case 'video':
         return <Video className="h-5 w-5" />;
-      case 'image':
+      case 'gallery':
         return <Image className="h-5 w-5" />;
       case 'link':
         return <LinkIcon className="h-5 w-5" />;
-      case 'presentation':
+      case 'guide':
         return <Presentation className="h-5 w-5" />;
+      case 'tool':
+        return <FileText className="h-5 w-5" />;
+      case 'article':
+        return <FileText className="h-5 w-5" />;
+      default:
+        return <FileText className="h-5 w-5" />;
     }
   };
 
-  const types: ResourceType[] = ['document', 'video', 'image', 'link', 'presentation'];
+  const types: ResourceType[] = ['guide', 'tool', 'article', 'video', 'document', 'link', 'gallery'];
 
-  const filteredResources = SAMPLE_RESOURCES.filter(resource => {
+  const filteredResources = resources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || resource.type === selectedType;
     return matchesSearch && matchesType;
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 dark:text-red-400">
+          Error loading resources. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -329,28 +305,16 @@ export default function ResourcesList() {
               </div>
 
               <div className="flex items-center mb-4">
-                <img
-                  src={resource.createdBy.image}
-                  alt={resource.createdBy.name}
-                  className="w-6 h-6 rounded-full mr-2"
-                />
                 <span className="text-sm text-slate-600 dark:text-slate-300">
-                  Added by {resource.createdBy.name} on {new Date(resource.createdAt).toLocaleDateString()}
+                  Added by {resource.contributor?.name || 'Unknown'} on {new Date(resource.dateAdded).toLocaleDateString()}
                 </span>
               </div>
 
-              {(resource.group || resource.event) && (
-                <div className="mb-4 space-y-2">
-                  {resource.group && (
-                    <div className="text-sm text-slate-600 dark:text-slate-300">
-                      Group: {resource.group.name}
-                    </div>
-                  )}
-                  {resource.event && (
-                    <div className="text-sm text-slate-600 dark:text-slate-300">
-                      Event: {resource.event.name}
-                    </div>
-                  )}
+              {resource.groupId && (
+                <div className="mb-4">
+                  <div className="text-sm text-slate-600 dark:text-slate-300">
+                    Group ID: {resource.groupId}
+                  </div>
                 </div>
               )}
 
