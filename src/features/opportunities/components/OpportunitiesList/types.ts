@@ -35,6 +35,8 @@ export interface Opportunity {
   applyUrl?: string;
   featured?: boolean;
   status?: ContentStatus;
+  coverImage?: string;
+  originalId?: string; // Preserve the original string ID for routing
 }
 
 // Adapter function to convert from main Opportunity type to local Opportunity type

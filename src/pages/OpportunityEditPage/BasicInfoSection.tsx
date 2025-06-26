@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Building, Globe, Mail, DollarSign } from 'lucide-react';
+import { MapPin, Calendar, Building, Globe, Mail, DollarSign, Link } from 'lucide-react';
 import RichTextEditor from '@/shared/components/ui/RichTextEditor';
 import CustomSelect from '@/shared/components/ui/CustomSelect';
 import { FormSectionProps } from './types';
@@ -45,6 +45,34 @@ const BasicInfoSection = ({
             placeholder="e.g., Senior Full Stack Developer"
           />
           {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="slug" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            URL Slug <span className="text-red-500">*</span>
+          </label>
+          <div className="mt-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Link className="h-5 w-5 text-slate-400" />
+            </div>
+            <input
+              type="text"
+              id="slug"
+              name="slug"
+              value={formData.slug}
+              onChange={onChange}
+              disabled={isSubmitting}
+              className={`block w-full pl-10 pr-3 py-2 border ${
+                errors.slug ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'
+              } rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500
+                bg-white dark:bg-slate-800 text-slate-900 dark:text-white`}
+              placeholder="senior-full-stack-developer"
+            />
+          </div>
+          {errors.slug && <p className="mt-1 text-sm text-red-500">{errors.slug}</p>}
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            This will be used in the URL: /opportunities/{formData.slug || 'your-slug'}
+          </p>
         </div>
 
         <div>

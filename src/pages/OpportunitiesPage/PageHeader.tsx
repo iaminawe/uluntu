@@ -6,7 +6,7 @@ const PageHeader: React.FC = () => {
   return (
     <SharedPageHeader
       title="Tech Opportunities"
-      subtitle="Discover jobs, projects, and volunteer positions in the Kootenay tech community"
+      subtitle="Find your next role in the Kootenay tech ecosystem. From startups to established companies, discover positions that match your skills and passion."
       isHero={true}
       backgroundImage={MOUNTAIN_BACKGROUNDS.opportunities}
     />

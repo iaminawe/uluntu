@@ -21,7 +21,15 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     deadline: dbOpportunity.deadline ?? undefined,
     status: (dbOpportunity.status as 'draft' | 'published' | 'archived') ?? 'draft',
     featured: dbOpportunity.featured === null ? false : !!dbOpportunity.featured,
-    created_at: dbOpportunity.created_at ?? new Date().toISOString()
+    created_at: dbOpportunity.created_at ?? new Date().toISOString(),
+    // Add missing fields for detail page
+    organization: dbOpportunity.organization ?? '',
+    contactEmail: dbOpportunity.contact_email ?? '',
+    website: dbOpportunity.website ?? '',
+    image: dbOpportunity.image ?? '',
+    requirements: dbOpportunity.requirements ?? [],
+    responsibilities: dbOpportunity.responsibilities ?? [],
+    benefits: dbOpportunity.benefits ?? []
   };
 }
 
