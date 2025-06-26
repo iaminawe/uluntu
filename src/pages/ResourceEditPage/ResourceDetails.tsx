@@ -1,5 +1,6 @@
 import { ResourceDetailsProps } from './types';
 import { FormInput, FormTextarea } from '@/shared/components/ui/Form';
+import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 
 const ResourceDetails: React.FC<ResourceDetailsProps> = ({ formData, handleChange }) => {
   return (
@@ -12,6 +13,14 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ formData, handleChang
         onChange={handleChange}
         required
         placeholder="Enter resource title"
+      />
+      
+      <SlugField
+        value={formData.slug}
+        onChange={(value) => handleChange({ target: { name: 'slug', value } } as any)}
+        sourceValue={formData.title}
+        required
+        baseUrl="/resources/"
       />
       
       <FormTextarea

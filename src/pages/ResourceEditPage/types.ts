@@ -7,6 +7,7 @@ export type ResourceType = Resource['type'];
 
 export interface FormData {
   title: string;
+  slug: string;
   description: string;
   status: ContentStatus;
   featured: boolean;
