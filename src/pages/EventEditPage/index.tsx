@@ -6,6 +6,7 @@ import { EventInput } from '@/features/events/types';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { format } from 'date-fns';
+import { generateSlug } from '@/utils/slugUtils';
 import FormHeader from './FormHeader';
 import EventDetails from './EventDetails';
 import EventImage from './EventImage';
@@ -18,6 +19,7 @@ import { uploadEventImage } from '../../lib/supabase';
 
 const initialFormData: FormData = {
   title: '',
+  slug: '',
   date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
   endDate: format(new Date(new Date().getTime() + 2 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"), // 2 hours later
   location: '',
@@ -26,7 +28,8 @@ const initialFormData: FormData = {
   type: 'in-person',
   url: '',
   organizerId: '1', // Use string ID to match expected type
-  sessions: []
+  sessions: [],
+  status: 'draft'
 };
 
 export default function EventEditPage() {
@@ -60,6 +63,7 @@ export default function EventEditPage() {
       console.log('EventEditPage - Setting form data from event');
       setFormData({
         title: event.title,
+        slug: event.slug || generateSlug(event.title),
         date: event.date,
         endDate: event.endDate || format(new Date(new Date(event.date).getTime() + 2 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"),
         location: event.location,
@@ -76,6 +80,11 @@ export default function EventEditPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Auto-generate slug when title changes and slug is empty
+    if (name === 'title' && !formData.slug) {
+      setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
+    }
     
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
@@ -218,7 +227,7 @@ export default function EventEditPage() {
       </Helmet>
       
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+        <div className="w-4/5 max-w-[80%] mx-auto">
           <FormHeader 
             isEditMode={isEditMode} 
             title={event?.title || ''} 
@@ -271,6 +280,8 @@ export default function EventEditPage() {
                 isSubmitting={isSubmitting}
                 navigate={navigate}
                 id={id}
+                status={formData.status}
+                onStatusChange={(status) => setFormData({ ...formData, status })}
               />
             </form>
           )}
