@@ -390,7 +390,14 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         })
         .eq('id', themeId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating theme:', error);
+        if (error.code === '42501') {
+          console.error('Permission denied - user may not have admin role');
+          toast.error('Permission denied. Please ensure you have admin privileges.');
+        }
+        throw error;
+      }
 
       await loadThemes();
       toast.success('Theme updated successfully');
@@ -482,7 +489,14 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
           onConflict: 'theme_id,config_type'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating theme colors:', error);
+        if (error.code === '42501') {
+          console.error('Permission denied - user may not have admin role');
+          toast.error('Permission denied. Please ensure you have admin privileges.');
+        }
+        throw error;
+      }
 
       await loadThemes();
       return true;
