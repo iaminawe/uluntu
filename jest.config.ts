@@ -105,11 +105,11 @@ const config: Config.InitialOptions = {
     '<rootDir>/.next/'
   ],
   
-  // Watch plugins
-  watchPlugins: [
-    'jest-watch-typeahead/filename',
-    'jest-watch-typeahead/testname'
-  ],
+  // Watch plugins - commented out as the package may not be installed
+  // watchPlugins: [
+  //   'jest-watch-typeahead/filename',
+  //   'jest-watch-typeahead/testname'
+  // ],
   
   // Clear mocks between tests
   clearMocks: true,
