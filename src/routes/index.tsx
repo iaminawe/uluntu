@@ -34,7 +34,7 @@ const CompaniesPage = lazy(() => import('../pages/CompaniesPage'));
 const EventsPage = lazy(() => import('../pages/EventsPage'));
 const NewsPage = lazy(() => import('../pages/NewsPage'));
 const GroupsPage = lazy(() => import('../pages/GroupsPage'));
-const ResourcesPage = lazy(() => import('../pages/ResourcesPage'));
+const ResourcesPage = lazy(() => import('../pages/ResourcesPage/index'));
 const MarketplacePage = lazy(() => import('../pages/MarketplacePage'));
 const OpportunitiesPage = lazy(() => import('../pages/OpportunitiesPage'));
 
@@ -99,6 +99,10 @@ const UpdateCompanySlugs = lazy(() => import('../pages/admin/UpdateCompanySlugs'
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 import GroupGuard from '@/features/auth/components/GroupGuard';
 
+// Feature toggle components
+import { FeatureGate } from '@/utils/featureToggle';
+import NotFoundError from '@/shared/components/ui/ErrorDisplay/NotFoundError';
+
 // Lazy load onboarding
 const OnboardingWizard = lazy(() => import('@/features/onboarding/components/OnboardingWizard'));
 
@@ -107,6 +111,9 @@ const GalleriesPage = lazy(() => import('../pages/GalleriesPage'));
 const GalleryDetailPage = lazy(() => import('../pages/GalleryDetailPage'));
 const MyGalleriesPage = lazy(() => import('../pages/MyGalleriesPage'));
 const GalleryEditPage = lazy(() => import('../pages/GalleryEditPage'));
+
+// Lazy load messaging pages
+const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 
 export const router = createBrowserRouter([
   {
@@ -234,6 +241,16 @@ export const router = createBrowserRouter([
       { 
         path: 'my-galleries', 
         element: <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute> 
+      },
+      
+      // Messaging routes
+      { 
+        path: 'messages', 
+        element: (
+          <FeatureGate feature="user_messaging" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(MessagesPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       }
     ]
   },
