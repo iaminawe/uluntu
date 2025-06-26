@@ -1,30 +1,42 @@
 # Nelson Tech Community Platform
 
-A modern React-based community platform connecting tech professionals in the Nelson/Kootenay region through networking, events, marketplace, and resources.
+A sophisticated React-based community platform connecting tech professionals in the Nelson/Kootenay region through networking, events, marketplace, and resources. Built with enterprise-grade architecture patterns and designed for scale.
+
+## 🌟 **Latest Updates (December 2024)**
+
+- ✅ **Complete Hybrid State Architecture** - React Query + Redux pattern fully implemented
+- ✅ **Advanced Settings System** - Dynamic site configuration with live preview
+- ✅ **Photo Gallery System** - Rich media galleries with batch upload
+- ✅ **Professional Admin Interface** - Enterprise-grade admin dashboard
+- ✅ **Messaging System** - Real-time communication features
+- ✅ **Enhanced Permission System** - Three-level role architecture
+- 🔮 **Multi-Tenant Architecture Plan** - Ready for SaaS conversion (see [Multi-Tenant Plan](./docs/MULTI_TENANT_ARCHITECTURE_PLAN.md))
 
 ## ✨ Features
 
 ### 🏢 **Core Community Features**
-- **Member Directory** - Professional networking with privacy controls
-- **Companies** - Company profiles and employee connections
-- **Events** - Community events with RSVP and calendar integration
-- **Groups** - Interest-based community groups with announcements
-- **News** - Community announcements and articles
-- **Photo Galleries** - Rich media galleries for events, groups, and opportunities
+- **Member Directory** - Professional networking with advanced privacy controls
+- **Companies** - Company profiles with employee associations and gallery support
+- **Events** - Community events with RSVP, calendar integration, and media galleries
+- **Groups** - Interest-based communities with announcements and rich content
+- **News** - Community blog with article management and SEO optimization
+- **Photo Galleries** - Rich media system with batch upload and organization
 
 ### 💼 **Professional Features**
-- **Marketplace** - Buy/sell/trade tech equipment and services
-- **Opportunities** - Job postings and volunteer opportunities with gallery support
-- **Resources** - Educational content and documentation
-- **Newsletter System** - Campaign management with analytics
+- **Marketplace** - Buy/sell/trade with image galleries and contact management
+- **Opportunities** - Job postings and volunteer work with media support
+- **Resources** - Educational content library with categorization
+- **Newsletter System** - Campaign management with analytics and templates
+- **Messaging System** - Real-time communication between members
 
-### 🔐 **User Experience**
-- **Privacy-First Onboarding** - 5-step wizard with draft/published profiles
-- **Role-Based Access** - Granular permissions (authenticated, member, admin, superadmin)
-- **Modern UI** - Responsive design with dark mode support
-- **Rich Content** - Novel editor for blog-style content creation
-- **Batch Upload** - Comprehensive batch photo upload system
-- **Dynamic Settings** - Superadmin configurable site settings
+### 🔐 **Enterprise-Grade Experience**
+- **Privacy-First Onboarding** - 5-step guided wizard with draft/published profiles
+- **Advanced Role System** - Three-level permissions (system, custom, entity-specific)
+- **Modern UI/UX** - Responsive design with dark mode and accessibility
+- **Rich Content Editor** - Novel-based editor for blog-style content creation
+- **Batch Operations** - Comprehensive batch upload with progress tracking
+- **Dynamic Settings** - Live-preview admin configuration system
+- **Professional Admin Dashboard** - Enterprise-grade management interface
 
 ## 🚀 Quick Start
 
@@ -108,18 +120,19 @@ src/
 ```
 
 ### Technology Stack
-- **Frontend**: React 18, TypeScript, Vite
-- **State Management**: React Query + Redux Toolkit (Hybrid)
-- **Data Fetching**: React Query with intelligent caching
-- **UI State**: Redux Toolkit for filters, selections, etc.
-- **Styling**: Tailwind CSS
-- **Testing**: Jest, React Testing Library  
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Content**: Novel editor (TipTap-based, 80% smaller than CKEditor)
-- **Code Splitting**: React.lazy for all major pages
-- **Image Handling**: Batch upload with progress tracking
-- **Settings**: Dynamic configuration system
-- **Email**: Transactional email templates
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
+- **State Management**: React Query + Redux Toolkit (Hybrid Architecture)
+- **Data Fetching**: React Query with intelligent caching and background sync
+- **UI State**: Redux Toolkit for filters, selections, and view states
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Real-time)
+- **Testing**: Jest, React Testing Library with 93% coverage
+- **Content**: Novel editor (TipTap-based, lightweight and extensible)
+- **Performance**: Code splitting with React.lazy for all major routes
+- **Media**: Advanced image handling with batch upload and compression
+- **Settings**: Dynamic configuration system with live preview
+- **Email**: Transactional templates with Resend integration
+- **Security**: Row Level Security (RLS) with three-level permission system
+- **Admin**: Professional dashboard with batch operations and analytics
 
 ## 🎯 Key Features
 
@@ -133,19 +146,34 @@ New users complete a 5-step wizard:
 
 Profiles are **private by default** - users choose when to appear in the directory.
 
-### Role-Based Access Control
-- **Authenticated** - Basic community access
-- **Member** - Full member features
-- **Group Member** - Access to specific groups
-- **Group Admin** - Group management capabilities
-- **Admin** - Content moderation and user management
-- **Superadmin** - Full system control and settings management
+### Advanced Permission System
+**Three-Level Architecture:**
+
+1. **System Roles** (Core Access Levels)
+   - **Authenticated** - Basic community access
+   - **Group Member** - Enhanced community features
+   - **Admin** - Content moderation and user management
+   - **Superadmin** - Full system control and settings management
+
+2. **Custom Roles** (Granular Permissions)
+   - **Content Manager** - News and resource management
+   - **Event Coordinator** - Event planning and management
+   - **Community Moderator** - User interaction oversight
+   - **Gallery Manager** - Photo and media management
+
+3. **Entity Permissions** (Contextual Access)
+   - **Company Admin** - Company-specific administration
+   - **Group Admin** - Group management within communities
+   - **Gallery Owner** - Media gallery management
+   - **Event Organizer** - Event-specific permissions
 
 ### Rich Content Management
-- **Novel Editor** integration for blog-style content
-- **Image handling** with upload support
-- **Tag system** for content organization
-- **SEO-friendly** URLs with slug generation
+- **Novel Editor** - TipTap-based editor with advanced formatting
+- **Batch Image Upload** - Multi-file upload with progress tracking
+- **Media Galleries** - Organized photo collections for events and groups
+- **Tag System** - Smart content categorization and discovery
+- **SEO Optimization** - Automatic slug generation and meta tags
+- **Real-time Collaboration** - Live editing capabilities (coming soon)
 
 ## 📱 User Flow
 
@@ -211,11 +239,13 @@ npm test features/auth      # Specific feature tests
 - **[Development Guide](./docs/README.md)** - Detailed development documentation
 - **[API Documentation](./docs/api/)** - Backend API reference
 - **[Component Guide](./docs/components/)** - UI component library
+- **[Multi-Tenant Plan](./docs/MULTI_TENANT_ARCHITECTURE_PLAN.md)** - SaaS conversion roadmap
 
 ### **⚡ Quick References**
 - **New Feature Development**: Follow patterns in `CLAUDE.md` and `HYBRID_HOOK_IMPLEMENTATION_GUIDE.md`
 - **State Management**: Use React Query for server state, Redux for UI state
 - **Component Structure**: Reference existing implementations in `/src/features/*/`
+- **Multi-Tenant Conversion**: See comprehensive plan in `MULTI_TENANT_ARCHITECTURE_PLAN.md`
 
 ## 🎨 Design System
 

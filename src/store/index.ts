@@ -15,6 +15,7 @@ import onboardingReducer from '@/features/onboarding/store/onboardingSlice';
 import galleryReducer from '@/features/gallery/store/gallerySlice';
 import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
 import adminSettingsUIReducer from '@/features/admin/store/adminSettingsUISlice';
+import messagingUIReducer from '@/features/messaging/store/messagingUISlice';
 // Import additional reducers as they become available
 // import companyProfilesReducer from './slices/companyProfilesSlice';
 
@@ -43,6 +44,7 @@ export const store = configureStore({
     gallery: galleryReducer,
     galleryUI: galleryUIReducer,
     adminSettingsUI: adminSettingsUIReducer,
+    messagingUI: messagingUIReducer,
     // Other reducers will be added as they are implemented
   },
   middleware: (getDefaultMiddleware) => 

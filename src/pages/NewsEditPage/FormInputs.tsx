@@ -1,5 +1,5 @@
 import RichTextEditor from '@/shared/components/ui/RichTextEditor';
-import { FormInput, FormSelect, FormCheckbox, FormTextarea } from '@/shared/components/ui/Form';
+import { FormInput, FormSelect, FormCheckbox, FormTextarea, FormImageUpload } from '@/shared/components/ui/Form';
 import { FormInputsProps } from './types';
 import { ContentStatus } from '../../types/common';
 
@@ -7,6 +7,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
   formData, 
   handleChange, 
   setFormData, 
+  onImageChange,
   errors 
 }) => {
   return (
@@ -51,6 +52,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
         <label htmlFor="content" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Article Content *
         </label>
+        
         <RichTextEditor
           id="content"
           value={formData.content}
@@ -62,15 +64,17 @@ const FormInputs: React.FC<FormInputsProps> = ({
         )}
       </div>
       
-      {/* Image URL */}
-      <FormInput
-        id="image"
+      {/* Featured Image */}
+      <FormImageUpload
+        id="news-image"
         name="image"
-        label="Featured Image URL"
-        value={formData.image}
-        onChange={handleChange}
-        placeholder="https://example.com/image.jpg"
-        helperText="Upload or enter a URL to your featured image"
+        label="Featured Image"
+        currentImage={formData.image}
+        onChange={onImageChange}
+        placeholder="Upload an engaging news article image"
+        helperText="Upload an image that represents your article. JPG, PNG, or WebP formats supported."
+        maxSize={5 * 1024 * 1024} // 5MB limit
+        acceptedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
       />
       
       {/* Status */}

@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
 import { Member } from './types';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { DirectMessageButton } from '@/features/messaging/components/DirectMessageButton';
 
 interface ProfileHeaderProps {
   member: Member;
@@ -41,12 +42,11 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
             </div>
             
             <div className="flex mt-4 md:mt-0 space-x-3">
-              <button
-                onClick={onContactClick}
-                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
-              >
-                Contact
-              </button>
+              <DirectMessageButton
+                recipientId={(member as any).user_id || member.id}
+                recipientName={member.name}
+                onEmailFallback={onContactClick}
+              />
               {/* Only show edit button if this is the current user's profile */}
               {user?.id && (member as any).user_id && user.id === (member as any).user_id && (
                 <button

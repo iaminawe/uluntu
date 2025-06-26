@@ -1,3 +1,3 @@
-// Re-export the Novel-based RichTextEditor
-export { default } from './NovelRichTextEditor';
+// Test with minimal Tiptap implementation
+export { default } from './MinimalTiptap';
 export type { RichTextEditorProps } from './types';

@@ -1,6 +1,7 @@
 import { MapPin, Calendar, Building, Globe, Mail, DollarSign, Link } from 'lucide-react';
 import RichTextEditor from '@/shared/components/ui/RichTextEditor';
 import CustomSelect from '@/shared/components/ui/CustomSelect';
+import { FormImageUpload } from '@/shared/components/ui/Form';
 import { FormSectionProps } from './types';
 
 const OpportunityTypeOptions = [
@@ -21,6 +22,7 @@ const BasicInfoSection = ({
   errors,
   onChange,
   onDescriptionChange,
+  onImageChange,
   isSubmitting
 }: FormSectionProps) => {
   return (
@@ -249,19 +251,18 @@ const BasicInfoSection = ({
             </div>
           </div>
 
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Image URL
-            </label>
-            <input
-              type="url"
-              id="image"
+          <div className="md:col-span-2">
+            <FormImageUpload
+              id="opportunity-image"
               name="image"
-              value={formData.image}
-              onChange={onChange}
+              label="Featured Image"
+              currentImage={formData.image}
+              onChange={onImageChange}
               disabled={isSubmitting}
-              className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-              placeholder="https://example.com/image.jpg"
+              placeholder="Upload an image for this opportunity"
+              helperText="Upload an image that represents the opportunity or organization. JPG, PNG, or WebP formats supported."
+              maxSize={5 * 1024 * 1024} // 5MB limit
+              acceptedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
             />
           </div>
 

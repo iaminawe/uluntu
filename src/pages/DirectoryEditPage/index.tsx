@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMemberById as useMember } from '@/hooks/useMemberQueries';
 import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
-import { ContentStatus } from '@/shared/types/api';
+import { ContentStatus } from '@/types/common';
 import { generateSlug } from '@/utils/slugUtils';
 import BasicInfoSection from './BasicInfoSection';
 import SkillsSection from './SkillsSection';
@@ -46,6 +46,7 @@ export default function DirectoryEditPage() {
       
       setFormData({
         name: member.name || '',
+        slug: (member.slug && typeof member.slug === 'string') ? member.slug : '',
         title: typeof member.title === 'string' ? member.title : '',
         company: typeof member.company === 'string' ? member.company : '',
         location: typeof member.location === 'string' ? member.location : '',
@@ -54,6 +55,8 @@ export default function DirectoryEditPage() {
         skills: Array.isArray(member.skills) ? member.skills : [],
         interests: [], // Add missing interests field
         joinDate: member.joinDate || '',
+        status: member.status || 'published',
+        featured: member.featured || false,
         social: {
           linkedin: typeof memberSocial.linkedin === 'string' ? memberSocial.linkedin : '',
           twitter: typeof memberSocial.twitter === 'string' ? memberSocial.twitter : '',

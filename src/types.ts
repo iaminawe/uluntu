@@ -32,6 +32,7 @@ export interface EventPresenter {
 
 export interface Member extends BaseEntity {
   name: string;
+  slug?: string;
   title?: string; // Make optional to match useMemberQueries type
   company?: string;
   location?: string;
@@ -61,6 +62,7 @@ export interface Company extends BaseEntity {
 
 export interface Event extends BaseEntity {
   title: string;
+  slug?: string;
   date: string;
   endDate?: string;
   location: string;
@@ -106,6 +108,7 @@ export interface GroupPost {
 
 export interface Group extends BaseEntity {
   name: string;
+  slug?: string;
   description: string;
   longDescription?: string;
   heroImage: string;
@@ -144,6 +147,7 @@ export type { ContentStatus, BaseEntity, SocialLinks, Location };
 
 export interface Resource extends BaseEntity {
   title: string;
+  slug?: string;
   description: string;
   type: 'guide' | 'tool' | 'article' | 'video' | 'document' | 'link' | 'gallery'; // Added 'link' and 'gallery' for broader compatibility
   url: string;
@@ -159,6 +163,7 @@ export interface Resource extends BaseEntity {
 
 export interface MarketplaceItem extends BaseEntity {
   title: string;
+  slug?: string;
   description: string;
   price?: number;
   type: 'service' | 'product' | 'event';
@@ -205,6 +210,7 @@ export interface CompanyEmployee {
 
 export interface Opportunity extends BaseEntity {
   title: string;
+  slug?: string;
   company: {
     id: string;
     name: string;

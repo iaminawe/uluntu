@@ -12,7 +12,7 @@ import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { generateSlug } from '@/features/companies/utils/slugUtils';
-import { supabase } from '@/lib/supabase';
+import { supabase, uploadGroupImage } from '@/lib/supabase';
 import { ContentStatus } from '../../types/common';
 
 const initialFormData: FormData = {
@@ -40,6 +40,11 @@ export default function GroupEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
+  // Image upload state
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  
   const { 
     data: group, 
     isLoading: groupLoading
@@ -50,7 +55,7 @@ export default function GroupEditPage() {
     if (isEditMode && group) {
       setFormData({
         name: group.name,
-        slug: group.slug || generateSlug(group.name),
+        slug: (group as any).slug || generateSlug(group.name),
         description: group.description || '',
         longDescription: group.longDescription || '',
         heroImage: group.heroImage || '',
@@ -76,26 +81,24 @@ export default function GroupEditPage() {
   };
 
   const handleHeroImageChange = (file: File | null) => {
-    // Handle hero image upload
+    setHeroImageFile(file);
     if (file) {
-      // In a real app, you'd upload the file and get back a URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData(prev => ({ ...prev, heroImage: e.target?.result as string }));
-      };
-      reader.readAsDataURL(file);
+      // Create object URL for preview
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, heroImage: objectUrl }));
+    } else {
+      setFormData(prev => ({ ...prev, heroImage: '' }));
     }
   };
 
   const handleCoverImageChange = (file: File | null) => {
-    // Handle cover image upload
+    setCoverImageFile(file);
     if (file) {
-      // In a real app, you'd upload the file and get back a URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData(prev => ({ ...prev, coverImage: e.target?.result as string }));
-      };
-      reader.readAsDataURL(file);
+      // Create object URL for preview
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, coverImage: objectUrl }));
+    } else {
+      setFormData(prev => ({ ...prev, coverImage: '' }));
     }
   };
   
@@ -128,13 +131,44 @@ export default function GroupEditPage() {
     setIsSubmitting(true);
     
     try {
+      // Upload images if new files are selected
+      let finalHeroImageUrl = formData.heroImage;
+      let finalCoverImageUrl = formData.coverImage;
+      
+      if (heroImageFile || coverImageFile) {
+        setIsUploadingImages(true);
+        
+        const tempGroupId = id || `temp-${Date.now()}`;
+        
+        if (heroImageFile) {
+          const { url, error } = await uploadGroupImage(heroImageFile, tempGroupId, 'hero');
+          if (error) {
+            setErrors(prev => ({ ...prev, heroImage: 'Failed to upload hero image. Please try again.' }));
+            return;
+          }
+          finalHeroImageUrl = url || '';
+        }
+        
+        if (coverImageFile) {
+          const { url, error } = await uploadGroupImage(coverImageFile, tempGroupId, 'cover');
+          if (error) {
+            setErrors(prev => ({ ...prev, coverImage: 'Failed to upload cover image. Please try again.' }));
+            return;
+          }
+          finalCoverImageUrl = url || '';
+        }
+        
+        setIsUploadingImages(false);
+      }
+      
       // Prepare data for API
       const groupData: GroupInput = {
         name: formData.name,
         slug: formData.slug || generateSlug(formData.name),
         description: formData.description,
         longDescription: formData.longDescription || null,
-        heroImage: formData.heroImage,
+        heroImage: finalHeroImageUrl,
+        coverImage: finalCoverImageUrl,
         visibility: formData.visibility,
         status: formData.status,
         featured: formData.featured
@@ -272,6 +306,7 @@ export default function GroupEditPage() {
                   onHeroImageChange={handleHeroImageChange}
                   onCoverImageChange={handleCoverImageChange}
                   errors={errors}
+                  isSubmitting={isSubmitting || isUploadingImages}
                 />
                 
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
