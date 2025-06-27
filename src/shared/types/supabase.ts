@@ -399,6 +399,49 @@ export type Database = {
           },
         ]
       }
+      company_topics: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          topic_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          topic_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_topics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submission_notes: {
         Row: {
           author_id: string
@@ -765,6 +808,49 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_topics: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_topics_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -1232,6 +1318,49 @@ export type Database = {
           },
         ]
       }
+      group_topics: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_topics_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
           comment_count: number | null
@@ -1405,6 +1534,49 @@ export type Database = {
           },
         ]
       }
+      marketplace_topics: {
+        Row: {
+          created_at: string
+          id: string
+          marketplace_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          marketplace_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          marketplace_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_topics_marketplace_id_fkey"
+            columns: ["marketplace_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_interests: {
         Row: {
           created_at: string | null
@@ -1495,6 +1667,49 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_topics: {
+        Row: {
+          created_at: string
+          id: string
+          member_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_topics_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -2002,6 +2217,49 @@ export type Database = {
           },
         ]
       }
+      news_topics: {
+        Row: {
+          created_at: string
+          id: string
+          news_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_topics_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_analytics: {
         Row: {
           campaign_id: string | null
@@ -2449,6 +2707,49 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunity_topics: {
+        Row: {
+          created_at: string
+          id: string
+          opportunity_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opportunity_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunity_topics_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunity_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunity_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -2925,6 +3226,49 @@ export type Database = {
           },
         ]
       }
+      resource_topics: {
+        Row: {
+          created_at: string
+          id: string
+          resource_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resource_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resource_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_topics_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topic_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           comment_count: number | null
@@ -3266,6 +3610,45 @@ export type Database = {
         }
         Relationships: []
       }
+      topics: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_galleries: {
         Row: {
           cover_photo_id: string | null
@@ -3575,6 +3958,26 @@ export type Database = {
           },
         ]
       }
+      topic_analytics: {
+        Row: {
+          color: string | null
+          company_count: number | null
+          event_count: number | null
+          group_count: number | null
+          icon: string | null
+          id: string | null
+          marketplace_count: number | null
+          member_count: number | null
+          name: string | null
+          news_count: number | null
+          opportunity_count: number | null
+          popularity_percentage: number | null
+          resource_count: number | null
+          slug: string | null
+          total_content_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_member_profile: {
@@ -3607,6 +4010,13 @@ export type Database = {
           category: string
           key: string
           value: string
+        }[]
+      }
+      get_topic_content_counts: {
+        Args: { topic_slug_param: string }
+        Returns: {
+          entity_type: string
+          count: number
         }[]
       }
       get_unread_message_count: {
