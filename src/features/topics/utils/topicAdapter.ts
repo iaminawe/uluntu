@@ -6,10 +6,10 @@ export function adaptTopicFromDatabase(row: TopicRow): Topic {
     name: row.name,
     slug: row.slug,
     description: row.description || undefined,
-    icon: row.icon,
-    color: row.color,
-    sortOrder: row.sort_order,
-    isActive: row.is_active,
+    icon: row.icon || 'tag',
+    color: row.color || '#6366f1',
+    sortOrder: row.sort_order || 0,
+    isActive: row.is_active ?? true,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -31,26 +31,26 @@ export function adaptTopicToDatabase(topic: Partial<Topic>): Partial<TopicRow> {
 
 export function adaptTopicWithAnalyticsFromDatabase(row: TopicAnalyticsRow): TopicWithAnalytics {
   return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description || undefined,
-    icon: row.icon,
-    color: row.color,
-    sortOrder: row.sort_order,
-    isActive: row.is_active,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    totalContentCount: row.total_content_count,
-    eventCount: row.event_count,
-    newsCount: row.news_count,
-    resourceCount: row.resource_count,
-    marketplaceCount: row.marketplace_count,
-    opportunityCount: row.opportunity_count,
-    groupCount: row.group_count,
-    companyCount: row.company_count,
-    memberCount: row.member_count,
-    popularityPercentage: row.popularity_percentage
+    id: row.id || '',
+    name: row.name || '',
+    slug: row.slug || '',
+    description: undefined, // Not available in the view
+    icon: row.icon || 'tag',
+    color: row.color || '#6366f1',
+    sortOrder: 0, // Not available in the view
+    isActive: true, // Not available in the view
+    createdAt: new Date().toISOString(), // Not available in the view
+    updatedAt: new Date().toISOString(), // Not available in the view
+    totalContentCount: row.total_content_count || 0,
+    eventCount: row.event_count || 0,
+    newsCount: row.news_count || 0,
+    resourceCount: row.resource_count || 0,
+    marketplaceCount: row.marketplace_count || 0,
+    opportunityCount: row.opportunity_count || 0,
+    groupCount: row.group_count || 0,
+    companyCount: row.company_count || 0,
+    memberCount: row.member_count || 0,
+    popularityPercentage: row.popularity_percentage || 0
   };
 }
 

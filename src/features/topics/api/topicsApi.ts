@@ -2,7 +2,8 @@ import { supabase, handleSupabaseError } from '@/shared/api';
 import { 
   adaptTopicFromDatabase, 
   adaptTopicToDatabase, 
-  adaptTopicWithAnalyticsFromDatabase 
+  adaptTopicWithAnalyticsFromDatabase,
+  generateTopicSlug
 } from '../utils/topicAdapter';
 import type { 
   Topic, 
@@ -20,7 +21,6 @@ import type {
 export const topicsApi = {
   async getAll(): Promise<Topic[]> {
     try {
-      // @ts-expect-error - Topics table not yet in Supabase types
       const { data, error } = await supabase
         .from('topics')
         .select('*')
@@ -41,7 +41,6 @@ export const topicsApi = {
 
   async getById(id: string): Promise<Topic | null> {
     try {
-      // @ts-expect-error - Topics table not yet in Supabase types
       const { data, error } = await supabase
         .from('topics')
         .select('*')
@@ -62,7 +61,6 @@ export const topicsApi = {
 
   async getBySlug(slug: string): Promise<Topic | null> {
     try {
-      // @ts-expect-error - Topics table not yet in Supabase types
       const { data, error } = await supabase
         .from('topics')
         .select('*')
@@ -84,7 +82,6 @@ export const topicsApi = {
 
   async getWithAnalytics(): Promise<TopicWithAnalytics[]> {
     try {
-      // @ts-expect-error - Topics view not yet in Supabase types
       const { data, error } = await supabase
         .from('topic_analytics')
         .select('*')
@@ -104,16 +101,16 @@ export const topicsApi = {
 
   async create(topicData: TopicFormData): Promise<Topic | null> {
     try {
-      const dbData = adaptTopicToDatabase({
+      const dbData = {
         name: topicData.name,
-        description: topicData.description,
-        icon: topicData.icon || 'tag',
-        color: topicData.color || '#6366f1',
-        sortOrder: topicData.sortOrder || 0,
-        isActive: topicData.isActive ?? true
-      });
+        slug: generateTopicSlug(topicData.name),
+        description: topicData.description || null,
+        icon: topicData.icon || null,
+        color: topicData.color || null,
+        sort_order: topicData.sortOrder || 0,
+        is_active: topicData.isActive ?? true
+      };
 
-      // @ts-expect-error - Topics table not yet in Supabase types
       const { data, error } = await supabase
         .from('topics')
         .insert(dbData)
@@ -180,7 +177,7 @@ export const topicsApi = {
       const tableName = `${entityType}_topics`;
       const idColumn = `${entityType}_id`;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from(tableName)
         .select(`
           topic_id,
@@ -193,7 +190,7 @@ export const topicsApi = {
         return [];
       }
 
-      return (data || []).map(item => adaptTopicFromDatabase((item as any).topics));
+      return (data || []).map((item: any) => adaptTopicFromDatabase(item.topics));
     } catch (error) {
       handleSupabaseError(error, `fetching ${entityType} topics`);
       return [];
@@ -206,7 +203,7 @@ export const topicsApi = {
       const idColumn = `${entityType}_id`;
 
       // First, delete existing topics
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await (supabase as any)
         .from(tableName)
         .delete()
         .eq(idColumn, entityId);
@@ -223,7 +220,7 @@ export const topicsApi = {
           topic_id: topicId
         }));
 
-        const { error: insertError } = await supabase
+        const { error: insertError } = await (supabase as any)
           .from(tableName)
           .insert(topicData);
 

@@ -58,25 +58,30 @@ export interface TopicRow {
   name: string;
   slug: string;
   description: string | null;
-  icon: string;
-  color: string;
-  sort_order: number;
-  is_active: boolean;
+  icon: string | null;
+  color: string | null;
+  sort_order: number | null;
+  is_active: boolean | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface TopicAnalyticsRow extends TopicRow {
-  total_content_count: number;
-  event_count: number;
-  news_count: number;
-  resource_count: number;
-  marketplace_count: number;
-  opportunity_count: number;
-  group_count: number;
-  company_count: number;
-  member_count: number;
-  popularity_percentage: number;
+export interface TopicAnalyticsRow {
+  id: string | null;
+  name: string | null;
+  slug: string | null;
+  icon: string | null;
+  color: string | null;
+  total_content_count: number | null;
+  event_count: number | null;
+  news_count: number | null;
+  resource_count: number | null;
+  marketplace_count: number | null;
+  opportunity_count: number | null;
+  group_count: number | null;
+  company_count: number | null;
+  member_count: number | null;
+  popularity_percentage: number | null;
 }
 
 // Junction table types
