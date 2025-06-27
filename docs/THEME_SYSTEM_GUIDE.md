@@ -99,9 +99,22 @@ The Nelson Tech Community Platform features a comprehensive theming system that 
    - **Text Colors**: Primary and secondary text
 
 3. **Adjust Typography**
-   - **Font Family**: Choose from available fonts
+   - **Font Family**: Choose from Google Fonts library
    - **Base Font Size**: 14-20px recommended
-   - **Font Weights**: Normal, medium, and bold variations
+   - **Font Weights**: Light (300) to Black (900)
+   - **Line Heights**: Adjustable for optimal readability
+   
+   #### Font Selection Process
+   1. Click on the Font Family dropdown in Typography settings
+   2. Search for fonts by name or browse by category:
+      - Sans Serif (clean, modern)
+      - Serif (traditional, elegant)
+      - Display (decorative, impactful)
+      - Handwriting (personal, casual)
+      - Monospace (technical, code)
+   3. Preview fonts with custom text before applying
+   4. Font loads automatically when selected
+   5. System applies fallback fonts for reliability
 
 4. **Configure Layout**
    - **Border Radius**: 0-20px for rounded corners
@@ -300,15 +313,32 @@ All theme values are available as CSS variables:
 
 ```css
 :root {
-  --color-primary: #3B82F6;
-  --color-secondary: #64748B;
-  --color-accent: #0EA5E9;
-  --color-background: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-text: #1E293B;
-  --font-family: Inter;
-  --font-size-base: 16px;
-  --border-radius: 8px;
+  /* Colors */
+  --theme-color-primary: #3B82F6;
+  --theme-color-secondary: #64748B;
+  --theme-color-accent: #0EA5E9;
+  --theme-color-background: #F8FAFC;
+  --theme-color-surface: #FFFFFF;
+  --theme-color-text: #1E293B;
+  
+  /* Typography */
+  --theme-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --theme-font-family-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --theme-font-size-base: 16px;
+  --theme-font-size-sm: 14px;
+  --theme-font-size-lg: 18px;
+  --theme-font-size-xl: 20px;
+  --theme-font-size-2xl: 24px;
+  --theme-font-size-3xl: 30px;
+  --theme-font-size-4xl: 36px;
+  --theme-line-height-base: 1.5;
+  --theme-line-height-tight: 1.25;
+  --theme-line-height-loose: 1.75;
+  
+  /* Borders & Spacing */
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
 }
 ```
 
@@ -323,6 +353,82 @@ if (!validation.valid) {
   console.error('Theme issues:', validation.issues);
 }
 ```
+
+## Font System Details
+
+### How Fonts Are Loaded
+
+1. **Font Selection**
+   - User selects a font from the FontSelector component
+   - Component displays popular fonts and allows searching
+   - Preview text can be customized for testing
+
+2. **Dynamic Loading**
+   - When a font is selected, a Google Fonts link is created
+   - Link includes weight variations (300-700)
+   - Font is loaded asynchronously to prevent blocking
+   - Font Loading API ensures font is ready before use
+
+3. **Application**
+   - Font is applied via CSS variables
+   - Body font: `--theme-font-family`
+   - Heading font: `--theme-font-family-heading`
+   - Fallback chain ensures text remains readable
+
+4. **Persistence**
+   - Font choice is saved to database
+   - Applied on page load for all users
+   - Cached in browser for performance
+
+### Font Fallback System
+
+```css
+/* Example fallback chain */
+font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 
+             'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 
+             'Helvetica Neue', sans-serif;
+```
+
+- **Primary**: Selected Google Font
+- **System**: Native system fonts for performance
+- **Generic**: Final fallback (sans-serif, serif, monospace)
+
+### Performance Optimization
+
+1. **Font Display Strategy**
+   - Uses `display=swap` for better loading experience
+   - Text remains visible with fallback during load
+   - Smooth transition when custom font loads
+
+2. **Caching**
+   - Google Fonts are cached by browsers
+   - Popular fonts often pre-cached
+   - Reduces load time on repeat visits
+
+3. **Weight Optimization**
+   - Only requested weights are loaded (300-700)
+   - Reduces download size
+   - Synthetic bold/italic avoided
+
+### Troubleshooting Font Issues
+
+#### Font Not Loading
+1. Check internet connection
+2. Verify Content Security Policy allows fonts.googleapis.com
+3. Check browser console for errors
+4. Try a different font to isolate issue
+
+#### Font Looks Different
+1. Ensure correct weights are loaded
+2. Check font rendering settings in OS
+3. Verify font supports required characters
+4. Test in different browsers
+
+#### Performance Issues
+1. Use popular fonts (better cached)
+2. Limit number of font weights
+3. Consider system fonts for critical text
+4. Enable font-display: swap
 
 ## Support
 

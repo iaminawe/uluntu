@@ -1,9 +1,10 @@
+/* Import theme integration styles - must come before @tailwind */
+@import './styles/theme-integration.css';
+@import './styles/theme-fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import theme integration styles */
-@import './styles/theme-integration.css';
 
 @layer base {
   :root {
