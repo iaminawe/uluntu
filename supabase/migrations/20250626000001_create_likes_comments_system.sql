@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "public"."likes" (
 );
 
 -- Create unique constraint to prevent duplicate likes
-CREATE UNIQUE INDEX idx_likes_unique ON public.likes (user_id, entity_type, entity_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_likes_unique ON public.likes (user_id, entity_type, entity_id);
 
 -- Create comments table for polymorphic comments
 CREATE TABLE IF NOT EXISTS "public"."comments" (
@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS "public"."comments" (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_likes_entity ON public.likes (entity_type, entity_id);
-CREATE INDEX idx_likes_user ON public.likes (user_id);
-CREATE INDEX idx_comments_entity ON public.comments (entity_type, entity_id);
-CREATE INDEX idx_comments_user ON public.comments (user_id);
-CREATE INDEX idx_comments_parent ON public.comments (parent_id);
-CREATE INDEX idx_comments_created ON public.comments (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_likes_entity ON public.likes (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_likes_user ON public.likes (user_id);
+CREATE INDEX IF NOT EXISTS idx_comments_entity ON public.comments (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_comments_user ON public.comments (user_id);
+CREATE INDEX IF NOT EXISTS idx_comments_parent ON public.comments (parent_id);
+CREATE INDEX IF NOT EXISTS idx_comments_created ON public.comments (created_at DESC);
 
 -- Function to safely add columns to tables that exist
 DO $$
@@ -207,12 +207,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create triggers
+-- Create triggers (drop first if they exist)
+DROP TRIGGER IF EXISTS update_like_count_trigger ON public.likes;
 CREATE TRIGGER update_like_count_trigger
     AFTER INSERT OR DELETE ON public.likes
     FOR EACH ROW
     EXECUTE FUNCTION update_like_count();
 
+DROP TRIGGER IF EXISTS update_comment_count_trigger ON public.comments;
 CREATE TRIGGER update_comment_count_trigger
     AFTER INSERT OR UPDATE OF is_deleted ON public.comments
     FOR EACH ROW
@@ -222,32 +224,40 @@ CREATE TRIGGER update_comment_count_trigger
 ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 
--- RLS policies for likes
+-- RLS policies for likes (drop existing first)
+DROP POLICY IF EXISTS "Users can view all likes" ON public.likes;
 CREATE POLICY "Users can view all likes" ON public.likes
     FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can create their own likes" ON public.likes;
 CREATE POLICY "Users can create their own likes" ON public.likes
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own likes" ON public.likes;
 CREATE POLICY "Users can delete their own likes" ON public.likes
     FOR DELETE USING (auth.uid() = user_id);
 
--- RLS policies for comments
+-- RLS policies for comments (drop existing first)
+DROP POLICY IF EXISTS "Users can view non-deleted comments" ON public.comments;
 CREATE POLICY "Users can view non-deleted comments" ON public.comments
     FOR SELECT USING (is_deleted = false);
 
+DROP POLICY IF EXISTS "Users can create comments when authenticated" ON public.comments;
 CREATE POLICY "Users can create comments when authenticated" ON public.comments
     FOR INSERT WITH CHECK (auth.uid() = user_id AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Users can update their own comments" ON public.comments;
 CREATE POLICY "Users can update their own comments" ON public.comments
     FOR UPDATE USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can soft delete their own comments" ON public.comments;
 CREATE POLICY "Users can soft delete their own comments" ON public.comments
     FOR UPDATE USING (auth.uid() = user_id)
     WITH CHECK (is_deleted = true);
 
 -- Admins can view all comments including deleted ones
+DROP POLICY IF EXISTS "Admins can view all comments" ON public.comments;
 CREATE POLICY "Admins can view all comments" ON public.comments
     FOR SELECT USING (
         EXISTS (
@@ -258,6 +268,7 @@ CREATE POLICY "Admins can view all comments" ON public.comments
     );
 
 -- Admins can delete any comment
+DROP POLICY IF EXISTS "Admins can delete any comment" ON public.comments;
 CREATE POLICY "Admins can delete any comment" ON public.comments
     FOR UPDATE USING (
         EXISTS (
