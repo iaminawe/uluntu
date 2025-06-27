@@ -82,7 +82,6 @@ const AdminResourcesPage = lazy(() => import('../pages/admin/entities/ResourcesP
 const AdminMarketplacePage = lazy(() => import('../pages/admin/entities/MarketplacePage'));
 const AdminOpportunitiesPage = lazy(() => import('../pages/admin/entities/OpportunitiesPage'));
 const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
-const AdminTopicsPage = lazy(() => import('../pages/admin/TopicsPage'));
 const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
 const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
 const ContactInboxDetailPage = lazy(() => import('../pages/admin/ContactInboxDetailPage'));
@@ -294,7 +293,6 @@ export const router = createBrowserRouter([
       { path: 'entities/marketplace', element: withSuspense(AdminMarketplacePage) },
       { path: 'entities/opportunities', element: withSuspense(AdminOpportunitiesPage) },
       { path: 'entities/pages', element: withSuspense(AdminPagesPage) },
-      { path: 'entities/topics', element: withSuspense(AdminTopicsPage) },
       { path: 'newsletter', element: withSuspense(NewsletterDashboard) },
       { path: 'newsletter/campaigns', element: withSuspense(CampaignManager) },
       { path: 'newsletter/subscribers', element: withSuspense(SubscriberManager) },

@@ -2,8 +2,8 @@
 // This can be used to temporarily disable features if tables don't exist
 
 export const interactionsConfig = {
-  // Set to false to disable likes/comments if tables don't exist
-  enabled: false,
+  // Set to true now that tables exist
+  enabled: true,
   
   // Show UI but in disabled state
   showDisabled: true,
