@@ -31,24 +31,71 @@ CREATE INDEX idx_comments_user ON public.comments (user_id);
 CREATE INDEX idx_comments_parent ON public.comments (parent_id);
 CREATE INDEX idx_comments_created ON public.comments (created_at DESC);
 
--- Add like count columns to content tables
-ALTER TABLE public.events ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.news ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.resources ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.marketplace_listings ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.opportunities ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.groups ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
-ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+-- Function to safely add columns to tables that exist
+DO $$
+BEGIN
+    -- Add like_count columns if tables exist
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'events') THEN
+        ALTER TABLE public.events ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'news') THEN
+        ALTER TABLE public.news ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'resources') THEN
+        ALTER TABLE public.resources ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'marketplace_listings') THEN
+        ALTER TABLE public.marketplace_listings ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'opportunities') THEN
+        ALTER TABLE public.opportunities ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'groups') THEN
+        ALTER TABLE public.groups ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+        ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
+    END IF;
+    
+    -- Add like_count to comments table (this should exist since we just created it)
+    ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS like_count integer DEFAULT 0;
 
--- Add comment count columns to content tables
-ALTER TABLE public.events ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.news ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.resources ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.marketplace_listings ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.opportunities ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.groups ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
-ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    -- Add comment_count columns if tables exist
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'events') THEN
+        ALTER TABLE public.events ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'news') THEN
+        ALTER TABLE public.news ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'resources') THEN
+        ALTER TABLE public.resources ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'marketplace_listings') THEN
+        ALTER TABLE public.marketplace_listings ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'opportunities') THEN
+        ALTER TABLE public.opportunities ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'groups') THEN
+        ALTER TABLE public.groups ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+    
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+        ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS comment_count integer DEFAULT 0;
+    END IF;
+END
+$$;
 
 -- Create function to update like counts
 CREATE OR REPLACE FUNCTION update_like_count() RETURNS TRIGGER AS $$

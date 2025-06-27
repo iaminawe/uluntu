@@ -82,7 +82,7 @@ const AdminResourcesPage = lazy(() => import('../pages/admin/entities/ResourcesP
 const AdminMarketplacePage = lazy(() => import('../pages/admin/entities/MarketplacePage'));
 const AdminOpportunitiesPage = lazy(() => import('../pages/admin/entities/OpportunitiesPage'));
 const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
-const AdminTopicsPage = lazy(() => import('../pages/admin/entities/TopicsPage'));
+const AdminTopicsPage = lazy(() => import('../pages/admin/TopicsPage'));
 const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
 const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
 const ContactInboxDetailPage = lazy(() => import('../pages/admin/ContactInboxDetailPage'));

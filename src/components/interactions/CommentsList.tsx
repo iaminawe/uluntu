@@ -61,7 +61,17 @@ export function CommentsList({
         .is('parent_id', null)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // Handle table not existing gracefully
+        if (error.message?.includes('does not exist') || error.code === '42P01') {
+          console.warn('Comments table does not exist yet');
+          setComments([]);
+          setCommentCount(0);
+          setIsLoading(false);
+          return;
+        }
+        throw error;
+      }
 
       // Fetch replies for each comment
       const commentsWithReplies = await Promise.all(
