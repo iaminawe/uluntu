@@ -55,17 +55,7 @@ export const interactionsApi = {
     let query = supabase
       .from('comments')
       .select(`
-        *,
-        user:user_id (
-          id,
-          email,
-          raw_user_meta_data
-        ),
-        member:members!comments_user_id_fkey (
-          id,
-          name,
-          avatar_url
-        )
+        *
       `)
       .eq('entity_type', entityType)
       .eq('entity_id', entityId)
@@ -98,17 +88,7 @@ export const interactionsApi = {
         parent_id: parentId
       })
       .select(`
-        *,
-        user:user_id (
-          id,
-          email,
-          raw_user_meta_data
-        ),
-        member:members!comments_user_id_fkey (
-          id,
-          name,
-          avatar_url
-        )
+        *
       `)
       .single();
 
@@ -125,17 +105,7 @@ export const interactionsApi = {
       .eq('id', commentId)
       .eq('user_id', userId)
       .select(`
-        *,
-        user:user_id (
-          id,
-          email,
-          raw_user_meta_data
-        ),
-        member:members!comments_user_id_fkey (
-          id,
-          name,
-          avatar_url
-        )
+        *
       `)
       .single();
 

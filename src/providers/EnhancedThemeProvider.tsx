@@ -89,17 +89,17 @@ interface Theme {
   id: string;
   name: string;
   slug: string;
-  description?: string;
+  description?: string | null;
   is_active: boolean;
   is_default: boolean;
   is_preset: boolean;
-  colors?: ThemeColors;
-  typography?: ThemeTypography;
-  spacing?: ThemeSpacing;
-  borders?: ThemeBorders;
-  shadows?: ThemeShadows;
+  colors?: Partial<ThemeColors>;
+  typography?: Partial<ThemeTypography>;
+  spacing?: Partial<ThemeSpacing>;
+  borders?: Partial<ThemeBorders>;
+  shadows?: Partial<ThemeShadows>;
   assets?: ThemeAsset[];
-  metadata?: ThemeMetadata;
+  metadata?: Partial<ThemeMetadata>;
 }
 
 interface ThemeContextValue {
@@ -200,7 +200,9 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       const transformedThemes = (themesData || []).map(theme => {
         const configurations = theme.theme_configurations || [];
         const assets = theme.theme_assets || [];
-        const metadata = theme.theme_metadata?.[0] || {};
+        const metadata = Array.isArray(theme.theme_metadata) && theme.theme_metadata.length > 0 
+          ? theme.theme_metadata[0] 
+          : {};
 
         // Extract configurations by type
         const getConfig = (type: string) => 
@@ -214,14 +216,14 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
           is_active: theme.is_active,
           is_default: theme.is_default,
           is_preset: theme.is_preset,
-          colors: getConfig('colors') as ThemeColors,
-          typography: getConfig('typography') as ThemeTypography,
-          spacing: getConfig('spacing') as ThemeSpacing,
-          borders: getConfig('borders') as ThemeBorders,
-          shadows: getConfig('shadows') as ThemeShadows,
+          colors: getConfig('colors') as Partial<ThemeColors>,
+          typography: getConfig('typography') as Partial<ThemeTypography>,
+          spacing: getConfig('spacing') as Partial<ThemeSpacing>,
+          borders: getConfig('borders') as Partial<ThemeBorders>,
+          shadows: getConfig('shadows') as Partial<ThemeShadows>,
           assets: assets,
-          metadata: metadata
-        };
+          metadata: metadata as Partial<ThemeMetadata>
+        } as Theme;
       });
 
       setThemes(transformedThemes);
@@ -284,7 +286,7 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     
     // Load and apply Google Font
-    if (typography.font_family) {
+    if (typography && 'font_family' in typography && typography.font_family) {
       // Extract the primary font name (before the first comma)
       const primaryFont = typography.font_family.split(',')[0].trim().replace(/['"]/g, '');
       console.log('Loading font:', primaryFont, 'from font_family:', typography.font_family);
@@ -315,7 +317,9 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         // Add load event listener to ensure font is applied after loading
         fontLink.addEventListener('load', async () => {
           console.log('Font loaded successfully:', primaryFont);
-          document.body.style.fontFamily = typography.font_family;
+          if (typography.font_family) {
+            document.body.style.fontFamily = typography.font_family;
+          }
           
           // Use Font Loading API to ensure font is ready
           if ('fonts' in document) {
@@ -338,7 +342,7 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log('Applied font to body and CSS variable:', typography.font_family);
       
       // Also set heading font if different
-      if (typography.font_family_heading && typography.font_family_heading !== typography.font_family) {
+      if ('font_family_heading' in typography && typography.font_family_heading && typography.font_family_heading !== typography.font_family) {
         const headingFont = typography.font_family_heading.split(',')[0].trim().replace(/['"]/g, '');
         
         // Skip system fonts for headings too

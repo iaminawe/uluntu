@@ -79,7 +79,7 @@ export default function EventDetailPage() {
                       <LikeButton
                         entityType="event"
                         entityId={event.id}
-                        initialLikeCount={event.like_count || 0}
+                        initialLikeCount={0}
                       />
                     </div>
                     

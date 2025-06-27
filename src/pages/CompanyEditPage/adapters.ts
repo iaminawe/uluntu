@@ -1,5 +1,8 @@
 import type { FormData } from './types';
-import type { TablesInsert, TablesUpdate } from '../../types/supabase';
+import type { Database } from '@/shared/types/supabase';
+
+type TablesInsert<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+type TablesUpdate<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
 
 /**
  * Converts form data to the format expected by Supabase for insert operations

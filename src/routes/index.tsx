@@ -114,6 +114,11 @@ const GalleryDetailPage = lazy(() => import('../pages/GalleryDetailPage'));
 const MyGalleriesPage = lazy(() => import('../pages/MyGalleriesPage'));
 const GalleryEditPage = lazy(() => import('../pages/GalleryEditPage'));
 
+// Lazy load topics pages
+const TopicsPage = lazy(() => import('../pages/TopicsPage'));
+const TopicDetailPage = lazy(() => import('../pages/TopicDetailPage'));
+
+
 // Lazy load messaging pages
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 
@@ -245,6 +250,10 @@ export const router = createBrowserRouter([
         path: 'my-galleries', 
         element: <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute> 
       },
+      
+      // Topics routes
+      { path: 'topics', element: withSuspense(TopicsPage) },
+      { path: 'topics/:slug', element: withSuspense(TopicDetailPage) },
       
       // Messaging routes
       { 

@@ -189,6 +189,7 @@ export const useOnboarding = () => {
       const { error } = await supabase
         .from('members')
         .update({
+          // @ts-expect-error - Onboarding fields exist in database but not in types yet
           onboarding_current_step: onboarding.currentStep,
           onboarding_skipped_steps: onboarding.skippedSteps,
           profile_completion_percentage: onboarding.completionPercentage,

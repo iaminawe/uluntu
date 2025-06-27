@@ -43,17 +43,7 @@ export function CommentsList({
       const { data: commentsData, error } = await supabase
         .from('comments')
         .select(`
-          *,
-          user:user_id (
-            id,
-            email,
-            raw_user_meta_data
-          ),
-          member:members!comments_user_id_fkey (
-            id,
-            name,
-            avatar_url
-          )
+          *
         `)
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
@@ -79,17 +69,7 @@ export function CommentsList({
           const { data: replies } = await supabase
             .from('comments')
             .select(`
-              *,
-              user:user_id (
-                id,
-                email,
-                raw_user_meta_data
-              ),
-              member:members!comments_user_id_fkey (
-                id,
-                name,
-                avatar_url
-              )
+              *
             `)
             .eq('parent_id', comment.id)
             .eq('is_deleted', false)
@@ -97,12 +77,16 @@ export function CommentsList({
 
           return {
             ...comment,
-            replies: replies || []
+            entity_type: comment.entity_type as EntityType,
+            replies: (replies || []).map(r => ({
+              ...r,
+              entity_type: r.entity_type as EntityType
+            }))
           };
         })
       );
 
-      setComments(commentsWithReplies);
+      setComments(commentsWithReplies as Comment[]);
       
       // Calculate total comment count including replies
       const totalCount = commentsWithReplies.reduce(
@@ -138,7 +122,7 @@ export function CommentsList({
     return (
       <div className={cn('border-t dark:border-gray-800', className)}>
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={() => setIsExpanded(true)}
           className="w-full justify-between py-4 text-left"
         >

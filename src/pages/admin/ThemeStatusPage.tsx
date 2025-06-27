@@ -114,8 +114,7 @@ const ThemePageContent: React.FC = () => {
   const { 
     themes, 
     currentTheme, 
-    loading,
-    error: themeError 
+    loading
   } = useTheme();
 
   if (loading) {
