@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import type { EntityType, Like, Comment } from '@/components/interactions/types';
 
@@ -33,11 +33,11 @@ export function useInteractions({ entityType, entityId }: UseInteractionsOptions
         .eq('entity_id', entityId);
 
       if (likesData) {
-        setLikes(likesData);
+        setLikes(likesData as Like[]);
         setLikeCount(likesCount || 0);
         
         if (user) {
-          setIsLiked(likesData.some(like => like.user_id === user.id));
+          setIsLiked(likesData.some((like: any) => like.user_id === user.id));
         }
       }
 

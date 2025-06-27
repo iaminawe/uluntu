@@ -261,7 +261,7 @@ export const companiesApi = {
       const supabaseData = adaptCompanyToSupabaseInsert(companyData);
       const { data, error } = await supabase
         .from('companies')
-        .insert(supabaseData)
+        .insert(supabaseData as any)
         .select()
         .single();
 
@@ -282,7 +282,7 @@ export const companiesApi = {
       const supabaseData = adaptCompanyToSupabaseUpdate(companyData);
       const { data, error } = await supabase
         .from('companies')
-        .update(supabaseData)
+        .update(supabaseData as any)
         .eq('id', id)
         .select()
         .single();

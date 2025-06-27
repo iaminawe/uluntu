@@ -4,19 +4,46 @@ import { SocialLinks } from '@/types/common';
 
 type SupabaseMember = Database['public']['Tables']['members']['Row'];
 
-export function adaptMemberFromDatabase(dbMember: SupabaseMember): Member {
+// When Supabase returns data from insert/update operations, it may not include all fields
+// This type represents the minimal data we can expect from such operations
+type PartialSupabaseMember = Pick<SupabaseMember, 
+  'id' | 'name' | 'title' | 'bio' | 'location' | 'image' | 
+  'website' | 'status' | 'featured' | 'created_at' | 'company' | 
+  'social' | 'arrived_in_nelson' | 'employment_status' | 'open_to_volunteering'
+> & {
+  // These fields might be missing when data comes from insert/update operations
+  onboarding_completed_at?: string | null;
+  onboarding_current_step?: number | null;
+  onboarding_skipped_steps?: unknown | null;
+  profile_completion_percentage?: number | null;
+  updated_at?: string | null;
+  user_id?: string | null;
+};
+
+export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | SupabaseMember): Member {
+  // Handle social links - dbMember.social is stored as JSON in the database
+  let social: SocialLinks | undefined = undefined;
+  
+  if (dbMember.social && typeof dbMember.social === 'object') {
+    // If social is stored as JSON, use it directly
+    social = dbMember.social as SocialLinks;
+  } else if (dbMember.website) {
+    // Fallback to website field if social is not available
+    social = { website: dbMember.website };
+  }
+
   return {
     id: dbMember.id,
     name: dbMember.name,
     title: dbMember.title || '',
-    company: undefined, // This would need to be populated from employment status or company relationships
+    company: dbMember.company || undefined, // Use company field from database if available
     location: dbMember.location || undefined,
     image: dbMember.image || '/placeholder-avatar.png',
     bio: dbMember.bio || undefined,
     intro: (dbMember as any).intro || undefined,
     skills: [], // This would need to be populated from member_skills table
     joinDate: dbMember.created_at || new Date().toISOString(),
-    social: dbMember.website ? { website: dbMember.website } : undefined,
+    social: social,
     status: (['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '') ? dbMember.status as ContentStatus : 'draft'), // Validate and cast
     featured: dbMember.featured || false,
     created_at: dbMember.created_at || new Date().toISOString()

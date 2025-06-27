@@ -169,7 +169,10 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
       setCurrentTheme({
         ...defaultTheme,
         name: activeTheme.name,
-        colors: activeTheme.colors || defaultTheme.colors,
+        colors: {
+          ...defaultTheme.colors,
+          ...(activeTheme.colors || {})
+        },
         typography: {
           fontFamily: activeTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
           fontFallback: activeTheme.typography?.font_family || defaultTheme.typography.fontFallback,
@@ -194,30 +197,30 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         spacing: activeTheme.spacing ? {
           unit: 4,
           scale: {
-            xs: parseInt(activeTheme.spacing.spacing_xs) / 4,
-            sm: parseInt(activeTheme.spacing.spacing_sm) / 4,
-            md: parseInt(activeTheme.spacing.spacing_md) / 4,
-            lg: parseInt(activeTheme.spacing.spacing_lg) / 4,
-            xl: parseInt(activeTheme.spacing.spacing_xl) / 4,
-            '2xl': parseInt(activeTheme.spacing.spacing_2xl) / 4,
-            '3xl': parseInt(activeTheme.spacing.spacing_3xl) / 4
+            xs: parseInt(activeTheme.spacing.spacing_xs || '2') / 4,
+            sm: parseInt(activeTheme.spacing.spacing_sm || '4') / 4,
+            md: parseInt(activeTheme.spacing.spacing_md || '6') / 4,
+            lg: parseInt(activeTheme.spacing.spacing_lg || '8') / 4,
+            xl: parseInt(activeTheme.spacing.spacing_xl || '12') / 4,
+            '2xl': parseInt(activeTheme.spacing.spacing_2xl || '16') / 4,
+            '3xl': parseInt(activeTheme.spacing.spacing_3xl || '24') / 4
           }
         } : defaultTheme.spacing,
         layout: {
           borderRadius: activeTheme.borders ? {
             none: '0px',
-            sm: activeTheme.borders.radius_sm,
-            md: activeTheme.borders.radius_md,
-            lg: activeTheme.borders.radius_lg,
-            xl: activeTheme.borders.radius_xl,
-            full: activeTheme.borders.radius_full
+            sm: activeTheme.borders.radius_sm || '0.125rem',
+            md: activeTheme.borders.radius_md || '0.375rem',
+            lg: activeTheme.borders.radius_lg || '0.5rem',
+            xl: activeTheme.borders.radius_xl || '0.75rem',
+            full: activeTheme.borders.radius_full || '9999px'
           } : defaultTheme.layout.borderRadius,
           shadow: activeTheme.shadows ? {
             none: 'none',
-            sm: activeTheme.shadows.shadow_sm,
-            md: activeTheme.shadows.shadow_md,
-            lg: activeTheme.shadows.shadow_lg,
-            xl: activeTheme.shadows.shadow_xl
+            sm: activeTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            md: activeTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            lg: activeTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            xl: activeTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
           } : defaultTheme.layout.shadow,
           containerWidth: activeTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
           sidebarWidth: defaultTheme.layout.sidebarWidth
@@ -275,7 +278,10 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
       setCurrentTheme({
         ...defaultTheme,
         name: preset.name,
-        colors: dbTheme.colors || defaultTheme.colors,
+        colors: {
+          ...defaultTheme.colors,
+          ...(dbTheme.colors || {})
+        },
         typography: {
           fontFamily: dbTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
           fontFallback: dbTheme.typography?.font_family || defaultTheme.typography.fontFallback,
@@ -300,18 +306,18 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         layout: {
           borderRadius: dbTheme.borders ? {
             none: '0px',
-            sm: dbTheme.borders.radius_sm,
-            md: dbTheme.borders.radius_md,
-            lg: dbTheme.borders.radius_lg,
-            xl: dbTheme.borders.radius_xl,
-            full: dbTheme.borders.radius_full
+            sm: dbTheme.borders.radius_sm || '0.125rem',
+            md: dbTheme.borders.radius_md || '0.375rem',
+            lg: dbTheme.borders.radius_lg || '0.5rem',
+            xl: dbTheme.borders.radius_xl || '0.75rem',
+            full: dbTheme.borders.radius_full || '9999px'
           } : defaultTheme.layout.borderRadius,
           shadow: dbTheme.shadows ? {
             none: 'none',
-            sm: dbTheme.shadows.shadow_sm,
-            md: dbTheme.shadows.shadow_md,
-            lg: dbTheme.shadows.shadow_lg,
-            xl: dbTheme.shadows.shadow_xl
+            sm: dbTheme.shadows.shadow_sm || '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            md: dbTheme.shadows.shadow_md || '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            lg: dbTheme.shadows.shadow_lg || '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            xl: dbTheme.shadows.shadow_xl || '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
           } : defaultTheme.layout.shadow,
           containerWidth: dbTheme.spacing?.container_max_width || defaultTheme.layout.containerWidth,
           sidebarWidth: defaultTheme.layout.sidebarWidth
@@ -319,13 +325,13 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         spacing: dbTheme.spacing ? {
           unit: 4,
           scale: {
-            xs: parseInt(dbTheme.spacing.spacing_xs) / 4,
-            sm: parseInt(dbTheme.spacing.spacing_sm) / 4,
-            md: parseInt(dbTheme.spacing.spacing_md) / 4,
-            lg: parseInt(dbTheme.spacing.spacing_lg) / 4,
-            xl: parseInt(dbTheme.spacing.spacing_xl) / 4,
-            '2xl': parseInt(dbTheme.spacing.spacing_2xl) / 4,
-            '3xl': parseInt(dbTheme.spacing.spacing_3xl) / 4
+            xs: parseInt(dbTheme.spacing.spacing_xs || '2') / 4,
+            sm: parseInt(dbTheme.spacing.spacing_sm || '4') / 4,
+            md: parseInt(dbTheme.spacing.spacing_md || '6') / 4,
+            lg: parseInt(dbTheme.spacing.spacing_lg || '8') / 4,
+            xl: parseInt(dbTheme.spacing.spacing_xl || '12') / 4,
+            '2xl': parseInt(dbTheme.spacing.spacing_2xl || '16') / 4,
+            '3xl': parseInt(dbTheme.spacing.spacing_3xl || '24') / 4
           }
         } : defaultTheme.spacing,
         darkMode: preset.name.toLowerCase().includes('dark'),
@@ -334,7 +340,9 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
       setHasChanges(false); // No changes needed since we just activated a preset
     } else {
       // If not found in database, just update local state for editing
-      toast.info('Preset theme not found in database. You can customize and save it.');
+      toast('Preset theme not found in database. You can customize and save it.', {
+        icon: '💡',
+      });
       
       const { colors, typography, spacing, borders, shadows } = preset.configurations;
       

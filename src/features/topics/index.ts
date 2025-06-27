@@ -1,6 +1,6 @@
 // API exports
 export { topicsApi } from './api/topicsApi';
-export type { TopicFormData, TopicAnalytics } from './api/topicsApi';
+export type { TopicFormData } from './types';
 
 // Entity-specific API exports
 export {
@@ -10,7 +10,8 @@ export {
   groupTopicsApi,
   marketplaceTopicsApi,
   opportunityTopicsApi,
-  companyTopicsApi
+  companyTopicsApi,
+  memberTopicsApi
 } from './api/topicsApi';
 
 // Hook exports
@@ -20,11 +21,13 @@ export {
   useTopicBySlug,
   useEntityTopics,
   useTopicAnalytics,
+  useTopicContentCounts,
+  useCreateTopic,
+  useUpdateTopic,
+  useDeleteTopic,
+  useSetEntityTopics,
   topicsQueryKeys
 } from './hooks/useTopicsHybrid';
-
-// Service exports
-export { topicService, TopicService } from './utils/topicService';
 
 // Adapter exports
 export {
@@ -43,31 +46,19 @@ export {
 // Type exports
 export type {
   Topic,
-  TopicInsert,
-  TopicUpdate,
   TopicWithAnalytics,
   TopicEntityType,
-  NewsTopic,
+  TopicFilters,
+  TopicRow,
+  TopicAnalyticsRow,
   EventTopic,
+  NewsTopic,
   ResourceTopic,
   GroupTopic,
   MarketplaceTopic,
   OpportunityTopic,
   CompanyTopic,
-  EntityWithTopics,
-  SupabaseTopicRecord,
-  TopicOption,
-  TopicFilter,
-  TopicFormState,
-  TopicAssignmentState,
-  EntityTopicManager,
-  TopicUsageStats,
-  TopicTrend,
-  TopicBadgeProps,
-  TopicSelectorProps,
-  TopicPickerProps,
-  TopicSearchResult,
-  TopicSearchOptions
+  MemberTopic
 } from './types';
 
 // Constants

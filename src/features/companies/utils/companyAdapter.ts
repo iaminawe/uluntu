@@ -68,7 +68,9 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
   if (company.name !== undefined) supabaseCompany.name = company.name;
   if (company.description !== undefined) supabaseCompany.description = company.description;
   if (company.logo !== undefined) supabaseCompany.logo = company.logo;
-  if (company.slug !== undefined) supabaseCompany.slug = company.slug ?? null;
+  if (company.slug !== undefined && company.slug !== null) {
+    supabaseCompany.slug = company.slug;
+  }
   if (company.cover_image !== undefined) supabaseCompany.cover_image = company.cover_image ?? null;
   if (company.industry !== undefined) supabaseCompany.industry = company.industry;
   if (company.size !== undefined) supabaseCompany.size = company.size;
@@ -103,6 +105,7 @@ export function adaptCompanyToSupabaseInsert(company: Partial<Omit<Company, 'id'
 
   return {
     name: company.name ?? '', // Provide a default for required fields
+    slug: company.slug || `company-${Date.now()}`, // Required in DB - generate temporary slug if empty
     description: company.description ?? '', // Provide a default for required fields
     logo: company.logo ?? '', // Provide a default for required fields
     cover_image: company.cover_image ?? null, // Optional in DB, explicitly set to null if undefined

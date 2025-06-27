@@ -22,7 +22,7 @@ const ThemeConfigPage: React.FC = () => {
         </p>
       </div>
 
-      <ThemeEditor settings={null} onRefresh={() => window.location.reload()} />
+      <ThemeEditor settings={[]} onRefresh={() => window.location.reload()} />
     </div>
   );
 };

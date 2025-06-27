@@ -19,7 +19,8 @@ const Header: React.FC<HeaderProps> = ({
     { text: "Marketplace", href: "/marketplace" },
     { text: "Resources", href: "/resources" },
     { text: "Groups", href: "/groups" },
-    { text: "News", href: "/news" }
+    { text: "News", href: "/news" },
+    { text: "Topics", href: "/topics" }
   ]
 }) => {
   const { settings } = useSettings();

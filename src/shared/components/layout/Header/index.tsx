@@ -39,6 +39,11 @@ const Header: React.FC<HeaderProps> = ({
       feature: "resources_library"
     },
     { 
+      text: "Topics", 
+      href: "/topics", 
+      description: "Browse content by topic"
+    },
+    { 
       text: "About", 
       href: "/about",
       children: [

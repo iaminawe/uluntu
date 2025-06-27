@@ -19,6 +19,7 @@ import galleryReducer from '@/features/gallery/store/gallerySlice';
 import galleryUIReducer from '@/features/gallery/store/galleryUISlice';
 import adminSettingsUIReducer from '@/features/admin/store/adminSettingsUISlice';
 import messagingUIReducer from '@/features/messaging/store/messagingUISlice';
+import topicsUIReducer from '@/features/topics/store/topicsUISlice';
 import type { RootState } from '@/store/index';
 
 // Mock implementations
@@ -60,7 +61,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 export const renderWithProviders = (
   ui: ReactElement,
   {
-    preloadedState = {},
+    preloadedState,
     store = configureStore({
       reducer: {
         auth: authReducer as any,
@@ -79,6 +80,7 @@ export const renderWithProviders = (
         galleryUI: galleryUIReducer as any,
         adminSettingsUI: adminSettingsUIReducer as any,
         messagingUI: messagingUIReducer as any,
+        topicsUI: topicsUIReducer as any,
       },
       preloadedState
     }),

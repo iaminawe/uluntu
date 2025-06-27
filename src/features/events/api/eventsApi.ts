@@ -284,8 +284,8 @@ export const eventsApi = {
       }
       
       // Handle the case where multiple rows might be returned
-      const eventData = Array.isArray(data) ? data[0] : data;
-      return eventData ? adaptEventFromDatabase(eventData) : null;
+      const updatedEvent = Array.isArray(data) ? data[0] : data;
+      return updatedEvent ? adaptEventFromDatabase(updatedEvent) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating event');
       return null;
