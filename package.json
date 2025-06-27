@@ -25,7 +25,10 @@
     "typecheck:strict": "tsc --noEmit",
     "perf:analyze": "npm run build:analyze",
     "perf:baseline": "npm run build && node -e \"console.log('Bundle size baseline captured')\"",
-    "perf:report": "npm run build:analyze && open dist/stats.html"
+    "perf:report": "npm run build:analyze && open dist/stats.html",
+    "migrate:topics": "./database/migrations/apply_topics_migration.sh",
+    "validate:topics": "node scripts/simple-topics-validation.js",
+    "validate:topics-full": "npx ts-node scripts/validate-topics-integration.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

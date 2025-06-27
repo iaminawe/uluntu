@@ -32,16 +32,21 @@ export function LikeButton({
     async function checkLikeStatus() {
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('likes')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('likes')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('entity_type', entityType)
+          .eq('entity_id', entityId)
+          .single();
 
-      if (!error && data) {
-        setIsLiked(true);
+        if (!error && data) {
+          setIsLiked(true);
+        }
+      } catch (err) {
+        // Silently fail if table doesn't exist
+        console.warn('Likes table may not exist:', err);
       }
     }
 
@@ -51,19 +56,25 @@ export function LikeButton({
   // Get current like count
   useEffect(() => {
     async function fetchLikeCount() {
-      const { count, error } = await supabase
-        .from('likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId);
+      try {
+        const { count, error } = await supabase
+          .from('likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('entity_type', entityType)
+          .eq('entity_id', entityId);
 
-      if (!error && count !== null) {
-        setLikeCount(count);
+        if (!error && count !== null) {
+          setLikeCount(count);
+        }
+      } catch (err) {
+        // Silently fail if table doesn't exist, use initial count
+        console.warn('Likes table may not exist:', err);
+        setLikeCount(initialLikeCount);
       }
     }
 
     fetchLikeCount();
-  }, [entityType, entityId]);
+  }, [entityType, entityId, initialLikeCount]);
 
   const handleToggleLike = async () => {
     if (!user) {
@@ -102,8 +113,12 @@ export function LikeButton({
           setLikeCount(prev => prev + 1);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error toggling like:', error);
+      // If table doesn't exist, fail silently
+      if (error.message?.includes('does not exist') || error.code === '42P01') {
+        console.warn('Likes table does not exist yet');
+      }
     } finally {
       setIsLoading(false);
     }

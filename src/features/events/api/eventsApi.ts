@@ -276,15 +276,16 @@ export const eventsApi = {
         .from('events')
         .update(supabaseData)
         .eq('id', id)
-        .select('*, event_sessions(*)')
-        .single();
+        .select('*, event_sessions(*)');
 
       if (error) {
         handleSupabaseError(error, 'updating event');
         return null;
       }
       
-      return data ? adaptEventFromDatabase(data) : null;
+      // Handle the case where multiple rows might be returned
+      const eventData = Array.isArray(data) ? data[0] : data;
+      return eventData ? adaptEventFromDatabase(eventData) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating event');
       return null;
