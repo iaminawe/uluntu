@@ -26,7 +26,8 @@ import {
   TrendingUp,
   Inbox,
   BarChart3,
-  Palette
+  Palette,
+  Tag
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -87,7 +88,8 @@ const AdminLayout: React.FC = () => {
         { name: 'News', href: '/admin/entities/news', icon: Newspaper },
         { name: 'Resources', href: '/admin/entities/resources', icon: BookOpen },
         { name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag },
-        { name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase }
+        { name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase },
+        { name: 'Topics', href: '/admin/entities/topics', icon: Tag }
       ]
     },
     {
