@@ -247,6 +247,7 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       
       if (active) {
         setCurrentTheme(active);
+        applyThemeToDOM(active);
       }
     } catch (error) {
       console.error('Error loading themes:', error);
@@ -260,17 +261,15 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     loadThemes();
   }, [loadThemes]);
-
-  // Apply theme CSS variables
-  useEffect(() => {
-    if (!activeTheme) return;
-
+  
+  // Helper function to apply theme to DOM
+  const applyThemeToDOM = useCallback((theme: Theme) => {
     const root = document.documentElement;
-    const colors = activeTheme.colors || {};
-    const typography = activeTheme.typography || {};
-    const spacing = activeTheme.spacing || {};
-    const borders = activeTheme.borders || {};
-    const shadows = activeTheme.shadows || {};
+    const colors = theme.colors || {};
+    const typography = theme.typography || {};
+    const spacing = theme.spacing || {};
+    const borders = theme.borders || {};
+    const shadows = theme.shadows || {};
 
     // Apply color variables
     Object.entries(colors).forEach(([key, value]) => {
@@ -283,6 +282,82 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       const cssVar = `--theme-${key.replace(/_/g, '-')}`;
       root.style.setProperty(cssVar, value);
     });
+    
+    // Load and apply Google Font
+    if (typography.font_family) {
+      // Extract the primary font name (before the first comma)
+      const primaryFont = typography.font_family.split(',')[0].trim().replace(/['"]/g, '');
+      console.log('Loading font:', primaryFont, 'from font_family:', typography.font_family);
+      
+      // Skip system fonts
+      const systemFonts = ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif', 'serif', 'monospace'];
+      if (systemFonts.includes(primaryFont)) {
+        console.log('Skipping system font:', primaryFont);
+        // Still set the CSS variable even for system fonts
+        root.style.setProperty('--theme-font-family', typography.font_family);
+        document.body.style.fontFamily = typography.font_family;
+        return;
+      }
+      
+      // Check if font link already exists
+      const fontId = `google-font-${primaryFont.replace(/\s+/g, '-')}`;
+      let fontLink = document.getElementById(fontId) as HTMLLinkElement;
+      
+      if (!fontLink) {
+        // Create new font link
+        fontLink = document.createElement('link');
+        fontLink.id = fontId;
+        fontLink.rel = 'stylesheet';
+        fontLink.href = `https://fonts.googleapis.com/css2?family=${primaryFont.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
+        document.head.appendChild(fontLink);
+        console.log('Created font link:', fontLink.href);
+        
+        // Add load event listener to ensure font is applied after loading
+        fontLink.addEventListener('load', async () => {
+          console.log('Font loaded successfully:', primaryFont);
+          document.body.style.fontFamily = typography.font_family;
+          
+          // Use Font Loading API to ensure font is ready
+          if ('fonts' in document) {
+            try {
+              await document.fonts.load(`16px ${primaryFont}`);
+              console.log('Font is ready to use:', primaryFont);
+            } catch (error) {
+              console.error('Error loading font:', error);
+            }
+          }
+          
+          // Force re-render by triggering a style recalculation
+          document.body.offsetHeight;
+        });
+      }
+      
+      // Apply font to body and CSS variable
+      document.body.style.fontFamily = typography.font_family;
+      root.style.setProperty('--theme-font-family', typography.font_family);
+      console.log('Applied font to body and CSS variable:', typography.font_family);
+      
+      // Also set heading font if different
+      if (typography.font_family_heading && typography.font_family_heading !== typography.font_family) {
+        const headingFont = typography.font_family_heading.split(',')[0].trim().replace(/['"]/g, '');
+        
+        // Skip system fonts for headings too
+        if (!systemFonts.includes(headingFont)) {
+          const headingFontId = `google-font-${headingFont.replace(/\s+/g, '-')}`;
+          let headingFontLink = document.getElementById(headingFontId) as HTMLLinkElement;
+          
+          if (!headingFontLink) {
+            headingFontLink = document.createElement('link');
+            headingFontLink.id = headingFontId;
+            headingFontLink.rel = 'stylesheet';
+            headingFontLink.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
+            document.head.appendChild(headingFontLink);
+          }
+        }
+        
+        root.style.setProperty('--theme-font-family-heading', typography.font_family_heading);
+      }
+    }
 
     // Apply spacing variables
     Object.entries(spacing).forEach(([key, value]) => {
@@ -303,15 +378,21 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     // Apply custom CSS if any
-    if (activeTheme.metadata?.custom_css) {
+    if (theme.metadata?.custom_css) {
       const styleElement = document.getElementById('theme-custom-css') || document.createElement('style');
       styleElement.id = 'theme-custom-css';
-      styleElement.textContent = activeTheme.metadata.custom_css;
-      if (!document.getElementById('theme-custom-css')) {
+      styleElement.textContent = theme.metadata.custom_css;
+      if (!styleElement.parentNode) {
         document.head.appendChild(styleElement);
       }
     }
-  }, [activeTheme]);
+  }, []);
+
+  // Apply theme CSS variables
+  useEffect(() => {
+    if (!activeTheme) return;
+    applyThemeToDOM(activeTheme);
+  }, [activeTheme, applyThemeToDOM]);
 
   // Initialize theme mode (light/dark)
   useEffect(() => {

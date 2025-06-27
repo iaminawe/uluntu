@@ -27,6 +27,7 @@ const TermsPage = lazy(() => import('../pages/TermsPage'));
 const PartnersPage = lazy(() => import('../pages/PartnersPage'));
 const TestPage = lazy(() => import('../pages/TestPage'));
 const DebugPage = lazy(() => import('../pages/DebugPage'));
+const TestFontsPage = lazy(() => import('../pages/TestFontsPage'));
 
 // Lazy load feature pages
 const DirectoryPage = lazy(() => import('../pages/DirectoryPage'));
@@ -130,6 +131,7 @@ export const router = createBrowserRouter([
       { path: 'partners', element: withSuspense(PartnersPage) },
       { path: 'test', element: withSuspense(TestPage) },
       { path: 'debug', element: withSuspense(DebugPage) },
+      { path: 'test-fonts', element: withSuspense(TestFontsPage) },
       { path: 'directory', element: withSuspense(DirectoryPage) },
       { 
         path: 'directory/create', 

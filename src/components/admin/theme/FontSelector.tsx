@@ -117,7 +117,10 @@ export default function FontSelector({ typography, onChange }: FontSelectorProps
 
   const handleFontChange = useCallback((fontFamily: string) => {
     loadGoogleFont(fontFamily);
-    onChange({ fontFamily });
+    onChange({ 
+      fontFamily,
+      fontFallback: `${fontFamily}, system-ui, -apple-system, sans-serif`
+    });
   }, [onChange, loadGoogleFont]);
 
   const handleFontSizeChange = useCallback((size: keyof Theme['typography']['fontSize'], value: string) => {

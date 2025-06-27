@@ -87,9 +87,25 @@ Access the theme system at `/admin/theme`
 
 ### Typography
 - Font families (body and headings)
-- Font sizes (7 levels)
-- Line heights
-- Google Fonts integration
+- Font sizes (7 levels: xs, sm, base, lg, xl, 2xl, 3xl, 4xl)
+- Line heights (tight, normal, relaxed)
+- Google Fonts integration with 100+ fonts
+- Font weights (light to black: 300-900)
+- Custom font preview with editable text
+
+#### Font Loading System
+- **Google Fonts Integration**: Automatic loading of fonts from Google Fonts library
+- **Font Selection**: Choose from 100+ popular Google Fonts or search the entire library
+- **Lazy Loading**: Fonts are loaded only when selected or applied
+- **Font Fallback**: Automatic fallback chain for optimal rendering
+- **System Fonts**: Support for system font stacks without external loading
+
+#### Font Configuration
+- **Primary Font**: Main font for body text and general content
+- **Heading Font**: Optional separate font for headings (H1-H6)
+- **Font Weights**: Support for 300-900 weight variations
+- **Font Sizes**: Configurable size scale from xs to 4xl
+- **Line Heights**: Tight (1.25), Normal (1.5), and Relaxed (1.75) options
 
 ### Spacing
 - Spacing scale (xs to 3xl)
@@ -142,6 +158,21 @@ interface Theme {
   shadows: ShadowConfig;
   assets?: ThemeAsset[];
   metadata?: ThemeMetadata;
+}
+
+interface TypographyConfig {
+  font_family: string;           // e.g., "Inter, system-ui, sans-serif"
+  font_family_heading?: string;  // Optional separate heading font
+  font_size_base: string;        // Base font size (e.g., "16px")
+  font_size_sm: string;          // Small text
+  font_size_lg: string;          // Large text
+  font_size_xl: string;          // Extra large
+  font_size_2xl: string;         // 2x large
+  font_size_3xl: string;         // 3x large
+  font_size_4xl: string;         // 4x large
+  line_height_base: string;      // Normal line height
+  line_height_tight: string;     // Compact line height
+  line_height_loose: string;     // Relaxed line height
 }
 ```
 
@@ -196,6 +227,20 @@ interface Theme {
 - Check for CSS conflicts
 - Verify theme structure
 
+**Fonts not displaying correctly?**
+- Check internet connection (Google Fonts requires online access)
+- Verify font name is correctly formatted
+- Check browser console for CORS errors
+- Ensure Content Security Policy allows fonts.googleapis.com
+- Try refreshing the page after font selection
+- Check if font supports required weights (300-700)
+
+**Font loading slowly?**
+- Google Fonts are loaded asynchronously
+- Consider using display=swap for better perceived performance
+- Popular fonts are cached by browsers
+- System fonts load instantly without external requests
+
 ## Best Practices
 
 1. **Test themes thoroughly** before activating
@@ -204,6 +249,17 @@ interface Theme {
 4. **Keep custom CSS minimal** for maintainability
 5. **Export themes** before major changes
 6. **Document theme changes** for team members
+
+### Font Selection Best Practices
+
+1. **Choose readable fonts** for body text (avoid decorative fonts)
+2. **Limit font variations** to 2-3 fonts maximum per theme
+3. **Test font loading** on slower connections
+4. **Use font weights** that the selected font supports
+5. **Consider font pairing** - complementary fonts for headings and body
+6. **Check license compatibility** for commercial use
+7. **Preview at different sizes** to ensure readability
+8. **Test special characters** if your content uses them
 
 ## Future Enhancements
 

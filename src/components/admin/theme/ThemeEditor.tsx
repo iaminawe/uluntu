@@ -171,7 +171,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         name: activeTheme.name,
         colors: activeTheme.colors || defaultTheme.colors,
         typography: {
-          fontFamily: activeTheme.typography?.font_family?.split(',')[0]?.trim() || defaultTheme.typography.fontFamily,
+          fontFamily: activeTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
           fontFallback: activeTheme.typography?.font_family || defaultTheme.typography.fontFallback,
           fontSize: {
             base: activeTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
@@ -277,7 +277,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         name: preset.name,
         colors: dbTheme.colors || defaultTheme.colors,
         typography: {
-          fontFamily: dbTheme.typography?.font_family?.split(',')[0]?.trim() || defaultTheme.typography.fontFamily,
+          fontFamily: dbTheme.typography?.font_family?.split(',')[0]?.trim()?.replace(/['"]/g, '') || defaultTheme.typography.fontFamily,
           fontFallback: dbTheme.typography?.font_family || defaultTheme.typography.fontFallback,
           fontSize: {
             base: dbTheme.typography?.font_size_base || defaultTheme.typography.fontSize.base,
@@ -428,9 +428,11 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
         await updateThemeColors(activeTheme.id, currentTheme.colors);
         
         // Update typography
+        const fontFamily = currentTheme.typography.fontFamily;
+        const fallback = currentTheme.typography.fontFallback || 'system-ui, -apple-system, sans-serif';
         await updateThemeTypography(activeTheme.id, {
-          font_family: `${currentTheme.typography.fontFamily}, ${currentTheme.typography.fontFallback}`,
-          font_family_heading: `${currentTheme.typography.fontFamily}, ${currentTheme.typography.fontFallback}`,
+          font_family: `${fontFamily}, ${fallback}`,
+          font_family_heading: `${fontFamily}, ${fallback}`,
           font_size_base: currentTheme.typography.fontSize.base,
           font_size_sm: currentTheme.typography.fontSize.sm,
           font_size_lg: currentTheme.typography.fontSize.lg,

@@ -256,6 +256,18 @@ CREATE INDEX idx_theme_history_date ON public.theme_history(created_at);
 - Automatic optimization
 - Support for logo, favicon, backgrounds
 
+#### FontSelector Component
+- Google Fonts integration with API
+- Search and filter functionality
+- Font category filtering (sans-serif, serif, display, etc.)
+- Real-time font preview with custom text
+- Popular fonts quick selection
+- Automatic font loading on selection
+- Font weight configuration (300-900)
+- Font size scale configuration
+- Line height adjustments
+- Fallback font chain management
+
 #### ThemePreview
 - Iframe with isolated styles
 - Device frame options (desktop/tablet/mobile)
@@ -383,17 +395,81 @@ CREATE POLICY "Admins can manage themes" ON public.themes
 
 ## 8. TECHNICAL CONSIDERATIONS
 
+### Font Loading Implementation
+
+#### Dynamic Font Loading
+```typescript
+const loadGoogleFont = (fontFamily: string) => {
+  const fontId = `google-font-${fontFamily.replace(/\s+/g, '-')}`;
+  let fontLink = document.getElementById(fontId);
+  
+  if (!fontLink) {
+    fontLink = document.createElement('link');
+    fontLink.id = fontId;
+    fontLink.rel = 'stylesheet';
+    fontLink.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
+    document.head.appendChild(fontLink);
+    
+    // Use Font Loading API
+    fontLink.addEventListener('load', async () => {
+      if ('fonts' in document) {
+        await document.fonts.load(`16px ${fontFamily}`);
+      }
+    });
+  }
+};
+```
+
+#### Font Application Strategy
+1. Parse font family from theme configuration
+2. Check if font is system font (skip loading)
+3. Create/update Google Fonts link element
+4. Apply font via CSS variables and direct styles
+5. Handle separate heading fonts if configured
+6. Ensure fallback chain is properly set
+
+#### Font CSS Variables
+```css
+:root {
+  --theme-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --theme-font-family-heading: 'Playfair Display', serif;
+  --theme-font-size-base: 16px;
+  --theme-font-size-sm: 14px;
+  --theme-font-size-lg: 18px;
+  --theme-font-size-xl: 20px;
+  --theme-font-size-2xl: 24px;
+  --theme-font-size-3xl: 30px;
+  --theme-font-size-4xl: 36px;
+  --theme-line-height-base: 1.5;
+  --theme-line-height-tight: 1.25;
+  --theme-line-height-loose: 1.75;
+}
+```
+
 ### Performance
 - Compile themes to static CSS
 - Cache active theme aggressively
 - Lazy load theme editor components
 - Optimize asset delivery via CDN
+- Font optimization strategies:
+  - Load only required font weights (300-700)
+  - Use font-display: swap for better perceived performance
+  - Preconnect to fonts.googleapis.com
+  - Cache font selections in localStorage
+  - Leverage browser font caching
+  - Limit number of custom fonts per theme
 
 ### Security
 - Sanitize custom CSS input
 - Validate color values
 - Restrict file upload types/sizes
 - CSRF protection for theme activation
+- Font loading security:
+  - Only load from trusted sources (fonts.googleapis.com)
+  - Validate font names to prevent injection
+  - Use Content Security Policy for font sources
+  - Sanitize font family strings before applying
+  - Prevent malicious font URLs via validation
 
 ### Scalability
 - Theme compilation queue for complex themes
