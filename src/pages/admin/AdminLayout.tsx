@@ -27,7 +27,8 @@ import {
   Inbox,
   BarChart3,
   Palette,
-  Tag
+  Tag,
+  Zap
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -105,6 +106,12 @@ const AdminLayout: React.FC = () => {
       current: location.pathname === '/admin/roles'
     },
     {
+      name: 'Features',
+      href: '/admin/features',
+      icon: Zap,
+      current: location.pathname === '/admin/features'
+    },
+    {
       name: 'Moderation',
       href: '/admin/moderation',
       icon: FileCheck,
@@ -140,9 +147,11 @@ const AdminLayout: React.FC = () => {
     },
     {
       name: 'Settings',
-      href: '/admin/settings',
       icon: Settings,
-      current: location.pathname.startsWith('/admin/settings')
+      children: [
+        { name: 'Settings (Legacy)', href: '/admin/settings', icon: Settings },
+        { name: 'Settings (New)', href: '/admin/settings-v2', icon: Settings }
+      ]
     },
     {
       name: 'Theme',
