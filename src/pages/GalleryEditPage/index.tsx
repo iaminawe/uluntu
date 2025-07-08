@@ -10,6 +10,8 @@ import { GallerySelector } from '@/features/gallery/components/GallerySelector';
 import { uploadApi } from '@/features/gallery/api/uploadApi';
 import { useUserGroups } from '@/shared/hooks/useUserContent';
 import type { Gallery, CreateGalleryInput, UpdateGalleryInput } from '@/features/gallery/types';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 const GalleryEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +44,11 @@ const GalleryEditPage: React.FC = () => {
   }>({ type: 'user' });
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('gallery', id || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
 
   // Redirect if not logged in
   useEffect(() => {
@@ -109,6 +116,13 @@ const GalleryEditPage: React.FC = () => {
       setLoading(false);
     }
   };
+  
+  // Effect to populate topics
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -144,13 +158,42 @@ const GalleryEditPage: React.FC = () => {
         owner_id: galleryOwner.type === 'user' ? user?.id : galleryOwner.id
       };
       
+      let result;
       if (isEditing && id) {
-        await galleryApi.updateGallery(id, finalFormData as UpdateGalleryInput);
+        result = await galleryApi.updateGallery(id, finalFormData as UpdateGalleryInput);
+        
+        // Save topics after successful entity save
+        if (selectedTopicIds.length > 0) {
+          try {
+            await setEntityTopicsMutation.mutateAsync({
+              entityType: 'gallery',
+              entityId: id,
+              topicIds: selectedTopicIds
+            });
+          } catch (topicError) {
+            console.error('Error saving topics:', topicError);
+          }
+        }
+        
         navigate(`/galleries/${id}`);
       } else {
-        const newGallery = await galleryApi.createGallery(finalFormData);
+        result = await galleryApi.createGallery(finalFormData);
+        
+        // Save topics after successful entity save
+        if (result && selectedTopicIds.length > 0) {
+          try {
+            await setEntityTopicsMutation.mutateAsync({
+              entityType: 'gallery',
+              entityId: result.id,
+              topicIds: selectedTopicIds
+            });
+          } catch (topicError) {
+            console.error('Error saving topics:', topicError);
+          }
+        }
+        
         // After creating, show upload modal or navigate
-        if (newGallery) {
+        if (result) {
           setShowUpload(true);
         }
       }
@@ -350,6 +393,23 @@ const GalleryEditPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Topics Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Topics
+            </label>
+            <TopicSelector
+              selectedTopics={selectedTopicIds}
+              onTopicsChange={setSelectedTopicIds}
+              placeholder="Search and select topics for this gallery..."
+              maxTopics={5}
+              className="w-full"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              Add topics to help categorize this gallery and make it discoverable on topic pages.
+            </p>
+          </div>
+          
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

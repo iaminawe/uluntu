@@ -15,6 +15,8 @@ import { ContentStatus } from '../../types/common';
 import { NewsArticle } from '@/types';
 import { generateSlug } from '@/utils/slugUtils';
 import { uploadNewsImage } from '../../lib/supabase';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 const initialFormData: FormData = {
   title: '',
@@ -44,11 +46,16 @@ export default function NewsEditPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
   
   const { 
     data: article, 
     isLoading: articleLoading
   } = useNewsArticle(articleId!);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('news', articleId || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   // Populate form with article data when in edit mode
   useEffect(() => {
@@ -66,6 +73,13 @@ export default function NewsEditPage() {
       });
     }
   }, [isEditMode, article]);
+  
+  // Populate topics when entity topics are loaded
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -184,6 +198,15 @@ export default function NewsEditPage() {
       }
 
       if (result) {
+        // Save topics after successful article save
+        if (selectedTopicIds.length > 0) {
+          await setEntityTopicsMutation.mutateAsync({
+            entityType: 'news',
+            entityId: result.id,
+            topicIds: selectedTopicIds
+          });
+        }
+        
         setSubmitSuccess(true);
         
         // Navigate after successful submission
@@ -274,6 +297,23 @@ export default function NewsEditPage() {
                 handleRemoveTag={handleRemoveTag}
                 errors={errors}
               />
+              
+              {/* Topics Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Topics
+                </label>
+                <TopicSelector
+                  selectedTopics={selectedTopicIds}
+                  onTopicsChange={setSelectedTopicIds}
+                  placeholder="Search and select topics for this article..."
+                  maxTopics={5}
+                  className="w-full"
+                />
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add topics to help categorize this article and make it discoverable on topic pages.
+                </p>
+              </div>
               
               <FormActions 
                 isEditMode={isEditMode}

@@ -13,6 +13,8 @@ import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import { FormData, ListingCondition, ListingType } from './types';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 export default function MarketplaceEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -49,6 +51,11 @@ export default function MarketplaceEditPage() {
   // Get listing data if editing
   const { data: listing, isLoading: fetchLoading, error: fetchError } = getListing(id || '');
   
+  // Topic management
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  const { data: entityTopics } = useEntityTopics('marketplace', id || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
+  
   // State for delete confirmation modal
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,6 +83,13 @@ export default function MarketplaceEditPage() {
     }
   }, [listing, isEditing]);
   
+  // Effect to populate topics
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
+  
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,12 +113,26 @@ export default function MarketplaceEditPage() {
         sellerId: isEditing ? '' : '1' 
       };
       
+      let result;
       if (isEditing && id) {
         // Update existing listing
-        await updateListing.mutateAsync({ id, data: listingData as any });
+        result = await updateListing.mutateAsync({ id, data: listingData as any });
       } else {
         // Create new listing
-        await createListing.mutateAsync(listingData as any);
+        result = await createListing.mutateAsync(listingData as any);
+      }
+      
+      // Save topics after successful entity save
+      if (result && selectedTopicIds.length > 0) {
+        try {
+          await setEntityTopicsMutation.mutateAsync({
+            entityType: 'marketplace',
+            entityId: result.id || id,
+            topicIds: selectedTopicIds
+          });
+        } catch (topicError) {
+          console.error('Error saving topics:', topicError);
+        }
       }
       
       // Navigate back to marketplace on success
@@ -216,6 +244,25 @@ export default function MarketplaceEditPage() {
                 handleTagsChange={handleTagsChange}
                 isSubmitting={isSubmitting}
               />
+              
+              <hr className="border-t border-slate-200 dark:border-slate-700" />
+              
+              {/* Topics Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Topics
+                </label>
+                <TopicSelector
+                  selectedTopics={selectedTopicIds}
+                  onTopicsChange={setSelectedTopicIds}
+                  placeholder="Search and select topics for this listing..."
+                  maxTopics={5}
+                  className="w-full"
+                />
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add topics to help categorize this listing and make it discoverable on topic pages.
+                </p>
+              </div>
               
               <hr className="border-t border-slate-200 dark:border-slate-700" />
               

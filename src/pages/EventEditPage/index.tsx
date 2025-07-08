@@ -16,6 +16,8 @@ import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { uploadEventImage } from '../../lib/supabase';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 const initialFormData: FormData = {
   title: '',
@@ -47,10 +49,15 @@ export default function EventEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
   
   // Use hybrid approach for event data
   const { event, isLoading: eventLoading, updateEvent } = useEventHybrid(isEditMode ? id : undefined);
   const { createEvent } = useEventsHybrid();
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('event', eventIdString);
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   // Populate form with event data when in edit mode
   useEffect(() => {
@@ -76,6 +83,13 @@ export default function EventEditPage() {
       });
     }
   }, [isEditMode, event, eventIdString, eventLoading]);
+  
+  // Populate topics when entity topics are loaded
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -162,9 +176,10 @@ export default function EventEditPage() {
         setIsUploadingImage(false);
       }
       
+      let eventResult;
       if (isEditMode && id) {
         // Update existing event using hybrid hook
-        await updateEvent({
+        eventResult = await updateEvent({
           title: formData.title,
           description: formData.description,
           date: formData.date,
@@ -174,6 +189,7 @@ export default function EventEditPage() {
           url: formData.url || undefined,
           organizer_id: formData.organizerId || member?.id || ''
         });
+        eventResult = { id }; // Use existing ID for topic update
       } else {
         // Create new event using events API
         if (!member) {
@@ -193,7 +209,16 @@ export default function EventEditPage() {
           status: 'published'
         };
 
-        await createEvent(eventData);
+        eventResult = await createEvent(eventData);
+      }
+      
+      // Save topics after successful event save
+      if (eventResult && selectedTopicIds.length > 0) {
+        await setEntityTopicsMutation.mutateAsync({
+          entityType: 'event',
+          entityId: eventResult.id,
+          topicIds: selectedTopicIds
+        });
       }
       
       setSubmitSuccess(true);
@@ -274,6 +299,23 @@ export default function EventEditPage() {
                 sessions={formData.sessions || []}
                 onSessionsChange={(sessions) => setFormData({ ...formData, sessions })}
               />
+              
+              {/* Topics Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Topics
+                </label>
+                <TopicSelector
+                  selectedTopics={selectedTopicIds}
+                  onTopicsChange={setSelectedTopicIds}
+                  placeholder="Search and select topics for this event..."
+                  maxTopics={5}
+                  className="w-full"
+                />
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add topics to help categorize this event and make it discoverable on topic pages.
+                </p>
+              </div>
               
               <FormActions 
                 isEditMode={isEditMode}

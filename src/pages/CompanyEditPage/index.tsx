@@ -14,6 +14,8 @@ import { convertFormDataToInsert, convertFormDataToUpdate } from './adapters';
 import { generateSlug } from '@/features/companies/utils/slugUtils';
 // Import ContentStatus for proper typing
 import { ContentStatus } from '../../types/common';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 // Define an extended company type that includes the optional fields we need
 interface ExtendedCompany {
@@ -58,6 +60,11 @@ export default function CompanyEditPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('company', companyId || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   const { 
     data: company,
@@ -111,6 +118,13 @@ export default function CompanyEditPage() {
       });
     }
   }, [isEditMode, company]);
+  
+  // Effect to populate topics
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -306,7 +320,20 @@ export default function CompanyEditPage() {
         throw new Error(`Database operation failed: ${dbOperationError.message}`);
       }
 
-      // 4. Success handling
+      // 4. Save topics after successful entity save
+      if (companyData && selectedTopicIds.length > 0) {
+        try {
+          await setEntityTopicsMutation.mutateAsync({
+            entityType: 'company',
+            entityId: companyData.id,
+            topicIds: selectedTopicIds
+          });
+        } catch (topicError) {
+          console.error('Error saving topics:', topicError);
+        }
+      }
+      
+      // 5. Success handling
       setSubmitSuccess(true);
       
       // Redirect after a short delay
@@ -438,6 +465,25 @@ export default function CompanyEditPage() {
                 isSubmitting={isSubmitting}
                 error={errors.industry}
               />
+              
+              <hr className="border-t border-slate-200 dark:border-slate-700" />
+              
+              {/* Topics Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Topics
+                </label>
+                <TopicSelector
+                  selectedTopics={selectedTopicIds}
+                  onTopicsChange={setSelectedTopicIds}
+                  placeholder="Search and select topics for this company..."
+                  maxTopics={5}
+                  className="w-full"
+                />
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Add topics to help categorize this company and make it discoverable on topic pages.
+                </p>
+              </div>
               
               <hr className="border-t border-slate-200 dark:border-slate-700" />
               
