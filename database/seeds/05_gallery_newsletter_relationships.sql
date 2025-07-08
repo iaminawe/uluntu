@@ -104,12 +104,12 @@ WHERE id = '70000003-0003-0003-0003-000000000003'; -- June 22 digest featuring A
 
 -- Connect gallery photos to news articles
 UPDATE news 
-SET hero_image = 'galleries/jennifer/climate-data-viz.jpg',
+SET hero_image = '/climate-data-viz.jpg',
     hero_image_alt = 'Beautiful data visualization showing climate trends in the Kootenay region'
 WHERE slug = 'datawise-environmental-innovation-award';
 
 UPDATE news 
-SET hero_image = 'galleries/amanda/brand-photoshoot.jpg',
+SET hero_image = '/brand-photoshoot.jpg',
     hero_image_alt = 'Professional brand photoshoot showcasing local tech startup culture'
 WHERE slug = 'kootenay-tech-startup-growth-2024';
 
