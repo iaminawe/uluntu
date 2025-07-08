@@ -21,6 +21,7 @@ import ErrorPage from '../pages/ErrorPage';
 
 // Lazy load main pages
 const AboutPage = lazy(() => import('../pages/AboutPage'));
+const AboutUluntuPage = lazy(() => import('../pages/AboutUluntuPage'));
 const ContactPage = lazy(() => import('../pages/ContactPage'));
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
@@ -95,6 +96,12 @@ const AnalyticsDashboard = lazy(() => import('../pages/admin/newsletter/Analytic
 const UpdateNewsSlugs = lazy(() => import('../pages/admin/UpdateNewsSlugs'));
 const UpdateCompanySlugs = lazy(() => import('../pages/admin/UpdateCompanySlugs'));
 const ThemeConfigPage = lazy(() => import('../pages/admin/ThemeStatusPage'));
+const FeaturesPage = lazy(() => import('../pages/admin/FeaturesPage'));
+
+// Lazy load topic pages
+const TopicsIndexPage = lazy(() => import('../pages/TopicsIndexPage'));
+const TopicLandingPage = lazy(() => import('../pages/TopicLandingPage'));
+const ImprovedSettingsPage = lazy(() => import('../pages/admin/ImprovedSettingsPage'));
 
 
 // Auth components
@@ -130,6 +137,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'about', element: withSuspense(AboutPage) },
+      { path: 'about-uluntu', element: withSuspense(AboutUluntuPage) },
       { path: 'contact', element: withSuspense(ContactPage) },
       { path: 'privacy', element: withSuspense(PrivacyPage) },
       { path: 'terms', element: withSuspense(TermsPage) },
@@ -252,8 +260,8 @@ export const router = createBrowserRouter([
       },
       
       // Topics routes
-      { path: 'topics', element: withSuspense(TopicsPage) },
-      { path: 'topics/:slug', element: withSuspense(TopicDetailPage) },
+      { path: 'topics', element: withSuspense(TopicsIndexPage) },
+      { path: 'topics/:slug', element: withSuspense(TopicLandingPage) },
       
       // Messaging routes
       { 
@@ -280,10 +288,15 @@ export const router = createBrowserRouter([
       { index: true, element: withSuspense(AdminDashboard) },
       { path: 'users', element: withSuspense(UsersPage) },
       { path: 'roles', element: withSuspense(RolesPage) },
+      { path: 'features', element: withSuspense(FeaturesPage) },
       { path: 'moderation', element: withSuspense(ModerationPage) },
       { 
         path: 'settings', 
         element: withSuspense(AdminSettingsPage)
+      },
+      { 
+        path: 'settings-v2', 
+        element: withSuspense(ImprovedSettingsPage)
       },
       { 
         path: 'theme', 
