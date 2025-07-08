@@ -48,6 +48,7 @@ const Header: React.FC<HeaderProps> = ({
       href: "/about",
       children: [
         { text: "About Us", href: "/about", description: "Learn about our mission" },
+        { text: "About Uluntu", href: "/about-uluntu", description: "Learn about the Uluntu platform" },
         { text: "Partners", href: "/partners", description: "Our community partners and sponsors" },
         { text: "Contact", href: "/contact", description: "Get in touch with us" },
         { text: "Privacy", href: "/privacy", description: "Privacy policy and data protection" },
