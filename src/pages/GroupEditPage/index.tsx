@@ -14,6 +14,8 @@ import { FormData } from './types';
 import { generateSlug } from '@/features/companies/utils/slugUtils';
 import { supabase, uploadGroupImage } from '@/lib/supabase';
 import { ContentStatus } from '../../types/common';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 const initialFormData: FormData = {
   name: '',
@@ -44,6 +46,11 @@ export default function GroupEditPage() {
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('group', groupId || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   const { 
     data: group, 
@@ -69,6 +76,13 @@ export default function GroupEditPage() {
       });
     }
   }, [isEditMode, group]);
+  
+  // Effect to populate topics
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -184,6 +198,19 @@ export default function GroupEditPage() {
       }
 
       if (result) {
+        // Save topics after successful entity save
+        if (selectedTopicIds.length > 0) {
+          try {
+            await setEntityTopicsMutation.mutateAsync({
+              entityType: 'group',
+              entityId: result.id,
+              topicIds: selectedTopicIds
+            });
+          } catch (topicError) {
+            console.error('Error saving topics:', topicError);
+          }
+        }
+        
         setSubmitSuccess(true);
         
         // Navigate back after success
@@ -308,6 +335,23 @@ export default function GroupEditPage() {
                   errors={errors}
                   isSubmitting={isSubmitting || isUploadingImages}
                 />
+                
+                {/* Topics Section */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Topics
+                  </label>
+                  <TopicSelector
+                    selectedTopics={selectedTopicIds}
+                    onTopicsChange={setSelectedTopicIds}
+                    placeholder="Search and select topics for this group..."
+                    maxTopics={5}
+                    className="w-full"
+                  />
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Add topics to help categorize this group and make it discoverable on topic pages.
+                  </p>
+                </div>
                 
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button

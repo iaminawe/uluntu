@@ -16,6 +16,8 @@ import LoadingState from './LoadingState';
 import { FormData } from './types';
 import { initialFormData } from './data';
 import { uploadOpportunityImage } from '../../lib/supabase';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 export default function OpportunityEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,12 +37,24 @@ export default function OpportunityEditPage() {
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('opportunity', id || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   useEffect(() => {
     if (isEditMode && id) {
       loadOpportunity();
     }
   }, [isEditMode, id]);
+  
+  // Effect to populate topics
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
 
   const loadOpportunity = async () => {
     if (!id) return;
@@ -250,6 +264,19 @@ export default function OpportunityEditPage() {
       }
 
       if (result) {
+        // Save topics after successful entity save
+        if (selectedTopicIds.length > 0) {
+          try {
+            await setEntityTopicsMutation.mutateAsync({
+              entityType: 'opportunity',
+              entityId: result.id,
+              topicIds: selectedTopicIds
+            });
+          } catch (topicError) {
+            console.error('Error saving topics:', topicError);
+          }
+        }
+        
         setSubmitSuccess(true);
         
         // Navigate back after success
@@ -332,6 +359,23 @@ export default function OpportunityEditPage() {
                     onImageChange={handleImageChange}
                     isSubmitting={isSubmitting || isUploadingImage}
                   />
+                  
+                  {/* Topics Section */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Topics
+                    </label>
+                    <TopicSelector
+                      selectedTopics={selectedTopicIds}
+                      onTopicsChange={setSelectedTopicIds}
+                      placeholder="Search and select topics for this opportunity..."
+                      maxTopics={5}
+                      className="w-full"
+                    />
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Add topics to help categorize this opportunity and make it discoverable on topic pages.
+                    </p>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <ListSection

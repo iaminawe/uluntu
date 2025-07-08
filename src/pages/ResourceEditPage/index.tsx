@@ -20,6 +20,8 @@ import FormActions from './FormActions';
 import DeleteConfirm from './DeleteConfirm';
 import LoadingState from './LoadingState';
 import { FormData, ResourceType } from './types';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 // This would normally come from a hook like useResource
 const SAMPLE_RESOURCE = {
@@ -61,12 +63,24 @@ export default function ResourceEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditing);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management
+  const { data: entityTopics } = useEntityTopics('resource', id || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   useEffect(() => {
     if (isEditing && id) {
       loadResource();
     }
   }, [isEditing, id]);
+  
+  // Populate topics when entity topics are loaded
+  useEffect(() => {
+    if (entityTopics) {
+      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    }
+  }, [entityTopics]);
 
   const loadResource = async () => {
     if (!id) return;
@@ -148,6 +162,15 @@ export default function ResourceEditPage() {
       }
 
       if (result) {
+        // Save topics after successful resource save
+        if (selectedTopicIds.length > 0) {
+          await setEntityTopicsMutation.mutateAsync({
+            entityType: 'resource',
+            entityId: result.id,
+            topicIds: selectedTopicIds
+          });
+        }
+        
         setSubmitSuccess(true);
         
         // Redirect after a short delay
@@ -253,6 +276,23 @@ export default function ResourceEditPage() {
                   handleChange={handleChange}
                   setFormData={setFormData}
                 />
+                
+                {/* Topics Section */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Topics
+                  </label>
+                  <TopicSelector
+                    selectedTopics={selectedTopicIds}
+                    onTopicsChange={setSelectedTopicIds}
+                    placeholder="Search and select topics for this resource..."
+                    maxTopics={5}
+                    className="w-full"
+                  />
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Add topics to help categorize this resource and make it discoverable on topic pages.
+                  </p>
+                </div>
                 
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
