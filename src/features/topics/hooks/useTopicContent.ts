@@ -1,0 +1,341 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/shared/api';
+
+interface TopicContentItem {
+  id: string;
+  title: string;
+  excerpt?: string;
+  description?: string;
+  date?: string;
+  image?: string;
+  author?: {
+    id: string;
+    name: string;
+    image?: string;
+  };
+  type: string;
+  url: string;
+  status?: string;
+  featured?: boolean;
+}
+
+interface TopicContentResponse {
+  [entityType: string]: TopicContentItem[];
+}
+
+export const topicContentQueryKeys = {
+  byTopic: (topicSlug: string) => ['topic-content', topicSlug] as const,
+};
+
+async function fetchTopicContent(topicSlug: string): Promise<TopicContentResponse> {
+  if (!topicSlug) return {};
+
+  try {
+    // Get topic ID first
+    const { data: topic, error: topicError } = await supabase
+      .from('topics')
+      .select('id')
+      .eq('slug', topicSlug)
+      .eq('is_active', true)
+      .single();
+
+    if (topicError || !topic) {
+      console.error('Topic not found:', topicError);
+      return {};
+    }
+
+    const topicId = topic.id;
+    const content: TopicContentResponse = {};
+
+    // Fetch events
+    const { data: events } = await supabase
+      .from('event_topics')
+      .select(`
+        events!inner (
+          id,
+          title,
+          description,
+          date,
+          image,
+          status,
+          organizer_id,
+          members!events_organizer_id_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('events.status', 'published');
+
+    if (events) {
+      content.events = events.map((item: any) => ({
+        id: item.events.id,
+        title: item.events.title,
+        excerpt: item.events.description,
+        date: item.events.date,
+        image: item.events.image,
+        author: {
+          id: item.events.members?.id || '',
+          name: item.events.members?.name || 'Unknown',
+          image: item.events.members?.image
+        },
+        type: 'event',
+        url: `/events/${item.events.id}`
+      }));
+    }
+
+    // Fetch news
+    const { data: news } = await supabase
+      .from('news_topics')
+      .select(`
+        news!inner (
+          id,
+          title,
+          excerpt,
+          date,
+          image,
+          status,
+          author_id,
+          members!news_author_id_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('news.status', 'published');
+
+    if (news) {
+      content.news = news.map((item: any) => ({
+        id: item.news.id,
+        title: item.news.title,
+        excerpt: item.news.excerpt,
+        date: item.news.date,
+        image: item.news.image,
+        author: {
+          id: item.news.members?.id || '',
+          name: item.news.members?.name || 'Unknown',
+          image: item.news.members?.image
+        },
+        type: 'news',
+        url: `/news/${item.news.id}`
+      }));
+    }
+
+    // Fetch resources
+    const { data: resources } = await supabase
+      .from('resource_topics')
+      .select(`
+        resources!inner (
+          id,
+          title,
+          description,
+          url,
+          type,
+          status,
+          contributor_id,
+          members!resources_contributor_id_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('resources.status', 'published');
+
+    if (resources) {
+      content.resources = resources.map((item: any) => ({
+        id: item.resources.id,
+        title: item.resources.title,
+        excerpt: item.resources.description,
+        author: {
+          id: item.resources.members?.id || '',
+          name: item.resources.members?.name || 'Unknown',
+          image: item.resources.members?.image
+        },
+        type: 'resource',
+        url: `/resources/${item.resources.id}`
+      }));
+    }
+
+    // Fetch groups
+    const { data: groups } = await supabase
+      .from('group_topics')
+      .select(`
+        groups!inner (
+          id,
+          name,
+          description,
+          hero_image,
+          status,
+          visibility
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('groups.status', 'published')
+      .in('groups.visibility', ['open', 'public']);
+
+    if (groups) {
+      content.groups = groups.map((item: any) => ({
+        id: item.groups.id,
+        title: item.groups.name,
+        excerpt: item.groups.description,
+        image: item.groups.hero_image,
+        type: 'group',
+        url: `/groups/${item.groups.id}`
+      }));
+    }
+
+    // Fetch marketplace listings
+    const { data: marketplace } = await supabase
+      .from('marketplace_topics')
+      .select(`
+        marketplace_listings!inner (
+          id,
+          title,
+          description,
+          price,
+          status,
+          seller_id,
+          members!marketplace_listings_seller_id_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('marketplace_listings.status', 'published');
+
+    if (marketplace) {
+      content.marketplace = marketplace.map((item: any) => ({
+        id: item.marketplace_listings.id,
+        title: item.marketplace_listings.title,
+        excerpt: item.marketplace_listings.description,
+        author: {
+          id: item.marketplace_listings.members?.id || '',
+          name: item.marketplace_listings.members?.name || 'Unknown',
+          image: item.marketplace_listings.members?.image
+        },
+        type: 'marketplace',
+        url: `/marketplace/${item.marketplace_listings.id}`
+      }));
+    }
+
+    // Fetch opportunities
+    const { data: opportunities } = await supabase
+      .from('opportunity_topics')
+      .select(`
+        opportunities!inner (
+          id,
+          title,
+          description,
+          status,
+          posted_by,
+          members!opportunities_posted_by_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('opportunities.status', 'published');
+
+    if (opportunities) {
+      content.opportunities = opportunities.map((item: any) => ({
+        id: item.opportunities.id,
+        title: item.opportunities.title,
+        excerpt: item.opportunities.description,
+        author: {
+          id: item.opportunities.members?.id || '',
+          name: item.opportunities.members?.name || 'Unknown',
+          image: item.opportunities.members?.image
+        },
+        type: 'opportunity',
+        url: `/opportunities/${item.opportunities.id}`
+      }));
+    }
+
+    // Fetch companies
+    const { data: companies } = await supabase
+      .from('company_topics')
+      .select(`
+        companies!inner (
+          id,
+          name,
+          description,
+          logo,
+          status
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('companies.status', 'published');
+
+    if (companies) {
+      content.companies = companies.map((item: any) => ({
+        id: item.companies.id,
+        title: item.companies.name,
+        excerpt: item.companies.description,
+        image: item.companies.logo,
+        type: 'company',
+        url: `/companies/${item.companies.id}`
+      }));
+    }
+
+    // Fetch galleries
+    const { data: galleries } = await supabase
+      .from('gallery_topics')
+      .select(`
+        galleries!inner (
+          id,
+          title,
+          description,
+          cover_image,
+          status,
+          created_by,
+          members!galleries_created_by_fkey (
+            id,
+            name,
+            image
+          )
+        )
+      `)
+      .eq('topic_id', topicId)
+      .eq('galleries.status', 'published');
+
+    if (galleries) {
+      content.galleries = galleries.map((item: any) => ({
+        id: item.galleries.id,
+        title: item.galleries.title,
+        excerpt: item.galleries.description,
+        image: item.galleries.cover_image,
+        author: {
+          id: item.galleries.members?.id || '',
+          name: item.galleries.members?.name || 'Unknown',
+          image: item.galleries.members?.image
+        },
+        type: 'gallery',
+        url: `/galleries/${item.galleries.id}`
+      }));
+    }
+
+    return content;
+  } catch (error) {
+    console.error('Error fetching topic content:', error);
+    return {};
+  }
+}
+
+export function useTopicContent(topicSlug: string) {
+  return useQuery({
+    queryKey: topicContentQueryKeys.byTopic(topicSlug),
+    queryFn: () => fetchTopicContent(topicSlug),
+    enabled: !!topicSlug,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
