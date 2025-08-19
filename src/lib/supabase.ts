@@ -74,8 +74,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     flowType: 'pkce',
     // Enhanced storage key to avoid conflicts
     storageKey: 'sb-auth-token',
-    // Debug mode for development
-    debug: import.meta.env.DEV
+    // Debug mode disabled
+    debug: false
   },
   // Global headers for better debugging
   global: {

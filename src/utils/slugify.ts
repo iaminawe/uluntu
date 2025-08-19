@@ -1,8 +1,18 @@
 /**
- * Generate a URL-friendly slug from a string
- * @param text The text to convert to a slug
- * @param options Configuration options
- * @returns A URL-friendly slug
+ * Legacy slug utilities - kept for backward compatibility
+ * @deprecated Use the comprehensive utilities in /lib/utils/slugUtils.ts instead
+ */
+
+import { 
+  generateSlug as newGenerateSlug, 
+  generateUniqueSlug as newGenerateUniqueSlug,
+  type SlugOptions,
+  type ContentType
+} from '../lib/utils/slugUtils';
+import { logger } from './logger';
+
+/**
+ * @deprecated Use generateSlug from /lib/utils/slugUtils.ts
  */
 export function generateSlug(
   text: string,
@@ -12,46 +22,23 @@ export function generateSlug(
     strict?: boolean;
   } = {}
 ): string {
-  const {
-    lowercase = true,
-    separator = '-',
-    strict = false
-  } = options;
-
-  let slug = text
-    .normalize('NFD') // Normalize unicode characters
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-    .trim();
-
-  if (lowercase) {
-    slug = slug.toLowerCase();
-  }
-
-  // Replace spaces and non-alphanumeric characters with separator
-  if (strict) {
-    // Strict mode: only allow alphanumeric characters
-    slug = slug.replace(/[^a-zA-Z0-9]+/g, separator);
-  } else {
-    // Default: allow alphanumeric, hyphens, and underscores
-    slug = slug.replace(/[^a-zA-Z0-9-_]+/g, separator);
-  }
-
-  // Remove multiple separators
-  slug = slug.replace(new RegExp(`${separator}{2,}`, 'g'), separator);
-
-  // Remove separator from start and end
-  slug = slug.replace(new RegExp(`^${separator}|${separator}$`, 'g'), '');
-
-  return slug;
+  logger.warn('Using deprecated generateSlug. Please migrate to /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
+  
+  const newOptions: SlugOptions = {
+    lowercase: options.lowercase,
+    separator: options.separator,
+    strict: options.strict
+  };
+  
+  return newGenerateSlug(text, newOptions);
 }
 
 /**
- * Ensure a slug is unique by appending a number if necessary
- * @param baseSlug The base slug to make unique
- * @param existingSlugs Array of existing slugs to check against
- * @returns A unique slug
+ * @deprecated Use generateUniqueSlug from /lib/utils/slugUtils.ts with database checking
  */
 export function ensureUniqueSlug(baseSlug: string, existingSlugs: string[]): string {
+  logger.warn('Using deprecated ensureUniqueSlug. Please migrate to /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
+  
   if (!existingSlugs.includes(baseSlug)) {
     return baseSlug;
   }
@@ -68,17 +55,27 @@ export function ensureUniqueSlug(baseSlug: string, existingSlugs: string[]): str
 }
 
 /**
- * Generate a slug from a title with uniqueness check
- * @param title The title to convert to a slug
- * @param existingSlugs Array of existing slugs
- * @param options Slug generation options
- * @returns A unique slug
+ * @deprecated Use generateUniqueSlug from /lib/utils/slugUtils.ts with database checking
  */
 export function generateUniqueSlug(
   title: string,
   existingSlugs: string[] = [],
   options?: Parameters<typeof generateSlug>[1]
 ): string {
+  logger.warn('Using deprecated generateUniqueSlug. Please migrate to /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
+  
   const baseSlug = generateSlug(title, options);
   return ensureUniqueSlug(baseSlug, existingSlugs);
 }
+
+/**
+ * Migration helper - provides guidance for updating to new slug utilities
+ */
+export const slugMigrationGuide = {
+  generateSlug: 'Replace with: import { generateSlug } from "@/lib/utils/slugUtils"',
+  ensureUniqueSlug: 'Replace with: import { generateUniqueSlug } from "@/lib/utils/slugUtils" and specify contentType',
+  generateUniqueSlug: 'Replace with: import { generateUniqueSlug } from "@/lib/utils/slugUtils" and specify contentType',
+  validation: 'Use: import { validateSlugSEO } from "@/lib/utils/slugValidation" for advanced validation',
+  lookup: 'Use: import { lookupByIdOrSlug } from "@/lib/utils/slugUtils" for database lookups',
+  hooks: 'Use: import { useSlugGeneration } from "@/lib/utils/slugHooks" for React components'
+};

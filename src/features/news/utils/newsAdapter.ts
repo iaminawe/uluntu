@@ -18,7 +18,7 @@ export function adaptNewsArticleFromDatabase(dbArticle: SupabaseNewsArticleWithA
     hero_image_alt: dbArticle.hero_image_alt || undefined,
     author: {
       id: dbArticle.members?.id || dbArticle.author_id || 'UNKNOWN_AUTHOR_ID',
-      name: dbArticle.members?.name || (dbArticle.author_id ? `Author ID: ${dbArticle.author_id}` : 'Unknown Author'),
+      name: dbArticle.members?.name || 'Unknown Author',
       image: dbArticle.members?.image || '/placeholder-avatar.png'
     },
     tags: dbArticle.tags || undefined,

@@ -49,10 +49,16 @@ export default function OpportunityEditPage() {
     }
   }, [isEditMode, id]);
   
-  // Effect to populate topics
+  // Effect to populate topics - only update if actually different
   useEffect(() => {
-    if (entityTopics) {
-      setSelectedTopicIds(entityTopics.map(topic => topic.id));
+    if (entityTopics && entityTopics.length > 0) {
+      const newTopicIds = entityTopics.map(topic => topic.id);
+      // Only update if the topic IDs have actually changed
+      setSelectedTopicIds(prevIds => {
+        const hasChanged = prevIds.length !== newTopicIds.length || 
+                          !prevIds.every(id => newTopicIds.includes(id));
+        return hasChanged ? newTopicIds : prevIds;
+      });
     }
   }, [entityTopics]);
 

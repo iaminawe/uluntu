@@ -20,7 +20,7 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className, ...props }) => (
   <div
     className={cn(
-      'rounded-lg border border-gray-200 bg-white shadow-sm',
+      'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm',
       className
     )}
     {...props}
@@ -40,7 +40,7 @@ export const CardHeader: React.FC<CardHeaderProps> = ({ children, className, ...
 
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className, ...props }) => (
   <h3
-    className={cn('text-lg font-semibold leading-none tracking-tight', className)}
+    className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100', className)}
     {...props}
   >
     {children}

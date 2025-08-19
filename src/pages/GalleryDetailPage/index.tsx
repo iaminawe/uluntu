@@ -23,6 +23,7 @@ import { AddToResourcesButton } from '@/features/gallery/components/AddToResourc
 import { GalleryGrid } from '@/features/gallery/components/GalleryGrid';
 import { formatDistanceToNow } from 'date-fns';
 import type { Gallery, Photo } from '@/features/gallery/types';
+import { AuthorLink } from '@/components/ui/AuthorLink';
 
 const GalleryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -204,7 +205,7 @@ const GalleryDetailPage: React.FC = () => {
                 
                 <div className="flex items-center gap-6 text-sm text-gray-500 mb-4">
                   <div>
-                    By <span className="font-medium text-gray-700">{gallery.owner?.name || 'Unknown User'}</span>
+                    By <AuthorLink userId={gallery.owner_id} className="font-medium text-gray-700" linkToProfile={true} />
                   </div>
                   <div>
                     {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
