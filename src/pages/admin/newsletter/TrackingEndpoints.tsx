@@ -80,8 +80,8 @@ export const ClickTracker: React.FC = () => {
 export const WebhookHandler: React.FC = () => {
   return (
     <div className="p-8 text-center">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Webhook Handler</h1>
-      <p className="text-gray-600">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Webhook Handler</h1>
+      <p className="text-gray-600 dark:text-gray-400">
         This endpoint handles Resend webhooks for delivery tracking.
         In a production app, this would be a server-side API route.
       </p>

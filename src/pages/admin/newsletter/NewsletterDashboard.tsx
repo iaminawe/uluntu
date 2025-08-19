@@ -95,8 +95,8 @@ const NewsletterDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Newsletter Dashboard</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Newsletter Dashboard</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Manage your community newsletter and engage with subscribers
           </p>
         </div>
@@ -112,11 +112,11 @@ const NewsletterDashboard: React.FC = () => {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickStats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-6">
+          <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.title}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stat.value}</p>
                 <p className="text-sm text-green-600 mt-1">{stat.change} from last month</p>
               </div>
               <div className={`${stat.color} p-3 rounded-lg`}>
@@ -128,8 +128,8 @@ const NewsletterDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action, index) => (
             <Link
@@ -147,9 +147,9 @@ const NewsletterDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Campaigns */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Campaigns</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Campaigns</h2>
             <Link 
               to="/admin/newsletter/campaigns"
               className="text-sm text-blue-600 hover:text-blue-700"
@@ -162,15 +162,15 @@ const NewsletterDashboard: React.FC = () => {
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
           ) : recentCampaigns?.data?.length === 0 ? (
             <div className="text-center py-8">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No campaigns yet</p>
+              <FileText className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">No campaigns yet</p>
               <Link
                 to="/admin/newsletter/campaigns/new"
                 className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
@@ -181,11 +181,11 @@ const NewsletterDashboard: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {recentCampaigns?.data?.map((campaign) => (
-                <div key={campaign.id} className="border-l-4 border-gray-200 pl-4">
+                <div key={campaign.id} className="border-l-4 border-gray-200 dark:border-gray-700 pl-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{campaign.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{campaign.subject}</p>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{campaign.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{campaign.subject}</p>
                       <div className="flex items-center mt-2 space-x-4">
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           campaign.status === 'sent' ? 'bg-green-100 text-green-800' :
@@ -209,7 +209,7 @@ const NewsletterDashboard: React.FC = () => {
                     </div>
                     <Link
                       to={`/admin/newsletter/campaigns/${campaign.id}`}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                     >
                       <Eye className="h-4 w-4" />
                     </Link>
@@ -221,15 +221,15 @@ const NewsletterDashboard: React.FC = () => {
         </div>
 
         {/* Performance Overview */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Performance Overview</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Performance Overview</h2>
           
           {statsLoading ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-2 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 </div>
               ))}
             </div>
@@ -237,10 +237,10 @@ const NewsletterDashboard: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Open Rate</span>
+                  <span className="text-gray-600 dark:text-gray-400">Open Rate</span>
                   <span className="font-medium">{stats?.avg_open_rate?.toFixed(1) || 0}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full" 
                     style={{ width: `${Math.min(stats?.avg_open_rate || 0, 100)}%` }}
@@ -253,7 +253,7 @@ const NewsletterDashboard: React.FC = () => {
                   <span className="text-gray-600">Click Rate</span>
                   <span className="font-medium">{stats?.avg_click_rate?.toFixed(1) || 0}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div 
                     className="bg-green-600 h-2 rounded-full" 
                     style={{ width: `${Math.min(stats?.avg_click_rate || 0, 100)}%` }}
@@ -266,7 +266,7 @@ const NewsletterDashboard: React.FC = () => {
                   <span className="text-gray-600">Subscriber Growth</span>
                   <span className="font-medium">+12% this month</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div className="bg-purple-600 h-2 rounded-full w-3/4"></div>
                 </div>
               </div>
