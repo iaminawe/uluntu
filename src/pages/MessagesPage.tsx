@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Menu, X } from 'lucide-react';
 import ConversationsList from '@/features/messaging/components/ConversationsList';
-import MessageThread from '@/features/messaging/components/MessageThread';
+import RealtimeMessageThread from '@/features/messaging/components/MessageThread/RealtimeMessageThread';
 import NewMessageModal from '@/features/messaging/components/NewMessageModal';
 import { useMessagingHybrid } from '@/features/messaging/hooks/useMessagingHybrid';
 import { ContentContainer, PageHeader } from '@/shared/components/ui/PageLayout';
@@ -158,11 +158,8 @@ const MessagesPage: React.FC = () => {
               </div>
               
               {/* Message thread */}
-              <MessageThread
-                messages={messages}
+              <RealtimeMessageThread
                 conversationId={selectedConversationId}
-                loading={isLoading}
-                error={null}
               />
             </div>
           ) : (

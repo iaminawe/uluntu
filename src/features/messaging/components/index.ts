@@ -14,3 +14,4 @@ export { default as TypingIndicator } from './TypingIndicator';
 export { default as MessageSellerButton } from './MessageSellerButton';
 export { default as MessageNotification } from './MessageNotification';
 export { default as DirectMessageButton } from './DirectMessageButton';
+export { ComposeMessageModal } from './ComposeMessageModal';
