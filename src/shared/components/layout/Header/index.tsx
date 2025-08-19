@@ -8,54 +8,11 @@ import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 import { useEnabledFeatures, useSettings } from "@/hooks/useSettings";
 import { useTheme } from "@/providers/EnhancedThemeProvider";
+import { useHeaderNavigation } from "@/hooks/useNavigation";
 
 const Header: React.FC<HeaderProps> = ({
   logo,
-  navLinks = [
-    { 
-      text: "Community", 
-      href: "/community",
-      children: [
-        { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks", feature: "events_system" },
-        { text: "Directory", href: "/directory", description: "Connect with tech professionals", feature: "members_directory" },
-        { text: "Groups", href: "/groups", description: "Join communities of interest", feature: "groups_communities" },
-        { text: "News", href: "/news", description: "Latest tech news and articles", feature: "news_blog" },
-        { text: "Galleries", href: "/galleries", description: "Browse community photo galleries", feature: "photo_galleries" }
-      ]
-    },
-    { 
-      text: "Business", 
-      href: "/business",
-      children: [
-        { text: "Companies", href: "/companies", description: "Explore local tech companies", feature: "companies_listing" },
-        { text: "Opportunities", href: "/opportunities", description: "Find jobs and volunteer roles", feature: "opportunities_board" },
-        { text: "Marketplace", href: "/marketplace", description: "Buy and sell tech items", feature: "marketplace" }
-      ]
-    },
-    { 
-      text: "Resources", 
-      href: "/resources", 
-      description: "Educational content and guides",
-      feature: "resources_library"
-    },
-    { 
-      text: "Topics", 
-      href: "/topics", 
-      description: "Browse content by topic"
-    },
-    { 
-      text: "About", 
-      href: "/about",
-      children: [
-        { text: "About Us", href: "/about", description: "Learn about our mission" },
-        { text: "About Uluntu", href: "/about-uluntu", description: "Learn about the Uluntu platform" },
-        { text: "Partners", href: "/partners", description: "Our community partners and sponsors" },
-        { text: "Contact", href: "/contact", description: "Get in touch with us" },
-        { text: "Privacy", href: "/privacy", description: "Privacy policy and data protection" },
-        { text: "Terms", href: "/terms", description: "Terms of service and guidelines" }
-      ]
-    }
-  ]
+  navLinks = [] // Now optional since we get navigation from NavigationProvider
 }) => {
   const { features, isFeatureEnabled } = useEnabledFeatures();
   const { settings } = useSettings();
@@ -70,39 +27,55 @@ const Header: React.FC<HeaderProps> = ({
   const siteLogo = settings?.site?.site_logo?.value;
   const displayLogo = logo || siteLogo || siteName;
 
-  // Filter navigation links based on feature toggles
-  const filteredNavLinks = useMemo(() => {
-    // If features are still loading, show all nav links to prevent blank header
-    if (!features || Object.keys(features).length === 0) {
-      return navLinks;
-    }
-
-    return navLinks.map(link => {
-      // If the main link has a feature requirement, check it
-      if (link.feature && !isFeatureEnabled(link.feature as any)) {
-        return null;
+  // Get navigation data from NavigationProvider
+  const { 
+    navLinks: navigationLinks, 
+    loading: navigationLoading, 
+    error: navigationError,
+    isDynamic 
+  } = useHeaderNavigation();
+  
+  // Use provided navLinks as override if available, otherwise use navigation system
+  const finalNavLinks = useMemo(() => {
+    if (navLinks && navLinks.length > 0) {
+      // Override provided - use as-is but still apply feature filtering
+      if (!features || Object.keys(features).length === 0) {
+        return navLinks;
       }
 
-      // Filter children based on their feature requirements
-      if (link.children) {
-        const filteredChildren = link.children.filter(child => {
-          return !child.feature || isFeatureEnabled(child.feature as any);
-        });
-
-        // If no children remain after filtering, hide the parent
-        if (filteredChildren.length === 0) {
+      return navLinks.map(link => {
+        // If the main link has a feature requirement, check it
+        if (link.feature && !isFeatureEnabled(link.feature as any)) {
           return null;
         }
 
-        return {
-          ...link,
-          children: filteredChildren
-        };
-      }
+        // Filter children based on their feature requirements
+        if (link.children) {
+          const filteredChildren = link.children.filter(child => {
+            return !child.feature || isFeatureEnabled(child.feature as any);
+          });
 
-      return link;
-    }).filter(Boolean); // Remove null entries
-  }, [navLinks, isFeatureEnabled, features]);
+          // If no children remain after filtering, hide the parent
+          if (filteredChildren.length === 0) {
+            return null;
+          }
+
+          return {
+            ...link,
+            children: filteredChildren
+          };
+        }
+
+        return link;
+      }).filter(Boolean);
+    }
+    
+    // Use navigation system links
+    return navigationLinks;
+  }, [navLinks, navigationLinks, features, isFeatureEnabled]);
+  
+  // Show loading skeleton during initial load
+  const showLoadingSkeleton = navigationLoading && finalNavLinks.length === 0;
 
   // Handle scroll effect
   useEffect(() => {
@@ -146,9 +119,10 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <DesktopNav 
-            navLinks={filteredNavLinks.filter(Boolean) as NavLinkItem[]} 
+            navLinks={finalNavLinks.filter(Boolean) as NavLinkItem[]} 
             isDark={isDark} 
-            toggleDarkMode={toggleDarkMode} 
+            toggleDarkMode={toggleDarkMode}
+            showLoadingSkeleton={showLoadingSkeleton}
           />
 
           {/* Mobile Menu Controls */}
@@ -172,8 +146,9 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Navigation */}
         <MobileNav 
           isOpen={isOpen} 
-          navLinks={filteredNavLinks.filter(Boolean) as NavLinkItem[]} 
-          onLinkClick={closeMobileMenu} 
+          navLinks={finalNavLinks.filter(Boolean) as NavLinkItem[]} 
+          onLinkClick={closeMobileMenu}
+          showLoadingSkeleton={showLoadingSkeleton}
         />
       </div>
     </header>
