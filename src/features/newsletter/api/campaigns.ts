@@ -12,7 +12,10 @@ import {
   EmailPreview,
   SendResult,
   TemplateData,
-  SendTestEmailRequest
+  SendTestEmailRequest,
+  ABTest,
+  ABTestResults,
+  CreateABTestRequest
 } from '@/types/newsletter';
 
 class NewsletterCampaignAPI {
@@ -287,6 +290,193 @@ class NewsletterCampaignAPI {
   }
 
   /**
+   * Create A/B test for campaigns
+   */
+  async createABTest(request: CreateABTestRequest): Promise<ABTest | null> {
+    try {
+      const testData = {
+        name: request.name,
+        description: request.description,
+        campaign_a_id: request.campaign_a_id,
+        campaign_b_id: request.campaign_b_id,
+        test_percentage: request.test_percentage,
+        winner_metric: request.winner_metric,
+        status: 'draft' as const,
+        created_by: (await supabase.auth.getUser()).data.user?.id
+      };
+
+      const { data, error } = await supabase
+        .from('newsletter_ab_tests')
+        .insert(testData)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ABTest;
+    } catch (error) {
+      console.error('Error creating A/B test:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Start A/B test
+   */
+  async startABTest(testId: string): Promise<boolean> {
+    try {
+      const { data: test, error: testError } = await supabase
+        .from('newsletter_ab_tests')
+        .select('*, campaign_a:newsletter_campaigns!campaign_a_id(*), campaign_b:newsletter_campaigns!campaign_b_id(*)')
+        .eq('id', testId)
+        .single();
+
+      if (testError) throw testError;
+
+      // Get active subscribers for the test
+      const subscribers = await newsletterSubscriptionApi.getActiveSubscribers();
+      const testSize = Math.floor(subscribers.length * (test.test_percentage / 100));
+      
+      // Randomly split subscribers
+      const shuffled = subscribers.sort(() => 0.5 - Math.random());
+      const groupA = shuffled.slice(0, Math.floor(testSize / 2));
+      const groupB = shuffled.slice(Math.floor(testSize / 2), testSize);
+
+      // Send to group A
+      await this.sendCampaignToSegment(test.campaign_a_id, groupA.map(s => s.id));
+      
+      // Send to group B
+      await this.sendCampaignToSegment(test.campaign_b_id, groupB.map(s => s.id));
+
+      // Update test status
+      const { error: updateError } = await supabase
+        .from('newsletter_ab_tests')
+        .update({
+          status: 'running',
+          start_date: new Date().toISOString()
+        })
+        .eq('id', testId);
+
+      if (updateError) throw updateError;
+      return true;
+    } catch (error) {
+      console.error('Error starting A/B test:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get A/B test results
+   */
+  async getABTestResults(testId: string): Promise<ABTestResults | null> {
+    try {
+      const { data: test, error } = await supabase
+        .from('newsletter_ab_tests')
+        .select('*')
+        .eq('id', testId)
+        .single();
+
+      if (error) throw error;
+
+      // Get analytics for both campaigns
+      const [campaignAAnalytics, campaignBAnalytics] = await Promise.all([
+        this.getCampaignAnalytics(test.campaign_a_id),
+        this.getCampaignAnalytics(test.campaign_b_id)
+      ]);
+
+      if (!campaignAAnalytics || !campaignBAnalytics) return null;
+
+      const campaign_a_stats = {
+        sent: campaignAAnalytics.total_sent,
+        opened: campaignAAnalytics.total_opened,
+        clicked: campaignAAnalytics.total_clicked,
+        conversions: 0, // TODO: Implement conversion tracking
+        open_rate: campaignAAnalytics.open_rate,
+        click_rate: campaignAAnalytics.click_rate,
+        conversion_rate: 0
+      };
+
+      const campaign_b_stats = {
+        sent: campaignBAnalytics.total_sent,
+        opened: campaignBAnalytics.total_opened,
+        clicked: campaignBAnalytics.total_clicked,
+        conversions: 0,
+        open_rate: campaignBAnalytics.open_rate,
+        click_rate: campaignBAnalytics.click_rate,
+        conversion_rate: 0
+      };
+
+      // Determine winner based on metric
+      let winner: 'a' | 'b' | 'tie' | null = null;
+      const metric = test.winner_metric;
+      
+      if (metric === 'open_rate') {
+        if (campaign_a_stats.open_rate > campaign_b_stats.open_rate) winner = 'a';
+        else if (campaign_b_stats.open_rate > campaign_a_stats.open_rate) winner = 'b';
+        else winner = 'tie';
+      } else if (metric === 'click_rate') {
+        if (campaign_a_stats.click_rate > campaign_b_stats.click_rate) winner = 'a';
+        else if (campaign_b_stats.click_rate > campaign_a_stats.click_rate) winner = 'b';
+        else winner = 'tie';
+      }
+
+      // Calculate confidence level (simplified)
+      const confidence_level = this.calculateConfidenceLevel(campaign_a_stats, campaign_b_stats, metric);
+
+      return {
+        campaign_a_stats,
+        campaign_b_stats,
+        winner,
+        confidence_level
+      };
+    } catch (error) {
+      console.error('Error getting A/B test results:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Send campaign to specific segment/subscribers
+   */
+  async sendCampaignToSegment(campaignId: string, subscriberIds: string[]): Promise<SendResult> {
+    try {
+      const campaign = await this.getCampaign(campaignId);
+      if (!campaign) {
+        return { success: false, error: 'Campaign not found', sent_count: 0, failed_count: 0, failed_emails: [] };
+      }
+
+      // Get subscribers
+      const { data: subscribers, error } = await supabase
+        .from('newsletter_subscriptions')
+        .select('*')
+        .in('id', subscriberIds)
+        .eq('status', 'active');
+
+      if (error) throw error;
+
+      const mappedSubscribers = (subscribers || []).map(sub => this.mapSubscription(sub));
+
+      // Use Resend service to send
+      const sendResult = await resendService.sendNewsletterCampaign(campaign, mappedSubscribers);
+
+      // Record analytics
+      for (const subscriber of mappedSubscribers) {
+        await this.recordAnalytics(campaignId, subscriber.id, 'sent');
+      }
+
+      return sendResult;
+    } catch (error) {
+      console.error('Error sending campaign to segment:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        sent_count: 0,
+        failed_count: 0,
+        failed_emails: []
+      };
+    }
+  }
+
+  /**
    * Send campaign immediately
    */
   async sendCampaign(id: string): Promise<SendResult> {
@@ -449,6 +639,62 @@ class NewsletterCampaignAPI {
   }
 
   // Private helper methods
+
+  private mapSubscription(data: any): any {
+    return {
+      id: data.id,
+      email: data.email,
+      member_id: data.member_id || undefined,
+      status: data.status || 'pending',
+      preferences: data.preferences || {
+        frequency: 'weekly',
+        content_types: ['events', 'news', 'opportunities'],
+        format: 'digest',
+        location_filter: true,
+        language: 'en'
+      },
+      subscription_token: data.subscription_token,
+      confirmation_token: data.confirmation_token || undefined,
+      confirmed_at: data.confirmed_at || undefined,
+      subscribed_at: data.subscribed_at || new Date().toISOString(),
+      unsubscribed_at: data.unsubscribed_at || undefined,
+      last_sent_at: data.last_sent_at || undefined,
+      bounce_count: data.bounce_count || 0,
+      created_at: data.created_at || new Date().toISOString(),
+      updated_at: data.updated_at || new Date().toISOString()
+    };
+  }
+
+  private calculateConfidenceLevel(
+    statsA: { sent: number; opened: number; clicked: number; open_rate: number; click_rate: number },
+    statsB: { sent: number; opened: number; clicked: number; open_rate: number; click_rate: number },
+    metric: 'open_rate' | 'click_rate' | 'conversion_rate'
+  ): number {
+    // Simplified statistical significance calculation
+    // In production, you'd want to use proper statistical tests like z-test or t-test
+    const sampleSizeA = statsA.sent;
+    const sampleSizeB = statsB.sent;
+    
+    if (sampleSizeA < 30 || sampleSizeB < 30) {
+      return 0; // Not enough data for statistical significance
+    }
+
+    // Statistical confidence calculation based on sample sizes and effect size
+    const totalSample = sampleSizeA + sampleSizeB;
+    const minSample = Math.min(sampleSizeA, sampleSizeB);
+    
+    // Calculate effect size difference between A and B variants
+    const openRateA = sampleSizeA > 0 ? statsA.opened / sampleSizeA : 0;
+    const openRateB = sampleSizeB > 0 ? statsB.opened / sampleSizeB : 0;
+    const effectSize = Math.abs(openRateA - openRateB);
+    
+    // Confidence based on sample size and effect size
+    if (totalSample >= 1000 && minSample >= 100 && effectSize > 0.02) return 95;
+    if (totalSample >= 500 && minSample >= 50 && effectSize > 0.03) return 90;
+    if (totalSample >= 200 && minSample >= 30 && effectSize > 0.05) return 80;
+    if (effectSize > 0.10) return 70;
+    return 60;
+  }
 
   private async renderMJMLTemplate(templateContent: string, data: TemplateData): Promise<string> {
     // TODO: Implement MJML rendering

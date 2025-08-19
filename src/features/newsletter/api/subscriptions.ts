@@ -309,20 +309,58 @@ class NewsletterSubscriptionAPI {
    */
   async getSubscriptionStats(): Promise<NewsletterStats | null> {
     try {
-      // RPC function not available - return mock stats for now
-      // const { data, error } = await supabase.rpc('get_newsletter_stats');
-      // if (error) throw error;
-      // return data?.[0] || null;
-      
-      return {
-        total_subscribers: 0,
-        active_subscribers: 0,
-        pending_subscribers: 0,
+      // Get subscription counts by status
+      const { data: subscriptions, error: subsError } = await supabase
+        .from('newsletter_subscriptions')
+        .select('status');
+
+      if (subsError) throw subsError;
+
+      const stats = {
+        total_subscribers: subscriptions?.length || 0,
+        active_subscribers: subscriptions?.filter(s => s.status === 'active').length || 0,
+        pending_subscribers: subscriptions?.filter(s => s.status === 'pending').length || 0,
         total_campaigns: 0,
         sent_campaigns: 0,
         avg_open_rate: 0,
         avg_click_rate: 0
       };
+
+      // Get campaign counts if table exists
+      try {
+        const { data: campaigns, error: campError } = await supabase
+          .from('newsletter_campaigns')
+          .select('status');
+
+        if (!campError && campaigns) {
+          stats.total_campaigns = campaigns.length;
+          stats.sent_campaigns = campaigns.filter(c => c.status === 'sent').length;
+        }
+      } catch (err) {
+        // Campaign table may not exist yet, continue with subscription stats only
+        console.warn('Newsletter campaigns table not found, continuing with subscription stats only');
+      }
+
+      // Get analytics stats if table exists
+      try {
+        const { data: analytics, error: analyticsError } = await supabase
+          .from('newsletter_analytics')
+          .select('event_type');
+
+        if (!analyticsError && analytics && analytics.length > 0) {
+          const totalEvents = analytics.length;
+          const openEvents = analytics.filter(a => a.event_type === 'opened').length;
+          const clickEvents = analytics.filter(a => a.event_type === 'clicked').length;
+          
+          stats.avg_open_rate = totalEvents > 0 ? (openEvents / totalEvents) * 100 : 0;
+          stats.avg_click_rate = totalEvents > 0 ? (clickEvents / totalEvents) * 100 : 0;
+        }
+      } catch (err) {
+        // Analytics table may not exist yet, continue with other stats
+        console.warn('Newsletter analytics table not found, continuing without engagement stats');
+      }
+
+      return stats;
     } catch (error) {
       console.error('Error getting subscription stats:', error);
       return null;

@@ -324,6 +324,221 @@ class NewsletterAnalyticsAPI {
   }
 
   /**
+   * Calculate engagement score for a subscriber
+   */
+  async calculateEngagementScore(subscriptionId: string): Promise<EngagementScore | null> {
+    try {
+      const { data: subscription, error: subError } = await supabase
+        .from('newsletter_subscriptions')
+        .select('subscribed_at')
+        .eq('id', subscriptionId)
+        .single();
+
+      if (subError) throw subError;
+
+      // Get analytics events for this subscriber
+      const { data: analytics, error: analyticsError } = await supabase
+        .from('newsletter_analytics')
+        .select('event_type, occurred_at')
+        .eq('subscription_id', subscriptionId);
+
+      if (analyticsError) throw analyticsError;
+
+      const events = analytics || [];
+      const sentEvents = events.filter(e => e.event_type === 'sent');
+      const openEvents = events.filter(e => e.event_type === 'opened');
+      const clickEvents = events.filter(e => e.event_type === 'clicked');
+
+      // Calculate factors
+      const open_rate = sentEvents.length > 0 ? (openEvents.length / sentEvents.length) * 100 : 0;
+      const click_rate = openEvents.length > 0 ? (clickEvents.length / openEvents.length) * 100 : 0;
+
+      // Recent activity (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const recentEvents = events.filter(e => 
+        e.occurred_at && new Date(e.occurred_at) > thirtyDaysAgo
+      );
+      const recent_activity = recentEvents.length;
+
+      // Subscription longevity (months)
+      const subscriptionDate = new Date(subscription.subscribed_at);
+      const now = new Date();
+      const subscription_longevity = Math.max(1, 
+        (now.getTime() - subscriptionDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
+      );
+
+      // Content engagement (variety of interactions)
+      const uniqueEventTypes = new Set(events.map(e => e.event_type)).size;
+      const content_engagement = uniqueEventTypes * 10; // Scale factor
+
+      // Calculate overall score (0-100)
+      const score = Math.min(100, Math.max(0,
+        (open_rate * 0.3) + 
+        (click_rate * 0.3) + 
+        (Math.min(recent_activity, 10) * 2) + 
+        (Math.min(subscription_longevity, 12) * 1.5) + 
+        (content_engagement * 0.5)
+      ));
+
+      return {
+        subscriber_id: subscriptionId,
+        score: Math.round(score * 100) / 100,
+        factors: {
+          open_rate: Math.round(open_rate * 100) / 100,
+          click_rate: Math.round(click_rate * 100) / 100,
+          recent_activity,
+          subscription_longevity: Math.round(subscription_longevity * 100) / 100,
+          content_engagement
+        },
+        updated_at: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error calculating engagement score:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get cohort analysis for subscriber retention
+   */
+  async getCohortAnalysis(cohortPeriod: 'month' | 'quarter' = 'month'): Promise<CohortAnalysis[]> {
+    try {
+      const cohorts: CohortAnalysis[] = [];
+      const periodMonths = cohortPeriod === 'quarter' ? 3 : 1;
+      
+      // Get cohorts for the last 12 periods
+      for (let i = 11; i >= 0; i--) {
+        const cohortStart = new Date();
+        cohortStart.setMonth(cohortStart.getMonth() - (i * periodMonths));
+        cohortStart.setDate(1);
+        
+        const cohortEnd = new Date(cohortStart);
+        cohortEnd.setMonth(cohortEnd.getMonth() + periodMonths);
+        cohortEnd.setDate(0);
+
+        const cohortPeriodLabel = `${cohortStart.getFullYear()}-${String(cohortStart.getMonth() + 1).padStart(2, '0')}`;
+
+        // Get subscribers from this cohort
+        const { data: cohortSubscribers, error } = await supabase
+          .from('newsletter_subscriptions')
+          .select('id')
+          .gte('subscribed_at', cohortStart.toISOString())
+          .lt('subscribed_at', cohortEnd.toISOString());
+
+        if (error) throw error;
+
+        const cohort_size = cohortSubscribers?.length || 0;
+        if (cohort_size === 0) continue;
+
+        const subscriberIds = (cohortSubscribers || []).map(s => s.id);
+
+        // Calculate retention for each period after cohort
+        const retention_rates: Array<{ period: number; subscribers: number; retention_rate: number }> = [];
+        const engagement_metrics: Array<{ period: number; avg_open_rate: number; avg_click_rate: number }> = [];
+
+        for (let period = 0; period < 12; period++) {
+          const periodStart = new Date(cohortEnd);
+          periodStart.setMonth(periodStart.getMonth() + (period * periodMonths));
+          
+          const periodEnd = new Date(periodStart);
+          periodEnd.setMonth(periodEnd.getMonth() + periodMonths);
+
+          // Check how many subscribers were still active in this period
+          const { data: activeInPeriod, error: activeError } = await supabase
+            .from('newsletter_analytics')
+            .select('subscription_id')
+            .in('subscription_id', subscriberIds)
+            .gte('occurred_at', periodStart.toISOString())
+            .lt('occurred_at', periodEnd.toISOString())
+            .eq('event_type', 'sent');
+
+          if (activeError) throw activeError;
+
+          const uniqueActive = new Set((activeInPeriod || []).map(a => a.subscription_id));
+          const activeCount = uniqueActive.size;
+          const retention_rate = (activeCount / cohort_size) * 100;
+
+          retention_rates.push({
+            period,
+            subscribers: activeCount,
+            retention_rate: Math.round(retention_rate * 100) / 100
+          });
+
+          // Calculate engagement metrics for this period
+          const { data: engagementData, error: engagementError } = await supabase
+            .from('newsletter_analytics')
+            .select('event_type, subscription_id')
+            .in('subscription_id', Array.from(uniqueActive))
+            .gte('occurred_at', periodStart.toISOString())
+            .lt('occurred_at', periodEnd.toISOString())
+            .in('event_type', ['sent', 'opened', 'clicked']);
+
+          if (!engagementError && engagementData) {
+            const sentCount = engagementData.filter(e => e.event_type === 'sent').length;
+            const openCount = engagementData.filter(e => e.event_type === 'opened').length;
+            const clickCount = engagementData.filter(e => e.event_type === 'clicked').length;
+
+            const avg_open_rate = sentCount > 0 ? (openCount / sentCount) * 100 : 0;
+            const avg_click_rate = openCount > 0 ? (clickCount / openCount) * 100 : 0;
+
+            engagement_metrics.push({
+              period,
+              avg_open_rate: Math.round(avg_open_rate * 100) / 100,
+              avg_click_rate: Math.round(avg_click_rate * 100) / 100
+            });
+          }
+        }
+
+        cohorts.push({
+          cohort_period: cohortPeriodLabel,
+          cohort_size,
+          retention_rates,
+          engagement_metrics
+        });
+      }
+
+      return cohorts;
+    } catch (error) {
+      console.error('Error getting cohort analysis:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get advanced analytics dashboard data
+   */
+  async getAdvancedAnalytics(days: number = 90): Promise<AdvancedAnalytics | null> {
+    try {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      // Subscriber growth
+      const subscriber_growth = await this.getSubscriberGrowth(startDate, endDate);
+      
+      // Engagement trends
+      const engagement_trends = await this.getEngagementTrends(startDate, endDate);
+      
+      // Content performance
+      const content_performance = await this.getContentPerformance();
+      
+      // Segment performance
+      const segment_performance = await this.getSegmentPerformance();
+
+      return {
+        subscriber_growth,
+        engagement_trends,
+        content_performance,
+        segment_performance
+      };
+    } catch (error) {
+      console.error('Error getting advanced analytics:', error);
+      return null;
+    }
+  }
+
+  /**
    * Get engagement metrics for dashboard
    */
   async getEngagementMetrics(days: number = 30): Promise<{
@@ -398,6 +613,194 @@ class NewsletterAnalyticsAPI {
       console.error('Error getting engagement metrics:', error);
       return null;
     }
+  }
+
+  // Private helper methods for advanced analytics
+
+  private async getSubscriberGrowth(startDate: Date, endDate: Date) {
+    const growth: Array<{ date: string; new_subscribers: number; unsubscribes: number; net_growth: number }> = [];
+    
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      // Get new subscribers
+      const { data: newSubs, error: newError } = await supabase
+        .from('newsletter_subscriptions')
+        .select('id')
+        .gte('subscribed_at', currentDate.toISOString())
+        .lt('subscribed_at', nextDate.toISOString());
+
+      // Get unsubscribes
+      const { data: unsubscribes, error: unsubError } = await supabase
+        .from('newsletter_subscriptions')
+        .select('id')
+        .gte('unsubscribed_at', currentDate.toISOString())
+        .lt('unsubscribed_at', nextDate.toISOString());
+
+      if (!newError && !unsubError) {
+        const new_subscribers = newSubs?.length || 0;
+        const unsubscribes_count = unsubscribes?.length || 0;
+        const net_growth = new_subscribers - unsubscribes_count;
+
+        growth.push({
+          date: dateStr,
+          new_subscribers,
+          unsubscribes: unsubscribes_count,
+          net_growth
+        });
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return growth;
+  }
+
+  private async getEngagementTrends(startDate: Date, endDate: Date) {
+    const trends: Array<{ date: string; open_rate: number; click_rate: number; engagement_score: number }> = [];
+    
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      const nextDate = new Date(currentDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const { data: analytics, error } = await supabase
+        .from('newsletter_analytics')
+        .select('event_type')
+        .gte('occurred_at', currentDate.toISOString())
+        .lt('occurred_at', nextDate.toISOString());
+
+      if (!error && analytics) {
+        const events = analytics;
+        const sentCount = events.filter(e => e.event_type === 'sent').length;
+        const openCount = events.filter(e => e.event_type === 'opened').length;
+        const clickCount = events.filter(e => e.event_type === 'clicked').length;
+
+        const open_rate = sentCount > 0 ? (openCount / sentCount) * 100 : 0;
+        const click_rate = openCount > 0 ? (clickCount / openCount) * 100 : 0;
+        const engagement_score = (open_rate + click_rate) / 2;
+
+        trends.push({
+          date: dateStr,
+          open_rate: Math.round(open_rate * 100) / 100,
+          click_rate: Math.round(click_rate * 100) / 100,
+          engagement_score: Math.round(engagement_score * 100) / 100
+        });
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return trends;
+  }
+
+  private async getContentPerformance() {
+    const performance: Array<{
+      content_type: string;
+      avg_open_rate: number;
+      avg_click_rate: number;
+      total_campaigns: number;
+    }> = [];
+
+    // Analyze campaign content by querying actual campaign data
+    try {
+      const { data: campaigns, error } = await supabase
+        .from('newsletter_campaigns')
+        .select(`
+          content,
+          delivery_stats
+        `)
+        .eq('status', 'sent')
+        .not('delivery_stats', 'is', null);
+
+      if (error) throw error;
+
+      const contentTypes = ['events', 'news', 'opportunities', 'marketplace', 'members', 'companies'];
+      
+      for (const contentType of contentTypes) {
+        // Filter campaigns that contain this content type
+        const relevantCampaigns = (campaigns || []).filter(campaign => {
+          const content = campaign.content || {};
+          return content[contentType] && Array.isArray(content[contentType]) && content[contentType].length > 0;
+        });
+
+        if (relevantCampaigns.length > 0) {
+          const totalOpen = relevantCampaigns.reduce((sum, c) => sum + (c.delivery_stats?.opened || 0), 0);
+          const totalClick = relevantCampaigns.reduce((sum, c) => sum + (c.delivery_stats?.clicked || 0), 0);
+          const totalSent = relevantCampaigns.reduce((sum, c) => sum + (c.delivery_stats?.sent || 0), 0);
+
+          performance.push({
+            content_type: contentType,
+            avg_open_rate: totalSent > 0 ? (totalOpen / totalSent) * 100 : 0,
+            avg_click_rate: totalOpen > 0 ? (totalClick / totalOpen) * 100 : 0,
+            total_campaigns: relevantCampaigns.length
+          });
+        } else {
+          performance.push({
+            content_type: contentType,
+            avg_open_rate: 0,
+            avg_click_rate: 0,
+            total_campaigns: 0
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error analyzing content performance:', error);
+      // Return empty structure on error
+      const contentTypes = ['events', 'news', 'opportunities', 'marketplace', 'members', 'companies'];
+      for (const contentType of contentTypes) {
+        performance.push({
+          content_type: contentType,
+          avg_open_rate: 0,
+          avg_click_rate: 0,
+          total_campaigns: 0
+        });
+      }
+    }
+
+    return performance;
+  }
+
+  private async getSegmentPerformance() {
+    const performance: Array<{
+      segment_id: string;
+      segment_name: string;
+      subscriber_count: number;
+      avg_engagement: number;
+    }> = [];
+
+    try {
+      const { data: segments, error } = await supabase
+        .from('newsletter_segments')
+        .select('id, name');
+
+      if (!error && segments) {
+        for (const segment of segments) {
+          // Get subscriber count for segment
+          const { count, error: countError } = await supabase
+            .from('newsletter_segment_assignments')
+            .select('*', { count: 'exact', head: true })
+            .eq('segment_id', segment.id);
+
+          if (!countError) {
+            performance.push({
+              segment_id: segment.id,
+              segment_name: segment.name,
+              subscriber_count: count || 0,
+              avg_engagement: 0 // TODO: Calculate actual engagement
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error getting segment performance:', error);
+    }
+
+    return performance;
   }
 }
 
