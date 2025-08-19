@@ -1,7 +1,14 @@
-// TEMPORARY: Using mock implementation until messaging database tables are created
-// TODO: Replace with actual Supabase implementation after running migration 009_create_messaging_system.sql
+// Switch between mock and real implementation based on environment variable
+// Set VITE_USE_MOCK_MESSAGING=false to use real Supabase implementation
+// Default to real implementation now that database is ready
 
-export { messagingApi } from './messagingApi.mock';
+import { messagingApi as realApi } from './messagingApi.real';
+import { messagingApi as mockApi } from './messagingApi.mock';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_MESSAGING === 'true';
+
+// Use real implementation by default, mock only if explicitly set
+export const messagingApi = USE_MOCK ? mockApi : realApi;
 
 // Export query keys for React Query
 export const messagingQueryKeys = {

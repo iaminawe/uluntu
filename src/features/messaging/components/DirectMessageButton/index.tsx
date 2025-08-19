@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MessageCircle, Mail } from 'lucide-react';
 import { useFeatureToggle } from '@/utils/featureToggle';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
-import { useCreateConversation } from '@/hooks/useMessagingQueries';
-import { useNavigate } from 'react-router-dom';
+import { ComposeMessageModal } from '../ComposeMessageModal';
 
 interface DirectMessageButtonProps {
   recipientId: string;
@@ -23,9 +22,8 @@ export function DirectMessageButton({
   className = ''
 }: DirectMessageButtonProps) {
   const { user } = useSession();
-  const navigate = useNavigate();
   const { enabled: isMessagingEnabled, loading } = useFeatureToggle('user_messaging');
-  const createConversation = useCreateConversation();
+  const [showComposeModal, setShowComposeModal] = useState(false);
 
   // Don't allow messaging yourself
   if (user?.id === recipientId) {
@@ -59,32 +57,27 @@ export function DirectMessageButton({
   }
 
   // User is logged in and messaging is enabled - show direct message button
-  const handleDirectMessage = async () => {
-    try {
-      const conversation = await createConversation.mutateAsync({
-        type: 'direct',
-        participant_ids: [recipientId],
-        initial_message: `Hi ${recipientName}! I'd like to connect with you.`
-      });
-      
-      // Navigate to messages page with the new conversation selected
-      navigate(`/messages?conversation=${conversation.id}`);
-    } catch (error) {
-      console.error('Failed to create conversation:', error);
-      // Fall back to email contact on error
-      onEmailFallback();
-    }
+  const handleDirectMessage = () => {
+    setShowComposeModal(true);
   };
 
   return (
-    <button
-      onClick={handleDirectMessage}
-      disabled={createConversation.isPending}
-      className={`px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md transition-colors flex items-center ${className}`}
-    >
-      <MessageCircle className="h-4 w-4 mr-2" />
-      {createConversation.isPending ? 'Creating...' : 'Send Message'}
-    </button>
+    <>
+      <button
+        onClick={handleDirectMessage}
+        className={`px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors flex items-center ${className}`}
+      >
+        <MessageCircle className="h-4 w-4 mr-2" />
+        Send Message
+      </button>
+      
+      <ComposeMessageModal
+        recipientId={recipientId}
+        recipientName={recipientName}
+        isOpen={showComposeModal}
+        onClose={() => setShowComposeModal(false)}
+      />
+    </>
   );
 }
 
