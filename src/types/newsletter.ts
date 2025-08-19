@@ -417,6 +417,301 @@ export interface ResendWebhook {
   };
 }
 
+// Segmentation Types
+
+export interface NewsletterSegment {
+  id: string;
+  name: string;
+  description?: string;
+  criteria: SegmentationCriteria;
+  is_dynamic: boolean;
+  color: string;
+  subscriber_count: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SegmentationCriteria {
+  status?: ('pending' | 'active' | 'unsubscribed' | 'bounced')[];
+  subscribed_after?: string;
+  subscribed_before?: string;
+  location_filter?: string[];
+  content_preferences?: ContentType[];
+  min_open_rate?: number;
+  max_open_rate?: number;
+  min_click_rate?: number;
+  max_click_rate?: number;
+  max_bounce_count?: number;
+  last_activity_after?: string;
+  last_activity_before?: string;
+  engagement_score_min?: number;
+  engagement_score_max?: number;
+  tags?: string[];
+}
+
+export interface CreateSegmentRequest {
+  name: string;
+  description?: string;
+  criteria: SegmentationCriteria;
+  is_dynamic?: boolean;
+  color?: string;
+}
+
+export interface UpdateSegmentRequest {
+  name?: string;
+  description?: string;
+  criteria?: SegmentationCriteria;
+  is_dynamic?: boolean;
+  color?: string;
+}
+
+export interface SegmentFilters {
+  is_dynamic?: boolean;
+  search?: string;
+  created_by?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface SegmentSubscriberStats {
+  total_subscribers: number;
+  active_subscribers: number;
+  engagement_rate: number;
+  avg_open_rate: number;
+  avg_click_rate: number;
+  last_campaign_performance: {
+    campaign_title: string;
+    open_rate: number;
+    click_rate: number;
+    sent_date: string;
+  } | null;
+}
+
+// Enhanced Template Types
+
+export interface TemplateCategory {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface CreateTemplateRequest {
+  name: string;
+  description?: string;
+  category?: string;
+  type?: 'mjml' | 'react-email';
+  template_content: string;
+  default_settings?: Record<string, unknown>;
+  preview_image?: string;
+  tags?: string[];
+  is_active?: boolean;
+}
+
+export interface UpdateTemplateRequest {
+  name?: string;
+  description?: string;
+  category?: string;
+  type?: 'mjml' | 'react-email';
+  template_content?: string;
+  default_settings?: Record<string, unknown>;
+  preview_image?: string;
+  tags?: string[];
+  is_active?: boolean;
+}
+
+export interface TemplateFilters {
+  category?: string;
+  type?: 'mjml' | 'react-email';
+  is_active?: boolean;
+  is_system?: boolean;
+  search?: string;
+  tags?: string[];
+  limit?: number;
+  offset?: number;
+}
+
+export interface TemplatePreview {
+  template_id: string;
+  html: string;
+  text: string;
+  preview_data: Record<string, unknown>;
+}
+
+// Enhanced Newsletter Template with new fields
+export interface EnhancedNewsletterTemplate extends NewsletterTemplate {
+  category: string;
+  tags: string[];
+  is_system: boolean;
+  created_by: string;
+}
+
+// Import/Export Types
+
+export type ExportFormat = 'csv' | 'json' | 'xlsx';
+
+export interface ImportResult {
+  success: boolean;
+  total_processed: number;
+  successful_imports: number;
+  failed_imports: number;
+  duplicates_skipped: number;
+  errors: string[];
+  warnings: string[];
+}
+
+export interface BulkOperation {
+  type: 'update_status' | 'update_preferences' | 'assign_segment' | 'remove_segment' | 'delete';
+  subscriber_ids: string[];
+  data: Record<string, unknown>;
+}
+
+export interface BulkOperationResult {
+  success: boolean;
+  total_processed: number;
+  successful_operations: number;
+  failed_operations: number;
+  errors: string[];
+}
+
+// A/B Testing Types
+
+export interface ABTest {
+  id: string;
+  name: string;
+  description?: string;
+  campaign_a_id: string;
+  campaign_b_id: string;
+  test_percentage: number;
+  winner_metric: 'open_rate' | 'click_rate' | 'conversion_rate';
+  status: 'draft' | 'running' | 'completed' | 'cancelled';
+  start_date?: string;
+  end_date?: string;
+  results?: ABTestResults;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ABTestResults {
+  campaign_a_stats: {
+    sent: number;
+    opened: number;
+    clicked: number;
+    conversions: number;
+    open_rate: number;
+    click_rate: number;
+    conversion_rate: number;
+  };
+  campaign_b_stats: {
+    sent: number;
+    opened: number;
+    clicked: number;
+    conversions: number;
+    open_rate: number;
+    click_rate: number;
+    conversion_rate: number;
+  };
+  winner: 'a' | 'b' | 'tie' | null;
+  confidence_level: number;
+}
+
+export interface CreateABTestRequest {
+  name: string;
+  description?: string;
+  campaign_a_id: string;
+  campaign_b_id: string;
+  test_percentage: number;
+  winner_metric: 'open_rate' | 'click_rate' | 'conversion_rate';
+}
+
+// Enhanced Analytics Types
+
+export interface EngagementScore {
+  subscriber_id: string;
+  score: number;
+  factors: {
+    open_rate: number;
+    click_rate: number;
+    recent_activity: number;
+    subscription_longevity: number;
+    content_engagement: number;
+  };
+  updated_at: string;
+}
+
+export interface CohortAnalysis {
+  cohort_period: string;
+  cohort_size: number;
+  retention_rates: Array<{
+    period: number;
+    subscribers: number;
+    retention_rate: number;
+  }>;
+  engagement_metrics: Array<{
+    period: number;
+    avg_open_rate: number;
+    avg_click_rate: number;
+  }>;
+}
+
+export interface AdvancedAnalytics {
+  subscriber_growth: Array<{
+    date: string;
+    new_subscribers: number;
+    unsubscribes: number;
+    net_growth: number;
+  }>;
+  engagement_trends: Array<{
+    date: string;
+    open_rate: number;
+    click_rate: number;
+    engagement_score: number;
+  }>;
+  content_performance: Array<{
+    content_type: ContentType;
+    avg_open_rate: number;
+    avg_click_rate: number;
+    total_campaigns: number;
+  }>;
+  segment_performance: Array<{
+    segment_id: string;
+    segment_name: string;
+    subscriber_count: number;
+    avg_engagement: number;
+  }>;
+}
+
+// Campaign Scheduling Types
+
+export interface CampaignSchedule {
+  id: string;
+  campaign_id: string;
+  schedule_type: 'one_time' | 'recurring' | 'drip';
+  scheduled_at?: string;
+  recurring_pattern?: RecurringPattern;
+  drip_config?: DripConfig;
+  timezone: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecurringPattern {
+  frequency: 'daily' | 'weekly' | 'monthly';
+  interval: number;
+  days_of_week?: number[];
+  day_of_month?: number;
+  end_date?: string;
+  max_occurrences?: number;
+}
+
+export interface DripConfig {
+  trigger_event: 'subscription' | 'segment_join' | 'custom';
+  delay_days: number;
+  conditions?: Record<string, unknown>;
+}
+
 // Pagination Types
 
 export interface PaginatedResponse<T> {
@@ -430,3 +725,5 @@ export interface PaginatedResponse<T> {
 export type PaginatedSubscriptions = PaginatedResponse<NewsletterSubscription>;
 export type PaginatedCampaigns = PaginatedResponse<NewsletterCampaign>;
 export type PaginatedAnalytics = PaginatedResponse<NewsletterAnalytics>;
+export type PaginatedSegments = PaginatedResponse<NewsletterSegment>;
+export type PaginatedTemplates = PaginatedResponse<EnhancedNewsletterTemplate>;
