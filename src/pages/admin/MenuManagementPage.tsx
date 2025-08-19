@@ -1215,7 +1215,22 @@ const AdminMenuManagementPage: React.FC = () => {
 
   // Event handlers
   const handleDragEnd = useCallback((result: DropResult) => {
+    // Validate the drag result
     if (!result.destination) return;
+    if (!result.draggableId) return;
+    if (result.source.index === result.destination.index) return;
+    
+    // Ensure we're working with the right droppable
+    const expectedDroppableId = `${activeTab}-menu`;
+    if (result.source.droppableId !== expectedDroppableId || 
+        result.destination.droppableId !== expectedDroppableId) {
+      console.warn('Droppable ID mismatch', {
+        expected: expectedDroppableId,
+        source: result.source.droppableId,
+        destination: result.destination.droppableId
+      });
+      return;
+    }
 
     const items = Array.from(currentItems);
     const [reorderedItem] = items.splice(result.source.index, 1);
@@ -1224,12 +1239,12 @@ const AdminMenuManagementPage: React.FC = () => {
     // Create reorder updates
     const updates = items.map((item, index) => ({
       id: item.id,
-      order_index: index,
+      order_index: index * 100, // Use increments of 100 for easier reordering
       parent_id: item.parent_id
     }));
 
     reorderMutation.mutate(updates);
-  }, [currentItems, reorderMutation]);
+  }, [currentItems, reorderMutation, activeTab]);
 
   const handleEditItem = (item: MenuItem) => {
     setEditingItem(item);

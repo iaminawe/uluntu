@@ -1,14 +1,25 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Header from '@/shared/components/layout/Header';
 import Footer from '@/shared/components/layout/Footer';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useState, useEffect } from 'react';
 import { ThemePreviewIndicator } from '@/components/ThemePreviewIndicator';
+import { OnboardingGuard } from '@/components/OnboardingGuard';
+import { MenuProvider } from '@/features/menu/contexts/MenuContext';
+import { NavigationProvider } from '@/providers/NavigationProvider';
 
 export default function AppLayout() {
   const { loading } = useSession();
+  const location = useLocation();
   const [showContent, setShowContent] = useState(false);
+
+  // Skip onboarding for auth routes and onboarding routes
+  const shouldSkipOnboarding = location.pathname.startsWith('/signin') || 
+                               location.pathname.startsWith('/signup') || 
+                               location.pathname.startsWith('/onboarding') ||
+                               location.pathname.startsWith('/forgot-password') ||
+                               location.pathname.startsWith('/reset-password');
 
   // Show content after a short delay to prevent flash of loading
   useEffect(() => {
@@ -35,14 +46,20 @@ export default function AppLayout() {
 
   return (
     <HelmetProvider>
-      <div className="font-sans bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100">
-        <Header />
-        <main className="min-h-screen pt-16">
-          <Outlet />
-        </main>
-        <Footer />
-        <ThemePreviewIndicator />
-      </div>
+      <MenuProvider>
+        <NavigationProvider>
+          <OnboardingGuard skipOnboarding={shouldSkipOnboarding}>
+            <div className="font-sans bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100">
+              <Header />
+              <main className="min-h-screen pt-16">
+                <Outlet />
+              </main>
+              <Footer />
+              <ThemePreviewIndicator />
+            </div>
+          </OnboardingGuard>
+        </NavigationProvider>
+      </MenuProvider>
     </HelmetProvider>
   );
 }

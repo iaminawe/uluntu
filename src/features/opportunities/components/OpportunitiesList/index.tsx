@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import OpportunityCardEnhanced from './OpportunityCardEnhanced';
+import FeaturedOpportunitiesCarousel from '../FeaturedOpportunitiesCarousel';
 import Pagination from '@/components/Pagination';
 import { 
   Opportunity, 
@@ -152,23 +153,7 @@ const OpportunitiesList = ({
       ) : (
         <div className="space-y-6">
           {featuredOpportunities.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
-                <span className="bg-gradient-to-r from-orange-500 to-amber-500 text-transparent bg-clip-text">Featured Opportunities</span>
-                <span className="ml-2 text-xs bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded-full">
-                  {featuredOpportunities.length}
-                </span>
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {featuredOpportunities.map((opportunity, index) => (
-                  <OpportunityCardEnhanced 
-                    key={`featured-${opportunity.id}-${index}`} 
-                    opportunity={opportunity} 
-                    featured={true} 
-                  />
-                ))}
-              </div>
-            </div>
+            <FeaturedOpportunitiesCarousel opportunities={featuredOpportunities} />
           )}
           
           {currentRegularOpportunitiesToDisplay.length > 0 && (

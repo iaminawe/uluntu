@@ -7,10 +7,10 @@ import ErrorState from './ErrorState';
 import MemberProfile from '@/features/directory/components/MemberProfile';
 
 export default function DirectoryDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   
-  // Use hybrid approach for data fetching
-  const { member, isLoading, error } = useMemberHybrid(id);
+  // Use hybrid approach for data fetching with slug
+  const { member, isLoading, error } = useMemberHybrid(slug);
   
   if (isLoading) {
     return <LoadingState />;
@@ -29,7 +29,7 @@ export default function DirectoryDetailPage() {
       
       <ContentContainer>
         {/* Use our enhanced MemberProfile component that shows all contributions */}
-        <MemberProfile memberId={id as string} />
+        <MemberProfile memberSlug={slug as string} />
       </ContentContainer>
     </>
   );

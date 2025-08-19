@@ -212,7 +212,7 @@ const DirectHomePage = () => {
         // Use the correct table name and add ordering
         const { data: newsData, error: newsError } = await supabase
           .from('news')
-          .select('*')
+          .select('*, members:author_id(id, name, image)')
           .order('created_at', { ascending: false })
           .limit(3);
         
@@ -431,9 +431,13 @@ const DirectHomePage = () => {
                         // Add required publishedAt property
                         publishedAt: article.published_date || article.created_at || new Date().toISOString(),
                         // Add required author property
-                        author: {
+                        author: article.members ? {
+                          id: article.members.id,
+                          name: article.members.name,
+                          image: article.members.image || '/placeholder-author.png'
+                        } : {
                           id: article.author_id || 'unknown',
-                          name: 'Article Author',
+                          name: 'Unknown Author',
                           image: '/placeholder-author.png'
                         },
                         // Add required tags property

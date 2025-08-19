@@ -165,9 +165,9 @@ export const router = createBrowserRouter([
         path: 'directory/create', 
         element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
       },
-      { path: 'directory/:id', element: withSuspense(DirectoryDetailPage) },
+      { path: 'directory/:slug', element: withSuspense(DirectoryDetailPage) },
       { 
-        path: 'directory/:id/edit', 
+        path: 'directory/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
       },
       { path: 'companies', element: withSuspense(CompaniesPage) },
@@ -185,9 +185,9 @@ export const router = createBrowserRouter([
         path: 'events/create', 
         element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
       },
-      { path: 'events/:id', element: withSuspense(EventDetailPage) },
+      { path: 'events/:slug', element: withSuspense(EventDetailPage) },
       { 
-        path: 'events/:id/edit', 
+        path: 'events/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
       },
       { path: 'news', element: withSuspense(NewsPage) },
@@ -206,11 +206,11 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute>{withSuspense(GroupEditPage)}</ProtectedRoute> 
       },
       { 
-        path: 'groups/:id', 
+        path: 'groups/:slug', 
         element: <GroupGuard>{withSuspense(GroupDetailPage)}</GroupGuard> 
       },
       { 
-        path: 'groups/:id/edit', 
+        path: 'groups/:slug/edit', 
         element: <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute> 
       },
       { path: 'resources', element: withSuspense(ResourcesPage) },
@@ -238,9 +238,9 @@ export const router = createBrowserRouter([
         path: 'opportunities/create', 
         element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
       },
-      { path: 'opportunities/:id', element: withSuspense(OpportunityDetailPage) },
+      { path: 'opportunities/:slug', element: withSuspense(OpportunityDetailPage) },
       { 
-        path: 'opportunities/:id/edit', 
+        path: 'opportunities/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
       },
       { path: 'signin', element: <SignInPage /> },

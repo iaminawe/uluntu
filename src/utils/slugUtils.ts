@@ -1,13 +1,24 @@
+/**
+ * Legacy slug utilities - kept for backward compatibility
+ * @deprecated Use the new utilities in /lib/utils/slugUtils.ts instead
+ */
+
+import { generateSlug as newGenerateSlug, validateSlug as newValidateSlug } from '../lib/utils/slugUtils';
+import { logger } from './logger';
+
+/**
+ * @deprecated Use generateSlug from /lib/utils/slugUtils.ts
+ */
 export function generateSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
-    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  logger.warn('Using deprecated generateSlug. Please use the new version from /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
+  return newGenerateSlug(text, { strict: true });
 }
 
+/**
+ * @deprecated Use validateSlug from /lib/utils/slugUtils.ts
+ */
 export function validateSlug(slug: string): boolean {
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  return slugRegex.test(slug);
+  logger.warn('Using deprecated validateSlug. Please use the new version from /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
+  const validation = newValidateSlug(slug);
+  return validation.isValid;
 }

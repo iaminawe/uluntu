@@ -282,7 +282,7 @@ const GalleryEditPage: React.FC = () => {
           )}
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Gallery Title *
             </label>
             <input
@@ -290,8 +290,8 @@ const GalleryEditPage: React.FC = () => {
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                errors.title ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 ${
+                errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="My Amazing Photos"
               maxLength={100}
@@ -303,15 +303,15 @@ const GalleryEditPage: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
             <textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 ${
+                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Tell us about this gallery..."
               rows={4}
@@ -320,18 +320,18 @@ const GalleryEditPage: React.FC = () => {
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
             )}
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {(formData.description || '').length}/500 characters
             </p>
           </div>
 
           {/* Privacy Level */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Privacy Level
             </label>
             <div className="space-y-3">
-              <label className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className="flex items-start gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700">
                 <input
                   type="radio"
                   name="privacy"
@@ -343,15 +343,15 @@ const GalleryEditPage: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Globe className="w-5 h-5 text-green-600" />
-                    <span className="font-medium">Public</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Public</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Anyone can view this gallery
                   </p>
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className="flex items-start gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700">
                 <input
                   type="radio"
                   name="privacy"
@@ -363,15 +363,15 @@ const GalleryEditPage: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-blue-600" />
-                    <span className="font-medium">Members Only</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Members Only</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Only logged-in members can view this gallery
                   </p>
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <label className="flex items-start gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700">
                 <input
                   type="radio"
                   name="privacy"
@@ -383,9 +383,9 @@ const GalleryEditPage: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Lock className="w-5 h-5 text-gray-600" />
-                    <span className="font-medium">Private</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Private</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Only you can view this gallery
                   </p>
                 </div>
@@ -395,7 +395,7 @@ const GalleryEditPage: React.FC = () => {
 
           {/* Topics Section */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Topics
             </label>
             <TopicSelector
@@ -405,14 +405,14 @@ const GalleryEditPage: React.FC = () => {
               maxTopics={5}
               className="w-full"
             />
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Add topics to help categorize this gallery and make it discoverable on topic pages.
             </p>
           </div>
           
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Tags
             </label>
             <div className="flex gap-2 mb-2">
@@ -421,14 +421,14 @@ const GalleryEditPage: React.FC = () => {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                 placeholder="Add a tag..."
                 maxLength={30}
               />
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
               >
                 Add
               </button>

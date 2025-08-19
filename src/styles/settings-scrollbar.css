@@ -1,0 +1,45 @@
+/* Hide scrollbar for tab navigation while maintaining scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Optional: Add subtle shadow indicators for scrollable content */
+.scrollbar-hide {
+  position: relative;
+}
+
+/* Fade effect on edges when scrollable */
+.scrollbar-hide::before,
+.scrollbar-hide::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scrollbar-hide::before {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.scrollbar-hide::after {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
+/* Dark mode fade effect */
+.dark .scrollbar-hide::before {
+  background: linear-gradient(to right, rgb(30 41 59), transparent);
+}
+
+.dark .scrollbar-hide::after {
+  background: linear-gradient(to left, rgb(30 41 59), transparent);
+}
