@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Heart, Briefcase, Calendar, Code, Lightbulb, GraduationCap, Check, Star } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateCommunityEngagement } from '../../store/onboardingSlice';
+import { useOnboardingFeatures } from '../../hooks/useOnboardingSteps';
 import ProfilePublisher from '../shared/ProfilePublisher';
 import type { OnboardingStepProps, CommunityEngagement } from '../../types';
 

@@ -199,10 +199,10 @@ export function ProfileOnboarding({ onComplete, onSkip, showSkipOption = true }:
       {/* Action buttons */}
       <div className="space-y-3">
         <Link
-          to="/profile/edit"
+          to="/onboarding"
           className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md text-center transition-colors"
         >
-          Complete Profile
+          Complete Onboarding
         </Link>
         <button
           onClick={() => setStep('privacy')}
