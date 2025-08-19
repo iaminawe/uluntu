@@ -32,7 +32,7 @@ export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | Supaba
     social = { website: dbMember.website };
   }
 
-  return {
+  const member = {
     id: dbMember.id,
     name: dbMember.name,
     title: dbMember.title || '',
@@ -48,6 +48,13 @@ export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | Supaba
     featured: dbMember.featured || false,
     created_at: dbMember.created_at || new Date().toISOString()
   };
+  
+  // Add user_id if available from database
+  if (dbMember.user_id) {
+    (member as any).user_id = dbMember.user_id;
+  }
+  
+  return member;
 }
 
 export function adaptMemberToDatabase(member: Partial<Member>): Partial<SupabaseMember> {
@@ -79,10 +86,11 @@ type MemberLike = {
   social?: Record<string, string>;
   status?: ContentStatus;
   created_at?: string;
+  user_id?: string; // Add user_id to support profile ownership detection
 };
 
 export function mapMemberToProfileMember(member: MemberLike): import('../components/MemberProfile/types').Member {
-  return {
+  const profileMember = {
     id: member.id,
     name: member.name,
     title: member.title || member.role || 'Member', // Map title from role if title is not available
@@ -109,6 +117,13 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     openToVolunteering: false, // TODO: Add to member type
     arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString()
   };
+  
+  // Add user_id to the profile member so ProfileHeader can check ownership
+  if (member.user_id) {
+    (profileMember as any).user_id = member.user_id;
+  }
+  
+  return profileMember;
 }
 
 // Moved from dataAdapters.ts

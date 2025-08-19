@@ -13,6 +13,8 @@ import InterestsSection from './DirectoryEditPage/InterestsSection';
 import SocialSection from './DirectoryEditPage/SocialSection';
 import { FormData } from './DirectoryEditPage/types';
 import { initialFormData } from './DirectoryEditPage/data';
+import TopicSelector from '@/components/admin/TopicSelector';
+import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
@@ -29,6 +31,11 @@ export default function ProfileEditPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  
+  // Topic management hooks
+  const { data: memberTopics } = useEntityTopics('member', member?.id || '');
+  const setEntityTopicsMutation = useSetEntityTopics();
   
   useEffect(() => {
     // If user is not logged in, redirect to login page
@@ -67,6 +74,13 @@ export default function ProfileEditPage() {
       setFormData(newFormData);
     }
   }, [member]);
+  
+  // Populate topics when member topics load
+  useEffect(() => {
+    if (memberTopics) {
+      setSelectedTopicIds(memberTopics.map(topic => topic.id));
+    }
+  }, [memberTopics]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -234,6 +248,20 @@ export default function ProfileEditPage() {
         }
       }
       
+      // Save topics after successful profile save
+      if (profileId && selectedTopicIds.length > 0) {
+        try {
+          await setEntityTopicsMutation.mutateAsync({
+            entityType: 'member',
+            entityId: profileId,
+            topicIds: selectedTopicIds
+          });
+        } catch (topicError) {
+          console.error('Error saving topics:', topicError);
+          // Continue anyway as the profile was saved
+        }
+      }
+      
       // Refetch the member data to get the updated/created profile
       await refetch();
       
@@ -364,6 +392,25 @@ export default function ProfileEditPage() {
                   isSubmitting={isSubmitting}
                   error={errors.interests}
                 />
+                
+                <hr className="border-t border-slate-200 dark:border-slate-700" />
+                
+                {/* Topics Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                    Topics of Interest
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                    Select topics you're interested in to help others find you and connect over shared interests.
+                  </p>
+                  <TopicSelector
+                    selectedTopics={selectedTopicIds}
+                    onTopicsChange={setSelectedTopicIds}
+                    placeholder="Search and select topics..."
+                    maxTopics={10}
+                    className="w-full"
+                  />
+                </div>
                 
                 <hr className="border-t border-slate-200 dark:border-slate-700" />
                 

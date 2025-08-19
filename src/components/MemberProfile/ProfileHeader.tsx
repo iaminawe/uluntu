@@ -16,7 +16,7 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
           <img
             src={member.image}
             alt={member.name}
-            className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-cover"
+            className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-contain bg-slate-50 dark:bg-slate-700"
           />
         </div>
         

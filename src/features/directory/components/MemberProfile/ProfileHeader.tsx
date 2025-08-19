@@ -26,7 +26,7 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
           <img
             src={member.image}
             alt={member.name}
-            className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-cover"
+            className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-contain bg-slate-50 dark:bg-slate-700"
           />
         </div>
         
@@ -43,7 +43,7 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
             
             <div className="flex mt-4 md:mt-0 space-x-3">
               <DirectMessageButton
-                recipientId={(member as any).user_id || member.id}
+                recipientId={member.id}
                 recipientName={member.name}
                 onEmailFallback={onContactClick}
               />
@@ -136,8 +136,30 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
                   {skill}
                 </span>
               ))}
+              {(!member.skills || member.skills.length === 0) && (
+                <span className="text-slate-500 dark:text-slate-400 text-sm italic">No skills listed yet</span>
+              )}
             </div>
           </div>
+          
+          {/* Interests Section */}
+          {member.interests && member.interests.length > 0 && (
+            <div className="mt-4">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                Interests
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {member.interests.map((interest: string) => (
+                  <span
+                    key={interest}
+                    className="px-3 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400 rounded-full text-sm"
+                  >
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           
           {member.socialLinks && member.socialLinks.length > 0 && (
             <div className="mt-4 flex space-x-3">

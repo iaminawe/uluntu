@@ -29,7 +29,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ id, member }) => {
           <img
             src={member.image}
             alt={member.name}
-            className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 object-cover"
+            className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 object-contain bg-slate-50 dark:bg-slate-700"
           />
         </div>
       </div>
