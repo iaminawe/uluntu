@@ -2,8 +2,10 @@
 
 A sophisticated React-based community platform connecting tech professionals in the Nelson/Kootenay region through networking, events, marketplace, and resources. Built with enterprise-grade architecture patterns and designed for scale.
 
-## 🌟 **Latest Updates (December 2024)**
+## 🌟 **Latest Updates (January 2025)**
 
+- ✅ **Enhanced Admin Settings Page** - Advanced settings management with dark mode, color pickers, and image upload
+- ✅ **Newsletter Dark Mode** - Complete dark mode theming for all newsletter pages
 - ✅ **Complete Hybrid State Architecture** - React Query + Redux pattern fully implemented
 - ✅ **Advanced Settings System** - Dynamic site configuration with live preview
 - ✅ **Photo Gallery System** - Rich media galleries with batch upload
