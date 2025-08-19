@@ -147,7 +147,7 @@ const EntityTable = <T extends { id: string } = any>({
     <div>
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">{entityName}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{entityName}</h2>
         <div className="flex items-center gap-2">
           {createPath && (
             <Link
@@ -170,20 +170,20 @@ const EntityTable = <T extends { id: string } = any>({
             placeholder={`Search ${entityName.toLowerCase()}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           />
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => refetch()}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center"
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center"
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center"
           >
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -193,8 +193,8 @@ const EntityTable = <T extends { id: string } = any>({
 
       {/* Bulk Actions */}
       {selectedItems.length > 0 && (
-        <div className="mb-4 p-4 bg-blue-50 rounded-lg flex items-center justify-between">
-          <span className="text-sm text-blue-700">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-between">
+          <span className="text-sm text-blue-700 dark:text-blue-300">
             {selectedItems.length} items selected
           </span>
           <button
@@ -212,9 +212,9 @@ const EntityTable = <T extends { id: string } = any>({
       )}
 
       {/* Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
               <th className="px-6 py-3 text-left">
                 <input
@@ -233,8 +233,8 @@ const EntityTable = <T extends { id: string } = any>({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                    column.sortable ? 'cursor-pointer hover:text-gray-700' : ''
+                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${
+                    column.sortable ? 'cursor-pointer hover:text-gray-700 dark:hover:text-gray-200' : ''
                   }`}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
@@ -253,22 +253,22 @@ const EntityTable = <T extends { id: string } = any>({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {isLoading ? (
               <tr>
-                <td colSpan={columns.length + 2} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={columns.length + 2} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                   Loading...
                 </td>
               </tr>
             ) : data?.items.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 2} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={columns.length + 2} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                   No {entityName.toLowerCase()} found
                 </td>
               </tr>
             ) : (
               data?.items.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
@@ -284,7 +284,7 @@ const EntityTable = <T extends { id: string } = any>({
                     />
                   </td>
                   {columns.map((column) => (
-                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {column.render ? column.render((item as any)[column.key], item) : (item as any)[column.key]}
                     </td>
                   ))}
@@ -293,7 +293,7 @@ const EntityTable = <T extends { id: string } = any>({
                       {detailPath && (
                         <Link
                           to={detailPath.replace(':id', item.id)}
-                          className="text-gray-600 hover:text-gray-900"
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                         >
                           <Eye className="h-4 w-4" />
                         </Link>
@@ -301,7 +301,7 @@ const EntityTable = <T extends { id: string } = any>({
                       {editPath && (
                         <Link
                           to={editPath.replace(':id', item.id)}
-                          className="text-gray-600 hover:text-gray-900"
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                         >
                           <Edit className="h-4 w-4" />
                         </Link>
@@ -319,7 +319,7 @@ const EntityTable = <T extends { id: string } = any>({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-gray-700 dark:text-gray-300">
             Showing {((currentPage - 1) * pageSize) + 1} to{' '}
             {Math.min(currentPage * pageSize, data?.total || 0)} of{' '}
             {data?.total || 0} results
@@ -328,17 +328,17 @@ const EntityTable = <T extends { id: string } = any>({
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

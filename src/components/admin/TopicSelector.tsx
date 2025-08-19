@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Plus, Tag, Search } from 'lucide-react';
 import { useTopicsHybrid } from '@/features/topics/hooks/useTopicsHybrid';
 import { Topic } from '@/features/topics/types';
@@ -23,17 +23,15 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({
   const { topics, isLoading } = useTopicsHybrid();
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [filteredTopics, setFilteredTopics] = useState<Topic[]>([]);
 
-  // Filter topics based on search term
-  useEffect(() => {
-    if (!topics) return;
+  // Memoize filtered topics to prevent infinite loops
+  const filteredTopics = useMemo(() => {
+    if (!topics) return [];
     
-    const filtered = topics.filter(topic => 
+    return topics.filter(topic => 
       topic.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       !selectedTopics.includes(topic.id)
     );
-    setFilteredTopics(filtered);
   }, [topics, searchTerm, selectedTopics]);
 
   const handleAddTopic = (topicId: string) => {

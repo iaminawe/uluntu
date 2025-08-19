@@ -256,14 +256,14 @@ const ImprovedSettingsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Settings className="h-6 w-6 text-blue-600" />
+                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                  <Settings className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                     Settings Management
                   </h1>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
                     Configure core platform settings (Features and Themes managed separately)
                   </p>
                 </div>
@@ -285,7 +285,7 @@ const ImprovedSettingsPage: React.FC = () => {
                     placeholder="Search settings..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
@@ -293,7 +293,7 @@ const ImprovedSettingsPage: React.FC = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="all">All Categories</option>
                   {settingSections.map(section => (
@@ -308,8 +308,8 @@ const ImprovedSettingsPage: React.FC = () => {
                   onClick={() => setShowOnlyModified(!showOnlyModified)}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                     showOnlyModified
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   <Filter className="h-4 w-4" />
@@ -342,16 +342,16 @@ const ImprovedSettingsPage: React.FC = () => {
                         <CardTitle className="flex items-center space-x-2">
                           <span>{section.title}</span>
                           {modifiedCount > 0 && (
-                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                            <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
                               {modifiedCount} modified
                             </span>
                           )}
                         </CardTitle>
-                        <p className="text-sm text-gray-600">{section.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{section.description}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {section.settings.length} settings
                       </span>
                       {isExpanded ? (
@@ -364,7 +364,7 @@ const ImprovedSettingsPage: React.FC = () => {
                 </CardHeader>
 
                 {isExpanded && (
-                  <CardContent className="border-t border-gray-100">
+                  <CardContent className="border-t border-gray-100 dark:border-gray-700">
                     {section.settings.length > 0 ? (
                       <div className="space-y-4">
                         {section.settings.map((setting) => {
@@ -390,10 +390,10 @@ const ImprovedSettingsPage: React.FC = () => {
                     ) : (
                       <div className="text-center py-12">
                         <Info className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                           No settings found
                         </h3>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-gray-400">
                           No settings match your current filters.
                         </p>
                       </div>
@@ -413,26 +413,26 @@ const ImprovedSettingsPage: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{settings.length}</div>
-                <div className="text-sm text-gray-600">Total Settings</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{settings.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Settings</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {Object.keys(localSettings).length}
                 </div>
-                <div className="text-sm text-gray-600">Modified</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Modified</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                   {settingSections.length}
                 </div>
-                <div className="text-sm text-gray-600">Categories</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Categories</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {expandedSections.size}
                 </div>
-                <div className="text-sm text-gray-600">Expanded Sections</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Expanded Sections</div>
               </div>
             </div>
           </CardContent>

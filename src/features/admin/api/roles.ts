@@ -199,7 +199,7 @@ export const adminRolesApi = {
           .from('user_custom_roles')
           .insert({
             user_id: userId,
-            custom_role_id: roleId
+            role_id: roleId
           })
           .select();
 
@@ -247,7 +247,7 @@ export const adminRolesApi = {
           .delete()
           .match({
             user_id: userId,
-            custom_role_id: roleId
+            role_id: roleId
           });
 
         if (error) {
@@ -338,32 +338,34 @@ export const adminRolesApi = {
           }
         }
 
-        // Tables exist, now get user's custom roles
-        const { data: userCustomRoles, error: userCustomError } = await (supabase as any)
-          .from('user_custom_roles')
-          .select('custom_role_id')
+        // Get user's roles from user_roles table
+        const { data: userRoles, error: userRolesError } = await supabase
+          .from('user_roles')
+          .select('role')
           .eq('user_id', userId);
 
-        if (userCustomError) {
-          logger.warn('Error fetching user custom roles', 'ROLES', userCustomError);
-        } else if (userCustomRoles && userCustomRoles.length > 0) {
-          // Get the actual role objects
-          const roleIds = userCustomRoles.map((ucr: any) => ucr.custom_role_id);
-          const { data: customRoleObjects, error: roleError } = await supabase
-            .from('custom_roles')
-            .select('*')
-            .in('id', roleIds);
-            
-          if (!roleError && customRoleObjects && customRoleObjects.length > 0) {
-            const mappedRoles = customRoleObjects.map((role: any) => ({
-              ...role,
-              type: 'custom' as const
-            }));
-            roles.push(...mappedRoles);
-            logger.debug(`Found ${mappedRoles.length} custom roles for user`, 'ROLES', { userId, roles: customRoleObjects.map(r => r.name) });
-          }
+        if (userRolesError) {
+          logger.warn('Error fetching user roles', 'ROLES', userRolesError);
+        } else if (userRoles && userRoles.length > 0) {
+          // Map the roles to the expected format
+          const mappedRoles = userRoles.map((ur: any) => {
+            // Check if it's a system role
+            const systemRole = SYSTEM_ROLES.find(sr => sr.id === ur.role);
+            if (systemRole) {
+              return systemRole;
+            }
+            // Otherwise treat as custom role
+            return {
+              id: ur.role,
+              name: ur.role,
+              type: 'custom' as const,
+              permissions: {}
+            };
+          });
+          roles.push(...mappedRoles);
+          logger.debug(`Found ${mappedRoles.length} roles for user`, 'ROLES', { userId, roles: userRoles.map(r => r.role) });
         } else {
-          logger.debug('No custom roles assigned to user', 'ROLES', { userId });
+          logger.debug('No roles assigned to user', 'ROLES', { userId });
         }
       } catch (customError) {
         logger.debug('Custom roles functionality not available', 'ROLES', customError);

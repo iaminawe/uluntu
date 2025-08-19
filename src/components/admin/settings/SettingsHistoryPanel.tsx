@@ -13,6 +13,7 @@ import {
   Info
 } from 'lucide-react';
 import type { SettingsHistory } from '@/types/settings';
+import { AuthorLink } from '@/components/ui/AuthorLink';
 
 interface SettingsHistoryPanelProps {
   history: SettingsHistory[];
@@ -357,7 +358,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
                           {entry.changed_by && (
                             <div className="flex items-center">
                               <User className="h-3 w-3 mr-1" />
-                              User ID: {entry.changed_by}
+                              <AuthorLink userId={entry.changed_by} fallback="System" />
                             </div>
                           )}
                           
@@ -427,7 +428,7 @@ export const SettingsHistoryPanel: React.FC<SettingsHistoryPanelProps> = ({
                   {selectedEntry.changed_by && (
                     <div>
                       <span className="font-medium text-gray-700">Changed By:</span>
-                      <p className="mt-1">User ID: {selectedEntry.changed_by}</p>
+                      <p className="mt-1"><AuthorLink userId={selectedEntry.changed_by} fallback="System" linkToProfile={false} /></p>
                     </div>
                   )}
                   

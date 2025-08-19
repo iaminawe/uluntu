@@ -8,8 +8,8 @@ const PagesPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pages</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Pages</h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Manage static pages and content for your community platform.
           </p>
         </div>

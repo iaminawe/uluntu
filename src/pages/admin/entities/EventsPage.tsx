@@ -10,11 +10,11 @@ const AdminEventsPage: React.FC = () => {
       render: (value: string, item: any) => (
         <div>
           <div className="font-medium flex items-center">
-            <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+            <Calendar className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
             {value}
           </div>
           {item.event_type && (
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {item.event_type}
             </div>
           )}

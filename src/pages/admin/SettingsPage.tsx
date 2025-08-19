@@ -257,12 +257,12 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               {!sidebarCollapsed && (
                 <div>
-                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
+                  <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                     <Settings className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Super Admin Settings</span>
                     <span className="sm:hidden">Settings</span>
                   </h1>
-                  <p className="text-sm text-gray-500 mt-1 hidden sm:block">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
                     Manage platform configuration
                   </p>
                 </div>
@@ -359,10 +359,10 @@ const SettingsPage: React.FC = () => {
           <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div className="flex-1">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {currentItem?.title}
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {currentItem?.description}
                 </p>
               </div>

@@ -160,7 +160,7 @@ export default function ContactSubmissionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             Contact Submissions
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
@@ -200,7 +200,7 @@ export default function ContactSubmissionsPage() {
               <MessageSquare className="h-8 w-8 text-blue-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).total || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(stats as any).total || 0}</p>
               </div>
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function ContactSubmissionsPage() {
               <Clock className="h-8 w-8 text-yellow-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {((stats as any).by_status?.new || 0) + ((stats as any).by_status?.in_progress || 0)}
                 </p>
               </div>
@@ -222,7 +222,7 @@ export default function ContactSubmissionsPage() {
               <User className="h-8 w-8 text-orange-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Unassigned</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).unassigned_count || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(stats as any).unassigned_count || 0}</p>
               </div>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function ContactSubmissionsPage() {
               <AlertTriangle className="h-8 w-8 text-red-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Overdue</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{(stats as any).overdue_count || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(stats as any).overdue_count || 0}</p>
               </div>
             </div>
           </div>

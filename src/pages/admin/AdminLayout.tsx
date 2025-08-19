@@ -19,6 +19,7 @@ import {
   ShoppingBag,
   Briefcase,
   ChevronRight,
+  ChevronDown,
   Menu,
   X,
   FileSearch,
@@ -28,7 +29,9 @@ import {
   BarChart3,
   Palette,
   Tag,
-  Zap
+  Zap,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -37,8 +40,9 @@ const AdminLayout: React.FC = () => {
   const userRoles = authState.roles.list;
   const location = useLocation();
   const { settings } = useSettings();
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['User Management', 'Content Management']);
   
   // Get site name from settings
   const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
@@ -71,6 +75,15 @@ const AdminLayout: React.FC = () => {
   // Check if user is superadmin
   const isSuperAdmin = userRoles?.includes('superadmin');
 
+  // Toggle group expansion
+  const toggleGroup = (groupName: string) => {
+    setExpandedGroups(prev => 
+      prev.includes(groupName) 
+        ? prev.filter(name => name !== groupName)
+        : [...prev, groupName]
+    );
+  };
+
   const navigation = [
     {
       name: 'Dashboard',
@@ -79,10 +92,9 @@ const AdminLayout: React.FC = () => {
       current: location.pathname === '/admin'
     },
     {
-      name: 'Entity Management',
+      name: 'Content Management',
       icon: FileText,
       children: [
-        { name: 'Members', href: '/admin/entities/members', icon: Users },
         { name: 'Companies', href: '/admin/entities/companies', icon: Building2 },
         { name: 'Groups', href: '/admin/entities/groups', icon: UsersRound },
         { name: 'Events', href: '/admin/entities/events', icon: Calendar },
@@ -94,75 +106,47 @@ const AdminLayout: React.FC = () => {
       ]
     },
     {
-      name: 'Users',
-      href: '/admin/users',
+      name: 'User Management',
       icon: Users,
-      current: location.pathname.startsWith('/admin/users')
+      children: [
+        { name: 'Users', href: '/admin/users', icon: Users },
+        { name: 'Roles', href: '/admin/roles', icon: Shield }
+      ]
     },
     {
-      name: 'Roles',
-      href: '/admin/roles',
-      icon: Shield,
-      current: location.pathname === '/admin/roles'
-    },
-    {
-      name: 'Features',
-      href: '/admin/features',
-      icon: Zap,
-      current: location.pathname === '/admin/features'
-    },
-    {
-      name: 'Moderation',
-      href: '/admin/moderation',
-      icon: FileCheck,
-      current: location.pathname.startsWith('/admin/moderation')
-    },
-    {
-      name: 'Contact Inbox',
-      href: '/admin/contact-inbox',
-      icon: Inbox,
-      current: location.pathname.startsWith('/admin/contact-inbox')
-    },
-    {
-      name: 'Newsletter',
+      name: 'Communication',
       icon: Mail,
       children: [
-        { name: 'Dashboard', href: '/admin/newsletter', icon: LayoutDashboard },
+        { name: 'Contact Inbox', href: '/admin/contact-inbox', icon: Inbox },
+        { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
         { name: 'Campaigns', href: '/admin/newsletter/campaigns', icon: Mail },
         { name: 'Subscribers', href: '/admin/newsletter/subscribers', icon: Users },
         { name: 'Analytics', href: '/admin/newsletter/analytics', icon: TrendingUp }
       ]
     },
     {
-      name: 'Audit Log',
-      href: '/admin/audit',
-      icon: FileSearch,
-      current: location.pathname === '/admin/audit'
-    },
-    {
-      name: 'Performance',
-      href: '/admin/performance',
-      icon: BarChart3,
-      current: location.pathname === '/admin/performance'
-    },
-    {
-      name: 'Settings',
+      name: 'System Management',
       icon: Settings,
       children: [
-        { name: 'Settings (Legacy)', href: '/admin/settings', icon: Settings },
-        { name: 'Settings (New)', href: '/admin/settings-v2', icon: Settings }
+        { name: 'Features', href: '/admin/features', icon: Zap },
+        { name: 'Settings', href: '/admin/settings', icon: Settings },
+        { name: 'Theme', href: '/admin/theme', icon: Palette },
+        { name: 'Menu Management', href: '/admin/menu-management', icon: Menu },
+        { name: 'Moderation', href: '/admin/moderation', icon: FileCheck }
       ]
     },
     {
-      name: 'Theme',
-      href: '/admin/theme',
-      icon: Palette,
-      current: location.pathname === '/admin/theme'
+      name: 'Monitoring',
+      icon: BarChart3,
+      children: [
+        { name: 'Performance', href: '/admin/performance', icon: BarChart3 },
+        { name: 'Audit Log', href: '/admin/audit', icon: FileSearch }
+      ]
     }
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
@@ -184,11 +168,17 @@ const AdminLayout: React.FC = () => {
         theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900'
       }`}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className={`flex items-center h-16 px-4 ${
+          {/* Logo and Controls */}
+          <div className={`flex items-center justify-between h-16 px-4 ${
             theme === 'dark' ? 'bg-gray-900' : 'bg-gray-800'
           }`}>
-            <h1 className="text-xl font-bold text-white">{siteName} Admin</h1>
+            <Link
+              to="/"
+              className="text-xl font-bold text-white hover:text-gray-200 transition-colors"
+              title="Back to Site"
+            >
+              {siteName} Admin
+            </Link>
           </div>
 
           {/* Navigation */}
@@ -197,28 +187,41 @@ const AdminLayout: React.FC = () => {
               <div key={item.name}>
                 {item.children ? (
                   <div>
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      {item.name}
-                    </div>
-                    <div className="space-y-1">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          to={child.href}
-                          className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
-                            location.pathname === child.href
-                              ? theme === 'dark' 
-                                ? 'bg-gray-700 text-white shadow-sm'
-                                : 'bg-gray-800 text-white shadow-sm'
-                              : 'text-gray-300 hover:bg-gray-700 hover:text-white hover:translate-x-1'
-                          }`}
-                          onClick={() => setSidebarOpen(false)}
-                        >
-                          <child.icon className="mr-3 h-5 w-5" />
-                          {child.name}
-                        </Link>
-                      ))}
-                    </div>
+                    <button
+                      onClick={() => toggleGroup(item.name)}
+                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-300 transition-colors"
+                    >
+                      <div className="flex items-center">
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {item.name}
+                      </div>
+                      {expandedGroups.includes(item.name) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedGroups.includes(item.name) && (
+                      <div className="space-y-1 ml-2 mt-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.name}
+                            to={child.href}
+                            className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
+                              location.pathname === child.href
+                                ? theme === 'dark' 
+                                  ? 'bg-gray-700 text-white shadow-sm'
+                                  : 'bg-gray-800 text-white shadow-sm'
+                                : 'text-gray-300 hover:bg-gray-700 hover:text-white hover:translate-x-1'
+                            }`}
+                            onClick={() => setSidebarOpen(false)}
+                          >
+                            <child.icon className="mr-3 h-4 w-4" />
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <Link
@@ -263,9 +266,26 @@ const AdminLayout: React.FC = () => {
 
       {/* Main content */}
       <div className="lg:pl-64 transition-all duration-200">
-        <main className="min-h-screen py-4 sm:py-6">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-            <Outlet />
+        {/* Theme toggle for main content area */}
+        <div className="flex justify-end p-4">
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-md transition-colors ${
+              theme === 'dark' 
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+            aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+        </div>
+        <main className="min-h-screen py-4 sm:py-6 bg-white dark:bg-gray-900">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl bg-white dark:bg-gray-900">
+            <div className="bg-white dark:bg-gray-900">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>

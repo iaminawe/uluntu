@@ -5,6 +5,7 @@ import { useUnifiedSettings } from '@/features/admin/hooks/useUnifiedSettings';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorAlert } from '@/components/ui/ErrorAlert';
 import { ErrorCode } from '@/utils/errorSanitization';
+import { useTheme } from '@/providers/EnhancedThemeProvider';
 
 // Lazy load section components for performance
 const GeneralSettingsSection = lazy(() => import('@/components/admin/settings/GeneralSettingsSection'));
@@ -17,6 +18,7 @@ const ContactSection = lazy(() => import('@/components/admin/settings/ContactSec
 const AuditSection = lazy(() => import('@/components/admin/settings/AuditSection'));
 
 const AdminSettingsPage: React.FC = () => {
+  const { theme } = useTheme();
   const {
     activeSection,
     settings,
@@ -121,10 +123,10 @@ const AdminSettingsPage: React.FC = () => {
       default:
         return (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
               Settings Section Not Found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               The requested settings section could not be loaded.
             </p>
           </div>
@@ -134,7 +136,7 @@ const AdminSettingsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -142,7 +144,7 @@ const AdminSettingsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <ErrorAlert
           error={{ userMessage: error, errorCode: ErrorCode.GENERIC_UNKNOWN, debugId: Date.now().toString(), timestamp: new Date().toISOString() }}
           onRetry={refetch}
@@ -155,13 +157,13 @@ const AdminSettingsPage: React.FC = () => {
   return (
     <AdminOnly
       fallback={
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-64 bg-gray-50 dark:bg-gray-900">
           <div className="text-center">
             <div className="text-4xl mb-4">🔒</div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Admin Access Required
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               This area is restricted to administrators only.
             </p>
           </div>
@@ -179,10 +181,10 @@ const AdminSettingsPage: React.FC = () => {
 const UnauthorizedSection: React.FC = () => (
   <div className="text-center py-12">
     <div className="text-4xl mb-4">🔒</div>
-    <h3 className="text-lg font-medium text-gray-900 mb-2">
+    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
       Insufficient Permissions
     </h3>
-    <p className="text-gray-600">
+    <p className="text-gray-600 dark:text-gray-400">
       You don't have the required permissions to access this section.
     </p>
   </div>
