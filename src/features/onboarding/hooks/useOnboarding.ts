@@ -41,34 +41,51 @@ export const useOnboarding = () => {
     }
   }, [dispatch, onboarding.isCompleted]);
 
-  // Handle step navigation
-  const handleNext = useCallback(async () => {
-    dispatch(clearAllErrors());
-    
-    // Validate current step before proceeding
-    const isValid = await validateCurrentStep();
-    if (!isValid) return;
+  const saveProgress = useCallback(async () => {
+    if (!user?.id) return;
 
-    // Save progress to database
-    await saveProgress();
+    try {
+      const { error } = await supabase
+        .from('members')
+        .update({
+          // @ts-expect-error - Onboarding fields exist in database but not in types yet
+          onboarding_current_step: onboarding.currentStep,
+          onboarding_skipped_steps: onboarding.skippedSteps,
+          profile_completion_percentage: onboarding.completionPercentage,
+        })
+        .eq('user_id', user.id);
 
-    // Move to next step
-    dispatch(goToNextStep());
-
-    // If this was the last step, complete onboarding
-    if (onboarding.currentStep === 5) {
-      await handleComplete();
+      if (error) throw error;
+    } catch (error) {
+      console.error('Failed to save onboarding progress:', error);
     }
-  }, [dispatch, onboarding.currentStep]);
+  }, [user, onboarding]);
 
-  const handleBack = useCallback(() => {
-    dispatch(goToPreviousStep());
-  }, [dispatch]);
-
-  const handleSkip = useCallback(async () => {
-    dispatch(skipCurrentStep());
-    await saveProgress();
-  }, [dispatch]);
+  const validateCurrentStep = useCallback(async (): Promise<boolean> => {
+    // Step-specific validation logic
+    switch (onboarding.currentStep) {
+      case 2: // Professional Info
+        if (!onboarding.formData.professional.bio || onboarding.formData.professional.bio.length < 20) {
+          dispatch(setError({ field: 'bio', message: 'Please provide a bio of at least 20 characters' }));
+          return false;
+        }
+        break;
+      case 3: // Company Association
+        // Optional step, no validation required
+        break;
+      case 4: // Privacy Settings
+        // Already has defaults, no validation required
+        break;
+      case 5: // Community Engagement
+        if (onboarding.formData.engagement.interests.length === 0) {
+          dispatch(setError({ field: 'interests', message: 'Please select at least one area of interest' }));
+          return false;
+        }
+        break;
+    }
+    
+    return true;
+  }, [dispatch, onboarding]);
 
   const handleComplete = useCallback(async () => {
     dispatch(setSaving(true));
@@ -182,51 +199,34 @@ export const useOnboarding = () => {
     }
   }, [dispatch, navigate, onboarding, user]);
 
-  const saveProgress = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('members')
-        .update({
-          // @ts-expect-error - Onboarding fields exist in database but not in types yet
-          onboarding_current_step: onboarding.currentStep,
-          onboarding_skipped_steps: onboarding.skippedSteps,
-          profile_completion_percentage: onboarding.completionPercentage,
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Failed to save onboarding progress:', error);
-    }
-  }, [user, onboarding]);
-
-  const validateCurrentStep = useCallback(async (): Promise<boolean> => {
-    // Step-specific validation logic
-    switch (onboarding.currentStep) {
-      case 2: // Professional Info
-        if (!onboarding.formData.professional.bio || onboarding.formData.professional.bio.length < 20) {
-          dispatch(setError({ field: 'bio', message: 'Please provide a bio of at least 20 characters' }));
-          return false;
-        }
-        break;
-      case 3: // Company Association
-        // Optional step, no validation required
-        break;
-      case 4: // Privacy Settings
-        // Already has defaults, no validation required
-        break;
-      case 5: // Community Engagement
-        if (onboarding.formData.engagement.interests.length === 0) {
-          dispatch(setError({ field: 'interests', message: 'Please select at least one area of interest' }));
-          return false;
-        }
-        break;
-    }
+  // Handle step navigation
+  const handleNext = useCallback(async () => {
+    dispatch(clearAllErrors());
     
-    return true;
-  }, [dispatch, onboarding]);
+    // Validate current step before proceeding
+    const isValid = await validateCurrentStep();
+    if (!isValid) return;
+
+    // Save progress to database
+    await saveProgress();
+
+    // If this is the last step, complete onboarding
+    if (onboarding.currentStep === 5) {
+      await handleComplete();
+    } else {
+      // Move to next step
+      dispatch(goToNextStep());
+    }
+  }, [dispatch, onboarding.currentStep, handleComplete, validateCurrentStep, saveProgress]);
+
+  const handleBack = useCallback(() => {
+    dispatch(goToPreviousStep());
+  }, [dispatch]);
+
+  const handleSkip = useCallback(async () => {
+    dispatch(skipCurrentStep());
+    await saveProgress();
+  }, [dispatch, saveProgress]);
 
   const goToStep = useCallback((step: number) => {
     if (step >= 1 && step <= 5) {

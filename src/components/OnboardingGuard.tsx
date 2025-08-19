@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCurrentMember } from '../hooks/useCurrentMember';
 import { useProfileCompletion, shouldShowOnboarding } from '../hooks/useProfileCompletion';
 import { ProfileOnboarding } from './Onboarding';
+import '../utils/clearOnboarding'; // Load the utility in dev mode
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -23,16 +24,48 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
   useEffect(() => {
     if (isLoading || skipOnboarding) return;
 
-    // Get stored onboarding status from localStorage
-    const onboardingCompleted = localStorage.getItem('onboarding_completed');
-    const onboardingSkipped = localStorage.getItem('onboarding_skipped');
+    // Get stored onboarding status with user-specific keys
+    const userId = member?.user_id || member?.id;
+    const userOnboardingKey = userId ? `onboarding_completed_${userId}` : 'onboarding_completed';
+    const userSkipKey = userId ? `onboarding_skipped_${userId}` : 'onboarding_skipped';
+    
+    // Check if user completed onboarding (persistent)
+    const onboardingCompleted = localStorage.getItem(userOnboardingKey);
+    // Check if user skipped in this session only (temporary)
+    const onboardingSkipped = sessionStorage.getItem(userSkipKey);
+
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[OnboardingGuard] Checking onboarding status:', {
+        userId,
+        member: member ? { name: member.name, bio: member.bio, image: member.image } : null,
+        shouldShowOnboardingFlow,
+        onboardingCompleted,
+        onboardingSkipped,
+      });
+    }
 
     // Show onboarding if:
-    // 1. Profile completion suggests it AND
-    // 2. User hasn't completed onboarding AND
-    // 3. User hasn't skipped onboarding in this session
-    if (shouldShowOnboardingFlow && !onboardingCompleted && !onboardingSkipped) {
-      setShowOnboarding(true);
+    // 1. Profile is incomplete (missing required fields) AND
+    // 2. User hasn't explicitly completed their profile through onboarding
+    // Note: We check profile completion status, not just localStorage
+    if (shouldShowOnboardingFlow) {
+      // Even if they skipped before, show again if profile is still incomplete
+      // Only hide if profile is actually complete or they completed onboarding
+      const profileIsComplete = member?.bio && member?.image && 
+                               !member.image.includes('placeholder');
+      
+      if (!profileIsComplete && !onboardingCompleted && !onboardingSkipped) {
+        console.log('[OnboardingGuard] Showing onboarding - profile incomplete');
+        setShowOnboarding(true);
+      } else {
+        console.log('[OnboardingGuard] Not showing onboarding:', { 
+          profileIsComplete, 
+          onboardingCompleted, 
+          onboardingSkipped 
+        });
+        setShowOnboarding(false);
+      }
     } else {
       setShowOnboarding(false);
     }
@@ -49,16 +82,22 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
 
   // Show onboarding flow
   if (showOnboarding && !hasSeenOnboarding) {
+    const userId = member?.user_id || member?.id;
+    const userOnboardingKey = userId ? `onboarding_completed_${userId}` : 'onboarding_completed';
+    const userSkipKey = userId ? `onboarding_skipped_${userId}` : 'onboarding_skipped';
+    
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <ProfileOnboarding
           onComplete={() => {
-            localStorage.setItem('onboarding_completed', 'true');
+            // Only set completed if they actually complete the profile
+            localStorage.setItem(userOnboardingKey, 'true');
             setShowOnboarding(false);
             setHasSeenOnboarding(true);
           }}
           onSkip={() => {
-            localStorage.setItem('onboarding_skipped', 'true');
+            // Set skipped for this session only - will show again next time if profile still incomplete
+            sessionStorage.setItem(userSkipKey, 'true');
             setShowOnboarding(false);
             setHasSeenOnboarding(true);
           }}
