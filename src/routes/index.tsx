@@ -65,11 +65,17 @@ const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ProfileEditPage = lazy(() => import('../pages/ProfileEditPage'));
 const AcceptInvitationPage = lazy(() => import('../pages/AcceptInvitationPage'));
+const UserSettingsPage = lazy(() => import('../pages/UserSettingsPage'));
+const NewsletterConfirmPage = lazy(() => import('../pages/NewsletterConfirmPage'));
+const AdminSetupPage = lazy(() => import('../pages/AdminSetupPage'));
+const UnifiedUsersDebug = lazy(() => import('../pages/admin/UnifiedUsersDebug'));
+const SimpleUnifiedUsersPage = lazy(() => import('../pages/admin/SimpleUnifiedUsersPage'));
 
 // Lazy load admin pages
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('../pages/admin/Dashboard'));
 const UsersPage = lazy(() => import('../pages/admin/UsersPage'));
+const UnifiedUsersPage = lazy(() => import('../pages/admin/UnifiedUsersPage'));
 const SettingsPage = lazy(() => import('../pages/admin/SettingsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 const ModerationPage = lazy(() => import('../pages/admin/ModerationPage'));
@@ -82,6 +88,7 @@ const AdminNewsPage = lazy(() => import('../pages/admin/entities/NewsPage'));
 const AdminResourcesPage = lazy(() => import('../pages/admin/entities/ResourcesPage'));
 const AdminMarketplacePage = lazy(() => import('../pages/admin/entities/MarketplacePage'));
 const AdminOpportunitiesPage = lazy(() => import('../pages/admin/entities/OpportunitiesPage'));
+const AdminTopicsPage = lazy(() => import('../pages/admin/entities/TopicsPage'));
 const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
 const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
 const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
@@ -93,15 +100,23 @@ const NewsletterDashboard = lazy(() => import('../pages/admin/newsletter/Newslet
 const CampaignManager = lazy(() => import('../pages/admin/newsletter/CampaignManager'));
 const SubscriberManager = lazy(() => import('../pages/admin/newsletter/SubscriberManager'));
 const AnalyticsDashboard = lazy(() => import('../pages/admin/newsletter/AnalyticsDashboard'));
+const NewsletterEditor = lazy(() => import('../pages/admin/newsletter/NewsletterEditor'));
+const TemplateManager = lazy(() => import('../pages/admin/newsletter/TemplateManager'));
+const CampaignCalendar = lazy(() => import('../pages/admin/newsletter/CampaignCalendar'));
 const UpdateNewsSlugs = lazy(() => import('../pages/admin/UpdateNewsSlugs'));
 const UpdateCompanySlugs = lazy(() => import('../pages/admin/UpdateCompanySlugs'));
 const ThemeConfigPage = lazy(() => import('../pages/admin/ThemeStatusPage'));
 const FeaturesPage = lazy(() => import('../pages/admin/FeaturesPage'));
+const MenuManagementPage = lazy(() => import('../pages/admin/MenuManagementPage'));
+const EnhancedMenuManagementPage = lazy(() => import('../pages/admin/EnhancedMenuManagementPage'));
+const MenuToggleDemo = lazy(() => import('../features/menu/components/MenuToggleDemo'));
+const MenuManagementDebug = lazy(() => import('../pages/admin/MenuManagementDebug'));
 
 // Lazy load topic pages
 const TopicsIndexPage = lazy(() => import('../pages/TopicsIndexPage'));
 const TopicLandingPage = lazy(() => import('../pages/TopicLandingPage'));
 const ImprovedSettingsPage = lazy(() => import('../pages/admin/ImprovedSettingsPage'));
+const EnhancedSettingsPage = lazy(() => import('../pages/admin/EnhancedSettingsPage'));
 
 
 // Auth components
@@ -242,6 +257,18 @@ export const router = createBrowserRouter([
         path: 'profile/edit', 
         element: <ProtectedRoute>{withSuspense(ProfileEditPage)}</ProtectedRoute> 
       },
+      { 
+        path: 'settings', 
+        element: <ProtectedRoute>{withSuspense(UserSettingsPage)}</ProtectedRoute> 
+      },
+      { 
+        path: 'newsletter/confirm', 
+        element: withSuspense(NewsletterConfirmPage)
+      },
+      {
+        path: 'admin-setup',
+        element: <ProtectedRoute>{withSuspense(AdminSetupPage)}</ProtectedRoute>
+      },
       
       // Gallery routes
       { path: 'galleries', element: withSuspense(GalleriesPage) },
@@ -286,16 +313,27 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: withSuspense(AdminDashboard) },
-      { path: 'users', element: withSuspense(UsersPage) },
+      { path: 'users', element: withSuspense(SimpleUnifiedUsersPage) },
+      { path: 'users-advanced', element: withSuspense(UnifiedUsersPage) },
+      { path: 'users-debug', element: withSuspense(UnifiedUsersDebug) },
+      { path: 'users-legacy', element: withSuspense(UsersPage) },
       { path: 'roles', element: withSuspense(RolesPage) },
       { path: 'features', element: withSuspense(FeaturesPage) },
+      { path: 'menu-management', element: withSuspense(MenuManagementPage) },
+      { path: 'menu-management-enhanced', element: withSuspense(EnhancedMenuManagementPage) },
+      { path: 'menu-toggle-demo', element: withSuspense(MenuToggleDemo) },
+      { path: 'menu-debug', element: withSuspense(MenuManagementDebug) },
       { path: 'moderation', element: withSuspense(ModerationPage) },
       { 
         path: 'settings', 
-        element: withSuspense(AdminSettingsPage)
+        element: withSuspense(EnhancedSettingsPage)
       },
       { 
         path: 'settings-v2', 
+        element: withSuspense(EnhancedSettingsPage)
+      },
+      { 
+        path: 'settings-old', 
         element: withSuspense(ImprovedSettingsPage)
       },
       { 
@@ -306,7 +344,6 @@ export const router = createBrowserRouter([
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
       { path: 'audit', element: withSuspense(AuditPage) },
       { path: 'performance', element: withSuspense(PerformanceMetricsPage) },
-      { path: 'entities/members', element: withSuspense(AdminMembersPage) },
       { path: 'entities/companies', element: withSuspense(AdminCompaniesPage) },
       { path: 'entities/groups', element: withSuspense(AdminGroupsPage) },
       { path: 'entities/events', element: withSuspense(AdminEventsPage) },
@@ -314,9 +351,15 @@ export const router = createBrowserRouter([
       { path: 'entities/resources', element: withSuspense(AdminResourcesPage) },
       { path: 'entities/marketplace', element: withSuspense(AdminMarketplacePage) },
       { path: 'entities/opportunities', element: withSuspense(AdminOpportunitiesPage) },
+      { path: 'entities/topics', element: withSuspense(AdminTopicsPage) },
       { path: 'entities/pages', element: withSuspense(AdminPagesPage) },
       { path: 'newsletter', element: withSuspense(NewsletterDashboard) },
       { path: 'newsletter/campaigns', element: withSuspense(CampaignManager) },
+      { path: 'newsletter/campaigns/new', element: withSuspense(NewsletterEditor) },
+      { path: 'newsletter/campaigns/:id/edit', element: withSuspense(NewsletterEditor) },
+      { path: 'newsletter/campaigns/:id', element: withSuspense(NewsletterEditor) },
+      { path: 'newsletter/calendar', element: withSuspense(CampaignCalendar) },
+      { path: 'newsletter/templates', element: withSuspense(TemplateManager) },
       { path: 'newsletter/subscribers', element: withSuspense(SubscriberManager) },
       { path: 'newsletter/analytics', element: withSuspense(AnalyticsDashboard) },
       { path: 'utils/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
