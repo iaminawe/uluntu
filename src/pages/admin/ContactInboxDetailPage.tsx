@@ -289,8 +289,8 @@ const ContactInboxDetailPage: React.FC = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Contact Submission</h1>
-            <p className="text-gray-600">#{submission.id.slice(0, 8)}</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Contact Submission</h1>
+            <p className="text-gray-600 dark:text-gray-400">#{submission.id.slice(0, 8)}</p>
           </div>
         </div>
         

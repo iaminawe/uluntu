@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { FileText, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useTheme } from '@/providers/EnhancedThemeProvider';
 
 interface AuditSectionProps {
   history: SettingsHistory[];
@@ -11,6 +12,7 @@ interface AuditSectionProps {
 }
 
 const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoading }) => {
+  const { theme } = useTheme();
   const recentChanges = history.slice(0, 20); // Show last 20 changes
 
   const getChangeTypeColor = (changeType: string) => {
@@ -24,10 +26,10 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <FileText className="h-5 w-5 text-blue-600" />
+          <CardTitle className="flex items-center space-x-2 text-gray-900 dark:text-gray-100">
+            <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             <span>Recent Settings Changes</span>
             <Badge variant="secondary">{history.length} total changes</Badge>
           </CardTitle>
@@ -36,20 +38,20 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
           {recentChanges.length > 0 ? (
             <div className="space-y-4">
               {recentChanges.map((change) => (
-                <div key={change.id} className="border border-gray-100 rounded-lg p-4">
+                <div key={change.id} className="border border-gray-100 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
                         <Badge variant={getChangeTypeColor(change.change_type || '') as any}>
                           {change.change_type || 'unknown'}
                         </Badge>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
                           {change.category}.{change.setting_key}
                         </span>
                       </div>
                       
                       {change.change_type === 'updated' && (
-                        <div className="text-sm text-gray-600 space-y-1">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                           {change.old_value && (
                             <div>
                               <span className="font-medium">Old:</span> {String(change.old_value)}
@@ -64,13 +66,13 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
                       )}
                       
                       {change.change_type === 'created' && change.new_value && (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Value:</span> {String(change.new_value)}
                         </div>
                       )}
                     </div>
                     
-                    <div className="text-right text-sm text-gray-500">
+                    <div className="text-right text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>
@@ -88,7 +90,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               No settings changes recorded yet.
             </p>
           )}
@@ -96,29 +98,29 @@ const AuditSection: React.FC<AuditSectionProps> = ({ history, isLoading: _isLoad
       </Card>
 
       {/* Stats */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Change Statistics</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-gray-100">Change Statistics</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {history.filter(h => h.change_type === 'created').length}
               </div>
-              <div className="text-sm text-gray-600">Created</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Created</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                 {history.filter(h => h.change_type === 'updated').length}
               </div>
-              <div className="text-sm text-gray-600">Updated</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Updated</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {history.filter(h => h.change_type === 'deleted').length}
               </div>
-              <div className="text-sm text-gray-600">Deleted</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Deleted</div>
             </div>
           </div>
         </CardContent>

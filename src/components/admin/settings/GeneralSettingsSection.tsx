@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import ImageUploader from '@/components/ui/ImageUploader';
 import { Globe, Eye, Navigation, Palette, Save, RotateCcw, EyeOff, Info, Image } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useTheme } from '@/providers/EnhancedThemeProvider';
 
 interface GeneralSettingsSectionProps {
   settings: ApplicationSetting[];
@@ -21,6 +22,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
   onRefresh,
   isLoading
 }) => {
+  const { theme } = useTheme();
   const [updatingSettings, setUpdatingSettings] = useState<Set<string>>(new Set());
   const [localSettings, setLocalSettings] = useState<Record<string, any>>({});
 
@@ -122,6 +124,12 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
     return imageKeys.some(key => setting.setting_key.toLowerCase().includes(key.toLowerCase()));
   };
 
+  // Helper to determine if setting is a color type
+  const isColorSetting = (setting: ApplicationSetting) => {
+    const colorKeys = ['primary_color', 'secondary_color', 'accent_color', 'background_color', 'text_color', 'brand_color'];
+    return colorKeys.some(key => setting.setting_key.toLowerCase().includes(key.toLowerCase()));
+  };
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8">
@@ -129,13 +137,13 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
           const Icon = section.icon;
           
           return (
-            <Card key={section.title} className="w-full">
+            <Card key={section.title} className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Icon className={`h-5 w-5 text-${section.color}-600`} />
+                <CardTitle className="flex items-center space-x-2 text-gray-900 dark:text-gray-100">
+                  <Icon className={`h-5 w-5 text-${section.color}-600 dark:text-${section.color}-400`} />
                   <span>{section.title}</span>
                 </CardTitle>
-                <p className="text-sm text-gray-600">{section.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{section.description}</p>
               </CardHeader>
               <CardContent>
                 {section.settings.length > 0 ? (
@@ -146,12 +154,12 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                       const hasChanged = hasChanges(setting.id);
 
                       return (
-                        <div key={setting.id} className="border border-gray-200 rounded-lg p-4">
+                        <div key={setting.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                           <div className={`${isImageSetting(setting) ? 'space-y-4' : 'flex items-start justify-between'}`}>
                             <div className="flex-1 min-w-0 mr-4">
-                              <h4 className="font-medium text-gray-900">{setting.setting_key}</h4>
+                              <h4 className="font-medium text-gray-900 dark:text-gray-100">{setting.setting_key}</h4>
                               {setting.description && (
-                                <p className="text-sm text-gray-500 mt-1">{setting.description}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{setting.description}</p>
                               )}
                             </div>
                             
@@ -162,6 +170,14 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                                   checked={currentValue}
                                   onCheckedChange={(checked) => handleSettingChange(setting.id, checked)}
                                   disabled={isUpdating}
+                                />
+                              ) : isColorSetting(setting) ? (
+                                <input
+                                  type="color"
+                                  value={String(currentValue)}
+                                  onChange={(e) => handleSettingChange(setting.id, e.target.value)}
+                                  disabled={isUpdating}
+                                  className="w-16 h-8 border border-gray-300 dark:border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed"
                                 />
                               ) : isImageSetting(setting) ? (
                                 <div className="flex items-center justify-between">
@@ -212,7 +228,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                                       : e.target.value
                                   )}
                                   disabled={isUpdating}
-                                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[200px]"
+                                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[200px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                 />
                               )}
 
@@ -246,7 +262,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                           </div>
                           
                           {hasChanged && (
-                            <div className="mt-2 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-2 py-1 rounded">
                               Unsaved changes
                             </div>
                           )}
@@ -255,7 +271,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 italic">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
                     No {section.title.toLowerCase()} configured yet.
                   </p>
                 )}
@@ -266,27 +282,27 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
       </div>
 
       {/* Quick Stats */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>General Settings Summary</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-gray-100">General Settings Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{siteSettings.length}</div>
-              <div className="text-sm text-gray-600">Site Settings</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{siteSettings.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Site Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{headerSettings.length}</div>
-              <div className="text-sm text-gray-600">Header Settings</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{headerSettings.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Header Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{navigationSettings.length}</div>
-              <div className="text-sm text-gray-600">Navigation Settings</div>
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{navigationSettings.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Navigation Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{appearanceSettings.length}</div>
-              <div className="text-sm text-gray-600">Appearance Settings</div>
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{appearanceSettings.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Appearance Settings</div>
             </div>
           </div>
         </CardContent>

@@ -142,23 +142,23 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Zap className="h-5 w-5 text-blue-600" />
-            <span>Feature Toggle Overview</span>
+            <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-gray-900 dark:text-gray-100">Feature Toggle Overview</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{totalFeatures}</div>
-              <div className="text-sm text-gray-600">Total Features</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalFeatures}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Features</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">{enabledFeatures}</div>
-              <div className="text-sm text-gray-600">Enabled Features</div>
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">{enabledFeatures}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Enabled Features</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600">{enabledPercentage}%</div>
-              <div className="text-sm text-gray-600">Adoption Rate</div>
+              <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">{enabledPercentage}%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Adoption Rate</div>
             </div>
           </div>
         </CardContent>
@@ -173,13 +173,13 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
             <Card key={category.title} className="h-fit">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Icon className={`h-5 w-5 text-${category.color}-600`} />
-                  <span>{category.title}</span>
+                  <Icon className={`h-5 w-5 text-${category.color}-600 dark:text-${category.color}-400`} />
+                  <span className="text-gray-900 dark:text-gray-100">{category.title}</span>
                   <Badge variant="secondary">
                     {category.features.filter(f => f.enabled || false).length}/{category.features.length}
                   </Badge>
                 </CardTitle>
-                <p className="text-sm text-gray-600">{category.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{category.description}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -187,10 +187,10 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                     const isUpdating = updatingFeatures.has(feature.feature_key);
                     
                     return (
-                      <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
+                      <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">
                               {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </h4>
                             {(feature.enabled || false) && (
@@ -200,10 +200,10 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                             )}
                           </div>
                           {feature.description && (
-                            <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{feature.description}</p>
                           )}
                           {((feature.rollout_percentage ?? 0) < 100) && ((feature.rollout_percentage ?? 0) > 0) && (
-                            <p className="text-xs text-orange-600 mt-1">
+                            <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                               Rollout: {feature.rollout_percentage ?? 0}%
                             </p>
                           )}
