@@ -47,7 +47,7 @@ function adaptMember(data: unknown): Member {
   const member = data as Record<string, unknown>;
   
   // Safe property access with type checking
-  return {
+  const adaptedMember = {
     id: isString(member.id) ? member.id : String(member.id),
     name: isString(member.name) ? member.name : '',
     email: isString(member.email) ? member.email : undefined,
@@ -72,6 +72,13 @@ function adaptMember(data: unknown): Member {
     status: isString(member.status) ? member.status as ContentStatus : 'published' as ContentStatus,
     featured: isBoolean(member.featured) ? member.featured : undefined
   };
+  
+  // Add user_id if available
+  if (isString(member.user_id)) {
+    (adaptedMember as any).user_id = member.user_id;
+  }
+  
+  return adaptedMember;
 }
 
 // No need for a separate function since we're now using adaptMember directly

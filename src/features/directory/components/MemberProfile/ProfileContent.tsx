@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, ExternalLink } from 'lucide-react';
+import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, ExternalLink, Hash } from 'lucide-react';
 import { Member } from './types';
 import { getTypeIcon } from './utils';
+import { useEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 // import { MemberContributions } from '../../hooks/useMemberContributions';
 
 interface ProfileContentProps {
@@ -10,6 +11,8 @@ interface ProfileContentProps {
 }
 
 const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
+  // Fetch topics for this member
+  const { data: memberTopics } = useEntityTopics('member', member.id);
   // Use contributions data if available, otherwise fall back to member data
   const groups = contributions?.groups || member.groups || [];
   const resources = contributions?.resources || member.resources || [];
@@ -45,6 +48,30 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
   const achievements = member.achievements || [];
   return (
     <div className="space-y-8 mt-8">
+      {/* Topics of Interest Section */}
+      {memberTopics && memberTopics.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
+              <Hash className="h-5 w-5 text-orange-500" />
+            </div>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Topics of Interest</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {memberTopics.map((topic: any) => (
+              <Link
+                key={topic.id}
+                to={`/topics/${topic.slug}`}
+                className="inline-flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-sm hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+              >
+                {topic.icon && <span className="mr-1.5">{topic.icon}</span>}
+                {topic.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      
       {/* Main content sections */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Groups section with visual enhancements */}
@@ -166,48 +193,6 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
         </div>
       </div>
 
-      {/* Opportunities section - New addition */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-        <div className="flex items-center mb-6">
-          <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
-            <Briefcase className="h-5 w-5 text-orange-500" />
-          </div>
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Opportunities</h2>
-        </div>
-        
-        {!member.opportunities || member.opportunities.length === 0 ? (
-          <p className="text-slate-500 dark:text-slate-400 text-center py-4">No opportunities posted yet</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {member.opportunities?.map(opportunity => (
-              <div key={opportunity.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-medium text-slate-900 dark:text-white">{opportunity.title}</h3>
-                    <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                      {opportunity.type}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 line-clamp-2">
-                    {opportunity.description}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-orange-600 dark:text-orange-400">
-                      {opportunity.location} {opportunity.remote && '• Remote'}
-                    </span>
-                    <Link 
-                      to={`/opportunities/${opportunity.id}`}
-                      className="text-sm font-medium text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* Marketplace listings with enhanced visual appeal */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -361,8 +346,8 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
         )}
       </div>
       
-      {/* Achievements section - New addition */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+{/* Achievements section - New addition */}
+      {/* <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6">
           <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
             <Award className="h-5 w-5 text-orange-500" />
@@ -386,7 +371,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
