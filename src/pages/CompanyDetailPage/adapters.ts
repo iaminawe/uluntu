@@ -57,6 +57,7 @@ export function adaptMemberForUI(supabaseMember: SupabaseMember): Member {
   // Create a member object with the required frontend properties
   const member: Member = {
     id: supabaseMember.id,
+    slug: (supabaseMember as any).slug || undefined, // Include slug field for proper URL generation
     name: supabaseMember.name || '',
     title: supabaseMember.title || '',
     // Handle missing fields in Supabase schema

@@ -15,6 +15,7 @@ import Pagination from '@/components/Pagination';
 const adaptMemberForUI = (queryMember: QueryMember): UITypeMember => {
   return {
     id: queryMember.id,
+    slug: queryMember.slug, // Include slug field for proper URL generation
     name: queryMember.name,
     title: queryMember.role || '', // Map role to title field
     image: queryMember.image || '',

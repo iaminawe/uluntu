@@ -26,6 +26,7 @@ const DirectoryList = ({
   // Adapt members from API format to DirectoryList format
   const adaptMemberForDirectory = (member: QueryMember): DirectoryMember => ({
     id: member.id,
+    slug: member.slug,
     name: member.name,
     title: member.role || 'Member', // Use role as title with fallback
     company: typeof member.company === 'string' ? member.company : undefined,
