@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MembersTabProps } from './types';
 import Pagination from '@/components/Pagination';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -53,7 +54,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
                 {admins.map(admin => (
                   <Link
                     key={admin.id}
-                    to={`/directory/${admin.id}`}
+                    to={getMemberProfileUrl(admin)}
                     className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow text-center"
                   >
                     <img
@@ -87,7 +88,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
                   {currentRegularMembers.map(member => (
                     <Link
                       key={member.id}
-                      to={`/directory/${member.id}`}
+                      to={getMemberProfileUrl(member)}
                       className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow text-center"
                     >
                       <img

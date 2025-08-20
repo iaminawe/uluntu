@@ -3,6 +3,7 @@ import { Users, Calendar, BookOpen, Newspaper, Package, Briefcase, Award, Extern
 import { Member } from './types';
 import { getTypeIcon } from './utils';
 import { useEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
+import { getGroupUrl, getResourceUrl, getEventUrl, getMarketplaceListingUrl, getOpportunityUrl, getGroupPostUrl } from '@/utils/contentUrlUtils';
 // import { MemberContributions } from '../../hooks/useMemberContributions';
 
 interface ProfileContentProps {
@@ -91,7 +92,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                 <div key={group.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
-                      to={`/groups/${group.id}`}
+                      to={getGroupUrl(group)}
                       className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 block mb-1"
                     >
                       {group.name}
@@ -126,7 +127,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                 <div key={resource.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
-                      to={`/resources/${resource.id}`}
+                      to={getResourceUrl(resource)}
                       className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 block mb-1"
                     >
                       {resource.title}
@@ -172,7 +173,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                 <div key={event.id} className="flex items-start border-b border-slate-100 dark:border-slate-700 pb-4 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <Link
-                      to={`/events/${event.id}`}
+                      to={getEventUrl(event)}
                       className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 block mb-1"
                     >
                       {event.title}
@@ -218,7 +219,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             {marketplaceListings.map((listing: any) => (
               <Link
                 key={listing.id}
-                to={`/marketplace/${listing.id}`}
+                to={getMarketplaceListingUrl(listing)}
                 className="group bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-all border border-slate-100 dark:border-slate-600"
               >
                 <div className="h-40 overflow-hidden">
@@ -279,7 +280,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             {posts.map((post: any) => (
               <div key={post.id} className="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-600">
                 <Link
-                  to={`/groups/${post.group.id}/posts/${post.id}`}
+                  to={getGroupPostUrl(post.group, post.id)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 block mb-2"
                 >
                   {post.title}
@@ -292,7 +293,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                     {new Date(post.date).toLocaleDateString()}
                   </span>
                   <Link
-                    to={`/groups/${post.group.id}`}
+                    to={getGroupUrl(post.group)}
                     className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300"
                   >
                     {post.group.name}
@@ -334,7 +335,7 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
                     {opportunity.remote && <span className="ml-1">(Remote)</span>}
                   </span>
                   <Link 
-                    to={`/opportunities/${opportunity.id}`}
+                    to={getOpportunityUrl(opportunity)}
                     className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 ml-auto"
                   >
                     View Details

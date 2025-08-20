@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { Resource } from '../../types';
+import { getResourceUrl } from '@/utils/contentUrlUtils';
 
 interface RelatedResourcesProps {
   relatedResources: Resource[];
@@ -25,7 +26,7 @@ const RelatedResources: React.FC<RelatedResourcesProps> = ({
         {relatedResources.map(relatedResource => (
           <Link 
             key={relatedResource.id}
-            to={`/resources/${relatedResource.id}`}
+            to={getResourceUrl(relatedResource)}
             className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 
                       flex items-start gap-4
                       hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

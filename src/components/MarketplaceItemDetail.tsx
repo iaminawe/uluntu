@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Package, Briefcase, Monitor, MapPin, Calendar, Mail, X } from 'lucide-react';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 type ListingType = 'product' | 'service' | 'equipment';
 type ListingCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor';
@@ -289,7 +290,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
             <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
               <div className="flex items-start space-x-4">
-                <Link to={`/directory/${listing.seller.id}`}>
+                <Link to={getMemberProfileUrl(listing.seller)}>
                   <img
                     src={listing.seller.image}
                     alt={listing.seller.name}
@@ -298,7 +299,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
                 </Link>
                 <div>
                   <Link
-                    to={`/directory/${listing.seller.id}`}
+                    to={getMemberProfileUrl(listing.seller)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {listing.seller.name}

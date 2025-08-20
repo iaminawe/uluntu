@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import { MarketplaceItem } from '@/features/marketplace/types';
+import { getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 interface RelatedListingsProps {
   id: string;
@@ -35,7 +36,7 @@ export default function RelatedListings({ id }: RelatedListingsProps) {
       {listings.map((listing: MarketplaceItem) => (
         <Link 
           key={listing.id}
-          to={`/marketplace/${listing.id}`}
+          to={getMarketplaceListingUrl(listing)}
           className="block"
         >
           <div className="flex items-start p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">

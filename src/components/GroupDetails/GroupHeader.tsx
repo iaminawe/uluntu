@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Group } from '@/features/groups/components/GroupDetails/types';
 import { getVisibilityIcon } from '@/features/groups/components/GroupDetails/utils';
+import { getGroupUrl } from '@/utils/contentUrlUtils';
 
 interface GroupHeaderProps {
   group: Group;
@@ -57,7 +58,7 @@ const GroupHeader = ({ group }: GroupHeaderProps) => {
         <div className="border-b border-slate-200 dark:border-slate-700">
           <nav className="flex space-x-8">
             <Link
-              to={`/groups/${group.id}`}
+              to={getGroupUrl(group)}
               className="text-orange-500 border-b-2 border-orange-500 px-1 py-3 font-medium text-sm"
               aria-current="page"
             >

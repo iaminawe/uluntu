@@ -3,6 +3,7 @@ import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
 import { Member } from './types';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { DirectMessageButton } from '@/features/messaging/components/DirectMessageButton';
+import { getCompanyUrl } from '@/utils/contentUrlUtils';
 
 interface ProfileHeaderProps {
   member: Member;
@@ -86,7 +87,7 @@ const ProfileHeader = ({ member, onContactClick }: ProfileHeaderProps) => {
                   {member.organizations.map((org, index) => (
                     <span key={org.id}>
                       <Link
-                        to={`/companies/${org.id}`}
+                        to={getCompanyUrl(org)}
                         className="hover:text-orange-500 dark:hover:text-orange-400"
                       >
                         {org.name}

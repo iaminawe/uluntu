@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Film, File, BookOpen, Wrench, BookOpen as ArticleIcon } from 'lucide-react';
 import { Resource } from '../../types';
+import { getResourceUrl } from '@/utils/contentUrlUtils';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -28,7 +29,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
 
   return (
     <Link 
-      to={`/resources/${resource.id}`}
+      to={getResourceUrl(resource)}
       className="flex flex-col h-full bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow rounded-lg overflow-hidden"
     >
       <div className="p-5 flex-grow flex flex-col">

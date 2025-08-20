@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Globe, Users, Calendar, BookOpen, Newspaper, Mail, Send, X, Briefcase } from 'lucide-react';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
+import { getEventUrl, getResourceUrl, getOpportunityUrl, getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 interface CompanyMember {
   id: number;
@@ -379,7 +381,7 @@ export default function CompanyProfile({ companyId: _companyId }: { companyId: s
                 />
                 <div>
                   <Link
-                    to={`/directory/${member.id}`}
+                    to={getMemberProfileUrl(member)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {member.name}
@@ -402,7 +404,7 @@ export default function CompanyProfile({ companyId: _companyId }: { companyId: s
             {company.events.map(event => (
               <div key={event.id}>
                 <Link
-                  to={`/events/${event.id}`}
+                  to={getEventUrl(event)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {event.title}
@@ -424,7 +426,7 @@ export default function CompanyProfile({ companyId: _companyId }: { companyId: s
             {company.resources.map(resource => (
               <div key={resource.id}>
                 <Link
-                  to={`/resources/${resource.id}`}
+                  to={getResourceUrl(resource)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {resource.title}
@@ -446,7 +448,7 @@ export default function CompanyProfile({ companyId: _companyId }: { companyId: s
             {company.opportunities.map(opportunity => (
               <div key={opportunity.id}>
                 <Link
-                  to={`/opportunities/${opportunity.id}`}
+                  to={getOpportunityUrl(opportunity)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {opportunity.title}
@@ -468,7 +470,7 @@ export default function CompanyProfile({ companyId: _companyId }: { companyId: s
             {company.posts.map(post => (
               <div key={post.id}>
                 <Link
-                  to={`/posts/${post.id}`}
+                  to={getNewsArticleUrl(post)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {post.title}

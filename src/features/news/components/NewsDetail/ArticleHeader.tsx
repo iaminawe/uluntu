@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Edit, Share, Clock } from 'lucide-react';
 import { NewsArticle } from './types';
 import { getAssociationIcon } from './utils';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 interface ArticleHeaderProps {
   article: NewsArticle;
@@ -33,7 +34,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
           />
           <div>
             <Link 
-              to={`/members/${article.author.id}`}
+              to={getMemberProfileUrl(article.author)}
               className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
             >
               {article.author.name}

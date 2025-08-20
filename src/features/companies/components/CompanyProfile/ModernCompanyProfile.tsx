@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 import { 
   Building2, 
   MapPin, 
@@ -356,7 +357,7 @@ export default function ModernCompanyProfile({
               {members.map((member: any) => (
                 <Link
                   key={member.id}
-                  to={`/directory/${member.id}`}
+                  to={getMemberProfileUrl(member)}
                   className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                 >
                   <img 

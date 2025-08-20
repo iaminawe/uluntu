@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { EmployeesSectionProps } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 const EmployeesSection: React.FC<EmployeesSectionProps> = ({ employees, isLoading }) => {
   if (isLoading) {
@@ -26,7 +27,7 @@ const EmployeesSection: React.FC<EmployeesSectionProps> = ({ employees, isLoadin
         {employees.map(employee => (
           <Link
             key={employee.id}
-            to={`/directory/${employee.id}`}
+            to={getMemberProfileUrl(employee)}
             className="group bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 flex flex-col items-center text-center"
           >
             <img

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Globe, Building, Heart, Clock } from 'lucide-react';
 import { Member } from '@/features/directory/components/MemberProfile/types';
+import { getCompanyUrl } from '@/utils/contentUrlUtils';
 
 interface ProfileHeaderProps {
   member: Member;
@@ -74,7 +75,7 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
                   {member.organizations.map((org, index) => (
                     <span key={org.id}>
                       <Link
-                        to={`/companies/${org.id}`}
+                        to={getCompanyUrl(org)}
                         className="hover:text-orange-500 dark:hover:text-orange-400"
                       >
                         {org.name}

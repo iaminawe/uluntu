@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Group } from './types';
 import { getVisibilityIcon } from './utils';
+import { getGroupUrl } from '@/utils/contentUrlUtils';
 
 interface GroupHeaderProps {
   group: Group;
@@ -57,32 +58,32 @@ const GroupHeader = ({ group }: GroupHeaderProps) => {
         <div className="border-b border-slate-200 dark:border-slate-700">
           <nav className="flex space-x-8">
             <Link
-              to={`/groups/${group.id}`}
+              to={getGroupUrl(group)}
               className="text-orange-500 border-b-2 border-orange-500 px-1 py-3 font-medium text-sm"
               aria-current="page"
             >
               Overview
             </Link>
             <Link
-              to={`/groups/${group.id}/members`}
+              to={`${getGroupUrl(group)}/members`}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 px-1 py-3 font-medium text-sm"
             >
               Members
             </Link>
             <Link
-              to={`/groups/${group.id}/events`}
+              to={`${getGroupUrl(group)}/events`}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 px-1 py-3 font-medium text-sm"
             >
               Events
             </Link>
             <Link
-              to={`/groups/${group.id}/resources`}
+              to={`${getGroupUrl(group)}/resources`}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 px-1 py-3 font-medium text-sm"
             >
               Resources
             </Link>
             <Link
-              to={`/groups/${group.id}/posts`}
+              to={`${getGroupUrl(group)}/posts`}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 px-1 py-3 font-medium text-sm"
             >
               Posts
