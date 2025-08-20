@@ -32,10 +32,10 @@ export function AuthorLink({
   
   const authorDisplay = (
     <span className={`author-info ${className}`}>
-      {showImage && author?.image && (
+      {showImage && author && author.image && (
         <img 
           src={author.image} 
-          alt={author.name}
+          alt={author.name || fallback}
           className="inline-block w-6 h-6 rounded-full mr-2"
         />
       )}

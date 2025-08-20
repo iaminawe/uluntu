@@ -102,7 +102,11 @@ const getFeatureIcon = (feature: FeatureKey) => {
     'automated_moderation': <Brain className="w-5 h-5" />,
     'smart_matching': <Brain className="w-5 h-5" />,
     'voice_features': <Mic className="w-5 h-5" />,
-    'video_features': <Video className="w-5 h-5" />
+    'video_features': <Video className="w-5 h-5" />,
+    
+    // UI Features
+    'dynamic_footer_menus': <Settings className="w-5 h-5" />,
+    'newsletter_signup': <Mail className="w-5 h-5" />
   };
 
   return iconMap[feature] || <Settings className="w-5 h-5" />;

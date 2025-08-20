@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEnabledFeatures } from '@/hooks/useSettings';
-import type { MenuItem, FeatureKey } from '@/types/menu';
+import type { MenuItem } from '@/types/menu';
+import type { FeatureKey } from '@/types/settings';
 
 interface FooterFeatureGateProps {
   children: React.ReactNode;
