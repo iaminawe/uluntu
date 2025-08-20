@@ -11,6 +11,7 @@ import {
   type Member,
   type MemberFilters,
 } from '@/hooks/useMemberQueries';
+import { useMemberBySlugOrId } from '@/hooks/useMemberBySlugOrId';
 import {
   setFilters,
   clearFilters,
@@ -136,10 +137,11 @@ export function useMemberHybrid(id?: string) {
 
   // Enhanced delete with better error handling
   const deleteMember = async () => {
-    if (!id) throw new Error('Member ID is required');
+    const memberId = memberQuery.data?.id;
+    if (!memberId) throw new Error('Member ID is required');
     
     try {
-      const result = await deleteMutation.mutateAsync(id);
+      const result = await deleteMutation.mutateAsync(memberId);
       // Invalidate related queries
       invalidationHelpers.invalidateMembers(queryClient);
       return result;

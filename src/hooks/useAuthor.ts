@@ -4,9 +4,11 @@ import { supabase } from '@/lib/supabase';
 export interface Author {
   id: string;
   name: string;
+  slug?: string | null;
   image?: string | null;
   title?: string | null;
   user_id?: string | null;
+  profileUrl?: string;
 }
 
 export type AuthorData = Author;
@@ -22,7 +24,7 @@ export function useAuthorByUserId(userId?: string | null) {
       
       const { data, error } = await supabase
         .from('members')
-        .select('id, name, image, title, user_id')
+        .select('id, name, slug, image, title, user_id')
         .eq('user_id', userId)
         .single();
       
@@ -50,7 +52,7 @@ export function useAuthorByMemberId(memberId?: string | null) {
       
       const { data, error } = await supabase
         .from('members')
-        .select('id, name, image, title, user_id')
+        .select('id, name, slug, image, title, user_id')
         .eq('id', memberId)
         .single();
       
@@ -110,8 +112,43 @@ export function formatAuthorName(author?: Author | null | unknown, fallback = 'U
 export function getAuthorProfileUrl(author?: Author | null | unknown): string | null {
   if (!author || typeof author !== 'object') return null;
   const authorObj = author as Record<string, unknown>;
-  if (typeof authorObj.id === 'string') {
+  // Prefer slug over id for SEO-friendly URLs
+  if (typeof authorObj.slug === 'string' && authorObj.slug) {
+    return `/directory/${authorObj.slug}`;
+  } else if (typeof authorObj.id === 'string') {
     return `/directory/${authorObj.id}`;
   }
   return null;
+}
+
+/**
+ * Get author by ID
+ */
+export function useAuthorById(authorId?: string | null) {
+  return useAuthorByMemberId(authorId);
+}
+
+/**
+ * Get multiple authors by IDs
+ */
+export function useAuthorsByIds(authorIds: string[]) {
+  return useQuery({
+    queryKey: ['authors', 'multiple', authorIds],
+    queryFn: async () => {
+      if (!authorIds.length) return [];
+      
+      const { data, error } = await supabase
+        .from('members')
+        .select('id, name, slug, image, title, user_id')
+        .in('id', authorIds);
+      
+      if (error) {
+        console.error('Error fetching authors:', error);
+        return [];
+      }
+      
+      return data as Author[];
+    },
+    enabled: authorIds.length > 0
+  });
 }

@@ -218,9 +218,9 @@ export const router = createBrowserRouter([
         path: 'resources/create', 
         element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
       },
-      { path: 'resources/:id', element: withSuspense(ResourceDetailPage) },
+      { path: 'resources/:slug', element: withSuspense(ResourceDetailPage) },
       { 
-        path: 'resources/:id/edit', 
+        path: 'resources/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
       },
       { path: 'marketplace', element: withSuspense(MarketplacePage) },
@@ -228,9 +228,9 @@ export const router = createBrowserRouter([
         path: 'marketplace/create', 
         element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
       },
-      { path: 'marketplace/:id', element: withSuspense(MarketplaceDetailPage) },
+      { path: 'marketplace/:slug', element: withSuspense(MarketplaceDetailPage) },
       { 
-        path: 'marketplace/:id/edit', 
+        path: 'marketplace/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
       },
       { path: 'opportunities', element: withSuspense(OpportunitiesPage) },
@@ -276,9 +276,9 @@ export const router = createBrowserRouter([
         path: 'galleries/create', 
         element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
       },
-      { path: 'galleries/:id', element: withSuspense(GalleryDetailPage) },
+      { path: 'galleries/:slug', element: withSuspense(GalleryDetailPage) },
       { 
-        path: 'galleries/:id/edit', 
+        path: 'galleries/:slug/edit', 
         element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
       },
       { 

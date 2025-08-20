@@ -30,11 +30,13 @@ WHERE slug IS NULL OR slug = '';
 -- Ensure uniqueness by adding numbers
 DO $$
 DECLARE
-  rec RECORD;
+  dup_rec RECORD;
+  event_rec RECORD;
   counter INTEGER;
   new_slug TEXT;
+  base_slug TEXT;
 BEGIN
-  FOR rec IN 
+  FOR dup_rec IN 
     SELECT slug, COUNT(*) as cnt 
     FROM public.events 
     WHERE slug IS NOT NULL 
@@ -42,14 +44,15 @@ BEGIN
     HAVING COUNT(*) > 1
   LOOP
     counter := 1;
-    FOR rec IN 
+    base_slug := dup_rec.slug;
+    FOR event_rec IN 
       SELECT id FROM public.events 
-      WHERE slug = rec.slug 
+      WHERE slug = base_slug 
       ORDER BY created_at
       OFFSET 1
     LOOP
-      new_slug := rec.slug || '-' || counter;
-      UPDATE public.events SET slug = new_slug WHERE id = rec.id;
+      new_slug := base_slug || '-' || counter;
+      UPDATE public.events SET slug = new_slug WHERE id = event_rec.id;
       counter := counter + 1;
     END LOOP;
   END LOOP;
@@ -98,11 +101,13 @@ WHERE slug IS NULL OR slug = '';
 -- Ensure uniqueness for opportunities
 DO $$
 DECLARE
-  rec RECORD;
+  dup_rec RECORD;
+  opp_rec RECORD;
   counter INTEGER;
   new_slug TEXT;
+  base_slug TEXT;
 BEGIN
-  FOR rec IN 
+  FOR dup_rec IN 
     SELECT slug, COUNT(*) as cnt 
     FROM public.opportunities 
     WHERE slug IS NOT NULL 
@@ -110,14 +115,15 @@ BEGIN
     HAVING COUNT(*) > 1
   LOOP
     counter := 1;
-    FOR rec IN 
+    base_slug := dup_rec.slug;
+    FOR opp_rec IN 
       SELECT id FROM public.opportunities 
-      WHERE slug = rec.slug 
+      WHERE slug = base_slug 
       ORDER BY created_at
       OFFSET 1
     LOOP
-      new_slug := rec.slug || '-' || counter;
-      UPDATE public.opportunities SET slug = new_slug WHERE id = rec.id;
+      new_slug := base_slug || '-' || counter;
+      UPDATE public.opportunities SET slug = new_slug WHERE id = opp_rec.id;
       counter := counter + 1;
     END LOOP;
   END LOOP;
@@ -166,11 +172,13 @@ WHERE slug IS NULL OR slug = '';
 -- Ensure uniqueness for groups
 DO $$
 DECLARE
-  rec RECORD;
+  dup_rec RECORD;
+  group_rec RECORD;
   counter INTEGER;
   new_slug TEXT;
+  base_slug TEXT;
 BEGIN
-  FOR rec IN 
+  FOR dup_rec IN 
     SELECT slug, COUNT(*) as cnt 
     FROM public.groups 
     WHERE slug IS NOT NULL 
@@ -178,14 +186,15 @@ BEGIN
     HAVING COUNT(*) > 1
   LOOP
     counter := 1;
-    FOR rec IN 
+    base_slug := dup_rec.slug;
+    FOR group_rec IN 
       SELECT id FROM public.groups 
-      WHERE slug = rec.slug 
+      WHERE slug = base_slug 
       ORDER BY created_at
       OFFSET 1
     LOOP
-      new_slug := rec.slug || '-' || counter;
-      UPDATE public.groups SET slug = new_slug WHERE id = rec.id;
+      new_slug := base_slug || '-' || counter;
+      UPDATE public.groups SET slug = new_slug WHERE id = group_rec.id;
       counter := counter + 1;
     END LOOP;
   END LOOP;
@@ -218,7 +227,7 @@ DECLARE
   base_slug TEXT;
   final_slug TEXT;
   counter INTEGER := 1;
-  query TEXT;
+  slug_exists BOOLEAN;
 BEGIN
   -- Generate base slug
   base_slug := LOWER(REGEXP_REPLACE(
@@ -240,19 +249,22 @@ BEGIN
   final_slug := base_slug;
   
   -- Check uniqueness dynamically
-  IF exclude_id IS NOT NULL THEN
-    query := format('SELECT 1 FROM public.%I WHERE slug = $1 AND id != $2', table_name);
-    WHILE EXECUTE query USING final_slug, exclude_id LOOP
-      final_slug := base_slug || '-' || counter;
-      counter := counter + 1;
-    END LOOP;
-  ELSE
-    query := format('SELECT 1 FROM public.%I WHERE slug = $1', table_name);
-    WHILE EXECUTE query USING final_slug LOOP
-      final_slug := base_slug || '-' || counter;
-      counter := counter + 1;
-    END LOOP;
-  END IF;
+  LOOP
+    IF exclude_id IS NOT NULL THEN
+      EXECUTE format('SELECT EXISTS(SELECT 1 FROM public.%I WHERE slug = $1 AND id != $2)', table_name)
+      INTO slug_exists
+      USING final_slug, exclude_id;
+    ELSE
+      EXECUTE format('SELECT EXISTS(SELECT 1 FROM public.%I WHERE slug = $1)', table_name)
+      INTO slug_exists
+      USING final_slug;
+    END IF;
+    
+    EXIT WHEN NOT slug_exists;
+    
+    final_slug := base_slug || '-' || counter;
+    counter := counter + 1;
+  END LOOP;
   
   RETURN final_slug;
 END;
