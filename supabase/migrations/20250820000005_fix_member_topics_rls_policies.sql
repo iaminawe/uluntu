@@ -15,7 +15,7 @@ FOR SELECT
 USING (true);
 
 -- Allow users to manage their own member's topics
--- This checks both user_id and id fields to handle different member identification methods
+-- This checks the user_id field to match the authenticated user
 CREATE POLICY "Users can manage their own member topics" 
 ON public.member_topics
 FOR ALL 
@@ -23,20 +23,14 @@ USING (
   EXISTS (
     SELECT 1 FROM public.members 
     WHERE members.id = member_topics.member_id 
-    AND (
-      members.user_id = auth.uid() 
-      OR members.id = auth.uid()::text
-    )
+    AND members.user_id = auth.uid()
   )
 )
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM public.members 
     WHERE members.id = member_topics.member_id 
-    AND (
-      members.user_id = auth.uid() 
-      OR members.id = auth.uid()::text
-    )
+    AND members.user_id = auth.uid()
   )
 );
 
@@ -68,10 +62,7 @@ WITH CHECK (
   EXISTS (
     SELECT 1 FROM public.members 
     WHERE members.id = member_topics.member_id 
-    AND (
-      members.user_id = auth.uid() 
-      OR members.id = auth.uid()::text
-    )
+    AND members.user_id = auth.uid()
   )
 );
 
