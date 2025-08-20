@@ -269,7 +269,9 @@ export default function ProfileEditPage() {
       
       // Redirect to the profile page after successful submission
       setTimeout(() => {
-        if (profileId) {
+        if (formData.slug) {
+          navigate(`/directory/${formData.slug}`);
+        } else if (profileId) {
           navigate(`/directory/${profileId}`);
         } else {
           navigate('/directory');
@@ -325,7 +327,7 @@ export default function ProfileEditPage() {
             </div>
             
             <Link 
-              to={member ? `/directory/${member.id}` : '/directory'}
+              to={member?.slug ? `/directory/${member.slug}` : member ? `/directory/${member.id}` : '/directory'}
               className="flex items-center text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
@@ -424,7 +426,7 @@ export default function ProfileEditPage() {
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
                     type="button"
-                    onClick={() => navigate(member ? `/directory/${member.id}` : '/directory')}
+                    onClick={() => navigate(member?.slug ? `/directory/${member.slug}` : member ? `/directory/${member.id}` : '/directory')}
                     className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                               text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                               transition-colors"

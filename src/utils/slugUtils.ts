@@ -1,24 +1,26 @@
 /**
- * Legacy slug utilities - kept for backward compatibility
- * @deprecated Use the new utilities in /lib/utils/slugUtils.ts instead
+ * Slug utilities for generating URL-friendly identifiers
  */
 
-import { generateSlug as newGenerateSlug, validateSlug as newValidateSlug } from '../lib/utils/slugUtils';
 import { logger } from './logger';
 
 /**
- * @deprecated Use generateSlug from /lib/utils/slugUtils.ts
+ * Generate a URL-friendly slug from text
  */
 export function generateSlug(text: string): string {
-  logger.warn('Using deprecated generateSlug. Please use the new version from /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
-  return newGenerateSlug(text, { strict: true });
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove non-word chars
+    .replace(/[\s_-]+/g, '-') // Replace spaces, underscores, hyphens with hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
 
 /**
- * @deprecated Use validateSlug from /lib/utils/slugUtils.ts
+ * Validate if a string is a valid slug
  */
-export function validateSlug(slug: string): boolean {
-  logger.warn('Using deprecated validateSlug. Please use the new version from /lib/utils/slugUtils.ts', 'SLUG_LEGACY');
-  const validation = newValidateSlug(slug);
-  return validation.isValid;
+export function validateSlug(slug: string): { isValid: boolean } {
+  // Check if slug matches the pattern: lowercase letters, numbers, and hyphens
+  const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  return { isValid: slugPattern.test(slug) };
 }
