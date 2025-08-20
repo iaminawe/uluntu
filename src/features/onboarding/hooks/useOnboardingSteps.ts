@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useFeatureToggles } from '@/utils/featureToggle';
 import type { FeatureKey } from '@/types/settings';
 import type { OnboardingStepProps } from '../types';
@@ -62,11 +62,13 @@ export function useOnboardingSteps() {
   const [availableSteps, setAvailableSteps] = useState<OnboardingStep[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get all feature keys that steps depend on
-  const requiredFeatureKeys = ALL_STEPS
-    .filter(step => step.requiredFeatures)
-    .flatMap(step => step.requiredFeatures!)
-    .filter((feature, index, self) => self.indexOf(feature) === index); // unique features
+  // Get all feature keys that steps depend on - memoized to prevent re-renders
+  const requiredFeatureKeys = useMemo(() => {
+    return ALL_STEPS
+      .filter(step => step.requiredFeatures)
+      .flatMap(step => step.requiredFeatures!)
+      .filter((feature, index, self) => self.indexOf(feature) === index); // unique features
+  }, []); // Empty dependency array since ALL_STEPS is constant
 
   const { toggles, loading: featuresLoading } = useFeatureToggles(requiredFeatureKeys);
 
@@ -118,19 +120,20 @@ export function useOnboardingSteps() {
   };
 }
 
+// Define features array outside component to prevent re-creation
+const ONBOARDING_FEATURES: FeatureKey[] = [
+  'companies_listing',
+  'groups_communities', 
+  'events_system',
+  'user_messaging',
+  'newsletter_system'
+];
+
 /**
  * Check if specific onboarding features are enabled
  */
 export function useOnboardingFeatures() {
-  const features: FeatureKey[] = [
-    'companies_listing',
-    'groups_communities', 
-    'events_system',
-    'user_messaging',
-    'newsletter_system'
-  ];
-
-  const { toggles, loading } = useFeatureToggles(features);
+  const { toggles, loading } = useFeatureToggles(ONBOARDING_FEATURES);
 
   return {
     hasCompanies: toggles['companies_listing'] || false,
