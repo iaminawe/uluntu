@@ -254,6 +254,10 @@ export const router = createBrowserRouter([
       },
       { path: 'invite/:token', element: withSuspense(AcceptInvitationPage) },
       { 
+        path: 'profile', 
+        element: <ProtectedRoute>{withSuspense(DirectoryDetailPage)}</ProtectedRoute> 
+      },
+      { 
         path: 'profile/edit', 
         element: <ProtectedRoute>{withSuspense(ProfileEditPage)}</ProtectedRoute> 
       },
