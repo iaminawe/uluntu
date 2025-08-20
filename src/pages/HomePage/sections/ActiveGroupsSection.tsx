@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { groupsApi } from '@/features/groups/api/groupsApi';
 import { DetailedCard } from '@/shared/components/visual';
+import { getGroupUrl } from '@/utils/contentUrlUtils';
 
 export default function ActiveGroupsSection() {
   const { data: groups = [], isLoading } = useQuery({
@@ -22,7 +23,7 @@ export default function ActiveGroupsSection() {
         date: group.lastActive || group.created_at,
         category: 'Community Group',
         readTime: `${group.memberCount || 0} members`,
-        link: `/groups/${group.id}`,
+        link: getGroupUrl(group),
         type: 'group' as const
       }));
   }, [groups]);

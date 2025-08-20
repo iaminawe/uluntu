@@ -6,6 +6,7 @@ import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { newsApi } from '@/features/news/api/newsApi';
 import { groupsApi } from '@/features/groups/api/groupsApi';
 import { DetailedCard } from '@/shared/components/visual';
+import { getEventUrl, getGroupUrl } from '@/utils/contentUrlUtils';
 
 export default function DataSections() {
   // Load data only when this component is rendered
@@ -68,7 +69,7 @@ export default function DataSections() {
                   image={event.image}
                   date={event.date}
                   category={event.type}
-                  link={`/events/${event.id}`}
+                  link={getEventUrl(event)}
                   linkText="View Event"
                 />
               ))}
@@ -109,7 +110,7 @@ export default function DataSections() {
                   image={group.heroImage || group.coverImage || '/placeholder-group.png'}
                   category="Community Group"
                   readTime={`${group.memberCount || 0} members`}
-                  link={`/groups/${group.id}`}
+                  link={getGroupUrl(group)}
                   linkText="Join Group"
                 />
               ))}

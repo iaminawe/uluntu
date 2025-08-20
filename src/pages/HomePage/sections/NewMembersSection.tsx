@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useMembersHybrid } from '@/features/directory/hooks/useMembersHybrid';
 import { DetailedCard } from '@/shared/components/visual';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 export default function NewMembersSection() {
   const { members, isLoading } = useMembersHybrid();
@@ -16,7 +17,7 @@ export default function NewMembersSection() {
         date: member.joinDate || member.created_at,
         category: member.title || member.role || 'Community Member',
         readTime: member.company || 'View Profile',
-        link: `/directory/${member.id}`,
+        link: getMemberProfileUrl(member),
         type: 'member' as const,
         author: {
           id: member.id,

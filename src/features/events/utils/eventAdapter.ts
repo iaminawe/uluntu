@@ -86,6 +86,7 @@ export function adaptEventFromDatabase(
 
   return {
     id: dbEvent.id,
+    slug: dbEvent.slug ?? undefined,
     title: dbEvent.title,
     description: dbEvent.description,
     date: dbEvent.date,

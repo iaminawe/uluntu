@@ -24,6 +24,7 @@ export function adaptGroupFromDatabase(group: SupabaseGroupRow): FrontendGroup {
 
     // Group specific properties
     name: group.name,
+    slug: group.slug ?? undefined,
     description: group.description,
     longDescription: group.long_description ?? undefined,
     heroImage: group.hero_image ?? '',
