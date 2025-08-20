@@ -64,6 +64,7 @@ const MarketplaceEditPage = lazy(() => import('../pages/MarketplaceEditPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ProfileEditPage = lazy(() => import('../pages/ProfileEditPage'));
+const CurrentUserProfilePage = lazy(() => import('../pages/CurrentUserProfilePage'));
 const AcceptInvitationPage = lazy(() => import('../pages/AcceptInvitationPage'));
 const UserSettingsPage = lazy(() => import('../pages/UserSettingsPage'));
 const NewsletterConfirmPage = lazy(() => import('../pages/NewsletterConfirmPage'));
@@ -255,7 +256,7 @@ export const router = createBrowserRouter([
       { path: 'invite/:token', element: withSuspense(AcceptInvitationPage) },
       { 
         path: 'profile', 
-        element: <ProtectedRoute>{withSuspense(DirectoryDetailPage)}</ProtectedRoute> 
+        element: <ProtectedRoute>{withSuspense(CurrentUserProfilePage)}</ProtectedRoute> 
       },
       { 
         path: 'profile/edit', 
