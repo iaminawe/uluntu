@@ -1,5 +1,5 @@
 import { Event } from '../../types';
-import { getEventUrl } from '../../../utils/contentUrlUtils';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 /**
  * Generates an iCalendar (.ics) format string for the given events
