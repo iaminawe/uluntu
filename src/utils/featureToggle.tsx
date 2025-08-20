@@ -153,6 +153,14 @@ export function useFeatureToggles(features: FeatureKey[]) {
   const [toggles, setToggles] = React.useState<Record<string, boolean>>({});
   const [loading, setLoading] = React.useState(true);
   
+  // Create a stable string key from features array to prevent infinite re-renders
+  // Sort the features to ensure consistent ordering
+  const featuresKey = React.useMemo(
+    () => [...features].sort().join(','), 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(features.sort())]
+  );
+  
   React.useEffect(() => {
     let mounted = true;
     
@@ -173,7 +181,7 @@ export function useFeatureToggles(features: FeatureKey[]) {
     return () => {
       mounted = false;
     };
-  }, [features]);
+  }, [featuresKey, features]);
   
   const isEnabled = (feature: FeatureKey) => toggles[feature] ?? false;
   
