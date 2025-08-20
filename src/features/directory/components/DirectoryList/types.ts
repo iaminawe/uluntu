@@ -3,6 +3,7 @@
  
 export interface Member {
   id: string;
+  slug?: string; // Add slug field for URL generation
   name: string;
   title: string;
   company?: string;

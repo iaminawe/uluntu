@@ -57,6 +57,7 @@ export const membersApi = {
         // Create a basic member object with required fields
         const member: Member = {
           id: item.id,
+          slug: (item as any).slug || undefined, // Include slug field for URL generation
           name: item.name || '',
           title: item.title || '',
           bio: item.bio || '',
