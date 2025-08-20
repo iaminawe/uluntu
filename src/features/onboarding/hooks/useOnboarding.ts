@@ -165,17 +165,29 @@ export const useOnboarding = () => {
         }
       }
 
+      // Get the actual member ID from the database
+      const { data: memberData } = await supabase
+        .from('members')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      const memberId = memberData?.id;
+      if (!memberId) {
+        console.warn('Could not find member ID for user:', user.id);
+      }
+
       // Save skills if provided
-      if (professional.skills && professional.skills.length > 0) {
+      if (professional.skills && professional.skills.length > 0 && memberId) {
         // First, delete existing skills
         await supabase
           .from('member_skills')
           .delete()
-          .eq('member_id', user.id);
+          .eq('member_id', memberId);
 
         // Then insert new skills
         const skillsData = professional.skills.map(skill => ({
-          member_id: user.id,
+          member_id: memberId,
           skill: skill,
           level: 'intermediate', // Default level
         }));
@@ -190,12 +202,12 @@ export const useOnboarding = () => {
       }
 
       // Save company association if provided
-      if (company.companyId && company.role) {
+      if (company.companyId && company.role && memberId) {
         const { error: companyError } = await supabase
           .from('company_members')
           .insert({
             company_id: company.companyId,
-            member_id: user.id,
+            member_id: memberId,
             role: company.role,
             verified: false,
           });
@@ -206,10 +218,10 @@ export const useOnboarding = () => {
       }
 
       // Save group memberships if selected
-      if (engagement.groupIds && engagement.groupIds.length > 0) {
+      if (engagement.groupIds && engagement.groupIds.length > 0 && memberId) {
         const groupMemberships = engagement.groupIds.map(groupId => ({
           group_id: groupId,
-          member_id: user.id,
+          member_id: memberId,
           role: 'member',
           status: 'active',
         }));
