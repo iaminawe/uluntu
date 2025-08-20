@@ -8,6 +8,7 @@ import {
 } from '../utils/groupAdapter';
 import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
 import { ContentStatus } from '../types/common'; // For casting 'status'
+import { lookupContent } from '@/utils/contentUrlUtils';
 
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
@@ -69,28 +70,22 @@ export const groupsApi = {
     }
   },
 
-  async getById(id: string): Promise<FrontendGroup | null> {
+  async getById(identifier: string): Promise<FrontendGroup | null> {
     try {
+      // Use the generic lookup function from contentUrlUtils to handle both slugs and IDs
+      const { data: groupData, foundBy } = await lookupContent('groups', identifier, supabase);
       
-      // First, get the basic group data without any joins
-      const { data: groupData, error: groupError } = await supabase
-        .from('groups')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-
-      if (groupError) {
-        handleSupabaseError(groupError, `fetching group with id ${id}`);
+      if (!groupData) {
+        console.warn(`Group not found with identifier: ${identifier}`);
         return null;
       }
       
       // Adapt only the core group data. The adaptGroupFromDatabase function initializes
       // events, resources, etc., to empty arrays as per FrontendGroup definition.
-      const adaptedGroup = groupData ? adaptGroupFromDatabase(groupData as any) : null;
+      const adaptedGroup = adaptGroupFromDatabase(groupData as any);
       return adaptedGroup;
     } catch (error) {
-      handleSupabaseError(error, `fetching group with id ${id}`);
+      handleSupabaseError(error, `fetching group with identifier ${identifier}`);
       return null;
     }
   },

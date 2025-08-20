@@ -1,5 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api';
+import { 
+  getEventUrl, 
+  getNewsArticleUrl, 
+  getResourceUrl, 
+  getGroupUrl, 
+  getMarketplaceListingUrl, 
+  getOpportunityUrl, 
+  getCompanyUrl,
+  getGalleryUrl
+} from '@/utils/contentUrlUtils';
 
 interface TopicContentItem {
   id: string;
@@ -82,7 +92,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.events.members?.image
         },
         type: 'event',
-        url: `/events/${item.events.id}`
+        url: getEventUrl(item.events)
       }));
     }
 
@@ -121,7 +131,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.news.members?.image
         },
         type: 'news',
-        url: `/news/${item.news.id}`
+        url: getNewsArticleUrl(item.news)
       }));
     }
 
@@ -158,7 +168,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.resources.members?.image
         },
         type: 'resource',
-        url: `/resources/${item.resources.id}`
+        url: getResourceUrl(item.resources)
       }));
     }
 
@@ -186,7 +196,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         excerpt: item.groups.description,
         image: item.groups.hero_image,
         type: 'group',
-        url: `/groups/${item.groups.id}`
+        url: getGroupUrl(item.groups)
       }));
     }
 
@@ -222,7 +232,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.marketplace_listings.members?.image
         },
         type: 'marketplace',
-        url: `/marketplace/${item.marketplace_listings.id}`
+        url: getMarketplaceListingUrl(item.marketplace_listings)
       }));
     }
 
@@ -257,7 +267,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.opportunities.members?.image
         },
         type: 'opportunity',
-        url: `/opportunities/${item.opportunities.id}`
+        url: getOpportunityUrl(item.opportunities)
       }));
     }
 
@@ -283,7 +293,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         excerpt: item.companies.description,
         image: item.companies.logo,
         type: 'company',
-        url: `/companies/${item.companies.id}`
+        url: getCompanyUrl(item.companies)
       }));
     }
 
@@ -320,7 +330,7 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           image: item.galleries.members?.image
         },
         type: 'gallery',
-        url: `/galleries/${item.galleries.id}`
+        url: getGalleryUrl(item.galleries)
       }));
     }
 

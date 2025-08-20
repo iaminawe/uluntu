@@ -20,19 +20,19 @@ import { useGroupMembers, useGroupEvents, useGroupResources, useGroupPosts } fro
 import { TabType } from './types';
 
 export default function GroupDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [selectedTab, setSelectedTab] = useState<TabType>('about');
   const [showJoinModal, setShowJoinModal] = useState(false);
   
   // Use the hybrid hook to fetch group data
   const { getGroup } = useGroupsHybrid();
-  const { data: group, isLoading, error } = getGroup(id || '');
+  const { data: group, isLoading, error } = getGroup(slug || '');
   
   // Fetch associations
-  const { data: members = [], isLoading: membersLoading } = useGroupMembers(id);
-  const { data: events = [], isLoading: eventsLoading } = useGroupEvents(id);
-  const { data: resources = [], isLoading: resourcesLoading } = useGroupResources(id);
-  const { data: posts = [], isLoading: postsLoading } = useGroupPosts(id);
+  const { data: members = [], isLoading: membersLoading } = useGroupMembers(group?.id);
+  const { data: events = [], isLoading: eventsLoading } = useGroupEvents(group?.id);
+  const { data: resources = [], isLoading: resourcesLoading } = useGroupResources(group?.id);
+  const { data: posts = [], isLoading: postsLoading } = useGroupPosts(group?.id);
   
   
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {

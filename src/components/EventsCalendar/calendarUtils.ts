@@ -1,4 +1,5 @@
 import { Event } from '../../types';
+import { getEventUrl } from '../../utils/contentUrlUtils';
 
 /**
  * Generates an iCalendar (.ics) format string for the given events
@@ -35,7 +36,7 @@ export const generateICalendar = (events: Event[]): string => {
       `SUMMARY:${event.title.replace(/,/g, '\\,')}`,
       `DESCRIPTION:${description}`,
       `LOCATION:${location}`,
-      `URL:https://kootenaytechcommunity.com/events/${event.id}`,
+      `URL:https://kootenaytechcommunity.com${getEventUrl(event)}`,
       'END:VEVENT'
     ]);
   });

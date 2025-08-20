@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MarketplaceListing } from '../types/marketplace';
+import { getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 export interface NavigationAnalytics {
   listing_id: string;
@@ -34,7 +35,7 @@ export const useMarketplaceNavigation = () => {
     trackMarketplaceNavigation(analyticsData);
 
     // Navigate to the listing detail page
-    navigate(`/marketplace/${listing.id}`);
+    navigate(getMarketplaceListingUrl(listing));
   }, [navigate]);
 
   const navigateToMarketplace = useCallback((filters?: {

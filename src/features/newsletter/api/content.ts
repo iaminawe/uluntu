@@ -13,6 +13,15 @@ import {
   DateRange,
   SelectionCriteria
 } from '@/types/newsletter';
+import { 
+  getEventUrl, 
+  getNewsArticleUrl, 
+  getOpportunityUrl, 
+  getMarketplaceListingUrl, 
+  getCompanyUrl,
+  getContentUrl
+} from '@/utils/contentUrlUtils';
+import { memberToAuthorData } from '@/utils/authorUtils';
 
 class NewsletterContentAPI {
   /**
@@ -278,7 +287,7 @@ class NewsletterContentAPI {
         if (event.url) result.url = event.url;
         if ((event as any).hero_image) result.image = (event as any).hero_image;
         else if ((event as any).image) result.image = (event as any).image;
-        result.registration_url = `/events/${event.id}`;
+        result.registration_url = getEventUrl(event);
         if (event.current_attendees !== null) result.attendee_count = event.current_attendees;
         if (event.max_attendees !== null) result.max_attendees = event.max_attendees;
         return result;
@@ -349,7 +358,7 @@ class NewsletterContentAPI {
           content: article.content,
           author: (article as any).author?.name || 'Community',
           published_at: article.created_at || new Date().toISOString(),
-          read_more_url: `/news/${article.id}`,
+          read_more_url: getNewsArticleUrl(article),
           tags: article.tags || [],
           featured: article.featured || false
         };
@@ -431,7 +440,7 @@ class NewsletterContentAPI {
           remote: opp.remote || false,
           description: opp.description || '',
           requirements: opp.requirements || [],
-          application_url: `/opportunities/${opp.id}`,
+          application_url: getOpportunityUrl(opp),
           featured: opp.featured || false
         };
         if (opp.location) result.location = opp.location;
@@ -504,7 +513,7 @@ class NewsletterContentAPI {
           description: listing.description || '',
           images: listing.images || [],
           seller: 'Seller', // TODO: Add seller lookup
-          contact_url: `/marketplace/${listing.id}`,
+          contact_url: getMarketplaceListingUrl(listing),
           featured: listing.featured || false
         };
         if (listing.price !== null) result.price = listing.price;
@@ -578,7 +587,7 @@ class NewsletterContentAPI {
         image: member.image || undefined,
         location: member.location || undefined,
         skills: [],
-        profile_url: `/directory/${member.id}`,
+        profile_url: memberToAuthorData(member).profileUrl,
         featured: member.featured || false
       }));
     } catch (error) {
@@ -635,7 +644,7 @@ class NewsletterContentAPI {
         logo: company.logo || undefined,
         website: company.website || undefined,
         employee_count: (company as any).employee_count || undefined,
-        profile_url: `/directory/companies/${company.id}`,
+        profile_url: getCompanyUrl(company),
         featured: company.featured || false
       }));
     } catch (error) {

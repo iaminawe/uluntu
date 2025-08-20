@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Eye, EyeOff, Trash2, Globe, RefreshCw } from 'lucide-react';
-import { generateSlug } from '@/features/companies/utils/slugUtils';
+import { generateSlug } from '@/lib/utils';
 import { FormActionsProps } from './types';
 
 // =====================
