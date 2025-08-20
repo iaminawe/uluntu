@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import { type Group, GroupVisibility } from './types'; // Fix the import path
 import { getVisibilityLabel } from './utils';
+import { getGroupUrl } from '@/utils/contentUrlUtils';
 
 // Map main Group visibility to local component visibility
 const mapVisibility = (visibility: 'public' | 'private' | 'members_only'): GroupVisibility => {
@@ -43,7 +44,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
           <div>
             <div className="flex items-center mb-1">
               <Link
-                to={`/groups/${safeId}`}
+                to={getGroupUrl(group)}
                 className="text-xl font-semibold text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {safeName}
