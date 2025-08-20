@@ -86,14 +86,12 @@ const onboardingSlice = createSlice({
     },
     
     goToNextStep: (state) => {
-      if (state.currentStep < 5) {
-        // Mark current step as completed if not already
-        if (!state.completedSteps.includes(state.currentStep)) {
-          state.completedSteps.push(state.currentStep);
-        }
-        state.currentStep += 1;
-        state.completionPercentage = calculateCompletionPercentage(state);
+      // Mark current step as completed if not already
+      if (!state.completedSteps.includes(state.currentStep)) {
+        state.completedSteps.push(state.currentStep);
       }
+      state.currentStep += 1;
+      state.completionPercentage = calculateCompletionPercentage(state);
     },
     
     goToPreviousStep: (state) => {
@@ -106,9 +104,7 @@ const onboardingSlice = createSlice({
       if (!state.skippedSteps.includes(state.currentStep)) {
         state.skippedSteps.push(state.currentStep);
       }
-      if (state.currentStep < 5) {
-        state.currentStep += 1;
-      }
+      state.currentStep += 1;
       state.completionPercentage = calculateCompletionPercentage(state);
     },
     

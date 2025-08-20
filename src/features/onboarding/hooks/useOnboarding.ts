@@ -13,6 +13,7 @@ import {
   completeOnboarding,
   restoreOnboarding,
 } from '../store/onboardingSlice';
+import { useOnboardingSteps } from './useOnboardingSteps';
 import type { OnboardingState } from '../types';
 
 export const useOnboarding = () => {
@@ -20,6 +21,7 @@ export const useOnboarding = () => {
   const navigate = useNavigate();
   const onboarding = useAppSelector((state) => state.onboarding);
   const { user } = useAppSelector((state) => state.auth);
+  const { totalSteps } = useOnboardingSteps();
 
   // Auto-save onboarding progress to localStorage
   useEffect(() => {
@@ -76,11 +78,8 @@ export const useOnboarding = () => {
       case 4: // Privacy Settings
         // Already has defaults, no validation required
         break;
-      case 5: // Community Engagement
-        if (onboarding.formData.engagement.interests.length === 0) {
-          dispatch(setError({ field: 'interests', message: 'Please select at least one area of interest' }));
-          return false;
-        }
+      default:
+        // For any additional steps, no specific validation required
         break;
     }
     
@@ -211,13 +210,13 @@ export const useOnboarding = () => {
     await saveProgress();
 
     // If this is the last step, complete onboarding
-    if (onboarding.currentStep === 5) {
+    if (onboarding.currentStep >= totalSteps) {
       await handleComplete();
     } else {
       // Move to next step
       dispatch(goToNextStep());
     }
-  }, [dispatch, onboarding.currentStep, handleComplete, validateCurrentStep, saveProgress]);
+  }, [dispatch, onboarding.currentStep, totalSteps, handleComplete, validateCurrentStep, saveProgress]);
 
   const handleBack = useCallback(() => {
     dispatch(goToPreviousStep());
@@ -248,8 +247,8 @@ export const useOnboarding = () => {
     
     // Computed
     isFirstStep: onboarding.currentStep === 1,
-    isLastStep: onboarding.currentStep === 5,
+    isLastStep: onboarding.currentStep >= totalSteps,
     canGoBack: onboarding.currentStep > 1,
-    canSkip: onboarding.currentStep !== 5, // Can't skip the last step
+    canSkip: onboarding.currentStep < totalSteps, // Can't skip the last step
   };
 };

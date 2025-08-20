@@ -34,8 +34,8 @@ const OnboardingWizard: React.FC = () => {
     );
   }
 
-  // Adjust current step if it exceeds available steps
-  const adjustedCurrentStep = Math.min(currentStep, steps.length);
+  // Adjust current step if it exceeds available steps or if no current step is set
+  const adjustedCurrentStep = currentStep > steps.length ? 1 : Math.max(1, currentStep);
   const StepComponent = getStepComponent(adjustedCurrentStep);
 
   if (!StepComponent) {
