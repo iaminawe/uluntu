@@ -2,6 +2,9 @@
 
 import { BaseEntity, ContentStatus } from './common';
 import { z } from 'zod';
+import { FeatureKey } from './settings';
+
+export { FeatureKey } from './settings';
 
 // Menu types
 export type MenuType = 'main' | 'footer' | 'mobile' | 'admin';
@@ -27,6 +30,7 @@ export interface MenuItem extends BaseEntity {
   visibility: MenuVisibility;
   required_roles?: string[] | null;
   is_external: boolean;
+  feature_flag?: string | null;
   children?: MenuItem[];
 }
 

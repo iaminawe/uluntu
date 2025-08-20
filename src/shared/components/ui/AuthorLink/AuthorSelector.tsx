@@ -3,7 +3,7 @@ import { useAuthorsByIds } from '../../../../hooks/useAuthor';
 import { AuthorListItem } from './AuthorListItem';
 import { AuthorData } from '../../../../hooks/useAuthor';
 import { filterAuthors, sortAuthorsByName } from '../../../../utils/authorUtils';
-import { Skeleton } from '../Skeleton/Skeleton';
+import Skeleton from '../Skeleton/Skeleton';
 
 interface AuthorSelectorProps {
   /** Available author IDs to choose from */

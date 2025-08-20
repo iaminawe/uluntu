@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthorById, useAuthorFromContent, AuthorData } from '../../../../hooks/useAuthor';
-import { Skeleton } from '../Skeleton/Skeleton';
+import { useAuthorByMemberId as useAuthorById, useAuthorFromContent, AuthorData } from '../../../../hooks/useAuthor';
+import Skeleton from '../Skeleton/Skeleton';
 import { AuthorInitialsAvatar } from './AuthorInitialsAvatar';
 
 interface AuthorLinkProps {

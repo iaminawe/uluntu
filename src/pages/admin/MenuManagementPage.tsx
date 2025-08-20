@@ -1513,12 +1513,12 @@ const AdminMenuManagementPage: React.FC = () => {
           </div>
 
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId={`${activeTab}-menu`}>
-              {(provided) => (
+            <Droppable droppableId={`${activeTab}-menu`} key={activeTab}>
+              {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="space-y-3"
+                  className={`space-y-3 min-h-[100px] rounded-lg transition-colors ${snapshot.isDraggingOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center py-12">
