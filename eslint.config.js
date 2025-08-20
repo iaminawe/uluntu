@@ -15,7 +15,12 @@ export default tseslint.config(
       '*.config.ts',
       'vite.config.*.ts',
       'scripts/**',
-      'public/**'
+      'public/**',
+      '.archive/**',
+      '.next/**',
+      'supabase/**',
+      'docs/**',
+      'tests/**'
     ]
   },
   {

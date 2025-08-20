@@ -6,7 +6,7 @@ import {
   AuthorCard
 } from '../shared/components/ui/AuthorLink';
 import { AuthorSelector } from '../shared/components/ui/AuthorLink/AuthorSelector';
-import { useAuthorById } from '../hooks/useAuthor';
+import { useAuthorByMemberId as useAuthorById } from '../hooks/useAuthor';
 
 /**
  * Comprehensive examples demonstrating the AuthorLink component system
