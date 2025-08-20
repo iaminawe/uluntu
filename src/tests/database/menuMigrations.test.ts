@@ -347,23 +347,29 @@ describe('Menu Management Database Migration Tests', () => {
 
   describe('Data Migration and Integrity Tests', () => {
     const sampleDataMigration = `
-      -- Insert sample menu items
+      -- Insert sample menu items using gen_random_uuid() for more realistic testing
       INSERT INTO menu_items (id, title, url, menu_type, sort_order) VALUES
-      ('11111111-1111-1111-1111-111111111111', 'Home', '/', 'main', 0),
-      ('22222222-2222-2222-2222-222222222222', 'About', '/about', 'main', 1),
-      ('33333333-3333-3333-3333-333333333333', 'Services', '/services', 'main', 2),
-      ('44444444-4444-4444-4444-444444444444', 'Web Design', '/services/web-design', 'main', 0),
-      ('55555555-5555-5555-5555-555555555555', 'SEO', '/services/seo', 'main', 1);
+      (gen_random_uuid(), 'Home', '/', 'main', 0),
+      (gen_random_uuid(), 'About', '/about', 'main', 1),
+      (gen_random_uuid(), 'Services', '/services', 'main', 2),
+      (gen_random_uuid(), 'Web Design', '/services/web-design', 'main', 0),
+      (gen_random_uuid(), 'SEO', '/services/seo', 'main', 1);
 
-      -- Set up parent-child relationships
-      UPDATE menu_items SET parent_id = '33333333-3333-3333-3333-333333333333' 
-      WHERE id IN ('44444444-4444-4444-4444-444444444444', '55555555-5555-5555-5555-555555555555');
+      -- Set up parent-child relationships using URL-based lookups (more realistic)
+      UPDATE menu_items SET parent_id = (SELECT id FROM menu_items WHERE url = '/services')
+      WHERE url IN ('/services/web-design', '/services/seo');
     `;
 
     beforeEach(() => {
+      // Use more realistic UUIDs for test data
+      const homeId = crypto.randomUUID();
+      const aboutId = crypto.randomUUID();
+      const servicesId = crypto.randomUUID();
+      
       dbHelper.setTableData('menu_items', [
-        { id: '11111111-1111-1111-1111-111111111111', title: 'Home', url: '/', menu_type: 'main', sort_order: 0 },
-        { id: '22222222-2222-2222-2222-222222222222', title: 'About', url: '/about', menu_type: 'main', sort_order: 1 },
+        { id: homeId, title: 'Home', url: '/', menu_type: 'main', sort_order: 0, slug: 'home' },
+        { id: aboutId, title: 'About', url: '/about', menu_type: 'main', sort_order: 1, slug: 'about' },
+        { id: servicesId, title: 'Services', url: '/services', menu_type: 'main', sort_order: 2, slug: 'services' },
       ]);
     });
 
@@ -397,9 +403,10 @@ describe('Menu Management Database Migration Tests', () => {
       
       // Attempt to create circular reference
       const circularReferenceQuery = `
+        -- Create circular reference using URL-based lookups
         UPDATE menu_items 
-        SET parent_id = '44444444-4444-4444-4444-444444444444'
-        WHERE id = '33333333-3333-3333-3333-333333333333';
+        SET parent_id = (SELECT id FROM menu_items WHERE url = '/services/web-design')
+        WHERE url = '/services';
       `;
       
       const result = await dbHelper.executeMigration(circularReferenceQuery);

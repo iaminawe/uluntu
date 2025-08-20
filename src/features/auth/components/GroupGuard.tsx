@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router-dom';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { supabase } from '@/lib/supabase';
+import { lookupContent } from '@/utils/contentUrlUtils';
 
 interface GroupGuardProps {
   children: ReactNode;
@@ -13,22 +14,36 @@ interface GroupGuardProps {
  * Checks if the user has access to the group based on visibility and membership
  */
 export default function GroupGuard({ children }: GroupGuardProps) {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { user, loading } = useSession();
   const authState = useAppSelector(state => state.auth);
   const userRoles = authState.roles.list;
   const isAdmin = userRoles.includes('admin') || userRoles.includes('superadmin');
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkGroupAccess() {
-      console.log('[GroupGuard] Checking access for group:', id, { loading, user: !!user, isAdmin });
+      console.log('[GroupGuard] Checking access for group:', slug, { loading, user: !!user, isAdmin });
       
-      if (!id || loading) {
-        console.log('[GroupGuard] Skipping check - no ID or still loading');
+      if (!slug || loading) {
+        console.log('[GroupGuard] Skipping check - no slug or still loading');
         return;
       }
+      
+      // First, resolve the slug to get the group ID
+      const { data: group, foundBy } = await lookupContent('groups', slug, supabase);
+      if (!group) {
+        console.error('[GroupGuard] Group not found for slug:', slug);
+        setHasAccess(false);
+        setIsLoading(false);
+        return;
+      }
+      
+      const id = group.id;
+      setGroupId(id);
+      console.log('[GroupGuard] Resolved slug to ID:', slug, '->', id);
 
       try {
         // If user is a superadmin, they always have access
@@ -97,7 +112,7 @@ export default function GroupGuard({ children }: GroupGuardProps) {
     }
 
     checkGroupAccess();
-  }, [id, user, loading, isAdmin]);
+  }, [slug, user, loading, isAdmin]);
 
   console.log('[GroupGuard] Render state:', { loading, isLoading, hasAccess });
   

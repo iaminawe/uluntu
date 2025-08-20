@@ -419,7 +419,8 @@ export const companiesApi = {
         query = query.eq('department', filters.department);
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      // Order by joined_date as fallback if created_at doesn't exist
+      const { data, error } = await query.order('joined_date', { ascending: false });
 
       if (error) {
         logger.apiError('getCompanyEmployees - fetch', error);

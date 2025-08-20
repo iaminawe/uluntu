@@ -14,7 +14,7 @@ export function memberToAuthorData(member: Member): AuthorData {
     name: member.name,
     title: member.title,
     image: member.image || '/placeholder-avatar.png',
-    profileUrl: `/directory/${member.id}`
+    profileUrl: member.slug ? `/directory/${member.slug}` : `/directory/${member.id}`
   };
 }
 
