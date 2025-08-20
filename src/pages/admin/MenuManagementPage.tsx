@@ -1513,7 +1513,7 @@ const AdminMenuManagementPage: React.FC = () => {
           </div>
 
           <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId={`${activeTab}-menu`} key={activeTab}>
+            <Droppable droppableId={`${activeTab}-menu`}>
               {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}

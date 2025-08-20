@@ -57,7 +57,15 @@ export const useOnboarding = () => {
         })
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        // Check if error is due to missing columns
+        if (error.code === 'PGRST204' && error.message?.includes('onboarding_current_step')) {
+          console.warn('Onboarding columns not yet available in database. Progress saved locally only.');
+          // Continue without throwing - progress is saved in localStorage
+          return;
+        }
+        throw error;
+      }
     } catch (error) {
       console.error('Failed to save onboarding progress:', error);
     }
@@ -97,12 +105,6 @@ export const useOnboarding = () => {
 
       // Update member profile with all onboarding data
       const updateData: any = {
-        // Onboarding tracking
-        onboarding_completed_at: new Date().toISOString(),
-        onboarding_current_step: 5,
-        profile_completion_percentage: onboarding.completionPercentage,
-        privacy_settings: privacy,
-
         // Professional information
         bio: professional.bio,
         title: professional.title,
@@ -110,15 +112,37 @@ export const useOnboarding = () => {
         
         // Privacy and profile status
         status: privacy.profileVisibility === 'private' ? 'draft' : 'published',
+        privacy_settings: privacy,
+      };
+      
+      // Only add onboarding tracking fields if they exist in the database
+      // This prevents errors if the migration hasn't been run yet
+      const onboardingData = {
+        onboarding_completed_at: new Date().toISOString(),
+        onboarding_current_step: totalSteps,
+        profile_completion_percentage: onboarding.completionPercentage,
       };
 
-      // Update member profile
-      const { error: memberError } = await supabase
+      // First try to update with onboarding fields
+      const { error: memberErrorWithOnboarding } = await supabase
         .from('members')
-        .update(updateData)
+        .update({ ...updateData, ...onboardingData })
         .eq('user_id', user.id);
 
-      if (memberError) throw memberError;
+      if (memberErrorWithOnboarding) {
+        // If it fails due to missing columns, try without onboarding fields
+        if (memberErrorWithOnboarding.code === 'PGRST204') {
+          console.warn('Onboarding columns not available, updating without tracking fields');
+          const { error: memberError } = await supabase
+            .from('members')
+            .update(updateData)
+            .eq('user_id', user.id);
+          
+          if (memberError) throw memberError;
+        } else {
+          throw memberErrorWithOnboarding;
+        }
+      }
 
       // Save skills if provided
       if (professional.skills && professional.skills.length > 0) {
