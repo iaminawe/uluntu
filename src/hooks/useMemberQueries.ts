@@ -7,6 +7,7 @@ import { IS_SUPABASE_ENABLED } from '@/config/env';
 // Define a Member type for consistency with our UI needs
 export type Member = {
   id: string;
+  slug?: string; // Slug for URL generation
   name: string;
   email?: string;
   bio?: string;
@@ -49,6 +50,7 @@ function adaptMember(data: unknown): Member {
   // Safe property access with type checking
   const adaptedMember = {
     id: isString(member.id) ? member.id : String(member.id),
+    slug: isString(member.slug) ? member.slug : undefined, // Include slug field
     name: isString(member.name) ? member.name : '',
     email: isString(member.email) ? member.email : undefined,
     bio: isString(member.bio) ? member.bio : undefined,
