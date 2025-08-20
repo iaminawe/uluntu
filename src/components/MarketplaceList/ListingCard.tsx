@@ -3,6 +3,7 @@ import { MarketplaceListing, ListingType, ListingCondition } from '../../types/m
 import { getTypeIcon, getConditionDisplayName, formatPrice } from '@/features/marketplace/components/MarketplaceList/utils';
 import { LikeButton } from '@/components/interactions';
 import { MessageCircle } from 'lucide-react';
+import { getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 interface ListingCardProps {
   listing: MarketplaceListing;
@@ -27,7 +28,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
       </div>
       
       <Link
-        to={`/marketplace/${listing.id}`}
+        to={getMarketplaceListingUrl(listing)}
         className="block"
       >
       <div className="h-48 overflow-hidden">

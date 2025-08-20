@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageSquare, ThumbsUp } from 'lucide-react';
 import { NewsArticle } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 interface CommentsSectionProps {
   article: NewsArticle;
@@ -57,7 +58,7 @@ const CommentsSection = ({ article, onAddComment }: CommentsSectionProps) => {
           {article.comments.map((comment) => (
             <div key={comment.id} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
               <div className="flex items-start mb-3">
-                <Link to={`/members/${comment.author.id}`}>
+                <Link to={getMemberProfileUrl(comment.author)}>
                   <img
                     src={comment.author.image}
                     alt={comment.author.name}
@@ -68,7 +69,7 @@ const CommentsSection = ({ article, onAddComment }: CommentsSectionProps) => {
                   <div className="flex justify-between items-start">
                     <div>
                       <Link
-                        to={`/members/${comment.author.id}`}
+                        to={getMemberProfileUrl(comment.author)}
                         className="font-medium text-slate-900 dark:text-white hover:text-orange-500 
                                 dark:hover:text-orange-400"
                       >

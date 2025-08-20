@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Building, Users, Calendar, BookOpen, Newspaper, Send, X, Package, Briefcase, Monitor, Globe, MapPin, Clock, Heart } from 'lucide-react';
+import { getGroupUrl, getEventUrl, getResourceUrl, getMarketplaceListingUrl, getGroupPostUrl } from '@/utils/contentUrlUtils';
 
 interface MemberGroup {
   id: number;
@@ -689,7 +690,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
               <div key={group.id} className="flex justify-between items-center">
                 <div>
                   <Link
-                    to={`/groups/${group.id}`}
+                    to={getGroupUrl(group)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {group.name}
@@ -714,7 +715,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
               <div key={event.id} className="flex justify-between items-center">
                 <div>
                   <Link
-                    to={`/events/${event.id}`}
+                    to={getEventUrl(event)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {event.title}
@@ -738,7 +739,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
               <div key={resource.id} className="flex justify-between items-center">
                 <div>
                   <Link
-                    to={`/resources/${resource.id}`}
+                    to={getResourceUrl(resource)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {resource.title}
@@ -761,7 +762,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
             {member.marketplaceListings.map(listing => (
               <Link
                 key={listing.id}
-                to={`/marketplace/${listing.id}`}
+                to={getMarketplaceListingUrl(listing)}
                 className="bg-slate-50 dark:bg-slate-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="h-48">
@@ -800,7 +801,7 @@ export default function MemberProfile({ memberId }: { memberId: string }) {
               <div key={post.id} className="flex justify-between items-center">
                 <div>
                   <Link
-                    to={`/groups/${post.group.id}/posts/${post.id}`}
+                    to={getGroupPostUrl(post.group, post.id)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {post.title}

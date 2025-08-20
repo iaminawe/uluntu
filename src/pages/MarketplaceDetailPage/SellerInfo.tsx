@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
 import { SellerInfoProps } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
   return (
     <div className="p-6 border-t border-slate-200 dark:border-slate-700">
       <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
       <div className="flex items-start space-x-4">
-        <Link to={`/directory/${seller.id}`}>
+        <Link to={getMemberProfileUrl(seller)}>
           <img
             src={seller.image}
             alt={seller.name}
@@ -15,7 +16,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
         </Link>
         <div>
           <Link
-            to={`/directory/${seller.id}`}
+            to={getMemberProfileUrl(seller)}
             className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
           >
             {seller.name}

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Building } from 'lucide-react';
 import { Member } from './types';
 import { getSkillColor } from './utils';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 interface MemberCardProps {
   member: Member;
@@ -10,7 +11,7 @@ interface MemberCardProps {
 const MemberCard = ({ member }: MemberCardProps) => {
   return (
     <Link
-      to={`/directory/${member.id}`}
+      to={getMemberProfileUrl(member)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full text-center"
     >
       <div className="pt-6">

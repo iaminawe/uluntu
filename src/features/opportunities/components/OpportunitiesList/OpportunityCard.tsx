@@ -5,6 +5,7 @@ import {
   Building
 } from 'lucide-react';
 import { Opportunity } from './types';
+import { getOpportunityUrl, getCompanyUrl } from '@/utils/contentUrlUtils';
 import { 
   formatDate, 
   calculateDaysLeft, 
@@ -46,7 +47,7 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
           <div className="flex flex-wrap items-start justify-between mb-3">
             <div className="mb-3 sm:mb-0">
               <Link 
-                to={`/companies/${opportunity.company.id}`}
+                to={getCompanyUrl(opportunity.company)}
                 className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-orange-500 
                          dark:hover:text-orange-400 flex items-center"
               >
@@ -81,7 +82,7 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
           </div>
           
           {/* Title */}
-          <Link to={`/opportunities/${opportunity.id}`}>
+          <Link to={getOpportunityUrl(opportunity)}>
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
                           dark:hover:text-orange-400 mb-2">
               {opportunity.title}
@@ -146,7 +147,7 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
             <div className="flex items-center mb-3 sm:mb-0">
               <div>
                 <Link 
-                  to={`/companies/${opportunity.company.id}`}
+                  to={getCompanyUrl(opportunity.company)}
                   className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-orange-500 
                            dark:hover:text-orange-400 flex items-center"
                 >
@@ -181,7 +182,7 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
           </div>
           
           {/* Title */}
-          <Link to={`/opportunities/${opportunity.id}`}>
+          <Link to={getOpportunityUrl(opportunity)}>
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
                           dark:hover:text-orange-400 mb-2">
               {opportunity.title}

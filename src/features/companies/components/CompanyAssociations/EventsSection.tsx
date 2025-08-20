@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Event } from '@/types';
 import { SkeletonCard } from '@/shared/components/ui/Skeleton';
 import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 interface EventsSectionProps {
   events: Event[];
@@ -69,7 +70,7 @@ export function EventsSection({ events, isLoading, error }: EventsSectionProps) 
             {upcomingEvents.map((event) => (
               <Link
                 key={event.id}
-                to={`/events/${event.id}`}
+                to={getEventUrl(event)}
                 className="bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
                 {event.image && (
@@ -125,7 +126,7 @@ export function EventsSection({ events, isLoading, error }: EventsSectionProps) 
             {pastEvents.map((event) => (
               <Link
                 key={event.id}
-                to={`/events/${event.id}`}
+                to={getEventUrl(event)}
                 className="block bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <div className="flex items-center justify-between">

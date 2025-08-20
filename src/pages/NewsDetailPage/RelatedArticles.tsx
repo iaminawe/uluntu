@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { RelatedArticlesProps } from './types';
+import { getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 const RelatedArticles: React.FC<RelatedArticlesProps> = ({ relatedArticles, isLoading }) => {
   if (isLoading) {
@@ -38,7 +39,7 @@ const RelatedArticles: React.FC<RelatedArticlesProps> = ({ relatedArticles, isLo
         {relatedArticles.map(relatedArticle => (
           <Link 
             key={relatedArticle.id} 
-            to={`/news/${relatedArticle.id}`}
+            to={getNewsArticleUrl(relatedArticle)}
             className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg 
                       hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           >

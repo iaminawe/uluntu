@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
 import { EventCardProps } from './types';
 import { formatDate } from './utils';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   return (
     <Link
-      to={`/events/${event.id}`}
+      to={getEventUrl(event)}
       className="flex bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/15 transition-colors"
     >
       <div className="w-24 h-24 flex-shrink-0">

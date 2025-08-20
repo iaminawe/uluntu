@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Users, Calendar, BookOpen, Newspaper, Briefcase } from 'lucide-react';
 import { Company } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
+import { getEventUrl, getResourceUrl, getOpportunityUrl, getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 interface CompanyContentProps {
   company: Company;
@@ -24,7 +26,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
               />
               <div>
                 <Link
-                  to={`/directory/${member.id}`}
+                  to={getMemberProfileUrl(member)}
                   className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                 >
                   {member.name}
@@ -47,7 +49,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.events.map(event => (
             <div key={event.id}>
               <Link
-                to={`/events/${event.id}`}
+                to={getEventUrl(event)}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {event.title}
@@ -69,7 +71,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.resources.map(resource => (
             <div key={resource.id}>
               <Link
-                to={`/resources/${resource.id}`}
+                to={getResourceUrl(resource)}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {resource.title}
@@ -91,7 +93,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.opportunities.map(opportunity => (
             <div key={opportunity.id}>
               <Link
-                to={`/opportunities/${opportunity.id}`}
+                to={getOpportunityUrl(opportunity)}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {opportunity.title}
@@ -113,7 +115,7 @@ const CompanyContent = ({ company }: CompanyContentProps) => {
           {company.posts.map(post => (
             <div key={post.id}>
               <Link
-                to={`/posts/${post.id}`}
+                to={getNewsArticleUrl(post)}
                 className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
               >
                 {post.title}

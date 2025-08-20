@@ -7,6 +7,8 @@ import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shared/hooks/useUserContent';
 import { useFeatureToggle } from '@/utils/featureToggle';
 import { UnreadBadge } from '@/features/messaging/components/UnreadBadge';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
+import { getGroupUrl, getResourceUrl, getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,7 +102,7 @@ export default function UserMenu() {
               </div>
               {member && (
                 <Link
-                  to={`/directory/${member.id}`}
+                  to={getMemberProfileUrl(member)}
                   className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   onClick={() => setIsOpen(false)}
                 >
@@ -180,7 +182,7 @@ export default function UserMenu() {
                       {groups.slice(0, 3).map((group) => (
                         <Link
                           key={group.id}
-                          to={`/groups/${group.id}`}
+                          to={getGroupUrl(group)}
                           className="block py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 truncate"
                           onClick={() => setIsOpen(false)}
                         >
@@ -214,7 +216,7 @@ export default function UserMenu() {
                       {resources.slice(0, 3).map((resource) => (
                         <Link
                           key={resource.id}
-                          to={`/resources/${resource.id}`}
+                          to={getResourceUrl(resource)}
                           className="block py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 truncate"
                           onClick={() => setIsOpen(false)}
                         >
@@ -248,7 +250,7 @@ export default function UserMenu() {
                       {marketplaceItems.slice(0, 3).map((item) => (
                         <Link
                           key={item.id}
-                          to={`/marketplace/${item.id}`}
+                          to={getMarketplaceListingUrl(item)}
                           className="block py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 truncate"
                           onClick={() => setIsOpen(false)}
                         >

@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Users } from 'lucide-react';
 import { Member, Company, Event, Group, NewsArticle } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
+import { getCompanyUrl, getEventUrl, getGroupUrl, getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 interface FeaturedItemsProps {
   members: Member[];
@@ -32,7 +34,7 @@ export const FeaturedItems = ({
     .map(member => (
       <Link
         key={member.id}
-        to={`/directory/${member.id}`}
+        to={getMemberProfileUrl(member)}
         className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
       >
         <div className="h-48 overflow-hidden">
@@ -57,7 +59,7 @@ export const FeaturedItems = ({
     .map(company => (
       <Link
         key={company.id}
-        to={`/companies/${company.id}`}
+        to={getCompanyUrl(company)}
         className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
       >
         <div className="h-48 overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
@@ -80,7 +82,7 @@ export const FeaturedItems = ({
     .map(event => (
       <Link
         key={event.id}
-        to={`/events/${event.id}`}
+        to={getEventUrl(event)}
         className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
       >
         <div className="h-48 overflow-hidden">
@@ -102,7 +104,7 @@ export const FeaturedItems = ({
   const activeGroups = groups.map(group => (
     <Link
       key={group.id}
-      to={`/groups/${group.id}`}
+      to={getGroupUrl(group)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
     >
       <div className="h-48 overflow-hidden">
@@ -130,7 +132,7 @@ export const FeaturedItems = ({
   const latestNews = news.map(article => (
     <Link
       key={article.id}
-      to={`/news/${article.id}`}
+      to={getNewsArticleUrl(article)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
     >
       <div className="h-48 overflow-hidden">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Building, MapPin } from 'lucide-react';
 import { Member } from './types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 interface MemberCardProps {
   member: Member;
@@ -9,7 +10,7 @@ interface MemberCardProps {
 const MemberCard = ({ member }: MemberCardProps) => {
   return (
     <Link
-      to={`/directory/${member.id}`}
+      to={getMemberProfileUrl(member)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
     >
       <div className="flex items-center mb-4">

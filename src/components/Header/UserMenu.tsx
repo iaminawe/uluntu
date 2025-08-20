@@ -4,6 +4,7 @@ import { User, LogOut, Settings, UserPlus, LogIn, Edit } from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +74,7 @@ export default function UserMenu() {
               </div>
               {member && (
                 <Link
-                  to={`/directory/${member.id}`}
+                  to={getMemberProfileUrl(member)}
                   className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   onClick={() => setIsOpen(false)}
                 >

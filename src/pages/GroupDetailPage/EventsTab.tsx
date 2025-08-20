@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { EventsTabProps } from './types';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 const EventsTab: React.FC<EventsTabProps> = ({ events, isLoading }) => {
   return (
@@ -23,7 +24,7 @@ const EventsTab: React.FC<EventsTabProps> = ({ events, isLoading }) => {
           {events.map(event => (
             <Link
               key={event.id}
-              to={`/events/${event.id}`}
+              to={getEventUrl(event)}
               className="block bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="flex flex-col md:flex-row">

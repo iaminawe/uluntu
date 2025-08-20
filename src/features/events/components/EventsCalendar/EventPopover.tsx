@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Event } from '../../types';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 interface EventPopoverProps {
   event: Event;
@@ -120,7 +121,7 @@ export const EventPopover: React.FC<EventPopoverProps> = ({ event, position, onC
       
       <div className="mt-4 flex justify-end">
         <Link
-          to={`/events/${event.id}`}
+          to={getEventUrl(event)}
           className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors text-sm"
         >
           View Details

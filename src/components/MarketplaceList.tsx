@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Package, Briefcase, Monitor, Plus, Filter } from 'lucide-react';
+import { getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 type ListingType = 'product' | 'service' | 'equipment';
 type ListingCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor';
@@ -176,7 +177,7 @@ export default function MarketplaceList() {
         {filteredListings.map(listing => (
           <Link
             key={listing.id}
-            to={`/marketplace/${listing.id}`}
+            to={getMarketplaceListingUrl(listing)}
             className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="h-48 overflow-hidden">

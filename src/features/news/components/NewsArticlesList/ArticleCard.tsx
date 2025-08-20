@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { NewsArticle } from './types';
 import { formatDate, truncateExcerpt } from './utils';
+import { getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 interface ArticleCardProps {
   article: NewsArticle;
@@ -9,7 +10,7 @@ interface ArticleCardProps {
 const ArticleCard = ({ article }: ArticleCardProps) => {
   return (
     <Link
-      to={`/news/${article.id}`}
+      to={getNewsArticleUrl(article)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full group"
     >
       <div className="h-48 overflow-hidden relative">

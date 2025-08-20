@@ -3,6 +3,7 @@ import { Resource } from '../../types';
 import { getTypeIcon } from '@/features/resources/components/ResourcesList/utils';
 import { LikeButton } from '@/components/interactions';
 import { MessageCircle } from 'lucide-react';
+import { getResourceUrl } from '@/utils/contentUrlUtils';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -11,7 +12,7 @@ interface ResourceCardProps {
 const ResourceCard = ({ resource }: ResourceCardProps) => {
   return (
     <Link 
-      to={`/resources/${resource.id}`}
+      to={getResourceUrl(resource)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden block hover:shadow-lg transition-shadow"
     >
       <div className="p-6">

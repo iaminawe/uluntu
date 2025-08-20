@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Event } from './types';
+import { getEventUrl } from '@/utils/contentUrlUtils';
 
 interface PastEventCardProps {
   event: Event;
@@ -10,7 +11,7 @@ interface PastEventCardProps {
 const PastEventCard = ({ event }: PastEventCardProps) => {
   return (
     <Link
-      to={`/events/${event.id}`}
+      to={getEventUrl(event)}
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
     >
       <div className="relative">

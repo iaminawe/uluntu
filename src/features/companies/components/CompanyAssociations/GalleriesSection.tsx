@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Gallery } from '@/features/gallery/types';
 import { SkeletonCard } from '@/shared/components/ui/Skeleton';
 import { Images, Camera, Eye, Lock, Globe } from 'lucide-react';
+import { getGalleryUrl } from '@/utils/contentUrlUtils';
 
 interface GalleriesSectionProps {
   galleries: Gallery[];
@@ -80,7 +81,7 @@ export function GalleriesSection({ galleries, isLoading, error }: GalleriesSecti
         {galleries.map((gallery) => (
           <Link
             key={gallery.id}
-            to={`/gallery/${gallery.id}`}
+            to={getGalleryUrl(gallery)}
             className="bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden group"
           >
             <div className="relative h-48 bg-slate-100 dark:bg-slate-700">

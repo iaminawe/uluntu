@@ -4,6 +4,7 @@ import { MapPin, Calendar, Mail } from 'lucide-react';
 import { Listing, SAMPLE_LISTING, adaptMainMarketplaceItemToDetail } from '@/features/marketplace/components/MarketplaceItemDetail/types';
 import { getTypeIcon } from '@/features/marketplace/components/MarketplaceItemDetail/utils';
 import ContactModal from '@/features/marketplace/components/MarketplaceItemDetail/ContactModal';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 import { marketplaceApi } from '@/features/marketplace/api/marketplaceApi';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import { useMarketplaceItem } from '@/hooks/useMarketplaceQueries';
@@ -200,7 +201,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
             <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
               <div className="flex items-start space-x-4">
-                <Link to={`/directory/${listing.seller.id}`}>
+                <Link to={getMemberProfileUrl(listing.seller)}>
                   <img
                     src={listing.seller.image}
                     alt={listing.seller.name}
@@ -209,7 +210,7 @@ const MarketplaceItemDetail = ({ itemId }: MarketplaceItemDetailProps) => {
                 </Link>
                 <div>
                   <Link
-                    to={`/directory/${listing.seller.id}`}
+                    to={getMemberProfileUrl(listing.seller)}
                     className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
                   >
                     {listing.seller.name}

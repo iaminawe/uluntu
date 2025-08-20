@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Group } from '@/features/groups/components/GroupDetails/types';
+import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
+import { getGroupPostUrl, getEventUrl } from '@/utils/contentUrlUtils';
 
 interface GroupContentProps {
   group: Group;
@@ -49,7 +51,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                   </div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2">
                     <Link
-                      to={`/groups/${group.id}/posts/${post.id}`}
+                      to={getGroupPostUrl(group, post.id)}
                       className="hover:text-orange-500 transition-colors"
                     >
                       {post.title}
@@ -91,7 +93,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                   <div className="mb-2">
                     <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2">
                       <Link
-                        to={`/events/${event.id}`}
+                        to={getEventUrl(event)}
                         className="hover:text-orange-500 transition-colors"
                       >
                         {event.title}
@@ -141,7 +143,7 @@ const GroupContent = ({ group }: GroupContentProps) => {
                 <div>
                   <h3 className="font-medium text-slate-900 dark:text-white">
                     <Link
-                      to={`/directory/${member.id}`}
+                      to={getMemberProfileUrl(member)}
                       className="hover:text-orange-500 transition-colors"
                     >
                       {member.name}

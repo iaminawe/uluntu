@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { MarketplaceListing, ListingType, ListingCondition } from '../../types/marketplace';
 import { getTypeIcon, getConditionDisplayName, formatPrice } from './utils';
 import { useMarketplaceNavigation } from '../../hooks/useMarketplaceNavigation';
+import { getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
 
 interface ListingCardProps {
   listing: MarketplaceListing;
@@ -38,7 +39,7 @@ const ListingCard = ({ listing, onClick }: ListingCardProps) => {
   
   return (
     <Link
-      to={`/marketplace/${listing.id}`}
+      to={getMarketplaceListingUrl(listing)}
       className="block bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
