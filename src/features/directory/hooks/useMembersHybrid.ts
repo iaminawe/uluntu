@@ -109,13 +109,13 @@ export function useMembersHybrid() {
 }
 
 /**
- * Hybrid hook for a single member
+ * Hybrid hook for a single member (supports both slug and ID)
  */
-export function useMemberHybrid(id?: string) {
+export function useMemberHybrid(slugOrId?: string) {
   const queryClient = useQueryClient();
   
-  // Use React Query for data fetching
-  const memberQuery = useMemberById(id);
+  // Use React Query for data fetching with slug or ID support
+  const memberQuery = useMemberBySlugOrId(slugOrId);
   
   // Mutations
   const updateMutation = useUpdateMember();
@@ -123,10 +123,10 @@ export function useMemberHybrid(id?: string) {
 
   // Enhanced update with better error handling
   const updateMember = async (data: Partial<MemberInput>) => {
-    if (!id) throw new Error('Member ID is required');
+    if (!memberQuery.data?.id) throw new Error('Member ID is required');
     
     try {
-      const result = await updateMutation.mutateAsync({ id, data });
+      const result = await updateMutation.mutateAsync({ id: memberQuery.data.id, data });
       // Invalidate related queries
       invalidationHelpers.invalidateMembers(queryClient);
       return result;

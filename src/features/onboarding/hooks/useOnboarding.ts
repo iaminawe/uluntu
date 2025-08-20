@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { generateMemberSlug } from '@/utils/memberSlugUtils';
 import {
   goToNextStep,
   goToPreviousStep,
@@ -103,12 +104,32 @@ export const useOnboarding = () => {
       
       const { professional, company, privacy, engagement } = onboarding.formData;
 
+      // First, check if the member already has a slug
+      const { data: currentMember } = await supabase
+        .from('members')
+        .select('slug, name')
+        .eq('user_id', user.id)
+        .single();
+
+      // Generate a slug if the member doesn't have one
+      let slug: string | undefined;
+      if (!currentMember?.slug) {
+        const nameToUse = professional.name || currentMember?.name || user.email?.split('@')[0] || 'member';
+        slug = await generateMemberSlug(nameToUse, user.id);
+      }
+
       // Update member profile with all onboarding data
       const updateData: any = {
         // Professional information
+        ...(professional.name && { name: professional.name }), // Only update name if provided
         bio: professional.bio,
         title: professional.title,
         employment_status: professional.employmentStatus,
+        professional_goals: professional.professionalGoals,
+        years_of_experience: professional.yearsOfExperience,
+        
+        // Add slug if generated
+        ...(slug && { slug }),
         
         // Privacy and profile status
         status: privacy.profileVisibility === 'private' ? 'draft' : 'published',
@@ -208,10 +229,17 @@ export const useOnboarding = () => {
       // Mark as completed
       dispatch(completeOnboarding());
 
+      // Get the final slug for the profile URL
+      const finalSlug = slug || currentMember?.slug;
+
       // Redirect based on profile visibility
       if (privacy.profileVisibility === 'private') {
         navigate('/profile/edit?onboarding=complete');
+      } else if (finalSlug) {
+        // Navigate to the user's profile page if we have a slug
+        navigate(`/directory/${finalSlug}?welcome=true`);
       } else {
+        // Fallback to directory listing if no slug
         navigate('/directory?welcome=true');
       }
     } catch (error) {
