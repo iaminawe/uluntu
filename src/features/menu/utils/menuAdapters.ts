@@ -6,6 +6,7 @@ import type {
   MenuToNavLinkAdapter,
   MenuToFooterColumnAdapter 
 } from '@/types/menu';
+import type { FeatureKey } from '@/types/settings';
 
 /**
  * Converts a dynamic MenuItem to legacy NavLinkItem format for backward compatibility
@@ -88,7 +89,7 @@ export function menuItemsToFooterLinks(items: MenuItem[]): FooterLink[] {
  */
 export function filterMenuItemsByFeatures(
   items: MenuItem[], 
-  isFeatureEnabled: (feature: string) => boolean
+  isFeatureEnabled: (feature: FeatureKey | string) => boolean
 ): MenuItem[] {
   return items.map(item => {
     // Check if this item should be shown based on feature flag

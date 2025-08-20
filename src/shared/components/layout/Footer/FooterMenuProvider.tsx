@@ -3,12 +3,13 @@ import { useEnabledFeatures } from '@/hooks/useSettings';
 import { useMenuItems } from '@/features/menu/contexts/MenuContext';
 import { filterMenuItemsByFeatures } from '@/features/menu/utils/menuAdapters';
 import type { MenuItem, FooterColumn, FooterMenuConfig } from '../types';
+import type { FeatureKey } from '@/types/settings';
 
 interface FooterMenuContextType {
   footerMenuItems: MenuItem[];
   loading: boolean;
   error: string | null;
-  isFeatureEnabled: (feature: string) => boolean;
+  isFeatureEnabled: (feature: FeatureKey) => boolean;
   generateColumns: (config?: Partial<FooterMenuConfig>) => FooterColumn[];
   refreshFooterMenu: () => void;
 }

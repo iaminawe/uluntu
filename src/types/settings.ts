@@ -147,6 +147,10 @@ export type FeatureKey =
   // Experimental Features
   | 'ai_content_suggestions'
   | 'automated_moderation'
+  
+  // UI Features
+  | 'dynamic_footer_menus'
+  | 'newsletter_signup'
   | 'smart_matching'
   | 'voice_features'
   | 'video_features';
@@ -229,7 +233,7 @@ export interface SettingsContextValue {
   loading: boolean;
   error: string | null;
   refreshSettings: () => Promise<void>;
-  isFeatureEnabled: (feature: FeatureKey) => boolean;
+  isFeatureEnabled: (feature: FeatureKey | string) => boolean;
   getSetting: <T = any>(category: string, key: string, defaultValue?: T) => T;
 }
 
