@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCurrentMember } from '../hooks/useCurrentMember';
 import { useProfileCompletion, shouldShowOnboarding } from '../hooks/useProfileCompletion';
+import { useAuth } from '../hooks/useAuth';
 import { ProfileOnboarding } from './Onboarding';
 import '../utils/clearOnboarding'; // Load the utility in dev mode
 
@@ -15,6 +16,7 @@ interface OnboardingGuardProps {
  */
 export function OnboardingGuard({ children, skipOnboarding = false }: OnboardingGuardProps) {
   const { data: member, isLoading } = useCurrentMember();
+  const { user, loading: authLoading } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
@@ -22,7 +24,10 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
 
   // Check if we should show onboarding
   useEffect(() => {
-    if (isLoading || skipOnboarding) return;
+    if (isLoading || authLoading || skipOnboarding) return;
+    
+    // Don't show onboarding if user is not authenticated
+    if (!user) return;
 
     // Get stored onboarding status with user-specific keys
     const userId = member?.user_id || member?.id;
@@ -69,10 +74,10 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     } else {
       setShowOnboarding(false);
     }
-  }, [member, isLoading, shouldShowOnboardingFlow, skipOnboarding]);
+  }, [member, isLoading, authLoading, shouldShowOnboardingFlow, skipOnboarding, user]);
 
   // Don't show anything while loading
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
