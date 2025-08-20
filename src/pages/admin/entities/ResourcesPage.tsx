@@ -138,8 +138,8 @@ const AdminResourcesPage: React.FC = () => {
       entityName="Resources"
       columns={columns}
       searchFields={['title', 'description', 'category', 'resource_type', 'tags']}
-      detailPath="/resources/:id"
-      editPath="/resources/:id/edit"
+      detailPath="/resources/:slug"
+      editPath="/resources/:slug/edit"
       createPath="/resources/create"
     />
   );

@@ -248,8 +248,8 @@ const EntityTable = <T extends { id: string } = any>({
                   </div>
                 </th>
               ))}
-              <th className="relative px-6 py-3">
-                <span className="sr-only">Actions</span>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
               </th>
             </tr>
           </thead>
@@ -288,22 +288,28 @@ const EntityTable = <T extends { id: string } = any>({
                       {column.render ? column.render((item as any)[column.key], item) : (item as any)[column.key]}
                     </td>
                   ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center justify-start gap-3">
                       {detailPath && (
                         <Link
-                          to={detailPath.replace(':id', item.id)}
-                          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                          to={detailPath
+                            .replace(':id', item.id)
+                            .replace(':slug', (item as any).slug || item.id)}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                          title="View"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-5 w-5" />
                         </Link>
                       )}
                       {editPath && (
                         <Link
-                          to={editPath.replace(':id', item.id)}
-                          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                          to={editPath
+                            .replace(':id', item.id)
+                            .replace(':slug', (item as any).slug || item.id)}
+                          className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 transition-colors"
+                          title="Edit"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-5 w-5" />
                         </Link>
                       )}
                       {customActions && customActions(item)}

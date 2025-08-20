@@ -25,11 +25,6 @@ const AdminCompaniesPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'industry',
-      label: 'Industry',
-      sortable: true
-    },
-    {
       key: 'location',
       label: 'Location',
       render: (value: string) => (
@@ -86,9 +81,9 @@ const AdminCompaniesPage: React.FC = () => {
       entityType="companies"
       entityName="Companies"
       columns={columns}
-      searchFields={['name', 'industry', 'location', 'description']}
-      detailPath="/companies/:id"
-      editPath="/companies/:id/edit"
+      searchFields={['name', 'location', 'description']}
+      detailPath="/companies/:slug"
+      editPath="/companies/:slug/edit"
       createPath="/companies/create"
     />
   );

@@ -60,17 +60,6 @@ const AdminEventsPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'max_attendees',
-      label: 'Capacity',
-      render: (value: number, item: any) => (
-        <div className="flex items-center">
-          <Users className="w-4 h-4 mr-1 text-gray-500" />
-          {item.current_attendees || 0} / {value || 'Unlimited'}
-        </div>
-      ),
-      sortable: true
-    },
-    {
       key: 'is_published',
       label: 'Status',
       render: (value: boolean, item: any) => {
@@ -121,8 +110,8 @@ const AdminEventsPage: React.FC = () => {
       entityName="Events"
       columns={columns}
       searchFields={['title', 'description', 'location', 'event_type']}
-      detailPath="/events/:id"
-      editPath="/events/:id/edit"
+      detailPath="/events/:slug"
+      editPath="/events/:slug/edit"
       createPath="/events/create"
     />
   );
