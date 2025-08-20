@@ -1,6 +1,6 @@
 import React from 'react';
 import EntityTable from '@/components/admin/EntityTable';
-import { Newspaper, Tag, User, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Newspaper, User, CheckCircle, XCircle, Eye } from 'lucide-react';
 
 const AdminNewsPage: React.FC = () => {
   const columns = [
@@ -19,17 +19,6 @@ const AdminNewsPage: React.FC = () => {
             </div>
           )}
         </div>
-      ),
-      sortable: true
-    },
-    {
-      key: 'category',
-      label: 'Category',
-      render: (value: string) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          <Tag className="w-3 h-3 mr-1" />
-          {value}
-        </span>
       ),
       sortable: true
     },
@@ -101,8 +90,8 @@ const AdminNewsPage: React.FC = () => {
       entityType="news"
       entityName="News Articles"
       columns={columns}
-      searchFields={['title', 'excerpt', 'content', 'category', 'author_name']}
-      detailPath="/news/:id"
+      searchFields={['title', 'excerpt', 'content', 'author_name']}
+      detailPath="/news/:slug"
       editPath="/news/:id/edit"
       createPath="/news/create"
     />

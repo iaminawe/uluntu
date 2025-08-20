@@ -23,11 +23,6 @@ const AdminGroupsPage: React.FC = () => {
       sortable: true
     },
     {
-      key: 'category',
-      label: 'Category',
-      sortable: true
-    },
-    {
       key: 'privacy_level',
       label: 'Privacy',
       render: (value: string) => {
@@ -94,9 +89,9 @@ const AdminGroupsPage: React.FC = () => {
       entityType="groups"
       entityName="Groups"
       columns={columns}
-      searchFields={['name', 'description', 'category']}
-      detailPath="/groups/:id"
-      editPath="/groups/:id/edit"
+      searchFields={['name', 'description']}
+      detailPath="/groups/:slug"
+      editPath="/groups/:slug/edit"
       createPath="/groups/create"
     />
   );

@@ -158,8 +158,8 @@ const AdminMarketplacePage: React.FC = () => {
       entityName="Marketplace Listings"
       columns={columns}
       searchFields={['title', 'description', 'type', 'location']}
-      detailPath="/marketplace/:id"
-      editPath="/marketplace/:id/edit"
+      detailPath="/marketplace/:slug"
+      editPath="/marketplace/:slug/edit"
       createPath="/marketplace/create"
       customQuery={customQuery}
     />

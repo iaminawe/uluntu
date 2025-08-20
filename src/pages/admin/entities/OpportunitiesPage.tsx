@@ -143,8 +143,8 @@ const AdminOpportunitiesPage: React.FC = () => {
       entityName="Opportunities"
       columns={columns}
       searchFields={['title', 'description', 'organization', 'location', 'type']}
-      detailPath="/opportunities/:id"
-      editPath="/opportunities/:id/edit"
+      detailPath="/opportunities/:slug"
+      editPath="/opportunities/:slug/edit"
       createPath="/opportunities/create"
     />
   );
