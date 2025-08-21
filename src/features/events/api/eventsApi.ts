@@ -72,7 +72,15 @@ export const eventsApi = {
       // Now proceed with the actual query
       let query = supabase
         .from('events')
-        .select('*')
+        .select(`
+          *,
+          members!organizer_id(id, name, image),
+          event_sessions(
+            *,
+            event_presenters(*),
+            event_resources(*)
+          )
+        `)
         .eq('status', 'published')
         .order('date', { ascending: true });
 
@@ -156,24 +164,31 @@ export const eventsApi = {
         return [];
       }
       
-      // Directly adapt the data without using helper functions that might be causing issues
+      // Use the adapter to properly transform the data
       const adapted = data.map(item => {
-        // Create a basic event object with required fields
-        const event: FrontendEvent = {
-          id: item.id,
-          title: item.title || '',
-          description: item.description || '',
-          date: item.date || new Date().toISOString(),
-          location: item.location || '',
-          type: (item.type as any) || 'in-person',
-          status: (item.status as any) || 'draft',
-          featured: item.featured || false,
-          image: item.image || '',
-          organizer: (item as any).organizer || { id: 'system', name: 'System' },
-          // Add any other fields that might be needed
-        } as any;
-        
-        return event;
+        try {
+          return adaptEventFromDatabase(item);
+        } catch (error) {
+          console.error('[EventsAPI] Error adapting event:', error, item);
+          // Return a minimal event to prevent the whole list from failing
+          return {
+            id: item.id,
+            title: item.title || 'Unknown Event',
+            description: item.description || '',
+            date: item.date || new Date().toISOString(),
+            location: item.location || '',
+            type: (item.type as any) || 'in-person',
+            status: (item.status as any) || 'published',
+            featured: item.featured || false,
+            image: item.image || '/placeholder-event.jpg',
+            organizer: {
+              id: item.organizer_id || 'unknown',
+              name: 'Unknown Organizer',
+              image: '/placeholder-avatar.png'
+            },
+            sessions: []
+          } as any;
+        }
       });
       
       console.log('[EventsAPI] Adapted events:', {
@@ -195,7 +210,12 @@ export const eventsApi = {
         .from('events')
         .select(`
           *,
-          event_sessions(*)
+          members!organizer_id(id, name, image),
+          event_sessions(
+            *,
+            event_presenters(*),
+            event_resources(*)
+          )
         `)
         .eq('id', id)
         .eq('status', 'published')

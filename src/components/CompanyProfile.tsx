@@ -7,42 +7,47 @@ import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 import { getEventUrl, getResourceUrl, getOpportunityUrl, getNewsArticleUrl } from '@/utils/contentUrlUtils';
 
 interface CompanyMember {
-  id: number;
+  id: string;
   name: string;
   title: string;
   image: string;
   joinedDate: string;
+  slug?: string | null;
 }
 
 interface CompanyEvent {
-  id: number;
+  id: string;
   title: string;
   date: string;
   type: string;
+  slug?: string | null;
 }
 
 interface CompanyResource {
-  id: number;
+  id: string;
   title: string;
   type: string;
   date: string;
+  slug?: string | null;
 }
 
 interface CompanyPost {
-  id: number;
+  id: string;
   title: string;
   date: string;
+  slug?: string | null;
 }
 
 interface CompanyOpportunity {
-  id: number;
+  id: string;
   title: string;
   type: string;
   date: string;
+  slug?: string | null;
 }
 
 interface Company {
-  id: number;
+  id: string;
   name: string;
   description: string;
   industry: string;
@@ -65,7 +70,7 @@ interface Company {
 
 // This would come from your database
 const SAMPLE_COMPANY: Company = {
-  id: 1,
+  id: '1',
   name: 'Mountain Tech Solutions',
   description: 'Mountain Tech Solutions is a leading software development company based in Nelson, BC.\n\n' +
                'We specialize in creating custom software solutions for businesses of all sizes, with a ' +
@@ -86,14 +91,14 @@ const SAMPLE_COMPANY: Company = {
   technologies: ['React', 'Node.js', 'TypeScript', 'AWS', 'Docker'],
   members: [
     {
-      id: 1,
+      id: '1',
       name: 'Sarah Johnson',
       title: 'Senior Developer',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       joinedDate: '2020-01-15'
     },
     {
-      id: 2,
+      id: '2',
       name: 'Michael Chen',
       title: 'UX Designer',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
@@ -102,13 +107,13 @@ const SAMPLE_COMPANY: Company = {
   ],
   events: [
     {
-      id: 1,
+      id: '1',
       title: 'Tech Talk: Modern Web Development',
       date: '2024-04-15',
       type: 'Presentation'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Open House',
       date: '2024-05-01',
       type: 'Community Event'
@@ -116,13 +121,13 @@ const SAMPLE_COMPANY: Company = {
   ],
   resources: [
     {
-      id: 1,
+      id: '1',
       title: 'Best Practices Guide',
       type: 'Document',
       date: '2024-02-15'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Tech Stack Overview',
       type: 'Presentation',
       date: '2024-03-01'
@@ -130,25 +135,25 @@ const SAMPLE_COMPANY: Company = {
   ],
   posts: [
     {
-      id: 1,
+      id: '1',
       title: 'Introducing Our New Cloud Services',
       date: '2024-03-15'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Join Our Growing Team',
       date: '2024-03-01'
     }
   ],
   opportunities: [
     {
-      id: 1,
+      id: '1',
       title: 'Senior Full Stack Developer',
       type: 'Full-time',
       date: '2024-03-01'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Summer Internship Program',
       type: 'Internship',
       date: '2024-03-15'

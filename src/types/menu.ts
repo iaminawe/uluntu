@@ -4,7 +4,7 @@ import { BaseEntity, ContentStatus } from './common';
 import { z } from 'zod';
 import { FeatureKey } from './settings';
 
-export { FeatureKey } from './settings';
+export type { FeatureKey } from './settings';
 
 // Menu types
 export type MenuType = 'main' | 'footer' | 'mobile' | 'admin';

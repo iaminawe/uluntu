@@ -28,7 +28,7 @@ interface Listing {
 
 const SAMPLE_LISTINGS: Listing[] = [
   {
-    id: 1,
+    id: '1',
     title: 'MacBook Pro 16" M1 Pro',
     description: 'Late 2021 model, 16GB RAM, 512GB SSD, excellent condition',
     type: 'equipment',
@@ -37,7 +37,7 @@ const SAMPLE_LISTINGS: Listing[] = [
     images: ['https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg'],
     createdAt: '2025-03-15',
     seller: {
-      id: 1,
+      id: '1',
       name: 'Sarah Johnson',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
     },
@@ -45,7 +45,7 @@ const SAMPLE_LISTINGS: Listing[] = [
     tags: ['Apple', 'Laptop', 'Development']
   },
   {
-    id: 2,
+    id: '2',
     title: 'Web Development Services',
     description: 'Full-stack development services for your next project',
     type: 'service',
@@ -53,7 +53,7 @@ const SAMPLE_LISTINGS: Listing[] = [
     images: ['https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg'],
     createdAt: '2025-03-14',
     seller: {
-      id: 2,
+      id: '2',
       name: 'Michael Chen',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
     },
@@ -61,7 +61,7 @@ const SAMPLE_LISTINGS: Listing[] = [
     tags: ['Web Development', 'React', 'Node.js']
   },
   {
-    id: 3,
+    id: '3',
     title: 'Custom AI Model Development',
     description: 'Develop custom machine learning models for your business',
     type: 'service',
@@ -69,7 +69,7 @@ const SAMPLE_LISTINGS: Listing[] = [
     images: ['https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'],
     createdAt: '2025-03-13',
     seller: {
-      id: 3,
+      id: '3',
       name: 'Emma Wilson',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg'
     },

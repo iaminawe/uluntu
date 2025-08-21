@@ -30,7 +30,7 @@ interface Listing {
 
 // This would come from your database
 const SAMPLE_LISTING: Listing = {
-  id: 1,
+  id: '1',
   title: 'MacBook Pro 16" M1 Pro',
   description: `Late 2021 model in excellent condition. Perfect for development work.
 
@@ -51,7 +51,7 @@ Includes original charger and box. Battery cycle count under 100.`,
   ],
   createdAt: '2025-03-15',
   seller: {
-    id: 1,
+    id: '1',
     name: 'Sarah Johnson',
     title: 'Senior Developer',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
