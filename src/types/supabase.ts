@@ -552,7 +552,7 @@ export type Database = {
           joined_at: string | null
           last_read_message_id: string | null
           left_at: string | null
-          notifications_enabled: boolean | null
+          notification_settings: Json | null
           role: string | null
           user_id: string
         }

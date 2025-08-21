@@ -7,7 +7,7 @@ import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 
 const SAMPLE_MEMBERS = [
   {
-    id: 1,
+    id: '1',
     name: 'Sarah Johnson',
     title: 'Full Stack Developer',
     company: 'Mountain Tech Solutions',
@@ -16,7 +16,7 @@ const SAMPLE_MEMBERS = [
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
   },
   {
-    id: 2,
+    id: '2',
     name: 'Michael Chen',
     title: 'UX Designer',
     company: 'Design Forward',
@@ -25,7 +25,7 @@ const SAMPLE_MEMBERS = [
     image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
   },
   {
-    id: 3,
+    id: '3',
     name: 'Emma Wilson',
     title: 'Data Scientist',
     company: 'Data Insights Co',

@@ -42,7 +42,7 @@ class MessagingApiReal {
         conversation_participants!inner(
           user_id,
           last_read_message_id,
-          notifications_enabled
+          notification_settings
         ),
         messages(
           id,
@@ -82,7 +82,7 @@ class MessagingApiReal {
           user_id,
           role,
           last_read_message_id,
-          notifications_enabled
+          notification_settings
         )
       `)
       .eq('id', id)
