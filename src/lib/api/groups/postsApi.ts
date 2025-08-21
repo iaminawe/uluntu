@@ -172,7 +172,7 @@ export const groupPostsApi = {
         .from('group_posts')
         .select(`
           *,
-          author:members!author_id(id, name, avatar_url, slug),
+          author:members!author_id(id, name, title),
           replies:group_posts!parent_id(id)
         `, { count: 'exact' })
         .eq('group_id', groupId);
@@ -253,10 +253,10 @@ export const groupPostsApi = {
         .from('group_posts')
         .select(`
           *,
-          author:members!author_id(id, name, avatar_url, slug),
+          author:members!author_id(id, name, title),
           replies:group_posts!parent_id(
             *,
-            author:members!author_id(id, name, avatar_url, slug)
+            author:members!author_id(id, name, title)
           )
         `)
         .eq('id', postId)
@@ -351,7 +351,7 @@ export const groupPostsApi = {
         .from('group_activities')
         .select(`
           *,
-          actor:members!actor_id(id, name, avatar_url, slug)
+          actor:members!actor_id(id, name, title)
         `, { count: 'exact' })
         .eq('group_id', groupId);
       
@@ -468,7 +468,7 @@ export const groupPostsApi = {
         .select(`
           *,
           group:groups!group_id(id, name, slug),
-          author:members!author_id(id, name, avatar_url, slug)
+          author:members!author_id(id, name, slug)
         `, { count: 'exact' })
         .eq('status', 'published')
         .or(`title.ilike.%${query}%,content.ilike.%${query}%`);

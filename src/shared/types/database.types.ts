@@ -1374,6 +1374,7 @@ export type Database = {
           long_description: string | null
           member_count: number | null
           name: string
+          slug: string | null
           status: string
           visibility: string
         }
@@ -1389,6 +1390,7 @@ export type Database = {
           long_description?: string | null
           member_count?: number | null
           name: string
+          slug?: string | null
           status?: string
           visibility: string
         }
@@ -1404,6 +1406,7 @@ export type Database = {
           long_description?: string | null
           member_count?: number | null
           name?: string
+          slug?: string | null
           status?: string
           visibility?: string
         }

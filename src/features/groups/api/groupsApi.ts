@@ -201,21 +201,27 @@ export const groupsApi = {
 
   async create(groupData: GroupInput): Promise<FrontendGroup | null> {
     try {
-      // Prepare data for the adapter, ensuring type compatibility
-      // Use type assertion for simplicity
-      const supabaseData = adaptGroupToSupabaseInsert(groupData as any);
-      const { data, error } = await (supabase as any)
-        .from('groups')
-        .insert(supabaseData as any)
-        .select()
-        .single();
+      // Use the new create_group_with_admin function to ensure creator becomes admin
+      const { data, error } = await supabase
+        .rpc('create_group_with_admin', {
+          p_name: groupData.name,
+          p_description: groupData.description,
+          p_visibility: groupData.visibility || 'open',
+          p_hero_image: groupData.heroImage || '',
+          p_slug: groupData.slug || null
+        });
 
       if (error) {
         handleSupabaseError(error, 'creating group');
         return null;
       }
       
-      return data ? adaptGroupFromDatabase(data as any) : null;
+      // Fetch the created group to return full data
+      if (data) {
+        return await this.getById(data);
+      }
+      
+      return null;
     } catch (error) {
       handleSupabaseError(error, 'creating group');
       return null;
@@ -293,16 +299,15 @@ export const groupsApi = {
         .from('group_members')
         .select(`
           *,
-          member:member_id (
+          member:members!member_id (
             id,
             name,
-            avatar_url,
             title,
             bio
           )
         `)
         .eq('group_id', groupId)
-        .order('joined_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         handleSupabaseError(error, 'fetching group members');

@@ -201,12 +201,12 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                           <div className="flex items-center">
                             <img
                               className="h-10 w-10 rounded-full"
-                              src={member.avatar_url || '/default-avatar.png'}
+                              src={member.image || '/default-avatar.png'}
                               alt={member.name}
                             />
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">{member.name}</div>
-                              <div className="text-sm text-gray-500">{member.email}</div>
+                              <div className="text-sm text-gray-500">{member.title || 'Member'}</div>
                             </div>
                           </div>
                         </td>

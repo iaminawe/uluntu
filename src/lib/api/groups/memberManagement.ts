@@ -230,7 +230,7 @@ export const groupMemberManagementApi = {
       }
       
       if (options?.search) {
-        query = query.or(`member.name.ilike.%${options.search}%,member.email.ilike.%${options.search}%`);
+        query = query.or(`member.name.ilike.%${options.search}%,member.title.ilike.%${options.search}%`);
       }
       
       // Apply pagination
@@ -390,8 +390,8 @@ export const groupMemberManagementApi = {
         .from('group_invitations')
         .select(`
           *,
-          invited_by_member:members!invited_by(name, avatar_url),
-          invited_member:members!invited_member_id(name, email, avatar_url)
+          invited_by_member:members!invited_by(name, image),
+          invited_member:members!invited_member_id(name, title)
         `)
         .eq('group_id', groupId)
         .eq('status', 'pending')
@@ -415,7 +415,7 @@ export const groupMemberManagementApi = {
       // Get member ID
       const { data: member } = await supabase
         .from('members')
-        .select('id, email')
+        .select('id')
         .eq('user_id', userId)
         .single();
       
@@ -426,10 +426,10 @@ export const groupMemberManagementApi = {
         .from('group_invitations')
         .select(`
           *,
-          group:groups!group_id(id, name, slug, image_url, visibility),
-          invited_by_member:members!invited_by(name, avatar_url)
+          group:groups!group_id(id, name, slug, hero_image, visibility),
+          invited_by_member:members!invited_by(name, image)
         `)
-        .or(`invited_member_id.eq.${member.id},invited_email.eq.${member.email}`)
+        .eq('invited_member_id', member.id)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
       
@@ -454,6 +454,57 @@ export const groupMemberManagementApi = {
    */
   async demoteMember(groupId: string, memberId: string): Promise<boolean> {
     return this.updateMemberRole({ group_id: groupId, member_id: memberId, role: 'member' });
+  },
+
+  /**
+   * Check if a user is a group admin
+   */
+  async isGroupAdmin(groupId: string, userId?: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .rpc('is_group_admin', {
+          p_group_id: groupId,
+          p_user_id: userId || undefined
+        });
+
+      if (error) throw error;
+      return data === true;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  },
+
+  /**
+   * Check if user can manage the group (alias for isGroupAdmin)
+   */
+  async canManageGroup(groupId: string, userId?: string): Promise<boolean> {
+    return this.isGroupAdmin(groupId, userId);
+  },
+
+  /**
+   * Change a member's role in a group
+   * Only admins can perform this action
+   */
+  async changeMemberRole(
+    groupId: string,
+    memberId: string, 
+    newRole: 'admin' | 'moderator' | 'member'
+  ): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .rpc('change_member_role', {
+          p_group_id: groupId,
+          p_member_id: memberId,
+          p_new_role: newRole
+        });
+
+      if (error) throw error;
+      return data === true;
+    } catch (error) {
+      console.error('Error changing member role:', error);
+      return false;
+    }
   },
 
   /**
