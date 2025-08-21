@@ -3,18 +3,20 @@ import { Member } from './types';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
 import ContactModal from './ContactModal';
-import { useMemberById as useMember } from '@/hooks/useMemberQueries';
+import { useMemberBySlugOrId } from '@/hooks/useMemberBySlugOrId';
 import { useMemberContributions } from '@/hooks/useMemberContributions';
 import { mapMemberToProfileMember } from '../../utils/memberAdapter';
 
 interface MemberProfileProps {
-  memberId: string;
+  memberId?: string;
+  memberSlug?: string;
 }
 
-const MemberProfile = ({ memberId }: MemberProfileProps) => {
-  // Use memberId as string directly without parsing to number
-  const { data: member, isLoading: isMemberLoading, error: memberError } = useMember(memberId);
-  const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(memberId);
+const MemberProfile = ({ memberId, memberSlug }: MemberProfileProps) => {
+  // Use slug or ID for lookup
+  const identifier = memberSlug || memberId;
+  const { data: member, isLoading: isMemberLoading, error: memberError } = useMemberBySlugOrId(identifier);
+  const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(member?.id);
   const [showContactModal, setShowContactModal] = useState(false);
 
   // Loading state

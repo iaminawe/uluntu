@@ -7,7 +7,7 @@ import { getGroupPostUrl, getEventUrl } from '@/utils/contentUrlUtils';
 
 
 interface GroupEvent {
-  id: number;
+  id: string;
   title: string;
   date: string;
   description: string;
@@ -15,7 +15,7 @@ interface GroupEvent {
 }
 
 interface GroupResource {
-  id: number;
+  id: string;
   title: string;
   type: string;
   url: string;
@@ -24,7 +24,7 @@ interface GroupResource {
 }
 
 interface GroupPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   author: {
@@ -37,7 +37,7 @@ interface GroupPost {
 
 // This would come from your database
 const SAMPLE_GROUP = {
-  id: 1,
+  id: '550e8400-e29b-41d4-a716-446655440001',
   name: 'AI Enthusiasts Kootenay',
   description: 'A group for anyone interested in artificial intelligence and its applications.',
   longDescription: `Our group brings together professionals, enthusiasts, and learners passionate about artificial intelligence and its real-world applications. We focus on:
@@ -55,7 +55,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   memberCount: 45,
   members: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440011',
       name: 'Sarah Johnson',
       title: 'AI Research Lead',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
@@ -63,7 +63,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       joinedDate: '2024-01-15'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440012',
       name: 'Michael Chen',
       title: 'ML Engineer',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
@@ -71,7 +71,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       joinedDate: '2024-02-01'
     },
     {
-      id: 3,
+      id: '550e8400-e29b-41d4-a716-446655440013',
       name: 'Emma Wilson',
       title: 'Data Scientist',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
@@ -81,14 +81,14 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   events: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440021',
       title: 'AI Ethics Workshop',
       date: '2025-06-15T18:00:00',
       description: 'Join us for an interactive workshop on AI ethics.',
       image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440022',
       title: 'Machine Learning Study Group',
       date: '2025-06-20T19:00:00',
       description: 'Monthly meetup to discuss and practice ML concepts.',
@@ -97,7 +97,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   resources: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440031',
       title: 'Getting Started with AI',
       type: 'Guide',
       url: '#',
@@ -105,7 +105,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       description: 'A comprehensive guide for beginners in AI.'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440032',
       title: 'ML Workshop Slides',
       type: 'Presentation',
       url: '#',
@@ -115,7 +115,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   posts: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440041',
       title: 'Recap: February AI Ethics Workshop',
       excerpt: 'Highlights from our latest workshop on ethical considerations in AI development.',
       author: {
@@ -126,7 +126,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440042',
       title: 'Announcing Our New ML Study Group',
       excerpt: 'Join our monthly machine learning study sessions starting next month.',
       author: {
