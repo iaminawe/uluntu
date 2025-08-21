@@ -14,10 +14,28 @@ export interface Group {
   resourceCount?: number;
   postCount?: number;
   lastActive?: string;
-  members?: any[];
-  events?: any[];
+  members?: GroupMember[];
+  events?: GroupEvent[];
   created_at: string;
   updated_at?: string;
+}
+
+// Define related types with consistent string IDs
+export interface GroupEvent {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  image?: string;
+}
+
+export interface GroupResource {
+  id: string;
+  title: string;
+  type: string;
+  url: string;
+  addedDate: string;
+  description: string;
 }
 
 export interface CreateGroupData {

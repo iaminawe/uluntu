@@ -9,6 +9,8 @@ import {
 import { Group as FrontendGroup } from '../types'; // For casting 'visibility'
 import { ContentStatus } from '../types/common'; // For casting 'status'
 import { lookupContent } from '@/utils/contentUrlUtils';
+import { groupMemberManagementApi } from '@/lib/api/groups/memberManagement';
+import { groupPostsApi } from '@/lib/api/groups/postsApi';
 
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
@@ -222,20 +224,31 @@ export const groupsApi = {
 
   async joinGroup(groupId: string, userId: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('group_members')
-        .insert({
-          group_id: groupId,
-          member_id: userId,
-          role: 'member',
-          joined_date: new Date().toISOString()
+      // First get the member ID from user ID
+      const { data: member } = await supabase
+        .from('members')
+        .select('id')
+        .eq('user_id', userId)
+        .single();
+      
+      if (!member) {
+        console.error('Member not found for user:', userId);
+        return false;
+      }
+
+      // Use the database function to safely join the group
+      const { data, error } = await supabase
+        .rpc('join_group', {
+          p_group_id: groupId,
+          p_member_id: member.id,
+          p_role: 'member'
         });
 
       if (error) {
         handleSupabaseError(error, 'joining group');
         return false;
       }
-      return true;
+      return data === true;
     } catch (error) {
       handleSupabaseError(error, 'joining group');
       return false;
@@ -244,17 +257,30 @@ export const groupsApi = {
 
   async leaveGroup(groupId: string, userId: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('group_members')
-        .delete()
-        .eq('group_id', groupId)
-        .eq('user_id', userId);
+      // First get the member ID from user ID
+      const { data: member } = await supabase
+        .from('members')
+        .select('id')
+        .eq('user_id', userId)
+        .single();
+      
+      if (!member) {
+        console.error('Member not found for user:', userId);
+        return false;
+      }
+
+      // Use the database function to safely leave the group
+      const { data, error } = await supabase
+        .rpc('leave_group', {
+          p_group_id: groupId,
+          p_member_id: member.id
+        });
 
       if (error) {
         handleSupabaseError(error, 'leaving group');
         return false;
       }
-      return true;
+      return data === true;
     } catch (error) {
       handleSupabaseError(error, 'leaving group');
       return false;
@@ -334,12 +360,51 @@ export const groupsApi = {
 
   async getGroupPosts(groupId: string): Promise<unknown[]> {
     try {
-      // TODO: Implement group posts when the table structure is available
-      // For now, return empty array as news table doesn't have group_id
-      return [];
+      const { posts } = await groupPostsApi.getGroupPosts(groupId);
+      return posts;
     } catch (error) {
       handleSupabaseError(error, 'fetching group posts');
       return [];
     }
+  },
+
+  // New member management methods
+  async isMember(groupId: string, userId: string): Promise<boolean> {
+    return groupMemberManagementApi.isMember(groupId, userId);
+  },
+
+  async getMemberRole(groupId: string, userId: string): Promise<'admin' | 'moderator' | 'member' | null> {
+    return groupMemberManagementApi.getMemberRole(groupId, userId);
+  },
+
+  async updateMemberRole(groupId: string, memberId: string, role: 'admin' | 'moderator' | 'member'): Promise<boolean> {
+    return groupMemberManagementApi.updateMemberRole({ group_id: groupId, member_id: memberId, role });
+  },
+
+  async removeMember(groupId: string, memberId: string): Promise<boolean> {
+    return groupMemberManagementApi.removeMember(groupId, memberId);
+  },
+
+  // New invitation methods
+  async createInvitation(groupId: string, invitationData: any): Promise<string | null> {
+    return groupMemberManagementApi.createInvitation({ group_id: groupId, ...invitationData });
+  },
+
+  async acceptInvitation(token: string): Promise<boolean> {
+    return groupMemberManagementApi.acceptInvitation(token);
+  },
+
+  async getUserInvitations(userId: string): Promise<unknown[]> {
+    return groupMemberManagementApi.getUserInvitations(userId);
+  },
+
+  // New posts methods
+  async createPost(groupId: string, postData: any): Promise<unknown | null> {
+    return groupPostsApi.createPost({ group_id: groupId, ...postData });
+  },
+
+  async getGroupActivities(groupId: string): Promise<unknown[]> {
+    const { activities } = await groupPostsApi.getGroupActivities(groupId);
+    return activities;
   }
 };

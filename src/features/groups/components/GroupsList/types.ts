@@ -1,8 +1,8 @@
 // GroupsList types
 import { Group as MainGroup, GroupMember as MainGroupMember } from '../../types';
 
-// Re-export the visibility type from the main Group type
-export type GroupVisibility = 'open' | 'closed' | 'secret';
+// Re-export the visibility type to match database schema
+export type GroupVisibility = 'public' | 'private' | 'members_only';
 
 // Use the main Group type directly
 export type Group = MainGroup;

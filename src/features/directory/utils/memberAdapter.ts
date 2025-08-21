@@ -34,6 +34,7 @@ export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | Supaba
 
   const member = {
     id: dbMember.id,
+    slug: (dbMember as any).slug || undefined, // Include slug field
     name: dbMember.name,
     title: dbMember.title || '',
     company: dbMember.company || undefined, // Use company field from database if available
@@ -75,6 +76,7 @@ export function adaptMemberToDatabase(member: Partial<Member>): Partial<Supabase
 // Define a type that includes both Member from hooks and the main Member type
 type MemberLike = {
   id: string;
+  slug?: string;
   name: string;
   title?: string;
   role?: string;

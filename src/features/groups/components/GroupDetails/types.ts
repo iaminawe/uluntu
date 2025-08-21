@@ -3,7 +3,7 @@ import { Group as MainGroup } from '../../types';
 
 // Define local types for the component's expectations
 export interface GroupMember {
-  id: number; // Local component expects number IDs
+  id: string; // Use string UUIDs consistent with database
   name: string;
   image: string;
   role: 'admin' | 'member';
@@ -12,7 +12,7 @@ export interface GroupMember {
 }
 
 export interface GroupEvent {
-  id: number;
+  id: string;
   title: string;
   date: string;
   description: string;
@@ -20,7 +20,7 @@ export interface GroupEvent {
 }
 
 export interface GroupResource {
-  id: number;
+  id: string;
   title: string;
   type: string;
   url: string;
@@ -29,7 +29,7 @@ export interface GroupResource {
 }
 
 export interface GroupPost {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
   author: {
@@ -42,7 +42,7 @@ export interface GroupPost {
 
 // Local Group interface
 export interface Group {
-  id: number;
+  id: string;
   name: string;
   description: string;
   longDescription?: string;
@@ -65,13 +65,13 @@ export interface Group {
 // Utility function to convert from main Group type to local Group type
 export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
   return {
-    id: parseInt(mainGroup.id), // Convert string ID to number
+    id: mainGroup.id, // Keep string ID consistent with database
     name: mainGroup.name,
     description: mainGroup.description || '',
     longDescription: mainGroup.longDescription,
     heroImage: (mainGroup as any).heroImage || '',
     coverImage: mainGroup.coverImage,
-    visibility: mainGroup.visibility === 'public' ? 'open' : (mainGroup.visibility === 'private' ? 'secret' : 'closed'),
+    visibility: mainGroup.visibility === 'public' ? 'open' : (mainGroup.visibility === 'private' ? 'closed' : 'secret'),
     memberCount: (mainGroup as any).memberCount || 0,
     eventCount: mainGroup.eventCount,
     resourceCount: mainGroup.resourceCount,
@@ -79,7 +79,7 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
     lastActive: mainGroup.lastActive,
     // Convert members, events, resources, and posts as needed
     members: ((mainGroup as any).members || []).map((member: any) => ({
-      id: parseInt(member.id),
+      id: member.id, // Keep string ID
       name: member.name,
       image: member.image,
       role: member.role,
@@ -87,14 +87,14 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
       title: member.title
     })),
     events: (mainGroup.events || []).map((event: any) => ({
-      id: parseInt(event.id),
+      id: event.id, // Keep string ID
       title: event.title,
       date: event.date,
       description: event.description,
       image: event.image
     })) || [],
     resources: ((mainGroup as any).resources || []).map((resource: any) => ({
-      id: parseInt(resource.id),
+      id: resource.id, // Keep string ID
       title: resource.title,
       type: resource.type,
       url: resource.url,
@@ -102,7 +102,7 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
       description: resource.description
     })) || [],
     posts: ((mainGroup as any).posts || []).map((post: any) => ({
-      id: parseInt(post.id),
+      id: post.id, // Keep string ID
       title: post.title,
       excerpt: post.excerpt,
       author: {
@@ -117,7 +117,7 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
 
 // Sample data
 export const SAMPLE_GROUP: Group = {
-  id: 1,
+  id: '550e8400-e29b-41d4-a716-446655440001',
   name: 'AI Enthusiasts Kootenay',
   description: 'A group for anyone interested in artificial intelligence and its applications.',
   longDescription: `Our group brings together professionals, enthusiasts, and learners passionate about artificial intelligence and its real-world applications. We focus on:
@@ -135,7 +135,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   memberCount: 45,
   members: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440011',
       name: 'Sarah Johnson',
       title: 'AI Research Lead',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
@@ -143,7 +143,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       joinedDate: '2024-01-15'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440012',
       name: 'Michael Chen',
       title: 'ML Engineer',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
@@ -151,7 +151,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       joinedDate: '2024-02-01'
     },
     {
-      id: 3,
+      id: '550e8400-e29b-41d4-a716-446655440013',
       name: 'Emma Wilson',
       title: 'Data Scientist',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
@@ -161,14 +161,14 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   events: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440021',
       title: 'AI Ethics Workshop',
       date: '2025-06-15T18:00:00',
       description: 'Join us for an interactive workshop on AI ethics.',
       image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440022',
       title: 'Machine Learning Study Group',
       date: '2025-06-20T19:00:00',
       description: 'Monthly meetup to discuss and practice ML concepts.',
@@ -177,7 +177,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   resources: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440031',
       title: 'Getting Started with AI',
       type: 'Guide',
       url: '#',
@@ -185,7 +185,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       description: 'A comprehensive guide for beginners in AI.'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440032',
       title: 'ML Workshop Slides',
       type: 'Presentation',
       url: '#',
@@ -195,7 +195,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
   ],
   posts: [
     {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440041',
       title: 'Recap: February AI Ethics Workshop',
       excerpt: 'Highlights from our latest workshop on ethical considerations in AI development.',
       author: {
@@ -206,7 +206,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
     },
     {
-      id: 2,
+      id: '550e8400-e29b-41d4-a716-446655440042',
       title: 'Announcing Our New ML Study Group',
       excerpt: 'Join our monthly machine learning study sessions starting next month.',
       author: {

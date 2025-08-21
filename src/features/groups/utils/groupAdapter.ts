@@ -24,12 +24,11 @@ export function adaptGroupFromDatabase(group: SupabaseGroupRow): FrontendGroup {
 
     // Group specific properties
     name: group.name,
-    slug: group.slug ?? undefined,
     description: group.description,
     longDescription: group.long_description ?? undefined,
     heroImage: group.hero_image ?? '',
     coverImage: group.cover_image ?? group.hero_image ?? undefined,
-    visibility: group.visibility as FrontendGroup['visibility'] ?? 'open',
+    visibility: group.visibility as FrontendGroup['visibility'] ?? 'public',
     
     // These counts and arrays are typically not part of the base SupabaseGroupRow.
     // They should be populated by more specific queries or API logic if needed.

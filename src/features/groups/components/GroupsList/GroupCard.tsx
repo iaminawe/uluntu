@@ -7,10 +7,10 @@ import { getGroupUrl } from '@/utils/contentUrlUtils';
 // Map main Group visibility to local component visibility
 const mapVisibility = (visibility: 'public' | 'private' | 'members_only'): GroupVisibility => {
   switch (visibility) {
-    case 'public': return 'open';
-    case 'private': return 'secret';
-    case 'members_only': return 'closed';
-    default: return 'open';
+    case 'public': return 'public';
+    case 'private': return 'private';
+    case 'members_only': return 'members_only';
+    default: return 'public';
   }
 };
 
@@ -57,12 +57,12 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
               {safeDescription}
             </p>
           </div>
-          {safeVisibility !== 'secret' && (
+          {safeVisibility !== 'members_only' && (
             <button
               onClick={() => onJoinClick(group)}
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors whitespace-nowrap"
             >
-              {safeVisibility === 'closed' ? 'Request to Join' : 'Join Group'}
+              {safeVisibility === 'private' ? 'Request to Join' : 'Join Group'}
             </button>
           )}
         </div>

@@ -45,43 +45,43 @@ jest.mock('@/components/Pagination', () => ({
 // Mock Redux hooks
 const mockGroups: Group[] = [
   {
-    id: '1',
+    id: '550e8400-e29b-41d4-a716-446655440001',
     name: 'Kootenay Coders Collective',
     description: 'A community of software developers in the Kootenay region',
     longDescription: 'Full description of the group',
     heroImage: 'https://example.com/image1.jpg',
-    visibility: 'open' as GroupVisibility,
+    visibility: 'public' as GroupVisibility,
     memberCount: 42,
     lastActive: '2025-05-25T14:30:00.000Z',
     members: [],
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2025-05-25T14:30:00.000Z'
+    created_at: '2024-01-01T00:00:00.000Z',
+    updated_at: '2025-05-25T14:30:00.000Z'
   },
   {
-    id: '2',
+    id: '550e8400-e29b-41d4-a716-446655440002',
     name: 'Nelson UX/UI Designers',
     description: 'Design professionals sharing knowledge and resources',
     longDescription: 'Full description of the design group',
     heroImage: 'https://example.com/image2.jpg',
-    visibility: 'closed' as GroupVisibility,
+    visibility: 'private' as GroupVisibility,
     memberCount: 25,
     lastActive: '2025-05-24T10:00:00.000Z',
     members: [],
-    createdAt: '2024-02-01T00:00:00.000Z',
-    updatedAt: '2025-05-24T10:00:00.000Z'
+    created_at: '2024-02-01T00:00:00.000Z',
+    updated_at: '2025-05-24T10:00:00.000Z'
   },
   {
-    id: '3',
+    id: '550e8400-e29b-41d4-a716-446655440003',
     name: 'Secret Tech Innovators',
     description: 'Invitation-only tech innovation group',
     longDescription: 'Full description of the secret group',
     heroImage: 'https://example.com/image3.jpg',
-    visibility: 'secret' as GroupVisibility,
+    visibility: 'members_only' as GroupVisibility,
     memberCount: 15,
     lastActive: '2025-05-23T08:00:00.000Z',
     members: [],
-    createdAt: '2024-03-01T00:00:00.000Z',
-    updatedAt: '2025-05-23T08:00:00.000Z'
+    created_at: '2024-03-01T00:00:00.000Z',
+    updated_at: '2025-05-23T08:00:00.000Z'
   }
 ];
 
@@ -288,9 +288,9 @@ describe('GroupsList Component', () => {
       expect(screen.getByText('Nelson UX/UI Designers')).toBeInTheDocument();
     });
 
-    it('GL-011: should filter groups by visibility - open only', () => {
+    it('GL-011: should filter groups by visibility - public only', () => {
       renderWithProviders(
-        <GroupsList searchTerm="" visibilityFilter={['open']} />
+        <GroupsList searchTerm="" visibilityFilter={['public']} />
       );
 
       expect(screen.getByText('Kootenay Coders Collective')).toBeInTheDocument();
@@ -332,7 +332,7 @@ describe('GroupsList Component', () => {
       // Create 10 groups to test pagination
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
-        id: `${i + 1}`,
+        id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
         name: `Group ${i + 1}`
       }));
 
@@ -364,7 +364,7 @@ describe('GroupsList Component', () => {
     it('GL-016: should navigate to next page', () => {
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
-        id: `${i + 1}`,
+        id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
         name: `Group ${i + 1}`
       }));
 
@@ -394,7 +394,7 @@ describe('GroupsList Component', () => {
     it('GL-017: should reset to page 1 when filters change', () => {
       const manyGroups = Array.from({ length: 10 }, (_, i) => ({
         ...mockGroups[0],
-        id: `${i + 1}`,
+        id: `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`,
         name: `Group ${i + 1}`
       }));
 

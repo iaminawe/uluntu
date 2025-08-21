@@ -8,21 +8,21 @@ import { GroupVisibility } from '../types';
 
 // Mock group data
 const mockGroup: Group = {
-  id: '1',
+  id: '550e8400-e29b-41d4-a716-446655440001',
   name: 'Kootenay Coders Collective',
   description: 'A community of software developers in the Kootenay region sharing knowledge and collaborating on projects.',
   longDescription: 'Full description of the group with more details',
   heroImage: 'https://example.com/group-image.jpg',
   coverImage: 'https://example.com/cover-image.jpg',
-  visibility: 'open' as GroupVisibility,
+  visibility: 'public' as GroupVisibility,
   memberCount: 42,
   eventCount: 5,
   resourceCount: 12,
   postCount: 25,
   lastActive: '2025-05-25T14:30:00.000Z',
   members: [],
-  createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2025-05-25T14:30:00.000Z'
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2025-05-25T14:30:00.000Z'
 };
 
 describe('GroupCard Component', () => {
@@ -162,7 +162,7 @@ describe('GroupCard Component', () => {
       renderWithRouter(<GroupCard {...defaultProps} />);
       
       const groupLink = screen.getByRole('link', { name: /Kootenay Coders Collective/i });
-      expect(groupLink).toHaveAttribute('href', '/groups/1');
+      expect(groupLink).toHaveAttribute('href', '/groups/550e8400-e29b-41d4-a716-446655440001');
     });
 
     it('GC-012: should have proper hover states for interactive elements', () => {
