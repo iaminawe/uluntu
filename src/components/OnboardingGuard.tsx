@@ -85,8 +85,9 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     );
   }
 
-  // Show onboarding flow
-  if (showOnboarding && !hasSeenOnboarding) {
+  // Onboarding modal is now disabled - using dedicated /onboarding page instead
+  // The modal functionality is preserved but never shown
+  if (false && showOnboarding && !hasSeenOnboarding) {
     const userId = member?.user_id || member?.id;
     const userOnboardingKey = userId ? `onboarding_completed_${userId}` : 'onboarding_completed';
     const userSkipKey = userId ? `onboarding_skipped_${userId}` : 'onboarding_skipped';
