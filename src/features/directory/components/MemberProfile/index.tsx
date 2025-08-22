@@ -19,8 +19,8 @@ const MemberProfile = ({ memberId, memberSlug }: MemberProfileProps) => {
   const { data: contributions, isLoading: isContributionsLoading } = useMemberContributions(member?.id);
   const [showContactModal, setShowContactModal] = useState(false);
 
-  // Loading state
-  if (isMemberLoading || isContributionsLoading) {
+  // Loading state - show loading for member, but allow contributions to load independently
+  if (isMemberLoading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="animate-pulse">
@@ -58,6 +58,7 @@ const MemberProfile = ({ memberId, memberSlug }: MemberProfileProps) => {
       <ProfileContent 
         member={profileMember} 
         contributions={contributions}
+        isContributionsLoading={isContributionsLoading}
       />
       
       {showContactModal && (

@@ -14,6 +14,7 @@ export interface EventOrganizer {
 // Local Event interface for the EventsList component
 export interface Event {
   id: string;
+  slug?: string;
   title: string;
   date: string;
   endDate?: string;
@@ -30,6 +31,7 @@ export interface Event {
 export const adaptMainEventToLocal = (event: MainEvent): Event => {
   return {
     id: event.id,
+    slug: event.slug,
     title: event.title,
     date: event.date,
     endDate: event.endDate,
@@ -51,6 +53,7 @@ export const adaptMainEventToLocal = (event: MainEvent): Event => {
 export const adaptLocalToMainEvent = (event: Event): Partial<MainEvent> => {
   return {
     id: event.id,
+    slug: event.slug,
     title: event.title,
     date: event.date,
     endDate: event.endDate,

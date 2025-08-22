@@ -9,9 +9,10 @@ import { getGroupUrl, getResourceUrl, getEventUrl, getMarketplaceListingUrl, get
 interface ProfileContentProps {
   member: Member;
   contributions?: any;
+  isContributionsLoading?: boolean;
 }
 
-const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
+const ProfileContent = ({ member, contributions, isContributionsLoading = false }: ProfileContentProps) => {
   // Fetch topics for this member
   const { data: memberTopics } = useEntityTopics('member', member.id);
   // Use contributions data if available, otherwise fall back to member data
@@ -84,7 +85,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Groups</h2>
           </div>
           
-          {groups.length === 0 ? (
+          {isContributionsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : groups.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No groups joined yet</p>
           ) : (
             <div className="space-y-5">
@@ -119,7 +129,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Resources</h2>
           </div>
           
-          {resources.length === 0 ? (
+          {isContributionsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : resources.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No resources shared yet</p>
           ) : (
             <div className="space-y-5">
@@ -165,7 +184,16 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Events & Presentations</h2>
           </div>
           
-          {events.length === 0 ? (
+          {isContributionsLoading ? (
+            <div className="space-y-3">
+              {[1, 2].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : events.length === 0 ? (
             <p className="text-slate-500 dark:text-slate-400 text-center py-4">No events or presentations yet</p>
           ) : (
             <div className="space-y-5">
@@ -212,7 +240,17 @@ const ProfileContent = ({ member, contributions }: ProfileContentProps) => {
           </Link>
         </div>
         
-        {marketplaceListings.length === 0 ? (
+        {isContributionsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="animate-pulse">
+                <div className="h-40 bg-slate-200 dark:bg-slate-700 rounded-lg mb-4"></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : marketplaceListings.length === 0 ? (
           <p className="text-slate-500 dark:text-slate-400 text-center py-4">No marketplace listings yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

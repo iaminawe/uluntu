@@ -86,6 +86,7 @@ const EventsList = ({
           // Create a safe adapter that handles missing organizer
           const adaptedEvent = {
             id: event.id,
+            slug: event.slug,
             title: event.title,
             date: event.date,
             endDate: event.endDate,
