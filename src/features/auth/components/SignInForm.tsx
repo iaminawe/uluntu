@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { supabase } from '@/lib/supabase';
+import { shouldShowOnboarding } from '@/hooks/useProfileCompletion';
 
 export default function SignInForm() {
   const [email, setEmail] = useState('');
@@ -35,9 +37,35 @@ export default function SignInForm() {
   // Redirect to intended page or home page when authenticated
   React.useEffect(() => {
     if (status === 'authenticated') {
-      // Get the intended redirect location from state, or default to homepage
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      // Check if user needs onboarding
+      const checkProfileAndRedirect = async () => {
+        try {
+          // Get the current user's member profile
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data: member } = await supabase
+              .from('members')
+              .select('*')
+              .eq('user_id', user.id)
+              .single();
+            
+            // Check if the member profile needs onboarding
+            if (shouldShowOnboarding(member)) {
+              console.log('User needs onboarding, redirecting to /onboarding');
+              navigate('/onboarding', { replace: true });
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error checking profile completion:', error);
+        }
+        
+        // If profile is complete or we couldn't check, proceed with normal redirect
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      };
+      
+      checkProfileAndRedirect();
     }
   }, [status, navigate, location]);
 
