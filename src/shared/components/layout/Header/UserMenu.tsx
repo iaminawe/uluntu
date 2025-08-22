@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera, MessageCircle } from 'lucide-react';
+import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera, MessageCircle, Grid3X3 } from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
@@ -78,10 +78,23 @@ export default function UserMenu() {
         aria-label="User menu"
       >
         {user ? (
-          <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-              <User className="h-5 w-5" />
-            </div>
+          <div className="flex items-center space-x-2">
+            {member?.image ? (
+              <img 
+                src={member.image} 
+                alt={member.name || 'User avatar'} 
+                className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <User className="h-5 w-5" />
+              </div>
+            )}
+            {member?.name && (
+              <span className="text-white text-sm font-medium hidden sm:inline-block truncate max-w-[120px]">
+                {member.name}
+              </span>
+            )}
           </div>
         ) : (
           <div className="flex items-center">
@@ -96,10 +109,29 @@ export default function UserMenu() {
           {user ? (
             <>
               <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
-                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                {member?.name && (
+                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                    {member.name}
+                  </p>
+                )}
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                   {user.email}
                 </p>
               </div>
+              
+              {/* Dashboard */}
+              <Link
+                to="/dashboard"
+                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                onClick={() => setIsOpen(false)}
+              >
+                <div className="flex items-center">
+                  <Grid3X3 className="h-4 w-4 mr-2" />
+                  Dashboard
+                </div>
+              </Link>
+              
+              {/* Profile */}
               {member && (
                 <Link
                   to={getMemberProfileUrl(member)}
@@ -108,40 +140,10 @@ export default function UserMenu() {
                 >
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-2" />
-                    Your Profile
+                    Profile
                   </div>
                 </Link>
               )}
-              <Link
-                to="/profile/edit"
-                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </div>
-              </Link>
-              <Link
-                to="/settings"
-                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </div>
-              </Link>
-              <Link
-                to="/my-galleries"
-                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center">
-                  <Camera className="h-4 w-4 mr-2" />
-                  My Galleries
-                </div>
-              </Link>
               
               {/* Messages - Only show if feature is enabled */}
               {isMessagingEnabled && (
@@ -156,6 +158,32 @@ export default function UserMenu() {
                       Messages
                     </div>
                     <UnreadBadge className="h-5 w-5 min-w-[1.25rem] text-xs" />
+                  </div>
+                </Link>
+              )}
+              
+              {/* Settings */}
+              <Link
+                to="/settings"
+                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                onClick={() => setIsOpen(false)}
+              >
+                <div className="flex items-center">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </div>
+              </Link>
+              
+              {/* Admin - Only show if user is admin */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
                   </div>
                 </Link>
               )}
@@ -259,21 +287,6 @@ export default function UserMenu() {
                       ))}
                     </div>
                   </div>
-                </>
-              )}
-              {isAdmin && (
-                <>
-                  <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
-                  <Link
-                    to="/admin"
-                    className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <div className="flex items-center">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Admin Dashboard
-                    </div>
-                  </Link>
                 </>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>

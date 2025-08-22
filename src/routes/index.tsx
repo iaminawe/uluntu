@@ -29,6 +29,18 @@ const PartnersPage = lazy(() => import('../pages/PartnersPage'));
 const TestPage = lazy(() => import('../pages/TestPage'));
 const DebugPage = lazy(() => import('../pages/DebugPage'));
 const TestFontsPage = lazy(() => import('../pages/TestFontsPage'));
+const TestBlockEditor = lazy(() => import('../pages/TestBlockEditor'));
+const DynamicPage = lazy(() => import('../pages/DynamicPage'));
+const CheckAdminStatus = lazy(() => import('../pages/CheckAdminStatus'));
+const SimplePageTest = lazy(() => import('../pages/SimplePageTest'));
+const DebugAdminAccess = lazy(() => import('../pages/debug/DebugAdminAccess'));
+const DirectAdminPages = lazy(() => import('../pages/admin/DirectAdminPages'));
+const AdvancedPageEdit = lazy(() => import('../pages/admin/AdvancedPageEdit'));
+const FeatureTestPage = lazy(() => import('../pages/debug/FeatureTestPage'));
+
+// Lazy load page builder components
+const EditablePageDisplay = lazy(() => import('../features/pages/components/EditablePageDisplay'));
+const EnhancedPageEditor = lazy(() => import('../features/pages/components/EnhancedPageEditor'));
 
 // Lazy load feature pages
 const DirectoryPage = lazy(() => import('../pages/DirectoryPage'));
@@ -91,6 +103,9 @@ const AdminMarketplacePage = lazy(() => import('../pages/admin/entities/Marketpl
 const AdminOpportunitiesPage = lazy(() => import('../pages/admin/entities/OpportunitiesPage'));
 const AdminTopicsPage = lazy(() => import('../pages/admin/entities/TopicsPage'));
 const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
+const PagesAdminTable = lazy(() => import('../pages/admin/PagesAdminTable'));
+const PagesManagement = lazy(() => import('../pages/admin/PagesManagement'));
+const QuickPageTest = lazy(() => import('../pages/admin/QuickPageTest'));
 const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
 const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
 const ContactInboxDetailPage = lazy(() => import('../pages/admin/ContactInboxDetailPage'));
@@ -144,6 +159,10 @@ const TopicDetailPage = lazy(() => import('../pages/TopicDetailPage'));
 
 // Lazy load messaging pages
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
+const TestConversations = lazy(() => import('../components/TestConversations'));
+
+// Lazy load dashboard pages
+const UserDashboard = lazy(() => import('../features/dashboard/components/UserDashboard'));
 
 export const router = createBrowserRouter([
   {
@@ -161,6 +180,16 @@ export const router = createBrowserRouter([
       { path: 'test', element: withSuspense(TestPage) },
       { path: 'debug', element: withSuspense(DebugPage) },
       { path: 'test-fonts', element: withSuspense(TestFontsPage) },
+      { path: 'test-editor', element: withSuspense(TestBlockEditor) },
+      { path: 'check-admin', element: withSuspense(CheckAdminStatus) },
+      { path: 'simple-page-test', element: withSuspense(SimplePageTest) },
+      { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
+      { path: 'direct-admin-pages', element: withSuspense(DirectAdminPages) },
+      { path: 'pages/:id/advanced', element: withSuspense(AdvancedPageEdit) },
+      { path: 'feature-test', element: withSuspense(FeatureTestPage) },
+      
+      // Dynamic pages (must come after specific routes)
+      { path: 'pages/:slug', element: withSuspense(DynamicPage) },
       { path: 'directory', element: withSuspense(DirectoryPage) },
       { 
         path: 'directory/create', 
@@ -290,6 +319,10 @@ export const router = createBrowserRouter([
         path: 'my-galleries', 
         element: <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute> 
       },
+      {
+        path: 'test-conversations',
+        element: withSuspense(TestConversations)
+      },
       
       // Topics routes
       { path: 'topics', element: withSuspense(TopicsIndexPage) },
@@ -303,6 +336,16 @@ export const router = createBrowserRouter([
             <ProtectedRoute>{withSuspense(MessagesPage)}</ProtectedRoute>
           </FeatureGate>
         )
+      },
+      
+      // Dashboard routes
+      { 
+        path: 'dashboard', 
+        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute> 
+      },
+      { 
+        path: 'dashboard/:tab', 
+        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute> 
       }
     ]
   },
@@ -358,6 +401,11 @@ export const router = createBrowserRouter([
       { path: 'entities/opportunities', element: withSuspense(AdminOpportunitiesPage) },
       { path: 'entities/topics', element: withSuspense(AdminTopicsPage) },
       { path: 'entities/pages', element: withSuspense(AdminPagesPage) },
+      { path: 'pages', element: withSuspense(PagesAdminTable) },
+      { path: 'pages/test', element: withSuspense(QuickPageTest) },
+      { path: 'pages/new', element: withSuspense(EnhancedPageEditor) },
+      { path: 'pages/:id/edit', element: withSuspense(EnhancedPageEditor) },
+      { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
       { path: 'newsletter', element: withSuspense(NewsletterDashboard) },
       { path: 'newsletter/campaigns', element: withSuspense(CampaignManager) },
       { path: 'newsletter/campaigns/new', element: withSuspense(NewsletterEditor) },

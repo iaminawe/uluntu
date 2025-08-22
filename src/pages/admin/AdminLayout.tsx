@@ -95,6 +95,7 @@ const AdminLayout: React.FC = () => {
       name: 'Content Management',
       icon: FileText,
       children: [
+        { name: 'Pages', href: '/admin/pages', icon: FileText },
         { name: 'Companies', href: '/admin/entities/companies', icon: Building2 },
         { name: 'Groups', href: '/admin/entities/groups', icon: UsersRound },
         { name: 'Events', href: '/admin/entities/events', icon: Calendar },
