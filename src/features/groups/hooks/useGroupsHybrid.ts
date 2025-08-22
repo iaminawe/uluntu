@@ -86,7 +86,7 @@ export function useGroupsHybrid() {
   });
   
   const joinGroup = useMutation({
-    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) => groupsApi.joinGroup(groupId, userId),
+    mutationFn: ({ groupId }: { groupId: string }) => groupsApi.joinGroup(groupId, ''), // userId is determined from auth context
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
       queryClient.invalidateQueries({ queryKey: queryKeys.userGroups });

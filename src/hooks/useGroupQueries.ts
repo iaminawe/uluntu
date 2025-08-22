@@ -322,16 +322,16 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
     });
 }
 
-export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: string }> {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
-    mutationFn: ({ groupId, memberId }) => {
+  return useMutation<boolean, Error, { groupId: string }>({
+    mutationFn: ({ groupId }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock join group
         return Promise.resolve(true);
       }
-      return groupsApi.joinGroup(groupId, memberId);
+      return groupsApi.joinGroup(groupId, ''); // userId determined from auth context
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });

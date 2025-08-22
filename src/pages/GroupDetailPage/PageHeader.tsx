@@ -24,8 +24,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
     setIsProcessing(true);
     try {
       await joinGroup.mutateAsync({
-        groupId: group.id,
-        memberId: currentMember.id
+        groupId: group.id
       });
     } catch (error) {
     } finally {

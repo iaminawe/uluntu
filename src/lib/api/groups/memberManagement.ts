@@ -40,12 +40,23 @@ export const groupMemberManagementApi = {
   async isMember(groupId: string, userId: string): Promise<boolean> {
     
     try {
-      // First get the member ID from user ID
-      const { data: member } = await supabase
+      // First get the member ID from user ID, handling missing member records
+      const { data: member, error: memberError } = await supabase
         .from('members')
         .select('id')
         .eq('user_id', userId)
         .single();
+      
+      // If user doesn't have a member record, they can't be a group member
+      if (memberError) {
+        if (memberError.code === 'PGRST116') {
+          // No member record found - not an error, just return false
+          return false;
+        }
+        // Other errors (like RLS blocking) should also return false
+        console.warn('Error fetching member for user', userId, ':', memberError);
+        return false;
+      }
       
       if (!member) return false;
       
@@ -58,7 +69,17 @@ export const groupMemberManagementApi = {
         .eq('status', 'active')
         .single();
       
-      return !error && !!data;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No membership record found - not an error, just return false
+          return false;
+        }
+        // Other errors should also return false
+        console.warn('Error fetching group membership:', error);
+        return false;
+      }
+      
+      return !!data;
     } catch (error) {
       console.error('Error checking membership:', error);
       return false;
@@ -71,12 +92,23 @@ export const groupMemberManagementApi = {
   async getMemberRole(groupId: string, userId: string): Promise<'admin' | 'moderator' | 'member' | null> {
     
     try {
-      // First get the member ID from user ID
-      const { data: member } = await supabase
+      // First get the member ID from user ID, handling missing member records
+      const { data: member, error: memberError } = await supabase
         .from('members')
         .select('id')
         .eq('user_id', userId)
         .single();
+      
+      // If user doesn't have a member record, they can't have a role
+      if (memberError) {
+        if (memberError.code === 'PGRST116') {
+          // No member record found - not an error, just return null
+          return null;
+        }
+        // Other errors (like RLS blocking) should also return null
+        console.warn('Error fetching member for user', userId, ':', memberError);
+        return null;
+      }
       
       if (!member) return null;
       
@@ -89,7 +121,17 @@ export const groupMemberManagementApi = {
         .eq('status', 'active')
         .single();
       
-      if (error || !data) return null;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No membership record found - not an error, just return null
+          return null;
+        }
+        // Other errors should also return null
+        console.warn('Error fetching member role:', error);
+        return null;
+      }
+      
+      if (!data) return null;
       
       return data.role as 'admin' | 'moderator' | 'member';
     } catch (error) {
