@@ -15,13 +15,13 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 
 export default function EventDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
   
-  // Use hybrid approach for data fetching
-  const { event, isLoading, error } = useEventHybrid(id);
+  // Use hybrid approach for data fetching - slug will work as the API handles both
+  const { event, isLoading, error } = useEventHybrid(slug);
   
   const handleRegister = () => {
     setIsRegistering(true);
@@ -60,7 +60,7 @@ export default function EventDetailPage() {
       </Helmet>
       
       <ContentContainer>
-          <PageHeader id={id as string} />
+          <PageHeader id={slug as string} />
           
           <Card className="overflow-hidden">
             {/* Hero Section with image and title */}

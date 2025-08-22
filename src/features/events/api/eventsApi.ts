@@ -1,6 +1,7 @@
 import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
 import { adaptEventFromDatabase, adaptEventToSupabaseInsert, adaptEventToSupabaseUpdate } from '../utils/eventAdapter';
 import { Event as FrontendEvent } from '../types'; // For typing
+import { parseContentIdentifier } from '@/utils/contentUrlUtils';
 
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
@@ -156,7 +157,7 @@ export const eventsApi = {
       console.log('[EventsAPI] Raw data structure:', {
         firstItem: data && data.length > 0 ? Object.keys(data[0]) : 'No data',
         sampleData: data?.slice(0, 1)
-      });
+      })
       
       // Ensure we have data to adapt
       if (!data || data.length === 0) {
@@ -204,9 +205,13 @@ export const eventsApi = {
     }
   },
 
-  async getById(id: string): Promise<FrontendEvent | null> {
+  async getById(identifier: string): Promise<FrontendEvent | null> {
     try {
-      const { data, error } = await supabase
+      // Determine if identifier is a UUID or slug
+      const { type, value } = parseContentIdentifier(identifier);
+      
+      // Build query with proper field
+      let query = supabase
         .from('events')
         .select(`
           *,
@@ -217,18 +222,49 @@ export const eventsApi = {
             event_resources(*)
           )
         `)
-        .eq('id', id)
-        .eq('status', 'published')
-        .single();
+        .eq('status', 'published');
+      
+      // Use slug or ID based on the identifier type
+      if (type === 'slug') {
+        query = query.eq('slug', value);
+      } else {
+        query = query.eq('id', value);
+      }
+      
+      const { data, error } = await query.single();
 
       if (error) {
-        handleSupabaseError(error, 'fetching event by id');
+        console.log(`[EventsAPI] No event found for ${type}: ${value}, trying alternative`);
+        
+        // If not found by slug, try by ID as fallback
+        if (type === 'slug') {
+          const fallbackQuery = await supabase
+            .from('events')
+            .select(`
+              *,
+              members!organizer_id(id, name, image),
+              event_sessions(
+                *,
+                event_presenters(*),
+                event_resources(*)
+              )
+            `)
+            .eq('id', value)
+            .eq('status', 'published')
+            .single();
+          
+          if (!fallbackQuery.error && fallbackQuery.data) {
+            return adaptEventFromDatabase(fallbackQuery.data);
+          }
+        }
+        
+        handleSupabaseError(error, `fetching event by ${type}`);
         return null;
       }
       
       return data ? adaptEventFromDatabase(data) : null;
     } catch (error) {
-      handleSupabaseError(error, 'fetching event by id');
+      handleSupabaseError(error, 'fetching event');
       return null;
     }
   },

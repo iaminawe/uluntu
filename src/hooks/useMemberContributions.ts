@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMember } from './useQueries';
+import { supabase } from '@/lib/supabase';
 
 // Types for member contributions
 export interface MemberContributions {
@@ -53,38 +53,39 @@ export interface MemberContributions {
 /**
  * Hook to fetch all contributions for a member
  */
-export function useMemberContributions(memberId: string) {
-  // First fetch the member data
-  const { data: member } = useMember(memberId);
-
+export function useMemberContributions(memberId?: string) {
+  // Remove the duplicate member fetch - we'll pass memberId directly
   // Then fetch all related content in parallel
   return useQuery({
     queryKey: ['member-contributions', memberId],
     queryFn: async () => {
-      if (!member) {
-        throw new Error('Member not found');
+      if (!memberId) {
+        throw new Error('Member ID required');
       }
 
-      // In a real application, we would make API calls to fetch related content from different endpoints
-      // For now, we'll simulate this by fetching from various sources
-      
-      // Get member groups - ignoring memberId in mock implementation
-      const groups = await fetchMemberGroups();
-      
-      // Get member events - ignoring memberId in mock implementation
-      const events = await fetchMemberEvents();
-      
-      // Get member resources - ignoring memberId in mock implementation
-      const resources = await fetchMemberResources();
-      
-      // Get member posts - ignoring memberId in mock implementation
-      const posts = await fetchMemberPosts();
-      
-      // Get member marketplace listings - ignoring memberId in mock implementation
-      const marketplaceListings = await fetchMemberMarketplaceListings();
-      
-      // Get member opportunities - ignoring memberId in mock implementation
-      const opportunities = await fetchMemberOpportunities();
+      // Fetch real data from database in parallel
+      const [
+        groupsData,
+        eventsData, 
+        resourcesData,
+        postsData,
+        marketplaceListingsData,
+        opportunitiesData
+      ] = await Promise.all([
+        fetchMemberGroups(memberId),
+        fetchMemberEvents(memberId),
+        fetchMemberResources(memberId),
+        fetchMemberPosts(memberId),
+        fetchMemberMarketplaceListings(memberId),
+        fetchMemberOpportunities(memberId)
+      ]);
+
+      const groups = groupsData || [];
+      const events = eventsData || [];
+      const resources = resourcesData || [];
+      const posts = postsData || [];
+      const marketplaceListings = marketplaceListingsData || [];
+      const opportunities = opportunitiesData || [];
       
       const contributions: MemberContributions = {
         groups,
@@ -97,7 +98,9 @@ export function useMemberContributions(memberId: string) {
 
       return contributions;
     },
-    enabled: !!member, // Only run this query if we have the member data
+    enabled: !!memberId, // Only run this query if we have a member ID
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    cacheTime: 10 * 60 * 1000, // 10 minutes cache
   });
 }
 
@@ -114,200 +117,177 @@ export function useMemberContributionsByType(memberId: string, type: keyof Membe
   };
 }
 
-// Mock functions to simulate fetching member contributions from different sources
-// In a real app, these would be API calls to different endpoints
+// Real database functions to fetch member contributions from Supabase
 
-// In a real implementation, we would use memberId to fetch only the groups for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberGroups() {
-  // In a real implementation, memberId would be used to filter groups
-  // For this mock implementation, we've removed the parameter as it's not being used
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  // Return mock data
-  return [
-    {
-      id: '1',
-      name: 'AI Enthusiasts Kootenay',
-      role: 'admin',
-      joinedDate: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Kootenay Tech Organizers',
-      role: 'member',
-      joinedDate: '2024-02-01'
-    },
-    {
-      id: '3',
-      name: 'Nelson Web Developers',
-      role: 'member',
-      joinedDate: '2024-03-10'
-    }
-  ];
+/**
+ * Fetch groups where the member is a participant
+ */
+async function fetchMemberGroups(memberId: string) {
+  const { data, error } = await supabase
+    .from('group_members')
+    .select(`
+      role,
+      joined_date,
+      groups:group_id (
+        id,
+        name,
+        slug
+      )
+    `)
+    .eq('member_id', memberId)
+    .order('joined_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching member groups:', error);
+    return [];
+  }
+
+  return (data || []).map(item => ({
+    id: item.groups?.id || '',
+    name: item.groups?.name || '',
+    role: item.role,
+    joinedDate: item.joined_date
+  }));
 }
 
-// In a real implementation, we would use memberId to fetch only the events for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberEvents() {
-  // In a real implementation, memberId would be used to filter events
-  // For this mock implementation, we've removed the parameter as it's not being used
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return [
-    {
-      id: '1',
-      title: 'AI Ethics Workshop',
-      date: '2024-02-15',
-      presentation: 'Ethics in Healthcare AI'
-    },
-    {
-      id: '2',
-      title: 'Machine Learning Study Group',
-      date: '2024-03-01',
-      presentation: 'Introduction to Neural Networks'
-    },
-    {
-      id: '3',
-      title: 'Kootenay Tech Meetup',
-      date: '2024-04-10',
-      presentation: 'Building Community Tech Ecosystems'
-    }
-  ];
+/**
+ * Fetch events where the member is an organizer or presenter
+ */
+async function fetchMemberEvents(memberId: string) {
+  // Fetch events where member is organizer (created_by)
+  const { data: organizedEvents, error: organizedError } = await supabase
+    .from('events')
+    .select('id, title, date, slug')
+    .eq('organizer_id', memberId)
+    .eq('status', 'published')
+    .order('date', { ascending: false });
+
+  if (organizedError) {
+    console.error('Error fetching organized events:', organizedError);
+  }
+
+  // For now, we'll treat organized events as presentations
+  // In the future, we could add a separate event_presenters table
+  return (organizedEvents || []).map(event => ({
+    id: event.id,
+    title: event.title,
+    date: event.date,
+    presentation: 'Event Organizer'
+  }));
 }
 
-// In a real implementation, we would use memberId to fetch only the resources for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberResources() {
-  // In a real implementation, memberId would be used to filter resources
-  // For this mock implementation, we've removed the parameter as it's not being used
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return [
-    {
-      id: '1',
-      title: 'Getting Started with AI',
-      type: 'document',
-      date: '2024-02-01',
-      url: 'https://example.com/ai-guide.pdf'
-    },
-    {
-      id: '2',
-      title: 'ML Workshop Slides',
-      type: 'presentation',
-      date: '2024-03-01',
-      url: 'https://example.com/ml-slides.pptx'
-    },
-    {
-      id: '3',
-      title: 'Web Development Best Practices',
-      type: 'article',
-      date: '2024-03-15',
-      url: 'https://example.com/web-dev-practices'
-    }
-  ];
+/**
+ * Fetch resources contributed by the member
+ */
+async function fetchMemberResources(memberId: string) {
+  const { data, error } = await supabase
+    .from('resources')
+    .select('id, title, type, created_at, url, description')
+    .eq('contributor_id', memberId)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching member resources:', error);
+    return [];
+  }
+
+  return (data || []).map(resource => ({
+    id: resource.id,
+    title: resource.title,
+    type: resource.type || 'document',
+    date: resource.created_at,
+    url: resource.url || '#'
+  }));
 }
 
-// In a real implementation, we would use memberId to fetch only the posts for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberPosts() {
-  // In a real implementation, memberId would be used to filter posts
-  // For this mock implementation, we've removed the parameter as it's not being used
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return [
-    {
-      id: '1',
-      title: 'Recap: February AI Ethics Workshop',
-      excerpt: 'A summary of our recent workshop on AI ethics and its implications for healthcare applications.',
-      group: {
-        id: '1',
-        name: 'AI Enthusiasts Kootenay'
-      },
-      date: '2024-02-16'
+/**
+ * Fetch posts authored by the member
+ */
+async function fetchMemberPosts(memberId: string) {
+  const { data, error } = await supabase
+    .from('group_posts')
+    .select(`
+      id,
+      title,
+      content,
+      created_at,
+      groups:group_id (
+        id,
+        name
+      )
+    `)
+    .eq('author_id', memberId)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching member posts:', error);
+    return [];
+  }
+
+  return (data || []).map(post => ({
+    id: post.id,
+    title: post.title,
+    excerpt: post.content ? post.content.substring(0, 150) + '...' : undefined,
+    group: {
+      id: post.groups?.id || '',
+      name: post.groups?.name || ''
     },
-    {
-      id: '2',
-      title: 'Announcing the Kootenay Tech Conference',
-      excerpt: 'We are excited to announce our first annual tech conference happening this summer in Nelson!',
-      group: {
-        id: '2',
-        name: 'Kootenay Tech Organizers'
-      },
-      date: '2024-03-05'
-    },
-    {
-      id: '3',
-      title: 'Web Accessibility Guidelines for 2024',
-      excerpt: 'Updated guidelines for making your web applications accessible to all users.',
-      group: {
-        id: '3',
-        name: 'Nelson Web Developers'
-      },
-      date: '2024-03-20'
-    }
-  ];
+    date: post.created_at
+  }));
 }
 
-// In a real implementation, we would use memberId to fetch only the marketplace listings for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberMarketplaceListings() {
-  // In a real implementation, memberId would be used to filter listings
-  // For this mock implementation, we've removed the parameter as it's not being used
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return [
-    {
-      id: '1',
-      title: 'Web Development Services',
-      type: 'service',
-      price: 75,
-      image: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg',
-      createdAt: '2025-03-14'
-    },
-    {
-      id: '2',
-      title: 'MacBook Pro 16" M1 Pro',
-      type: 'equipment',
-      price: 2000,
-      image: 'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-      createdAt: '2025-03-15'
-    },
-    {
-      id: '3',
-      title: 'AI Development Workshop',
-      type: 'event',
-      price: 50,
-      image: 'https://images.pexels.com/photos/7092613/pexels-photo-7092613.jpeg',
-      createdAt: '2025-03-20'
-    }
-  ];
+/**
+ * Fetch marketplace listings created by the member
+ */
+async function fetchMemberMarketplaceListings(memberId: string) {
+  // Check if marketplace table exists - this feature may not be fully implemented yet
+  const { data, error } = await supabase
+    .from('marketplace_listings')
+    .select('id, title, type, price, image, created_at')
+    .eq('seller_id', memberId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.warn('Marketplace listings not available:', error.message);
+    return [];
+  }
+
+  return (data || []).map(listing => ({
+    id: listing.id,
+    title: listing.title,
+    type: listing.type || 'item',
+    price: listing.price || 0,
+    image: listing.image || '',
+    createdAt: listing.created_at
+  }));
 }
 
-// In a real implementation, we would use memberId to fetch only the opportunities for this member
-// The memberId parameter has been removed in this mock implementation
-async function fetchMemberOpportunities() {
-  // In a real implementation, memberId would be used to filter opportunities
-  // For this mock implementation, we've removed the parameter as it's not being used
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return [
-    {
-      id: '1',
-      title: 'Frontend Developer Needed',
-      type: 'contract',
-      location: 'Nelson, BC',
-      remote: true,
-      description: 'Looking for a React developer to help build a new web application for a local business. 3-month contract with possibility of extension.'
-    },
-    {
-      id: '2',
-      title: 'Tech Mentor for Youth Program',
-      type: 'volunteer',
-      location: 'Kootenay Region',
-      remote: false,
-      description: 'Seeking experienced developers to mentor high school students in our after-school coding program. 2 hours per week commitment.'
-    }
-  ];
+/**
+ * Fetch opportunities posted by the member
+ */
+async function fetchMemberOpportunities(memberId: string) {
+  const { data, error } = await supabase
+    .from('opportunities')
+    .select('id, title, type, location, remote, description, created_at')
+    .eq('posted_by', memberId)
+    .eq('status', 'open')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('Opportunities not available:', error.message);
+    return [];
+  }
+
+  return (data || []).map(opportunity => ({
+    id: opportunity.id,
+    title: opportunity.title,
+    type: opportunity.type || 'opportunity',
+    location: opportunity.location || '',
+    remote: opportunity.remote || false,
+    description: opportunity.description
+  }));
 }
