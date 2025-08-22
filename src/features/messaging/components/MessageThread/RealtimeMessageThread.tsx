@@ -23,7 +23,8 @@ export default function RealtimeMessageThread({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch messages with React Query
-  const { data: messages = [], isLoading, error } = useMessages(conversationId);
+  const { data, isLoading, error } = useMessages(conversationId);
+  const messages = data?.pages?.flat() || [];
 
   // Realtime functionality
   const {

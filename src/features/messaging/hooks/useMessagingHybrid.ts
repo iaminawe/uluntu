@@ -9,6 +9,7 @@ import {
   useCreateConversation,
   useSendMessage,
   useUpdateMessage,
+  useUpdateConversation,
   useDeleteMessage,
   useAddReaction,
   useRemoveReaction,
@@ -48,6 +49,7 @@ import {
   CreateConversationInput,
   SendMessageInput,
   UpdateMessageInput,
+  UpdateConversationInput,
   ConversationFilters,
   MessageFilters,
   Message
@@ -83,6 +85,7 @@ export function useMessagingHybrid() {
   const createConversationMutation = useCreateConversation();
   const sendMessageMutation = useSendMessage();
   const updateMessageMutation = useUpdateMessage();
+  const updateConversationMutation = useUpdateConversation();
   const deleteMessageMutation = useDeleteMessage();
   const addReactionMutation = useAddReaction();
   const removeReactionMutation = useRemoveReaction();
@@ -127,6 +130,16 @@ export function useMessagingHybrid() {
       throw error;
     }
   }, [selectedConversationId, dispatch]);
+
+  const updateConversation = useCallback(async (conversationId: string, updates: UpdateConversationInput) => {
+    try {
+      const conversation = await updateConversationMutation.mutateAsync({ id: conversationId, ...updates });
+      return conversation;
+    } catch (error) {
+      console.error('Failed to update conversation:', error);
+      throw error;
+    }
+  }, [updateConversationMutation]);
 
   // =============================================
   // MESSAGE ACTIONS
@@ -345,6 +358,7 @@ export function useMessagingHybrid() {
   const isCreatingConversation = createConversationMutation.isPending;
   const isSendingMessage = sendMessageMutation.isPending;
   const isUpdatingMessage = updateMessageMutation.isPending;
+  const isUpdatingConversation = updateConversationMutation.isPending;
   const isDeletingMessage = deleteMessageMutation.isPending;
 
   // Additional loading states for MessagesPage
@@ -374,6 +388,7 @@ export function useMessagingHybrid() {
     isCreatingConversation,
     isSendingMessage,
     isUpdatingMessage,
+    isUpdatingConversation,
     isDeletingMessage,
     isLoadingMore: messagesQuery.isFetchingNextPage,
     hasMoreMessages: messagesQuery.hasNextPage,
@@ -400,6 +415,7 @@ export function useMessagingHybrid() {
     // Actions
     selectConversation,
     createConversation,
+    updateConversation,
     archiveConversation,
     sendMessage,
     updateMessage,

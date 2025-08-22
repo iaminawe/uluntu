@@ -9,7 +9,9 @@ import {
   ConversationFilters,
   MessageFilters,
   CreateMarketplaceThreadInput,
-  CreateOpportunityThreadInput
+  CreateOpportunityThreadInput,
+  UpdateConversationInput,
+  DeleteConversationInput
 } from '../types';
 
 class MessagingApiReal {
@@ -29,17 +31,35 @@ class MessagingApiReal {
     if (!member) throw new Error('User does not have a member profile');
     return member.id;
   }
+
+
   /**
    * Get conversations for the current user
    */
   async getConversations(filters?: ConversationFilters): Promise<Conversation[]> {
     const memberId = await this.getCurrentMemberId();
 
+    // First get conversation IDs user participates in
+    const { data: participantData, error: participantError } = await supabase
+      .from('conversation_participants')
+      .select('conversation_id')
+      .eq('user_id', memberId)
+      .is('left_at', null);
+
+    if (participantError) throw participantError;
+
+    if (!participantData || participantData.length === 0) {
+      return [];
+    }
+
+    const conversationIds = participantData.map(p => p.conversation_id);
+
+    // Then get conversations with details
     let query = supabase
       .from('conversations')
       .select(`
         *,
-        conversation_participants!inner(
+        conversation_participants(
           user_id,
           last_read_message_id,
           notification_settings
@@ -51,7 +71,7 @@ class MessagingApiReal {
           sender_id
         )
       `)
-      .eq('conversation_participants.user_id', memberId)
+      .in('id', conversationIds)
       .order('updated_at', { ascending: false });
 
     if (filters?.type) {
@@ -69,37 +89,165 @@ class MessagingApiReal {
   }
 
   /**
-   * Get a single conversation by ID
+   * Get a single conversation by ID with secure access
    */
   async getConversation(id: string): Promise<Conversation | null> {
-    const memberId = await this.getCurrentMemberId();
+    try {
+      // Validate ID is a string
+      if (typeof id !== 'string' || !id.trim()) {
+        throw new Error('Invalid conversation ID provided');
+      }
 
-    const { data, error } = await supabase
-      .from('conversations')
-      .select(`
-        *,
-        conversation_participants(
+      // First attempt: Use secure database function
+      const { data: secureData, error: secureError } = await supabase
+        .rpc('get_conversation_secure', {
+          conversation_id: id
+        });
+
+      if (secureData && !secureError) {
+        // Get additional participant information
+        const { data: participants, error: partError } = await supabase
+          .from('conversation_participants')
+          .select(`
+            id,
+            user_id,
+            role,
+            joined_at,
+            left_at,
+            last_read_message_id,
+            notification_settings,
+            member:members(
+              id,
+              name,
+              email,
+              avatar_url
+            )
+          `)
+          .eq('conversation_id', id)
+          .is('left_at', null);
+
+        return {
+          ...secureData,
+          participants: participants || []
+        };
+      }
+
+      // Fallback: Try traditional approach with better error handling
+      const memberId = await this.getCurrentMemberId();
+
+      // Check participant status using our secure function
+      const participantInfo = await this.checkParticipantStatus(id);
+      
+      if (!participantInfo.isParticipant && !participantInfo.isCreator) {
+        return null; // User doesn't have access
+      }
+
+      // Get conversation with minimal data to avoid 406 errors
+      const { data, error } = await supabase
+        .from('conversations')
+        .select(`
+          id,
+          title,
+          type,
+          created_by,
+          created_at,
+          updated_at,
+          archived_at
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null; // Not found
+        }
+        
+        // Handle 406 errors by trying without .single()
+        if (error.code === 'PGRST106') {
+          const { data: arrayData, error: arrayError } = await supabase
+            .from('conversations')
+            .select(`
+              id,
+              title,
+              type,
+              created_by,
+              created_at,
+              updated_at,
+              archived_at
+            `)
+            .eq('id', id);
+
+          if (arrayError || !arrayData || arrayData.length === 0) {
+            return null;
+          }
+
+          const conversation = arrayData[0];
+          
+          // Get participants separately to avoid complex joins
+          const { data: participants } = await supabase
+            .from('conversation_participants')
+            .select(`
+              id,
+              user_id,
+              role,
+              joined_at,
+              left_at,
+              last_read_message_id,
+              notification_settings,
+              member:members(
+                id,
+                name,
+                email,
+                avatar_url
+              )
+            `)
+            .eq('conversation_id', id)
+            .is('left_at', null);
+
+          return {
+            ...conversation,
+            participants: participants || []
+          };
+        }
+        
+        throw error;
+      }
+
+      // Get participants separately
+      const { data: participants } = await supabase
+        .from('conversation_participants')
+        .select(`
+          id,
           user_id,
           role,
+          joined_at,
+          left_at,
           last_read_message_id,
-          notification_settings
-        )
-      `)
-      .eq('id', id)
-      .single();
+          notification_settings,
+          member:members(
+            id,
+            name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('conversation_id', id)
+        .is('left_at', null);
 
-    if (error) throw error;
-    
-    // Check if user is a participant
-    const isParticipant = data?.conversation_participants?.some(
-      (p: any) => p.user_id === memberId
-    );
-    
-    if (!isParticipant) {
-      throw new Error('User is not a participant in this conversation');
+      return {
+        ...data,
+        participants: participants || []
+      };
+    } catch (error) {
+      console.error('Error getting conversation:', error);
+      
+      // Handle authorization errors gracefully
+      if (error.message?.includes('not authorized') || error.message?.includes('access')) {
+        return null;
+      }
+      
+      throw error;
     }
-
-    return data;
   }
 
   /**
@@ -121,52 +269,44 @@ class MessagingApiReal {
         throw new Error(`Recipient member not found: ${recipientError?.message || 'Unknown error'}`);
       }
 
-      const { data, error } = await supabase
-        .rpc('create_direct_conversation', {
-          other_user_id: input.participant_ids[0],
-          initial_message: input.initial_message || null
-        });
+      // Try the original function first
+      try {
+        const { data, error } = await supabase
+          .rpc('create_direct_conversation', {
+            other_user_id: input.participant_ids[0],
+            initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null
+          });
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        
+        // Since RLS blocks direct table access, we have to work with what the function gives us
+        // If force_new is requested, we'll add a timestamp to make it unique
+        if (input.force_new && data) {
+          // Try to update the conversation title to make it unique
+          try {
+            const timestamp = new Date().toLocaleString();
+            await this.updateConversation(data.id, { 
+              title: `${data.title || 'Conversation'} - ${timestamp}` 
+            });
+          } catch (updateError) {
+            console.warn('Could not update conversation title:', updateError);
+            // Continue anyway, at least we have a conversation
+          }
+        }
+        
+        return data;
+      } catch (error: any) {
+        console.error('Database function failed:', error);
+        
+        // Since RLS blocks direct access, we can't fall back to manual creation
+        // We need to inform the user that conversation creation is not available
+        throw new Error('Conversation creation is currently unavailable due to database restrictions. Please contact support.');
+      }
     }
 
-    // For group conversations, create manually
-    const { data: conversation, error: convError } = await supabase
-      .from('conversations')
-      .insert({
-        type: input.type,
-        name: input.name,
-        description: input.description,
-        created_by: memberId
-      })
-      .select()
-      .single();
-
-    if (convError) throw convError;
-
-    // Add participants
-    const participants = [memberId, ...input.participant_ids].map(userId => ({
-      conversation_id: conversation.id,
-      user_id: userId,
-      role: userId === memberId ? 'admin' : 'member'
-    }));
-
-    const { error: partError } = await supabase
-      .from('conversation_participants')
-      .insert(participants);
-
-    if (partError) throw partError;
-
-    // Send initial message if provided
-    if (input.initial_message) {
-      await this.sendMessage({
-        conversation_id: conversation.id,
-        content: input.initial_message
-      });
-    }
-
-    return conversation;
+    // For group conversations, we can't create manually due to RLS
+    // This would require a proper database function for group conversations
+    throw new Error('Group conversation creation is not currently supported due to database restrictions. Please contact support.');
   }
 
   /**
@@ -175,13 +315,23 @@ class MessagingApiReal {
   async getMessages(conversationId: string, filters?: MessageFilters): Promise<Message[]> {
     const memberId = await this.getCurrentMemberId();
 
+    // Validate conversation ID is a string
+    if (typeof conversationId !== 'string' || !conversationId.trim()) {
+      throw new Error('Invalid conversation ID provided');
+    }
+
     // Verify user is participant
-    const { data: participant } = await supabase
+    const { data: participant, error: participantError } = await supabase
       .from('conversation_participants')
       .select('user_id')
       .eq('conversation_id', conversationId)
       .eq('user_id', memberId)
+      .is('left_at', null)
       .single();
+
+    if (participantError && participantError.code !== 'PGRST116') {
+      throw participantError;
+    }
 
     if (!participant) {
       throw new Error('User is not a participant in this conversation');
@@ -191,11 +341,10 @@ class MessagingApiReal {
       .from('messages')
       .select(`
         *,
-        sender:profiles!messages_sender_id_fkey(
+        sender:members!messages_sender_id_fkey(
           id,
-          first_name,
-          last_name,
-          avatar_url
+          name,
+          image
         ),
         reactions:message_reactions(
           id,
@@ -344,11 +493,80 @@ class MessagingApiReal {
   }
 
   /**
-   * Get unread message count
+   * Delete a conversation (soft delete - removes user from participants)
    */
-  async getUnreadCount(): Promise<number> {
+  async deleteConversation(id: string): Promise<void> {
     const memberId = await this.getCurrentMemberId();
 
+    // Verify user is a participant
+    const { data: participant } = await supabase
+      .from('conversation_participants')
+      .select('user_id, role')
+      .eq('conversation_id', id)
+      .eq('user_id', memberId)
+      .is('left_at', null)
+      .single();
+
+    if (!participant) {
+      throw new Error('You are not a participant in this conversation');
+    }
+
+    // Soft delete by setting left_at timestamp
+    const { error } = await supabase
+      .from('conversation_participants')
+      .update({ left_at: new Date().toISOString() })
+      .eq('conversation_id', id)
+      .eq('user_id', memberId);
+
+    if (error) {
+      console.error('Error deleting conversation:', error);
+      throw new Error('Failed to delete conversation. Please try again.');
+    }
+  }
+
+  /**
+   * Delete multiple conversations (bulk delete)
+   */
+  async deleteConversations(ids: string[]): Promise<void> {
+    const memberId = await this.getCurrentMemberId();
+
+    // Verify user is a participant in all conversations
+    const { data: participants, error: checkError } = await supabase
+      .from('conversation_participants')
+      .select('conversation_id')
+      .in('conversation_id', ids)
+      .eq('user_id', memberId)
+      .is('left_at', null);
+
+    if (checkError) {
+      console.error('Error checking conversation participants:', checkError);
+      throw new Error('Failed to verify conversation access');
+    }
+
+    const accessibleIds = participants?.map(p => p.conversation_id) || [];
+    const inaccessibleCount = ids.length - accessibleIds.length;
+
+    if (inaccessibleCount > 0) {
+      throw new Error(`Cannot delete ${inaccessibleCount} conversation(s) - access denied`);
+    }
+
+    // Bulk soft delete
+    const { error } = await supabase
+      .from('conversation_participants')
+      .update({ left_at: new Date().toISOString() })
+      .in('conversation_id', accessibleIds)
+      .eq('user_id', memberId);
+
+    if (error) {
+      console.error('Error bulk deleting conversations:', error);
+      throw new Error('Failed to delete conversations. Please try again.');
+    }
+  }
+
+  /**
+   * Get unread message count
+   */
+  async getUnreadCount(userId?: string): Promise<number> {
     const { data, error } = await supabase
       .rpc('get_unread_message_count');
 
@@ -362,8 +580,8 @@ class MessagingApiReal {
   async createMarketplaceThread(input: CreateMarketplaceThreadInput): Promise<Conversation> {
     const conversation = await this.createConversation({
       type: 'direct',
-      participant_ids: [input.seller_id],
-      initial_message: input.initial_message
+      participant_ids: [input.sellerId],
+      initial_message: input.initialMessage
     });
 
     // Link to marketplace listing
@@ -371,7 +589,7 @@ class MessagingApiReal {
       .from('message_marketplace_contexts')
       .insert({
         conversation_id: conversation.id,
-        listing_id: input.listing_id
+        listing_id: input.itemId
       });
 
     return conversation;
@@ -383,8 +601,8 @@ class MessagingApiReal {
   async createOpportunityThread(input: CreateOpportunityThreadInput): Promise<Conversation> {
     const conversation = await this.createConversation({
       type: 'direct',
-      participant_ids: [input.employer_id],
-      initial_message: input.initial_message
+      participant_ids: [input.recruiterId],
+      initial_message: input.initialMessage
     });
 
     // Link to opportunity
@@ -392,10 +610,479 @@ class MessagingApiReal {
       .from('message_opportunity_contexts')
       .insert({
         conversation_id: conversation.id,
-        opportunity_id: input.opportunity_id
+        opportunity_id: input.opportunityId
       });
 
     return conversation;
+  }
+
+  /**
+   * Update conversation details
+   */
+  async updateConversation(id: string, updates: UpdateConversationInput): Promise<Conversation> {
+    try {
+      // First attempt: Use secure database function for title updates
+      if (updates.title !== undefined) {
+        const { data, error } = await supabase
+          .rpc('update_conversation_title', {
+            conversation_id: id,
+            new_title: updates.title
+          });
+
+        if (error) {
+          console.error('Database function update failed:', error);
+          
+          // Fallback: Try direct participant verification
+          const participantInfo = await this.checkParticipantStatus(id);
+          if (!participantInfo.canUpdate) {
+            throw new Error('You do not have permission to update this conversation');
+          }
+          
+          // Fallback: Try direct update with error handling
+          return await this.updateConversationFallback(id, updates);
+        }
+
+        return data;
+      }
+
+      // For other updates, use fallback method
+      return await this.updateConversationFallback(id, updates);
+    } catch (error) {
+      console.error('Conversation update error:', error);
+      
+      // Handle specific error cases
+      if (error.message?.includes('not authorized') || error.message?.includes('permission')) {
+        throw new Error('You do not have permission to update this conversation');
+      }
+      
+      if (error.message?.includes('not found')) {
+        throw new Error('Conversation not found');
+      }
+      
+      // Handle RLS errors with user-friendly message
+      if (error.code === '42501' || error.message?.includes('RLS')) {
+        throw new Error('Unable to update conversation due to security restrictions. Please try again or contact support.');
+      }
+      
+      // Handle 406 errors (multiple/no rows)
+      if (error.code === 'PGRST106' || error.message?.includes('JSON object requested')) {
+        console.warn('406 error detected, attempting participant verification');
+        const participantInfo = await this.checkParticipantStatus(id);
+        if (!participantInfo.canUpdate) {
+          throw new Error('You do not have permission to update this conversation');
+        }
+        throw new Error('Conversation update temporarily unavailable. Please try again.');
+      }
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Fallback method for conversation updates
+   */
+  private async updateConversationFallback(id: string, updates: UpdateConversationInput): Promise<Conversation> {
+    const memberId = await this.getCurrentMemberId();
+
+    // Verify participant status using database function
+    const participantInfo = await this.checkParticipantStatus(id);
+    
+    if (!participantInfo.isParticipant && !participantInfo.isCreator) {
+      throw new Error('You are not authorized to update this conversation');
+    }
+
+    // Prepare update object
+    const updateData: any = {
+      updated_at: new Date().toISOString()
+    };
+
+    if (updates.title !== undefined) {
+      updateData.title = updates.title;
+    }
+
+    if (updates.archived !== undefined) {
+      updateData.archived_at = updates.archived ? new Date().toISOString() : null;
+    }
+
+    // Try direct update with minimal selection to avoid 406 errors
+    const { data, error } = await supabase
+      .from('conversations')
+      .update(updateData)
+      .eq('id', id)
+      .select('id, title, type, created_by, updated_at, archived_at')
+      .single();
+
+    if (error) {
+      console.error('Fallback update failed:', error);
+      
+      // If still failing, try without .single() to avoid 406 errors
+      const { data: arrayData, error: arrayError } = await supabase
+        .from('conversations')
+        .update(updateData)
+        .eq('id', id)
+        .select('id, title, type, created_by, updated_at, archived_at');
+
+      if (arrayError) {
+        throw arrayError;
+      }
+
+      if (!arrayData || arrayData.length === 0) {
+        throw new Error('Conversation not found or update failed');
+      }
+
+      if (arrayData.length > 1) {
+        console.warn('Multiple conversations returned, using first one');
+      }
+
+      return arrayData[0] as Conversation;
+    }
+    
+    return data;
+  }
+
+  /**
+   * Check participant status using secure database function
+   */
+  private async checkParticipantStatus(conversationId: string): Promise<{
+    isParticipant: boolean;
+    isCreator: boolean;
+    role: string | null;
+    canUpdate: boolean;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .rpc('check_conversation_participant', {
+          conversation_id: conversationId
+        });
+
+      if (error) {
+        console.error('Participant check failed:', error);
+        return {
+          isParticipant: false,
+          isCreator: false,
+          role: null,
+          canUpdate: false
+        };
+      }
+
+      const info = data || {};
+      return {
+        isParticipant: info.is_participant || false,
+        isCreator: info.is_creator || false,
+        role: info.role || null,
+        canUpdate: (info.is_participant && ['admin', 'moderator'].includes(info.role)) || info.is_creator || false
+      };
+    } catch (error) {
+      console.error('Error checking participant status:', error);
+      return {
+        isParticipant: false,
+        isCreator: false,
+        role: null,
+        canUpdate: false
+      };
+    }
+  }
+
+  /**
+   * Archive a conversation (soft delete)
+   */
+  async archiveConversation(id: string): Promise<void> {
+    const { error } = await supabase
+      .rpc('archive_conversation', {
+        conversation_uuid: id
+      });
+
+    if (error) {
+      console.error('Error archiving conversation:', error);
+      throw new Error(`Failed to archive conversation: ${error.message}`);
+    }
+  }
+
+  /**
+   * Unarchive a conversation
+   */
+  async unarchiveConversation(id: string): Promise<void> {
+    const { error } = await supabase
+      .rpc('unarchive_conversation', {
+        conversation_uuid: id
+      });
+
+    if (error) {
+      console.error('Error unarchiving conversation:', error);
+      throw new Error(`Failed to unarchive conversation: ${error.message}`);
+    }
+  }
+
+  /**
+   * Delete a conversation (soft or hard delete)
+   */
+  async deleteConversation(input: DeleteConversationInput): Promise<void> {
+    if (input.deleteType === 'soft') {
+      // Soft delete: just archive the conversation
+      await this.archiveConversation(input.id);
+    } else {
+      // Hard delete: use database function for proper permission checking
+      const { error } = await supabase
+        .rpc('delete_conversation', {
+          conversation_uuid: input.id,
+          delete_reason: input.reason || null
+        });
+
+      if (error) {
+        console.error('Error deleting conversation:', error);
+        throw new Error(`Failed to delete conversation: ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Leave a conversation (removes user from participants)
+   */
+  async leaveConversation(conversationId: string): Promise<void> {
+    const { error } = await supabase
+      .rpc('leave_conversation', {
+        conversation_uuid: conversationId
+      });
+
+    if (error) {
+      console.error('Error leaving conversation:', error);
+      throw new Error(`Failed to leave conversation: ${error.message}`);
+    }
+  }
+
+  /**
+   * Block a user from messaging
+   */
+  async blockUser(userId: string, reason?: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('messaging_blocks')
+      .insert({
+        blocker_id: user.id,
+        blocked_id: userId,
+        reason: reason
+      });
+
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('User is already blocked');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Unblock a user
+   */
+  async unblockUser(userId: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('messaging_blocks')
+      .delete()
+      .eq('blocker_id', user.id)
+      .eq('blocked_id', userId);
+
+    if (error) throw error;
+  }
+
+  /**
+   * Get blocked users
+   */
+  async getBlockedUsers(): Promise<any[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from('messaging_blocks')
+      .select(`
+        *,
+        blocked_user:members!messaging_blocks_blocked_id_fkey(
+          id,
+          name,
+          image
+        )
+      `)
+      .eq('blocker_id', user.id);
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  /**
+   * Add reaction to message
+   */
+  async addReaction(messageId: string, reaction: string): Promise<MessageReaction> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('message_reactions')
+      .insert({
+        message_id: messageId,
+        user_id: user.id,
+        reaction: reaction
+      })
+      .select(`
+        *,
+        user:members!message_reactions_user_id_fkey(
+          id,
+          name,
+          image
+        )
+      `)
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('You have already reacted with this emoji');
+      }
+      throw error;
+    }
+
+    return data;
+  }
+
+  /**
+   * Remove reaction from message
+   */
+  async removeReaction(messageId: string, reaction: string): Promise<void> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('message_reactions')
+      .delete()
+      .eq('message_id', messageId)
+      .eq('user_id', user.id)
+      .eq('reaction', reaction);
+
+    if (error) throw error;
+  }
+
+  /**
+   * Check if conversation exists between users
+   */
+  async findExistingConversation(participantId: string): Promise<Conversation | null> {
+    const memberId = await this.getCurrentMemberId();
+
+    const { data: conversations, error } = await supabase
+      .from('conversations')
+      .select(`
+        *,
+        conversation_participants!inner(
+          user_id,
+          left_at
+        )
+      `)
+      .eq('type', 'direct')
+      .eq('conversation_participants.user_id', memberId)
+      .is('conversation_participants.left_at', null);
+
+    if (error) throw error;
+
+    // Find a conversation that has both users as participants
+    for (const conversation of conversations || []) {
+      const { data: otherParticipant } = await supabase
+        .from('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', conversation.id)
+        .eq('user_id', participantId)
+        .is('left_at', null)
+        .single();
+
+      if (otherParticipant) {
+        return conversation;
+      }
+    }
+
+    return null;
+  }
+
+
+  /**
+   * Delete multiple conversations (bulk operation)
+   */
+  async deleteConversations(conversationIds: string[]): Promise<void> {
+    const memberId = await this.getCurrentMemberId();
+
+    if (!conversationIds || conversationIds.length === 0) {
+      throw new Error('No conversations provided for deletion');
+    }
+
+    // Verify user is participant in all conversations
+    const { data: participants, error: participantError } = await supabase
+      .from('conversation_participants')
+      .select('conversation_id')
+      .in('conversation_id', conversationIds)
+      .eq('user_id', memberId)
+      .is('left_at', null);
+
+    if (participantError) {
+      throw participantError;
+    }
+
+    const validConversationIds = participants?.map(p => p.conversation_id) || [];
+    
+    if (validConversationIds.length !== conversationIds.length) {
+      const invalidIds = conversationIds.filter(id => !validConversationIds.includes(id));
+      console.warn('Some conversations not found or user not participant:', invalidIds);
+    }
+
+    if (validConversationIds.length === 0) {
+      throw new Error('No valid conversations found for deletion');
+    }
+
+    // Mark user as having left all conversations (bulk soft delete)
+    const { error } = await supabase
+      .from('conversation_participants')
+      .update({ 
+        left_at: new Date().toISOString(),
+        is_active: false
+      })
+      .in('conversation_id', validConversationIds)
+      .eq('user_id', memberId);
+
+    if (error) {
+      console.error('Error deleting conversations:', error);
+      throw new Error('Failed to delete conversations. Please try again.');
+    }
+  }
+
+
+
+  /**
+   * Generate conversation title from participants
+   */
+  async generateConversationTitle(conversationId: string): Promise<string> {
+    const memberId = await this.getCurrentMemberId();
+
+    const { data: participants, error } = await supabase
+      .from('conversation_participants')
+      .select(`
+        user_id,
+        members:members!conversation_participants_user_id_fkey(
+          name,
+          user_id
+        )
+      `)
+      .eq('conversation_id', conversationId)
+      .is('left_at', null)
+      .neq('user_id', memberId);
+
+    if (error) throw error;
+
+    if (participants && participants.length > 0) {
+      const names = participants
+        .map(p => p.members?.name || 'Unknown User')
+        .join(', ');
+      return names.length > 30 ? names.substring(0, 27) + '...' : names;
+    }
+
+    return 'Conversation';
   }
 }
 

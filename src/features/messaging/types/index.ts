@@ -104,6 +104,7 @@ export interface CreateConversationInput {
   participant_ids: string[];
   initial_message?: string;
   metadata?: ConversationMetadata;
+  force_new?: boolean; // Force creation of new conversation even if one exists
 }
 
 export interface SendMessageInput {
@@ -118,6 +119,17 @@ export interface SendMessageInput {
 export interface UpdateMessageInput {
   id: string;
   content: string;
+}
+
+export interface UpdateConversationInput {
+  title?: string;
+  archived?: boolean;
+}
+
+export interface DeleteConversationInput {
+  id: string;
+  deleteType: 'soft' | 'hard';
+  reason?: string;
 }
 
 export interface CreateMarketplaceThreadInput {
@@ -235,6 +247,7 @@ export interface MessagingError {
 export type ConversationType = Conversation['type'];
 export type MessageType = Message['message_type'];
 export type ParticipantRole = ConversationParticipant['role'];
+export type DeleteType = 'soft' | 'hard';
 
 // Component prop types
 export interface MessagingComponentProps {
