@@ -68,25 +68,46 @@ export default function GroupGuard({ children }: GroupGuardProps) {
           return;
         }
 
-        // Get the member ID for the current user
-        const { data: memberData } = await supabase
+        // Get the member ID for the current user, handling the case where none exists
+        const { data: memberData, error: memberError } = await supabase
           .from('members')
           .select('id')
           .eq('user_id', user.id)
           .single();
 
-        if (!memberData) {
+        if (memberError && memberError.code !== 'PGRST116') {
+          // If it's not a "no rows found" error, it's a real error
+          console.error('[GroupGuard] Error fetching member:', memberError);
           setHasAccess(false);
           return;
         }
 
+        if (!memberData) {
+          // User has no member record, so they can't be a group member
+          // Check if the group is open or closed for non-members
+          console.log('[GroupGuard] No member record found - checking group visibility');
+          const { data: group } = await supabase
+            .from('groups')
+            .select('visibility')
+            .eq('id', id)
+            .single();
+
+          setHasAccess(group?.visibility === 'open' || group?.visibility === 'closed');
+          return;
+        }
+
         // Check if the user is a member of the group
-        const { data: membership } = await supabase
+        const { data: membership, error: membershipError } = await supabase
           .from('group_members')
           .select('role')
           .eq('group_id', id)
           .eq('member_id', memberData.id)
           .single();
+
+        if (membershipError && membershipError.code !== 'PGRST116') {
+          // If it's not a "no rows found" error, it's a real error
+          console.error('[GroupGuard] Error fetching membership:', membershipError);
+        }
 
         if (membership) {
           // User is a member of the group

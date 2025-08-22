@@ -230,23 +230,56 @@ export const groupsApi = {
 
   async joinGroup(groupId: string, userId: string): Promise<boolean> {
     try {
+      // Get the current authenticated user to ensure we're using the correct user ID
+      const { data: authUser, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser.user) {
+        console.error('Authentication required to join group:', authError);
+        return false;
+      }
+      
+      // Use the authenticated user's ID, not the passed userId
+      const authenticatedUserId = authUser.user.id;
+      
       // First get the member ID from user ID
-      const { data: member } = await supabase
+      let { data: member } = await supabase
         .from('members')
         .select('id')
-        .eq('user_id', userId)
+        .eq('user_id', authenticatedUserId)
         .single();
       
       if (!member) {
-        console.error('Member not found for user:', userId);
-        return false;
+        console.error('Member not found for user:', authenticatedUserId, 'Creating member record...');
+        
+        // Create a member record for this user
+        const memberName = authUser.user.user_metadata?.name || 
+                          authUser.user.user_metadata?.full_name || 
+                          authUser.user.email?.split('@')[0] || 
+                          'User';
+        
+        const { data: newMember, error: createError } = await supabase
+          .from('members')
+          .insert({
+            user_id: authenticatedUserId,
+            name: memberName,
+            status: 'published', // Set to published so they can join groups
+            created_at: new Date().toISOString()
+          })
+          .select('id')
+          .single();
+          
+        if (createError || !newMember) {
+          console.error('Failed to create member record:', createError);
+          return false;
+        }
+        
+        member = newMember;
+        console.log('Created member record:', member.id, 'for user:', authenticatedUserId);
       }
 
-      // Use the database function to safely join the group
+      // Use the database function to safely join the group (it will use auth.uid() internally)
       const { data, error } = await supabase
         .rpc('join_group', {
           p_group_id: groupId,
-          p_member_id: member.id,
           p_role: 'member'
         });
 

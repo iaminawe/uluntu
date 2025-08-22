@@ -3,16 +3,30 @@ import { X } from 'lucide-react';
 import { JoinModalProps } from './types';
 import JoinRequestForm from './JoinRequestForm';
 import SuccessMessage from './SuccessMessage';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useGroupsHybrid } from '../../hooks/useGroupsHybrid';
 
 const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
-  const [_joining, setJoining] = useState(false);
+  const [joining, setJoining] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useSession();
+  const { joinGroup } = useGroupsHybrid();
   
-  const handleSubmit = (_message: string) => {
+  const handleSubmit = async (_message: string) => {
+    if (!user) {
+      setError('You must be logged in to join a group');
+      return;
+    }
+
     setJoining(true);
+    setError(null);
     
-    // Simulate API call to join group
-    setTimeout(() => {
+    try {
+      await joinGroup.mutateAsync({
+        groupId: group.id
+      });
+      
       setJoining(false);
       setSuccess(true);
       
@@ -20,7 +34,11 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
       setTimeout(() => {
         onClose();
       }, 2000);
-    }, 1000);
+    } catch (err) {
+      setJoining(false);
+      setError('Failed to join group. Please try again.');
+      console.error('Error joining group:', err);
+    }
   };
 
   const _isOpenGroup = group.visibility === 'public'; // 'public' maps to 'open'
@@ -41,11 +59,19 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
         </div>
         
         {!success ? (
-          <JoinRequestForm 
-            group={group} 
-            onSubmit={handleSubmit} 
-            onCancel={onClose} 
-          />
+          <>
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-md mx-4 mb-4">
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
+            )}
+            <JoinRequestForm 
+              group={group} 
+              onSubmit={handleSubmit} 
+              onCancel={onClose}
+              joining={joining}
+            />
+          </>
         ) : (
           <SuccessMessage 
             group={group} 

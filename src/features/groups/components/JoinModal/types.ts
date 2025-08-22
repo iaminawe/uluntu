@@ -10,6 +10,7 @@ export interface JoinRequestFormProps {
   group: Group;
   onSubmit: (message: string) => void;
   onCancel: () => void;
+  joining?: boolean;
 }
 
 export interface SuccessMessageProps {

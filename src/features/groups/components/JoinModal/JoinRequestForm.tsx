@@ -4,14 +4,13 @@ import { JoinRequestFormProps } from './types';
 const JoinRequestForm: React.FC<JoinRequestFormProps> = ({ 
   group, 
   onSubmit, 
-  onCancel 
+  onCancel,
+  joining = false
 }) => {
   const [message, setMessage] = useState('');
-  const [joining, setJoining] = useState(false);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setJoining(true);
     onSubmit(message);
   };
   
