@@ -241,8 +241,8 @@ export function useUpdateGroup() {
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (vars: { id: string; data: Partial<GroupInput> }) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
-    mutateAsync: async (vars: { id: string; data: Partial<GroupInput> }) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutate: async (data: { id: string } & Partial<GroupInput>) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutateAsync: async (data: { id: string } & Partial<GroupInput>) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
     status: 'success' as const,
     data: (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null,
     error: null, 
@@ -251,10 +251,12 @@ export function useUpdateGroup() {
     isError: false, 
     isIdle: false, 
     reset: () => {},
-  } as unknown as UseMutationResult<FrontendGroupType | null, Error, { id: string; data: Partial<GroupInput> }, unknown>;
+  } as unknown as UseMutationResult<FrontendGroupType | null, Error, { id: string } & Partial<GroupInput>, unknown>;
 
   const supabaseMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<GroupInput> }) => groupsApi.update(id, data), // groupsApi.update returns Promise<FrontendGroupType | null>
+    mutationFn: ({ id, ...updateData }: { id: string } & Partial<GroupInput>) => {
+      return groupsApi.update(id, updateData);
+    },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups', variables.id] });
@@ -313,7 +315,7 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
                 name: m.member?.name || 'Unknown',
                 role: m.role || 'member',
                 joinDate: m.joined_date,
-                image: m.member?.avatar_url,
+                image: m.member?.avatar_url || '/placeholder-avatar.png',
                 joinedDate: m.joined_date,
                 title: m.member?.title
             }));
@@ -495,31 +497,53 @@ export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId
   });
 }
 
-// Invitation hooks
+// Updated invitation hooks
 export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Error> {
   return useQuery<any[], Error>({
-    queryKey: ['groupInvitations', groupId],
+    queryKey: ['groupInvitations', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!groupId) return [];
       if (!IS_SUPABASE_ENABLED) {
-        return []; // Mock returns empty array
+        // Mock returns sample invitations
+        return [
+          {
+            id: 'mock-inv-1',
+            group_id: groupId,
+            invited_email: 'user@example.com',
+            role: 'member',
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            token: 'mock-token-1',
+            message: 'Welcome to join our group!'
+          },
+          {
+            id: 'mock-inv-2',
+            group_id: groupId,
+            invited_member_id: 'mock-member-1',
+            role: 'moderator',
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            token: 'mock-token-2',
+            message: 'Join us as a moderator!'
+          }
+        ];
       }
-      return (groupsApi as any).getInvitations(groupId);
+      return groupsApi.getGroupInvitations(groupId);
     },
     enabled: !!groupId,
   });
 }
 
-export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+export function useCreateInvitation(): UseMutationResult<string | null, Error, { groupId: string; data: any }> {
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, { groupId: string; data: any }>({
+  return useMutation<string | null, Error, { groupId: string; data: any }>({
     mutationFn: ({ groupId, data }) => {
       if (!IS_SUPABASE_ENABLED) {
-        // Mock create invitation
-        return Promise.resolve(data);
+        // Mock create invitation - return a mock token
+        return Promise.resolve('mock-invitation-token-' + Date.now());
       }
-      return (groupsApi as any).createInvitation(groupId, data);
+      return groupsApi.createInvitation(groupId, data);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
@@ -527,52 +551,149 @@ export function useCreateInvitation(): UseMutationResult<any, Error, { groupId: 
   });
 }
 
-export function useCancelInvitation(): UseMutationResult<boolean, Error, string> {
+export function useCancelInvitation(): UseMutationResult<boolean, Error, { invitationId: string; groupId: string }> {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, string>({
-    mutationFn: (invitationId) => {
+  return useMutation<boolean, Error, { invitationId: string; groupId: string }>({
+    mutationFn: ({ invitationId }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock cancel invitation
         return Promise.resolve(true);
       }
-      return (groupsApi as any).cancelInvitation(invitationId);
+      return groupsApi.cancelInvitation(invitationId);
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
       queryClient.invalidateQueries({ queryKey: ['groupInvitations'] });
     },
   });
 }
 
-export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token: string; memberId: string }> {
+export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token: string }> {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, { token: string; memberId: string }>({
-    mutationFn: ({ token, memberId }) => {
+  return useMutation<boolean, Error, { token: string }>({
+    mutationFn: ({ token }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock accept invitation
         return Promise.resolve(true);
       }
-      return (groupsApi as any).acceptInvitation(token, memberId);
+      return groupsApi.acceptInvitation(token);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });
       queryClient.invalidateQueries({ queryKey: ['groupMembers'] });
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations'] });
     },
   });
 }
 
 export function useInvitationByToken(token?: string): UseQueryResult<any, Error> {
   return useQuery<any, Error>({
-    queryKey: ['invitation', token],
+    queryKey: ['invitation', token, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
     queryFn: async () => {
       if (!token) return null;
       if (!IS_SUPABASE_ENABLED) {
-        return null; // Mock returns null
+        // Mock returns sample invitation data
+        return {
+          id: 'mock-inv-1',
+          token: token,
+          group_id: 'mock-group-1',
+          group: {
+            id: 'mock-group-1',
+            name: 'Mock Group',
+            description: 'A mock group for testing',
+            visibility: 'public'
+          },
+          invited_email: 'user@example.com',
+          role: 'member',
+          status: 'pending',
+          message: 'Welcome to join our group!',
+          created_at: new Date().toISOString()
+        };
       }
-      return (groupsApi as any).getInvitationByToken(token);
+      return groupsApi.getInvitationByToken(token);
     },
     enabled: !!token,
+  });
+}
+
+// New invitation-related hooks
+
+export function useInviteMember(): UseMutationResult<string | null, Error, { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<string | null, Error, { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }>({
+    mutationFn: ({ groupId, memberId, role = 'member', message }) => {
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock invite member - return a mock token
+        console.log(`Mock: Inviting member ${memberId} to group ${groupId} as ${role}`);
+        return Promise.resolve('mock-member-invitation-token-' + Date.now());
+      }
+      return groupsApi.createInvitation(groupId, {
+        invited_member_id: memberId,
+        role,
+        message
+      });
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
+    },
+  });
+}
+
+export function useInviteByEmail(): UseMutationResult<string | null, Error, { groupId: string; email: string; role?: 'admin' | 'moderator' | 'member'; message?: string; groupInfo?: { name: string; description?: string } }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<string | null, Error, { groupId: string; email: string; role?: 'admin' | 'moderator' | 'member'; message?: string; groupInfo?: { name: string; description?: string } }>({
+    mutationFn: ({ groupId, email, role = 'member', message }) => {
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock email invitation - return a mock token
+        console.log(`Mock: Inviting ${email} to group ${groupId} as ${role}`);
+        return Promise.resolve('mock-email-invitation-token-' + Date.now());
+      }
+      return groupsApi.createInvitation(groupId, {
+        invited_email: email,
+        role,
+        message
+      });
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
+    },
+  });
+}
+
+export function useResendInvitation(): UseMutationResult<string | null, Error, { invitationId: string; groupId: string }> {
+  const queryClient = useQueryClient();
+
+  return useMutation<string | null, Error, { invitationId: string; groupId: string }>({
+    mutationFn: async ({ invitationId, groupId }) => {
+      if (!IS_SUPABASE_ENABLED) {
+        // Mock resend invitation - return a mock token
+        return Promise.resolve('mock-resent-invitation-token-' + Date.now());
+      }
+      
+      // For resending, we need to get the original invitation details and create a new one
+      // This is a simplified approach - in practice, you might want to implement a specific resend endpoint
+      const invitations = await groupsApi.getGroupInvitations(groupId);
+      const invitation = invitations.find((inv: any) => inv.id === invitationId);
+      
+      if (!invitation) {
+        throw new Error('Invitation not found');
+      }
+      
+      // Create a new invitation with the same details
+      return groupsApi.createInvitation(groupId, {
+        invited_email: invitation.invited_email,
+        invited_member_id: invitation.invited_member_id,
+        role: invitation.role,
+        message: invitation.message
+      });
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['groupInvitations', variables.groupId] });
+    },
   });
 }
 
