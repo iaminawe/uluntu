@@ -1,14 +1,19 @@
-import { Users, Calendar, BookOpen, Newspaper } from 'lucide-react';
+import { Users, Calendar, BookOpen, Newspaper, Shield } from 'lucide-react';
 import { TabsProps, TabType } from './types';
 
-const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab, group }) => {
-  const tabs: { id: TabType; label: string; icon: React.ReactNode; count?: number }[] = [
+const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab, group, isAdmin }) => {
+  const baseTabs: { id: TabType; label: string; icon: React.ReactNode; count?: number }[] = [
     { id: 'about', label: 'About', icon: <BookOpen className="h-5 w-5" /> },
     { id: 'events', label: 'Events', icon: <Calendar className="h-5 w-5" />, count: group.eventCount },
     { id: 'members', label: 'Members', icon: <Users className="h-5 w-5" />, count: group.memberCount },
     { id: 'resources', label: 'Resources', icon: <BookOpen className="h-5 w-5" />, count: group.resourceCount },
     { id: 'posts', label: 'Posts', icon: <Newspaper className="h-5 w-5" />, count: group.postCount },
   ];
+  
+  // Add admin tab only if user is admin
+  const tabs = isAdmin 
+    ? [...baseTabs, { id: 'admin' as TabType, label: 'Admin', icon: <Shield className="h-5 w-5" /> }]
+    : baseTabs;
 
   return (
     <div className="border-b border-slate-200 dark:border-slate-700">
