@@ -436,10 +436,6 @@ export const groupsApi = {
     return groupMemberManagementApi.getUserInvitations(userId);
   },
 
-  async getInvitationByToken(token: string): Promise<unknown | null> {
-    return groupMemberManagementApi.getInvitationByToken(token);
-  },
-
   async getGroupInvitations(groupId: string): Promise<unknown[]> {
     return groupMemberManagementApi.getGroupInvitations(groupId);
   },
