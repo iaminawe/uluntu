@@ -95,13 +95,14 @@ export function useConversation(id: string): UseQueryResult<Conversation | null,
 
 /**
  * Hook to fetch messages for a conversation with infinite scrolling support
+ * Ensures proper conversation isolation by using conversation-specific query keys
  */
 export function useMessages(
   conversationId: string,
   limit: number = 50
 ): UseInfiniteQueryResult<Message[], Error> {
   return useInfiniteQuery({
-    queryKey: messagingQueryKeys.messages(conversationId),
+    queryKey: [...messagingQueryKeys.messages(conversationId), limit, 'infinite'],
     queryFn: ({ pageParam }) => {
       const filters: MessageFilters = {
         conversation_id: conversationId,
@@ -118,10 +119,21 @@ export function useMessages(
       return allPages.length * limit; // Next offset
     },
     initialPageParam: 0,
-    enabled: !!conversationId,
+    enabled: !!conversationId && conversationId.trim() !== '',
     staleTime: 10 * 1000, // 10 seconds - messages update frequently
     gcTime: 2 * 60 * 1000, // 2 minutes
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    // Ensure each conversation has isolated cache
+    structuralSharing: false,
+    // Don't share data between different conversation queries
+    select: (data) => {
+      if (!data?.pages) return { pages: [], pageParams: [] };
+      // Filter messages to ensure they belong to this conversation only
+      const filteredPages = data.pages.map(page => 
+        Array.isArray(page) ? page.filter(msg => msg.conversation_id === conversationId) : []
+      );
+      return { ...data, pages: filteredPages };
+    }
   });
 }
 
@@ -225,7 +237,7 @@ export function useCreateConversation(): UseMutationResult<Conversation, Error, 
 }
 
 /**
- * Hook to send a message
+ * Hook to send a message with proper cache isolation
  */
 export function useSendMessage(): UseMutationResult<Message, Error, SendMessageInput> {
   const queryClient = useQueryClient();
@@ -235,18 +247,23 @@ export function useSendMessage(): UseMutationResult<Message, Error, SendMessageI
     onSuccess: (newMessage, variables) => {
       logger.debug(`Sent message ${newMessage.id}`, 'MESSAGING');
 
-      // Update messages cache
+      // Update messages cache with conversation-specific keys
+      const messagesQueryKey = [...messagingQueryKeys.messages(variables.conversation_id), 50, 'infinite'];
       queryClient.setQueryData(
-        messagingQueryKeys.messages(variables.conversation_id),
+        messagesQueryKey,
         (oldData: any) => {
           if (!oldData) return { pages: [[newMessage]], pageParams: [0] };
           
+          // Ensure the message belongs to the correct conversation
+          if (newMessage.conversation_id !== variables.conversation_id) {
+            logger.warn('Message conversation_id mismatch', 'MESSAGING');
+            return oldData;
+          }
+          
           const updatedPages = [...oldData.pages];
-          if (updatedPages[updatedPages.length - 1]) {
-            updatedPages[updatedPages.length - 1] = [
-              ...updatedPages[updatedPages.length - 1],
-              newMessage
-            ];
+          if (updatedPages.length > 0) {
+            // Add to the first page (most recent messages)
+            updatedPages[0] = [newMessage, ...updatedPages[0]];
           } else {
             updatedPages.push([newMessage]);
           }
@@ -255,14 +272,23 @@ export function useSendMessage(): UseMutationResult<Message, Error, SendMessageI
         }
       );
 
-      // Update conversation timestamp
-      queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
+      // Only invalidate conversation-specific queries
       queryClient.invalidateQueries({ 
-        queryKey: messagingQueryKeys.conversation(variables.conversation_id) 
+        queryKey: messagingQueryKeys.conversation(variables.conversation_id),
+        exact: true
+      });
+      
+      // Update conversations list (but not other conversation caches)
+      queryClient.invalidateQueries({ 
+        queryKey: messagingQueryKeys.conversations,
+        exact: true
       });
 
-      // Update unread count for other participants
-      queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
+      // Update unread count
+      queryClient.invalidateQueries({ 
+        queryKey: messagingQueryKeys.unreadCount,
+        exact: true
+      });
     },
     onError: (error) => {
       logger.error('Failed to send message:', error.message, 'MESSAGING');
@@ -271,7 +297,7 @@ export function useSendMessage(): UseMutationResult<Message, Error, SendMessageI
 }
 
 /**
- * Hook to update a message
+ * Hook to update a message with proper cache isolation
  */
 export function useUpdateMessage(): UseMutationResult<Message, Error, UpdateMessageInput & { id: string }> {
   const queryClient = useQueryClient();
@@ -281,15 +307,18 @@ export function useUpdateMessage(): UseMutationResult<Message, Error, UpdateMess
     onSuccess: (updatedMessage, variables) => {
       logger.debug(`Updated message ${variables.id}`, 'MESSAGING');
 
-      // Update messages cache
+      // Update messages cache with conversation-specific key
+      const messagesQueryKey = [...messagingQueryKeys.messages(updatedMessage.conversation_id), 50, 'infinite'];
       queryClient.setQueryData(
-        messagingQueryKeys.messages(updatedMessage.conversation_id),
+        messagesQueryKey,
         (oldData: any) => {
           if (!oldData) return oldData;
           
           const updatedPages = oldData.pages.map((page: Message[]) =>
             page.map((message: Message) =>
-              message.id === variables.id ? updatedMessage : message
+              message.id === variables.id && message.conversation_id === updatedMessage.conversation_id 
+                ? updatedMessage 
+                : message
             )
           );
           
@@ -829,7 +858,51 @@ export function invalidateMessagingQueries(queryClient: any) {
 }
 
 /**
- * Helper to optimistically update a message in cache
+ * Helper to clear conversation-specific cache when switching conversations
+ * This prevents message bleeding between conversations
+ */
+export function clearConversationCache(queryClient: any, conversationId: string) {
+  // Remove all message queries for this conversation
+  queryClient.removeQueries({ 
+    queryKey: messagingQueryKeys.messages(conversationId),
+    exact: false
+  });
+  
+  // Remove infinite query cache specifically
+  queryClient.removeQueries({ 
+    queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
+    exact: true
+  });
+  
+  // Remove conversation-specific cache
+  queryClient.removeQueries({ 
+    queryKey: messagingQueryKeys.conversation(conversationId),
+    exact: true
+  });
+}
+
+/**
+ * Helper to ensure conversation isolation by clearing all cached data
+ * and forcing fresh queries
+ */
+export function resetConversationState(queryClient: any, conversationId: string) {
+  clearConversationCache(queryClient, conversationId);
+  
+  // Force refetch of conversation data
+  queryClient.invalidateQueries({ 
+    queryKey: messagingQueryKeys.conversation(conversationId),
+    exact: true
+  });
+  
+  // Force refetch of messages
+  queryClient.invalidateQueries({ 
+    queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
+    exact: true
+  });
+}
+
+/**
+ * Helper to optimistically update a message in cache with conversation isolation
  */
 export function optimisticallyUpdateMessage(
   queryClient: any,
@@ -837,14 +910,18 @@ export function optimisticallyUpdateMessage(
   messageId: string,
   updater: (message: Message) => Message
 ) {
+  const queryKey = [...messagingQueryKeys.messages(conversationId), 50, 'infinite'];
+  
   queryClient.setQueryData(
-    messagingQueryKeys.messages(conversationId),
+    queryKey,
     (oldData: any) => {
       if (!oldData) return oldData;
       
       const updatedPages = oldData.pages.map((page: Message[]) =>
         page.map((message: Message) =>
-          message.id === messageId ? updater(message) : message
+          message.id === messageId && message.conversation_id === conversationId 
+            ? updater(message) 
+            : message
         )
       );
       
