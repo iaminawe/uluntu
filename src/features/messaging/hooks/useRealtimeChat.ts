@@ -37,12 +37,15 @@ interface TypingPayload {
   is_typing: boolean;
 }
 
-// Helper function to update infinite query data safely
+// Helper function to update infinite query data safely with conversation isolation
 const updateInfiniteQueryData = (
   queryClient: any,
-  queryKey: any,
+  conversationId: string,
   updateFn: (pages: Message[][]) => Message[][]
 ) => {
+  // Use conversation-specific query key with infinite suffix
+  const queryKey = [...messagingQueryKeys.messages(conversationId), 50, 'infinite'];
+  
   queryClient.setQueryData(
     queryKey,
     (oldData: { pages: Message[][]; pageParams: unknown[] } | undefined) => {
@@ -71,10 +74,32 @@ export function useRealtimeChat(conversationId: string | undefined) {
   const [isConnected, setIsConnected] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const previousConversationId = useRef<string | undefined>(undefined);
 
-  // Initialize channel for conversation
+  // Initialize channel for conversation with proper cleanup
   useEffect(() => {
-    if (!user || !conversationId || typeof conversationId !== 'string') return;
+    if (!user || !conversationId || typeof conversationId !== 'string') {
+      // Clean up state when no conversation
+      setOnlineUsers([]);
+      setTypingUsers(new Map());
+      setIsConnected(false);
+      return;
+    }
+
+    // If conversation changed, clear previous state immediately
+    if (previousConversationId.current && previousConversationId.current !== conversationId) {
+      setOnlineUsers([]);
+      setTypingUsers(new Map());
+      setIsConnected(false);
+      
+      // Clear cache for previous conversation to prevent bleed-through
+      queryClient.removeQueries({ 
+        queryKey: [...messagingQueryKeys.messages(previousConversationId.current), 50, 'infinite'],
+        exact: true
+      });
+    }
+    
+    previousConversationId.current = conversationId;
 
     // Create a unique channel for this conversation
     const channel = supabase.channel(`conversation:${conversationId}`, {
@@ -91,7 +116,7 @@ export function useRealtimeChat(conversationId: string | undefined) {
 
     channelRef.current = channel;
 
-    // Track new messages from database
+    // Track new messages from database with conversation isolation
     channel
       .on(
         'postgres_changes',
@@ -102,26 +127,37 @@ export function useRealtimeChat(conversationId: string | undefined) {
           filter: `conversation_id=eq.${conversationId}`
         },
         (payload) => {
-          // Invalidate queries to fetch full message data with relations
+          // Only invalidate this conversation's queries
           queryClient.invalidateQueries({ 
-            queryKey: messagingQueryKeys.messages(conversationId) 
+            queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
+            exact: true
           });
           queryClient.invalidateQueries({ 
-            queryKey: messagingQueryKeys.conversations 
+            queryKey: messagingQueryKeys.conversations,
+            exact: true
           });
         }
       );
 
-    // Listen for real-time message broadcasts
+    // Listen for real-time message broadcasts with conversation validation
     channel.on('broadcast', { event: 'new_message' }, 
       ({ payload }: { payload: MessagePayload }) => {
         // Skip if it's our own message (we handle optimistic updates separately)
         if (payload.sender_id === user.id) return;
+        
+        // Critical: Only process messages for the current conversation
+        if (payload.conversation_id !== conversationId) {
+          console.warn('Received message for wrong conversation', { 
+            received: payload.conversation_id, 
+            expected: conversationId 
+          });
+          return;
+        }
 
         // Add message to cache immediately for infinite query
         updateInfiniteQueryData(
           queryClient,
-          messagingQueryKeys.messages(conversationId),
+          conversationId,
           (pages) => {
             const firstPage = pages[0] || [];
             
@@ -142,16 +178,16 @@ export function useRealtimeChat(conversationId: string | undefined) {
       }
     );
 
-    // Listen for message edits
+    // Listen for message edits with conversation validation
     channel.on('broadcast', { event: 'edit_message' },
       ({ payload }: { payload: EditMessagePayload }) => {
         updateInfiniteQueryData(
           queryClient,
-          messagingQueryKeys.messages(conversationId),
+          conversationId,
           (pages) => {
             return pages.map(page => 
               page.map(msg => 
-                msg.id === payload.id 
+                msg.id === payload.id && msg.conversation_id === conversationId
                   ? { ...msg, content: payload.content, updated_at: payload.updated_at }
                   : msg
               )
@@ -161,15 +197,15 @@ export function useRealtimeChat(conversationId: string | undefined) {
       }
     );
 
-    // Listen for message deletions
+    // Listen for message deletions with conversation validation
     channel.on('broadcast', { event: 'delete_message' },
       ({ payload }: { payload: { id: string } }) => {
         updateInfiniteQueryData(
           queryClient,
-          messagingQueryKeys.messages(conversationId),
+          conversationId,
           (pages) => {
             return pages.map(page => 
-              page.filter(msg => msg.id !== payload.id)
+              page.filter(msg => !(msg.id === payload.id && msg.conversation_id === conversationId))
             );
           }
         );
@@ -231,7 +267,15 @@ export function useRealtimeChat(conversationId: string | undefined) {
 
     return () => {
       setIsConnected(false);
+      setOnlineUsers([]);
+      setTypingUsers(new Map());
       channel.unsubscribe();
+      
+      // Clear typing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
     };
   }, [user, conversationId, queryClient]);
 
@@ -255,10 +299,10 @@ export function useRealtimeChat(conversationId: string | undefined) {
       parent_message_id: parentMessageId
     };
 
-    // Optimistic update for infinite query
+    // Optimistic update for infinite query with conversation isolation
     updateInfiniteQueryData(
       queryClient,
-      messagingQueryKeys.messages(conversationId),
+      conversationId,
       (pages) => {
         if (pages.length === 0) {
           return [[optimisticMessage as any]];
@@ -289,11 +333,11 @@ export function useRealtimeChat(conversationId: string | undefined) {
       // Update optimistic message with real data
       updateInfiniteQueryData(
         queryClient,
-        messagingQueryKeys.messages(conversationId),
+        conversationId,
         (pages) => {
           return pages.map(page =>
             page.map(msg => 
-              msg.id === optimisticMessage.id ? data : msg
+              msg.id === optimisticMessage.id && msg.conversation_id === conversationId ? data : msg
             )
           );
         }
@@ -303,10 +347,10 @@ export function useRealtimeChat(conversationId: string | undefined) {
       // Remove optimistic message on error
       updateInfiniteQueryData(
         queryClient,
-        messagingQueryKeys.messages(conversationId),
+        conversationId,
         (pages) => {
           return pages.map(page =>
-            page.filter(msg => msg.id !== optimisticMessage.id)
+            page.filter(msg => !(msg.id === optimisticMessage.id && msg.conversation_id === conversationId))
           );
         }
       );
