@@ -1,7 +1,7 @@
 // Types for GroupDetailPage components
 import { Group, Event as GroupEvent, GroupMember, Resource as GroupResource, GroupPost } from '../../types';
 
-export type TabType = 'about' | 'events' | 'members' | 'resources' | 'posts';
+export type TabType = 'about' | 'events' | 'members' | 'resources' | 'posts' | 'admin';
 
 export interface PageHeaderProps {
   group: Group;
@@ -12,6 +12,7 @@ export interface TabsProps {
   selectedTab: TabType;
   setSelectedTab: (tab: TabType) => void;
   group: Group;
+  isAdmin?: boolean;
 }
 
 export interface AboutTabProps {
@@ -39,6 +40,12 @@ export interface ResourcesTabProps {
 export interface PostsTabProps {
   posts: GroupPost[];
   isLoading: boolean;
+}
+
+export interface AdminTabProps {
+  group: Group;
+  members: any[];
+  onGroupUpdate?: () => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
