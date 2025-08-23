@@ -1,0 +1,332 @@
+/* BlockNote Editor Custom Styles */
+
+.blocknote-editor-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* AI Toolbar */
+.ai-toolbar {
+  position: relative;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  padding: 4px;
+  min-width: 250px;
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.ai-menu-section {
+  padding: 4px 0;
+}
+
+.ai-menu-section:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+}
+
+.ai-menu-section-title {
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+}
+
+.ai-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.ai-menu-item:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.ai-menu-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-processing {
+  color: #3b82f6;
+  font-weight: 500;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* BlockNote container styles */
+.blocknote-editor-wrapper .bn-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.6;
+}
+
+/* Editor content area */
+.blocknote-editor-wrapper .bn-editor {
+  padding: 20px;
+  min-height: 350px;
+}
+
+/* AI Menu Styles */
+.bn-ai-menu {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  padding: 8px;
+  max-width: 320px;
+}
+
+.bn-ai-menu-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bn-ai-menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+.bn-ai-menu-item.selected {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* AI Toolbar Button */
+.bn-ai-toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin: 0 4px;
+}
+
+.bn-ai-toolbar-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.bn-ai-toolbar-button:active {
+  transform: translateY(0);
+}
+
+/* AI Status Indicator */
+.ai-status-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+.ai-status-indicator .ai-available {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.ai-status-indicator .ai-unavailable {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* AI Response Streaming Animation */
+.bn-ai-streaming {
+  position: relative;
+}
+
+.bn-ai-streaming::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    #667eea 20%, 
+    #764ba2 50%, 
+    #667eea 80%, 
+    transparent
+  );
+  animation: streaming 1.5s linear infinite;
+}
+
+@keyframes streaming {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* AI Suggestion Highlight */
+.bn-ai-suggestion {
+  background-color: #fef3c7;
+  border-left: 3px solid #f59e0b;
+  padding-left: 12px;
+  margin: 8px 0;
+  position: relative;
+}
+
+.bn-ai-suggestion-actions {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+.bn-ai-suggestion-accept,
+.bn-ai-suggestion-reject {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.bn-ai-suggestion-accept {
+  background: #10b981;
+  color: white;
+}
+
+.bn-ai-suggestion-accept:hover {
+  background: #059669;
+}
+
+.bn-ai-suggestion-reject {
+  background: #ef4444;
+  color: white;
+}
+
+.bn-ai-suggestion-reject:hover {
+  background: #dc2626;
+}
+
+/* Formatting Toolbar Overrides */
+.bn-formatting-toolbar {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 4px;
+}
+
+/* Slash Menu Overrides */
+.bn-slash-menu {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  padding: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.bn-slash-menu-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.bn-slash-menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .blocknote-editor-wrapper[data-theme="dark"] {
+    background: #1f2937;
+  }
+  
+  .blocknote-editor-wrapper[data-theme="dark"] .bn-ai-menu,
+  .blocknote-editor-wrapper[data-theme="dark"] .bn-formatting-toolbar,
+  .blocknote-editor-wrapper[data-theme="dark"] .bn-slash-menu {
+    background: #374151;
+    border-color: #4b5563;
+  }
+  
+  .blocknote-editor-wrapper[data-theme="dark"] .bn-ai-menu-item:hover,
+  .blocknote-editor-wrapper[data-theme="dark"] .bn-slash-menu-item:hover {
+    background-color: #4b5563;
+  }
+  
+  .blocknote-editor-wrapper[data-theme="dark"] .ai-status-indicator {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .blocknote-editor-wrapper .bn-editor {
+    padding: 12px;
+  }
+  
+  .bn-ai-menu {
+    max-width: 280px;
+  }
+  
+  .ai-status-indicator {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+}
