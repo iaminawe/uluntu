@@ -30,6 +30,12 @@ const TestPage = lazy(() => import('../pages/TestPage'));
 const DebugPage = lazy(() => import('../pages/DebugPage'));
 const TestFontsPage = lazy(() => import('../pages/TestFontsPage'));
 const TestBlockEditor = lazy(() => import('../pages/TestBlockEditor'));
+const AIEditorDemo = lazy(() => import('../pages/AIEditorDemo'));
+const TestSimpleEditor = lazy(() => import('../pages/TestSimpleEditor'));
+const TestNoEditor = lazy(() => import('../pages/TestNoEditor'));
+const WorkingAIEditor = lazy(() => import('../pages/WorkingAIEditor'));
+const IsolatedAIEditor = lazy(() => import('../pages/IsolatedAIEditor'));
+const FixedAIEditor = lazy(() => import('../pages/FixedAIEditor'));
 const DynamicPage = lazy(() => import('../pages/DynamicPage'));
 const CheckAdminStatus = lazy(() => import('../pages/CheckAdminStatus'));
 const SimplePageTest = lazy(() => import('../pages/SimplePageTest'));
@@ -181,6 +187,12 @@ export const router = createBrowserRouter([
       { path: 'debug', element: withSuspense(DebugPage) },
       { path: 'test-fonts', element: withSuspense(TestFontsPage) },
       { path: 'test-editor', element: withSuspense(TestBlockEditor) },
+      { path: 'ai-editor', element: withSuspense(AIEditorDemo) },
+      { path: 'test-simple', element: withSuspense(TestSimpleEditor) },
+      { path: 'test-no-editor', element: withSuspense(TestNoEditor) },
+      { path: 'working-ai', element: withSuspense(WorkingAIEditor) },
+      { path: 'isolated-ai', element: withSuspense(IsolatedAIEditor) },
+      { path: 'fixed-ai', element: withSuspense(FixedAIEditor) },
       { path: 'check-admin', element: withSuspense(CheckAdminStatus) },
       { path: 'simple-page-test', element: withSuspense(SimplePageTest) },
       { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
