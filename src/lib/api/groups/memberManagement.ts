@@ -485,6 +485,39 @@ export const groupMemberManagementApi = {
   },
 
   /**
+   * Get invitation by token
+   */
+  async getInvitationByToken(token: string): Promise<GroupInvitation | null> {
+    
+    try {
+      const { data, error } = await supabase
+        .from('group_invitations')
+        .select(`
+          *,
+          group:groups!group_id(id, name, slug, description, hero_image, visibility),
+          invited_by_member:members!invited_by(name, image),
+          invited_member:members!invited_member_id(name, title)
+        `)
+        .eq('token', token)
+        .eq('status', 'pending')
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No invitation found with this token
+          return null;
+        }
+        throw error;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error getting invitation by token:', error);
+      return null;
+    }
+  },
+
+  /**
    * Promote member to admin
    */
   async promoteMember(groupId: string, memberId: string): Promise<boolean> {
