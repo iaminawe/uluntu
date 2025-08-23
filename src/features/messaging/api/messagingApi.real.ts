@@ -269,38 +269,71 @@ class MessagingApiReal {
         throw new Error(`Recipient member not found: ${recipientError?.message || 'Unknown error'}`);
       }
 
-      // Try the original function first
+      // If force_new is true, always create a new conversation
+      // Otherwise, check for existing conversation first
+      if (!input.force_new) {
+        // Check if there's an existing conversation with this user
+        const existingConv = await this.findExistingConversation(input.participant_ids[0]);
+        if (existingConv) {
+          console.log('Using existing conversation:', existingConv.id);
+          return existingConv;
+        }
+      }
+
+      // Create conversation using RPC function
       try {
+        // First, try the enhanced version with force_new parameter (if it exists)
         const { data, error } = await supabase
           .rpc('create_direct_conversation', {
             other_user_id: input.participant_ids[0],
-            initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null
+            initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null,
+            force_new: input.force_new || false
           });
 
-        if (error) throw error;
-        
-        // Since RLS blocks direct table access, we have to work with what the function gives us
-        // If force_new is requested, we'll add a timestamp to make it unique
-        if (input.force_new && data) {
-          // Try to update the conversation title to make it unique
-          try {
-            const timestamp = new Date().toLocaleString();
-            await this.updateConversation(data.id, { 
-              title: `${data.title || 'Conversation'} - ${timestamp}` 
-            });
-          } catch (updateError) {
-            console.warn('Could not update conversation title:', updateError);
-            // Continue anyway, at least we have a conversation
+        if (error) {
+          // If the enhanced version doesn't exist (missing force_new parameter),
+          // fall back to the basic version
+          if (error.code === 'PGRST202' || error.message?.includes('force_new')) {
+            console.warn('Enhanced create_direct_conversation not found, using basic version');
+            
+            // For force_new with basic version, we need a workaround
+            if (input.force_new) {
+              // Add timestamp to message to make it unique
+              const uniqueMessage = input.initial_message 
+                ? `${input.initial_message} [${new Date().toISOString()}]`
+                : `New conversation started at ${new Date().toISOString()}`;
+              
+              const { data: fallbackData, error: fallbackError } = await supabase
+                .rpc('create_direct_conversation', {
+                  other_user_id: input.participant_ids[0],
+                  initial_message: uniqueMessage
+                });
+              
+              if (fallbackError) throw fallbackError;
+              
+              console.log('Created conversation (basic RPC):', fallbackData.id);
+              return fallbackData;
+            } else {
+              // Non-force_new, use basic version normally
+              const { data: fallbackData, error: fallbackError } = await supabase
+                .rpc('create_direct_conversation', {
+                  other_user_id: input.participant_ids[0],
+                  initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null
+                });
+              
+              if (fallbackError) throw fallbackError;
+              return fallbackData;
+            }
           }
+          
+          throw error;
         }
         
+        console.log('Created conversation:', data.id, 'force_new:', input.force_new);
         return data;
       } catch (error: any) {
-        console.error('Database function failed:', error);
-        
-        // Since RLS blocks direct access, we can't fall back to manual creation
-        // We need to inform the user that conversation creation is not available
-        throw new Error('Conversation creation is currently unavailable due to database restrictions. Please contact support.');
+        console.error('Conversation creation failed:', error);
+        throw new Error('Unable to create conversation. Please try again.');
       }
     }
 
@@ -401,11 +434,10 @@ class MessagingApiReal {
       })
       .select(`
         *,
-        sender:profiles!messages_sender_id_fkey(
+        sender:members!messages_sender_id_fkey(
           id,
-          first_name,
-          last_name,
-          avatar_url
+          name,
+          image
         )
       `)
       .single();
@@ -630,9 +662,15 @@ class MessagingApiReal {
           });
 
         if (error) {
+          // If function doesn't exist, use fallback immediately
+          if (error.code === 'PGRST202' || error.message?.includes('does not exist')) {
+            console.warn('update_conversation_title function not found, using fallback');
+            return await this.updateConversationFallback(id, updates);
+          }
+          
           console.error('Database function update failed:', error);
           
-          // Fallback: Try direct participant verification
+          // For other errors, check permissions and use fallback
           const participantInfo = await this.checkParticipantStatus(id);
           if (!participantInfo.canUpdate) {
             throw new Error('You do not have permission to update this conversation');
@@ -741,7 +779,7 @@ class MessagingApiReal {
   }
 
   /**
-   * Check participant status using secure database function
+   * Check participant status using secure database function or fallback
    */
   private async checkParticipantStatus(conversationId: string): Promise<{
     isParticipant: boolean;
@@ -750,12 +788,19 @@ class MessagingApiReal {
     canUpdate: boolean;
   }> {
     try {
+      // Try to use the secure database function first
       const { data, error } = await supabase
         .rpc('check_conversation_participant', {
           conversation_id: conversationId
         });
 
       if (error) {
+        // If function doesn't exist, use fallback method
+        if (error.code === 'PGRST202' || error.message?.includes('does not exist')) {
+          console.warn('check_conversation_participant function not found, using fallback');
+          return await this.checkParticipantStatusFallback(conversationId);
+        }
+        
         console.error('Participant check failed:', error);
         return {
           isParticipant: false,
@@ -774,6 +819,52 @@ class MessagingApiReal {
       };
     } catch (error) {
       console.error('Error checking participant status:', error);
+      // Use fallback on any error
+      return await this.checkParticipantStatusFallback(conversationId);
+    }
+  }
+
+  /**
+   * Fallback method to check participant status without database function
+   */
+  private async checkParticipantStatusFallback(conversationId: string): Promise<{
+    isParticipant: boolean;
+    isCreator: boolean;
+    role: string | null;
+    canUpdate: boolean;
+  }> {
+    try {
+      const memberId = await this.getCurrentMemberId();
+      
+      // Check if user is a participant
+      const { data: participant } = await supabase
+        .from('conversation_participants')
+        .select('role')
+        .eq('conversation_id', conversationId)
+        .eq('user_id', memberId)
+        .is('left_at', null)
+        .single();
+
+      // Check if user is the creator
+      const { data: conversation } = await supabase
+        .from('conversations')
+        .select('created_by')
+        .eq('id', conversationId)
+        .single();
+
+      const isParticipant = !!participant;
+      const isCreator = conversation?.created_by === memberId;
+      const role = participant?.role || null;
+      const canUpdate = isCreator || (isParticipant && ['admin', 'moderator'].includes(role || ''));
+
+      return {
+        isParticipant,
+        isCreator,
+        role,
+        canUpdate
+      };
+    } catch (error) {
+      console.error('Fallback participant check failed:', error);
       return {
         isParticipant: false,
         isCreator: false,
