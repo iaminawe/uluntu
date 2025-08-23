@@ -118,6 +118,9 @@ export interface Group extends BaseEntity {
   eventCount?: number;
   resourceCount?: number;
   postCount?: number;
+  galleryCount?: number;
+  opportunityCount?: number;
+  marketplaceCount?: number;
   lastActive: string;
   members: GroupMember[];
   events?: Event[];
@@ -126,6 +129,31 @@ export interface Group extends BaseEntity {
   interests?: string[]; // Added for interests/hobbies/goals
   like_count?: number;
   comment_count?: number;
+}
+
+export interface GroupInvitation {
+  id: string;
+  group_id: string;
+  email: string;
+  invited_by: string;
+  message?: string;
+  status: 'pending' | 'accepted' | 'expired' | 'cancelled';
+  expires_at: string;
+  sent_at: string;
+  accepted_at?: string;
+}
+
+export interface InviteByEmailData {
+  groupId: string;
+  email: string;
+  message?: string;
+  invitedBy: string;
+}
+
+export interface InviteMemberData {
+  groupId: string;
+  memberId: string;
+  invitedBy: string;
 }
 
 export interface NewsArticle extends BaseEntity {
