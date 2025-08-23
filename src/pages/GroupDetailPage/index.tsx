@@ -12,11 +12,13 @@ import EventsTab from './EventsTab';
 import MembersTab from './MembersTab';
 import ResourcesTab from './ResourcesTab';
 import PostsTab from './PostsTab';
+import AdminTab from './AdminTab';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import JoinModal from '@/features/groups/components/JoinModal';
 import { useGroupsHybrid } from '@/features/groups/hooks/useGroupsHybrid';
 import { useGroupMembers, useGroupEvents, useGroupResources, useGroupPosts } from '@/hooks/useGroupQueries';
+import { useIsGroupAdmin } from '@/hooks/useEntityPermissions';
 import { TabType } from './types';
 
 export default function GroupDetailPage() {
@@ -33,6 +35,9 @@ export default function GroupDetailPage() {
   const { data: events = [], isLoading: eventsLoading } = useGroupEvents(group?.id);
   const { data: resources = [], isLoading: resourcesLoading } = useGroupResources(group?.id);
   const { data: posts = [], isLoading: postsLoading } = useGroupPosts(group?.id);
+  
+  // Check admin permissions
+  const isAdmin = useIsGroupAdmin(group?.id);
   
   
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
@@ -91,6 +96,7 @@ export default function GroupDetailPage() {
                 resourceCount: resources.length,
                 postCount: posts.length
               } as any}
+              isAdmin={isAdmin}
             />
             
             <div className="mt-6">
@@ -122,6 +128,16 @@ export default function GroupDetailPage() {
                 <PostsTab 
                   posts={posts} 
                   isLoading={postsLoading}
+                />
+              )}
+              {selectedTab === 'admin' && isAdmin && (
+                <AdminTab
+                  group={group as any}
+                  members={members}
+                  onGroupUpdate={() => {
+                    // Trigger refetch of group data
+                    window.location.reload();
+                  }}
                 />
               )}
             </div>
