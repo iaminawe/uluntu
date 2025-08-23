@@ -16,7 +16,9 @@ import {
   useBlockUser,
   useUnblockUser,
   messagingQueryKeys,
-  invalidateMessagingQueries
+  invalidateMessagingQueries,
+  clearConversationCache,
+  resetConversationState
 } from '@/hooks/useMessagingQueries';
 import {
   setSelectedConversation,
@@ -100,14 +102,36 @@ export function useMessagingHybrid() {
   // =============================================
 
   const selectConversation = useCallback((conversationId: string) => {
+    // If switching conversations, clear any stale cache for better isolation
+    if (selectedConversationId && selectedConversationId !== conversationId) {
+      // Clear previous conversation's cache to prevent message bleed-through
+      clearConversationCache(queryClient, selectedConversationId);
+      
+      // Reset UI state for the new conversation
+      dispatch(cancelReply());
+      dispatch(cancelEdit());
+      dispatch(clearMessageSelection());
+    }
+    
     dispatch(setSelectedConversation(conversationId));
     // Automatically mark as read when selecting (not implemented yet)
     // markAsReadMutation.mutate(conversationId);
-  }, [dispatch]);
+  }, [dispatch, selectedConversationId, queryClient]);
 
   const createConversation = useCallback(async (input: CreateConversationInput) => {
     try {
       const conversation = await createConversationMutation.mutateAsync(input);
+      
+      // Clear any existing cache for better isolation
+      if (selectedConversationId) {
+        clearConversationCache(queryClient, selectedConversationId);
+      }
+      
+      // Reset UI state when creating new conversation
+      dispatch(cancelReply());
+      dispatch(cancelEdit());
+      dispatch(clearMessageSelection());
+      
       // Select the new conversation
       dispatch(setSelectedConversation(conversation.id));
       return conversation;
@@ -115,7 +139,7 @@ export function useMessagingHybrid() {
       console.error('Failed to create conversation:', error);
       throw error;
     }
-  }, [createConversationMutation, dispatch]);
+  }, [createConversationMutation, dispatch, selectedConversationId, queryClient]);
 
   const archiveConversation = useCallback(async (conversationId: string) => {
     try {
