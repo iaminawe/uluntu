@@ -1,19 +1,25 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Send, Edit2, Trash2, MoreVertical } from 'lucide-react';
 import { useRealtimeChat } from '../../hooks/useRealtimeChat';
-import { useMessages } from '@/hooks/useMessagingQueries';
+import { useMessages, useConversation } from '@/hooks/useMessagingQueries';
+import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import MessageBubble from '../MessageBubble';
 import TypingIndicator from '../TypingIndicator';
-import { Message } from '../../types';
+import { 
+  Message, 
+  RealtimeMessageThreadProps, 
+  ConversationSwitchContext,
+  ConversationIsolationError,
+  isConversationIsolationError 
+} from '../../types';
 
-interface RealtimeMessageThreadProps {
-  conversationId: string;
-  className?: string;
-}
 
 export default function RealtimeMessageThread({ 
   conversationId, 
-  className = '' 
+  className = '',
+  onConversationSwitch,
+  onIsolationError
 }: RealtimeMessageThreadProps) {
   const [message, setMessage] = useState('');
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
@@ -21,10 +27,65 @@ export default function RealtimeMessageThread({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const previousConversationId = useRef<string | undefined>(undefined);
+  
+  // Get current user information
+  const { user } = useSession();
+  
+  // Get current user's member profile
+  const { data: currentMember } = useMemberByUserId(user?.id);
+  
+  // Fetch conversation details to check if it's a group chat
+  const { data: conversationData } = useConversation(conversationId || '');
 
-  // Fetch messages with React Query
+  // Fetch messages with React Query and error handling
   const { data, isLoading, error } = useMessages(conversationId);
-  const messages = data?.pages?.flat() || [];
+  
+  // Ensure messages are properly filtered for this conversation with validation
+  const messages = React.useMemo(() => {
+    try {
+      const flatMessages = data?.pages?.flat() || [];
+      const filteredMessages = flatMessages.filter(msg => {
+        if (!msg || !msg.conversation_id) {
+          console.warn('Invalid message detected:', msg);
+          return false;
+        }
+        if (msg.conversation_id !== conversationId) {
+          console.warn('Message bleeding detected:', {
+            messageConversationId: msg.conversation_id,
+            expectedConversationId: conversationId,
+            messageId: msg.id
+          });
+          return false;
+        }
+        return true;
+      });
+      
+      return filteredMessages;
+    } catch (err) {
+      const isolationError = new ConversationIsolationError(
+        'Failed to filter messages for conversation',
+        conversationId,
+        'message_filtering',
+        err
+      );
+      onIsolationError?.(isolationError);
+      return [];
+    }
+  }, [data, conversationId, onIsolationError]);
+  
+  // Determine if this is a group conversation (more than 2 participants)
+  const isGroupChat = useMemo(() => {
+    if (!conversationData) return false;
+    return conversationData.type === 'group' || 
+           (conversationData.participants && conversationData.participants.length > 2);
+  }, [conversationData]);
+  
+  // Get current user's member ID to identify own messages
+  const currentMemberId = useMemo(() => {
+    // Use the member ID from the member profile, not the auth user ID
+    return currentMember?.id || null;
+  }, [currentMember]);
 
   // Realtime functionality
   const {
@@ -37,6 +98,46 @@ export default function RealtimeMessageThread({
     sendTypingIndicator,
     requestNotificationPermission
   } = useRealtimeChat(conversationId);
+
+  // Reset state when conversation changes with error handling
+  useEffect(() => {
+    if (previousConversationId.current && previousConversationId.current !== conversationId) {
+      try {
+        // Create conversation switch context
+        const switchContext: ConversationSwitchContext = {
+          previousConversationId: previousConversationId.current,
+          newConversationId: conversationId,
+          reason: 'user_selection',
+          timestamp: new Date().toISOString()
+        };
+        
+        // Notify parent component of conversation switch
+        onConversationSwitch?.(switchContext);
+        
+        // Clear state when switching conversations
+        setMessage('');
+        setEditingMessage(null);
+        setReplyingTo(null);
+        
+        // Clear typing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+      } catch (error) {
+        const isolationError = new ConversationIsolationError(
+          'Failed to properly switch conversations',
+          conversationId,
+          'conversation_switch',
+          error
+        );
+        onIsolationError?.(isolationError);
+        console.error('Conversation isolation error:', isolationError);
+      }
+    }
+    
+    previousConversationId.current = conversationId;
+  }, [conversationId, onConversationSwitch, onIsolationError]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -139,6 +240,15 @@ export default function RealtimeMessageThread({
     textareaRef.current?.focus();
   };
 
+  // Show loading only if we have a valid conversationId
+  if (!conversationId) {
+    return (
+      <div className="flex items-center justify-center h-full text-slate-500 dark:text-slate-400">
+        Select a conversation to start messaging
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -148,6 +258,20 @@ export default function RealtimeMessageThread({
   }
 
   if (error) {
+    // Check if it's a conversation isolation error
+    if (isConversationIsolationError(error)) {
+      onIsolationError?.(error);
+      return (
+        <div className="flex items-center justify-center h-full text-red-500">
+          <div className="text-center">
+            <p className="font-semibold">Conversation Isolation Error</p>
+            <p className="text-sm mt-1">{error.message}</p>
+            <p className="text-xs mt-2 text-slate-500">Conversation ID: {error.conversationId}</p>
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="flex items-center justify-center h-full text-red-500">
         Error loading messages: {(error as Error).message}
@@ -195,7 +319,7 @@ export default function RealtimeMessageThread({
       )}
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-24rem)]">
         {messages.length === 0 ? (
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
             <p>No messages yet. Start the conversation!</p>
@@ -206,6 +330,8 @@ export default function RealtimeMessageThread({
               <MessageBubble
                 key={msg.id}
                 message={msg}
+                isOwn={msg.sender_id === currentMemberId}
+                showSenderName={isGroupChat}
                 onReply={() => handleReplyToMessage(msg)}
                 onEdit={() => handleEditMessage(msg)}
                 onDelete={() => handleDeleteMessage(msg.id)}
