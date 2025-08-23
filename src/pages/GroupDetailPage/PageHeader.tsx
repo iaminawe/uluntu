@@ -21,6 +21,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
       return;
     }
 
+    // For open groups, join directly
+    // For closed/secret groups, show the modal for approval
+    // Check both possible values since there's inconsistency in the codebase
+    if (group.visibility === 'closed' || group.visibility === 'secret' || 
+        (group as any).visibility === 'private' || (group as any).visibility === 'members_only') {
+      setShowJoinModal(true);
+      return;
+    }
+
     setIsProcessing(true);
     try {
       await joinGroup.mutateAsync({
@@ -89,7 +98,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
                     disabled={isProcessing}
                     className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isProcessing ? 'Processing...' : (group.visibility === 'closed' ? 'Request to Join' : 'Join Group')}
+                    {isProcessing ? 'Processing...' : (group.visibility === 'closed' || (group as any).visibility === 'private' || (group as any).visibility === 'members_only' ? 'Request to Join' : 'Join Group')}
                   </button>
                 )}
                 {isMember && (
