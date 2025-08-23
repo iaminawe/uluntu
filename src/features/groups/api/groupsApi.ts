@@ -436,6 +436,18 @@ export const groupsApi = {
     return groupMemberManagementApi.getUserInvitations(userId);
   },
 
+  async getInvitationByToken(token: string): Promise<unknown | null> {
+    return groupMemberManagementApi.getInvitationByToken(token);
+  },
+
+  async getGroupInvitations(groupId: string): Promise<unknown[]> {
+    return groupMemberManagementApi.getGroupInvitations(groupId);
+  },
+
+  async cancelInvitation(invitationId: string): Promise<boolean> {
+    return groupMemberManagementApi.cancelInvitation(invitationId);
+  },
+
   // New posts methods
   async createPost(groupId: string, postData: any): Promise<unknown | null> {
     return groupPostsApi.createPost({ group_id: groupId, ...postData });
@@ -444,5 +456,29 @@ export const groupsApi = {
   async getGroupActivities(groupId: string): Promise<unknown[]> {
     const { activities } = await groupPostsApi.getGroupActivities(groupId);
     return activities;
+  },
+
+  // Invitation methods - delegate to member management API
+  async inviteByEmail(data: { groupId: string; email: string; message?: string; invitedBy: string }): Promise<string | null> {
+    return groupMemberManagementApi.createInvitation({
+      group_id: data.groupId,
+      invited_email: data.email,
+      message: data.message
+    });
+  },
+
+  async inviteMember(data: { groupId: string; memberId: string; invitedBy: string }): Promise<string | null> {
+    return groupMemberManagementApi.createInvitation({
+      group_id: data.groupId,
+      invited_member_id: data.memberId
+    });
+  },
+
+  async acceptInvitation(token: string): Promise<boolean> {
+    return groupMemberManagementApi.acceptInvitation(token);
+  },
+
+  async getInvitationByToken(token: string): Promise<unknown | null> {
+    return groupMemberManagementApi.getInvitationByToken(token);
   }
 };
