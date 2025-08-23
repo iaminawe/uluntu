@@ -172,6 +172,31 @@ export interface MessageFilters {
   offset?: number;
 }
 
+// Types for conversation isolation utilities
+export interface ConversationCacheOptions {
+  /** Whether to clear the message cache */
+  clearMessages?: boolean;
+  /** Whether to clear the conversation cache */
+  clearConversation?: boolean;
+  /** Whether to reset UI state */
+  resetUIState?: boolean;
+}
+
+// Type for conversation switching context
+export interface ConversationSwitchContext {
+  previousConversationId?: string;
+  newConversationId: string;
+  reason: 'user_selection' | 'conversation_creation' | 'conversation_deletion';
+  timestamp: string;
+}
+
+// Enhanced conversation interface with cache metadata
+export interface ConversationWithCache extends Conversation {
+  _cacheVersion?: number;
+  _lastSwitchedAt?: string;
+  _isolated?: boolean;
+}
+
 // UI State types
 export interface MessagingUIState {
   selectedConversationId?: string;
@@ -243,6 +268,26 @@ export interface MessagingError {
   details?: any;
 }
 
+// Enhanced error type with conversation context
+export interface ConversationError extends MessagingError {
+  conversationId?: string;
+  operation?: string;
+  isolationIssue?: boolean;
+}
+
+// Error class for conversation isolation issues
+export class ConversationIsolationError extends Error {
+  constructor(
+    message: string,
+    public conversationId: string,
+    public operation: string,
+    public details?: any
+  ) {
+    super(message);
+    this.name = 'ConversationIsolationError';
+  }
+}
+
 // Utility types
 export type ConversationType = Conversation['type'];
 export type MessageType = Message['message_type'];
@@ -300,4 +345,28 @@ export interface MessageThread {
   updated_at: string;
   metadata?: ConversationMetadata;
   unread_count?: number;
+}
+
+// Type guards for conversation isolation
+export function isConversationIsolationError(error: any): error is ConversationIsolationError {
+  return error instanceof ConversationIsolationError || 
+         (error && error.name === 'ConversationIsolationError');
+}
+
+export function isConversationError(error: any): error is ConversationError {
+  return error && typeof error === 'object' && 'conversationId' in error;
+}
+
+// Type for real-time message payload with validation
+export interface ValidatedMessagePayload extends Message {
+  _validated: true;
+  _conversationId: string; // Explicit conversation ID for validation
+}
+
+// Enhanced props for components with conversation isolation
+export interface RealtimeMessageThreadProps {
+  conversationId: string;
+  className?: string;
+  onConversationSwitch?: (context: ConversationSwitchContext) => void;
+  onIsolationError?: (error: ConversationIsolationError) => void;
 }
