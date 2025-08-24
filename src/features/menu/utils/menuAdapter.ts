@@ -24,7 +24,7 @@ export function adaptMenuItemFromDatabase(row: MenuItemDatabaseRow): MenuItem {
     is_external: row.is_external,
     status: (row.status as ContentStatus) || 'published',
     featured: row.featured || false,
-    createdAt: row.created_at || new Date().toISOString(),
+    created_at: row.created_at || new Date().toISOString(),
     updated_at: row.updated_at || new Date().toISOString(),
     children: [] // Will be populated separately if needed
   };

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { menuManagementApi } from '@/features/admin/api/menuManagement';
-import type { MenuItem, MenuFilterParams, MenuType } from '@/types/menu';
+import type { MenuItem, MenuFilterParams, MenuType, MenuTarget, MenuVisibility, MenuItemDatabaseRow } from '@/types/menu';
+import { convertDatabaseRowToMenuItem, convertDatabaseRowsToMenuItems } from '@/features/menu/utils/typeAdapters';
 
 /**
  * Comprehensive Menu API for fetching dynamic menu items
@@ -76,8 +77,12 @@ class MenuAPI {
         );
       }
 
-      // Convert to MenuItem format
-      const menuItems = filteredData.map(this.convertDatabaseRowToMenuItem);
+      // Convert to MenuItem format using type adapter
+      const { items: menuItems, errors } = convertDatabaseRowsToMenuItems(filteredData);
+      
+      if (errors.length > 0) {
+        console.warn('Menu item conversion errors:', errors);
+      }
       
       // Build hierarchy if requested
       if (filters.include_children) {
@@ -121,48 +126,83 @@ class MenuAPI {
   }
 
   /**
-   * Convert MenuStructure to MenuItem format
+   * Convert MenuStructure to MenuItem format with proper type validation
    */
   private convertStructureToMenuItems(structures: any[], targetType: MenuType): MenuItem[] {
     return structures
       .filter(item => item.menu_type === targetType || !item.menu_type)
-      .map(structure => ({
-        id: structure.id,
-        title: structure.label,
-        url: structure.href,
-        description: structure.description,
-        menu_type: targetType,
-        sort_order: structure.order_index,
-        is_enabled: structure.is_enabled,
-        target: '_self',
-        visibility: 'public',
-        is_external: structure.href?.startsWith('http') || false,
-        children: structure.children ? 
-          this.convertStructureToMenuItems(structure.children, targetType) : undefined
-      }));
+      .map(structure => {
+        // Validate required fields
+        if (!structure.id || !structure.label || !structure.href) {
+          console.warn('Skipping invalid menu structure item:', structure);
+          return null;
+        }
+
+        return {
+          id: structure.id,
+          title: structure.label,
+          url: structure.href,
+          description: structure.description || undefined,
+          menu_type: targetType,
+          sort_order: Number(structure.order_index) || Number(structure.sort_order) || 0,
+          is_enabled: Boolean(structure.is_enabled),
+          target: '_self' as MenuTarget,
+          visibility: 'public' as MenuVisibility,
+          is_external: Boolean(structure.href?.startsWith('http')),
+          icon: structure.icon || undefined,
+          feature_flag: structure.feature_flag || undefined,
+          children: structure.children ? 
+            this.convertStructureToMenuItems(structure.children, targetType) : undefined
+        };
+      })
+      .filter((item): item is MenuItem => item !== null);
   }
 
   /**
-   * Convert database row to MenuItem
+   * Convert database row to MenuItem with proper type validation
    */
   private convertDatabaseRowToMenuItem(row: any): MenuItem {
+    // Validate required fields
+    if (!row.id || !row.title || !row.url) {
+      throw new Error('Invalid menu item data: missing required fields');
+    }
+
+    // Validate and convert menu_type
+    const menuType = row.menu_type as MenuType;
+    if (!['main', 'footer', 'mobile', 'admin'].includes(menuType)) {
+      throw new Error(`Invalid menu_type: ${row.menu_type}`);
+    }
+
+    // Validate and convert target
+    const target = row.target || '_self';
+    if (!['_self', '_blank', '_parent', '_top'].includes(target)) {
+      throw new Error(`Invalid target: ${target}`);
+    }
+
+    // Validate and convert visibility
+    const visibility = row.visibility || 'public';
+    if (!['public', 'authenticated', 'admin', 'role_based'].includes(visibility)) {
+      throw new Error(`Invalid visibility: ${visibility}`);
+    }
+
     return {
       id: row.id,
       title: row.title,
       url: row.url,
-      description: row.description,
-      menu_type: row.menu_type,
-      parent_id: row.parent_id,
-      sort_order: row.sort_order,
-      is_enabled: row.is_enabled,
-      target: row.target || '_self',
-      icon: row.icon,
-      css_classes: row.css_classes,
-      visibility: row.visibility || 'public',
-      required_roles: row.required_roles,
-      is_external: row.is_external || false,
-      created_at: row.created_at,
-      updated_at: row.updated_at
+      description: row.description || undefined,
+      menu_type: menuType,
+      parent_id: row.parent_id || undefined,
+      sort_order: Number(row.sort_order) || 0,
+      is_enabled: Boolean(row.is_enabled),
+      target: target as MenuTarget,
+      icon: row.icon || undefined,
+      css_classes: row.css_classes || undefined,
+      visibility: visibility as MenuVisibility,
+      required_roles: Array.isArray(row.required_roles) ? row.required_roles : undefined,
+      is_external: Boolean(row.is_external),
+      feature_flag: row.custom_properties?.feature_flag || undefined,
+      created_at: row.created_at || undefined,
+      updated_at: row.updated_at || undefined
     };
   }
 

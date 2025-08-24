@@ -1,21 +1,8 @@
 import { supabase } from '@/lib/supabase';
+import { MenuItem, MenuItemInput, MenuItemUpdate, MenuType } from '@/types/menu';
+import { convertDatabaseRowToMenuItem, convertDatabaseRowsToMenuItems } from '@/features/menu/utils/typeAdapters';
 
-export interface MenuItem {
-  id: string;
-  label: string;  // Maps to title in DB
-  href: string;   // Maps to url in DB
-  title?: string; // Direct DB field
-  url?: string;   // Direct DB field
-  description?: string;
-  parent_id?: string | null;
-  sort_order: number;
-  is_enabled: boolean;
-  icon?: string;
-  feature_flag?: string;
-  created_at: string;
-  updated_at: string;
-}
-
+// Legacy interface compatibility - deprecated
 export interface CreateMenuItemInput {
   label: string;
   href: string;
@@ -82,14 +69,14 @@ class MenuManagementAPI {
       throw new Error(`Failed to fetch menu items: ${error.message}`);
     }
 
-    // Map database fields to expected interface
-    return (data || []).map(item => ({
-      ...item,
-      label: item.title || item.label || '',
-      href: item.url || item.href || '',
-      title: item.title,
-      url: item.url
-    }));
+    // Use type adapter for consistent conversion
+    const { items, errors } = convertDatabaseRowsToMenuItems(data || []);
+    
+    if (errors.length > 0) {
+      console.warn('Menu item conversion errors:', errors);
+    }
+
+    return items;
   }
 
   /**
@@ -134,12 +121,16 @@ class MenuManagementAPI {
         title: input.label,
         url: input.href,
         description: input.description,
+        menu_type: 'main', // Default to main menu
         parent_id: input.parent_id,
         sort_order: input.sort_order,
         is_enabled: input.is_enabled ?? true,
+        target: '_self',
         icon: input.icon,
+        visibility: 'public',
+        is_external: false,
         custom_properties: input.feature_flag ? { feature_flag: input.feature_flag } : {},
-        menu_container_id: await this.getDefaultContainerId(),  // We'll need to handle this
+        menu_container_id: await this.getDefaultContainerId(),
         is_visible: true
       }])
       .select()
@@ -149,12 +140,8 @@ class MenuManagementAPI {
       throw new Error(`Failed to create menu item: ${error.message}`);
     }
 
-    // Map response to expected interface
-    return {
-      ...data,
-      label: data.title || '',
-      href: data.url || ''
-    };
+    // Use type adapter for consistent conversion
+    return convertDatabaseRowToMenuItem(data);
   }
 
   /**
@@ -190,12 +177,8 @@ class MenuManagementAPI {
       throw new Error(`Failed to update menu item: ${error.message}`);
     }
 
-    // Map response to expected interface
-    return {
-      ...data,
-      label: data.title || '',
-      href: data.url || ''
-    };
+    // Use type adapter for consistent conversion
+    return convertDatabaseRowToMenuItem(data);
   }
 
   /**
