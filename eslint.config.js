@@ -20,7 +20,12 @@ export default tseslint.config(
       '.next/**',
       'supabase/**',
       'docs/**',
-      'tests/**'
+      '.claude/**',
+      'database/**/*.js',
+      'memory/**',
+      'coordination/**',
+      'lib/**',
+      'tests/**/*.js'
     ]
   },
   {
@@ -41,7 +46,7 @@ export default tseslint.config(
         ecmaFeatures: {
           jsx: true
         },
-        project: ['./tsconfig.json', './tsconfig.node.json']
+        project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.test.json']
       }
     },
     plugins: {
@@ -92,10 +97,29 @@ export default tseslint.config(
     }
   },
   {
-    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.es2020,
+        ...globals.node,
+        ...globals.jest
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true
+        },
+        project: ['./tsconfig.test.json']
+      }
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      'no-console': 'off'
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-console': 'off',
+      'prefer-const': 'off'
     }
   }
 );
