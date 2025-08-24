@@ -11,14 +11,20 @@ import { ContentContainer, PageHeader } from '@/shared/components/ui/PageLayout'
 import { ErrorDisplay } from '@/shared/components/ui/ErrorDisplay';
 import { Button } from '@/shared/components/ui/Button';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { 
+  ConversationSwitchContext, 
+  ConversationIsolationError, 
+  isConversationIsolationError 
+} from '@/features/messaging/types';
 
 const MessagesPage: React.FC = () => {
   const { user } = useSession();
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [editingConversationTitle, setEditingConversationTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState('');
-  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isolationErrors, setIsolationErrors] = useState<ConversationIsolationError[]>([]);
   
   const {
     conversations,
@@ -46,8 +52,13 @@ const MessagesPage: React.FC = () => {
     }
   }, [composerState]);
 
-  const handleSelectConversation = (conversation: any) => {
-    selectConversation(conversation.id);
+  const handleSelectConversation = (conversationIdOrObject: any) => {
+    // Handle both ID string and conversation object
+    const conversationId = typeof conversationIdOrObject === 'string' 
+      ? conversationIdOrObject 
+      : conversationIdOrObject.id;
+    
+    selectConversation(conversationId);
     // On mobile, hide sidebar when selecting conversation
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
@@ -63,9 +74,24 @@ const MessagesPage: React.FC = () => {
     setShowNewMessageModal(true);
   };
 
-  const showNotification = (type: 'success' | 'error', message: string) => {
+  const showNotification = (type: 'success' | 'error' | 'warning', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
+  };
+
+  // Handle conversation isolation errors
+  const handleConversationSwitch = (context: ConversationSwitchContext) => {
+    console.log('Conversation switch:', context);
+    // Clear any previous isolation errors when switching conversations
+    setIsolationErrors([]);
+  };
+
+  const handleIsolationError = (error: ConversationIsolationError) => {
+    console.error('Conversation isolation error:', error);
+    setIsolationErrors(prev => [...prev, error]);
+    showNotification('warning', 
+      `Conversation isolation issue: ${error.message}. Please refresh if messages appear mixed.`
+    );
   };
 
   // Deletion hooks and mutations
@@ -168,7 +194,7 @@ const MessagesPage: React.FC = () => {
         <meta name="description" content="Communicate with other community members" />
       </Helmet>
       
-      <div className="h-[calc(100vh-4rem)] flex bg-slate-50 dark:bg-slate-900 relative">
+      <div className="h-[calc(100vh-8rem)] max-w-7xl mx-auto flex bg-slate-50 dark:bg-slate-900 relative">
         {/* Mobile header */}
         <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-600 p-4">
           <div className="flex items-center justify-between">
@@ -189,7 +215,7 @@ const MessagesPage: React.FC = () => {
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           md:translate-x-0 transition-transform duration-300 ease-in-out
           fixed md:relative top-16 md:top-0 left-0 z-30
-          w-80 md:w-96 h-[calc(100vh-4rem)] md:h-full
+          w-80 md:w-96 h-[calc(100vh-8rem)] md:h-full
           border-r border-slate-200 dark:border-slate-600
           bg-white dark:bg-slate-800
         `}>
@@ -331,9 +357,11 @@ const MessagesPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Message thread */}
+              {/* Message thread with isolation error handling */}
               <RealtimeMessageThread
                 conversationId={selectedConversationId}
+                onConversationSwitch={handleConversationSwitch}
+                onIsolationError={handleIsolationError}
               />
             </div>
           ) : (
@@ -360,11 +388,13 @@ const MessagesPage: React.FC = () => {
             fixed top-20 right-4 z-50 max-w-sm px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform
             ${notification.type === 'success' 
               ? 'bg-green-100 border border-green-500 text-green-800 dark:bg-green-900/20 dark:border-green-400 dark:text-green-200' 
+              : notification.type === 'warning'
+              ? 'bg-yellow-100 border border-yellow-500 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-400 dark:text-yellow-200'
               : 'bg-red-100 border border-red-500 text-red-800 dark:bg-red-900/20 dark:border-red-400 dark:text-red-200'
             }
           `}>
             <div className="flex items-center">
-              {notification.type === 'error' && <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />}
+              {(notification.type === 'error' || notification.type === 'warning') && <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />}
               <span className="text-sm font-medium">{notification.message}</span>
               <button
                 onClick={() => setNotification(null)}
@@ -391,6 +421,9 @@ const MessagesPage: React.FC = () => {
               initial_message: initialMessage,
               force_new: true // Always create new conversation
             });
+            
+            // CRITICAL: Clear message cache for the new conversation to prevent showing old messages
+            console.log('Created new conversation:', conversation.id);
             
             // Close modal and select the new conversation
             setShowNewMessageModal(false);

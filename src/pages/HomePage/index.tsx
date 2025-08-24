@@ -96,7 +96,8 @@ export default function HomePage() {
           height="large"
           actions={[
             { label: "Join the Community", href: "/directory", variant: "primary" },
-            { label: "Explore Events", href: "/events", variant: "secondary" }
+            { label: "Explore Events", href: "/events", variant: "secondary" },
+            { label: "✨ AI Editor Demo", href: "/ai-editor", variant: "secondary" }
           ]}
         />
         
@@ -125,7 +126,8 @@ export default function HomePage() {
           height="large"
           actions={[
             { label: "Join the Community", href: "/directory", variant: "primary" },
-            { label: "Explore Events", href: "/events", variant: "secondary" }
+            { label: "Explore Events", href: "/events", variant: "secondary" },
+            { label: "✨ AI Editor Demo", href: "/ai-editor", variant: "secondary" }
           ]}
         />
         

@@ -95,8 +95,8 @@ export default function MessageBubble({
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      {/* Avatar for other users (left side) */}
-      {!isOwn && (
+      {/* Avatar for current user (left side) */}
+      {isOwn && (
         <div className="flex-shrink-0 mb-1">
           {senderAvatar ? (
             <img
@@ -105,7 +105,7 @@ export default function MessageBubble({
               className="w-8 h-8 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
             />
           ) : (
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-slate-200 dark:border-slate-700 ${getUserColor(message.sender_id)}`}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-slate-200 dark:border-slate-700 bg-slate-500 dark:bg-slate-600">
               {senderInitials}
             </div>
           )}
@@ -258,8 +258,8 @@ export default function MessageBubble({
         </span>
       </div>
       
-      {/* Avatar for current user (right side) */}
-      {isOwn && (
+      {/* Avatar for other users (right side) */}
+      {!isOwn && (
         <div className="flex-shrink-0 mb-1">
           {senderAvatar ? (
             <img
@@ -268,7 +268,7 @@ export default function MessageBubble({
               className="w-8 h-8 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
             />
           ) : (
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-slate-200 dark:border-slate-700 bg-slate-500 dark:bg-slate-600">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-slate-200 dark:border-slate-700 ${getUserColor(message.sender_id)}`}>
               {senderInitials}
             </div>
           )}
