@@ -470,10 +470,6 @@ export const groupsApi = {
     });
   },
 
-  async acceptInvitation(token: string): Promise<boolean> {
-    return groupMemberManagementApi.acceptInvitation(token);
-  },
-
   async getInvitationByToken(token: string): Promise<unknown | null> {
     return groupMemberManagementApi.getInvitationByToken(token);
   }

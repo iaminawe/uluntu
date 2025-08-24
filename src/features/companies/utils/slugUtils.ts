@@ -21,7 +21,6 @@ export function generateSlug(name: string): string {
   logger.warn('Using deprecated company generateSlug. Consider migrating to @/lib/utils', 'COMPANY_SLUG');
   return universalGenerateSlug(name, {
     strict: true,
-    maxLength: 60,
     lowercase: true
   });
 }

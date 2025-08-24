@@ -3,7 +3,7 @@ import { PhotoGalleryTabProps } from '../../types';
 import ContentCard from '../ContentCard';
 import { Card } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
-import { SkeletonCard } from '@/components/ui/Skeleton/SkeletonCard';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 import { ErrorDisplay } from '@/components/ui/ErrorDisplay/ErrorDisplay';
 
 /**
