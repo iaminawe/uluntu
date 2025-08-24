@@ -524,76 +524,78 @@ class MessagingApiReal {
     if (error) throw error;
   }
 
-  /**
-   * Delete a conversation (soft delete - removes user from participants)
-   */
-  async deleteConversation(id: string): Promise<void> {
-    const memberId = await this.getCurrentMemberId();
+  // /**
+  //  * Delete a conversation (soft delete - removes user from participants)
+  //  * @deprecated - Use the deleteConversation method with DeleteConversationInput parameter
+  //  */
+  // async deleteConversation(id: string): Promise<void> {
+  //   const memberId = await this.getCurrentMemberId();
 
-    // Verify user is a participant
-    const { data: participant } = await supabase
-      .from('conversation_participants')
-      .select('user_id, role')
-      .eq('conversation_id', id)
-      .eq('user_id', memberId)
-      .is('left_at', null)
-      .single();
+  //   // Verify user is a participant
+  //   const { data: participant } = await supabase
+  //     .from('conversation_participants')
+  //     .select('user_id, role')
+  //     .eq('conversation_id', id)
+  //     .eq('user_id', memberId)
+  //     .is('left_at', null)
+  //     .single();
 
-    if (!participant) {
-      throw new Error('You are not a participant in this conversation');
-    }
+  //   if (!participant) {
+  //     throw new Error('You are not a participant in this conversation');
+  //   }
 
-    // Soft delete by setting left_at timestamp
-    const { error } = await supabase
-      .from('conversation_participants')
-      .update({ left_at: new Date().toISOString() })
-      .eq('conversation_id', id)
-      .eq('user_id', memberId);
+  //   // Soft delete by setting left_at timestamp
+  //   const { error } = await supabase
+  //     .from('conversation_participants')
+  //     .update({ left_at: new Date().toISOString() })
+  //     .eq('conversation_id', id)
+  //     .eq('user_id', memberId);
 
-    if (error) {
-      console.error('Error deleting conversation:', error);
-      throw new Error('Failed to delete conversation. Please try again.');
-    }
-  }
+  //   if (error) {
+  //     console.error('Error deleting conversation:', error);
+  //     throw new Error('Failed to delete conversation. Please try again.');
+  //   }
+  // }
 
-  /**
-   * Delete multiple conversations (bulk delete)
-   */
-  async deleteConversations(ids: string[]): Promise<void> {
-    const memberId = await this.getCurrentMemberId();
+  // /**
+  //  * Delete multiple conversations (bulk delete)
+  //  * @deprecated - Use the deleteConversations method with conversationIds parameter
+  //  */
+  // async deleteConversations(ids: string[]): Promise<void> {
+  //   const memberId = await this.getCurrentMemberId();
 
-    // Verify user is a participant in all conversations
-    const { data: participants, error: checkError } = await supabase
-      .from('conversation_participants')
-      .select('conversation_id')
-      .in('conversation_id', ids)
-      .eq('user_id', memberId)
-      .is('left_at', null);
+  //   // Verify user is a participant in all conversations
+  //   const { data: participants, error: checkError } = await supabase
+  //     .from('conversation_participants')
+  //     .select('conversation_id')
+  //     .in('conversation_id', ids)
+  //     .eq('user_id', memberId)
+  //     .is('left_at', null);
 
-    if (checkError) {
-      console.error('Error checking conversation participants:', checkError);
-      throw new Error('Failed to verify conversation access');
-    }
+  //   if (checkError) {
+  //     console.error('Error checking conversation participants:', checkError);
+  //     throw new Error('Failed to verify conversation access');
+  //   }
 
-    const accessibleIds = participants?.map(p => p.conversation_id) || [];
-    const inaccessibleCount = ids.length - accessibleIds.length;
+  //   const accessibleIds = participants?.map(p => p.conversation_id) || [];
+  //   const inaccessibleCount = ids.length - accessibleIds.length;
 
-    if (inaccessibleCount > 0) {
-      throw new Error(`Cannot delete ${inaccessibleCount} conversation(s) - access denied`);
-    }
+  //   if (inaccessibleCount > 0) {
+  //     throw new Error(`Cannot delete ${inaccessibleCount} conversation(s) - access denied`);
+  //   }
 
-    // Bulk soft delete
-    const { error } = await supabase
-      .from('conversation_participants')
-      .update({ left_at: new Date().toISOString() })
-      .in('conversation_id', accessibleIds)
-      .eq('user_id', memberId);
+  //   // Bulk soft delete
+  //   const { error } = await supabase
+  //     .from('conversation_participants')
+  //     .update({ left_at: new Date().toISOString() })
+  //     .in('conversation_id', accessibleIds)
+  //     .eq('user_id', memberId);
 
-    if (error) {
-      console.error('Error bulk deleting conversations:', error);
-      throw new Error('Failed to delete conversations. Please try again.');
-    }
-  }
+  //   if (error) {
+  //     console.error('Error bulk deleting conversations:', error);
+  //     throw new Error('Failed to delete conversations. Please try again.');
+  //   }
+  // }
 
   /**
    * Get unread message count
