@@ -8,7 +8,6 @@ describe('adaptCompanyFromDatabase', () => {
       description: 'Test Description',
       logo: 'test-logo.png',
       cover_image: null,
-      cover_image_url: null,
       industry: [],
       size: '1-10',
       founded: '2020',
@@ -17,6 +16,13 @@ describe('adaptCompanyFromDatabase', () => {
       status: 'active',
       featured: false,
       created_at: '2020-01-01',
+      comment_count: null,
+      like_count: null,
+      slug: 'test-company',
+      social: null,
+      updated_at: '2020-01-01',
+      user_id: 'test-user-id',
+      view_count: null,
     };
 
     expect(() => adaptCompanyFromDatabase(dbCompany)).toThrowError();

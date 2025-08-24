@@ -6,7 +6,7 @@ interface PerformanceMetrics {
   bundleSize?: number;
   networkRequests?: NetworkRequest[];
   cacheHits?: CacheMetrics;
-  renderMetrics?: RenderMetrics;
+  renderMetrics?: RenderMetrics | RenderMetrics[];
   memoryUsage?: MemoryMetrics;
 }
 
@@ -147,9 +147,10 @@ class PerformanceMonitor {
 
   // Get current metrics
   getMetrics(): PerformanceMetrics {
+    const renderMetricsArray = Array.from(this.renderTracker.values());
     return {
       ...this.metrics,
-      renderMetrics: Array.from(this.renderTracker.values())[0] // Get first render metric or undefined
+      renderMetrics: renderMetricsArray.length > 0 ? renderMetricsArray[0] : undefined
     };
   }
 
@@ -194,10 +195,10 @@ class PerformanceMonitor {
       report.push('Component Render Performance:');
       const renderMetricsArray = Array.from(this.renderTracker.values());
       const topRenders = renderMetricsArray
-        .sort((a: RenderMetrics, b: RenderMetrics) => b.renderCount - a.renderCount)
+        .sort((a, b) => b.renderCount - a.renderCount)
         .slice(0, 5);
 
-      topRenders.forEach((component: RenderMetrics) => {
+      topRenders.forEach((component) => {
         const avgRenderTime = component.renderTime / component.renderCount;
         report.push(`  ${component.componentName}:`);
         report.push(`    Renders: ${component.renderCount}`);

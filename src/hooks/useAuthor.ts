@@ -84,7 +84,9 @@ export function useAuthorFromContent(content?: Record<string, unknown>) {
   const userResult = useAuthorByUserId(isUserId ? authorId : undefined);
   const memberResult = useAuthorByMemberId(isMemberId ? authorId : undefined);
   
-  if (isUserId && content?.members) {
+  if (isUserId && content?.members && typeof content.members === 'object' && 
+      (content.members as Record<string, unknown>).id && 
+      (content.members as Record<string, unknown>).name) {
     // If we already have member data embedded, use it
     return {
       data: content.members as Author,

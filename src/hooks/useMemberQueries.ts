@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { membersApi, MemberInput } from '@/features/directory/api/membersApi';
 import allMockData from '../data/mock/mockData';
 import { ContentStatus } from '../types/common';
@@ -296,5 +297,60 @@ export function useDeleteMember(): UseMutationResult<
       queryClient.invalidateQueries({ queryKey: ['members'] });
       queryClient.invalidateQueries({ queryKey: ['members', id] });
     }
+  });
+}
+
+// Custom debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+export function useSearchMembers(query: string): UseQueryResult<Member[], Error> {
+  // Debounce the search query to avoid excessive API calls
+  const debouncedQuery = useDebounce(query, 300);
+
+  return useQuery<Member[], Error>({
+    queryKey: ['members', 'search', debouncedQuery, USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async () => {
+      // Only search if query is at least 2 characters
+      if (!debouncedQuery || debouncedQuery.trim().length < 2) {
+        return [];
+      }
+
+      const searchTerm = debouncedQuery.trim();
+
+      if (USE_SUPABASE) {
+        // Use the existing getAll method with search filter
+        const members = await membersApi.getAll({ search: searchTerm });
+        return members.map(m => adaptMember(m));
+      } else {
+        // Search mock data by name and email
+        const filteredMembers = allMockData.members.filter(member => {
+          const lowerSearchTerm = searchTerm.toLowerCase();
+          const matchesName = member.name.toLowerCase().includes(lowerSearchTerm);
+          const matchesEmail = member.email?.toLowerCase().includes(lowerSearchTerm);
+          return matchesName || matchesEmail;
+        });
+        return filteredMembers.map(m => adaptMember(m));
+      }
+    },
+    // Only enable the query if the debounced query is at least 2 characters
+    enabled: !!debouncedQuery && debouncedQuery.trim().length >= 2,
+    // Keep previous data while fetching new results
+    placeholderData: (previousData) => previousData,
+    // Cache results for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 }
