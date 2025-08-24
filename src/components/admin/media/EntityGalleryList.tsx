@@ -113,11 +113,11 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
   const getPrivacyIcon = (privacyLevel: Gallery['privacy_level']) => {
     switch (privacyLevel) {
       case 'public':
-        return <Globe className="w-4 h-4 text-green-500" title="Public" />;
+        return <Globe className="w-4 h-4 text-green-500" />;
       case 'members_only':
-        return <Users className="w-4 h-4 text-orange-500" title="Members Only" />;
+        return <Users className="w-4 h-4 text-orange-500" />;
       case 'private':
-        return <Lock className="w-4 h-4 text-red-500" title="Private" />;
+        return <Lock className="w-4 h-4 text-red-500" />;
       default:
         return null;
     }
@@ -185,7 +185,7 @@ const EntityGalleryList: React.FC<EntityGalleryListProps> = ({
                   {gallery.title}
                 </h4>
                 {isFeatured && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" title="Featured Gallery" />
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
                 )}
               </div>
               

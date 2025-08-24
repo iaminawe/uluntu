@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
 import { logger } from '@/utils/logger';
+import { requirePhotoGalleriesFeature } from './featureCheck';
 
 export interface GalleriesResponse {
   galleries: Gallery[];
@@ -12,6 +13,9 @@ export interface GalleriesResponse {
 export const galleryApi = {
   // Gallery CRUD operations
   async getAllGalleries(filters?: GalleryFilters & { page?: number; limit?: number }): Promise<GalleriesResponse> {
+    // Check if feature is enabled
+    await requirePhotoGalleriesFeature();
+    
     const page = filters?.page || 1;
     const limit = filters?.limit || 12;
     const from = (page - 1) * limit;
@@ -231,6 +235,8 @@ export const galleryApi = {
   },
 
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
+    // Check if feature is enabled
+    await requirePhotoGalleriesFeature();
     const { data, error } = await supabase
       .from('user_galleries')
       .insert([gallery as any])
@@ -246,6 +252,8 @@ export const galleryApi = {
   },
 
   async updateGallery(id: string, updates: Partial<Gallery>): Promise<Gallery> {
+    // Check if feature is enabled
+    await requirePhotoGalleriesFeature();
     const { data, error } = await supabase
       .from('user_galleries')
       .update(updates as any)
@@ -262,6 +270,8 @@ export const galleryApi = {
   },
 
   async deleteGallery(id: string): Promise<boolean> {
+    // Check if feature is enabled
+    await requirePhotoGalleriesFeature();
     const { error } = await supabase
       .from('user_galleries')
       .delete()
@@ -323,6 +333,8 @@ export const galleryApi = {
   },
 
   async uploadPhoto(input: PhotoUploadInput): Promise<Photo> {
+    // Check if feature is enabled
+    await requirePhotoGalleriesFeature();
     const baseFileName = `${Date.now()}-${input.file.name.replace(/\.[^/.]+$/, "")}`;
     const fileExtension = input.file.name.split('.').pop() || 'jpg';
     
