@@ -110,7 +110,8 @@ export function AuthorLink({
         {showAvatar && (
           <Skeleton 
             className="rounded-full" 
-            style={{ width: finalAvatarSize, height: finalAvatarSize }} 
+            width={`${finalAvatarSize}px`}
+            height={`${finalAvatarSize}px`}
           />
         )}
         <div className="flex flex-col">
@@ -134,8 +135,8 @@ export function AuthorLink({
     );
   }
 
-  // Handle no author found
-  if (!author) {
+  // Handle no author found or invalid author data
+  if (!author || !author.id || !author.name) {
     return (
       <span className={`text-gray-500 ${config.textSize} ${className}`}>
         {unknownAuthorText}
@@ -144,7 +145,7 @@ export function AuthorLink({
   }
 
   const handleClick = (e: React.MouseEvent) => {
-    if (onClick) {
+    if (onClick && author && author.id && author.name) {
       e.preventDefault();
       onClick(author);
     }
@@ -154,15 +155,15 @@ export function AuthorLink({
     <div className={`flex items-center ${config.gap} ${className}`}>
       {showAvatar && (
         <AuthorAvatarImage
-          src={author.image}
-          alt={`${author.name} avatar`}
-          name={author.name}
+          src={author.image || ''}
+          alt={`${author.name || 'Unknown'} avatar`}
+          name={author.name || 'Unknown'}
           size={finalAvatarSize}
         />
       )}
       <div className="flex flex-col min-w-0">
         <span className={`font-medium text-gray-900 dark:text-gray-100 truncate ${config.textSize}`}>
-          {author.name}
+          {author.name || unknownAuthorText}
         </span>
         {showTitle && author.title && (
           <span className={`text-gray-600 dark:text-gray-400 truncate ${config.titleSize}`}>
@@ -186,9 +187,11 @@ export function AuthorLink({
     );
   }
 
+  const profileUrl = author.profileUrl || `/directory/${author.slug || author.id}`;
+  
   return (
     <Link
-      to={author.profileUrl}
+      to={profileUrl}
       className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
       onClick={handleClick}
     >

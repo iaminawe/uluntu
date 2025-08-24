@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthorByUserId, useAuthorByMemberId, formatAuthorName, getAuthorProfileUrl } from '@/hooks/useAuthor';
+import { useAuthorByUserId, useAuthorByMemberId, formatAuthorName, getAuthorProfileUrl, Author } from '@/hooks/useAuthor';
 
 interface AuthorLinkProps {
   userId?: string | null;
@@ -24,7 +24,10 @@ export function AuthorLink({
   
   const author = authorByUser || authorByMember;
   const isLoading = userId ? loadingUser : loadingMember;
-  const profileUrl = getAuthorProfileUrl(author);
+  const validAuthor = author && typeof author === 'object' && 
+    'id' in author && 'name' in author && 
+    (author as Author).id && (author as Author).name;
+  const profileUrl = validAuthor ? getAuthorProfileUrl(author) : null;
   
   if (isLoading) {
     return <span className={`text-gray-400 ${className}`}>Loading...</span>;
@@ -32,10 +35,10 @@ export function AuthorLink({
   
   const authorDisplay = (
     <span className={`author-info ${className}`}>
-      {showImage && author && author.image && (
+      {showImage && validAuthor && (author as Author).image && (
         <img 
-          src={author.image} 
-          alt={author.name || fallback}
+          src={(author as Author).image || ''} 
+          alt={(author as Author).name || fallback}
           className="inline-block w-6 h-6 rounded-full mr-2"
         />
       )}
@@ -43,7 +46,7 @@ export function AuthorLink({
     </span>
   );
   
-  if (linkToProfile && profileUrl) {
+  if (linkToProfile && validAuthor && profileUrl) {
     return (
       <Link to={profileUrl} className="hover:underline">
         {authorDisplay}

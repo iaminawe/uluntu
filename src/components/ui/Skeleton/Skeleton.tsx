@@ -10,6 +10,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   height,
   rounded = 'rounded',
   colorMode,
+  style: inlineStyle,
 }) => {
   // Determine rounded class
   const roundedClass = rounded === true 
@@ -26,7 +27,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
       : 'bg-slate-200 dark:bg-slate-700';
   
   // Construct style props for width and height if provided
-  const style: React.CSSProperties = {};
+  const style: React.CSSProperties = { ...inlineStyle };
   if (width && !width.includes('w-')) style.width = width;
   if (height && !height.includes('h-')) style.height = height;
   

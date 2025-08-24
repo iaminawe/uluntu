@@ -23,6 +23,10 @@ export interface SkeletonProps {
    * Force light/dark mode for testing
    */
   colorMode?: 'light' | 'dark';
+  /**
+   * Inline styles to apply to the component
+   */
+  style?: React.CSSProperties;
 }
 
 export interface SkeletonContainerProps {
