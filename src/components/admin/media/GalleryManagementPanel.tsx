@@ -21,9 +21,10 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  X
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -53,6 +54,7 @@ const GalleryManagementPanel: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
+  const [viewingGallery, setViewingGallery] = useState<Gallery | null>(null);
 
   const pageSize = 20;
 
@@ -418,13 +420,19 @@ const GalleryManagementPanel: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setViewingGallery(gallery)}
+                        title="View Gallery"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditingGallery(gallery)}
+                        title="Edit Gallery"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -435,6 +443,14 @@ const GalleryManagementPanel: React.FC = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => setViewingGallery(gallery)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setEditingGallery(gallery)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Gallery
+                          </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Copy className="h-4 w-4 mr-2" />
                             Duplicate
@@ -447,7 +463,14 @@ const GalleryManagementPanel: React.FC = () => {
                             <Archive className="h-4 w-4 mr-2" />
                             Archive
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={() => {
+                              if (confirm(`Delete gallery "${gallery.title}"?`)) {
+                                deleteGalleriesMutation.mutate([gallery.id]);
+                              }
+                            }}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
@@ -496,8 +519,230 @@ const GalleryManagementPanel: React.FC = () => {
         </div>
       )}
 
-      {/* Modals would go here - Create Gallery Modal, Edit Gallery Modal etc. */}
-      {/* These would be separate components for better organization */}
+      {/* View Gallery Modal */}
+      {viewingGallery && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Gallery Details
+                </h3>
+                <Button
+                  variant="ghost"
+                  onClick={() => setViewingGallery(null)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[70vh]">
+              <div className="space-y-4">
+                {viewingGallery.cover_photo_url && (
+                  <div className="w-full h-48 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600">
+                    <img
+                      src={viewingGallery.cover_photo_url}
+                      alt={viewingGallery.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    {viewingGallery.title}
+                  </h4>
+                  {viewingGallery.description && (
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      {viewingGallery.description}
+                    </p>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Owner:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {viewingGallery.owner?.name || 'Unknown'} ({viewingGallery.owner_type})
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Privacy:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {viewingGallery.privacy_level}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Photos:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {viewingGallery.photo_count || 0}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Views:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {viewingGallery.view_count || 0}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Created:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {new Date(viewingGallery.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  {viewingGallery.is_featured && (
+                    <div>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">Status:</span>
+                      <Badge variant="secondary" className="ml-2">
+                        <Star className="h-3 w-3 mr-1" />
+                        Featured
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setViewingGallery(null);
+                  setEditingGallery(viewingGallery);
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Gallery
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setViewingGallery(null)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Gallery Modal */}
+      {editingGallery && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Edit Gallery
+                </h3>
+                <Button
+                  variant="ghost"
+                  onClick={() => setEditingGallery(null)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const updates = {
+                title: formData.get('title') as string,
+                description: formData.get('description') as string,
+                privacy_level: formData.get('privacy_level') as Gallery['privacy_level'],
+                is_featured: formData.get('is_featured') === 'on'
+              };
+              updateGalleryMutation.mutate({ id: editingGallery.id, updates });
+            }}>
+              <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Title
+                  </label>
+                  <Input
+                    name="title"
+                    defaultValue={editingGallery.title}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={editingGallery.description || ''}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Privacy Level
+                  </label>
+                  <Select name="privacy_level" defaultValue={editingGallery.privacy_level}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="private">Private</SelectItem>
+                      <SelectItem value="unlisted">Unlisted</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="is_featured"
+                    id="is_featured"
+                    defaultChecked={editingGallery.is_featured}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                    Featured Gallery
+                  </label>
+                </div>
+              </div>
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingGallery(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={updateGalleryMutation.isPending}
+                >
+                  {updateGalleryMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Gallery Modal - TODO: Implement create functionality */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Create New Gallery
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Gallery creation functionality will be implemented here.
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCreateModal(false)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
