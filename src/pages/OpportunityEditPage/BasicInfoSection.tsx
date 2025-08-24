@@ -1,8 +1,9 @@
 import { MapPin, Calendar, Building, Globe, Mail, DollarSign, Link } from 'lucide-react';
-import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import { EnhancedContentAIEditor } from '@/components/content/EnhancedContentAIEditor';
 import CustomSelect from '@/shared/components/ui/CustomSelect';
 import { FormImageUpload } from '@/shared/components/ui/Form';
 import { FormSectionProps } from './types';
+import { useState } from 'react';
 
 const OpportunityTypeOptions = [
   { value: 'job', label: 'Job Posting' },
@@ -25,6 +26,7 @@ const BasicInfoSection = ({
   onImageChange,
   isSubmitting
 }: FormSectionProps) => {
+  const [enableImages, setEnableImages] = useState(true);
   return (
     <>
       {/* Basic Information */}
@@ -78,19 +80,38 @@ const BasicInfoSection = ({
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <RichTextEditor
-            id="description"
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Description <span className="text-red-500">*</span>
+            </label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="enable-images"
+                checked={enableImages}
+                onChange={(e) => setEnableImages(e.target.checked)}
+                disabled={isSubmitting}
+                className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-slate-300 rounded"
+              />
+              <label htmlFor="enable-images" className="text-sm text-slate-600 dark:text-slate-400">
+                Enable AI image insertion
+              </label>
+            </div>
+          </div>
+          <EnhancedContentAIEditor
             value={formData.description}
             onChange={onDescriptionChange}
             placeholder="Enter a detailed description of the opportunity..."
-            height="250px"
+            contentType="opportunities"
+            includeImages={enableImages}
             disabled={isSubmitting}
+            height="500px"
             className={errors.description ? 'border-red-500' : ''}
           />
           {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Use the AI assistant to generate compelling opportunity descriptions, improve writing quality, or get content suggestions specific to job postings and volunteer opportunities.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
