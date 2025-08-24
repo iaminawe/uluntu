@@ -41,7 +41,8 @@ const config: Config.InitialOptions = {
         allowSyntheticDefaultImports: true,
         strict: true,
         skipLibCheck: true,
-        forceConsistentCasingInFileNames: true
+        forceConsistentCasingInFileNames: true,
+        isolatedModules: true
       }
     }],
     '^.+\\.(js|jsx)$': ['babel-jest', {
@@ -91,12 +92,7 @@ const config: Config.InitialOptions = {
   // Test timeout
   testTimeout: 10000,
   
-  // Globals
-  globals: {
-    'ts-jest': {
-      isolatedModules: true
-    }
-  },
+  // Globals - removed deprecated ts-jest config
   
   // Module paths to ignore
   modulePathIgnorePatterns: [
