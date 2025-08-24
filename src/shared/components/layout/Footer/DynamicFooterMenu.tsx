@@ -9,7 +9,7 @@ import type {
   DynamicFooterProps 
 } from './types';
 import type { MenuItem } from '@/types/menu';
-import FooterColumn from './FooterColumn';
+import FooterColumnComponent from './FooterColumn';
 import { MenuLoadingSkeleton } from '@/features/menu/components/DynamicMenu';
 
 interface DynamicFooterMenuProps extends DynamicFooterProps {
@@ -33,7 +33,8 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
   className = '',
   onError
 }) => {
-  const { isFeatureEnabled } = useEnabledFeatures();
+  const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
+  const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
   const { items: rawMenuItems, loading, error } = useMenuItems('footer_links');
   
   // Check if dynamic footer menus are enabled
@@ -134,7 +135,7 @@ export const DynamicFooterMenu: React.FC<DynamicFooterMenuProps> = ({
   return (
     <div className={`${gridClassName} gap-8 ${className}`}>
       {columnsToRender.map((column, index) => (
-        <FooterColumn key={column.id || index} column={column} />
+        <FooterColumnComponent key={column.id || index} column={column} />
       ))}
     </div>
   );

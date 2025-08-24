@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEnabledFeatures } from '@/hooks/useSettings';
 import type { MenuItem } from '@/types/menu';
-import type { FeatureKey } from '@/types/settings';
+import type { FeatureKey } from './types';
 
 interface FooterFeatureGateProps {
   children: React.ReactNode;
@@ -24,7 +24,8 @@ export const FooterFeatureGate: React.FC<FooterFeatureGateProps> = ({
   requireAll = false,
   showDevMode = true
 }) => {
-  const { isFeatureEnabled } = useEnabledFeatures();
+  const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
+  const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
 
   // Get feature flags to check
   const featuresToCheck = getFeaturesToCheck(featureKey, menuItem);
@@ -131,7 +132,8 @@ export function withFooterFeatureGate<T extends object>(
  * Hook for managing footer feature flags
  */
 export function useFooterFeatures() {
-  const { isFeatureEnabled, features } = useEnabledFeatures();
+  const { isFeatureEnabled: checkFeature, features } = useEnabledFeatures();
+  const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
 
   const checkItemFeature = (item: MenuItem): boolean => {
     if (!item.feature_flag) return true;
@@ -182,7 +184,8 @@ export const FooterFeatureDebug: React.FC<{
   features: string[];
   className?: string;
 }> = ({ features, className = '' }) => {
-  const { isFeatureEnabled } = useEnabledFeatures();
+  const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
+  const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
 
   if (process.env.NODE_ENV !== 'development') {
     return null;

@@ -2,14 +2,15 @@ import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import { useEnabledFeatures } from '@/hooks/useSettings';
 import { useMenuItems } from '@/features/menu/contexts/MenuContext';
 import { filterMenuItemsByFeatures } from '@/features/menu/utils/menuAdapters';
-import type { MenuItem, FooterColumn, FooterMenuConfig } from '../types';
+import type { MenuItem } from '@/types/menu';
+import type { FooterColumn, FooterMenuConfig } from './types';
 import type { FeatureKey } from '@/types/settings';
 
 interface FooterMenuContextType {
   footerMenuItems: MenuItem[];
   loading: boolean;
   error: string | null;
-  isFeatureEnabled: (feature: FeatureKey) => boolean;
+  isFeatureEnabled: (feature: string) => boolean;
   generateColumns: (config?: Partial<FooterMenuConfig>) => FooterColumn[];
   refreshFooterMenu: () => void;
 }
@@ -30,7 +31,8 @@ export const FooterMenuProvider: React.FC<FooterMenuProviderProps> = ({
   userRoles = [],
   fallbackItems = []
 }) => {
-  const { isFeatureEnabled } = useEnabledFeatures();
+  const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
+  const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
   const { items: rawItems, loading, error, refresh } = useMenuItems('footer_links');
 
   // Filter and process footer menu items

@@ -1,16 +1,17 @@
 // Types for Footer component with dynamic menu support
 import React from 'react';
 import type { MenuItem } from '@/types/menu';
+import type { FeatureKey as SettingsFeatureKey } from '@/types/settings';
 
-// Common types
+// Footer feature type - more permissive than settings FeatureKey
 export type FeatureKey = string;
 
 export interface FooterLink {
   text: string;
   href: string;
   isExternal?: boolean;
-  target?: string;
-  icon?: string;
+  target?: '_self' | '_blank' | '_parent' | '_top';
+  icon?: string | null;
   cssClasses?: string;
 }
 
