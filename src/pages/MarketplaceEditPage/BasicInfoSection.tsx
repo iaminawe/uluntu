@@ -1,8 +1,9 @@
-import { DollarSign, MapPin } from 'lucide-react';
-import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import { DollarSign, MapPin, Settings } from 'lucide-react';
+import { EnhancedContentAIEditor } from '@/components/content/EnhancedContentAIEditor';
 import { FormInput, FormSelect, FormCheckbox } from '@/shared/components/ui/Form';
 import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 import { BasicInfoSectionProps, ListingType } from './types';
+import { useState } from 'react';
 
 const typeOptions = [
   { value: 'product', label: 'Product' },
@@ -31,9 +32,11 @@ const BasicInfoSection = ({
   getTypeIcon,
   isSubmitting
 }: BasicInfoSectionProps) => {
-  const handleDescriptionChange = (data: string) => {
+  const [includeImages, setIncludeImages] = useState(true);
+  
+  const handleDescriptionChange = (content: string) => {
     const syntheticEvent = {
-      target: { name: 'description', value: data }
+      target: { name: 'description', value: content }
     } as React.ChangeEvent<HTMLTextAreaElement>;
     
     handleChange(syntheticEvent);
@@ -73,15 +76,29 @@ const BasicInfoSection = ({
       />
       
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Description <span className="text-red-500">*</span>
-        </label>
-        <RichTextEditor
-          id="description"
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Description <span className="text-red-500">*</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIncludeImages(!includeImages)}
+              className="flex items-center gap-1 px-2 py-1 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-600 rounded transition-colors"
+              disabled={isSubmitting}
+            >
+              <Settings className="h-3 w-3" />
+              {includeImages ? 'Images On' : 'Images Off'}
+            </button>
+          </div>
+        </div>
+        <EnhancedContentAIEditor
           value={formData.description}
           onChange={handleDescriptionChange}
           placeholder="Provide details about your listing..."
-          height="200px"
+          contentType="marketplace"
+          includeImages={includeImages}
+          height="500px"
           disabled={isSubmitting}
         />
       </div>

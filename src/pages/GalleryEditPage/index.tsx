@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Upload, Globe, Users, Lock, X } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Globe, Users, Lock, X, Image } from 'lucide-react';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
@@ -12,6 +12,7 @@ import { useUserGroups } from '@/shared/hooks/useUserContent';
 import type { Gallery, CreateGalleryInput, UpdateGalleryInput } from '@/features/gallery/types';
 import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
+import { EnhancedContentAIEditor } from '@/components/content/EnhancedContentAIEditor';
 
 const GalleryEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +46,7 @@ const GalleryEditPage: React.FC = () => {
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  const [enableImageInsertion, setEnableImageInsertion] = useState(true);
   
   // Topic management
   const { data: entityTopics } = useEntityTopics('gallery', id || '');
@@ -135,8 +137,8 @@ const GalleryEditPage: React.FC = () => {
       newErrors.title = 'Title must be less than 100 characters';
     }
     
-    if (formData.description && formData.description.length > 500) {
-      newErrors.description = 'Description must be less than 500 characters';
+    if (formData.description && formData.description.length > 2000) {
+      newErrors.description = 'Description must be less than 2000 characters';
     }
     
     setErrors(newErrors);
@@ -303,25 +305,57 @@ const GalleryEditPage: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description
-            </label>
-            <textarea
-              id="description"
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Description
+              </label>
+              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input
+                  type="checkbox"
+                  checked={enableImageInsertion}
+                  onChange={(e) => setEnableImageInsertion(e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <Image className="w-4 h-4" />
+                Enable AI Image Insertion
+              </label>
+            </div>
+            
+            <EnhancedContentAIEditor
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 ${
-                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Tell us about this gallery..."
-              rows={4}
-              maxLength={500}
+              onChange={(content) => setFormData({ ...formData, description: content })}
+              placeholder="Tell us about this gallery... You can use AI to generate compelling descriptions, improve your writing, or add relevant images."
+              contentType="gallery"
+              includeImages={enableImageInsertion}
+              height="500px"
+              className="w-full"
+              customPrompts={[
+                {
+                  id: 'collection-story',
+                  label: '📚 Collection Story',
+                  prompt: 'Write a compelling story about this photo collection, explaining its significance and what makes it special.',
+                  icon: '📚'
+                },
+                {
+                  id: 'photo-context',
+                  label: '🎨 Add Photo Context',
+                  prompt: 'Provide rich context and background information about the photos in this gallery.',
+                  icon: '🎨'
+                },
+                {
+                  id: 'exhibition-description',
+                  label: '🖼️ Exhibition Style',
+                  prompt: 'Write this as if it were a professional exhibition description for an art gallery or museum.',
+                  icon: '🖼️'
+                }
+              ]}
             />
+            
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
             )}
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {(formData.description || '').length}/500 characters
+              Content length: {(formData.description || '').length} characters. Rich content supported (Markdown, HTML).
             </p>
           </div>
 
