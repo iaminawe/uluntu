@@ -22,12 +22,40 @@ interface ComponentBlock {
   type: string;
   content: string;
   metadata?: {
+    // Basic styling
     style?: string;
     subtitle?: string;
     cta?: boolean;
     description?: string;
     icon?: string;
     columns?: number;
+    // Carousel specific
+    slides?: Array<{
+      id: string;
+      image: string;
+      title: string;
+      subtitle: string;
+      ctaText: string;
+      ctaLink: string;
+    }>;
+    autoPlay?: boolean;
+    showDots?: boolean;
+    showArrows?: boolean;
+    // Image specific
+    src?: string;
+    alt?: string;
+    alignment?: string;
+    width?: string;
+    caption?: boolean;
+    // Video specific
+    type?: string;
+    controls?: boolean;
+    muted?: boolean;
+    // Columns specific
+    columnCount?: number;
+    gap?: string;
+    // Column layout data
+    height?: string;
   };
 }
 
