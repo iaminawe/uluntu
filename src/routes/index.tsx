@@ -99,6 +99,7 @@ const SettingsPage = lazy(() => import('../pages/admin/SettingsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 const ModerationPage = lazy(() => import('../pages/admin/ModerationPage'));
 const RolesPage = lazy(() => import('../pages/admin/RolesPage'));
+const MediaManagementPage = lazy(() => import('../pages/admin/MediaManagementPage'));
 const AdminMembersPage = lazy(() => import('../pages/admin/entities/MembersPage'));
 const AdminCompaniesPage = lazy(() => import('../pages/admin/entities/CompaniesPage'));
 const AdminGroupsPage = lazy(() => import('../pages/admin/entities/GroupsPage'));
@@ -187,7 +188,7 @@ export const router = createBrowserRouter([
       { path: 'debug', element: withSuspense(DebugPage) },
       { path: 'test-fonts', element: withSuspense(TestFontsPage) },
       { path: 'test-editor', element: withSuspense(TestBlockEditor) },
-      { path: 'ai-editor', element: withSuspense(AIEditorDemo) },
+      { path: 'ai-editor', element: withSuspense(WorkingAIEditor) },
       { path: 'test-simple', element: withSuspense(TestSimpleEditor) },
       { path: 'test-no-editor', element: withSuspense(TestNoEditor) },
       { path: 'working-ai', element: withSuspense(WorkingAIEditor) },
@@ -400,6 +401,7 @@ export const router = createBrowserRouter([
         path: 'theme', 
         element: withSuspense(ThemeConfigPage)
       },
+      { path: 'media', element: withSuspense(MediaManagementPage) },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
       { path: 'audit', element: withSuspense(AuditPage) },

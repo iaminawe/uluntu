@@ -25,42 +25,68 @@ export default function WorkingAIEditor() {
       
       // Add images if configured
       if (includeImages && unsplashConfigured) {
-        console.log('Fetching images for:', topic);
-        const photos = await unsplashService.findRelevantPhotos(
-          result.substring(0, 500),
-          topic,
-          3
-        );
+        console.log('Unsplash configured:', unsplashConfigured);
+        console.log('Include images enabled:', includeImages);
+        console.log('Fetching images for topic:', topic);
         
-        if (photos.length > 0) {
-          // Add hero image after title
-          const lines = result.split('\n');
-          const processedLines = [];
-          let addedHero = false;
+        try {
+          const photos = await unsplashService.findRelevantPhotos(
+            result.substring(0, 500),
+            topic,
+            3
+          );
           
-          for (let i = 0; i < lines.length; i++) {
-            processedLines.push(lines[i]);
+          console.log('Photos fetched:', photos.length);
+          
+          if (photos.length > 0) {
+            // Add hero image after title
+            const lines = result.split('\n');
+            const processedLines = [];
+            let addedHero = false;
+            let addedSection = false;
             
-            // Add hero image after first heading
-            if (!addedHero && lines[i].startsWith('#') && photos[0]) {
-              processedLines.push('');
-              processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
-              processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
-              processedLines.push('');
-              addedHero = true;
+            for (let i = 0; i < lines.length; i++) {
+              processedLines.push(lines[i]);
+              
+              // Add hero image after first heading
+              if (!addedHero && lines[i].trim().startsWith('#') && photos[0]) {
+                console.log('Adding hero image after heading:', lines[i]);
+                processedLines.push('');
+                processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
+                processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
+                processedLines.push('');
+                addedHero = true;
+              }
+              
+              // Add section image in the middle
+              if (!addedSection && i > Math.floor(lines.length / 2) && photos[1]) {
+                console.log('Adding section image at line:', i);
+                processedLines.push('');
+                processedLines.push(`![${photos[1].photo.alt_description || 'Section image'}](${unsplashService.getOptimalImageUrl(photos[1].photo)})`);
+                processedLines.push(`*${unsplashService.formatAttribution(photos[1].photo)}*`);
+                processedLines.push('');
+                addedSection = true;
+              }
             }
             
-            // Add section images
-            if (i > lines.length / 2 && photos[1] && !processedLines.some(l => l.includes(photos[1].photo.urls.regular))) {
+            // Add conclusion image if we have a third photo and haven't added it yet
+            if (photos[2] && !processedLines.some(line => line.includes(photos[2].photo.urls.regular))) {
+              console.log('Adding conclusion image');
               processedLines.push('');
-              processedLines.push(`![${photos[1].photo.alt_description || 'Section image'}](${unsplashService.getOptimalImageUrl(photos[1].photo)})`);
-              processedLines.push(`*${unsplashService.formatAttribution(photos[1].photo)}*`);
-              processedLines.push('');
+              processedLines.push(`![${photos[2].photo.alt_description || 'Conclusion image'}](${unsplashService.getOptimalImageUrl(photos[2].photo)})`);
+              processedLines.push(`*${unsplashService.formatAttribution(photos[2].photo)}*`);
             }
+            
+            finalContent = processedLines.join('\n');
+            console.log('Images successfully added to content');
+          } else {
+            console.log('No photos returned from Unsplash');
           }
-          
-          finalContent = processedLines.join('\n');
+        } catch (error) {
+          console.error('Error fetching Unsplash images:', error);
         }
+      } else {
+        console.log('Images not being added - includeImages:', includeImages, 'unsplashConfigured:', unsplashConfigured);
       }
       
       setContent(finalContent);

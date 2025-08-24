@@ -967,4 +967,1253 @@ const useEnhancedUpload = (
   };
 };
 ```
+
+## Integration Points
+
+### 1. Groups Integration
+
+```typescript
+// /src/features/groups/components/GroupGalleries/GroupGalleryManager.tsx
+
+interface GroupGalleryIntegration {
+  // Gallery Types for Groups
+  createMemberGallery(groupId: string, memberId: string): Promise<Gallery>;
+  createEventGallery(groupId: string, eventId: string): Promise<Gallery>;
+  createGeneralGallery(groupId: string, title: string): Promise<Gallery>;
+  
+  // Member Permissions
+  canMemberCreateGallery(groupId: string, memberId: string): Promise<boolean>;
+  canMemberUploadToGallery(galleryId: string, memberId: string): Promise<boolean>;
+  
+  // Group-specific Features
+  enableGroupPhotoContest(groupId: string, rules: ContestRules): Promise<Contest>;
+  createGroupPhotoAlbum(groupId: string, albumData: AlbumData): Promise<Album>;
+  shareGalleryWithGroup(galleryId: string, groupId: string, permissions: SharingPermissions): Promise<void>;
+}
+
+// Usage Example
+const GroupProfile: React.FC<{ group: Group }> = ({ group }) => {
+  const { galleries, createGallery } = useGroupGalleries(group.id);
+  
+  return (
+    <div>
+      <GalleryGrid galleries={galleries} />
+      <CreateGalleryButton 
+        onCreateGallery={(data) => createGallery(data)}
+        entityType="group"
+        entityId={group.id}
+        allowedTypes={['members', 'events', 'general']}
+      />
+    </div>
+  );
+};
 ```
+
+### 2. Events Integration
+
+```typescript
+// /src/features/events/components/EventGalleries/EventGalleryIntegration.tsx
+
+interface EventGalleryIntegration {
+  // Pre-Event Setup
+  createEventGalleryStructure(eventId: string): Promise<{
+    mainGallery: Gallery;
+    speakerGallery: Gallery;
+    venueGallery: Gallery;
+  }>;
+  
+  // During Event
+  enableLivePhotoUploads(eventId: string, settings: LiveUploadSettings): Promise<void>;
+  createInstantGallery(eventId: string, sessionId: string): Promise<Gallery>;
+  
+  // Post-Event
+  generateEventSummaryGallery(eventId: string): Promise<Gallery>;
+  shareEventGalleries(eventId: string, shareConfig: EventSharingConfig): Promise<void>;
+  
+  // Speaker Integration
+  assignSpeakerPhotos(eventId: string, speakerId: string, photoIds: string[]): Promise<void>;
+  createSpeakerShowcase(eventId: string, speakerId: string): Promise<Gallery>;
+  
+  // Venue Integration
+  uploadVenuePhotos(eventId: string, venuePhotos: File[]): Promise<Photo[]>;
+  setEventHeaderImage(eventId: string, photoId: string): Promise<void>;
+}
+
+// Event Gallery Component
+const EventGalleryTab: React.FC<{ event: Event }> = ({ event }) => {
+  const { galleries, uploadToGallery } = useEventGalleries(event.id);
+  
+  return (
+    <TabContainer>
+      <TabList>
+        <Tab>Main Photos</Tab>
+        <Tab>Speakers</Tab>
+        <Tab>Venue</Tab>
+        <Tab>Live Stream</Tab>
+      </TabList>
+      
+      <TabPanel>
+        <EventPhotoGallery 
+          gallery={galleries.main}
+          allowUploads={event.status === 'active'}
+          onUpload={(files) => uploadToGallery('main', files)}
+        />
+      </TabPanel>
+      
+      <TabPanel>
+        <SpeakerGalleryGrid 
+          speakers={event.speakers}
+          galleries={galleries.speakers}
+          onAssignPhoto={(speakerId, photoId) => assignSpeakerPhoto(speakerId, photoId)}
+        />
+      </TabPanel>
+    </TabContainer>
+  );
+};
+```
+
+### 3. News Integration
+
+```typescript
+// /src/features/news/components/NewsGalleryIntegration.tsx
+
+interface NewsGalleryIntegration {
+  // Article Gallery Management
+  createArticleGallery(newsId: string, type: 'featured' | 'inline' | 'archive'): Promise<Gallery>;
+  attachGalleryToArticle(articleId: string, galleryId: string, position?: number): Promise<void>;
+  
+  // Featured Images
+  setFeaturedImage(newsId: string, photoId: string): Promise<void>;
+  createImageStory(newsId: string, photoIds: string[]): Promise<ImageStory>;
+  
+  // Editorial Workflow
+  submitPhotosForReview(newsId: string, photoIds: string[], metadata: EditorialMetadata): Promise<void>;
+  approvePhotosForPublication(newsId: string, photoIds: string[]): Promise<void>;
+  
+  // Rich Media Support
+  createPhotoCarousel(newsId: string, photoIds: string[], config: CarouselConfig): Promise<Carousel>;
+  embedGalleryInArticle(articleId: string, galleryId: string, embedConfig: EmbedConfig): Promise<string>;
+}
+
+// News Editor Integration
+const NewsEditor: React.FC<{ article: NewsArticle }> = ({ article }) => {
+  const { galleries, attachGallery } = useNewsGalleries(article.id);
+  const { insertEmbed } = useBlockEditor();
+  
+  const handleGalleryEmbed = (galleryId: string) => {
+    const embedCode = generateGalleryEmbed(galleryId, {
+      layout: 'carousel',
+      showCaptions: true,
+      autoplay: false
+    });
+    
+    insertEmbed(embedCode);
+  };
+  
+  return (
+    <EditorLayout>
+      <BlockEditor content={article.content} />
+      
+      <EditorSidebar>
+        <GalleryPanel 
+          galleries={galleries}
+          onEmbedGallery={handleGalleryEmbed}
+          onCreateGallery={(data) => attachGallery(data)}
+        />
+      </EditorSidebar>
+    </EditorLayout>
+  );
+};
+```
+
+### 4. Companies Integration
+
+```typescript
+// /src/features/companies/components/CompanyGalleryIntegration.tsx
+
+interface CompanyGalleryIntegration {
+  // Company Profile Galleries
+  createCompanyShowcase(companyId: string): Promise<{
+    teamGallery: Gallery;
+    officeGallery: Gallery;
+    productGallery: Gallery;
+    eventGallery: Gallery;
+  }>;
+  
+  // Team Management
+  createTeamMemberGallery(companyId: string, memberId: string): Promise<Gallery>;
+  updateCompanyTeamPhotos(companyId: string, teamPhotos: TeamPhotoUpdate[]): Promise<void>;
+  
+  // Product Portfolio
+  createProductGallery(companyId: string, productId: string): Promise<Gallery>;
+  linkProductToMarketplace(companyId: string, productId: string, marketplaceId: string): Promise<void>;
+  
+  // Branding
+  updateCompanyLogo(companyId: string, photoId: string): Promise<void>;
+  createBrandingKit(companyId: string, photoIds: string[]): Promise<BrandingKit>;
+  
+  // Event Documentation
+  linkEventGalleries(companyId: string, eventIds: string[]): Promise<void>;
+  createCompanyEventTimeline(companyId: string): Promise<EventTimeline>;
+}
+
+// Company Profile Component
+const CompanyProfile: React.FC<{ company: Company }> = ({ company }) => {
+  const { galleries } = useCompanyGalleries(company.id);
+  
+  return (
+    <CompanyLayout>
+      <CompanyHeader 
+        company={company}
+        logo={company.logo}
+        onUpdateLogo={(photoId) => updateCompanyLogo(company.id, photoId)}
+      />
+      
+      <CompanyContent>
+        <Section title="Team">
+          <TeamGallery gallery={galleries.team} />
+        </Section>
+        
+        <Section title="Our Office">
+          <OfficeGallery gallery={galleries.office} />
+        </Section>
+        
+        <Section title="Products & Services">
+          <ProductGallery 
+            gallery={galleries.products}
+            onLinkToMarketplace={(productId, marketplaceId) => 
+              linkProductToMarketplace(company.id, productId, marketplaceId)
+            }
+          />
+        </Section>
+      </CompanyContent>
+    </CompanyLayout>
+  );
+};
+```
+
+### 5. Marketplace Integration
+
+```typescript
+// /src/features/marketplace/components/MarketplaceGalleryIntegration.tsx
+
+interface MarketplaceGalleryIntegration {
+  // Listing Galleries
+  createListingGallery(listingId: string, type: 'primary' | 'portfolio' | 'before-after'): Promise<Gallery>;
+  setListingFeaturedImage(listingId: string, photoId: string): Promise<void>;
+  
+  // Product Showcase
+  createProductShowcase(listingId: string, productData: ProductShowcaseData): Promise<ProductShowcase>;
+  add360View(listingId: string, photos360: File[]): Promise<View360>;
+  
+  // Service Portfolio
+  createServicePortfolio(listingId: string, portfolioData: PortfolioData): Promise<Portfolio>;
+  linkProjectGalleries(listingId: string, projectIds: string[]): Promise<void>;
+  
+  // Quality Assurance
+  enablePhotoVerification(listingId: string, verificationLevel: 'basic' | 'enhanced'): Promise<void>;
+  requestPhotoAuthentication(listingId: string, photoIds: string[]): Promise<AuthenticationRequest>;
+  
+  // Customer Integration
+  enableCustomerPhotos(listingId: string, permissions: CustomerPhotoPermissions): Promise<void>;
+  moderateCustomerPhotos(listingId: string, photoIds: string[], action: ModerationAction): Promise<void>;
+}
+
+// Marketplace Listing Component
+const MarketplaceListingDetail: React.FC<{ listing: MarketplaceListing }> = ({ listing }) => {
+  const { galleries, setFeaturedImage } = useMarketplaceGalleries(listing.id);
+  
+  return (
+    <ListingLayout>
+      <ListingHeader>
+        <FeaturedImageCarousel 
+          images={galleries.primary?.photos || []}
+          onSetFeatured={(photoId) => setFeaturedImage(listing.id, photoId)}
+        />
+      </ListingHeader>
+      
+      <ListingContent>
+        <Section title="Gallery">
+          <MarketplaceGalleryTabs>
+            <Tab title="Main Photos">
+              <PhotoGrid photos={galleries.primary?.photos} />
+            </Tab>
+            
+            <Tab title="Portfolio">
+              <PortfolioGrid photos={galleries.portfolio?.photos} />
+            </Tab>
+            
+            <Tab title="Customer Photos">
+              <CustomerPhotoGrid photos={galleries.customer?.photos} />
+            </Tab>
+          </MarketplaceGalleryTabs>
+        </Section>
+      </ListingContent>
+    </ListingLayout>
+  );
+};
+```
+
+### 6. Resources Integration
+
+```typescript
+// /src/features/resources/components/ResourceGalleryIntegration.tsx
+
+interface ResourceGalleryIntegration {
+  // Educational Content
+  createTutorialGallery(resourceId: string, steps: TutorialStep[]): Promise<Gallery>;
+  linkDiagramsToContent(resourceId: string, diagramIds: string[]): Promise<void>;
+  
+  // Documentation Support
+  createScreenshotLibrary(resourceId: string, screenshots: File[]): Promise<Gallery>;
+  generateCodeExampleImages(resourceId: string, codeBlocks: CodeBlock[]): Promise<Photo[]>;
+  
+  // Interactive Content
+  createBeforeAfterGallery(resourceId: string, comparisons: BeforeAfterData[]): Promise<Gallery>;
+  enableAnnotatedImages(resourceId: string, photoIds: string[]): Promise<AnnotatedImage[]>;
+  
+  // Version Control
+  createVersionedGallery(resourceId: string, version: string): Promise<Gallery>;
+  linkVersionHistories(resourceId: string, previousVersionIds: string[]): Promise<void>;
+}
+
+// Resource Detail Component
+const ResourceDetail: React.FC<{ resource: Resource }> = ({ resource }) => {
+  const { galleries } = useResourceGalleries(resource.id);
+  
+  return (
+    <ResourceLayout>
+      <ResourceContent>
+        <ContentSection>
+          {resource.content}
+        </ContentSection>
+        
+        <GallerySection>
+          <ResourceGalleryViewer 
+            galleries={galleries}
+            resourceType={resource.type}
+            allowAnnotations={resource.settings.allowAnnotations}
+          />
+        </GallerySection>
+        
+        <ExamplesSection>
+          <CodeExampleGallery 
+            gallery={galleries.examples}
+            onGenerateFromCode={(codeBlocks) => 
+              generateCodeExampleImages(resource.id, codeBlocks)
+            }
+          />
+        </ExamplesSection>
+      </ResourceContent>
+    </ResourceLayout>
+  );
+};
+```
+
+## Component Architecture
+
+### 1. Core Gallery Components
+
+```typescript
+// /src/features/gallery/components/core/GallerySystem.tsx
+
+// Base Gallery Component
+interface BaseGalleryProps {
+  gallery: Gallery;
+  layout?: 'grid' | 'masonry' | 'carousel' | 'lightbox';
+  allowUploads?: boolean;
+  allowEditing?: boolean;
+  showMetadata?: boolean;
+  onPhotoClick?: (photo: Photo, index: number) => void;
+  onUpload?: (files: File[]) => Promise<void>;
+}
+
+const BaseGallery: React.FC<BaseGalleryProps> = ({
+  gallery,
+  layout = 'grid',
+  allowUploads = false,
+  allowEditing = false,
+  showMetadata = true,
+  onPhotoClick,
+  onUpload
+}) => {
+  const { photos, loading, error } = useGalleryPhotos(gallery.id);
+  
+  if (loading) return <GallerySkeleton layout={layout} />;
+  if (error) return <GalleryError error={error} />;
+  
+  return (
+    <GalleryContainer layout={layout}>
+      {allowUploads && (
+        <UploadZone onUpload={onUpload}>
+          <BatchUploadArea />
+        </UploadZone>
+      )}
+      
+      <PhotoGrid layout={layout}>
+        {photos.map((photo, index) => (
+          <PhotoCard
+            key={photo.id}
+            photo={photo}
+            showMetadata={showMetadata}
+            allowEditing={allowEditing}
+            onClick={() => onPhotoClick?.(photo, index)}
+          />
+        ))}
+      </PhotoGrid>
+    </GalleryContainer>
+  );
+};
+
+// Entity-Specific Gallery Components
+interface EntityGalleryProps extends BaseGalleryProps {
+  entityType: EntityType;
+  entityId: string;
+  relationshipType?: string;
+}
+
+const EntityGallery: React.FC<EntityGalleryProps> = ({
+  entityType,
+  entityId,
+  relationshipType,
+  ...baseProps
+}) => {
+  const { galleries, createGallery, attachGallery } = useEntityGalleries(entityType, entityId);
+  
+  const targetGallery = relationshipType 
+    ? galleries.find(g => g.relationship_type === relationshipType)
+    : galleries[0];
+  
+  if (!targetGallery) {
+    return (
+      <EmptyGalleryState
+        entityType={entityType}
+        onCreateGallery={(data) => createGallery({
+          ...data,
+          owner_type: entityType,
+          owner_id: entityId
+        })}
+      />
+    );
+  }
+  
+  return <BaseGallery gallery={targetGallery} {...baseProps} />;
+};
+```
+
+### 2. Specialized Photo Components
+
+```typescript
+// /src/features/gallery/components/photos/PhotoComponents.tsx
+
+// Progressive Image Component
+interface ProgressivePhotoProps {
+  photo: Photo;
+  size?: 'thumbnail' | 'small' | 'medium' | 'large' | 'original';
+  showPlaceholder?: boolean;
+  lazy?: boolean;
+  onClick?: () => void;
+}
+
+const ProgressivePhoto: React.FC<ProgressivePhotoProps> = ({
+  photo,
+  size = 'medium',
+  showPlaceholder = true,
+  lazy = true,
+  onClick
+}) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  
+  const imageUrl = photo[`${size}_url`] || photo.url;
+  const placeholderUrl = photo.placeholder_data;
+  
+  return (
+    <PhotoContainer onClick={onClick} aspectRatio={photo.aspect_ratio}>
+      {showPlaceholder && placeholderUrl && !loaded && (
+        <PlaceholderImage 
+          src={placeholderUrl}
+          dominantColor={photo.dominant_color}
+        />
+      )}
+      
+      <MainImage
+        src={imageUrl}
+        alt={photo.alt_text || photo.title}
+        loading={lazy ? 'lazy' : 'eager'}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        style={{ opacity: loaded ? 1 : 0 }}
+      />
+      
+      {error && <ImageErrorState photo={photo} />}
+    </PhotoContainer>
+  );
+};
+
+// Photo Card with Metadata
+interface PhotoCardProps {
+  photo: Photo;
+  showMetadata?: boolean;
+  allowEditing?: boolean;
+  size?: PhotoSize;
+  onClick?: () => void;
+}
+
+const PhotoCard: React.FC<PhotoCardProps> = ({
+  photo,
+  showMetadata = true,
+  allowEditing = false,
+  size = 'medium',
+  onClick
+}) => {
+  const [showActions, setShowActions] = useState(false);
+  
+  return (
+    <Card
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
+    >
+      <ProgressivePhoto 
+        photo={photo}
+        size={size}
+        onClick={onClick}
+      />
+      
+      {showActions && (
+        <PhotoActions>
+          <LikeButton photoId={photo.id} />
+          <ShareButton photo={photo} />
+          {allowEditing && <EditButton photoId={photo.id} />}
+          <MoreActionsMenu photo={photo} />
+        </PhotoActions>
+      )}
+      
+      {showMetadata && (
+        <PhotoMetadata>
+          <PhotoTitle>{photo.title}</PhotoTitle>
+          <PhotoStats 
+            likes={photo.like_count}
+            comments={photo.comment_count}
+            views={photo.view_count}
+          />
+          {photo.taken_at && (
+            <PhotoDate>{formatDate(photo.taken_at)}</PhotoDate>
+          )}
+          {photo.location_name && (
+            <PhotoLocation>{photo.location_name}</PhotoLocation>
+          )}
+        </PhotoMetadata>
+      )}
+    </Card>
+  );
+};
+```
+
+### 3. Admin Components
+
+```typescript
+// /src/features/gallery/components/admin/AdminGalleryComponents.tsx
+
+// Moderation Queue Component
+interface ModerationQueueProps {
+  filters?: ModerationFilters;
+  onModerate?: (photoId: string, action: ModerationAction) => void;
+}
+
+const ModerationQueue: React.FC<ModerationQueueProps> = ({ filters, onModerate }) => {
+  const { photos, loading, refetch } = useModerationQueue(filters);
+  const { moderatePhoto, bulkModerate } = usePhotoModeration();
+  
+  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
+  
+  const handleModerate = async (photoId: string, action: ModerationAction, reason?: string) => {
+    await moderatePhoto(photoId, action, reason);
+    refetch();
+  };
+  
+  const handleBulkModerate = async (action: ModerationAction) => {
+    await bulkModerate(selectedPhotos, action);
+    setSelectedPhotos([]);
+    refetch();
+  };
+  
+  return (
+    <ModerationContainer>
+      <ModerationToolbar>
+        <BulkActionsBar
+          selectedCount={selectedPhotos.length}
+          onBulkApprove={() => handleBulkModerate('approve')}
+          onBulkReject={() => handleBulkModerate('reject')}
+          onBulkFlag={() => handleBulkModerate('flag')}
+        />
+        
+        <ModerationFilters
+          filters={filters}
+          onChange={setFilters}
+        />
+      </ModerationToolbar>
+      
+      <PhotoModerationGrid>
+        {photos.map(photo => (
+          <ModerationPhotoCard
+            key={photo.id}
+            photo={photo}
+            selected={selectedPhotos.includes(photo.id)}
+            onSelect={(selected) => 
+              setSelectedPhotos(prev => 
+                selected 
+                  ? [...prev, photo.id]
+                  : prev.filter(id => id !== photo.id)
+              )
+            }
+            onModerate={(action, reason) => handleModerate(photo.id, action, reason)}
+          />
+        ))}
+      </PhotoModerationGrid>
+    </ModerationContainer>
+  );
+};
+
+// Page Header Management Component
+interface PageHeaderManagerProps {
+  pageSlug: string;
+}
+
+const PageHeaderManager: React.FC<PageHeaderManagerProps> = ({ pageSlug }) => {
+  const { headers, createHeader, updateHeader } = usePageHeaders(pageSlug);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  
+  return (
+    <HeaderManagerContainer>
+      <HeaderPreview
+        headers={headers}
+        pageSlug={pageSlug}
+        onEdit={setEditingHeader}
+      />
+      
+      <HeaderConfigPanel>
+        <PhotoSelector
+          onPhotoSelect={setSelectedPhoto}
+          selectedPhoto={selectedPhoto}
+        />
+        
+        <HeaderSettingsForm
+          onSave={(headerData) => createHeader({
+            ...headerData,
+            page_slug: pageSlug,
+            photo_id: selectedPhoto?.id
+          })}
+        />
+        
+        <SchedulingPanel
+          headers={headers}
+          onSchedule={(headerId, schedule) => scheduleHeader(headerId, schedule)}
+        />
+      </HeaderConfigPanel>
+    </HeaderManagerContainer>
+  );
+};
+```
+
+## Security Considerations
+
+### 1. Row Level Security (RLS) Policies
+
+```sql
+-- Enhanced RLS policies for polymorphic galleries
+
+-- User Galleries: Enhanced visibility controls
+CREATE POLICY "Enhanced gallery visibility" ON user_galleries
+  FOR SELECT USING (
+    CASE 
+      WHEN privacy_level = 'public' AND visibility = 'visible' THEN true
+      WHEN privacy_level = 'members_only' AND auth.uid() IS NOT NULL THEN true
+      WHEN user_id = auth.uid() THEN true
+      -- Entity-specific visibility
+      WHEN owner_type = 'group' THEN EXISTS (
+        SELECT 1 FROM group_members gm 
+        WHERE gm.group_id = owner_id 
+        AND gm.member_id = auth.uid()
+        AND gm.status = 'approved'
+      )
+      WHEN owner_type = 'company' THEN EXISTS (
+        SELECT 1 FROM company_employees ce 
+        WHERE ce.company_id = owner_id 
+        AND ce.member_id = auth.uid()
+        AND ce.status = 'active'
+      )
+      ELSE false
+    END
+  );
+
+-- Gallery Photos: Context-aware access control
+CREATE POLICY "Enhanced photo access" ON gallery_photos
+  FOR SELECT USING (
+    visibility = 'visible' 
+    AND moderation_status = 'approved'
+    AND EXISTS (
+      SELECT 1 FROM user_galleries ug 
+      WHERE ug.id = gallery_id 
+      -- Reuse gallery visibility logic
+    )
+  );
+
+-- Admin access policies
+CREATE POLICY "Admin full access" ON user_galleries
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM user_roles ur
+      WHERE ur.user_id = auth.uid()
+      AND ur.role IN ('super_admin', 'admin', 'moderator')
+    )
+  );
+
+-- Entity-specific admin policies
+CREATE POLICY "Group admin gallery access" ON user_galleries
+  FOR ALL USING (
+    owner_type = 'group' 
+    AND EXISTS (
+      SELECT 1 FROM group_members gm 
+      WHERE gm.group_id = owner_id 
+      AND gm.member_id = auth.uid()
+      AND gm.role IN ('admin', 'moderator')
+    )
+  );
+```
+
+### 2. API Security Layer
+
+```typescript
+// /src/features/gallery/middleware/gallerySecurityMiddleware.ts
+
+interface SecurityContext {
+  userId: string;
+  userRoles: string[];
+  entityPermissions: EntityPermissions;
+}
+
+class GallerySecurityMiddleware {
+  // Entity permission checking
+  async checkEntityAccess(
+    entityType: EntityType, 
+    entityId: string, 
+    action: 'read' | 'write' | 'delete' | 'moderate',
+    context: SecurityContext
+  ): Promise<boolean> {
+    switch (entityType) {
+      case 'group':
+        return this.checkGroupPermissions(entityId, action, context);
+      case 'company':
+        return this.checkCompanyPermissions(entityId, action, context);
+      case 'event':
+        return this.checkEventPermissions(entityId, action, context);
+      default:
+        return false;
+    }
+  }
+  
+  // Upload security validation
+  async validateUpload(
+    file: File, 
+    galleryId: string, 
+    context: SecurityContext
+  ): Promise<ValidationResult> {
+    const validations = [
+      this.validateFileType(file),
+      this.validateFileSize(file),
+      this.validateImageContent(file),
+      await this.validateUploadPermissions(galleryId, context),
+      await this.validateStorageQuota(context.userId)
+    ];
+    
+    const errors = validations
+      .filter(result => !result.isValid)
+      .flatMap(result => result.errors);
+    
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings: validations.flatMap(result => result.warnings || [])
+    };
+  }
+  
+  // Content moderation
+  async moderateImageContent(file: File): Promise<ModerationResult> {
+    // Integration with content moderation APIs
+    const results = await Promise.all([
+      this.checkExplicitContent(file),
+      this.detectFaces(file),
+      this.checkCopyright(file),
+      this.scanForText(file)
+    ]);
+    
+    return this.compileModerationResults(results);
+  }
+  
+  // Rate limiting
+  async checkRateLimit(
+    userId: string, 
+    action: string, 
+    timeWindow: number = 3600
+  ): Promise<boolean> {
+    const key = `rate_limit:${userId}:${action}`;
+    const count = await redis.get(key);
+    
+    if (!count) {
+      await redis.setex(key, timeWindow, 1);
+      return true;
+    }
+    
+    const currentCount = parseInt(count);
+    const limits = {
+      'upload': 50,
+      'create_gallery': 10,
+      'moderate': 100
+    };
+    
+    if (currentCount >= (limits[action] || 20)) {
+      return false;
+    }
+    
+    await redis.incr(key);
+    return true;
+  }
+}
+```
+
+### 3. Data Privacy & GDPR Compliance
+
+```typescript
+// /src/features/gallery/services/privacyService.ts
+
+interface PrivacyService {
+  // User data export
+  exportUserGalleryData(userId: string): Promise<UserGalleryExport>;
+  
+  // Data deletion
+  deleteUserGalleryData(userId: string, options?: DeletionOptions): Promise<DeletionResult>;
+  
+  // Anonymization
+  anonymizeUserGalleryData(userId: string): Promise<AnonymizationResult>;
+  
+  // Consent management
+  updatePhotoPrivacyConsent(photoId: string, consent: PrivacyConsent): Promise<void>;
+  checkPhotoUsageRights(photoId: string): Promise<UsageRights>;
+  
+  // Data retention
+  enforceRetentionPolicies(): Promise<RetentionReport>;
+  archiveExpiredGalleries(): Promise<ArchivalReport>;
+}
+
+// EXIF data sanitization
+class ExifSanitizer {
+  sanitizeMetadata(metadata: PhotoMetadata): PhotoMetadata {
+    const sanitized = { ...metadata };
+    
+    // Remove potentially sensitive location data unless explicitly allowed
+    if (!metadata.locationSharingConsent) {
+      delete sanitized.latitude;
+      delete sanitized.longitude;
+      delete sanitized.location_name;
+    }
+    
+    // Remove device-specific identifiers
+    delete sanitized.camera_serial;
+    delete sanitized.device_id;
+    
+    // Sanitize timestamp precision if required
+    if (metadata.timestampPrecision === 'day') {
+      sanitized.taken_at = this.roundToDay(metadata.taken_at);
+    }
+    
+    return sanitized;
+  }
+}
+```
+
+## Performance Considerations
+
+### 1. Database Optimization
+
+```sql
+-- Performance-optimized indexes
+CREATE INDEX CONCURRENTLY idx_galleries_entity_performance 
+ON user_galleries (owner_type, owner_id, privacy_level, visibility) 
+WHERE visibility = 'visible';
+
+CREATE INDEX CONCURRENTLY idx_photos_gallery_performance 
+ON gallery_photos (gallery_id, visibility, sort_order) 
+WHERE visibility = 'visible';
+
+-- Partial indexes for common queries
+CREATE INDEX CONCURRENTLY idx_photos_featured 
+ON gallery_photos (is_featured, created_at DESC) 
+WHERE is_featured = true AND visibility = 'visible';
+
+-- Materialized views for analytics
+CREATE MATERIALIZED VIEW gallery_stats_summary AS
+SELECT 
+  g.id as gallery_id,
+  g.owner_type,
+  g.owner_id,
+  COUNT(p.id) as photo_count,
+  COALESCE(SUM(p.view_count), 0) as total_views,
+  COALESCE(SUM(p.like_count), 0) as total_likes,
+  COALESCE(SUM(p.comment_count), 0) as total_comments,
+  MAX(p.created_at) as last_photo_uploaded
+FROM user_galleries g
+LEFT JOIN gallery_photos p ON g.id = p.gallery_id AND p.visibility = 'visible'
+WHERE g.visibility = 'visible'
+GROUP BY g.id, g.owner_type, g.owner_id;
+
+CREATE UNIQUE INDEX ON gallery_stats_summary (gallery_id);
+```
+
+### 2. Caching Strategy
+
+```typescript
+// /src/features/gallery/services/galleryCacheService.ts
+
+interface CacheStrategy {
+  // Multi-level caching
+  l1Cache: Map<string, any>; // In-memory cache
+  l2Cache: RedisCache;       // Redis cache
+  l3Cache: CDNCache;         // CDN cache
+  
+  // Cache patterns
+  getCachedGallery(galleryId: string): Promise<Gallery | null>;
+  setCachedGallery(gallery: Gallery, ttl?: number): Promise<void>;
+  invalidateGalleryCache(galleryId: string): Promise<void>;
+  
+  // Entity-specific caching
+  getEntityGalleries(entityType: EntityType, entityId: string): Promise<Gallery[]>;
+  cacheEntityGalleries(entityType: EntityType, entityId: string, galleries: Gallery[]): Promise<void>;
+  
+  // Image URL caching with precomputed variants
+  getCachedImageUrls(photoId: string): Promise<ImageUrls | null>;
+  precomputeImageUrls(photos: Photo[]): Promise<void>;
+}
+
+// Implementation with intelligent cache invalidation
+class GalleryCacheService implements CacheStrategy {
+  async getCachedGallery(galleryId: string): Promise<Gallery | null> {
+    // Try L1 cache first
+    const l1Result = this.l1Cache.get(galleryId);
+    if (l1Result) return l1Result;
+    
+    // Try L2 cache (Redis)
+    const l2Result = await this.l2Cache.get(`gallery:${galleryId}`);
+    if (l2Result) {
+      // Populate L1 cache
+      this.l1Cache.set(galleryId, l2Result);
+      return l2Result;
+    }
+    
+    return null;
+  }
+  
+  async invalidateGalleryCache(galleryId: string): Promise<void> {
+    // Invalidate all cache levels
+    this.l1Cache.delete(galleryId);
+    await this.l2Cache.del(`gallery:${galleryId}`);
+    
+    // Invalidate entity-specific caches
+    const gallery = await this.getGalleryFromDB(galleryId);
+    if (gallery?.owner_type && gallery?.owner_id) {
+      await this.l2Cache.del(`entity_galleries:${gallery.owner_type}:${gallery.owner_id}`);
+    }
+    
+    // Invalidate CDN cache
+    await this.l3Cache.purge([
+      `/api/galleries/${galleryId}`,
+      `/api/galleries/${galleryId}/photos`
+    ]);
+  }
+}
+```
+
+### 3. Image Optimization Pipeline
+
+```typescript
+// /src/features/gallery/services/imageOptimizationService.ts
+
+interface ImageOptimizationPipeline {
+  // Progressive loading optimization
+  generateProgressiveJPEG(file: File): Promise<File>;
+  createWebPVariants(file: File): Promise<{ webp: File; fallback: File }>;
+  
+  // Responsive image generation
+  generateResponsiveSet(file: File): Promise<ResponsiveImageSet>;
+  
+  // CDN optimization
+  configureCDNHeaders(imageUrl: string): Promise<CDNConfig>;
+  preloadCriticalImages(imageUrls: string[]): Promise<void>;
+  
+  // Lazy loading optimization
+  generateIntersectionObserverConfig(): IntersectionObserverInit;
+  prefetchNextImages(currentIndex: number, photos: Photo[]): Promise<void>;
+}
+
+// Optimized image loading component
+const OptimizedImage: React.FC<{
+  photo: Photo;
+  size: ImageSize;
+  priority?: boolean;
+}> = ({ photo, size, priority = false }) => {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  
+  // Preload critical images
+  useEffect(() => {
+    if (priority && photo.medium_url) {
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'image';
+      preloadLink.href = photo.medium_url;
+      document.head.appendChild(preloadLink);
+      
+      return () => {
+        document.head.removeChild(preloadLink);
+      };
+    }
+  }, [priority, photo.medium_url]);
+  
+  // Intersection observer for lazy loading
+  useIntersectionObserver(imgRef, {
+    threshold: 0.1,
+    onChange: (isIntersecting) => {
+      if (isIntersecting && !loaded) {
+        // Start loading the image
+        const img = new Image();
+        img.onload = () => setLoaded(true);
+        img.src = photo[`${size}_url`] || photo.url;
+      }
+    }
+  });
+  
+  return (
+    <picture ref={imgRef}>
+      {/* WebP support for modern browsers */}
+      {photo.webp_url && (
+        <source srcSet={photo.webp_url} type="image/webp" />
+      )}
+      
+      {/* Responsive srcset */}
+      <img
+        src={loaded ? (photo[`${size}_url`] || photo.url) : photo.placeholder_data}
+        srcSet={loaded ? generateSrcSet(photo) : undefined}
+        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        alt={photo.alt_text || photo.title}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+      />
+    </picture>
+  );
+};
+```
+
+## Migration Strategy
+
+### 1. Database Migration Plan
+
+```sql
+-- Migration 001: Create enhanced gallery system
+-- File: /migrations/001_create_enhanced_gallery_system.sql
+
+-- Step 1: Create new tables (already covered in Database Schema section)
+
+-- Step 2: Migrate existing data
+DO $$
+BEGIN
+  -- Migrate existing user_galleries if they exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_galleries_old') THEN
+    INSERT INTO user_galleries (
+      id, user_id, title, description, slug, privacy_level, 
+      visibility, photo_count, view_count, created_at, updated_at
+    )
+    SELECT 
+      id, user_id, title, description, slug, 
+      CASE privacy WHEN 'private' THEN 'private' ELSE 'public' END,
+      'visible', photo_count, view_count, created_at, updated_at
+    FROM user_galleries_old;
+  END IF;
+  
+  -- Migrate existing photos if they exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'gallery_photos_old') THEN
+    INSERT INTO gallery_photos (
+      id, gallery_id, user_id, file_name, original_file_name,
+      file_size, mime_type, storage_path, title, description,
+      sort_order, visibility, created_at, updated_at
+    )
+    SELECT 
+      id, gallery_id, user_id, file_name, original_file_name,
+      file_size, mime_type, storage_path, title, description,
+      sort_order, 'visible', created_at, updated_at
+    FROM gallery_photos_old;
+  END IF;
+END $$;
+
+-- Step 3: Create entity relationships for existing galleries
+-- This would need to be run after identifying which galleries belong to which entities
+```
+
+### 2. Code Migration Strategy
+
+```typescript
+// /src/features/gallery/migration/galleryMigrationService.ts
+
+interface MigrationService {
+  // Data migration
+  migrateGalleryData(): Promise<MigrationResult>;
+  migratePhotoUrls(): Promise<MigrationResult>;
+  migrateEntityRelationships(): Promise<MigrationResult>;
+  
+  // API migration
+  migrateApiEndpoints(): Promise<void>;
+  updateClientCode(): Promise<void>;
+  
+  // Rollback capabilities
+  rollbackMigration(step: string): Promise<void>;
+  validateMigration(): Promise<ValidationResult>;
+}
+
+// Phase-based migration approach
+enum MigrationPhase {
+  PREPARATION = 'preparation',
+  DATABASE_SCHEMA = 'database_schema',
+  DATA_MIGRATION = 'data_migration',
+  API_MIGRATION = 'api_migration',
+  CLIENT_MIGRATION = 'client_migration',
+  VALIDATION = 'validation',
+  CLEANUP = 'cleanup'
+}
+
+class GalleryMigrationService implements MigrationService {
+  async executeMigration(): Promise<MigrationResult> {
+    const phases = [
+      this.prepareForMigration(),
+      this.migrateSchema(),
+      this.migrateData(),
+      this.migrateAPIs(),
+      this.updateClients(),
+      this.validateSystem(),
+      this.cleanup()
+    ];
+    
+    const results = [];
+    
+    for (const phase of phases) {
+      try {
+        const result = await phase;
+        results.push(result);
+        
+        // Log progress
+        console.log(`Migration phase completed:`, result);
+        
+        // Checkpoint for potential rollback
+        await this.createCheckpoint(result.phase);
+        
+      } catch (error) {
+        console.error(`Migration failed at phase:`, error);
+        await this.rollbackToLastCheckpoint();
+        throw error;
+      }
+    }
+    
+    return {
+      success: true,
+      phases: results,
+      completedAt: new Date().toISOString()
+    };
+  }
+}
+```
+
+### 3. Deployment Strategy
+
+```typescript
+// Deployment checklist and strategy
+
+const DEPLOYMENT_CHECKLIST = {
+  preDeployment: [
+    'Backup all gallery data',
+    'Test migration scripts on staging',
+    'Verify API compatibility',
+    'Check storage bucket permissions',
+    'Validate CDN configuration'
+  ],
+  
+  deployment: [
+    'Deploy database migrations',
+    'Update API endpoints',
+    'Deploy frontend changes',
+    'Update CDN rules',
+    'Enable feature flags'
+  ],
+  
+  postDeployment: [
+    'Validate data integrity',
+    'Test core functionality',
+    'Monitor performance metrics',
+    'Check error rates',
+    'Verify user accessibility'
+  ],
+  
+  rollback: [
+    'Restore database snapshot',
+    'Revert API changes',
+    'Rollback frontend deployment',
+    'Reset CDN configuration'
+  ]
+};
+
+// Feature flag configuration for gradual rollout
+const FEATURE_FLAGS = {
+  polymorphic_galleries: {
+    enabled: false,
+    rolloutPercentage: 0,
+    enabledForUsers: [] as string[],
+    enabledForEntities: [] as { type: EntityType; id: string }[]
+  },
+  
+  enhanced_upload: {
+    enabled: false,
+    rolloutPercentage: 0,
+    maxFileSize: 50 * 1024 * 1024, // 50MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+  },
+  
+  admin_galleries: {
+    enabled: false,
+    enabledForRoles: ['super_admin'] as string[]
+  }
+};
+```
+
+---
+
+## Conclusion
+
+This comprehensive photo gallery system specification provides a robust, scalable, and secure foundation for implementing advanced gallery functionality across the Nelson Tech platform. The system's polymorphic design allows for seamless integration with all entity types while maintaining data integrity and performance.
+
+### Key Benefits
+
+1. **Unified Gallery System**: Single system handles all entity types
+2. **Advanced Admin Controls**: Comprehensive promotion and moderation workflows  
+3. **Performance Optimized**: Multi-level caching and image optimization
+4. **Security First**: Granular permissions and privacy controls
+5. **Developer Friendly**: Well-structured APIs and reusable components
+6. **Future Proof**: Extensible architecture for new features
+
+### Implementation Timeline
+
+- **Phase 1** (Weeks 1-2): Database schema and core API
+- **Phase 2** (Weeks 3-4): Basic gallery components and upload system
+- **Phase 3** (Weeks 5-6): Entity integrations and polymorphic relationships
+- **Phase 4** (Weeks 7-8): Admin interface and moderation system
+- **Phase 5** (Weeks 9-10): Advanced features and optimization
+- **Phase 6** (Weeks 11-12): Testing, deployment, and documentation
+
+This specification serves as the definitive guide for implementing a world-class photo gallery system that will enhance user engagement and provide powerful content management capabilities across the platform.
