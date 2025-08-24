@@ -125,8 +125,6 @@ export const BlockEditorBasic: React.FC<BlockEditorProps> = ({
   return (
     <div className={`blocknote-editor-wrapper ${className}`}>
       <BlockNoteDefaultUI
-        editor={editor}
-        editable={editable}
         theme="light"
         formattingToolbar={showToolbar && editable}
         slashMenu={editable}
