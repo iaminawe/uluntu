@@ -230,12 +230,18 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
 
   // AI content generation
   const generateContent = useCallback(async () => {
+    // Check if AI is configured before proceeding
+    if (!aiConfig.isConfigured) {
+      alert('AI features are not configured. Please check your API keys.');
+      return;
+    }
+
     const topic = prompt(`Enter a topic for your ${contentType}:`);
     if (!topic) return;
 
     setIsProcessing(true);
     try {
-      const prompt = contentType === 'news' ? 
+      const promptText = contentType === 'news' ? 
         `Write a comprehensive news article about: ${topic}` :
         contentType === 'events' ? 
         `Write a detailed event description for: ${topic}` :
@@ -243,45 +249,55 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
         `Write a compelling product/service description for: ${topic}` :
         `Write comprehensive content about: ${topic}`;
       
-      const result = await callAI(prompt, '');
+      const result = await callAI(promptText, '');
       
       let finalContent = result;
       
       // Add images if enabled
       if (includeImages && unsplashConfigured) {
-        const photos = await unsplashService.findRelevantPhotos(result.substring(0, 500), topic, 2);
-        if (photos.length > 0) {
-          const lines = result.split('\n');
-          const processedLines = [];
-          let addedHero = false;
-          
-          for (let i = 0; i < lines.length; i++) {
-            processedLines.push(lines[i]);
+        try {
+          const photos = await unsplashService.findRelevantPhotos(result.substring(0, 500), topic, 2);
+          if (photos.length > 0) {
+            const lines = result.split('\n');
+            const processedLines = [];
+            let addedHero = false;
             
-            if (!addedHero && lines[i].trim().startsWith('#') && photos[0]) {
-              processedLines.push('');
-              processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
-              processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
-              processedLines.push('');
-              addedHero = true;
+            for (let i = 0; i < lines.length; i++) {
+              processedLines.push(lines[i]);
+              
+              if (!addedHero && lines[i].trim().startsWith('#') && photos[0]) {
+                processedLines.push('');
+                processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
+                processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
+                processedLines.push('');
+                addedHero = true;
+              }
             }
+            
+            finalContent = processedLines.join('\n');
           }
-          
-          finalContent = processedLines.join('\n');
+        } catch (imageError) {
+          console.warn('Failed to add images, using text-only content:', imageError);
+          // Continue with text-only content
         }
       }
       
       onChange(finalContent);
     } catch (error) {
       console.error('Content generation failed:', error);
-      alert('Failed to generate content. Please check your API configuration.');
+      alert('Failed to generate content. Please check your AI configuration and try again.');
     } finally {
       setIsProcessing(false);
     }
-  }, [contentType, includeImages, unsplashConfigured, onChange]);
+  }, [contentType, includeImages, unsplashConfigured, onChange, aiConfig.isConfigured]);
 
   // Insert image from Unsplash
   const insertUnsplashImage = useCallback(async () => {
+    if (!unsplashConfigured) {
+      alert('Unsplash is not configured. Please check your API keys.');
+      return;
+    }
+
     const query = prompt('Search for images:');
     if (!query) return;
 
@@ -299,14 +315,15 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           onChange(newValue);
         }
       } else {
-        alert('No images found.');
+        alert('No images found for that search term.');
       }
     } catch (error) {
       console.error('Failed to insert image:', error);
+      alert('Failed to search for images. Please check your Unsplash configuration.');
     } finally {
       setIsProcessing(false);
     }
-  }, [value, onChange]);
+  }, [value, onChange, unsplashConfigured]);
 
   // Handle image upload
   const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -589,25 +606,27 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             )}
           </div>
 
-          {/* AI Tools */}
-          <div className="flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
-            <button
-              onClick={generateContent}
-              disabled={disabled || isProcessing || !aiConfig.isConfigured || viewMode === 'rendered'}
-              className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm">Generate</span>
-            </button>
-            <button
-              onClick={() => setShowAIMenu(!showAIMenu)}
-              disabled={disabled || isProcessing || !aiConfig.isConfigured || viewMode === 'rendered'}
-              className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              <FileText className="w-4 h-4" />
-              <span className="text-sm">AI Tools</span>
-            </button>
-          </div>
+          {/* AI Tools - Only show if AI is configured */}
+          {aiConfig.isConfigured && (
+            <div className="flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
+              <button
+                onClick={generateContent}
+                disabled={disabled || isProcessing || viewMode === 'rendered'}
+                className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm">Generate</span>
+              </button>
+              <button
+                onClick={() => setShowAIMenu(!showAIMenu)}
+                disabled={disabled || isProcessing || viewMode === 'rendered'}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                <FileText className="w-4 h-4" />
+                <span className="text-sm">AI Tools</span>
+              </button>
+            </div>
+          )}
 
           {/* Preview Toggle */}
           <div className="flex items-center">
@@ -635,8 +654,8 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           </div>
         </div>
 
-        {/* AI Menu Dropdown */}
-        {showAIMenu && (
+        {/* AI Menu Dropdown - Only show if AI is configured */}
+        {aiConfig.isConfigured && showAIMenu && (
           <div className="mt-2 p-2 bg-slate-50 dark:bg-slate-900 rounded">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               <button
@@ -818,11 +837,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
       {/* Status Bar */}
       <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-4">
-          {aiConfig.isConfigured ? (
-            <span className="text-green-600">✨ AI Ready</span>
-          ) : (
-            <span className="text-red-600">⚠️ Configure AI</span>
-          )}
+          {aiConfig.isConfigured && <span className="text-green-600">✨ AI Ready</span>}
           {isProcessing && <span className="text-orange-600">⏳ Processing...</span>}
           {uploadingImage && <span className="text-blue-600">📤 Uploading image...</span>}
           {viewMode === 'rendered' && <span className="text-purple-600">👁️ Rendered View</span>}
