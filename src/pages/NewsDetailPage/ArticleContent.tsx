@@ -1,6 +1,13 @@
 import { ArticleContentProps } from './types';
+import DOMPurify from 'dompurify';
 
 const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
+  // Sanitize the HTML content to prevent XSS attacks
+  const sanitizedContent = DOMPurify.sanitize(article.content, {
+    ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'strong', 'em', 'a', 'code', 'pre', 'br'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+  });
+
   return (
     <>
       {article.image && (
@@ -13,11 +20,10 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
         </div>
       )}
       
-      <div className="prose prose-slate dark:prose-invert prose-lg max-w-none mb-12 leading-relaxed">
-        {article.content.split('\n\n').map((paragraph, index) => (
-          <p key={index} className="mb-6">{paragraph}</p>
-        ))}
-      </div>
+      <div 
+        className="prose prose-slate dark:prose-invert prose-lg max-w-none mb-12 leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      />
     </>
   );
 };
