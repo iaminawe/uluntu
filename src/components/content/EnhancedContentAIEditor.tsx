@@ -105,7 +105,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
   const [selectedText, setSelectedText] = useState('');
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [viewMode, setViewMode] = useState<'rendered' | 'source'>('rendered');
   const [uploadingImage, setUploadingImage] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -417,7 +417,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="flex items-center border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={handleUndo}
-              disabled={disabled || undoStack.length === 0 || isPreviewMode}
+              disabled={disabled || undoStack.length === 0 || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Undo (Ctrl+Z)"
             >
@@ -425,7 +425,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={handleRedo}
-              disabled={disabled || redoStack.length === 0 || isPreviewMode}
+              disabled={disabled || redoStack.length === 0 || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Redo (Ctrl+Y)"
             >
@@ -437,7 +437,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="flex items-center border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={() => applyFormat('bold')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Bold (Ctrl+B)"
             >
@@ -445,7 +445,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => applyFormat('italic')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Italic (Ctrl+I)"
             >
@@ -453,7 +453,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => applyFormat('underline')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Underline"
             >
@@ -461,7 +461,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => applyFormat('code')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Code"
             >
@@ -473,7 +473,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="relative border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={() => setShowFormatMenu(!showFormatMenu)}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="flex items-center gap-1 px-2 py-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
             >
               <Type className="w-4 h-4" />
@@ -511,7 +511,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="flex items-center border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={() => applyFormat('ul')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Bullet List"
             >
@@ -519,7 +519,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => applyFormat('ol')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Numbered List"
             >
@@ -527,7 +527,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => applyFormat('quote')}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Quote"
             >
@@ -539,7 +539,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="flex items-center border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={insertLink}
-              disabled={disabled || isPreviewMode}
+              disabled={disabled || viewMode === 'rendered'}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
               title="Insert Link (Ctrl+K)"
             >
@@ -551,7 +551,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
               <div className="relative">
                 <button
                   onClick={() => setShowImageMenu(!showImageMenu)}
-                  disabled={disabled || isPreviewMode}
+                  disabled={disabled || viewMode === 'rendered'}
                   className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
                   title="Insert Image"
                 >
@@ -593,7 +593,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           <div className="flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2 mr-2">
             <button
               onClick={generateContent}
-              disabled={disabled || isProcessing || !aiConfig.isConfigured || isPreviewMode}
+              disabled={disabled || isProcessing || !aiConfig.isConfigured || viewMode === 'rendered'}
               className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
             >
               <Sparkles className="w-4 h-4" />
@@ -601,7 +601,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             </button>
             <button
               onClick={() => setShowAIMenu(!showAIMenu)}
-              disabled={disabled || isProcessing || !aiConfig.isConfigured || isPreviewMode}
+              disabled={disabled || isProcessing || !aiConfig.isConfigured || viewMode === 'rendered'}
               className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               <FileText className="w-4 h-4" />
@@ -612,23 +612,23 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           {/* Preview Toggle */}
           <div className="flex items-center">
             <button
-              onClick={() => setIsPreviewMode(!isPreviewMode)}
+              onClick={() => setViewMode(viewMode === 'rendered' ? 'source' : 'rendered')}
               className={`flex items-center gap-1 px-3 py-1.5 rounded transition-colors ${
-                isPreviewMode 
+                viewMode === 'source' 
                   ? 'bg-green-600 text-white hover:bg-green-700' 
                   : 'bg-slate-600 text-white hover:bg-slate-700'
               }`}
-              title={isPreviewMode ? 'Switch to Edit Mode' : 'Switch to Preview Mode'}
+              title={viewMode === 'source' ? 'Switch to Rendered View' : 'Switch to Source View'}
             >
-              {isPreviewMode ? (
+              {viewMode === 'source' ? (
                 <>
-                  <Edit3 className="w-4 h-4" />
-                  <span className="text-sm">Edit</span>
+                  <Eye className="w-4 h-4" />
+                  <span className="text-sm">Rendered</span>
                 </>
               ) : (
                 <>
-                  <Eye className="w-4 h-4" />
-                  <span className="text-sm">Preview</span>
+                  <Edit3 className="w-4 h-4" />
+                  <span className="text-sm">Source</span>
                 </>
               )}
             </button>
@@ -747,7 +747,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
       </div>
 
       {/* Editor/Preview Area */}
-      {isPreviewMode ? (
+      {viewMode === 'rendered' ? (
         <div 
           className="w-full p-4 border-x border-b border-slate-200 dark:border-slate-700 rounded-b-lg bg-white dark:bg-slate-900 overflow-auto"
           style={{ height, minHeight: '200px' }}
@@ -825,12 +825,12 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           )}
           {isProcessing && <span className="text-orange-600">⏳ Processing...</span>}
           {uploadingImage && <span className="text-blue-600">📤 Uploading image...</span>}
-          {isPreviewMode && <span className="text-purple-600">👁️ Preview Mode</span>}
+          {viewMode === 'rendered' && <span className="text-purple-600">👁️ Rendered View</span>}
         </div>
         <div className="flex items-center gap-4">
           <span>{value.split(/\s+/).filter(w => w).length} words</span>
           <span>{value.length} characters</span>
-          {selectedText && !isPreviewMode && <span>{selectedText.length} selected</span>}
+          {selectedText && viewMode === 'source' && <span>{selectedText.length} selected</span>}
         </div>
       </div>
     </div>

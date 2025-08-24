@@ -164,10 +164,11 @@ export default function NewsEditPage() {
       }
       
       // Prepare data for API
+      // ContentAIEditor returns markdown/HTML content which is compatible with existing format
       const newsArticleData: Partial<NewsArticle> = {
         title: formData.title,
         excerpt: formData.excerpt,
-        content: formData.content,
+        content: formData.content, // ContentAIEditor provides markdown/HTML content
         image: finalImageUrl,
         tags: formData.tags,
         status: formData.status,
