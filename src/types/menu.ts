@@ -108,6 +108,9 @@ export interface MenuItemDatabaseRow {
   is_external: boolean;
   status?: string;
   featured?: boolean | null;
+  menu_container_id?: string | null;
+  is_visible?: boolean;
+  custom_properties?: Record<string, any> | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
@@ -182,3 +185,6 @@ export const DEFAULT_MENU_ITEM: Partial<MenuItem> = {
   status: 'published',
   featured: false,
 };
+
+// Re-export Footer types from the footer module for backward compatibility
+export type { FooterColumn, FooterLink } from '../shared/components/layout/Footer/types';

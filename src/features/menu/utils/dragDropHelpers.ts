@@ -68,7 +68,7 @@ export const buildMenuTree = (
   // Sort items by order_index recursively
   const sortTreeItems = (items: DragDropMenuItem[]): DragDropMenuItem[] => {
     return items
-      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       .map(item => ({
         ...item,
         children: sortTreeItems(item.children)
@@ -227,11 +227,11 @@ export const applyDragOperation = (
       if (item.id === targetItemId) {
         switch (dropPosition) {
           case 'before':
-            items.splice(i, 0, { ...draggedItem, level: item.level });
+            items.splice(i, 0, { ...draggedItem!, level: item.level });
             return items;
             
           case 'after':
-            items.splice(i + 1, 0, { ...draggedItem, level: item.level });
+            items.splice(i + 1, 0, { ...draggedItem!, level: item.level });
             return items;
             
           case 'inside':
@@ -242,7 +242,7 @@ export const applyDragOperation = (
               children: menuItem.children.map(child => updateLevels(child, newLevel + 1))
             });
             
-            const updatedDraggedItem = updateLevels(draggedItem, item.level + 1);
+            const updatedDraggedItem = updateLevels(draggedItem!, item.level + 1);
             item.children.push(updatedDraggedItem);
             item.hasChildren = true;
             
@@ -291,7 +291,7 @@ export const treeToFlatItems = (tree: DragDropMenuItem[]): MenuItem[] => {
       flatItems.push({
         ...menuItem,
         parent_id: parentId,
-        order_index: index
+        sort_order: index
       });
       
       if (children.length > 0) {

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { MenuItem } from '@/types/menu';
+import { MenuItem, MenuType } from '@/types/menu';
 
 /**
  * Menu API service for managing site navigation menus
@@ -17,29 +17,41 @@ export class MenuApiService {
           {
             id: '1',
             title: 'Community',
-            subtitle: 'Connect with others',
+            description: 'Connect with others',
             url: '/community',
+            menu_type: 'main' as MenuType,
+            sort_order: 1,
+            is_enabled: true,
+            target: '_self',
             icon: 'Users',
-            enabled: true,
-            order: 1
+            visibility: 'public',
+            is_external: false
           },
           {
             id: '2', 
             title: 'Business',
-            subtitle: 'Explore opportunities',
+            description: 'Explore opportunities',
             url: '/business',
+            menu_type: 'main' as MenuType,
+            sort_order: 2,
+            is_enabled: true,
+            target: '_self',
             icon: 'Building2',
-            enabled: true,
-            order: 2
+            visibility: 'public',
+            is_external: false
           },
           {
             id: '3',
             title: 'Resources',
-            subtitle: 'Learn and grow',
-            url: '/resources', 
+            description: 'Learn and grow',
+            url: '/resources',
+            menu_type: 'main' as MenuType,
+            sort_order: 3,
+            is_enabled: true,
+            target: '_self',
             icon: 'BookOpen',
-            enabled: true,
-            order: 3
+            visibility: 'public',
+            is_external: false
           }
         ],
         footerMenu: [
@@ -47,17 +59,25 @@ export class MenuApiService {
             id: '4',
             title: 'About Us',
             url: '/about',
+            menu_type: 'footer' as MenuType,
+            sort_order: 1,
+            is_enabled: true,
+            target: '_self',
             icon: 'Info',
-            enabled: true,
-            order: 1
+            visibility: 'public',
+            is_external: false
           },
           {
             id: '5',
             title: 'Contact',
             url: '/contact',
+            menu_type: 'footer' as MenuType,
+            sort_order: 2,
+            is_enabled: true,
+            target: '_self',
             icon: 'Mail',
-            enabled: true,
-            order: 2
+            visibility: 'public',
+            is_external: false
           }
         ],
         lastModified: new Date().toISOString()
@@ -88,10 +108,16 @@ export class MenuApiService {
   /**
    * Create a new menu item
    */
-  static async createMenuItem(item: Omit<MenuItem, 'id'>, menuType: 'main' | 'footer'): Promise<MenuItem> {
+  static async createMenuItem(item: Omit<MenuItem, 'id'>, menuType: MenuType): Promise<MenuItem> {
     const newItem: MenuItem = {
       ...item,
-      id: `menu-item-${Date.now()}`
+      id: `menu-item-${Date.now()}`,
+      menu_type: menuType,
+      sort_order: item.sort_order ?? 0,
+      is_enabled: item.is_enabled ?? true,
+      target: item.target ?? '_self',
+      visibility: item.visibility ?? 'public',
+      is_external: item.is_external ?? false
     };
 
     // In a full implementation, you would save this to the database
@@ -118,7 +144,7 @@ export class MenuApiService {
   /**
    * Reorder menu items
    */
-  static async reorderMenuItems(items: MenuItem[], menuType: 'main' | 'footer'): Promise<void> {
+  static async reorderMenuItems(items: MenuItem[], menuType: MenuType): Promise<void> {
     // In a full implementation, you would update the order in the database
     console.log('Reordering menu items:', menuType, items.map(i => i.title));
   }
