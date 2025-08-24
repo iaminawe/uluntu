@@ -714,3 +714,4 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
 };
 
 export default ImprovedGeneralSettingsSection;
+export { ImprovedGeneralSettingsSection };

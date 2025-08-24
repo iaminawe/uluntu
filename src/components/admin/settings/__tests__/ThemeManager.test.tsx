@@ -97,7 +97,7 @@ describe('ThemeManager', () => {
         />
       );
 
-      const darkTheme = themePresets.find(t => t.id === 'dark-professional')!;
+      const darkTheme = themePresets.find(t => t.slug === 'dark-professional')!;
       await user.click(screen.getByText(darkTheme.name));
 
       expect(mockOnThemeChange).toHaveBeenCalledWith(darkTheme);
@@ -133,7 +133,7 @@ describe('ThemeManager', () => {
       const editButton = screen.getByText('Edit Colors');
       await user.click(editButton);
 
-      const colorInputs = screen.getAllByType('color');
+      const colorInputs = screen.getAllByDisplayValue(/^#[0-9a-fA-F]{6}$/);
       expect(colorInputs[0]).not.toBeDisabled();
     });
 
@@ -151,7 +151,7 @@ describe('ThemeManager', () => {
       await user.click(screen.getByText('Edit Colors'));
 
       // Change primary color
-      const primaryColorInput = screen.getAllByDisplayValue(defaultTheme.colors.primary)[0];
+      const primaryColorInput = screen.getAllByDisplayValue(defaultTheme.configurations.colors.primary)[0];
       fireEvent.change(primaryColorInput, { target: { value: '#FF0000' } });
 
       expect(mockOnThemeChange).toHaveBeenCalledWith(
@@ -175,7 +175,7 @@ describe('ThemeManager', () => {
 
       await user.click(screen.getByText('Edit Colors'));
 
-      const textInputs = screen.getAllByPattern(/^#[0-9A-Fa-f]{6}$/);
+      const textInputs = screen.getAllByDisplayValue(/^#[0-9A-Fa-f]{6}$/);
       expect(textInputs.length).toBeGreaterThan(0);
     });
   });
@@ -393,9 +393,12 @@ describe('ThemeManager', () => {
     it('should show accessibility warnings for poor contrast', () => {
       const poorContrastTheme = {
         ...defaultTheme,
-        colors: {
-          ...defaultTheme.colors,
-          text: '#CCCCCC', // Poor contrast on white background
+        configurations: {
+          ...defaultTheme.configurations,
+          colors: {
+            ...defaultTheme.configurations.colors,
+            text: '#CCCCCC', // Poor contrast on white background
+          },
         },
       };
 

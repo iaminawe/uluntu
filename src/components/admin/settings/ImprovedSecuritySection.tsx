@@ -736,3 +736,4 @@ const ImprovedSecuritySection: React.FC<ImprovedSecuritySectionProps> = ({
 };
 
 export default ImprovedSecuritySection;
+export { ImprovedSecuritySection };
