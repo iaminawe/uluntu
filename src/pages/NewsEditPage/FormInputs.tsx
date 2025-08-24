@@ -1,6 +1,7 @@
-import RichTextEditor from '@/shared/components/ui/RichTextEditor';
+import { EnhancedContentAIEditor } from '@/components/content/EnhancedContentAIEditor';
 import { FormInput, FormSelect, FormCheckbox, FormTextarea, FormImageUpload } from '@/shared/components/ui/Form';
 import { FormInputsProps } from './types';
+import { useState } from 'react';
 import { ContentStatus } from '../../types/common';
 
 const FormInputs: React.FC<FormInputsProps> = ({ 
@@ -10,6 +11,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
   onImageChange,
   errors 
 }) => {
+  const [enableImageInsertion, setEnableImageInsertion] = useState(true);
   return (
     <div className="space-y-6">
       {/* Title */}
@@ -49,19 +51,39 @@ const FormInputs: React.FC<FormInputsProps> = ({
       
       {/* Content */}
       <div>
-        <label htmlFor="content" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Article Content *
-        </label>
+        <div className="flex items-center justify-between mb-4">
+          <label htmlFor="content" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Article Content *
+          </label>
+          <div className="flex items-center space-x-2">
+            <label className="text-sm text-slate-600 dark:text-slate-400">
+              <input
+                type="checkbox"
+                checked={enableImageInsertion}
+                onChange={(e) => setEnableImageInsertion(e.target.checked)}
+                className="mr-1"
+              />
+              Enable AI image insertion
+            </label>
+          </div>
+        </div>
         
-        <RichTextEditor
-          id="content"
+        <EnhancedContentAIEditor
           value={formData.content}
           onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-          placeholder="Write your article here..."
+          placeholder="Write your news article here. Use the AI tools to generate content, improve writing, or insert relevant images..."
+          contentType="news"
+          includeImages={enableImageInsertion}
+          height="500px"
+          className="min-h-[500px]"
         />
         {errors.content && (
           <p className="mt-1 text-sm text-red-600">{errors.content}</p>
         )}
+        
+        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+          💡 Tip: Select text to access AI editing options, or use the toolbar buttons to generate content and enhance your writing.
+        </div>
       </div>
       
       {/* Featured Image */}
