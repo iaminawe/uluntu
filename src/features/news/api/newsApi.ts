@@ -25,8 +25,8 @@ export const newsApi = {
         throw new Error('Missing Supabase configuration');
       }
       
-      // Build query string
-      let queryString = 'select=*';
+      // Build query string with members join
+      let queryString = 'select=*,members:author_id(id,name,image,bio,title,user_id)';
       
       // Add status filter (default to published)
       const status = filters.status || 'published';
@@ -71,7 +71,7 @@ export const newsApi = {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*')
+        .select('*, members:author_id(id,name,image,bio,title,user_id)')
         .eq('id', id)
         .single();
 
@@ -91,7 +91,7 @@ export const newsApi = {
     try {
       const { data, error } = await supabase
         .from('news')
-        .select('*')
+        .select('*, members:author_id(id,name,image,bio,title,user_id)')
         .eq('slug', slug) 
         .single();
 
