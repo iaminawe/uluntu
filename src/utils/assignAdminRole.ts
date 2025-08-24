@@ -27,7 +27,7 @@ export async function assignAdminRole() {
       // Try to create the table if it doesn't exist
       console.log('Attempting to create user_roles table...');
       
-      const { error: createTableError } = await supabase.rpc('create_user_roles_table', {});
+      const { error: createTableError } = await supabase.rpc('create_member_profile' as any, {});
       if (createTableError) {
         console.error('Could not create table:', createTableError);
       }

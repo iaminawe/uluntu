@@ -4,6 +4,7 @@ import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/providers/EnhancedThemeProvider';
+import { useFeatureToggle } from '@/utils/featureToggle';
 import {
   LayoutDashboard,
   Users,
@@ -44,6 +45,9 @@ const AdminLayout: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['User Management', 'Content Management']);
+  
+  // Check if photo galleries feature is enabled
+  const { enabled: photoGalleriesEnabled } = useFeatureToggle('photo_galleries');
   
   // Get site name from settings
   const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
@@ -97,7 +101,7 @@ const AdminLayout: React.FC = () => {
       icon: FileText,
       children: [
         { name: 'Pages', href: '/admin/pages', icon: FileText },
-        { name: 'Media Gallery', href: '/admin/media', icon: Image },
+        ...(photoGalleriesEnabled ? [{ name: 'Media Gallery', href: '/admin/media', icon: Image }] : []),
         { name: 'Companies', href: '/admin/entities/companies', icon: Building2 },
         { name: 'Groups', href: '/admin/entities/groups', icon: UsersRound },
         { name: 'Events', href: '/admin/entities/events', icon: Calendar },
