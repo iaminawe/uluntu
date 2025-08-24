@@ -31,7 +31,8 @@ import {
   Tag,
   Zap,
   Sun,
-  Moon
+  Moon,
+  Image
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -96,6 +97,7 @@ const AdminLayout: React.FC = () => {
       icon: FileText,
       children: [
         { name: 'Pages', href: '/admin/pages', icon: FileText },
+        { name: 'Media Gallery', href: '/admin/media', icon: Image },
         { name: 'Companies', href: '/admin/entities/companies', icon: Building2 },
         { name: 'Groups', href: '/admin/entities/groups', icon: UsersRound },
         { name: 'Events', href: '/admin/entities/events', icon: Calendar },
