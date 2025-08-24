@@ -1,6 +1,6 @@
 // Export all footer components for easy importing
 export { default as Footer } from './index';
-export { default as FooterColumn } from './FooterColumn';
+export { default as FooterColumnComponent } from './FooterColumn';
 export { default as SocialLinks } from './SocialLinks';
 export { default as DynamicFooterMenu } from './DynamicFooterMenu';
 export { default as FooterMenuProvider, useFooterMenu } from './FooterMenuProvider';
@@ -10,7 +10,7 @@ export { default as FooterFeatureGate, withFooterFeatureGate, useFooterFeatures,
 // Export types
 export type {
   FooterProps,
-  FooterColumn as FooterColumnType,
+  FooterColumn,
   FooterLink,
   SocialLink,
   DynamicFooterProps,
@@ -18,5 +18,6 @@ export type {
   FooterGroupingStrategy,
   FooterMenuConfig,
   EnhancedFooterLink,
-  EnhancedFooterColumn
+  EnhancedFooterColumn,
+  FeatureKey
 } from './types';
