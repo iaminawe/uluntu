@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@/test/utils/testUtils';
+import { render, screen, fireEvent, waitFor, createLegacySettingFormat } from '@/test/utils/testUtils';
 import { ImprovedSecuritySection } from '../ImprovedSecuritySection';
 import { toast } from 'react-hot-toast';
-import type { ApplicationSetting } from '@/types/settings';
+import type { ApplicationSetting, FeatureToggle } from '@/types/settings';
 
 // Mock react-hot-toast
 jest.mock('react-hot-toast', () => ({
@@ -16,57 +16,129 @@ jest.mock('react-hot-toast', () => ({
 describe('ImprovedSecuritySection', () => {
   const mockSettings: ApplicationSetting[] = [
     {
-      key: 'require_email_verification',
-      value: 'true',
+      id: '1',
       category: 'security',
-      data_type: 'boolean' as const,
+      setting_key: 'require_email_verification',
+      setting_value: 'true',
+      data_type: 'boolean',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'enable_two_factor',
-      value: 'false',
+      id: '2',
       category: 'security',
-      data_type: 'boolean' as const,
+      setting_key: 'enable_two_factor',
+      setting_value: 'false',
+      data_type: 'boolean',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'session_timeout',
-      value: '3600',
+      id: '3',
       category: 'security',
-      data_type: 'number' as const,
+      setting_key: 'session_timeout',
+      setting_value: '3600',
+      data_type: 'number',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'max_login_attempts',
-      value: '5',
+      id: '4',
       category: 'security',
-      data_type: 'number' as const,
+      setting_key: 'max_login_attempts',
+      setting_value: '5',
+      data_type: 'number',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'password_min_length',
-      value: '8',
+      id: '5',
       category: 'security',
-      data_type: 'number' as const,
+      setting_key: 'password_min_length',
+      setting_value: '8',
+      data_type: 'number',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'require_strong_password',
-      value: 'true',
+      id: '6',
       category: 'security',
-      data_type: 'boolean' as const,
+      setting_key: 'require_strong_password',
+      setting_value: 'true',
+      data_type: 'boolean',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'enable_rate_limiting',
-      value: 'true',
+      id: '7',
       category: 'security',
-      data_type: 'boolean' as const,
+      setting_key: 'enable_rate_limiting',
+      setting_value: 'true',
+      data_type: 'boolean',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'allowed_origins',
-      value: 'https://example.com,https://app.example.com',
+      id: '8',
       category: 'security',
-      data_type: 'string' as const,
+      setting_key: 'allowed_origins',
+      setting_value: 'https://example.com,https://app.example.com',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+    },
+  ];
+
+  const mockFeatures: FeatureToggle[] = [
+    {
+      id: '1',
+      feature_key: 'security_monitoring',
+      enabled: true,
+      config: null,
+      rollout_percentage: null,
+      enabled_for_users: null,
+      enabled_for_roles: null,
+      description: 'Security monitoring features',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
   ];
 
   const defaultProps = {
     settings: mockSettings,
+    features: mockFeatures,
     onUpdateSetting: jest.fn().mockResolvedValue(undefined),
     onRefresh: jest.fn().mockResolvedValue(undefined),
     isLoading: false,
@@ -133,7 +205,7 @@ describe('ImprovedSecuritySection', () => {
     it('shows appropriate status based on score', () => {
       const lowScoreSettings = mockSettings.map(s => ({
         ...s,
-        value: s.data_type === 'boolean' ? 'false' : s.value,
+        setting_value: s.data_type === 'boolean' ? 'false' : s.setting_value,
       }));
 
       render(<ImprovedSecuritySection {...defaultProps} settings={lowScoreSettings} />);
@@ -346,7 +418,7 @@ describe('ImprovedSecuritySection', () => {
     it('hides recommendations when all security features are enabled', () => {
       const secureSettings = mockSettings.map(s => ({
         ...s,
-        value: s.key === 'enable_two_factor' ? 'true' : s.value,
+        setting_value: s.setting_key === 'enable_two_factor' ? 'true' : s.setting_value,
       }));
 
       render(<ImprovedSecuritySection {...defaultProps} settings={secureSettings} />);

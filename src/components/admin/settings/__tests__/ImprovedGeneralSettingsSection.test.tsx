@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@/test/utils/testUtils';
+import { render, screen, fireEvent, waitFor, createLegacySettingFormat } from '@/test/utils/testUtils';
 import { ImprovedGeneralSettingsSection } from '../ImprovedGeneralSettingsSection';
 import { toast } from 'react-hot-toast';
 import type { ApplicationSetting } from '@/types/settings';
@@ -27,40 +27,82 @@ jest.mock('@/components/ui/ImageUploader', () => ({
 describe('ImprovedGeneralSettingsSection', () => {
   const mockSettings: ApplicationSetting[] = [
     {
-      key: 'site_title',
-      value: 'Test Site',
+      id: '1',
       category: 'general',
-      data_type: 'string' as const,
+      setting_key: 'site_title',
+      setting_value: 'Test Site',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'site_description',
-      value: 'A test site description',
+      id: '2',
       category: 'general',
-      data_type: 'string' as const,
+      setting_key: 'site_description',
+      setting_value: 'A test site description',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'site_logo',
-      value: '/logo.png',
+      id: '3',
       category: 'general',
-      data_type: 'string' as const,
+      setting_key: 'site_logo',
+      setting_value: '/logo.png',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'primary_color',
-      value: '#3B82F6',
+      id: '4',
       category: 'appearance',
-      data_type: 'string' as const,
+      setting_key: 'primary_color',
+      setting_value: '#3B82F6',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'dark_mode_enabled',
-      value: 'true',
+      id: '5',
       category: 'appearance',
-      data_type: 'boolean' as const,
+      setting_key: 'dark_mode_enabled',
+      setting_value: 'true',
+      data_type: 'boolean',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
     {
-      key: 'font_family',
-      value: 'Inter',
+      id: '6',
       category: 'appearance',
-      data_type: 'string' as const,
+      setting_key: 'font_family',
+      setting_value: 'Inter',
+      data_type: 'string',
+      is_public: true,
+      is_system: false,
+      validation_rules: null,
+      description: null,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
   ];
 
@@ -177,15 +219,15 @@ describe('ImprovedGeneralSettingsSection', () => {
       await waitFor(() => {
         expect(defaultProps.onUpdateSetting).toHaveBeenCalledTimes(2);
         expect(defaultProps.onUpdateSetting).toHaveBeenCalledWith({
-          key: 'site_title',
-          value: 'Updated Title',
           category: 'general',
+          setting_key: 'site_title',
+          setting_value: 'Updated Title',
           data_type: 'string',
         });
         expect(defaultProps.onUpdateSetting).toHaveBeenCalledWith({
-          key: 'primary_color',
-          value: '#00FF00',
           category: 'appearance',
+          setting_key: 'primary_color',
+          setting_value: '#00FF00',
           data_type: 'string',
         });
       });

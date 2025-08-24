@@ -527,3 +527,4 @@ const ImprovedUserManagementSection: React.FC<ImprovedUserManagementSectionProps
 };
 
 export default ImprovedUserManagementSection;
+export { ImprovedUserManagementSection };
