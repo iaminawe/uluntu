@@ -36,6 +36,7 @@ const TestNoEditor = lazy(() => import('../pages/TestNoEditor'));
 const WorkingAIEditor = lazy(() => import('../pages/WorkingAIEditor'));
 const IsolatedAIEditor = lazy(() => import('../pages/IsolatedAIEditor'));
 const FixedAIEditor = lazy(() => import('../pages/FixedAIEditor'));
+const EditorFeatureDemo = lazy(() => import('../pages/EditorFeatureDemo'));
 const DynamicPage = lazy(() => import('../pages/DynamicPage'));
 const CheckAdminStatus = lazy(() => import('../pages/CheckAdminStatus'));
 const SimplePageTest = lazy(() => import('../pages/SimplePageTest'));
@@ -134,6 +135,7 @@ const MenuManagementPage = lazy(() => import('../pages/admin/MenuManagementPage'
 const EnhancedMenuManagementPage = lazy(() => import('../pages/admin/EnhancedMenuManagementPage'));
 const MenuToggleDemo = lazy(() => import('../features/menu/components/MenuToggleDemo'));
 const MenuManagementDebug = lazy(() => import('../pages/admin/MenuManagementDebug'));
+const DebugRoles = lazy(() => import('../pages/admin/DebugRoles'));
 
 // Lazy load topic pages
 const TopicsIndexPage = lazy(() => import('../pages/TopicsIndexPage'));
@@ -194,6 +196,7 @@ export const router = createBrowserRouter([
       { path: 'working-ai', element: withSuspense(WorkingAIEditor) },
       { path: 'isolated-ai', element: withSuspense(IsolatedAIEditor) },
       { path: 'fixed-ai', element: withSuspense(FixedAIEditor) },
+      { path: 'editor-demo', element: withSuspense(EditorFeatureDemo) },
       { path: 'check-admin', element: withSuspense(CheckAdminStatus) },
       { path: 'simple-page-test', element: withSuspense(SimplePageTest) },
       { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
@@ -318,19 +321,45 @@ export const router = createBrowserRouter([
       },
       
       // Gallery routes
-      { path: 'galleries', element: withSuspense(GalleriesPage) },
+      { 
+        path: 'galleries', 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            {withSuspense(GalleriesPage)}
+          </FeatureGate>
+        )
+      },
       { 
         path: 'galleries/create', 
-        element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'galleries/:slug', element: withSuspense(GalleryDetailPage) },
+      { 
+        path: 'galleries/:slug', 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            {withSuspense(GalleryDetailPage)}
+          </FeatureGate>
+        )
+      },
       { 
         path: 'galleries/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute> 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
       { 
         path: 'my-galleries', 
-        element: <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute> 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
       {
         path: 'test-conversations',
@@ -401,7 +430,15 @@ export const router = createBrowserRouter([
         path: 'theme', 
         element: withSuspense(ThemeConfigPage)
       },
-      { path: 'media', element: withSuspense(MediaManagementPage) },
+      { 
+        path: 'media', 
+        element: (
+          <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
+            {withSuspense(MediaManagementPage)}
+          </FeatureGate>
+        )
+      },
+      { path: 'debug-roles', element: withSuspense(DebugRoles) },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
       { path: 'audit', element: withSuspense(AuditPage) },
