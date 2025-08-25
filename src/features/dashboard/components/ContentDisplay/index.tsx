@@ -7,9 +7,9 @@ import {
   List
 } from 'lucide-react';
 import { ContentGrid } from '../ContentGrid';
-import { ContentFilters } from '../ContentFilters';
-import { ViewModeToggle } from '../ViewModeToggle';
-import { SortDropdown } from '../SortDropdown';
+import ContentFilters from '../ContentFilters';
+import ViewModeToggle from '../ViewModeToggle';
+import SortDropdown from '../SortDropdown';
 import { useUserContent } from '../../hooks/useDashboardData';
 import { ContentType } from '../../types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -18,7 +18,7 @@ import MessagesTab from '../MessagesTab';
 import ActivityTab from '../ActivityTab';
 import AnalyticsTab from '../AnalyticsTab';
 import CompaniesTab from '../CompaniesTab';
-import { GroupsTab } from '../GroupsTab';
+import GroupsTab from '../GroupsTab';
 
 interface ContentDisplayProps {
   activeTab: string;
