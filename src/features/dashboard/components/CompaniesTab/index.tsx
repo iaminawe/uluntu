@@ -9,7 +9,7 @@ import {
   Eye,
   Plus
 } from 'lucide-react';
-import { useCompanies } from '@/hooks/useCompanyQueries';
+import { useUserCompanies } from '@/hooks/useCompanyQueries';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/shared/components/ui/ErrorDisplay';
@@ -32,11 +32,9 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user } = useSession();
-  const { data: allCompanies, isLoading, error, refetch } = useCompanies();
-
-  // Filter companies where user is associated (for now showing all, 
-  // in real implementation this would filter by user associations)
-  const userCompanies = allCompanies || [];
+  
+  // Use a custom hook to fetch only user-associated companies
+  const { data: userCompanies = [], isLoading, error, refetch } = useUserCompanies();
 
   const isLoadingState = propLoading || isLoading;
   const errorState = propError || error;

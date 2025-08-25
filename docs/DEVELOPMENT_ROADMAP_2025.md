@@ -69,6 +69,32 @@
 
 ## 🚀 Q2 2025 (April - June)
 
+### Social Media Platform (Twitter/X Clone)
+- [ ] **Core Social Features**
+  - [ ] Post creation with rich text and media
+  - [ ] Threading and reply system
+  - [ ] Like and repost functionality
+  - [ ] Following/follower system
+  - [ ] Activity feeds (Home, Community, Trending)
+
+- [ ] **Media & Embeds**
+  - [ ] Photo uploads (up to 4 per post)
+  - [ ] YouTube/Vimeo video embeds
+  - [ ] Link previews with Open Graph
+  - [ ] Image gallery integration
+
+- [ ] **Social Discovery**
+  - [ ] Hashtag system and trending topics
+  - [ ] User mentions with autocomplete
+  - [ ] Search across posts and users
+  - [ ] Follow suggestions based on connections
+
+- [ ] **Optional Federation**
+  - [ ] AT Protocol (Bluesky) adapter
+  - [ ] ActivityPub (Mastodon) bridge
+  - [ ] Cross-platform content sync
+  - [ ] Federation toggle controls
+
 ### Multi-Tenant Architecture
 - [ ] **SaaS Foundation**
   - [ ] Tenant isolation implementation
@@ -82,19 +108,21 @@
   - [ ] Plugin system architecture
   - [ ] API for third-party integrations
 
+## 📈 Q3 2025 (July - September)
+
 ### Mobile Application
 - [ ] **React Native App**
   - [ ] Core feature parity with web
+  - [ ] Social media features on mobile
   - [ ] Push notifications
   - [ ] Offline mode support
   - [ ] Native device features (camera, location)
-
-## 📈 Q3 2025 (July - September)
 
 ### Analytics & Insights
 - [ ] **Platform Analytics**
   - [ ] User engagement metrics
   - [ ] Content performance tracking
+  - [ ] Social media analytics dashboard
   - [ ] Community health dashboard
   - [ ] Export capabilities
 
@@ -160,9 +188,11 @@
 
 ### Community Success
 - **Content Creation**: 100+ posts/month
+- **Social Engagement**: 500+ social posts/month
 - **Group Activity**: 80% active groups
 - **Event Participation**: 60% RSVP attendance
 - **Member Connections**: 5+ connections per user
+- **Social Following**: Average 10+ followers per active user
 
 ### Technical Excellence
 - **Test Coverage**: > 90%
@@ -209,3 +239,7 @@
 **Last Updated**: January 2025
 **Status**: Active Development
 **Next Review**: February 2025
+
+## 📚 Related Documentation
+
+- [Social Media Platform Specification](./SOCIAL_MEDIA_PLATFORM_SPECIFICATION.md) - Detailed technical specification for the Q2 2025 social media features
