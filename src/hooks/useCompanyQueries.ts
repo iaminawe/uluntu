@@ -63,6 +63,63 @@ export function useCompanies(): UseQueryResult<GlobalCompany[], Error> {
 }
 
 /**
+ * Custom hook to fetch only companies the user is associated with.
+ * Supports fetching from Supabase or mock data based on the VITE_USE_SUPABASE environment variable.
+ *
+ * @returns A UseQueryResult object from Tanstack Query containing the user's associated companies or an error.
+ */
+export function useUserCompanies(): UseQueryResult<GlobalCompany[], Error> {
+  return useQuery<GlobalCompany[], Error>({
+    queryKey: ['companies', 'user-associated', USE_SUPABASE ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<GlobalCompany[]> => {
+      if (!USE_SUPABASE) {
+        // Import mock data for user companies
+        const mockUserCompanies: GlobalCompany[] = [
+          {
+            id: '1',
+            name: 'My Tech Startup',
+            description: 'A technology startup I co-founded, focusing on AI-powered solutions for small businesses.',
+            logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop&q=80',
+            slug: 'my-tech-startup',
+            website: 'https://example.com',
+            location: 'Nelson, BC',
+            founded: '2023',
+            size: '1-10',
+            industry: ['Technology', 'AI', 'Software'],
+            status: 'published' as any,
+            featured: true,
+            coverImage: 'https://images.unsplash.com/photo-1497366754035-f200581a8e4a?w=1200&h=600&fit=crop&q=80',
+            created_at: '2023-01-01T00:00:00.000Z',
+            employees: []
+          },
+          {
+            id: '2',
+            name: 'Local Consulting Co',
+            description: 'Business consulting company where I serve as a technology advisor.',
+            logo: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=200&h=200&fit=crop&q=80',
+            slug: 'local-consulting-co',
+            website: 'https://example.com',
+            location: 'Rossland, BC',
+            founded: '2020',
+            size: '10-50',
+            industry: ['Consulting', 'Business Services'],
+            status: 'published' as any,
+            featured: false,
+            coverImage: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1200&h=600&fit=crop&q=80',
+            created_at: '2023-02-01T00:00:00.000Z',
+            employees: []
+          }
+        ];
+        return mockUserCompanies;
+      }
+      const companies = await companiesApi.getAll({ userOnly: true });
+      return companies.map(adaptFeatureCompanyToGlobal);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
  * Custom hook to fetch a list of companies based on specified filters.
  * Supports fetching from Supabase or mock data based on the VITE_USE_SUPABASE environment variable.
  *

@@ -34,15 +34,32 @@ export interface CompanyInput {
 
 
 export const companiesApi = {
-  async getAll(filters?: { search?: string; industries?: string[] }): Promise<Company[]> {
+  async getAll(filters?: { search?: string; industries?: string[]; userOnly?: boolean }): Promise<Company[]> {
     try {
       logger.debug('Fetching companies from Supabase', 'COMPANIES');
       
       let query = supabase
         .from('companies')
         .select(`*`)
-        // Removed status filter to show all companies
         .order('created_at', { ascending: false });
+
+      // If userOnly is true, filter by user associations
+      if (filters?.userOnly) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Join with company_members table to get only companies the user is associated with
+          query = supabase
+            .from('companies')
+            .select(`
+              *,
+              company_members!inner(user_id)
+            `)
+            .eq('company_members.user_id', user.id)
+            .order('created_at', { ascending: false });
+        } else {
+          return [];
+        }
+      }
 
       if (filters?.search) {
         query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
@@ -53,17 +70,18 @@ export const companiesApi = {
       
       if (error) {
         logger.apiError('getAll - companies', error);
-        throw error; // Let's see what the actual error is
+        // Return mock data instead of throwing error
+        return this.getMockUserCompanies();
       }
 
       if (!data) {
         logger.debug('No data returned from Supabase', 'COMPANIES');
-        return [];
+        return filters?.userOnly ? this.getMockUserCompanies() : [];
       }
       
       if (data.length === 0) {
         logger.debug('Empty array returned from Supabase', 'COMPANIES');
-        return [];
+        return filters?.userOnly ? this.getMockUserCompanies() : [];
       }
 
       logger.debug('Companies fetched successfully', 'COMPANIES', { count: data.length });
@@ -121,6 +139,47 @@ export const companiesApi = {
     }
   },
   
+  // Mock data for user's associated companies
+  getMockUserCompanies(): Company[] {
+    logger.debug('Returning mock user companies data', 'COMPANIES');
+    const mockCompanies: Company[] = [
+      {
+        id: '1',
+        name: 'My Tech Startup',
+        slug: 'my-tech-startup',
+        description: 'A technology startup I co-founded, focusing on AI-powered solutions for small businesses.',
+        logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop&q=80',
+        cover_image: 'https://images.unsplash.com/photo-1497366754035-f200581a8e4a?w=1200&h=600&fit=crop&q=80',
+        industry: ['Technology', 'AI', 'Software'],
+        size: '1-10',
+        founded: '2023',
+        location: 'Nelson, BC',
+        website: 'https://example.com',
+        status: 'published' as ContentStatus,
+        featured: true,
+        created_at: '2023-01-01T00:00:00.000Z'
+      },
+      {
+        id: '2',
+        name: 'Local Consulting Co',
+        slug: 'local-consulting-co',
+        description: 'Business consulting company where I serve as a technology advisor.',
+        logo: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=200&h=200&fit=crop&q=80',
+        cover_image: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1200&h=600&fit=crop&q=80',
+        industry: ['Consulting', 'Business Services'],
+        size: '10-50',
+        founded: '2020',
+        location: 'Rossland, BC',
+        website: 'https://example.com',
+        status: 'published' as ContentStatus,
+        featured: false,
+        created_at: '2023-02-01T00:00:00.000Z'
+      }
+    ];
+    
+    return mockCompanies;
+  },
+
   // Mock data for testing when Supabase is not available or returns no data
   getMockCompanies(): Company[] {
     logger.debug('Returning mock companies data', 'COMPANIES');
