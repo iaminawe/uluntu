@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { Gallery, GalleryFilters } from '@/features/gallery/types';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { 
+  selectSelectedGalleries, 
+  selectViewMode, 
+  toggleGallerySelection,
+  clearGallerySelection,
+  setViewMode
+} from '@/features/gallery/store/galleryUISlice';
 import {
   Search,
   Plus,
@@ -22,7 +30,10 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
-  X
+  X,
+  Grid,
+  List,
+  Photos
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -41,11 +52,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/Badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import AdminPhotoManager from './AdminPhotoManager';
+import GalleryCreationModal from './GalleryCreationModal';
+import GalleryEditModal from './GalleryEditModal';
+import ConfirmationDialog from './ConfirmationDialog';
 
 const GalleryManagementPanel: React.FC = () => {
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
+  const selectedGalleries = useAppSelector(selectSelectedGalleries);
+  const viewMode = useAppSelector(selectViewMode);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGalleries, setSelectedGalleries] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<GalleryFilters>({
     sortBy: 'date',
@@ -55,6 +73,12 @@ const GalleryManagementPanel: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
   const [viewingGallery, setViewingGallery] = useState<Gallery | null>(null);
+  const [managingPhotos, setManagingPhotos] = useState<Gallery | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    open: boolean;
+    galleries: Gallery[];
+    single: boolean;
+  }>({ open: false, galleries: [], single: false });
 
   const pageSize = 20;
 

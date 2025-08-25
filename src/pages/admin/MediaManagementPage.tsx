@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Camera, Image, BarChart3, Settings, Users } from 'lucide-react';
+import { Camera, Image, BarChart3, Settings, Users, Shield } from 'lucide-react';
 import GalleryManagementPanel from '@/components/admin/media/GalleryManagementPanel';
 import PhotoModerationQueue from '@/components/admin/media/PhotoModerationQueue';
+import PhotoModerationInterface from '@/components/admin/media/PhotoModerationInterface';
 import StorageAnalytics from '@/components/admin/media/StorageAnalytics';
 import EntityGalleryManager from '@/components/admin/media/EntityGalleryManager';
 
@@ -25,14 +26,18 @@ const MediaManagementPage: React.FC = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="galleries" className="flex items-center gap-2">
             <Camera className="h-4 w-4" />
             Galleries
           </TabsTrigger>
           <TabsTrigger value="moderation" className="flex items-center gap-2">
-            <Image className="h-4 w-4" />
+            <Shield className="h-4 w-4" />
             Moderation
+          </TabsTrigger>
+          <TabsTrigger value="queue" className="flex items-center gap-2">
+            <Image className="h-4 w-4" />
+            Queue
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
@@ -53,6 +58,10 @@ const MediaManagementPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="moderation" className="space-y-6">
+          <PhotoModerationInterface />
+        </TabsContent>
+
+        <TabsContent value="queue" className="space-y-6">
           <PhotoModerationQueue />
         </TabsContent>
 

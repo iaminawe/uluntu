@@ -1,3 +1,11 @@
 export { default as GallerySelector } from './GallerySelector';
 export { default as EntityGalleryList } from './EntityGalleryList';
 export { default as GalleryAttachmentField } from './GalleryAttachmentField';
+export { default as GalleryManagementPanel } from './GalleryManagementPanel';
+export { default as AdminPhotoManager } from './AdminPhotoManager';
+export { default as GalleryCreationModal } from './GalleryCreationModal';
+export { default as GalleryEditModal } from './GalleryEditModal';
+export { default as PhotoMetadataModal } from './PhotoMetadataModal';
+export { default as BulkPhotoUploader } from './BulkPhotoUploader';
+export { default as PhotoModerationInterface } from './PhotoModerationInterface';
+export { default as ConfirmationDialog } from './ConfirmationDialog';
