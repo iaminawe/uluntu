@@ -428,10 +428,14 @@ const GalleryManagementPanel: React.FC = () => {
                     </Badge>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center text-sm text-gray-900 dark:text-gray-100">
+                    <button
+                      onClick={() => setManagingPhotos(gallery)}
+                      className="flex items-center text-sm text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                      title="Click to manage photos"
+                    >
                       <Image className="h-4 w-4 mr-1" />
                       {gallery.photo_count || 0}
-                    </div>
+                    </button>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center text-sm text-gray-900 dark:text-gray-100">
@@ -460,6 +464,15 @@ const GalleryManagementPanel: React.FC = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setManagingPhotos(gallery)}
+                        title="Manage Photos"
+                        className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        <Image className="h-4 w-4" />
+                      </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
@@ -474,6 +487,10 @@ const GalleryManagementPanel: React.FC = () => {
                           <DropdownMenuItem onClick={() => setEditingGallery(gallery)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Gallery
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setManagingPhotos(gallery)}>
+                            <Image className="h-4 w-4 mr-2" />
+                            Manage Photos
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Copy className="h-4 w-4 mr-2" />
@@ -625,16 +642,28 @@ const GalleryManagementPanel: React.FC = () => {
               </div>
             </div>
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setViewingGallery(null);
-                  setEditingGallery(viewingGallery);
-                }}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Gallery
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setViewingGallery(null);
+                    setEditingGallery(viewingGallery);
+                  }}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Gallery
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setViewingGallery(null);
+                    setManagingPhotos(viewingGallery);
+                  }}
+                >
+                  <Image className="h-4 w-4 mr-2" />
+                  Manage Photos
+                </Button>
+              </div>
               <Button
                 variant="outline"
                 onClick={() => setViewingGallery(null)}
@@ -766,6 +795,15 @@ const GalleryManagementPanel: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Admin Photo Manager Modal */}
+      {managingPhotos && (
+        <AdminPhotoManager
+          gallery={managingPhotos}
+          isOpen={!!managingPhotos}
+          onClose={() => setManagingPhotos(null)}
+        />
       )}
     </div>
   );
