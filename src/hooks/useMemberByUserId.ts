@@ -57,10 +57,9 @@ export function useMemberByUserId(userId?: string): UseQueryResult<Member | null
     queryKey: ['members', 'by-user-id', userId],
     queryFn: async () => {
       if (!userId) {
-        console.log('useMemberByUserId: No userId provided');
         return null;
       }
-      
+
       try {
         // Fetch member by user_id
         const { data, error } = await supabase
@@ -76,9 +75,9 @@ export function useMemberByUserId(userId?: string): UseQueryResult<Member | null
         if (error) {
           // If no member found for this user, return null (not an error)
           if (error.code === 'PGRST116') {
-            console.log('No member profile found for user:', userId);
             return null;
           }
+          // Log error for debugging
           console.error('Error fetching member by user ID:', error);
           throw error;
         }

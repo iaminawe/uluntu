@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import DOMPurify from 'dompurify';
 import { supabase } from '@/lib/supabase';
-import { 
-  Calendar, 
-  Users, 
-  Briefcase, 
-  BookOpen, 
-  Rocket, 
+import {
+  Calendar,
+  Users,
+  Briefcase,
+  BookOpen,
+  Rocket,
   Target,
   Code,
   Globe,
@@ -24,6 +25,30 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CarouselHero from '@/components/CarouselHero';
+
+/**
+ * DOMPurify configuration for video embed codes.
+ * Very restrictive - only allows iframe from trusted video platforms.
+ * Blocks all script execution and event handlers.
+ */
+const VIDEO_EMBED_CONFIG = {
+  ALLOWED_TAGS: ['iframe', 'div'],
+  ALLOWED_ATTR: [
+    'src',
+    'title',
+    'width',
+    'height',
+    'frameborder',
+    'allowfullscreen',
+    'allow',
+    'class',
+  ],
+  ALLOW_DATA_ATTR: false,
+  FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+  // Only allow iframe sources from trusted video platforms
+  ALLOWED_URI_REGEXP: /^(?:https?:)?\/\/(?:www\.)?(youtube\.com|youtube-nocookie\.com|player\.vimeo\.com|dailymotion\.com|vimeo\.com)\//i,
+};
 
 interface PageBlock {
   type: string;
@@ -179,7 +204,18 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
       
       // Custom embed code
       if (metadata?.type === 'embed' && src.includes('<')) {
-        return <div dangerouslySetInnerHTML={{ __html: src }} />;
+        /**
+         * CRITICAL: Sanitize video embed code to prevent XSS attacks.
+         * Only allow iframes from trusted video platforms (YouTube, Vimeo, etc.)
+         * and block all script execution.
+         */
+        return (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(src, VIDEO_EMBED_CONFIG),
+            }}
+          />
+        );
       }
       
       // Fallback

@@ -36,26 +36,16 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
         `route-change-end-${location.pathname}`
       );
 
-      if (duration) {
-        console.log(`Route change took ${duration.toFixed(2)}ms`);
-      }
-
       previousLocation.current = location.pathname;
     }
 
     markPerformance(`route-change-start-${location.pathname}`);
   }, [location]);
 
-  // Log performance report periodically in development
+  // Performance monitoring (disabled to reduce console output)
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      const interval = setInterval(() => {
-        console.log(performanceMonitor.generateReport());
-      }, 60000); // Every minute
-      
-      return () => clearInterval(interval);
-    }
-    // No return needed when condition is false
+    // Development performance logging disabled
+    // Uncomment to enable: console.log(performanceMonitor.generateReport());
     return undefined;
   }, []);
 

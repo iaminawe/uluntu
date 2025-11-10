@@ -95,11 +95,11 @@ export class MenuApiService {
     try {
       // For now, just simulate saving (table doesn't exist yet)
       // In production, this would save to the database
-      console.log('Saving menu configuration:', config);
-      
+
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 500));
     } catch (error) {
+      // Log error for debugging save failures
       console.error('Error saving menu configuration:', error);
       throw error;
     }
@@ -138,7 +138,6 @@ export class MenuApiService {
    */
   static async deleteMenuItem(itemId: string): Promise<void> {
     // In a full implementation, you would delete this from the database
-    console.log('Deleting menu item:', itemId);
   }
 
   /**
@@ -146,7 +145,6 @@ export class MenuApiService {
    */
   static async reorderMenuItems(items: MenuItem[], menuType: MenuType): Promise<void> {
     // In a full implementation, you would update the order in the database
-    console.log('Reordering menu items:', menuType, items.map(i => i.title));
   }
 }
 

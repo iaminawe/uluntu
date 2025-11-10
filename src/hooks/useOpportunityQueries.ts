@@ -67,7 +67,6 @@ export function useOpportunities(filters?: OpportunityFilters): UseQueryResult<F
     queryKey: ['opportunities', filters, useSupabase ? 'supabase' : 'mock'],
     queryFn: async (): Promise<FrontendOpportunity[]> => {
       if (!useSupabase) {
-        console.log('Mock: Returning opportunities from mockData');
         // Type cast mockData with proper type checking
         const typedMockData = mockData as unknown as MockDataType;
         
@@ -151,12 +150,10 @@ export function useOpportunity(id: string): UseQueryResult<FrontendOpportunity |
     queryKey: ['opportunity', id, useSupabase ? 'supabase' : 'mock'],
     queryFn: async (): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
-        console.log(`Mock: Fetching opportunity with id: ${id}`);
         const typedMockData = mockData as unknown as MockDataType;
         const mockOpp = typedMockData.opportunities.find(opp => String(opp.id) === id);
         
         if (!mockOpp) {
-          console.warn(`Mock: Opportunity with id ${id} not found`);
           return null;
         }
         
@@ -200,7 +197,6 @@ export function useCreateOpportunity(): UseMutationResult<FrontendOpportunity | 
   return useMutation<FrontendOpportunity | null, Error, OpportunityInput>({
     mutationFn: async (data: OpportunityInput): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
-        console.log('Mock: Creating opportunity:', data);
         // Create a unique ID for the mock opportunity
         const mockId = `mock-${Date.now()}`;
         
@@ -283,7 +279,6 @@ export function useUpdateOpportunity(): UseMutationResult<FrontendOpportunity | 
   return useMutation<FrontendOpportunity | null, Error, { id: string; data: OpportunityUpdateInput }>({
     mutationFn: async ({ id, data }: { id: string; data: OpportunityUpdateInput }): Promise<FrontendOpportunity | null> => {
       if (!useSupabase) {
-        console.log(`Mock: Updating opportunity with id: ${id}`, data);
         const typedMockData = mockData as unknown as MockDataType;
         
         // Ensure opportunities array exists
@@ -291,7 +286,6 @@ export function useUpdateOpportunity(): UseMutationResult<FrontendOpportunity | 
         const mockOppIndex = opportunities.findIndex(opp => String(opp.id) === id);
         
         if (mockOppIndex === -1) {
-          console.warn(`Mock: Opportunity with id ${id} not found for update`);
           return Promise.resolve(null);
         }
         
@@ -386,18 +380,15 @@ export function useDeleteOpportunity(): UseMutationResult<void, Error, string> {
   return useMutation<void, Error, string>({
     mutationFn: async (id: string): Promise<void> => {
       if (!useSupabase) {
-        console.log(`Mock: Deleting opportunity with id: ${id}`);
         const typedMockData = mockData as unknown as MockDataType;
         const opportunityIndex = typedMockData.opportunities.findIndex(opp => String(opp.id) === id);
         
         if (opportunityIndex === -1) {
-          console.warn(`Mock: Opportunity with id ${id} not found for deletion`);
           return;
         }
-        
+
         // In a real implementation, we would remove the opportunity from the array
         // mockData.opportunities.splice(opportunityIndex, 1);
-        console.log(`Mock: Successfully deleted opportunity with id: ${id}`);
         return;
       }
       
