@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { EditUserModal } from './components/EditUserModal';
 import { DeleteUserModal } from './components/DeleteUserModal';
 import { ImportUsersModal } from './components/ImportUsersModal';
@@ -9,6 +10,8 @@ import { BulkActionsPanel } from './components/BulkActionsPanel';
 import { useUserManagement } from './hooks/useUserManagement';
 import { useUserFilters } from './hooks/useUserFilters';
 import { useUserImport } from './hooks/useUserImport';
+import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
+import { UsersErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
 
 /**
  * SimpleUnifiedUsersPage - Main user management page
@@ -19,7 +22,7 @@ import { useUserImport } from './hooks/useUserImport';
  * - /hooks - Custom hooks for state and logic
  * - /types.ts - TypeScript interfaces
  */
-const SimpleUnifiedUsersPage: React.FC = () => {
+const SimpleUnifiedUsersPageContent: React.FC = () => {
   // User management hook (permissions, CRUD operations, role management)
   const {
     editingUser,
@@ -224,6 +227,27 @@ const SimpleUnifiedUsersPage: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+/**
+ * SimpleUnifiedUsersPage - Wrapped with error boundary for graceful failure handling
+ */
+const SimpleUnifiedUsersPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <FeatureErrorBoundary
+      featureName="User Management"
+      fallback={
+        <UsersErrorFallback
+          onRetry={() => window.location.reload()}
+          onGoBack={() => navigate('/admin')}
+        />
+      }
+    >
+      <SimpleUnifiedUsersPageContent />
+    </FeatureErrorBoundary>
   );
 };
 

@@ -4,11 +4,39 @@ import { useIsGroupAdmin } from '@/hooks/useEntityPermissions';
 import { useCurrentMember } from '@/hooks/useCurrentMember';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { resourcesApi } from '@/features/resources/api/resourcesApi';
+import { toast } from 'react-hot-toast';
 
 const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading, groupId }) => {
   const { data: isAdmin = false } = useIsGroupAdmin(groupId);
   const { data: currentMember } = useCurrentMember();
   const [removingResource, setRemovingResource] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const deleteResourceMutation = useMutation({
+    mutationFn: (resourceId: string) => resourcesApi.delete(resourceId),
+    onSuccess: () => {
+      toast.success('Resource removed from group');
+      queryClient.invalidateQueries({ queryKey: ['group-resources', groupId] });
+    },
+    onError: (error) => {
+      toast.error('Failed to remove resource');
+      console.error('Error removing resource:', error);
+    }
+  });
+
+  const handleRemoveResource = async (resourceId: string) => {
+    if (window.confirm('Remove this resource from the group?')) {
+      setRemovingResource(resourceId);
+      try {
+        await deleteResourceMutation.mutateAsync(resourceId);
+      } finally {
+        setRemovingResource(null);
+      }
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -68,15 +96,10 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ resources, isLoading, group
                   </a>
                   {isAdmin && currentMember && resource.contributor.id === currentMember.id && (
                     <button
-                      onClick={async () => {
-                        if (window.confirm('Remove this resource from the group?')) {
-                          setRemovingResource(resource.id);
-                          // TODO: Implement resource removal
-                          setRemovingResource(null);
-                        }
-                      }}
+                      onClick={() => handleRemoveResource(resource.id)}
                       disabled={removingResource === resource.id}
                       className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50"
+                      title="Remove this resource from the group"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

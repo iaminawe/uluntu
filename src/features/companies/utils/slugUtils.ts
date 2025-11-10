@@ -40,7 +40,17 @@ export async function generateUniqueCompanySlug(
     strict: true,
     lowercase: true
   });
-  return baseSlug; // TODO: Add database checking
+
+  // TODO(slug-uniqueness): Add database checking for slug uniqueness
+  // Current implementation: Only generates base slug, no database lookup
+  // To implement:
+  //   1. Query Supabase for existing companies with same slug
+  //   2. If not unique, append incrementing number (e.g., slug-1, slug-2)
+  //   3. Exclude current company ID if updating
+  //   4. Consider caching results with React Query
+  // Note: Requires supabase client and database connection
+
+  return baseSlug;
 }
 
 /**
@@ -87,7 +97,17 @@ export async function lookupCompany<T = any>(
   identifier: string,
   selectFields?: string
 ): Promise<{ data: T | null; foundBy: 'id' | 'slug' | null; error?: string }> {
-  // TODO: Implement database lookup
+  // TODO(company-lookup): Implement database lookup function
+  // Current status: Stub implementation - returns not implemented error
+  // To implement:
+  //   1. Determine if identifier is UUID or slug using parseCompanyParam()
+  //   2. Query Supabase companies table:
+  //      - By ID if UUID format
+  //      - By slug field if slug format
+  //   3. Return company data with foundBy metadata
+  //   4. Handle errors gracefully
+  // Related: parseCompanyParam, companiesApi
+  // Estimated effort: 1 hour
   return { data: null, foundBy: null, error: 'Not implemented' };
 }
 
