@@ -4,6 +4,30 @@
 
 This comprehensive menu management system provides a flexible, hierarchical structure for managing navigation menus with advanced features including drag-and-drop reordering, permissions, audit trails, and internationalization support.
 
+## Documentation Index
+
+- **[System Analysis](./ANALYSIS.md)** - Architecture and design analysis
+- **[Security Implementation](./SECURITY.md)** - Security controls and permissions
+- **[API Type Fixes](./API_TYPE_FIXES.md)** - TypeScript type definitions and fixes
+- **[Toggle System](./TOGGLE_SYSTEM.md)** - Menu visibility and toggle controls
+- **[Drag & Drop](./DRAG_DROP.md)** - Drag-and-drop functionality implementation
+
+## Database Fixes
+
+Menu-related SQL scripts and database migrations are located in: [/database/menu-fixes/](../../../database/menu-fixes/)
+
+## Quick Links
+
+- Main Project: [../../../README.md](../../../README.md)
+- Architecture: [../../architecture/](../../architecture/)
+- Admin Interface: [../admin/](../admin/)
+
+## Related Documentation
+
+- [Navigation System](../../navigation/)
+- [Admin Features](../admin/)
+- [Component Library](../../components/)
+
 ## Architecture
 
 ### Database Schema
