@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUnreadCount } from '@/hooks/useMessagingQueries';
+import { useUnreadCount } from '@/hooks/messaging';
 import { useAuth } from '@/hooks/useAuth';
 
 interface UnreadBadgeProps {

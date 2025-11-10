@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Send } from 'lucide-react';
-import { useCreateConversation } from '@/hooks/useMessagingQueries';
+import { useCreateConversation } from '@/hooks/messaging';
 import { useNavigate } from 'react-router-dom';
 
 interface ComposeMessageModalProps {
