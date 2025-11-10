@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Send, Edit2, Trash2, MoreVertical } from 'lucide-react';
 import { useRealtimeChat } from '../../hooks/useRealtimeChat';
-import { useMessages, useConversation } from '@/hooks/useMessagingQueries';
+import { useMessages, useConversation } from '@/hooks/messaging';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import MessageBubble from '../MessageBubble';

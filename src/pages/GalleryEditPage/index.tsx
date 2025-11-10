@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
+import { GalleryErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
 import { ArrowLeft, Save, Upload, Globe, Users, Lock, X, Image } from 'lucide-react';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { useAppSelector } from '@/store/hooks';
@@ -14,7 +16,7 @@ import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 import { EnhancedContentAIEditor } from '@/components/content/EnhancedContentAIEditor';
 
-const GalleryEditPage: React.FC = () => {
+const GalleryEditPageContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
@@ -557,6 +559,27 @@ const GalleryEditPage: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+/**
+ * GalleryEditPage - Wrapped with error boundary for graceful failure handling
+ */
+const GalleryEditPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <FeatureErrorBoundary
+      featureName="Gallery Editor"
+      fallback={
+        <GalleryErrorFallback
+          onRetry={() => window.location.reload()}
+          onGoBack={() => navigate('/gallery')}
+        />
+      }
+    >
+      <GalleryEditPageContent />
+    </FeatureErrorBoundary>
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
+import { GalleryErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
 import { 
   ArrowLeft, 
   Download, 
@@ -25,7 +27,7 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Gallery, Photo } from '@/features/gallery/types';
 import { AuthorLink } from '@/components/ui/AuthorLink';
 
-const GalleryDetailPage: React.FC = () => {
+const GalleryDetailPageContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
@@ -307,6 +309,27 @@ const GalleryDetailPage: React.FC = () => {
 
       </div>
     </ContentContainer>
+  );
+};
+
+/**
+ * GalleryDetailPage - Wrapped with error boundary for graceful failure handling
+ */
+const GalleryDetailPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <FeatureErrorBoundary
+      featureName="Gallery"
+      fallback={
+        <GalleryErrorFallback
+          onRetry={() => window.location.reload()}
+          onGoBack={() => navigate('/gallery')}
+        />
+      }
+    >
+      <GalleryDetailPageContent />
+    </FeatureErrorBoundary>
   );
 };
 

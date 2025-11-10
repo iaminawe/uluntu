@@ -48,11 +48,11 @@ export default function DirectoryPage() {
   // Convert all members to the UI type expected by MembersList
   const adaptedMembers = (allMembers || []).map(adaptMemberForUI);
   
-  // TODO: Implement filtering logic here if ActionBar doesn't handle it before pagination
-  // For now, we assume 'adaptedMembers' is the list to be paginated.
-  // If MembersList applies filters internally and returns a filtered list, that would be better.
-  // Or, filters from ActionBar should be applied here to 'adaptedMembers' before pagination.
-  const filteredMembers = adaptedMembers; // Placeholder for actual filtering if needed
+  // Filtering is handled by useMembersHybrid hook which applies search and skills filters
+  // The adaptedMembers list is already filtered based on the filters state from ActionBar
+  // If ActionBar filter changes, the useMembersHybrid hook will refetch and filter the members
+  // No additional filtering needed here - just paginate the pre-filtered results
+  const filteredMembers = adaptedMembers; // Already filtered by useMembersHybrid hook
 
   const totalMembers = filteredMembers.length;
   const hasMembers = totalMembers > 0;
