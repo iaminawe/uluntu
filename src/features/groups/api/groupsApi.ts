@@ -11,6 +11,16 @@ import { ContentStatus } from '../types/common'; // For casting 'status'
 import { lookupContent } from '@/utils/contentUrlUtils';
 import { groupMemberManagementApi } from '@/lib/api/groups/memberManagement';
 import { groupPostsApi } from '@/lib/api/groups/postsApi';
+import type {
+  GroupActivity,
+  GroupAnnouncement,
+  GroupInvitation,
+  GroupResource,
+  GroupPost,
+  GroupActivityInput,
+  GroupAnnouncementInput,
+  CreateInvitationData,
+} from '@/hooks/useGroupQueries.types';
 
 
 // TODO: Consider importing specific Supabase row types for 'data' variables
@@ -375,7 +385,7 @@ export const groupsApi = {
     }
   },
 
-  async getGroupResources(groupId: string): Promise<unknown[]> {
+  async getGroupResources(groupId: string): Promise<GroupResource[]> {
     try {
       const { data, error } = await supabase
         .from('resources')
@@ -388,18 +398,18 @@ export const groupsApi = {
         handleSupabaseError(error, 'fetching group resources');
         return [];
       }
-      
-      return data || [];
+
+      return (data || []) as GroupResource[];
     } catch (error) {
       handleSupabaseError(error, 'fetching group resources');
       return [];
     }
   },
 
-  async getGroupPosts(groupId: string): Promise<unknown[]> {
+  async getGroupPosts(groupId: string): Promise<GroupPost[]> {
     try {
       const { posts } = await groupPostsApi.getGroupPosts(groupId);
-      return posts;
+      return posts as GroupPost[];
     } catch (error) {
       handleSupabaseError(error, 'fetching group posts');
       return [];
@@ -424,7 +434,7 @@ export const groupsApi = {
   },
 
   // New invitation methods
-  async createInvitation(groupId: string, invitationData: any): Promise<string | null> {
+  async createInvitation(groupId: string, invitationData: CreateInvitationData): Promise<string | null> {
     return groupMemberManagementApi.createInvitation({ group_id: groupId, ...invitationData });
   },
 
@@ -432,12 +442,14 @@ export const groupsApi = {
     return groupMemberManagementApi.acceptInvitation(token);
   },
 
-  async getUserInvitations(userId: string): Promise<unknown[]> {
-    return groupMemberManagementApi.getUserInvitations(userId);
+  async getUserInvitations(userId: string): Promise<GroupInvitation[]> {
+    const invitations = await groupMemberManagementApi.getUserInvitations(userId);
+    return invitations as GroupInvitation[];
   },
 
-  async getGroupInvitations(groupId: string): Promise<unknown[]> {
-    return groupMemberManagementApi.getGroupInvitations(groupId);
+  async getGroupInvitations(groupId: string): Promise<GroupInvitation[]> {
+    const invitations = await groupMemberManagementApi.getGroupInvitations(groupId);
+    return invitations as GroupInvitation[];
   },
 
   async cancelInvitation(invitationId: string): Promise<boolean> {
@@ -445,13 +457,36 @@ export const groupsApi = {
   },
 
   // New posts methods
-  async createPost(groupId: string, postData: any): Promise<unknown | null> {
-    return groupPostsApi.createPost({ group_id: groupId, ...postData });
+  async createPost(groupId: string, postData: Partial<GroupPost>): Promise<GroupPost | null> {
+    const post = await groupPostsApi.createPost({ group_id: groupId, ...postData });
+    return post as GroupPost | null;
   },
 
-  async getGroupActivities(groupId: string): Promise<unknown[]> {
+  async getGroupActivities(groupId: string): Promise<GroupActivity[]> {
     const { activities } = await groupPostsApi.getGroupActivities(groupId);
-    return activities;
+    return activities as GroupActivity[];
+  },
+
+  async getAnnouncements(groupId: string): Promise<GroupAnnouncement[]> {
+    // Announcements are stored as group_posts with type='announcement'
+    const { posts } = await groupPostsApi.getGroupPosts(groupId, { type: 'announcement' });
+    return posts as GroupAnnouncement[];
+  },
+
+  async createActivity(groupId: string, activityData: GroupActivityInput): Promise<GroupActivity | null> {
+    // Activities would be created through the posts API activity logging
+    // This is a placeholder - actual implementation depends on your activity tracking system
+    throw new Error('createActivity not implemented - use groupPostsApi.logActivity directly');
+  },
+
+  async createAnnouncement(groupId: string, announcementData: GroupAnnouncementInput): Promise<GroupAnnouncement | null> {
+    // Announcements are created as posts with type='announcement'
+    const post = await groupPostsApi.createPost({
+      group_id: groupId,
+      type: 'announcement',
+      ...announcementData
+    });
+    return post as GroupAnnouncement | null;
   },
 
   // Invitation methods - delegate to member management API
@@ -470,7 +505,8 @@ export const groupsApi = {
     });
   },
 
-  async getInvitationByToken(token: string): Promise<unknown | null> {
-    return groupMemberManagementApi.getInvitationByToken(token);
+  async getInvitationByToken(token: string): Promise<GroupInvitation | null> {
+    const invitation = await groupMemberManagementApi.getInvitationByToken(token);
+    return invitation as GroupInvitation | null;
   }
 };
