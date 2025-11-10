@@ -235,7 +235,6 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!active && transformedThemes.length > 0) {
         const defaultTheme = transformedThemes.find(t => t.is_default) || transformedThemes[0];
         if (defaultTheme) {
-          console.log('No active theme found, activating default:', defaultTheme.name);
           // Activate the default theme
           await supabase
             .from('themes')
@@ -289,12 +288,10 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     if (typography && 'font_family' in typography && typography.font_family) {
       // Extract the primary font name (before the first comma)
       const primaryFont = typography.font_family.split(',')[0].trim().replace(/['"]/g, '');
-      console.log('Loading font:', primaryFont, 'from font_family:', typography.font_family);
-      
+
       // Skip system fonts
       const systemFonts = ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif', 'serif', 'monospace'];
       if (systemFonts.includes(primaryFont)) {
-        console.log('Skipping system font:', primaryFont);
         // Still set the CSS variable even for system fonts
         root.style.setProperty('--theme-font-family', typography.font_family);
         document.body.style.fontFamily = typography.font_family;
@@ -312,11 +309,9 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         fontLink.rel = 'stylesheet';
         fontLink.href = `https://fonts.googleapis.com/css2?family=${primaryFont.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
         document.head.appendChild(fontLink);
-        console.log('Created font link:', fontLink.href);
-        
+
         // Add load event listener to ensure font is applied after loading
         fontLink.addEventListener('load', async () => {
-          console.log('Font loaded successfully:', primaryFont);
           if (typography.font_family) {
             document.body.style.fontFamily = typography.font_family;
           }
@@ -325,9 +320,8 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
           if ('fonts' in document) {
             try {
               await document.fonts.load(`16px ${primaryFont}`);
-              console.log('Font is ready to use:', primaryFont);
             } catch (error) {
-              console.error('Error loading font:', error);
+              // Error loading font, non-critical
             }
           }
           
@@ -339,8 +333,7 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       // Apply font to body and CSS variable
       document.body.style.fontFamily = typography.font_family;
       root.style.setProperty('--theme-font-family', typography.font_family);
-      console.log('Applied font to body and CSS variable:', typography.font_family);
-      
+
       // Also set heading font if different
       if ('font_family_heading' in typography && typography.font_family_heading && typography.font_family_heading !== typography.font_family) {
         const headingFont = typography.font_family_heading.split(',')[0].trim().replace(/['"]/g, '');

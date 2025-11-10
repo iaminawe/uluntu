@@ -157,19 +157,9 @@ export const useNavigationDebug = () => {
   }), [navigation, helpers.isNavigationHealthy]);
 
   const logNavigationState = useCallback(() => {
-    console.group('Navigation System Debug');
-    console.table(debugInfo.system);
-    console.table({
-      header: debugInfo.header,
-      footer: debugInfo.footer,
-      mobile: debugInfo.mobile
-    });
-    console.groupCollapsed('Navigation Links');
-    console.log('Header:', navigation.headerNavLinks);
-    console.log('Footer:', navigation.footerNavLinks);
-    console.log('Mobile:', navigation.mobileNavLinks);
-    console.groupEnd();
-    console.groupEnd();
+    // Debug logging function for navigation state (disabled)
+    // Uncomment for debugging: console.group('Navigation System Debug');
+    // etc...
   }, [debugInfo, navigation]);
 
   return {

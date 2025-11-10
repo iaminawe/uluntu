@@ -60,8 +60,6 @@ export class UnsplashService {
     const { perPage = 3, orientation = 'landscape', page = 1 } = options;
 
     try {
-      console.log(`Searching Unsplash for: "${query}" (page: ${page}, perPage: ${perPage})`);
-      
       const params = new URLSearchParams({
         query,
         per_page: perPage.toString(),
@@ -70,7 +68,6 @@ export class UnsplashService {
       });
 
       const url = `${this.baseUrl}/search/photos?${params}`;
-      console.log('Unsplash API URL:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -78,21 +75,14 @@ export class UnsplashService {
         },
       });
 
-      console.log('Unsplash API response status:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
+        // Log error for debugging purposes in development
         console.error('Unsplash API error response:', errorText);
         throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
       }
 
       const data: UnsplashSearchResponse = await response.json();
-      console.log(`Found ${data.results.length} photos for "${query}"`);
-      
-      if (data.results.length > 0) {
-        console.log('First photo URL:', data.results[0].urls.regular);
-      }
-      
       return data.results;
     } catch (error) {
       console.error('Failed to search Unsplash photos:', error);
@@ -201,8 +191,6 @@ export class UnsplashService {
     topic: string,
     count: number = 3
   ): Promise<Array<{ photo: UnsplashPhoto; placement: 'hero' | 'section' | 'conclusion' }>> {
-    console.log(`Finding relevant photos for topic: "${topic}", count: ${count}`);
-    
     if (!this.isConfigured()) {
       console.warn('Unsplash not configured - cannot fetch photos');
       return [];
@@ -212,54 +200,41 @@ export class UnsplashService {
     
     try {
       // Get hero image for the main topic
-      console.log('Fetching hero image for topic:', topic);
-      const heroPhotos = await this.searchPhotos(topic, { 
-        perPage: 1, 
-        orientation: 'landscape' 
+      const heroPhotos = await this.searchPhotos(topic, {
+        perPage: 1,
+        orientation: 'landscape'
       });
       if (heroPhotos.length > 0) {
-        console.log('Hero photo found:', heroPhotos[0].urls.regular);
         photos.push({ photo: heroPhotos[0], placement: 'hero' });
-      } else {
-        console.log('No hero photo found for topic:', topic);
       }
 
       // Extract keywords for section images
       const keywords = this.extractKeywords(content, topic);
-      console.log('Extracted keywords:', keywords);
-      
+
       // Get section images based on keywords
       for (let i = 0; i < Math.min(keywords.length, count - 1); i++) {
-        console.log(`Fetching section image for keyword: "${keywords[i]}"`);
-        const sectionPhotos = await this.searchPhotos(keywords[i], { 
+        const sectionPhotos = await this.searchPhotos(keywords[i], {
           perPage: 1,
           orientation: 'landscape'
         });
         if (sectionPhotos.length > 0) {
-          console.log('Section photo found:', sectionPhotos[0].urls.regular);
-          photos.push({ 
-            photo: sectionPhotos[0], 
-            placement: i === keywords.length - 1 ? 'conclusion' : 'section' 
+          photos.push({
+            photo: sectionPhotos[0],
+            placement: i === keywords.length - 1 ? 'conclusion' : 'section'
           });
-        } else {
-          console.log('No photo found for keyword:', keywords[i]);
         }
       }
 
       // If we don't have enough photos, get some random ones related to the topic
       if (photos.length < count) {
-        console.log(`Need ${count - photos.length} more photos, fetching additional from topic`);
         const additionalPhotos = await this.searchPhotos(topic, {
           perPage: count - photos.length,
           page: 2 // Get different results
         });
         additionalPhotos.forEach(photo => {
-          console.log('Additional photo found:', photo.urls.regular);
           photos.push({ photo, placement: 'section' });
         });
       }
-
-      console.log(`Total photos found: ${photos.length}`);
     } catch (error) {
       console.error('Error finding relevant photos:', error);
     }

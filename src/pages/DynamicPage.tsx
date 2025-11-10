@@ -133,21 +133,12 @@ export default function DynamicPage() {
 
   // Handle double-click to edit
   const handleDoubleClick = (e: React.MouseEvent) => {
-    console.log('Double-click detected:', { 
-      user: user?.id, 
-      isAdmin, 
-      isEditable: page?.is_editable, 
-      isEditing,
-      pageId: page?.id 
-    });
-    
     if (isAdmin && page?.is_editable !== false) {
       e.preventDefault();
       e.stopPropagation();
       setIsEditing(true);
       toast.success('Edit mode activated! 🎉');
     } else if (!isAdmin) {
-      console.log('Admin check failed - isAdmin:', isAdmin);
       toast.error('Admin access required to edit');
     } else if (page?.is_editable === false) {
       toast.error('This page is not editable');

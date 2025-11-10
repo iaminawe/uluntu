@@ -95,8 +95,8 @@ export const BlockEditorBasic: React.FC<BlockEditorProps> = ({
             try {
               await onSave(blocks);
               lastSavedContentRef.current = currentContent;
-              console.log('Auto-saved successfully');
             } catch (error) {
+              // Log error for debugging auto-save failures
               console.error('Auto-save failed:', error);
             }
           }, autoSaveDelay);

@@ -1,4 +1,5 @@
 import type { CompleteTheme, ColorConfig, TypographyConfig, SpacingConfig, BordersConfig, ShadowsConfig } from '@/types/theme';
+import DOMPurify from 'dompurify';
 
 // Generate CSS custom properties from theme configuration
 export function generateThemeCSSVariables(theme: CompleteTheme): string {
@@ -160,31 +161,71 @@ function updateFavicon(url: string): void {
   document.head.appendChild(link);
 }
 
-// Insert custom HTML
+/**
+ * DOMPurify configuration for head HTML sanitization
+ * Allows safe styling and metadata tags while blocking all script execution
+ * @security Prevents XSS attacks via custom head HTML injection
+ */
+const HEAD_SANITIZE_CONFIG: DOMPurify.Config = {
+  ALLOWED_TAGS: ['style', 'link', 'meta'],
+  ALLOWED_ATTR: ['rel', 'href', 'type', 'content', 'name', 'charset', 'property', 'media'],
+  ALLOW_DATA_ATTR: false,
+  FORBID_TAGS: ['script', 'iframe', 'embed', 'object'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+};
+
+/**
+ * DOMPurify configuration for body HTML sanitization
+ * Allows limited safe HTML elements while blocking all script execution and event handlers
+ * @security Prevents XSS attacks via custom body HTML injection
+ */
+const BODY_SANITIZE_CONFIG: DOMPurify.Config = {
+  ALLOWED_TAGS: ['div', 'span', 'p', 'a', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br', 'strong', 'em'],
+  ALLOWED_ATTR: ['class', 'id', 'href', 'src', 'alt', 'title'],
+  ALLOW_DATA_ATTR: false,
+  FORBID_TAGS: ['script', 'iframe', 'embed', 'object', 'form', 'input', 'button'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onmouseout', 'onfocus', 'onblur'],
+};
+
+/**
+ * Insert custom HTML with DOMPurify sanitization
+ * @security All custom HTML is sanitized before injection to prevent XSS attacks
+ * @param theme - The theme containing custom HTML metadata
+ */
 function insertCustomHTML(theme: CompleteTheme): void {
   const metadata = theme.metadata;
   if (!metadata) return;
-  
+
   // Remove existing custom HTML
   const existingHeadHTML = document.getElementById('theme-custom-head');
   const existingBodyHTML = document.getElementById('theme-custom-body');
-  
+
   if (existingHeadHTML) existingHeadHTML.remove();
   if (existingBodyHTML) existingBodyHTML.remove();
-  
-  // Insert custom head HTML
+
+  // Insert custom head HTML with sanitization
   if (metadata.custom_head_html) {
     const headDiv = document.createElement('div');
     headDiv.id = 'theme-custom-head';
-    headDiv.innerHTML = metadata.custom_head_html;
+    // Sanitize head HTML to prevent XSS attacks
+    // Only allows style, link, and meta tags with safe attributes
+    headDiv.innerHTML = DOMPurify.sanitize(
+      metadata.custom_head_html,
+      HEAD_SANITIZE_CONFIG
+    );
     document.head.appendChild(headDiv);
   }
-  
-  // Insert custom body HTML
+
+  // Insert custom body HTML with sanitization
   if (metadata.custom_body_html) {
     const bodyDiv = document.createElement('div');
     bodyDiv.id = 'theme-custom-body';
-    bodyDiv.innerHTML = metadata.custom_body_html;
+    // Sanitize body HTML to prevent XSS attacks
+    // Only allows safe HTML elements without event handlers or scripts
+    bodyDiv.innerHTML = DOMPurify.sanitize(
+      metadata.custom_body_html,
+      BODY_SANITIZE_CONFIG
+    );
     document.body.appendChild(bodyDiv);
   }
 }

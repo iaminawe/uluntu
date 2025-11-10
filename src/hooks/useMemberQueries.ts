@@ -181,8 +181,6 @@ export function useCreateMember(): UseMutationResult<
         const createdMember = await membersApi.create(data);
         return createdMember ? adaptMember(createdMember) : null;
       } else {
-        console.log('Mock create member:', data);
-        
         // Create a new member with the provided data
         const newMember = {
           id: Date.now().toString(),
@@ -229,8 +227,6 @@ export function useUpdateMember(): UseMutationResult<
         const updatedMember = await membersApi.update(id, data);
         return updatedMember ? adaptMember(updatedMember) : null;
       } else {
-        console.log('Mock update member:', { id, data });
-        
         // Find the member to update
         const memberIndex = allMockData.members.findIndex(m => String(m.id) === id);
         if (memberIndex === -1) {
@@ -278,12 +274,9 @@ export function useDeleteMember(): UseMutationResult<
         // Use the actual API
         return await membersApi.delete(id);
       } else {
-        console.log('Mock delete member:', id);
-        
         // Find the member to delete
         const memberIndex = allMockData.members.findIndex(m => String(m.id) === id);
         if (memberIndex === -1) {
-          console.warn(`Member with id ${id} not found for deletion`);
           return false;
         }
         
