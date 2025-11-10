@@ -206,88 +206,261 @@ export const router = createBrowserRouter([
       
       // Dynamic pages (must come after specific routes)
       { path: 'pages/:slug', element: withSuspense(DynamicPage) },
-      { path: 'directory', element: withSuspense(DirectoryPage) },
-      { 
-        path: 'directory/create', 
-        element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
+      {
+        path: 'directory',
+        element: (
+          <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
+            {withSuspense(DirectoryPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'directory/:slug', element: withSuspense(DirectoryDetailPage) },
-      { 
-        path: 'directory/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute> 
+      {
+        path: 'directory/create',
+        element: (
+          <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'companies', element: withSuspense(CompaniesPage) },
-      { 
-        path: 'companies/create', 
-        element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
+      {
+        path: 'directory/:slug',
+        element: (
+          <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
+            {withSuspense(DirectoryDetailPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'companies/:slug', element: withSuspense(CompanyDetailPage) },
-      { 
-        path: 'companies/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute> 
+      {
+        path: 'directory/:slug/edit',
+        element: (
+          <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'events', element: withSuspense(EventsPage) },
-      { 
-        path: 'events/create', 
-        element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
+      {
+        path: 'companies',
+        element: (
+          <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
+            {withSuspense(CompaniesPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'events/:slug', element: withSuspense(EventDetailPage) },
-      { 
-        path: 'events/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute> 
+      {
+        path: 'companies/create',
+        element: (
+          <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'news', element: withSuspense(NewsPage) },
-      { 
-        path: 'news/create', 
-        element: <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute> 
+      {
+        path: 'companies/:slug',
+        element: (
+          <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
+            {withSuspense(CompanyDetailPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'news/:slug', element: withSuspense(NewsDetailPage) },
-      { 
-        path: 'news/:id/edit', 
-        element: <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute> 
+      {
+        path: 'companies/:slug/edit',
+        element: (
+          <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'groups', element: withSuspense(GroupsPage) },
-      { 
-        path: 'groups/create', 
-        element: <ProtectedRoute>{withSuspense(GroupEditPage)}</ProtectedRoute> 
+      {
+        path: 'events',
+        element: (
+          <FeatureGate feature="events_system" fallback={<NotFoundError />}>
+            {withSuspense(EventsPage)}
+          </FeatureGate>
+        )
       },
-      { 
-        path: 'groups/:slug', 
-        element: <GroupGuard>{withSuspense(GroupDetailPage)}</GroupGuard> 
+      {
+        path: 'events/create',
+        element: (
+          <FeatureGate feature="events_system" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { 
-        path: 'groups/:slug/edit', 
-        element: <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute> 
+      {
+        path: 'events/:slug',
+        element: (
+          <FeatureGate feature="events_system" fallback={<NotFoundError />}>
+            {withSuspense(EventDetailPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'resources', element: withSuspense(ResourcesPage) },
-      { 
-        path: 'resources/create', 
-        element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
+      {
+        path: 'events/:slug/edit',
+        element: (
+          <FeatureGate feature="events_system" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'resources/:slug', element: withSuspense(ResourceDetailPage) },
-      { 
-        path: 'resources/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute> 
+      {
+        path: 'news',
+        element: (
+          <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
+            {withSuspense(NewsPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'marketplace', element: withSuspense(MarketplacePage) },
-      { 
-        path: 'marketplace/create', 
-        element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
+      {
+        path: 'news/create',
+        element: (
+          <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'marketplace/:slug', element: withSuspense(MarketplaceDetailPage) },
-      { 
-        path: 'marketplace/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute> 
+      {
+        path: 'news/:slug',
+        element: (
+          <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
+            {withSuspense(NewsDetailPage)}
+          </FeatureGate>
+        )
       },
-      { path: 'opportunities', element: withSuspense(OpportunitiesPage) },
-      { 
-        path: 'opportunities/create', 
-        element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
+      {
+        path: 'news/:id/edit',
+        element: (
+          <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
-      { path: 'opportunities/:slug', element: withSuspense(OpportunityDetailPage) },
-      { 
-        path: 'opportunities/:slug/edit', 
-        element: <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute> 
+      {
+        path: 'groups',
+        element: (
+          <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
+            {withSuspense(GroupsPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'groups/create',
+        element: (
+          <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(GroupEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'groups/:slug',
+        element: (
+          <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
+            <GroupGuard>{withSuspense(GroupDetailPage)}</GroupGuard>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'groups/:slug/edit',
+        element: (
+          <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
+            <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'resources',
+        element: (
+          <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
+            {withSuspense(ResourcesPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'resources/create',
+        element: (
+          <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'resources/:slug',
+        element: (
+          <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
+            {withSuspense(ResourceDetailPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'resources/:slug/edit',
+        element: (
+          <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'marketplace',
+        element: (
+          <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
+            {withSuspense(MarketplacePage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'marketplace/create',
+        element: (
+          <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'marketplace/:slug',
+        element: (
+          <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
+            {withSuspense(MarketplaceDetailPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'marketplace/:slug/edit',
+        element: (
+          <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'opportunities',
+        element: (
+          <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
+            {withSuspense(OpportunitiesPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'opportunities/create',
+        element: (
+          <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'opportunities/:slug',
+        element: (
+          <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
+            {withSuspense(OpportunityDetailPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'opportunities/:slug/edit',
+        element: (
+          <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
+            <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute>
+          </FeatureGate>
+        )
       },
       { path: 'signin', element: <SignInPage /> },
       { path: 'signup', element: <SignUpPage /> },
