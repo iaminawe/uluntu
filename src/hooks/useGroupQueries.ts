@@ -627,7 +627,6 @@ export function useInviteMember(): UseMutationResult<string | null, Error, { gro
     mutationFn: ({ groupId, memberId, role = 'member', message }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock invite member - return a mock token
-        console.log(`Mock: Inviting member ${memberId} to group ${groupId} as ${role}`);
         return Promise.resolve('mock-member-invitation-token-' + Date.now());
       }
       return groupsApi.createInvitation(groupId, {
@@ -649,7 +648,6 @@ export function useInviteByEmail(): UseMutationResult<string | null, Error, { gr
     mutationFn: ({ groupId, email, role = 'member', message }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock email invitation - return a mock token
-        console.log(`Mock: Inviting ${email} to group ${groupId} as ${role}`);
         return Promise.resolve('mock-email-invitation-token-' + Date.now());
       }
       return groupsApi.createInvitation(groupId, {

@@ -50,9 +50,16 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ### Reporting
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at:
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement using one of these methods:
 
-**[Contact email to be added]**
+**GitHub Issues (Private):**
+https://github.com/iaminawe/nelson-tech/issues/new (mark as confidential)
+
+**Direct Contact:**
+Contact the repository maintainers through GitHub: https://github.com/iaminawe
+
+**Email:**
+For sensitive matters, you may also contact the project lead directly (email available on GitHub profile)
 
 All complaints will be reviewed and investigated promptly and fairly.
 

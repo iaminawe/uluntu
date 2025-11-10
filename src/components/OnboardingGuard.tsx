@@ -39,17 +39,6 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     // Check if user skipped in this session only (temporary)
     const onboardingSkipped = sessionStorage.getItem(userSkipKey);
 
-    // Debug logging
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[OnboardingGuard] Checking onboarding status:', {
-        userId,
-        member: member ? { name: member.name, bio: member.bio, image: member.image } : null,
-        shouldShowOnboardingFlow,
-        onboardingCompleted,
-        onboardingSkipped,
-      });
-    }
-
     // Show onboarding if:
     // 1. Profile is incomplete (missing required fields) AND
     // 2. User hasn't explicitly completed their profile through onboarding
@@ -57,18 +46,12 @@ export function OnboardingGuard({ children, skipOnboarding = false }: Onboarding
     if (shouldShowOnboardingFlow) {
       // Even if they skipped before, show again if profile is still incomplete
       // Only hide if profile is actually complete or they completed onboarding
-      const profileIsComplete = member?.bio && member?.image && 
+      const profileIsComplete = member?.bio && member?.image &&
                                !member.image.includes('placeholder');
-      
+
       if (!profileIsComplete && !onboardingCompleted && !onboardingSkipped) {
-        console.log('[OnboardingGuard] Showing onboarding - profile incomplete');
         setShowOnboarding(true);
       } else {
-        console.log('[OnboardingGuard] Not showing onboarding:', { 
-          profileIsComplete, 
-          onboardingCompleted, 
-          onboardingSkipped 
-        });
         setShowOnboarding(false);
       }
     } else {

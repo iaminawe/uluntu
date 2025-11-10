@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  PencilIcon, 
-  EyeIcon, 
-  TrashIcon, 
+import DOMPurify from 'dompurify';
+import {
+  PencilIcon,
+  EyeIcon,
+  TrashIcon,
   DocumentDuplicateIcon,
   CalendarIcon,
   UserIcon,
   TagIcon,
-  GlobeAltIcon 
+  GlobeAltIcon
 } from '@heroicons/react/24/outline';
 import { usePages } from '../hooks/usePages';
 import { Page } from '../types';
+
+/**
+ * DOMPurify configuration for rich page content.
+ * Allows formatting tags and blocks scripts/event handlers to prevent XSS attacks.
+ * More permissive than theme HTML sanitization since page content requires rich formatting.
+ */
+const RICH_CONTENT_CONFIG = {
+  ALLOWED_TAGS: [
+    'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img', 'table', 'tr',
+    'td', 'th', 'thead', 'tbody', 'div', 'span', 'hr',
+  ],
+  ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+  ALLOW_DATA_ATTR: false,
+  // Block all script execution
+  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+};
 
 interface PageDetailProps {
   pageId?: string;
@@ -208,7 +227,15 @@ const PageContent: React.FC<PageContentProps> = ({ page }) => {
 
         <div className="prose max-w-none">
           {page.content ? (
-            <div dangerouslySetInnerHTML={{ __html: page.content }} />
+            <div
+              dangerouslySetInnerHTML={{
+                /**
+                 * CRITICAL: Sanitize page content to prevent XSS attacks.
+                 * Page content may come from database or user input and must be sanitized.
+                 */
+                __html: DOMPurify.sanitize(page.content, RICH_CONTENT_CONFIG),
+              }}
+            />
           ) : (
             <p className="text-gray-500 italic">No content available</p>
           )}

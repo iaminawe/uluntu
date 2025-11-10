@@ -141,7 +141,6 @@ const mockMarketplaceItems = (mockData.marketplaceListings || []) as unknown as 
 // Hooks
 
 export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOptions): UseQueryResult<MarketplaceListing[], Error> {
-  console.log('useMarketplaceItemsWithFilters: Starting query with filters:', filters);
   const queryKey: MarketplaceItemsQueryKey = ['marketplaceListings', 'filters', filters];
   
   return useQuery<MarketplaceListing[], Error>({
@@ -150,7 +149,6 @@ export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOp
       // Use Supabase or mock data based on environment variable
       if (USE_SUPABASE) {
         try {
-          console.log('Fetching marketplace listings from Supabase with filters:', filters);
           let fetchedItems;
           if (filters) {
             // If filters are provided, pass them to the API
@@ -161,7 +159,6 @@ export function useMarketplaceItemsWithFilters(filters?: MarketplaceItemsQueryOp
           }
           // Convert to the expected format
           const marketplaceListings = (fetchedItems || []).map(adaptMarketplaceItemToListing);
-          console.log('Fetched marketplace listings from Supabase:', marketplaceListings.length);
           return marketplaceListings;
         } catch (error) {
           console.error('Error fetching marketplace listings from Supabase:', error);
@@ -390,7 +387,6 @@ export function useUpdateMarketplaceItem(): UseMutationResult<MarketplaceListing
         mockMarketplaceItems[itemIndex] = updatedMockItemData;
         // Map the updated mock item to the expected format
         const updatedListing = mapMockMarketplaceItemToListing(updatedMockItemData);
-        console.log('Mock updated item data:', updatedListing);
         return updatedListing;
       }
     },
@@ -412,9 +408,6 @@ export function useDeleteMarketplaceItem(): UseMutationResult<void, Error, strin
         const itemIndex = mockMarketplaceItems.findIndex((item) => String(item.id) === itemId);
         if (itemIndex > -1) {
           mockMarketplaceItems.splice(itemIndex, 1);
-          console.log(`Mock deleted item with id ${itemId}`);
-        } else {
-          console.warn(`Mock item with id ${itemId} not found for deletion.`);
         }
       }
     },

@@ -14,8 +14,6 @@ export async function assignAdminRole() {
       return false;
     }
 
-    console.log('Current user:', user.email, user.id);
-
     // Check existing roles
     const { data: existingRoles, error: fetchError } = await supabase
       .from('user_roles')
@@ -25,14 +23,10 @@ export async function assignAdminRole() {
     if (fetchError) {
       console.error('Error fetching existing roles:', fetchError);
       // Try to create the table if it doesn't exist
-      console.log('Attempting to create user_roles table...');
-      
       const { error: createTableError } = await supabase.rpc('create_member_profile' as any, {});
       if (createTableError) {
         console.error('Could not create table:', createTableError);
       }
-    } else {
-      console.log('Existing roles:', existingRoles);
     }
 
     // Try to insert admin role
@@ -46,7 +40,6 @@ export async function assignAdminRole() {
 
     if (insertError) {
       if (insertError.code === '23505') {
-        console.log('Admin role already exists for this user');
         // Try to update instead
         const { error: updateError } = await supabase
           .from('user_roles')
@@ -66,9 +59,6 @@ export async function assignAdminRole() {
       }
     }
 
-    console.log('✅ Admin role assigned successfully!');
-    console.log('Inserted roles:', insertData);
-    
     // Verify the roles were added
     const { data: verifyRoles, error: verifyError } = await supabase
       .from('user_roles')
@@ -77,11 +67,8 @@ export async function assignAdminRole() {
 
     if (verifyError) {
       console.error('Error verifying roles:', verifyError);
-    } else {
-      console.log('Verified roles:', verifyRoles);
     }
 
-    console.log('🔄 Please refresh the page to apply the new roles');
     return true;
 
   } catch (error) {

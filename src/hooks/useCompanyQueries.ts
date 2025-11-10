@@ -246,47 +246,37 @@ export function useCompanyBySlug(slug?: string): UseQueryResult<GlobalCompany | 
  * @returns A UseQueryResult object from Tanstack Query containing the company data or null if not found, or an error.
  */
 export function useCompanyByIdOrSlug(idOrSlug?: string): UseQueryResult<GlobalCompany | null, Error> {
-  console.log('[useCompanyByIdOrSlug] Called with:', idOrSlug);
   return useQuery<GlobalCompany | null, Error>({
     queryKey: ['companies', 'id-or-slug', idOrSlug, USE_SUPABASE ? 'supabase' : 'mock'],
     queryFn: async (): Promise<GlobalCompany | null> => {
-      console.log('[useCompanyByIdOrSlug queryFn] idOrSlug:', idOrSlug);
       if (!idOrSlug) {
-        console.log('[useCompanyByIdOrSlug queryFn] No idOrSlug provided, returning null');
         return null;
       }
 
       if (!USE_SUPABASE) {
-        console.log('[useCompanyByIdOrSlug queryFn] Using mock data');
         // For mock data, directly access the mock companies array
         const { companies: mockCompanies } = await import('../data/mock/companies');
-        
+
         // Try ID first
         const companyById = mockCompanies.find(c => c.id === idOrSlug);
         if (companyById) {
-          console.log('[useCompanyByIdOrSlug queryFn] Found company by ID:', companyById);
           return companyById;
         }
-        
+
         // Try as slug
-        const companyBySlug = mockCompanies.find(c => 
+        const companyBySlug = mockCompanies.find(c =>
           c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === idOrSlug
         );
         if (companyBySlug) {
-          console.log('[useCompanyByIdOrSlug queryFn] Found company by slug:', companyBySlug);
           return companyBySlug;
         }
-        
-        console.log('[useCompanyByIdOrSlug queryFn] No company found in mock data');
+
         return null;
       }
 
       try {
-        console.log('[useCompanyByIdOrSlug queryFn] Calling companiesApi.getByIdOrSlug');
         const company = await companiesApi.getByIdOrSlug(idOrSlug);
-        console.log('[useCompanyByIdOrSlug queryFn] API returned:', company);
         const result = company ? adaptFeatureCompanyToGlobal(company) : null;
-        console.log('[useCompanyByIdOrSlug queryFn] Adapted result:', result);
         return result;
       } catch (error) {
         console.error(`[useCompanyByIdOrSlug queryFn] Error fetching company with ID or slug ${idOrSlug}:`, error);

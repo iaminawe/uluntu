@@ -137,7 +137,6 @@ export function useCreateEvent(): UseMutationResult<
         };
         return eventsApi.create(apiEventData);
       } else {
-        console.log('Mock creating event:', eventData);
         const newMockEvent: FrontendEvent = {
           // Map fields from eventData (Supabase Insert type) to FrontendEvent
           id: `mock_${Math.random().toString(36).substr(2, 9)}`,
@@ -191,7 +190,6 @@ export function useUpdateEvent(): UseMutationResult<
       if (useSupabase) {
         return eventsApi.update(id, data as EventsApiEventInput); // Cast because eventsApi.update expects Partial<EventInput>
       } else {
-        console.log('Mock updating event:', id, data);
         const eventIndex = mockEvents?.findIndex(e => e.id.toString() === id);
         if (eventIndex !== -1 && mockEvents && mockEvents[eventIndex]) {
           // Create a new object for the updated event to ensure type compatibility
@@ -237,7 +235,6 @@ export function useDeleteEvent(): UseMutationResult<
   return useMutation<void, Error, string>({
     mutationFn: async (id: string): Promise<void> => {
       if (!useSupabase) {
-        console.log('Mock: Deleting event with id:', id);
         // const index = mockData.events.findIndex((e: Database['public']['Tables']['events']['Row']) => e.id.toString() === id);
         // if (index > -1 && mockData.events) {
         //   mockData.events.splice(index, 1);
@@ -293,7 +290,6 @@ export function useRegisterForEvent(): UseMutationResult<
       if (useSupabase) {
         return await (eventsApi as any).registerForEvent(eventId, memberId);
       } else {
-        console.log('Mock: Registering for event', eventId, 'with member', memberId);
         return true; // Mock success
       }
     },
@@ -328,7 +324,6 @@ export function useUnregisterFromEvent(): UseMutationResult<
       if (useSupabase) {
         return await (eventsApi as any).unregisterFromEvent(eventId, memberId);
       } else {
-        console.log('Mock: Unregistering from event', eventId, 'with member', memberId);
         return true; // Mock success
       }
     },
@@ -417,7 +412,6 @@ export function useUpdateAttendeeStatus(): UseMutationResult<
       if (useSupabase) {
         return await (eventsApi as any).updateAttendeeStatus(eventId, memberId, status);
       } else {
-        console.log('Mock: Updating attendee status', { eventId, memberId, status });
         return true; // Mock success
       }
     },
