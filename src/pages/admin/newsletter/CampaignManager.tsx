@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
+import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
+import { NewsletterErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
 import { 
   Plus, 
   Eye, 
@@ -29,7 +31,7 @@ import {
 import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 import { NewsletterCampaign, CampaignFilters } from '@/types/newsletter';
 
-const CampaignManager: React.FC = () => {
+const CampaignManagerContent: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -987,6 +989,27 @@ const CampaignManager: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+/**
+ * CampaignManager - Wrapped with error boundary for graceful failure handling
+ */
+const CampaignManager: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <FeatureErrorBoundary
+      featureName="Campaign Manager"
+      fallback={
+        <NewsletterErrorFallback
+          onRetry={() => window.location.reload()}
+          onGoBack={() => navigate('/admin')}
+        />
+      }
+    >
+      <CampaignManagerContent />
+    </FeatureErrorBoundary>
   );
 };
 

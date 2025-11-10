@@ -205,8 +205,16 @@ export const setupQueryPerformanceMonitoring = (queryClient: QueryClient) => {
   // Log slow queries
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'updated' && event.query.state.fetchStatus === 'idle') {
-      // Skip performance monitoring for now due to type issues
-      // TODO: Implement proper performance monitoring with correct types
+      // TODO(performance-monitoring): Implement proper performance monitoring with correct types
+      // Current status: Skipped due to TypeScript type compatibility issues with query cache events
+      // To implement:
+      //   1. Define proper types for cache subscription events
+      //   2. Log queries that exceed threshold (e.g., > 1000ms)
+      //   3. Track metrics: query key, duration, cache hit rate
+      //   4. Send metrics to monitoring service (Sentry, LogRocket, etc.)
+      // Example implementation:
+      //   const duration = event.query.state.dataUpdatedAt - event.query.state.fetchStartTime;
+      //   if (duration > 1000) console.warn('Slow query:', event.query.queryKey, duration + 'ms');
     }
   });
   

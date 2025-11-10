@@ -424,8 +424,16 @@ class NewsletterTemplateAPI {
   // Private helper methods
 
   private async renderMJMLTemplate(templateContent: string, data: Record<string, unknown>): Promise<string> {
-    // TODO: Implement MJML rendering with mjml library
-    // For now, return a simple HTML version
+    // TODO(newsletter-mjml): Implement MJML rendering with mjml library
+    // Current status: Basic placeholder replacement only
+    // To implement:
+    //   1. Install mjml package: npm install mjml @react-email/mjml
+    //   2. Compile MJML template to HTML
+    //   3. Replace data placeholders
+    //   4. Optimize for email clients (inline CSS, remove modern HTML)
+    //   5. Test across email clients (Gmail, Outlook, Apple Mail)
+    // Estimated effort: 3 hours
+    // Note: MJML is best for complex responsive emails
     let html = templateContent;
 
     // Replace common placeholders
@@ -438,8 +446,16 @@ class NewsletterTemplateAPI {
   }
 
   private async renderReactTemplate(templateContent: string, data: Record<string, unknown>): Promise<string> {
-    // TODO: Implement React Email rendering
-    // For now, use same logic as MJML
+    // TODO(newsletter-react-email): Implement React Email rendering
+    // Current status: Falls back to MJML rendering
+    // To implement:
+    //   1. Install react-email package: npm install react-email @react-email/components
+    //   2. Parse template as React component
+    //   3. Render component with provided data
+    //   4. Handle component props/slots
+    //   5. Convert to MJML or plain HTML for compatibility
+    // Estimated effort: 4 hours
+    // Note: React Email provides better TypeScript support and component reusability
     return this.renderMJMLTemplate(templateContent, data);
   }
 
