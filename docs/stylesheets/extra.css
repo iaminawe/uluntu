@@ -1,0 +1,165 @@
+/* Custom styles for Nelson Tech Documentation */
+
+:root {
+  --md-primary-fg-color: #fb923c;
+  --md-primary-fg-color--light: #fdba74;
+  --md-primary-fg-color--dark: #ea580c;
+  --md-accent-fg-color: #f97316;
+  --md-accent-fg-color--transparent: rgba(249, 115, 22, 0.1);
+}
+
+/* Improve code block styling */
+.highlight pre {
+  border-radius: 0.5rem;
+}
+
+/* Better table styling */
+.md-typeset table:not([class]) {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Card grid styling */
+.grid.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.grid.cards > * {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.grid.cards > *:hover {
+  border-color: var(--md-primary-fg-color);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Improve admonition spacing */
+.md-typeset .admonition {
+  margin: 1.5rem 0;
+}
+
+/* Better link styling in navigation */
+.md-nav__link:hover {
+  color: var(--md-primary-fg-color) !important;
+}
+
+/* Improve search results */
+.md-search-result__meta {
+  background-color: var(--md-accent-fg-color--transparent);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Custom badge styling */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-new {
+  background-color: #10b981;
+  color: white;
+}
+
+.badge-important {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.badge-deprecated {
+  background-color: #6b7280;
+  color: white;
+}
+
+/* Improve table of contents */
+.md-sidebar--secondary .md-sidebar__scrollwrap {
+  margin: 0;
+}
+
+/* Better mobile navigation */
+@media screen and (max-width: 76.1875em) {
+  .md-nav__source {
+    background-color: var(--md-primary-fg-color--dark);
+  }
+}
+
+/* Improve announcement bar */
+.md-banner {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-primary-fg-color);
+}
+
+/* Custom footer styling */
+.md-footer-meta {
+  background-color: var(--md-default-bg-color);
+}
+
+/* Syntax highlighting improvements */
+.highlight .hll { background-color: #fef3c7; }
+.highlight .c { color: #6b7280; font-style: italic; }
+.highlight .k { color: #8b5cf6; font-weight: bold; }
+.highlight .o { color: #f59e0b; }
+.highlight .cm { color: #6b7280; font-style: italic; }
+.highlight .cp { color: #10b981; }
+.highlight .c1 { color: #6b7280; font-style: italic; }
+.highlight .cs { color: #6b7280; font-weight: bold; font-style: italic; }
+
+/* Mermaid diagram styling */
+.mermaid {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Improve version banner */
+.md-version {
+  font-size: 0.9rem;
+}
+
+/* Better keyboard key styling */
+.keys kbd {
+  background-color: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 0 1px var(--md-default-fg-color--lightest);
+  color: var(--md-code-fg-color);
+  font-family: var(--md-code-font-family);
+  padding: 0.25rem 0.5rem;
+}
+
+/* Improve blockquote styling */
+.md-typeset blockquote {
+  border-left: 4px solid var(--md-primary-fg-color);
+  padding-left: 1rem;
+}
+
+/* Custom hero section */
+.hero {
+  background: linear-gradient(135deg, var(--md-primary-fg-color--light), var(--md-primary-fg-color));
+  color: white;
+  padding: 4rem 2rem;
+  border-radius: 1rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.hero h1 {
+  color: white !important;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}

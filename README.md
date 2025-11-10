@@ -301,24 +301,55 @@ npm run test:integration   # Integration test suite
 
 ## 📚 Documentation
 
-### **🏗️ Architecture & Development**
-- **[CLAUDE.md](./CLAUDE.md)** - **Essential development guidelines & architectural patterns**
-- **[Hybrid State Management](./docs/architecture/HYBRID_STATE_MANAGEMENT.md)** - Complete architecture overview
-- **[Migration Guide](./docs/migrations/REDUX_TO_HYBRID_MIGRATION_GUIDE.md)** - Migration documentation & patterns
-- **[Implementation Guide](./docs/development/HYBRID_HOOK_IMPLEMENTATION_GUIDE.md)** - Step-by-step feature development
+### **🎯 Essential Reading (Start Here)**
+- **[CLAUDE.md](./CLAUDE.md)** - **⭐ CRITICAL**: Development guidelines, SPARC methodology, and architectural patterns
+- **[Documentation Map](./docs/DOCUMENTATION_MAP.md)** - Complete index of all documentation with quick links
+- **[Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)** - Production deployment instructions and best practices
 
-### **📖 General Documentation**
-- **[Development Roadmap 2025](./docs/DEVELOPMENT_ROADMAP_2025.md)** - Current development priorities and timeline
-- **[Development Guide](./docs/README.md)** - Detailed development documentation
-- **[API Documentation](./docs/api/)** - Backend API reference
-- **[Component Guide](./docs/components/)** - UI component library
-- **[Multi-Tenant Plan](./docs/MULTI_TENANT_ARCHITECTURE_PLAN.md)** - SaaS conversion roadmap
+### **🏗️ Architecture & Development**
+- **[Hybrid State Management](./docs/architecture/HYBRID_STATE_MANAGEMENT.md)** - Complete state management architecture
+- **[Hybrid Pattern Guide](./docs/guides/HYBRID_PATTERN_GUIDE.md)** - Implementation guide with examples
+- **[Project Structure](./docs/architecture/PROJECT_STRUCTURE.md)** - Codebase organization
+- **[API Structure](./docs/guides/API_STRUCTURE.md)** - API layer patterns
+- **[Error Handling Guide](./docs/guides/ERROR_HANDLING_GUIDE.md)** - Error handling best practices
+- **[Development Patterns](./docs/patterns/PATTERNS.md)** - Code standards and patterns
+
+### **🖼️ Feature Documentation**
+- **[Gallery System](./docs/features/gallery/)** - Photo gallery with batch upload and organization
+- **[Groups](./docs/features/groups/)** - Community groups with roles and permissions
+- **[Menu System](./docs/features/menu/)** - Dynamic navigation with drag-and-drop
+- **[Admin Features](./docs/features/admin/)** - Administrative interfaces and tools
+- **[Dashboard](./docs/features/dashboard/)** - User dashboard and personalization
+- **[Messaging](./docs/features/messaging/)** - Real-time messaging and conversations
+- **[Onboarding](./docs/onboarding/)** - User onboarding flow documentation
+
+### **🎨 Design & Theming**
+- **[Theme System Guide](./docs/THEME_SYSTEM_GUIDE.md)** - Complete theming documentation
+- **[Theme Architecture](./docs/theme-system-architecture.md)** - Technical implementation
+- **[Font System](./docs/FONT_SYSTEM_DOCUMENTATION.md)** - Typography system
+- **[Component Library](./docs/components/)** - UI component reference
+
+### **💼 Business & Strategy**
+- **[AI Strategy Plan](./docs/business/AI_STRATEGY_PLAN.md)** - AI integration roadmap
+- **[SaaS Business Plan](./docs/business/SAAS_BUSINESS_PLAN.md)** - Multi-tenant SaaS strategy
+- **[Multi-Tenant Architecture](./docs/business/MULTI_TENANT_ARCHITECTURE_PLAN.md)** - Technical SaaS architecture
+- **[Lean Canvas](./docs/business/LEAN_CANVAS.md)** - Business model canvas
+- **[All Business Docs](./docs/business/)** - Complete business documentation
+
+### **🔄 Migrations & Implementation**
+- **[Redux to Hybrid Migration](./docs/migrations/REDUX_TO_HYBRID_MIGRATION_GUIDE.md)** - State management migration
+- **[Implementation Status](./docs/implementation/)** - Current implementation reports
+- **[Migration Instructions](./docs/migrations/)** - Database and code migrations
+
+### **🧪 Testing & Quality**
+- **[QA Reports](./docs/qa-reports/)** - Quality assurance validation reports
+- **[Testing Documentation](./docs/testing/)** - Test strategies and plans
 
 ### **⚡ Quick References**
-- **New Feature Development**: Follow patterns in `CLAUDE.md` and `HYBRID_HOOK_IMPLEMENTATION_GUIDE.md`
-- **State Management**: Use React Query for server state, Redux for UI state
-- **Component Structure**: Reference existing implementations in `/src/features/*/`
-- **Multi-Tenant Conversion**: See comprehensive plan in `MULTI_TENANT_ARCHITECTURE_PLAN.md`
+- **New Feature Development**: Follow patterns in [CLAUDE.md](./CLAUDE.md) and [Hybrid Pattern Guide](./docs/guides/HYBRID_PATTERN_GUIDE.md)
+- **State Management**: Use React Query for server state, Redux for UI state ([Architecture Guide](./docs/architecture/HYBRID_STATE_MANAGEMENT.md))
+- **Component Structure**: Reference existing implementations in `/src/features/*/` ([Component Guide](./docs/components/))
+- **Complete Documentation**: See [Documentation Map](./docs/DOCUMENTATION_MAP.md) for all available docs
 
 ## 🎨 Design System
 
@@ -531,11 +562,13 @@ npm test -- --updateSnapshot
 ## 📞 Support
 
 - **Documentation**: Comprehensive guides in `/docs`
-  - [Hybrid Pattern Guide](./docs/HYBRID_PATTERN_GUIDE.md) - State management architecture
-  - [Rich Text Editor Guide](./docs/RICH_TEXT_EDITOR_GUIDE.md) - Editor implementation details
-  - [Multi-Tenant Architecture](./docs/MULTI_TENANT_ARCHITECTURE_PLAN.md) - SaaS conversion plan
+  - [Documentation Map](./docs/DOCUMENTATION_MAP.md) - Complete index of all documentation
+  - [CLAUDE.md](./CLAUDE.md) - Development guidelines and SPARC methodology
+  - [Hybrid Pattern Guide](./docs/guides/HYBRID_PATTERN_GUIDE.md) - State management architecture
+  - [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) - Production deployment instructions
+  - [Feature Documentation](./docs/features/) - All feature-specific guides
 - **Issue Tracker**: GitHub issues for bugs/features
-- **Development**: Follow SPARC methodology in CLAUDE.md
+- **Development**: Follow SPARC methodology in [CLAUDE.md](./CLAUDE.md)
 - **Community**: Nelson Tech Community Slack/Discord
 
 ---
