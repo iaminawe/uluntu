@@ -5,6 +5,16 @@ import { Group as FeatureGroupType } from '@/features/groups/types/index';
 import { Group as MockGroup } from '../data/mock/groups'; // This is the mock data's Group type
 import { Event as MockEvent } from '../data/mock/events';
 import { IS_SUPABASE_ENABLED } from '@/config/env';
+import {
+  GroupActivity,
+  GroupAnnouncement,
+  GroupInvitation,
+  GroupResource,
+  GroupPost,
+  GroupActivityInput,
+  GroupAnnouncementInput,
+  CreateInvitationData,
+} from './useGroupQueries.types';
 
 // Type adapter to convert between different Group types
 function adaptMockGroupToFeature(mockGroup: MockGroup): FeatureGroupType {
@@ -120,7 +130,7 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
       }
       
       const events = await groupsApi.getGroupEvents(stringId);
-      return events.map((e: any) => ({
+      return events.map((e): MockEvent => ({
         id: e.id,
         title: e.title || 'Untitled Event',
         description: e.description || '',
@@ -141,7 +151,7 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
         longitude: e.longitude,
         featured: e.featured || false,
         created_at: e.created_at
-      } as MockEvent));
+      }));
     },
     enabled: stringId !== undefined,
   });
@@ -310,7 +320,7 @@ export function useGroupMembers(groupId: number | string | undefined): UseQueryR
             }
             
             const members = await groupsApi.getGroupMembers(stringId);
-            return members.map((m: any) => ({
+            return members.map((m): MockGroupMemberType => ({
                 id: m.member?.id || m.member_id,
                 name: m.member?.name || 'Unknown',
                 role: m.role || 'member',
@@ -370,21 +380,21 @@ export function useGroupMembership(groupId?: string, memberId?: string): UseQuer
       if (!IS_SUPABASE_ENABLED) {
         return false; // Mock always returns false
       }
-      return (groupsApi as any).isMember(groupId, memberId);
+      return groupsApi.isMember(groupId, memberId);
     },
     enabled: !!groupId && !!memberId,
   });
 }
 
-export function useGroupMemberRole(groupId?: string, memberId?: string): UseQueryResult<'admin' | 'member' | null, Error> {
-  return useQuery<'admin' | 'member' | null, Error>({
+export function useGroupMemberRole(groupId?: string, memberId?: string): UseQueryResult<'admin' | 'moderator' | 'member' | null, Error> {
+  return useQuery<'admin' | 'moderator' | 'member' | null, Error>({
     queryKey: ['groupMemberRole', groupId, memberId],
     queryFn: async () => {
       if (!groupId || !memberId) return null;
       if (!IS_SUPABASE_ENABLED) {
         return null; // Mock always returns null
       }
-      return (groupsApi as any).getMemberRole(groupId, memberId);
+      return groupsApi.getMemberRole(groupId, memberId);
     },
     enabled: !!groupId && !!memberId,
   });
@@ -393,17 +403,17 @@ export function useGroupMemberRole(groupId?: string, memberId?: string): UseQuer
 export function useUpdateMemberRole(): UseMutationResult<
   boolean,
   Error,
-  { groupId: string; memberId: string; role: 'admin' | 'member' }
+  { groupId: string; memberId: string; role: 'admin' | 'moderator' | 'member' }
 > {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, { groupId: string; memberId: string; role: 'admin' | 'member' }>({
+  return useMutation<boolean, Error, { groupId: string; memberId: string; role: 'admin' | 'moderator' | 'member' }>({
     mutationFn: ({ groupId, memberId, role }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock update member role
         return Promise.resolve(true);
       }
-      return (groupsApi as any).updateMemberRole(groupId, memberId, role);
+      return groupsApi.updateMemberRole(groupId, memberId, role);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
@@ -425,7 +435,7 @@ export function useRemoveMember(): UseMutationResult<
         // Mock remove member
         return Promise.resolve(true);
       }
-      return (groupsApi as any).removeMember(groupId, memberId);
+      return groupsApi.removeMember(groupId, memberId);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupMembers', variables.groupId] });
@@ -435,44 +445,96 @@ export function useRemoveMember(): UseMutationResult<
 }
 
 // Activities and Announcements hooks
-export function useGroupActivities(groupId?: string): UseQueryResult<any[], Error> {
-  return useQuery<any[], Error>({
+/**
+ * Hook to fetch group activities (member actions, posts, events, etc.)
+ *
+ * @param groupId - The ID of the group to fetch activities for
+ * @returns Query result containing array of GroupActivity objects
+ *
+ * @example
+ * ```typescript
+ * const { data: activities, isLoading } = useGroupActivities('group-123');
+ * activities?.forEach(activity => {
+ *   console.log(`${activity.actor?.name} ${activity.action}`);
+ * });
+ * ```
+ */
+export function useGroupActivities(groupId?: string): UseQueryResult<GroupActivity[], Error> {
+  return useQuery<GroupActivity[], Error>({
     queryKey: ['groupActivities', groupId],
-    queryFn: async () => {
+    queryFn: async (): Promise<GroupActivity[]> => {
       if (!groupId) return [];
       if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
-      return (groupsApi as any).getActivities(groupId);
+      const activities = await groupsApi.getGroupActivities(groupId);
+      return activities as GroupActivity[];
     },
     enabled: !!groupId,
   });
 }
 
-export function useGroupAnnouncements(groupId?: string): UseQueryResult<any[], Error> {
-  return useQuery<any[], Error>({
+/**
+ * Hook to fetch group announcements (important messages for members)
+ *
+ * @param groupId - The ID of the group to fetch announcements for
+ * @returns Query result containing array of GroupAnnouncement objects
+ *
+ * @example
+ * ```typescript
+ * const { data: announcements } = useGroupAnnouncements('group-123');
+ * const urgentAnnouncements = announcements?.filter(a => a.priority === 'urgent');
+ * ```
+ */
+export function useGroupAnnouncements(groupId?: string): UseQueryResult<GroupAnnouncement[], Error> {
+  return useQuery<GroupAnnouncement[], Error>({
     queryKey: ['groupAnnouncements', groupId],
-    queryFn: async () => {
+    queryFn: async (): Promise<GroupAnnouncement[]> => {
       if (!groupId) return [];
       if (!IS_SUPABASE_ENABLED) {
         return []; // Mock returns empty array
       }
-      return (groupsApi as any).getAnnouncements(groupId);
+      const announcements = await groupsApi.getAnnouncements(groupId);
+      return announcements as GroupAnnouncement[];
     },
     enabled: !!groupId,
   });
 }
 
-export function useCreateActivity(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+/**
+ * Hook to create a new group activity
+ *
+ * @returns Mutation result for creating activities
+ *
+ * @example
+ * ```typescript
+ * const createActivity = useCreateActivity();
+ * await createActivity.mutateAsync({
+ *   groupId: 'group-123',
+ *   data: { action: 'post_created', target_id: 'post-456' }
+ * });
+ * ```
+ */
+export function useCreateActivity(): UseMutationResult<GroupActivity, Error, { groupId: string; data: GroupActivityInput }> {
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, { groupId: string; data: any }>({
-    mutationFn: ({ groupId, data }) => {
+  return useMutation<GroupActivity, Error, { groupId: string; data: GroupActivityInput }>({
+    mutationFn: async ({ groupId, data }): Promise<GroupActivity> => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock create activity
-        return Promise.resolve(data);
+        return {
+          id: `mock-${Date.now()}`,
+          group_id: groupId,
+          actor_id: 'mock-actor',
+          action: data.action,
+          target_type: data.target_type || null,
+          target_id: data.target_id || null,
+          metadata: data.metadata || null,
+          created_at: new Date().toISOString()
+        };
       }
-      return (groupsApi as any).createActivity(groupId, data);
+      const result = await groupsApi.createActivity(groupId, data);
+      return result as GroupActivity;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupActivities', variables.groupId] });
@@ -480,16 +542,45 @@ export function useCreateActivity(): UseMutationResult<any, Error, { groupId: st
   });
 }
 
-export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId: string; data: any }> {
+/**
+ * Hook to create a new group announcement
+ *
+ * @returns Mutation result for creating announcements
+ *
+ * @example
+ * ```typescript
+ * const createAnnouncement = useCreateAnnouncement();
+ * await createAnnouncement.mutateAsync({
+ *   groupId: 'group-123',
+ *   data: {
+ *     title: 'Important Update',
+ *     content: 'Meeting time changed to 3pm',
+ *     priority: 'high'
+ *   }
+ * });
+ * ```
+ */
+export function useCreateAnnouncement(): UseMutationResult<GroupAnnouncement, Error, { groupId: string; data: GroupAnnouncementInput }> {
   const queryClient = useQueryClient();
 
-  return useMutation<any, Error, { groupId: string; data: any }>({
-    mutationFn: ({ groupId, data }) => {
+  return useMutation<GroupAnnouncement, Error, { groupId: string; data: GroupAnnouncementInput }>({
+    mutationFn: async ({ groupId, data }): Promise<GroupAnnouncement> => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock create announcement
-        return Promise.resolve(data);
+        return {
+          id: `mock-${Date.now()}`,
+          group_id: groupId,
+          title: data.title || null,
+          content: data.content,
+          content_html: data.content_html || null,
+          priority: data.priority || 'normal',
+          author_id: 'mock-author',
+          created_at: new Date().toISOString(),
+          status: 'published'
+        };
       }
-      return (groupsApi as any).createAnnouncement(groupId, data);
+      const result = await groupsApi.createAnnouncement(groupId, data);
+      return result as GroupAnnouncement;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groupAnnouncements', variables.groupId] });
@@ -498,10 +589,22 @@ export function useCreateAnnouncement(): UseMutationResult<any, Error, { groupId
 }
 
 // Updated invitation hooks
-export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Error> {
-  return useQuery<any[], Error>({
+/**
+ * Hook to fetch group invitations
+ *
+ * @param groupId - The ID of the group to fetch invitations for
+ * @returns Query result containing array of GroupInvitation objects
+ *
+ * @example
+ * ```typescript
+ * const { data: invitations } = useGroupInvitations('group-123');
+ * const pendingInvites = invitations?.filter(inv => inv.status === 'pending');
+ * ```
+ */
+export function useGroupInvitations(groupId?: string): UseQueryResult<GroupInvitation[], Error> {
+  return useQuery<GroupInvitation[], Error>({
     queryKey: ['groupInvitations', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<GroupInvitation[]> => {
       if (!groupId) return [];
       if (!IS_SUPABASE_ENABLED) {
         // Mock returns sample invitations
@@ -510,6 +613,7 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Err
             id: 'mock-inv-1',
             group_id: groupId,
             invited_email: 'user@example.com',
+            invited_by: 'mock-admin',
             role: 'member',
             status: 'pending',
             created_at: new Date().toISOString(),
@@ -520,6 +624,7 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Err
             id: 'mock-inv-2',
             group_id: groupId,
             invited_member_id: 'mock-member-1',
+            invited_by: 'mock-admin',
             role: 'moderator',
             status: 'pending',
             created_at: new Date().toISOString(),
@@ -528,16 +633,31 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<any[], Err
           }
         ];
       }
-      return groupsApi.getGroupInvitations(groupId);
+      const invitations = await groupsApi.getGroupInvitations(groupId);
+      return invitations as GroupInvitation[];
     },
     enabled: !!groupId,
   });
 }
 
-export function useCreateInvitation(): UseMutationResult<string | null, Error, { groupId: string; data: any }> {
+/**
+ * Hook to create a new group invitation
+ *
+ * @returns Mutation result for creating invitations
+ *
+ * @example
+ * ```typescript
+ * const createInvitation = useCreateInvitation();
+ * await createInvitation.mutateAsync({
+ *   groupId: 'group-123',
+ *   data: { invited_email: 'user@example.com', role: 'member' }
+ * });
+ * ```
+ */
+export function useCreateInvitation(): UseMutationResult<string | null, Error, { groupId: string; data: CreateInvitationData }> {
   const queryClient = useQueryClient();
 
-  return useMutation<string | null, Error, { groupId: string; data: any }>({
+  return useMutation<string | null, Error, { groupId: string; data: CreateInvitationData }>({
     mutationFn: ({ groupId, data }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock create invitation - return a mock token
@@ -588,10 +708,24 @@ export function useAcceptInvitation(): UseMutationResult<boolean, Error, { token
   });
 }
 
-export function useInvitationByToken(token?: string): UseQueryResult<any, Error> {
-  return useQuery<any, Error>({
+/**
+ * Hook to fetch an invitation by its token (for accepting invites)
+ *
+ * @param token - The invitation token
+ * @returns Query result containing the GroupInvitation object or null
+ *
+ * @example
+ * ```typescript
+ * const { data: invitation } = useInvitationByToken(tokenFromUrl);
+ * if (invitation && invitation.status === 'pending') {
+ *   // Show accept/decline buttons
+ * }
+ * ```
+ */
+export function useInvitationByToken(token?: string): UseQueryResult<GroupInvitation | null, Error> {
+  return useQuery<GroupInvitation | null, Error>({
     queryKey: ['invitation', token, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
-    queryFn: async () => {
+    queryFn: async (): Promise<GroupInvitation | null> => {
       if (!token) return null;
       if (!IS_SUPABASE_ENABLED) {
         // Mock returns sample invitation data
@@ -599,6 +733,7 @@ export function useInvitationByToken(token?: string): UseQueryResult<any, Error>
           id: 'mock-inv-1',
           token: token,
           group_id: 'mock-group-1',
+          invited_by: 'mock-admin',
           group: {
             id: 'mock-group-1',
             name: 'Mock Group',
@@ -612,7 +747,8 @@ export function useInvitationByToken(token?: string): UseQueryResult<any, Error>
           created_at: new Date().toISOString()
         };
       }
-      return groupsApi.getInvitationByToken(token);
+      const invitation = await groupsApi.getInvitationByToken(token);
+      return invitation as GroupInvitation | null;
     },
     enabled: !!token,
   });
@@ -674,9 +810,9 @@ export function useResendInvitation(): UseMutationResult<string | null, Error, {
       
       // For resending, we need to get the original invitation details and create a new one
       // This is a simplified approach - in practice, you might want to implement a specific resend endpoint
-      const invitations = await groupsApi.getGroupInvitations(groupId);
-      const invitation = invitations.find((inv: any) => inv.id === invitationId);
-      
+      const invitations = await groupsApi.getGroupInvitations(groupId) as GroupInvitation[];
+      const invitation = invitations.find((inv) => inv.id === invitationId);
+
       if (!invitation) {
         throw new Error('Invitation not found');
       }
@@ -696,10 +832,22 @@ export function useResendInvitation(): UseMutationResult<string | null, Error, {
 }
 
 // Group Resources Hook
-export function useGroupResources(groupId: string | undefined): UseQueryResult<any[], Error> {
-  return useQuery<any[], Error>({
+/**
+ * Hook to fetch group resources (documents, links, files)
+ *
+ * @param groupId - The ID of the group to fetch resources for
+ * @returns Query result containing array of GroupResource objects
+ *
+ * @example
+ * ```typescript
+ * const { data: resources } = useGroupResources('group-123');
+ * const documents = resources?.filter(r => r.type === 'document');
+ * ```
+ */
+export function useGroupResources(groupId: string | undefined): UseQueryResult<GroupResource[], Error> {
+  return useQuery<GroupResource[], Error>({
     queryKey: ['groupResources', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
-    queryFn: async (): Promise<any[]> => {
+    queryFn: async (): Promise<GroupResource[]> => {
       if (!groupId) {
         return [];
       }
@@ -707,17 +855,19 @@ export function useGroupResources(groupId: string | undefined): UseQueryResult<a
         // Mock returns empty array for now
         return [];
       }
-      
+
       const resources = await groupsApi.getGroupResources(groupId);
-      return resources.map((r: any) => ({
+      return resources.map((r): GroupResource => ({
         id: r.id,
+        group_id: groupId,
         title: r.title || 'Untitled Resource',
-        description: r.description || '',
+        description: r.description || null,
         url: r.url || '',
-        type: r.type || 'link',
+        type: (r.type as GroupResource['type']) || 'link',
         created_at: r.created_at,
-        category: r.category,
-        tags: r.tags
+        category: r.category || null,
+        tags: r.tags || null,
+        status: r.status || 'published'
       }));
     },
     enabled: !!groupId,
@@ -725,10 +875,22 @@ export function useGroupResources(groupId: string | undefined): UseQueryResult<a
 }
 
 // Group Posts Hook
-export function useGroupPosts(groupId: string | undefined): UseQueryResult<any[], Error> {
-  return useQuery<any[], Error>({
+/**
+ * Hook to fetch group posts (discussions, updates, content)
+ *
+ * @param groupId - The ID of the group to fetch posts for
+ * @returns Query result containing array of GroupPost objects
+ *
+ * @example
+ * ```typescript
+ * const { data: posts } = useGroupPosts('group-123');
+ * const pinnedPosts = posts?.filter(p => p.is_pinned);
+ * ```
+ */
+export function useGroupPosts(groupId: string | undefined): UseQueryResult<GroupPost[], Error> {
+  return useQuery<GroupPost[], Error>({
     queryKey: ['groupPosts', groupId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
-    queryFn: async (): Promise<any[]> => {
+    queryFn: async (): Promise<GroupPost[]> => {
       if (!groupId) {
         return [];
       }
@@ -736,15 +898,26 @@ export function useGroupPosts(groupId: string | undefined): UseQueryResult<any[]
         // Mock returns empty array for now
         return [];
       }
-      
+
       const posts = await groupsApi.getGroupPosts(groupId);
-      return posts.map((p: any) => ({
-        id: p.post?.id || p.post_id,
-        title: p.post?.title || 'Untitled Post',
-        content: p.post?.content || '',
-        author_id: p.post?.author_id,
+      return posts.map((p): GroupPost => ({
+        id: p.post?.id || p.post_id || p.id,
+        group_id: groupId,
+        title: p.post?.title || p.title || null,
+        content: p.post?.content || p.content || '',
+        author_id: p.post?.author_id || p.author_id,
+        type: (p.type as GroupPost['type']) || 'post',
+        status: (p.status as GroupPost['status']) || 'published',
         created_at: p.post?.created_at || p.created_at,
-        updated_at: p.post?.updated_at
+        updated_at: p.post?.updated_at || p.updated_at || null,
+        post: p.post ? {
+          id: p.post.id,
+          title: p.post.title || null,
+          content: p.post.content,
+          author_id: p.post.author_id,
+          created_at: p.post.created_at,
+          updated_at: p.post.updated_at || null
+        } : undefined
       }));
     },
     enabled: !!groupId,
