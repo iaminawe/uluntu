@@ -1,0 +1,2579 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive documentation for the Nelson Tech Community Platform - A sophisticated React-based community platform">
+      
+      
+        <meta name="author" content="Nelson Tech Community">
+      
+      
+        <link rel="canonical" href="https://iaminawe.github.io/nelson-tech/archive/auth_test_plan/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Authentication Module Test Plan - Nelson Tech Community Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#authentication-module-test-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Nelson Tech Community Platform" class="md-header__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nelson Tech Community Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Authentication Module Test Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../components/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Components
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Patterns & Templates
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DEPLOYMENT_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../THEME_SYSTEM_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Design & Theming
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../business/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Business & Strategy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../implementation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../migrations/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Migrations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../qa-reports/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Testing & QA
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DOCUMENTATION_MAP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../research/github_template_research_report/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Research
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Nelson Tech Community Platform" class="md-nav__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nelson Tech Community Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Development Guides
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../features/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../components/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Components
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../patterns/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Patterns & Templates
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../DEPLOYMENT_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../THEME_SYSTEM_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Design & Theming
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../business/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Business & Strategy
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../implementation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../migrations/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Migrations
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../qa-reports/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Testing & QA
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../DOCUMENTATION_MAP/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../research/github_template_research_report/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iaminawe/nelson-tech/edit/main/docs/archive/auth_test_plan.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech/raw/main/docs/archive/auth_test_plan.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
+  
+
+
+<h1 id="authentication-module-test-plan">Authentication Module Test Plan<a class="headerlink" href="#authentication-module-test-plan" title="Permanent link">&para;</a></h1>
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<p>This document outlines the detailed test plan for the Authentication Module of the Hyperlocal Community Platform. The authentication system is built upon the integrated <code>mmvergara/react-supabase-auth-template</code> and includes user registration, login, logout, profile management, role-based access control, password reset, and security hardening features.</p>
+<p>This test plan explicitly adopts London School of Test-Driven Development (TDD) principles, focusing on interaction-based testing and the mocking of collaborators to verify observable outcomes rather than internal state. It also defines a comprehensive recursive testing strategy to ensure ongoing stability and catch regressions early.</p>
+<h2 id="2-test-scope">2. Test Scope<a class="headerlink" href="#2-test-scope" title="Permanent link">&para;</a></h2>
+<p>This test plan covers the granular testing of the Authentication Module, which maps directly to Phase 1 of the PRDMasterPlan (Foundation &amp; Template-Based Authentication). The following AI Verifiable End Results from PRDMasterPlan.md are targeted for verification:</p>
+<table>
+<thead>
+<tr>
+<th>Microtask</th>
+<th>AI Verifiable End Result</th>
+<th>Test Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Template files from <code>mmvergara/react-supabase-auth-template</code> are successfully integrated into the project structure</td>
+<td>Environment and configuration verification tests</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Supabase client connection established and authentication service configured to work with the template</td>
+<td>Supabase client integration tests</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>New users can register with email and password using the template's authentication system</td>
+<td>User registration test suite</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Registered users can authenticate with valid credentials using the template's authentication system</td>
+<td>User login test suite</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>Users can securely end their session using the template's authentication system</td>
+<td>User logout test suite</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>Users can view and edit their profile information beyond the template's basic functionality</td>
+<td>User profile management test suite</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>Authentication system extended to support role-based permissions beyond the template's basic functionality</td>
+<td>Role-based access control test suite</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>Users can reset forgotten passwords via email, extending the template's functionality</td>
+<td>Password reset test suite</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>Template's authentication system is hardened with additional security measures</td>
+<td>Security hardening test suite</td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>Template's authentication components are styled to match the platform's design system</td>
+<td>UI integration test suite</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>Development bypass for authentication is properly secured</td>
+<td>Development bypass security test suite</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-testing-strategy">3. Testing Strategy<a class="headerlink" href="#3-testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="31-london-school-tdd-principles">3.1 London School TDD Principles<a class="headerlink" href="#31-london-school-tdd-principles" title="Permanent link">&para;</a></h3>
+<p>This test plan adopts the London School of Test-Driven Development (TDD) principles, which emphasize:</p>
+<ol>
+<li><strong>Interaction-Based Testing</strong>: Tests focus on the behavior of units through their interactions with collaborators rather than examining internal state.</li>
+<li><strong>Collaborator Mocking</strong>: External dependencies and collaborators are mocked or stubbed to isolate the unit under test.</li>
+<li><strong>Observable Outcome Verification</strong>: Tests verify observable outcomes (method calls, return values, UI changes) rather than internal state.</li>
+<li><strong>Outside-In Development</strong>: Development proceeds from high-level acceptance tests down to unit tests.</li>
+</ol>
+<h3 id="32-recursive-testing-strategy">3.2 Recursive Testing Strategy<a class="headerlink" href="#32-recursive-testing-strategy" title="Permanent link">&para;</a></h3>
+<p>To ensure ongoing stability and catch regressions early, this test plan defines a comprehensive recursive testing strategy:</p>
+<h4 id="321-test-categories-and-tags">3.2.1 Test Categories and Tags<a class="headerlink" href="#321-test-categories-and-tags" title="Permanent link">&para;</a></h4>
+<p>Tests will be categorized and tagged for selective execution:</p>
+<ul>
+<li><strong>Unit Tests</strong> <code>[unit]</code>: Test individual components in isolation</li>
+<li><strong>Integration Tests</strong> <code>[integration]</code>: Test interactions between components</li>
+<li><strong>UI Tests</strong> <code>[ui]</code>: Test user interface components</li>
+<li><strong>Security Tests</strong> <code>[security]</code>: Test security features</li>
+<li><strong>Authentication Module Tests</strong> <code>[feature:auth]</code>: Tests specifically for the authentication module</li>
+<li><strong>Critical Path Tests</strong> <code>[critical]</code>: Tests for critical functionality that must not fail</li>
+</ul>
+<p>Additional tags for Authentication-specific features:
+- <code>[auth:registration]</code>: User registration tests
+- <code>[auth:login]</code>: User login tests
+- <code>[auth:logout]</code>: User logout tests
+- <code>[auth:profile]</code>: User profile management tests
+- <code>[auth:rbac]</code>: Role-based access control tests
+- <code>[auth:password-reset]</code>: Password reset tests
+- <code>[auth:security]</code>: Security hardening tests
+- <code>[auth:ui]</code>: Authentication UI integration tests
+- <code>[auth:development]</code>: Development bypass tests</p>
+<h4 id="322-regression-testing-triggers">3.2.2 Regression Testing Triggers<a class="headerlink" href="#322-regression-testing-triggers" title="Permanent link">&para;</a></h4>
+<p>Tests will be re-executed based on the following triggers:</p>
+<ol>
+<li><strong>Code Changes</strong>: When code is modified, tests related to the modified components and their dependencies will be run.</li>
+<li><strong>API Changes</strong>: When Supabase API contracts change, all tests interacting with those APIs will be run.</li>
+<li><strong>Dependency Updates</strong>: When dependencies (including the Supabase client, React, or testing libraries) are updated, tests affected by those dependencies will be run.</li>
+<li><strong>Pre-Release</strong>: Before releases, all tests will be run.</li>
+<li><strong>Post-Deployment</strong>: After deployment, critical path tests will be run in the production environment.</li>
+<li><strong>Template Updates</strong>: When the base <code>mmvergara/react-supabase-auth-template</code> is updated or modified, all authentication tests should be run.</li>
+</ol>
+<h4 id="323-test-selection-strategy">3.2.3 Test Selection Strategy<a class="headerlink" href="#323-test-selection-strategy" title="Permanent link">&para;</a></h4>
+<p>For different triggers, different subsets of tests will be selected:</p>
+<ol>
+<li><strong>Minimal Set</strong> (for frequent development changes):</li>
+<li>Unit tests for changed components</li>
+<li>Integration tests directly involving changed components</li>
+<li>
+<p>Tagged with <code>[critical]</code> if in critical path</p>
+</li>
+<li>
+<p><strong>Extended Set</strong> (for significant changes or feature completion):</p>
+</li>
+<li>All tests in the minimal set</li>
+<li>All integration tests for authentication</li>
+<li>UI tests for authentication</li>
+<li>
+<p>Tagged with <code>[feature:auth]</code></p>
+</li>
+<li>
+<p><strong>Full Set</strong> (for releases or major changes):</p>
+</li>
+<li>All tests</li>
+</ol>
+<h4 id="324-re-testing-frequency-guidelines">3.2.4 Re-Testing Frequency Guidelines<a class="headerlink" href="#324-re-testing-frequency-guidelines" title="Permanent link">&para;</a></h4>
+<p>The following guidelines should be followed for re-testing frequency:</p>
+<ol>
+<li><strong>Continuous Testing</strong>: Unit tests and critical tests run on every commit</li>
+<li><strong>Daily Testing</strong>: Extended tests run daily on the development branch</li>
+<li><strong>Weekly Testing</strong>: Full test suite run weekly</li>
+<li><strong>Pre-Release Testing</strong>: Full test suite run before any release</li>
+<li><strong>Post-Deployment Testing</strong>: Critical path tests run after deployment</li>
+</ol>
+<h2 id="4-test-environment">4. Test Environment<a class="headerlink" href="#4-test-environment" title="Permanent link">&para;</a></h2>
+<h3 id="41-setup-requirements">4.1 Setup Requirements<a class="headerlink" href="#41-setup-requirements" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Testing Framework</strong>: Jest with Testing Library</li>
+<li><strong>Test Environment</strong>: jsdom for browser-like environment</li>
+<li><strong>Mocking Tools</strong>: Jest mocks and React Testing Library mocks</li>
+<li><strong>Test Database</strong>: Supabase test environment or mock</li>
+<li><strong>Test Users</strong>: Pre-defined test user accounts with different roles</li>
+</ol>
+<h3 id="42-mock-configurations">4.2 Mock Configurations<a class="headerlink" href="#42-mock-configurations" title="Permanent link">&para;</a></h3>
+<p>The following mock configurations are required:</p>
+<ol>
+<li><strong>Supabase Client Mock</strong>: Mock for the Supabase client that returns predictable responses</li>
+<li><strong>Session Context Mock</strong>: Mock for the session context to simulate different authentication states</li>
+<li><strong>Router Mock</strong>: Mock for navigation and redirection</li>
+<li><strong>API Response Mocks</strong>: Predefined API response mocks for different scenarios</li>
+<li><strong>Environment Variables Mock</strong>: Mock for environment variables to test different environments</li>
+</ol>
+<h3 id="43-test-data">4.3 Test Data<a class="headerlink" href="#43-test-data" title="Permanent link">&para;</a></h3>
+<p>The following test data should be prepared:</p>
+<ol>
+<li><strong>Test Users</strong>: Sample user data including valid and invalid credentials</li>
+<li><strong>Test Profiles</strong>: Sample user profile data for profile management tests</li>
+<li><strong>Test Roles</strong>: Sample role definitions for role-based access control tests</li>
+</ol>
+<h2 id="5-detailed-test-cases">5. Detailed Test Cases<a class="headerlink" href="#5-detailed-test-cases" title="Permanent link">&para;</a></h2>
+<h3 id="51-user-registration-tests">5.1 User Registration Tests<a class="headerlink" href="#51-user-registration-tests" title="Permanent link">&para;</a></h3>
+<h4 id="511-registration-form-input-validation">5.1.1 Registration Form Input Validation<a class="headerlink" href="#511-registration-form-input-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: New users can register with email and password using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the registration form validates user inputs before submission</p>
+<p><strong>Units to Test</strong>:
+- Registration form component
+- Input validation logic</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handler (to prevent actual submission)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should validate email format
+- Form should validate password strength
+- Form should validate required fields
+- Submit button should be disabled for invalid inputs</p>
+<p><strong>Observable Outcome</strong>:
+- Form displays appropriate validation messages
+- Submit button state changes based on validation</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal and extended test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:registration]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for all validation rules pass
+- Validation error messages display correctly
+- Submit button state correctly responds to validation status</p>
+<h4 id="512-registration-api-integration">5.1.2 Registration API Integration<a class="headerlink" href="#512-registration-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: New users can register with email and password using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the registration form correctly interacts with the Supabase auth API</p>
+<p><strong>Units to Test</strong>:
+- Registration form component
+- Registration API service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's <code>auth.signUp</code> method
+- Session context
+- Router for redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Form should collect user data
+- API service should call Supabase <code>auth.signUp</code> with correct data
+- On success, session context should be updated
+- On success, user should be redirected to home page
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- Supabase client receives correct registration data
+- Session context updates with new user information
+- Redirect occurs to home page on success
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal, extended, and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:registration]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock Supabase client
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h4 id="513-registration-success-ui-feedback">5.1.3 Registration Success UI Feedback<a class="headerlink" href="#513-registration-success-ui-feedback" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: New users can register with email and password using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the UI provides appropriate feedback during and after registration</p>
+<p><strong>Units to Test</strong>:
+- Registration form component
+- Loading state indicators
+- Success/error notification components</p>
+<p><strong>Collaborators to Mock</strong>:
+- Registration API service (to control response timing and success/failure)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should show loading state during submission
+- Success message should appear after successful registration
+- Error message should appear after failed registration</p>
+<p><strong>Observable Outcome</strong>:
+- Loading indicator appears during submission
+- Success message displays after successful registration
+- Error message displays after failed registration with appropriate details</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[ui]</code>, <code>[feature:auth]</code>, <code>[auth:registration]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- UI tests for loading, success, and error states pass
+- UI elements appear and disappear at appropriate times
+- Messages contain appropriate content</p>
+<h3 id="52-user-login-tests">5.2 User Login Tests<a class="headerlink" href="#52-user-login-tests" title="Permanent link">&para;</a></h3>
+<h4 id="521-login-form-input-validation">5.2.1 Login Form Input Validation<a class="headerlink" href="#521-login-form-input-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Registered users can authenticate with valid credentials using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the login form validates user inputs before submission</p>
+<p><strong>Units to Test</strong>:
+- Login form component
+- Input validation logic</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handler (to prevent actual submission)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should validate email format
+- Form should validate password presence
+- Form should validate required fields
+- Submit button should be disabled for invalid inputs</p>
+<p><strong>Observable Outcome</strong>:
+- Form displays appropriate validation messages
+- Submit button state changes based on validation</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal and extended test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:login]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for all validation rules pass
+- Validation error messages display correctly
+- Submit button state correctly responds to validation status</p>
+<h4 id="522-login-api-integration">5.2.2 Login API Integration<a class="headerlink" href="#522-login-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Registered users can authenticate with valid credentials using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the login form correctly interacts with the Supabase auth API</p>
+<p><strong>Units to Test</strong>:
+- Login form component
+- Login API service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's <code>auth.signInWithPassword</code> method
+- Session context
+- Router for redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Form should collect user credentials
+- API service should call Supabase <code>auth.signInWithPassword</code> with correct credentials
+- On success, session context should be updated
+- On success, user should be redirected to home page
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- Supabase client receives correct login credentials
+- Session context updates with user information
+- Redirect occurs to home page on success
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal, extended, and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:login]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock Supabase client
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h4 id="523-login-success-ui-feedback">5.2.3 Login Success UI Feedback<a class="headerlink" href="#523-login-success-ui-feedback" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Registered users can authenticate with valid credentials using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the UI provides appropriate feedback during and after login</p>
+<p><strong>Units to Test</strong>:
+- Login form component
+- Loading state indicators
+- Success/error notification components</p>
+<p><strong>Collaborators to Mock</strong>:
+- Login API service (to control response timing and success/failure)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should show loading state during submission
+- Success message or redirect should occur after successful login
+- Error message should appear after failed login</p>
+<p><strong>Observable Outcome</strong>:
+- Loading indicator appears during submission
+- Redirect occurs after successful login
+- Error message displays after failed login with appropriate details</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[ui]</code>, <code>[feature:auth]</code>, <code>[auth:login]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- UI tests for loading, success, and error states pass
+- UI elements appear and disappear at appropriate times
+- Messages contain appropriate content</p>
+<h3 id="53-user-logout-tests">5.3 User Logout Tests<a class="headerlink" href="#53-user-logout-tests" title="Permanent link">&para;</a></h3>
+<h4 id="531-logout-button-interaction">5.3.1 Logout Button Interaction<a class="headerlink" href="#531-logout-button-interaction" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can securely end their session using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the logout button triggers the logout process</p>
+<p><strong>Units to Test</strong>:
+- Logout button component
+- AuthButton component</p>
+<p><strong>Collaborators to Mock</strong>:
+- Logout handler function</p>
+<p><strong>Expected Interactions</strong>:
+- Button should call the logout handler when clicked</p>
+<p><strong>Observable Outcome</strong>:
+- Logout handler is called when button is clicked</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal and extended test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:logout]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit test for button click passes
+- Logout handler is called exactly once per click</p>
+<h4 id="532-logout-api-integration">5.3.2 Logout API Integration<a class="headerlink" href="#532-logout-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can securely end their session using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that the logout process correctly interacts with the Supabase auth API</p>
+<p><strong>Units to Test</strong>:
+- Logout handler
+- Authentication service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's <code>auth.signOut</code> method
+- Session context
+- Router for redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Logout handler should call Supabase <code>auth.signOut</code>
+- On success, session context should be cleared
+- On success, user should be redirected to login page or home as guest
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- Supabase client receives logout request
+- Session context is cleared
+- Redirect occurs to login page or home
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal, extended, and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:logout]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock Supabase client
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h4 id="533-post-logout-session-verification">5.3.3 Post-Logout Session Verification<a class="headerlink" href="#533-post-logout-session-verification" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can securely end their session using the template's authentication system</p>
+<p><strong>Test Case</strong>: Verify that after logout, the user session is properly terminated and protected routes are inaccessible</p>
+<p><strong>Units to Test</strong>:
+- Protected route components
+- Session context provider</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's auth state
+- Router for navigation attempts</p>
+<p><strong>Expected Interactions</strong>:
+- After logout, attempt to access protected route
+- Router should redirect to login page
+- Session context should indicate unauthenticated state</p>
+<p><strong>Observable Outcome</strong>:
+- Redirect occurs when attempting to access protected route
+- Session context shows unauthenticated state</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:logout]</code>, <code>[security]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test verifies protected routes are inaccessible after logout
+- Session context correctly reflects unauthenticated state</p>
+<h3 id="54-user-profile-management-tests">5.4 User Profile Management Tests<a class="headerlink" href="#54-user-profile-management-tests" title="Permanent link">&para;</a></h3>
+<h4 id="541-profile-view-component">5.4.1 Profile View Component<a class="headerlink" href="#541-profile-view-component" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can view and edit their profile information beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that the profile view component correctly displays user information</p>
+<p><strong>Units to Test</strong>:
+- Profile view component
+- Profile data service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Profile data API
+- Session context for authenticated user</p>
+<p><strong>Expected Interactions</strong>:
+- Component should request user profile data
+- API should return profile data
+- Component should display the data</p>
+<p><strong>Observable Outcome</strong>:
+- Profile component displays correct user information
+- Loading states are handled properly
+- Error states are handled properly</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[ui]</code>, <code>[feature:auth]</code>, <code>[auth:profile]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for profile display pass
+- All expected profile fields are displayed correctly
+- Loading and error states are handled correctly</p>
+<h4 id="542-profile-edit-form-input-validation">5.4.2 Profile Edit Form Input Validation<a class="headerlink" href="#542-profile-edit-form-input-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can view and edit their profile information beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that the profile edit form validates user inputs before submission</p>
+<p><strong>Units to Test</strong>:
+- Profile edit form component
+- Input validation logic</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handler (to prevent actual submission)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should validate required fields
+- Form should validate field formats (email, phone, etc.)
+- Submit button should be disabled for invalid inputs</p>
+<p><strong>Observable Outcome</strong>:
+- Form displays appropriate validation messages
+- Submit button state changes based on validation</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:profile]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for all validation rules pass
+- Validation error messages display correctly
+- Submit button state correctly responds to validation status</p>
+<h4 id="543-profile-update-api-integration">5.4.3 Profile Update API Integration<a class="headerlink" href="#543-profile-update-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can view and edit their profile information beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that the profile edit form correctly interacts with the profile update API</p>
+<p><strong>Units to Test</strong>:
+- Profile edit form component
+- Profile update service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Profile update API
+- Session context
+- Router for redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Form should collect profile updates
+- Service should call profile update API with correct data
+- On success, profile should be updated
+- On success, user should see confirmation
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- API receives correct profile update data
+- Success message or updated profile is displayed
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:profile]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock API
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h3 id="55-role-based-access-control-tests">5.5 Role-Based Access Control Tests<a class="headerlink" href="#55-role-based-access-control-tests" title="Permanent link">&para;</a></h3>
+<h4 id="551-role-assignment-api-integration">5.5.1 Role Assignment API Integration<a class="headerlink" href="#551-role-assignment-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Authentication system extended to support role-based permissions beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that administrators can assign roles to users</p>
+<p><strong>Units to Test</strong>:
+- Role management component
+- Role assignment service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Role assignment API
+- Session context for admin authentication
+- User list service</p>
+<p><strong>Expected Interactions</strong>:
+- Component should display user list with current roles
+- Role selection should trigger role assignment API
+- API should update user role
+- Component should show updated role</p>
+<p><strong>Observable Outcome</strong>:
+- API receives correct role assignment data
+- UI reflects the updated role assignment
+- Error handling works appropriately</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:rbac]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock API
+- Role assignment process completes successfully
+- UI updates to reflect new role</p>
+<h4 id="552-protected-component-access-control">5.5.2 Protected Component Access Control<a class="headerlink" href="#552-protected-component-access-control" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Authentication system extended to support role-based permissions beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that components with role-based access control restrict access properly</p>
+<p><strong>Units to Test</strong>:
+- Protected component wrapper
+- Role-based permission checker</p>
+<p><strong>Collaborators to Mock</strong>:
+- Session context with different user roles</p>
+<p><strong>Expected Interactions</strong>:
+- Component should check user role against required role
+- Component should render contents for authorized roles
+- Component should hide contents or redirect for unauthorized roles</p>
+<p><strong>Observable Outcome</strong>:
+- Component contents are visible for authorized roles
+- Component contents are hidden or redirect occurs for unauthorized roles</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal, extended, and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:rbac]</code>, <code>[security]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests pass for all role combinations
+- Protected content is only visible to authorized roles</p>
+<h4 id="553-protected-route-access-control">5.5.3 Protected Route Access Control<a class="headerlink" href="#553-protected-route-access-control" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Authentication system extended to support role-based permissions beyond the template's basic functionality</p>
+<p><strong>Test Case</strong>: Verify that routes with role-based access control restrict access properly</p>
+<p><strong>Units to Test</strong>:
+- Protected route component
+- Role-based route guard</p>
+<p><strong>Collaborators to Mock</strong>:
+- Session context with different user roles
+- Router for navigation and redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Route guard should check user role against required role
+- Route should allow access for authorized roles
+- Route should redirect for unauthorized roles</p>
+<p><strong>Observable Outcome</strong>:
+- Route content is accessible for authorized roles
+- Redirect occurs for unauthorized roles</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in minimal, extended, and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:rbac]</code>, <code>[security]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration tests pass for all role combinations
+- Protected routes are only accessible to authorized roles
+- Unauthorized access attempts are redirected appropriately</p>
+<h3 id="56-password-reset-tests">5.6 Password Reset Tests<a class="headerlink" href="#56-password-reset-tests" title="Permanent link">&para;</a></h3>
+<h4 id="561-password-reset-request-form">5.6.1 Password Reset Request Form<a class="headerlink" href="#561-password-reset-request-form" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can reset forgotten passwords via email, extending the template's functionality</p>
+<p><strong>Test Case</strong>: Verify that the password reset request form collects and validates the user's email</p>
+<p><strong>Units to Test</strong>:
+- Password reset request form component
+- Email validation logic</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handler (to prevent actual submission)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should validate email format
+- Submit button should be disabled for invalid email
+- Form should submit valid email</p>
+<p><strong>Observable Outcome</strong>:
+- Form displays appropriate validation messages
+- Submit button state changes based on validation
+- Form submits with valid email</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:password-reset]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for email validation pass
+- Validation error messages display correctly
+- Submit button state correctly responds to validation status</p>
+<h4 id="562-password-reset-request-api-integration">5.6.2 Password Reset Request API Integration<a class="headerlink" href="#562-password-reset-request-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can reset forgotten passwords via email, extending the template's functionality</p>
+<p><strong>Test Case</strong>: Verify that the password reset request form correctly interacts with the Supabase auth API</p>
+<p><strong>Units to Test</strong>:
+- Password reset request form component
+- Password reset service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's <code>auth.resetPasswordForEmail</code> method
+- Notification service for success/error messages</p>
+<p><strong>Expected Interactions</strong>:
+- Form should collect user email
+- Service should call Supabase <code>auth.resetPasswordForEmail</code> with correct email
+- On success, success message should be displayed
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- Supabase client receives correct email
+- Success message displays on success
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:password-reset]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock Supabase client
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h4 id="563-password-reset-confirmation-form">5.6.3 Password Reset Confirmation Form<a class="headerlink" href="#563-password-reset-confirmation-form" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can reset forgotten passwords via email, extending the template's functionality</p>
+<p><strong>Test Case</strong>: Verify that the password reset confirmation form validates the new password</p>
+<p><strong>Units to Test</strong>:
+- Password reset confirmation form component
+- Password validation logic</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handler (to prevent actual submission)</p>
+<p><strong>Expected Interactions</strong>:
+- Form should validate password strength
+- Form should validate password confirmation match
+- Submit button should be disabled for invalid inputs</p>
+<p><strong>Observable Outcome</strong>:
+- Form displays appropriate validation messages
+- Submit button state changes based on validation</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:password-reset]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for password validation pass
+- Validation error messages display correctly
+- Submit button state correctly responds to validation status</p>
+<h4 id="564-password-reset-confirmation-api-integration">5.6.4 Password Reset Confirmation API Integration<a class="headerlink" href="#564-password-reset-confirmation-api-integration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Users can reset forgotten passwords via email, extending the template's functionality</p>
+<p><strong>Test Case</strong>: Verify that the password reset confirmation form correctly interacts with the Supabase auth API</p>
+<p><strong>Units to Test</strong>:
+- Password reset confirmation form component
+- Password reset service</p>
+<p><strong>Collaborators to Mock</strong>:
+- Supabase client's <code>auth.updateUser</code> method
+- Session context
+- Router for redirection</p>
+<p><strong>Expected Interactions</strong>:
+- Form should collect new password
+- Service should call Supabase <code>auth.updateUser</code> with correct password
+- On success, user should be redirected to login
+- On error, appropriate error message should be displayed</p>
+<p><strong>Observable Outcome</strong>:
+- Supabase client receives correct password update
+- Redirect occurs to login page on success
+- Error message displays on failure</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:password-reset]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration test passes with mock Supabase client
+- All expected interactions are verified
+- Success and error paths are both tested</p>
+<h3 id="57-security-hardening-tests">5.7 Security Hardening Tests<a class="headerlink" href="#57-security-hardening-tests" title="Permanent link">&para;</a></h3>
+<h4 id="571-input-sanitization">5.7.1 Input Sanitization<a class="headerlink" href="#571-input-sanitization" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Template's authentication system is hardened with additional security measures</p>
+<p><strong>Test Case</strong>: Verify that all user inputs are properly sanitized to prevent injection attacks</p>
+<p><strong>Units to Test</strong>:
+- Form input components
+- Input sanitization utilities</p>
+<p><strong>Collaborators to Mock</strong>:
+- Form submission handlers</p>
+<p><strong>Expected Interactions</strong>:
+- Inputs should sanitize dangerous characters
+- Sanitized data should be used in API calls and UI rendering</p>
+<p><strong>Observable Outcome</strong>:
+- Dangerous input characters are escaped or removed
+- Sanitized data is used in downstream operations</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:security]</code>, <code>[security]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests for sanitization functions pass
+- Attempted injection attacks are neutralized</p>
+<h4 id="572-csrf-protection">5.7.2 CSRF Protection<a class="headerlink" href="#572-csrf-protection" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Template's authentication system is hardened with additional security measures</p>
+<p><strong>Test Case</strong>: Verify that CSRF protection is implemented for authentication forms</p>
+<p><strong>Units to Test</strong>:
+- Form components
+- CSRF token service</p>
+<p><strong>Collaborators to Mock</strong>:
+- CSRF token generation
+- Form submission handlers</p>
+<p><strong>Expected Interactions</strong>:
+- Forms should include CSRF tokens
+- API calls should include valid CSRF tokens
+- Invalid CSRF tokens should be rejected</p>
+<p><strong>Observable Outcome</strong>:
+- CSRF tokens are included in forms
+- API calls include valid tokens
+- Requests with invalid tokens are rejected</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:security]</code>, <code>[security]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration tests verify CSRF token inclusion
+- Requests without valid tokens are rejected</p>
+<h4 id="573-rate-limiting">5.7.3 Rate Limiting<a class="headerlink" href="#573-rate-limiting" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Template's authentication system is hardened with additional security measures</p>
+<p><strong>Test Case</strong>: Verify that rate limiting is implemented for authentication attempts</p>
+<p><strong>Units to Test</strong>:
+- Authentication services
+- Rate limiting middleware</p>
+<p><strong>Collaborators to Mock</strong>:
+- Rate limiting store
+- Authentication APIs</p>
+<p><strong>Expected Interactions</strong>:
+- Service should track authentication attempts
+- Service should block excessive attempts
+- Service should implement increasing timeouts</p>
+<p><strong>Observable Outcome</strong>:
+- Excessive authentication attempts are blocked
+- Error messages indicate rate limiting
+- Timeouts increase with repeated attempts</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:security]</code>, <code>[security]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration tests verify rate limiting functionality
+- Repeated authentication attempts are properly limited</p>
+<h3 id="58-ui-integration-tests">5.8 UI Integration Tests<a class="headerlink" href="#58-ui-integration-tests" title="Permanent link">&para;</a></h3>
+<h4 id="581-authentication-component-styling">5.8.1 Authentication Component Styling<a class="headerlink" href="#581-authentication-component-styling" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Template's authentication components are styled to match the platform's design system</p>
+<p><strong>Test Case</strong>: Verify that authentication components are properly styled according to the design system</p>
+<p><strong>Units to Test</strong>:
+- Authentication form components
+- Button components
+- Input components</p>
+<p><strong>Collaborators to Mock</strong>:
+- Theme provider</p>
+<p><strong>Expected Interactions</strong>:
+- Components should render with design system styles
+- Components should adapt to theme changes
+- Components should be responsive</p>
+<p><strong>Observable Outcome</strong>:
+- Components match design system specifications
+- Components adapt to different themes
+- Components render correctly at different screen sizes</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[ui]</code>, <code>[feature:auth]</code>, <code>[auth:ui]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- UI tests verify styling matches design system
+- Components display correctly in different environments</p>
+<h4 id="582-authentication-flow-navigation">5.8.2 Authentication Flow Navigation<a class="headerlink" href="#582-authentication-flow-navigation" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Template's authentication components are styled to match the platform's design system</p>
+<p><strong>Test Case</strong>: Verify that navigation between authentication screens works correctly</p>
+<p><strong>Units to Test</strong>:
+- Authentication flow components
+- Navigation links</p>
+<p><strong>Collaborators to Mock</strong>:
+- Router for navigation
+- Session context</p>
+<p><strong>Expected Interactions</strong>:
+- Navigation links should trigger correct route changes
+- Back buttons should navigate to previous screens
+- Successful authentication should navigate to appropriate destinations</p>
+<p><strong>Observable Outcome</strong>:
+- Navigation occurs correctly between authentication screens
+- Navigation respects authentication state</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[ui]</code>, <code>[feature:auth]</code>, <code>[auth:ui]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration tests verify navigation between screens
+- All navigation paths work as expected</p>
+<h3 id="59-development-bypass-tests">5.9 Development Bypass Tests<a class="headerlink" href="#59-development-bypass-tests" title="Permanent link">&para;</a></h3>
+<h4 id="591-development-bypass-configuration">5.9.1 Development Bypass Configuration<a class="headerlink" href="#591-development-bypass-configuration" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Development bypass for authentication is properly secured</p>
+<p><strong>Test Case</strong>: Verify that the development bypass is correctly configured based on environment</p>
+<p><strong>Units to Test</strong>:
+- Authentication configuration service
+- Environment detection</p>
+<p><strong>Collaborators to Mock</strong>:
+- Environment variables
+- Configuration service</p>
+<p><strong>Expected Interactions</strong>:
+- Service should read environment settings
+- Service should enable bypass only in development
+- Service should disable bypass in production</p>
+<p><strong>Observable Outcome</strong>:
+- Bypass is enabled only in development environment
+- Bypass is disabled in production environment</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[unit]</code>, <code>[feature:auth]</code>, <code>[auth:development]</code>, <code>[security]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Unit tests verify bypass configuration
+- Bypass cannot be enabled in production</p>
+<h4 id="592-development-bypass-security">5.9.2 Development Bypass Security<a class="headerlink" href="#592-development-bypass-security" title="Permanent link">&para;</a></h4>
+<p><strong>Target AI Verifiable End Result</strong>: Development bypass for authentication is properly secured</p>
+<p><strong>Test Case</strong>: Verify that attempts to enable the development bypass in production are prevented</p>
+<p><strong>Units to Test</strong>:
+- Authentication bypass protection
+- Environment detection</p>
+<p><strong>Collaborators to Mock</strong>:
+- Environment variables
+- Configuration service</p>
+<p><strong>Expected Interactions</strong>:
+- Attempt to enable bypass in production
+- Protection should prevent enablement
+- Protection should log security warning</p>
+<p><strong>Observable Outcome</strong>:
+- Bypass remains disabled in production despite attempts to enable
+- Security warning is logged</p>
+<p><strong>Recursive Testing Scope</strong>:
+- Include in extended and full test sets
+- Tagged with <code>[integration]</code>, <code>[feature:auth]</code>, <code>[auth:development]</code>, <code>[security]</code>, <code>[critical]</code></p>
+<p><strong>AI Verifiable Completion Criterion</strong>:
+- Integration tests verify bypass cannot be enabled in production
+- Security warnings are properly logged</p>
+<h2 id="6-implementation-guidelines">6. Implementation Guidelines<a class="headerlink" href="#6-implementation-guidelines" title="Permanent link">&para;</a></h2>
+<h3 id="61-test-structure">6.1 Test Structure<a class="headerlink" href="#61-test-structure" title="Permanent link">&para;</a></h3>
+<p>Tests should be organized in the following structure:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>src/auth_template/__tests__/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── unit/                     # Unit tests
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── components/           # Component tests
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── services/             # Service tests
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   └── utils/                # Utility function tests
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── integration/              # Integration tests
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── api/                  # API integration tests
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── flows/                # Authentication flow tests
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── ui/                       # UI tests
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>└── e2e/                      # End-to-end tests
+</span></code></pre></div>
+<h3 id="62-mock-implementation-guidelines">6.2 Mock Implementation Guidelines<a class="headerlink" href="#62-mock-implementation-guidelines" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Supabase Client Mocks</strong>: Create a mock Supabase client that mimics the behavior of the real client but returns predictable responses.</li>
+<li><strong>Session Context Mocks</strong>: Create a mock session context that can simulate different authentication states.</li>
+<li><strong>Router Mocks</strong>: Create a mock router that can track navigation and redirection.</li>
+<li><strong>API Response Mocks</strong>: Create mock API responses for different scenarios (success, failure, error conditions).</li>
+</ol>
+<h3 id="63-test-implementation-steps">6.3 Test Implementation Steps<a class="headerlink" href="#63-test-implementation-steps" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Write Test First</strong>: Following TDD principles, write the test before implementing the feature.</li>
+<li><strong>Create Mocks</strong>: Create all necessary mocks for collaborators.</li>
+<li><strong>Define Expected Interactions</strong>: Clearly define the expected interactions and outcomes.</li>
+<li><strong>Implement the Test</strong>: Implement the test to verify the expected interactions.</li>
+<li><strong>Implement the Feature</strong>: Implement the feature to make the test pass.</li>
+<li><strong>Refactor</strong>: Refactor the code while keeping the test passing.</li>
+<li><strong>Add to CI</strong>: Ensure the test is included in the CI pipeline with appropriate tags.</li>
+</ol>
+<h2 id="7-continuous-integration">7. Continuous Integration<a class="headerlink" href="#7-continuous-integration" title="Permanent link">&para;</a></h2>
+<p>All tests should be integrated into the CI/CD pipeline with the following guidelines:</p>
+<ol>
+<li><strong>Fast Feedback Loop</strong>: Unit and critical tests run on every commit</li>
+<li><strong>Comprehensive Testing</strong>: Extended tests run on pull requests</li>
+<li><strong>Full Regression</strong>: Complete test suite run before releases</li>
+</ol>
+<h2 id="8-ai-verifiability">8. AI Verifiability<a class="headerlink" href="#8-ai-verifiability" title="Permanent link">&para;</a></h2>
+<p>Each test case in this plan includes an explicit AI Verifiable Completion Criterion. These criteria define observable, measurable outcomes that can be programmatically verified. Test implementations should include assertions that directly verify these criteria.</p>
+<p>To enable AI verification of test execution and results:</p>
+<ol>
+<li><strong>Structured Test Output</strong>: Tests should produce structured output that can be parsed by AI agents.</li>
+<li><strong>Clear Pass/Fail Conditions</strong>: Each test should have clear pass/fail conditions tied to the AI Verifiable Completion Criterion.</li>
+<li><strong>Tagged Test Results</strong>: Test results should include the tags assigned to each test for selective verification.</li>
+<li><strong>Coverage Reporting</strong>: Test runs should produce coverage reports to verify test scope.</li>
+</ol>
+<h2 id="9-conclusion">9. Conclusion<a class="headerlink" href="#9-conclusion" title="Permanent link">&para;</a></h2>
+<p>This test plan provides a comprehensive approach to testing the Authentication Module of the Hyperlocal Community Platform. By following the London School TDD principles, focusing on interaction-based testing, and implementing a robust recursive testing strategy, we can ensure that the authentication system is reliable, secure, and maintainable.</p>
+<p>The plan directly maps to the AI Verifiable End Results from PRDMasterPlan.md, ensuring that all requirements are properly tested and verified. Each test case includes specific interactions to test, collaborators to mock, expected interactions, observable outcomes, and AI verifiable completion criteria.</p>
+<p>By implementing this test plan, we can ensure that the Authentication Module meets all requirements and contributes to the overall success of the Hyperlocal Community Platform.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 27, 2025 15:51:25 UTC"><span class="timeago" datetime="2025-05-27T15:51:25+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 27, 2025 15:51:25 UTC">2025-05-27</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 27, 2025 15:51:25 UTC"><span class="timeago" datetime="2025-05-27T15:51:25+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 27, 2025 15:51:25 UTC">2025-05-27</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Nelson Tech Community
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nelson-tech.slack.com" target="_blank" rel="noopener" title="nelson-tech.slack.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M94.1 315.1c0 25.9-21.2 47.1-47.1 47.1S0 341 0 315.1 21.2 268 47.1 268h47.1v47.1zm23.7 0c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1v117.8c0 25.9-21.2 47.1-47.1 47.1s-47.1-21.2-47.1-47.1zm47.1-189c-25.9 0-47.1-21.2-47.1-47.1s21.2-47 47.1-47S212 53.2 212 79.1v47.1h-47.1zm0 23.7c25.9 0 47.1 21.2 47.1 47.1S190.8 244 164.9 244H47.1C21.2 244 0 222.8 0 196.9s21.2-47.1 47.1-47.1zm189 47.1c0-25.9 21.2-47.1 47.1-47.1s47 21.2 47 47.1-21.2 47.1-47.1 47.1h-47.1v-47.1zm-23.7 0c0 25.9-21.2 47.1-47.1 47.1S236 222.8 236 196.9V79.1c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1zm-47.1 189c25.9 0 47.1 21.2 47.1 47.1s-21.2 47-47.1 47-47.1-21.2-47.1-47.1v-47.1h47.1zm0-23.7c-25.9 0-47.1-21.2-47.1-47.1s21.2-47.1 47.1-47.1h117.8c25.9 0 47.1 21.2 47.1 47.1s-21.2 47.1-47.1 47.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>

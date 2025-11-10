@@ -1,0 +1,1738 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive documentation for the Nelson Tech Community Platform - A sophisticated React-based community platform">
+      
+      
+        <meta name="author" content="Nelson Tech Community">
+      
+      
+        <link rel="canonical" href="https://iaminawe.github.io/nelson-tech/slug-utilities-guide/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Comprehensive Slug Utilities Guide\n\nThis guide covers the complete slug generation and management system implemented in the Nelson Tech project.\n\n## Overview\n\nThe slug utilities provide:\n- Universal slug generation for all content types\n- Database-backed uniqueness checking\n- SEO optimization and validation\n- International text support\n- Caching for performance\n- React hooks for easy integration\n- Migration path from legacy utilities\n\n## Quick Start\n\ntypescript\nimport { generateUniqueSlug, useSlugGeneration } from '@/lib/utils';\n\n// Basic usage\nconst slug = await generateUniqueSlug('My Article Title', 'news');\n\n// In React components\nfunction ArticleForm() {\n const { slug, setSlug, validation, suggestions } = useSlugGeneration(\n title, // source text\n 'news', // content type\n { autoGenerate: true }\n );\n \n return (\n <input \n value={slug} \n onChange={(e) => setSlug(e.target.value)}\n className={validation?.isValid ? 'valid' : 'invalid'}\n />\n );\n}\n\n\n## Core Features\n\n### 1. Universal Slug Generation\n\ntypescript\nimport { generateSlug, generateUniqueSlug } from '@/lib/utils/slugUtils';\n\n// Basic slug generation\nconst slug = generateSlug('Hello World!');\n// Result: \"hello-world\"\n\n// With options\nconst slug = generateSlug('Café & Restaurant', {\n preserveUnicode: false,\n strict: true,\n maxLength: 30\n});\n// Result: \"cafe-restaurant\"\n\n// Database-unique slug\nconst uniqueSlug = await generateUniqueSlug(\n 'My Article Title',\n 'news', // content type\n 'existing-id', // exclude this ID\n { maxLength: 60 }\n);\n\n\n### 2. Content Type Support\n\nSupported content types:\n- members - User profiles\n- companies - Company profiles\n- events - Events and workshops\n- news - News articles\n- opportunities - Job/volunteer opportunities\n- groups - Community groups\n- resources - Learning resources\n- marketplace - Marketplace listings\n- pages - Static pages\n- topics - Discussion topics\n\n### 3. Advanced Validation\n\ntypescript\nimport { validateSlugSEO, autoFixSlug } from '@/lib/utils/slugValidation';\n\n// Comprehensive validation\nconst validation = validateSlugSEO('my-article-slug');\nif (!validation.isValid) {\n console.log('Errors:', validation.errors);\n console.log('Suggestions:', validation.suggestions);\n console.log('SEO Score:', validation.score); // 0-100\n}\n\n// Auto-fix common issues\nconst { fixedSlug, changesApplied } = autoFixSlug('My--Bad__Slug!');\n// Result: { fixedSlug: \"my-bad-slug\", changesApplied: [...] }\n\n\n### 4. Database Lookups\n\ntypescript\nimport { lookupByIdOrSlug, checkSlugExists } from '@/lib/utils/slugUtils';\n\n// Flexible lookup (works with both IDs and slugs)\nconst { data, foundBy, error } = await lookupByIdOrSlug(\n 'my-article-slug', // or UUID\n 'news',\n 'id,title,slug,created_at' // optional fields\n);\n\n// Check availability\nconst exists = await checkSlugExists('new-slug', 'news', 'exclude-id');\n\n\n## React Hooks\n\n### useSlugGeneration\n\ntypescript\nimport { useSlugGeneration } from '@/lib/utils/slugHooks';\n\nfunction ContentForm({ title, id }) {\n const {\n slug,\n setSlug,\n isGenerating,\n validation,\n suggestions,\n manuallyEdited,\n resetToAutoGeneration,\n applySuggestion,\n autoFix\n } = useSlugGeneration(title, 'news', {\n autoGenerate: true,\n excludeId: id,\n debounceMs: 500\n });\n\n return (\n <div>\n <input \n value={slug} \n onChange={(e) => setSlug(e.target.value)}\n />\n \n {validation && (\n <div className={validation.isValid ? 'valid' : 'invalid'}>\n Score: {validation.score}/100\n {validation.errors.map(error => (\n <div key={error} className=\"error\">{error}</div>\n ))}\n </div>\n )}\n \n {suggestions.length > 0 && (\n <div>\n <h4>Suggestions:</h4>\n {suggestions.map(suggestion => (\n <button \n key={suggestion}\n onClick={() => applySuggestion(suggestion)}\n >\n {suggestion}\n </button>\n ))}\n </div>\n )}\n \n <button onClick={autoFix}>Auto-fix Issues</button>\n <button onClick={resetToAutoGeneration}>Reset to Auto</button>\n </div>\n );\n}\n\n\n### useSlugLookup\n\ntypescript\nimport { useSlugLookup } from '@/lib/utils/slugHooks';\n\nfunction ContentViewer({ identifier }) {\n const { data, loading, error, foundBy, refetch } = useSlugLookup(\n identifier,\n 'news',\n 'id,title,content,slug'\n );\n\n if (loading) return <div>Loading...</div>;\n if (error) return <div>Error: {error}</div>;\n if (!data) return <div>Not found</div>;\n\n return (\n <div>\n <h1>{data.title}</h1>\n <p>Found by: {foundBy}</p>\n <div>{data.content}</div>\n </div>\n );\n}\n\n\n### useSlugAvailability\n\ntypescript\nimport { useSlugAvailability } from '@/lib/utils/slugHooks';\n\nfunction SlugChecker({ slug, contentType }) {\n const { isAvailable, checking } = useSlugAvailability(slug, contentType);\n\n return (\n <div>\n {checking ? (\n <span>Checking...</span>\n ) : isAvailable === true ? (\n <span className=\"available\">✓ Available</span>\n ) : isAvailable === false ? (\n <span className=\"taken\">✗ Already taken</span>\n ) : null}\n </div>\n );\n}\n\n\n## Performance Features\n\n### Caching\n\ntypescript\nimport { slugCacheUtils } from '@/lib/utils/slugUtils';\n\n// Cache management\nslugCacheUtils.clearAll();\nslugCacheUtils.clearForContentType('news');\nslugCacheUtils.preloadSlugs('news', 100);\n\nconst stats = slugCacheUtils.getStats();\nconsole.log(`Cache size: ${stats.size}`);\n\n\n### Batch Operations\n\ntypescript\nimport { generateMultipleSlugs } from '@/lib/utils/slugUtils';\n\nconst items = [\n { text: 'First Article', id: '1' },\n { text: 'Second Article', id: '2' },\n { text: 'Third Article', id: '3' }\n];\n\nconst results = await generateMultipleSlugs(items, 'news');\n// Results include unique slugs for each item\n\n\n## SEO Optimization\n\nThe utilities include comprehensive SEO optimization:\n\n### Automatic Improvements\n- Remove stop words (\"the\", \"and\", \"of\", etc.)\n- Optimize length for search engines\n- Handle international characters\n- Prevent reserved word conflicts\n- Score slugs for SEO quality (0-100)\n\n### Best Practices\ntypescript\n// Good slugs\n\"ultimate-guide-react-hooks\" // Score: 95\n\"javascript-tips-beginners\" // Score: 90\n\"web-development-tools\" // Score: 85\n\n// Poor slugs\n\"the-ultimate-guide-to-the-best\" // Score: 45 (too many stop words)\n\"a\" // Score: 20 (too short)\n\"very-very-long-slug-with-many\" // Score: 30 (too long)\n\n\n## Migration Guide\n\n### From Legacy Utilities\n\ntypescript\n// Old way (deprecated)\nimport { generateSlug } from '@/utils/slugUtils';\nconst slug = generateSlug('My Title');\n\n// New way\nimport { generateSlug } from '@/lib/utils/slugUtils';\nconst slug = generateSlug('My Title', { strict: true });\n\n// With database uniqueness\nimport { generateUniqueSlug } from '@/lib/utils/slugUtils';\nconst uniqueSlug = await generateUniqueSlug('My Title', 'news');\n\n\n### Feature Comparison\n\n| Feature | Legacy | New |\n|---------|--------|-----|\n| Basic generation | ✅ | ✅ |\n| Unicode support | ❌ | ✅ |\n| Database uniqueness | ❌ | ✅ |\n| SEO validation | ❌ | ✅ |\n| Caching | ❌ | ✅ |\n| React hooks | ❌ | ✅ |\n| Batch operations | ❌ | ✅ |\n| Auto-fixing | ❌ | ✅ |\n\n## Configuration\n\n### Environment-Specific Settings\n\ntypescript\n// Development: More permissive\nconst devOptions = {\n strict: false,\n maxLength: 200,\n allowUppercase: true\n};\n\n// Production: Strict SEO\nconst prodOptions = {\n strict: true,\n maxLength: 80,\n allowUppercase: false\n};\n\n\n### Content Type Customization\n\ntypescript\n// Customize per content type\nconst newsOptions = {\n maxLength: 80,\n removeStopWords: true,\n includeDate: false\n};\n\nconst eventOptions = {\n maxLength: 70,\n removeStopWords: false,\n includeDate: true\n};\n\n\n## Error Handling\n\ntypescript\ntry {\n const slug = await generateUniqueSlug('My Title', 'news');\n} catch (error) {\n if (error.message.includes('Could not generate unique slug')) {\n // Handle uniqueness failure\n console.error('Too many similar slugs exist');\n } else {\n // Handle other errors\n console.error('Slug generation failed:', error);\n }\n}\n\n\n## Testing\n\ntypescript\nimport { generateSlug, validateSlugSEO } from '@/lib/utils';\n\ndescribe('Slug utilities', () => {\n test('generates SEO-friendly slugs', () => {\n const slug = generateSlug('My Test Article!');\n expect(slug).toBe('my-test-article');\n \n const validation = validateSlugSEO(slug);\n expect(validation.isValid).toBe(true);\n expect(validation.score).toBeGreaterThan(80);\n });\n});\n\n\n## Best Practices\n\n1. Always use content types for database uniqueness\n2. Enable auto-generation in forms for better UX\n3. Validate slugs before saving to database\n4. Cache frequently accessed slugs for performance\n5. Use batch operations for bulk updates\n6. Handle internationalization with unicode support\n7. Monitor SEO scores to maintain quality\n8. Test edge cases like very long titles\n\n## Troubleshooting\n\n### Common Issues\n\n**Slug generation fails**\ntypescript\n// Check if text is valid\nif (!text || typeof text !== 'string') {\n throw new Error('Invalid text provided');\n}\n\n\n**Database lookup fails**\ntypescript\n// Verify content type configuration\nif (!CONTENT_TYPE_CONFIG[contentType]) {\n throw new Error(`Unsupported content type: ${contentType}`);\n}\n\n\n**Cache not working**\ntypescript\n// Clear and reinitialize cache\nslugCacheUtils.clearAll();\nawait slugCacheUtils.preloadSlugs('news', 100);\n\n\n### Performance Tips\n\n1. Preload common slugs during app initialization\n2. Use debouncing in form inputs (500ms recommended)\n3. Batch operations when processing multiple items\n4. Monitor cache hit rates and adjust TTL as needed\n5. Use appropriate content type limits for slug length\n\nThis comprehensive slug system provides everything needed for professional URL management with excellent performance, SEO optimization, and developer experience.\n" - Nelson Tech Community Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/timeago.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comprehensive-slug-utilities-guidennthis-guide-covers-the-complete-slug-generation-and-management-system-implemented-in-the-nelson-tech-projectnn-overviewnnthe-slug-utilities-providen-universal-slug-generation-for-all-content-typesn-database-backed-uniqueness-checkingn-seo-optimization-and-validationn-international-text-supportn-caching-for-performancen-react-hooks-for-easy-integrationn-migration-path-from-legacy-utilitiesnn-quick-startnntypescriptnimport-generateuniqueslug-usesluggeneration-from-libutilsnn-basic-usagenconst-slug-await-generateuniqueslugmy-article-title-newsnn-in-react-componentsnfunction-articleform-n-const-slug-setslug-validation-suggestions-usesluggenerationn-title-source-textn-news-content-typen-autogenerate-true-n-n-n-return-n-input-n-valueslug-n-onchangee-setslugetargetvaluen-classnamevalidationisvalid-valid-invalidn-n-nnnn-core-featuresnn-1-universal-slug-generationnntypescriptnimport-generateslug-generateuniqueslug-from-libutilsslugutilsnn-basic-slug-generationnconst-slug-generateslughello-worldn-result-hello-worldnn-with-optionsnconst-slug-generateslugcafe-restaurant-n-preserveunicode-falsen-strict-truen-maxlength-30nn-result-cafe-restaurantnn-database-unique-slugnconst-uniqueslug-await-generateuniqueslugn-my-article-titlen-news-content-typen-existing-id-exclude-this-idn-maxlength-60-nnnn-2-content-type-supportnnsupported-content-typesn-members-user-profilesn-companies-company-profilesn-events-events-and-workshopsn-news-news-articlesn-opportunities-jobvolunteer-opportunitiesn-groups-community-groupsn-resources-learning-resourcesn-marketplace-marketplace-listingsn-pages-static-pagesn-topics-discussion-topicsnn-3-advanced-validationnntypescriptnimport-validateslugseo-autofixslug-from-libutilsslugvalidationnn-comprehensive-validationnconst-validation-validateslugseomy-article-slugnif-validationisvalid-n-consolelogerrors-validationerrorsn-consolelogsuggestions-validationsuggestionsn-consolelogseo-score-validationscore-0-100nnn-auto-fix-common-issuesnconst-fixedslug-changesapplied-autofixslugmy-bad__slugn-result-fixedslug-my-bad-slug-changesapplied-nnn-4-database-lookupsnntypescriptnimport-lookupbyidorslug-checkslugexists-from-libutilsslugutilsnn-flexible-lookup-works-with-both-ids-and-slugsnconst-data-foundby-error-await-lookupbyidorslugn-my-article-slug-or-uuidn-newsn-idtitleslugcreated_at-optional-fieldsnnn-check-availabilitynconst-exists-await-checkslugexistsnew-slug-news-exclude-idnnn-react-hooksnn-usesluggenerationnntypescriptnimport-usesluggeneration-from-libutilsslughooksnnfunction-contentform-title-id-n-const-n-slugn-setslugn-isgeneratingn-validationn-suggestionsn-manuallyeditedn-resettoautogenerationn-applysuggestionn-autofixn-usesluggenerationtitle-news-n-autogenerate-truen-excludeid-idn-debouncems-500n-nn-return-n-divn-input-n-valueslug-n-onchangee-setslugetargetvaluen-n-n-validation-n-div-classnamevalidationisvalid-valid-invalidn-score-validationscore100n-validationerrorsmaperror-n-div-keyerror-classnameerrorerrordivn-n-divn-n-n-suggestionslength-0-n-divn-h4suggestionsh4n-suggestionsmapsuggestion-n-button-n-keysuggestionn-onclick-applysuggestionsuggestionn-n-suggestionn-buttonn-n-divn-n-n-button-onclickautofixauto-fix-issuesbuttonn-button-onclickresettoautogenerationreset-to-autobuttonn-divn-nnnn-usesluglookupnntypescriptnimport-usesluglookup-from-libutilsslughooksnnfunction-contentviewer-identifier-n-const-data-loading-error-foundby-refetch-usesluglookupn-identifiern-newsn-idtitlecontentslugn-nn-if-loading-return-divloadingdivn-if-error-return-diverror-errordivn-if-data-return-divnot-founddivnn-return-n-divn-h1datatitleh1n-pfound-by-foundbypn-divdatacontentdivn-divn-nnnn-useslugavailabilitynntypescriptnimport-useslugavailability-from-libutilsslughooksnnfunction-slugchecker-slug-contenttype-n-const-isavailable-checking-useslugavailabilityslug-contenttypenn-return-n-divn-checking-n-spancheckingspann-isavailable-true-n-span-classnameavailable-availablespann-isavailable-false-n-span-classnametaken-already-takenspann-nulln-divn-nnnn-performance-featuresnn-cachingnntypescriptnimport-slugcacheutils-from-libutilsslugutilsnn-cache-managementnslugcacheutilsclearallnslugcacheutilsclearforcontenttypenewsnslugcacheutilspreloadslugsnews-100nnconst-stats-slugcacheutilsgetstatsnconsolelogcache-size-statssizennn-batch-operationsnntypescriptnimport-generatemultipleslugs-from-libutilsslugutilsnnconst-items-n-text-first-article-id-1-n-text-second-article-id-2-n-text-third-article-id-3-nnnconst-results-await-generatemultipleslugsitems-newsn-results-include-unique-slugs-for-each-itemnnn-seo-optimizationnnthe-utilities-include-comprehensive-seo-optimizationnn-automatic-improvementsn-remove-stop-words-the-and-of-etcn-optimize-length-for-search-enginesn-handle-international-charactersn-prevent-reserved-word-conflictsn-score-slugs-for-seo-quality-0-100nn-best-practicesntypescriptn-good-slugsnultimate-guide-react-hooks-score-95njavascript-tips-beginners-score-90nweb-development-tools-score-85nn-poor-slugsnthe-ultimate-guide-to-the-best-score-45-too-many-stop-wordsna-score-20-too-shortnvery-very-long-slug-with-many-score-30-too-longnnn-migration-guidenn-from-legacy-utilitiesnntypescriptn-old-way-deprecatednimport-generateslug-from-utilsslugutilsnconst-slug-generateslugmy-titlenn-new-waynimport-generateslug-from-libutilsslugutilsnconst-slug-generateslugmy-title-strict-true-nn-with-database-uniquenessnimport-generateuniqueslug-from-libutilsslugutilsnconst-uniqueslug-await-generateuniqueslugmy-title-newsnnn-feature-comparisonnn-feature-legacy-new-n-n-basic-generation-n-unicode-support-n-database-uniqueness-n-seo-validation-n-caching-n-react-hooks-n-batch-operations-n-auto-fixing-nn-configurationnn-environment-specific-settingsnntypescriptn-development-more-permissivenconst-devoptions-n-strict-falsen-maxlength-200n-allowuppercase-truennn-production-strict-seonconst-prodoptions-n-strict-truen-maxlength-80n-allowuppercase-falsennnn-content-type-customizationnntypescriptn-customize-per-content-typenconst-newsoptions-n-maxlength-80n-removestopwords-truen-includedate-falsennnconst-eventoptions-n-maxlength-70n-removestopwords-falsen-includedate-truennnn-error-handlingnntypescriptntry-n-const-slug-await-generateuniqueslugmy-title-newsn-catch-error-n-if-errormessageincludescould-not-generate-unique-slug-n-handle-uniqueness-failuren-consoleerrortoo-many-similar-slugs-existn-else-n-handle-other-errorsn-consoleerrorslug-generation-failed-errorn-nnnn-testingnntypescriptnimport-generateslug-validateslugseo-from-libutilsnndescribeslug-utilities-n-testgenerates-seo-friendly-slugs-n-const-slug-generateslugmy-test-articlen-expectslugtobemy-test-articlen-n-const-validation-validateslugseoslugn-expectvalidationisvalidtobetruen-expectvalidationscoretobegreaterthan80n-nnnn-best-practicesnn1-always-use-content-types-for-database-uniquenessn2-enable-auto-generation-in-forms-for-better-uxn3-validate-slugs-before-saving-to-databasen4-cache-frequently-accessed-slugs-for-performancen5-use-batch-operations-for-bulk-updatesn6-handle-internationalization-with-unicode-supportn7-monitor-seo-scores-to-maintain-qualityn8-test-edge-cases-like-very-long-titlesnn-troubleshootingnn-common-issuesnnslug-generation-failsntypescriptn-check-if-text-is-validnif-text-typeof-text-string-n-throw-new-errorinvalid-text-providednnnndatabase-lookup-failsntypescriptn-verify-content-type-configurationnif-content_type_configcontenttype-n-throw-new-errorunsupported-content-type-contenttypennnncache-not-workingntypescriptn-clear-and-reinitialize-cachenslugcacheutilsclearallnawait-slugcacheutilspreloadslugsnews-100nnn-performance-tipsnn1-preload-common-slugs-during-app-initializationn2-use-debouncing-in-form-inputs-500ms-recommendedn3-batch-operations-when-processing-multiple-itemsn4-monitor-cache-hit-rates-and-adjust-ttl-as-neededn5-use-appropriate-content-type-limits-for-slug-lengthnnthis-comprehensive-slug-system-provides-everything-needed-for-professional-url-management-with-excellent-performance-seo-optimization-and-developer-experiencen" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Nelson Tech Community Platform" class="md-header__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nelson Tech Community Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comprehensive Slug Utilities Guide\n\nThis guide covers the complete slug generation and management system implemented in the Nelson Tech project.\n\n## Overview\n\nThe slug utilities provide:\n- Universal slug generation for all content types\n- Database-backed uniqueness checking\n- SEO optimization and validation\n- International text support\n- Caching for performance\n- React hooks for easy integration\n- Migration path from legacy utilities\n\n## Quick Start\n\ntypescript\nimport { generateUniqueSlug, useSlugGeneration } from '@/lib/utils';\n\n// Basic usage\nconst slug = await generateUniqueSlug('My Article Title', 'news');\n\n// In React components\nfunction ArticleForm() {\n const { slug, setSlug, validation, suggestions } = useSlugGeneration(\n title, // source text\n 'news', // content type\n { autoGenerate: true }\n );\n \n return (\n &lt;input \n value={slug} \n onChange={(e) =&gt; setSlug(e.target.value)}\n className={validation?.isValid ? 'valid' : 'invalid'}\n /&gt;\n );\n}\n\n\n## Core Features\n\n### 1. Universal Slug Generation\n\ntypescript\nimport { generateSlug, generateUniqueSlug } from '@/lib/utils/slugUtils';\n\n// Basic slug generation\nconst slug = generateSlug('Hello World!');\n// Result: \"hello-world\"\n\n// With options\nconst slug = generateSlug('Café &amp; Restaurant', {\n preserveUnicode: false,\n strict: true,\n maxLength: 30\n});\n// Result: \"cafe-restaurant\"\n\n// Database-unique slug\nconst uniqueSlug = await generateUniqueSlug(\n 'My Article Title',\n 'news', // content type\n 'existing-id', // exclude this ID\n { maxLength: 60 }\n);\n\n\n### 2. Content Type Support\n\nSupported content types:\n- members - User profiles\n- companies - Company profiles\n- events - Events and workshops\n- news - News articles\n- opportunities - Job/volunteer opportunities\n- groups - Community groups\n- resources - Learning resources\n- marketplace - Marketplace listings\n- pages - Static pages\n- topics - Discussion topics\n\n### 3. Advanced Validation\n\ntypescript\nimport { validateSlugSEO, autoFixSlug } from '@/lib/utils/slugValidation';\n\n// Comprehensive validation\nconst validation = validateSlugSEO('my-article-slug');\nif (!validation.isValid) {\n console.log('Errors:', validation.errors);\n console.log('Suggestions:', validation.suggestions);\n console.log('SEO Score:', validation.score); // 0-100\n}\n\n// Auto-fix common issues\nconst { fixedSlug, changesApplied } = autoFixSlug('My--Bad__Slug!');\n// Result: { fixedSlug: \"my-bad-slug\", changesApplied: [...] }\n\n\n### 4. Database Lookups\n\ntypescript\nimport { lookupByIdOrSlug, checkSlugExists } from '@/lib/utils/slugUtils';\n\n// Flexible lookup (works with both IDs and slugs)\nconst { data, foundBy, error } = await lookupByIdOrSlug(\n 'my-article-slug', // or UUID\n 'news',\n 'id,title,slug,created_at' // optional fields\n);\n\n// Check availability\nconst exists = await checkSlugExists('new-slug', 'news', 'exclude-id');\n\n\n## React Hooks\n\n### useSlugGeneration\n\ntypescript\nimport { useSlugGeneration } from '@/lib/utils/slugHooks';\n\nfunction ContentForm({ title, id }) {\n const {\n slug,\n setSlug,\n isGenerating,\n validation,\n suggestions,\n manuallyEdited,\n resetToAutoGeneration,\n applySuggestion,\n autoFix\n } = useSlugGeneration(title, 'news', {\n autoGenerate: true,\n excludeId: id,\n debounceMs: 500\n });\n\n return (\n &lt;div&gt;\n &lt;input \n value={slug} \n onChange={(e) =&gt; setSlug(e.target.value)}\n /&gt;\n \n {validation &amp;&amp; (\n &lt;div className={validation.isValid ? 'valid' : 'invalid'}&gt;\n Score: {validation.score}/100\n {validation.errors.map(error =&gt; (\n &lt;div key={error} className=\"error\"&gt;{error}&lt;/div&gt;\n ))}\n &lt;/div&gt;\n )}\n \n {suggestions.length &gt; 0 &amp;&amp; (\n &lt;div&gt;\n &lt;h4&gt;Suggestions:&lt;/h4&gt;\n {suggestions.map(suggestion =&gt; (\n &lt;button \n key={suggestion}\n onClick={() =&gt; applySuggestion(suggestion)}\n &gt;\n {suggestion}\n &lt;/button&gt;\n ))}\n &lt;/div&gt;\n )}\n \n &lt;button onClick={autoFix}&gt;Auto-fix Issues&lt;/button&gt;\n &lt;button onClick={resetToAutoGeneration}&gt;Reset to Auto&lt;/button&gt;\n &lt;/div&gt;\n );\n}\n\n\n### useSlugLookup\n\ntypescript\nimport { useSlugLookup } from '@/lib/utils/slugHooks';\n\nfunction ContentViewer({ identifier }) {\n const { data, loading, error, foundBy, refetch } = useSlugLookup(\n identifier,\n 'news',\n 'id,title,content,slug'\n );\n\n if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;\n if (error) return &lt;div&gt;Error: {error}&lt;/div&gt;;\n if (!data) return &lt;div&gt;Not found&lt;/div&gt;;\n\n return (\n &lt;div&gt;\n &lt;h1&gt;{data.title}&lt;/h1&gt;\n &lt;p&gt;Found by: {foundBy}&lt;/p&gt;\n &lt;div&gt;{data.content}&lt;/div&gt;\n &lt;/div&gt;\n );\n}\n\n\n### useSlugAvailability\n\ntypescript\nimport { useSlugAvailability } from '@/lib/utils/slugHooks';\n\nfunction SlugChecker({ slug, contentType }) {\n const { isAvailable, checking } = useSlugAvailability(slug, contentType);\n\n return (\n &lt;div&gt;\n {checking ? (\n &lt;span&gt;Checking...&lt;/span&gt;\n ) : isAvailable === true ? (\n &lt;span className=\"available\"&gt;✓ Available&lt;/span&gt;\n ) : isAvailable === false ? (\n &lt;span className=\"taken\"&gt;✗ Already taken&lt;/span&gt;\n ) : null}\n &lt;/div&gt;\n );\n}\n\n\n## Performance Features\n\n### Caching\n\ntypescript\nimport { slugCacheUtils } from '@/lib/utils/slugUtils';\n\n// Cache management\nslugCacheUtils.clearAll();\nslugCacheUtils.clearForContentType('news');\nslugCacheUtils.preloadSlugs('news', 100);\n\nconst stats = slugCacheUtils.getStats();\nconsole.log(`Cache size: ${stats.size}`);\n\n\n### Batch Operations\n\ntypescript\nimport { generateMultipleSlugs } from '@/lib/utils/slugUtils';\n\nconst items = [\n { text: 'First Article', id: '1' },\n { text: 'Second Article', id: '2' },\n { text: 'Third Article', id: '3' }\n];\n\nconst results = await generateMultipleSlugs(items, 'news');\n// Results include unique slugs for each item\n\n\n## SEO Optimization\n\nThe utilities include comprehensive SEO optimization:\n\n### Automatic Improvements\n- Remove stop words (\"the\", \"and\", \"of\", etc.)\n- Optimize length for search engines\n- Handle international characters\n- Prevent reserved word conflicts\n- Score slugs for SEO quality (0-100)\n\n### Best Practices\ntypescript\n// Good slugs\n\"ultimate-guide-react-hooks\" // Score: 95\n\"javascript-tips-beginners\" // Score: 90\n\"web-development-tools\" // Score: 85\n\n// Poor slugs\n\"the-ultimate-guide-to-the-best\" // Score: 45 (too many stop words)\n\"a\" // Score: 20 (too short)\n\"very-very-long-slug-with-many\" // Score: 30 (too long)\n\n\n## Migration Guide\n\n### From Legacy Utilities\n\ntypescript\n// Old way (deprecated)\nimport { generateSlug } from '@/utils/slugUtils';\nconst slug = generateSlug('My Title');\n\n// New way\nimport { generateSlug } from '@/lib/utils/slugUtils';\nconst slug = generateSlug('My Title', { strict: true });\n\n// With database uniqueness\nimport { generateUniqueSlug } from '@/lib/utils/slugUtils';\nconst uniqueSlug = await generateUniqueSlug('My Title', 'news');\n\n\n### Feature Comparison\n\n| Feature | Legacy | New |\n|---------|--------|-----|\n| Basic generation | ✅ | ✅ |\n| Unicode support | ❌ | ✅ |\n| Database uniqueness | ❌ | ✅ |\n| SEO validation | ❌ | ✅ |\n| Caching | ❌ | ✅ |\n| React hooks | ❌ | ✅ |\n| Batch operations | ❌ | ✅ |\n| Auto-fixing | ❌ | ✅ |\n\n## Configuration\n\n### Environment-Specific Settings\n\ntypescript\n// Development: More permissive\nconst devOptions = {\n strict: false,\n maxLength: 200,\n allowUppercase: true\n};\n\n// Production: Strict SEO\nconst prodOptions = {\n strict: true,\n maxLength: 80,\n allowUppercase: false\n};\n\n\n### Content Type Customization\n\ntypescript\n// Customize per content type\nconst newsOptions = {\n maxLength: 80,\n removeStopWords: true,\n includeDate: false\n};\n\nconst eventOptions = {\n maxLength: 70,\n removeStopWords: false,\n includeDate: true\n};\n\n\n## Error Handling\n\ntypescript\ntry {\n const slug = await generateUniqueSlug('My Title', 'news');\n} catch (error) {\n if (error.message.includes('Could not generate unique slug')) {\n // Handle uniqueness failure\n console.error('Too many similar slugs exist');\n } else {\n // Handle other errors\n console.error('Slug generation failed:', error);\n }\n}\n\n\n## Testing\n\ntypescript\nimport { generateSlug, validateSlugSEO } from '@/lib/utils';\n\ndescribe('Slug utilities', () =&gt; {\n test('generates SEO-friendly slugs', () =&gt; {\n const slug = generateSlug('My Test Article!');\n expect(slug).toBe('my-test-article');\n \n const validation = validateSlugSEO(slug);\n expect(validation.isValid).toBe(true);\n expect(validation.score).toBeGreaterThan(80);\n });\n});\n\n\n## Best Practices\n\n1. Always use content types for database uniqueness\n2. Enable auto-generation in forms for better UX\n3. Validate slugs before saving to database\n4. Cache frequently accessed slugs for performance\n5. Use batch operations for bulk updates\n6. Handle internationalization with unicode support\n7. Monitor SEO scores to maintain quality\n8. Test edge cases like very long titles\n\n## Troubleshooting\n\n### Common Issues\n\n**Slug generation fails**\ntypescript\n// Check if text is valid\nif (!text || typeof text !== 'string') {\n throw new Error('Invalid text provided');\n}\n\n\n**Database lookup fails**\ntypescript\n// Verify content type configuration\nif (!CONTENT_TYPE_CONFIG[contentType]) {\n throw new Error(`Unsupported content type: ${contentType}`);\n}\n\n\n**Cache not working**\ntypescript\n// Clear and reinitialize cache\nslugCacheUtils.clearAll();\nawait slugCacheUtils.preloadSlugs('news', 100);\n\n\n### Performance Tips\n\n1. Preload common slugs during app initialization\n2. Use debouncing in form inputs (500ms recommended)\n3. Batch operations when processing multiple items\n4. Monitor cache hit rates and adjust TTL as needed\n5. Use appropriate content type limits for slug length\n\nThis comprehensive slug system provides everything needed for professional URL management with excellent performance, SEO optimization, and developer experience.\n"
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../guides/README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../features/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../components/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Components
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../patterns/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Patterns & Templates
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DEPLOYMENT_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../THEME_SYSTEM_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Design & Theming
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../business/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Business & Strategy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../implementation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../migrations/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Migrations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../qa-reports/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Testing & QA
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DOCUMENTATION_MAP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../research/github_template_research_report/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Research
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../CHANGELOG.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Nelson Tech Community Platform" class="md-nav__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nelson Tech Community Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../guides/README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Development Guides
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../features/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../components/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Components
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../patterns/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Patterns & Templates
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../DEPLOYMENT_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../THEME_SYSTEM_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Design & Theming
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../business/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Business & Strategy
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../implementation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../migrations/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Migrations
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../qa-reports/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Testing & QA
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../DOCUMENTATION_MAP/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../research/github_template_research_report/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iaminawe/nelson-tech/edit/main/docs/slug-utilities-guide.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech/raw/main/docs/slug-utilities-guide.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
+  
+
+
+<h1 id="comprehensive-slug-utilities-guidennthis-guide-covers-the-complete-slug-generation-and-management-system-implemented-in-the-nelson-tech-projectnn-overviewnnthe-slug-utilities-providen-universal-slug-generation-for-all-content-typesn-database-backed-uniqueness-checkingn-seo-optimization-and-validationn-international-text-supportn-caching-for-performancen-react-hooks-for-easy-integrationn-migration-path-from-legacy-utilitiesnn-quick-startnntypescriptnimport-generateuniqueslug-usesluggeneration-from-libutilsnn-basic-usagenconst-slug-await-generateuniqueslugmy-article-title-newsnn-in-react-componentsnfunction-articleform-n-const-slug-setslug-validation-suggestions-usesluggenerationn-title-source-textn-news-content-typen-autogenerate-true-n-n-n-return-n-input-n-valueslug-n-onchangee-setslugetargetvaluen-classnamevalidationisvalid-valid-invalidn-n-nnnn-core-featuresnn-1-universal-slug-generationnntypescriptnimport-generateslug-generateuniqueslug-from-libutilsslugutilsnn-basic-slug-generationnconst-slug-generateslughello-worldn-result-hello-worldnn-with-optionsnconst-slug-generateslugcafe-restaurant-n-preserveunicode-falsen-strict-truen-maxlength-30nn-result-cafe-restaurantnn-database-unique-slugnconst-uniqueslug-await-generateuniqueslugn-my-article-titlen-news-content-typen-existing-id-exclude-this-idn-maxlength-60-nnnn-2-content-type-supportnnsupported-content-typesn-members-user-profilesn-companies-company-profilesn-events-events-and-workshopsn-news-news-articlesn-opportunities-jobvolunteer-opportunitiesn-groups-community-groupsn-resources-learning-resourcesn-marketplace-marketplace-listingsn-pages-static-pagesn-topics-discussion-topicsnn-3-advanced-validationnntypescriptnimport-validateslugseo-autofixslug-from-libutilsslugvalidationnn-comprehensive-validationnconst-validation-validateslugseomy-article-slugnif-validationisvalid-n-consolelogerrors-validationerrorsn-consolelogsuggestions-validationsuggestionsn-consolelogseo-score-validationscore-0-100nnn-auto-fix-common-issuesnconst-fixedslug-changesapplied-autofixslugmy-bad__slugn-result-fixedslug-my-bad-slug-changesapplied-nnn-4-database-lookupsnntypescriptnimport-lookupbyidorslug-checkslugexists-from-libutilsslugutilsnn-flexible-lookup-works-with-both-ids-and-slugsnconst-data-foundby-error-await-lookupbyidorslugn-my-article-slug-or-uuidn-newsn-idtitleslugcreated_at-optional-fieldsnnn-check-availabilitynconst-exists-await-checkslugexistsnew-slug-news-exclude-idnnn-react-hooksnn-usesluggenerationnntypescriptnimport-usesluggeneration-from-libutilsslughooksnnfunction-contentform-title-id-n-const-n-slugn-setslugn-isgeneratingn-validationn-suggestionsn-manuallyeditedn-resettoautogenerationn-applysuggestionn-autofixn-usesluggenerationtitle-news-n-autogenerate-truen-excludeid-idn-debouncems-500n-nn-return-n-divn-input-n-valueslug-n-onchangee-setslugetargetvaluen-n-n-validation-n-div-classnamevalidationisvalid-valid-invalidn-score-validationscore100n-validationerrorsmaperror-n-div-keyerror-classnameerrorerrordivn-n-divn-n-n-suggestionslength-0-n-divn-h4suggestionsh4n-suggestionsmapsuggestion-n-button-n-keysuggestionn-onclick-applysuggestionsuggestionn-n-suggestionn-buttonn-n-divn-n-n-button-onclickautofixauto-fix-issuesbuttonn-button-onclickresettoautogenerationreset-to-autobuttonn-divn-nnnn-usesluglookupnntypescriptnimport-usesluglookup-from-libutilsslughooksnnfunction-contentviewer-identifier-n-const-data-loading-error-foundby-refetch-usesluglookupn-identifiern-newsn-idtitlecontentslugn-nn-if-loading-return-divloadingdivn-if-error-return-diverror-errordivn-if-data-return-divnot-founddivnn-return-n-divn-h1datatitleh1n-pfound-by-foundbypn-divdatacontentdivn-divn-nnnn-useslugavailabilitynntypescriptnimport-useslugavailability-from-libutilsslughooksnnfunction-slugchecker-slug-contenttype-n-const-isavailable-checking-useslugavailabilityslug-contenttypenn-return-n-divn-checking-n-spancheckingspann-isavailable-true-n-span-classnameavailable-availablespann-isavailable-false-n-span-classnametaken-already-takenspann-nulln-divn-nnnn-performance-featuresnn-cachingnntypescriptnimport-slugcacheutils-from-libutilsslugutilsnn-cache-managementnslugcacheutilsclearallnslugcacheutilsclearforcontenttypenewsnslugcacheutilspreloadslugsnews-100nnconst-stats-slugcacheutilsgetstatsnconsolelogcache-size-statssizennn-batch-operationsnntypescriptnimport-generatemultipleslugs-from-libutilsslugutilsnnconst-items-n-text-first-article-id-1-n-text-second-article-id-2-n-text-third-article-id-3-nnnconst-results-await-generatemultipleslugsitems-newsn-results-include-unique-slugs-for-each-itemnnn-seo-optimizationnnthe-utilities-include-comprehensive-seo-optimizationnn-automatic-improvementsn-remove-stop-words-the-and-of-etcn-optimize-length-for-search-enginesn-handle-international-charactersn-prevent-reserved-word-conflictsn-score-slugs-for-seo-quality-0-100nn-best-practicesntypescriptn-good-slugsnultimate-guide-react-hooks-score-95njavascript-tips-beginners-score-90nweb-development-tools-score-85nn-poor-slugsnthe-ultimate-guide-to-the-best-score-45-too-many-stop-wordsna-score-20-too-shortnvery-very-long-slug-with-many-score-30-too-longnnn-migration-guidenn-from-legacy-utilitiesnntypescriptn-old-way-deprecatednimport-generateslug-from-utilsslugutilsnconst-slug-generateslugmy-titlenn-new-waynimport-generateslug-from-libutilsslugutilsnconst-slug-generateslugmy-title-strict-true-nn-with-database-uniquenessnimport-generateuniqueslug-from-libutilsslugutilsnconst-uniqueslug-await-generateuniqueslugmy-title-newsnnn-feature-comparisonnn-feature-legacy-new-n-n-basic-generation-n-unicode-support-n-database-uniqueness-n-seo-validation-n-caching-n-react-hooks-n-batch-operations-n-auto-fixing-nn-configurationnn-environment-specific-settingsnntypescriptn-development-more-permissivenconst-devoptions-n-strict-falsen-maxlength-200n-allowuppercase-truennn-production-strict-seonconst-prodoptions-n-strict-truen-maxlength-80n-allowuppercase-falsennnn-content-type-customizationnntypescriptn-customize-per-content-typenconst-newsoptions-n-maxlength-80n-removestopwords-truen-includedate-falsennnconst-eventoptions-n-maxlength-70n-removestopwords-falsen-includedate-truennnn-error-handlingnntypescriptntry-n-const-slug-await-generateuniqueslugmy-title-newsn-catch-error-n-if-errormessageincludescould-not-generate-unique-slug-n-handle-uniqueness-failuren-consoleerrortoo-many-similar-slugs-existn-else-n-handle-other-errorsn-consoleerrorslug-generation-failed-errorn-nnnn-testingnntypescriptnimport-generateslug-validateslugseo-from-libutilsnndescribeslug-utilities-n-testgenerates-seo-friendly-slugs-n-const-slug-generateslugmy-test-articlen-expectslugtobemy-test-articlen-n-const-validation-validateslugseoslugn-expectvalidationisvalidtobetruen-expectvalidationscoretobegreaterthan80n-nnnn-best-practicesnn1-always-use-content-types-for-database-uniquenessn2-enable-auto-generation-in-forms-for-better-uxn3-validate-slugs-before-saving-to-databasen4-cache-frequently-accessed-slugs-for-performancen5-use-batch-operations-for-bulk-updatesn6-handle-internationalization-with-unicode-supportn7-monitor-seo-scores-to-maintain-qualityn8-test-edge-cases-like-very-long-titlesnn-troubleshootingnn-common-issuesnnslug-generation-failsntypescriptn-check-if-text-is-validnif-text-typeof-text-string-n-throw-new-errorinvalid-text-providednnnndatabase-lookup-failsntypescriptn-verify-content-type-configurationnif-content_type_configcontenttype-n-throw-new-errorunsupported-content-type-contenttypennnncache-not-workingntypescriptn-clear-and-reinitialize-cachenslugcacheutilsclearallnawait-slugcacheutilspreloadslugsnews-100nnn-performance-tipsnn1-preload-common-slugs-during-app-initializationn2-use-debouncing-in-form-inputs-500ms-recommendedn3-batch-operations-when-processing-multiple-itemsn4-monitor-cache-hit-rates-and-adjust-ttl-as-neededn5-use-appropriate-content-type-limits-for-slug-lengthnnthis-comprehensive-slug-system-provides-everything-needed-for-professional-url-management-with-excellent-performance-seo-optimization-and-developer-experiencen">Comprehensive Slug Utilities Guide\n\nThis guide covers the complete slug generation and management system implemented in the Nelson Tech project.\n\n## Overview\n\nThe slug utilities provide:\n- Universal slug generation for all content types\n- Database-backed uniqueness checking\n- SEO optimization and validation\n- International text support\n- Caching for performance\n- React hooks for easy integration\n- Migration path from legacy utilities\n\n## Quick Start\n\n<code>typescript\nimport { generateUniqueSlug, useSlugGeneration } from '@/lib/utils';\n\n// Basic usage\nconst slug = await generateUniqueSlug('My Article Title', 'news');\n\n// In React components\nfunction ArticleForm() {\n  const { slug, setSlug, validation, suggestions } = useSlugGeneration(\n    title, // source text\n    'news', // content type\n    { autoGenerate: true }\n  );\n  \n  return (\n    &lt;input \n      value={slug} \n      onChange={(e) =&gt; setSlug(e.target.value)}\n      className={validation?.isValid ? 'valid' : 'invalid'}\n    /&gt;\n  );\n}\n</code>\n\n## Core Features\n\n### 1. Universal Slug Generation\n\n<code>typescript\nimport { generateSlug, generateUniqueSlug } from '@/lib/utils/slugUtils';\n\n// Basic slug generation\nconst slug = generateSlug('Hello World!');\n// Result: \"hello-world\"\n\n// With options\nconst slug = generateSlug('Café &amp; Restaurant', {\n  preserveUnicode: false,\n  strict: true,\n  maxLength: 30\n});\n// Result: \"cafe-restaurant\"\n\n// Database-unique slug\nconst uniqueSlug = await generateUniqueSlug(\n  'My Article Title',\n  'news', // content type\n  'existing-id', // exclude this ID\n  { maxLength: 60 }\n);\n</code>\n\n### 2. Content Type Support\n\nSupported content types:\n- <code>members</code> - User profiles\n- <code>companies</code> - Company profiles\n- <code>events</code> - Events and workshops\n- <code>news</code> - News articles\n- <code>opportunities</code> - Job/volunteer opportunities\n- <code>groups</code> - Community groups\n- <code>resources</code> - Learning resources\n- <code>marketplace</code> - Marketplace listings\n- <code>pages</code> - Static pages\n- <code>topics</code> - Discussion topics\n\n### 3. Advanced Validation\n\n<code>typescript\nimport { validateSlugSEO, autoFixSlug } from '@/lib/utils/slugValidation';\n\n// Comprehensive validation\nconst validation = validateSlugSEO('my-article-slug');\nif (!validation.isValid) {\n  console.log('Errors:', validation.errors);\n  console.log('Suggestions:', validation.suggestions);\n  console.log('SEO Score:', validation.score); // 0-100\n}\n\n// Auto-fix common issues\nconst { fixedSlug, changesApplied } = autoFixSlug('My--Bad__Slug!');\n// Result: { fixedSlug: \"my-bad-slug\", changesApplied: [...] }\n</code>\n\n### 4. Database Lookups\n\n<code>typescript\nimport { lookupByIdOrSlug, checkSlugExists } from '@/lib/utils/slugUtils';\n\n// Flexible lookup (works with both IDs and slugs)\nconst { data, foundBy, error } = await lookupByIdOrSlug(\n  'my-article-slug', // or UUID\n  'news',\n  'id,title,slug,created_at' // optional fields\n);\n\n// Check availability\nconst exists = await checkSlugExists('new-slug', 'news', 'exclude-id');\n</code>\n\n## React Hooks\n\n### useSlugGeneration\n\n<code>typescript\nimport { useSlugGeneration } from '@/lib/utils/slugHooks';\n\nfunction ContentForm({ title, id }) {\n  const {\n    slug,\n    setSlug,\n    isGenerating,\n    validation,\n    suggestions,\n    manuallyEdited,\n    resetToAutoGeneration,\n    applySuggestion,\n    autoFix\n  } = useSlugGeneration(title, 'news', {\n    autoGenerate: true,\n    excludeId: id,\n    debounceMs: 500\n  });\n\n  return (\n    &lt;div&gt;\n      &lt;input \n        value={slug} \n        onChange={(e) =&gt; setSlug(e.target.value)}\n      /&gt;\n      \n      {validation &amp;&amp; (\n        &lt;div className={validation.isValid ? 'valid' : 'invalid'}&gt;\n          Score: {validation.score}/100\n          {validation.errors.map(error =&gt; (\n            &lt;div key={error} className=\"error\"&gt;{error}&lt;/div&gt;\n          ))}\n        &lt;/div&gt;\n      )}\n      \n      {suggestions.length &gt; 0 &amp;&amp; (\n        &lt;div&gt;\n          &lt;h4&gt;Suggestions:&lt;/h4&gt;\n          {suggestions.map(suggestion =&gt; (\n            &lt;button \n              key={suggestion}\n              onClick={() =&gt; applySuggestion(suggestion)}\n            &gt;\n              {suggestion}\n            &lt;/button&gt;\n          ))}\n        &lt;/div&gt;\n      )}\n      \n      &lt;button onClick={autoFix}&gt;Auto-fix Issues&lt;/button&gt;\n      &lt;button onClick={resetToAutoGeneration}&gt;Reset to Auto&lt;/button&gt;\n    &lt;/div&gt;\n  );\n}\n</code>\n\n### useSlugLookup\n\n<code>typescript\nimport { useSlugLookup } from '@/lib/utils/slugHooks';\n\nfunction ContentViewer({ identifier }) {\n  const { data, loading, error, foundBy, refetch } = useSlugLookup(\n    identifier,\n    'news',\n    'id,title,content,slug'\n  );\n\n  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;\n  if (error) return &lt;div&gt;Error: {error}&lt;/div&gt;;\n  if (!data) return &lt;div&gt;Not found&lt;/div&gt;;\n\n  return (\n    &lt;div&gt;\n      &lt;h1&gt;{data.title}&lt;/h1&gt;\n      &lt;p&gt;Found by: {foundBy}&lt;/p&gt;\n      &lt;div&gt;{data.content}&lt;/div&gt;\n    &lt;/div&gt;\n  );\n}\n</code>\n\n### useSlugAvailability\n\n<code>typescript\nimport { useSlugAvailability } from '@/lib/utils/slugHooks';\n\nfunction SlugChecker({ slug, contentType }) {\n  const { isAvailable, checking } = useSlugAvailability(slug, contentType);\n\n  return (\n    &lt;div&gt;\n      {checking ? (\n        &lt;span&gt;Checking...&lt;/span&gt;\n      ) : isAvailable === true ? (\n        &lt;span className=\"available\"&gt;✓ Available&lt;/span&gt;\n      ) : isAvailable === false ? (\n        &lt;span className=\"taken\"&gt;✗ Already taken&lt;/span&gt;\n      ) : null}\n    &lt;/div&gt;\n  );\n}\n</code>\n\n## Performance Features\n\n### Caching\n\n<code>typescript\nimport { slugCacheUtils } from '@/lib/utils/slugUtils';\n\n// Cache management\nslugCacheUtils.clearAll();\nslugCacheUtils.clearForContentType('news');\nslugCacheUtils.preloadSlugs('news', 100);\n\nconst stats = slugCacheUtils.getStats();\nconsole.log(`Cache size: ${stats.size}`);\n</code>\n\n### Batch Operations\n\n<code>typescript\nimport { generateMultipleSlugs } from '@/lib/utils/slugUtils';\n\nconst items = [\n  { text: 'First Article', id: '1' },\n  { text: 'Second Article', id: '2' },\n  { text: 'Third Article', id: '3' }\n];\n\nconst results = await generateMultipleSlugs(items, 'news');\n// Results include unique slugs for each item\n</code>\n\n## SEO Optimization\n\nThe utilities include comprehensive SEO optimization:\n\n### Automatic Improvements\n- Remove stop words (\"the\", \"and\", \"of\", etc.)\n- Optimize length for search engines\n- Handle international characters\n- Prevent reserved word conflicts\n- Score slugs for SEO quality (0-100)\n\n### Best Practices\n<code>typescript\n// Good slugs\n\"ultimate-guide-react-hooks\"      // Score: 95\n\"javascript-tips-beginners\"       // Score: 90\n\"web-development-tools\"           // Score: 85\n\n// Poor slugs\n\"the-ultimate-guide-to-the-best\"  // Score: 45 (too many stop words)\n\"a\"                               // Score: 20 (too short)\n\"very-very-long-slug-with-many\"   // Score: 30 (too long)\n</code>\n\n## Migration Guide\n\n### From Legacy Utilities\n\n<code>typescript\n// Old way (deprecated)\nimport { generateSlug } from '@/utils/slugUtils';\nconst slug = generateSlug('My Title');\n\n// New way\nimport { generateSlug } from '@/lib/utils/slugUtils';\nconst slug = generateSlug('My Title', { strict: true });\n\n// With database uniqueness\nimport { generateUniqueSlug } from '@/lib/utils/slugUtils';\nconst uniqueSlug = await generateUniqueSlug('My Title', 'news');\n</code>\n\n### Feature Comparison\n\n| Feature | Legacy | New |\n|---------|--------|-----|\n| Basic generation | ✅ | ✅ |\n| Unicode support | ❌ | ✅ |\n| Database uniqueness | ❌ | ✅ |\n| SEO validation | ❌ | ✅ |\n| Caching | ❌ | ✅ |\n| React hooks | ❌ | ✅ |\n| Batch operations | ❌ | ✅ |\n| Auto-fixing | ❌ | ✅ |\n\n## Configuration\n\n### Environment-Specific Settings\n\n<code>typescript\n// Development: More permissive\nconst devOptions = {\n  strict: false,\n  maxLength: 200,\n  allowUppercase: true\n};\n\n// Production: Strict SEO\nconst prodOptions = {\n  strict: true,\n  maxLength: 80,\n  allowUppercase: false\n};\n</code>\n\n### Content Type Customization\n\n<code>typescript\n// Customize per content type\nconst newsOptions = {\n  maxLength: 80,\n  removeStopWords: true,\n  includeDate: false\n};\n\nconst eventOptions = {\n  maxLength: 70,\n  removeStopWords: false,\n  includeDate: true\n};\n</code>\n\n## Error Handling\n\n<code>typescript\ntry {\n  const slug = await generateUniqueSlug('My Title', 'news');\n} catch (error) {\n  if (error.message.includes('Could not generate unique slug')) {\n    // Handle uniqueness failure\n    console.error('Too many similar slugs exist');\n  } else {\n    // Handle other errors\n    console.error('Slug generation failed:', error);\n  }\n}\n</code>\n\n## Testing\n\n<code>typescript\nimport { generateSlug, validateSlugSEO } from '@/lib/utils';\n\ndescribe('Slug utilities', () =&gt; {\n  test('generates SEO-friendly slugs', () =&gt; {\n    const slug = generateSlug('My Test Article!');\n    expect(slug).toBe('my-test-article');\n    \n    const validation = validateSlugSEO(slug);\n    expect(validation.isValid).toBe(true);\n    expect(validation.score).toBeGreaterThan(80);\n  });\n});\n</code>\n\n## Best Practices\n\n1. <strong>Always use content types</strong> for database uniqueness\n2. <strong>Enable auto-generation</strong> in forms for better UX\n3. <strong>Validate slugs</strong> before saving to database\n4. <strong>Cache frequently accessed</strong> slugs for performance\n5. <strong>Use batch operations</strong> for bulk updates\n6. <strong>Handle internationalization</strong> with unicode support\n7. <strong>Monitor SEO scores</strong> to maintain quality\n8. <strong>Test edge cases</strong> like very long titles\n\n## Troubleshooting\n\n### Common Issues\n\n**Slug generation fails**\n<code>typescript\n// Check if text is valid\nif (!text || typeof text !== 'string') {\n  throw new Error('Invalid text provided');\n}\n</code>\n\n**Database lookup fails**\n<code>typescript\n// Verify content type configuration\nif (!CONTENT_TYPE_CONFIG[contentType]) {\n  throw new Error(`Unsupported content type: ${contentType}`);\n}\n</code>\n\n**Cache not working**\n<code>typescript\n// Clear and reinitialize cache\nslugCacheUtils.clearAll();\nawait slugCacheUtils.preloadSlugs('news', 100);\n</code>\n\n### Performance Tips\n\n1. <strong>Preload common slugs</strong> during app initialization\n2. <strong>Use debouncing</strong> in form inputs (500ms recommended)\n3. <strong>Batch operations</strong> when processing multiple items\n4. <strong>Monitor cache hit rates</strong> and adjust TTL as needed\n5. <strong>Use appropriate content type limits</strong> for slug length\n\nThis comprehensive slug system provides everything needed for professional URL management with excellent performance, SEO optimization, and developer experience.\n"<a class="headerlink" href="#comprehensive-slug-utilities-guidennthis-guide-covers-the-complete-slug-generation-and-management-system-implemented-in-the-nelson-tech-projectnn-overviewnnthe-slug-utilities-providen-universal-slug-generation-for-all-content-typesn-database-backed-uniqueness-checkingn-seo-optimization-and-validationn-international-text-supportn-caching-for-performancen-react-hooks-for-easy-integrationn-migration-path-from-legacy-utilitiesnn-quick-startnntypescriptnimport-generateuniqueslug-usesluggeneration-from-libutilsnn-basic-usagenconst-slug-await-generateuniqueslugmy-article-title-newsnn-in-react-componentsnfunction-articleform-n-const-slug-setslug-validation-suggestions-usesluggenerationn-title-source-textn-news-content-typen-autogenerate-true-n-n-n-return-n-input-n-valueslug-n-onchangee-setslugetargetvaluen-classnamevalidationisvalid-valid-invalidn-n-nnnn-core-featuresnn-1-universal-slug-generationnntypescriptnimport-generateslug-generateuniqueslug-from-libutilsslugutilsnn-basic-slug-generationnconst-slug-generateslughello-worldn-result-hello-worldnn-with-optionsnconst-slug-generateslugcafe-restaurant-n-preserveunicode-falsen-strict-truen-maxlength-30nn-result-cafe-restaurantnn-database-unique-slugnconst-uniqueslug-await-generateuniqueslugn-my-article-titlen-news-content-typen-existing-id-exclude-this-idn-maxlength-60-nnnn-2-content-type-supportnnsupported-content-typesn-members-user-profilesn-companies-company-profilesn-events-events-and-workshopsn-news-news-articlesn-opportunities-jobvolunteer-opportunitiesn-groups-community-groupsn-resources-learning-resourcesn-marketplace-marketplace-listingsn-pages-static-pagesn-topics-discussion-topicsnn-3-advanced-validationnntypescriptnimport-validateslugseo-autofixslug-from-libutilsslugvalidationnn-comprehensive-validationnconst-validation-validateslugseomy-article-slugnif-validationisvalid-n-consolelogerrors-validationerrorsn-consolelogsuggestions-validationsuggestionsn-consolelogseo-score-validationscore-0-100nnn-auto-fix-common-issuesnconst-fixedslug-changesapplied-autofixslugmy-bad__slugn-result-fixedslug-my-bad-slug-changesapplied-nnn-4-database-lookupsnntypescriptnimport-lookupbyidorslug-checkslugexists-from-libutilsslugutilsnn-flexible-lookup-works-with-both-ids-and-slugsnconst-data-foundby-error-await-lookupbyidorslugn-my-article-slug-or-uuidn-newsn-idtitleslugcreated_at-optional-fieldsnnn-check-availabilitynconst-exists-await-checkslugexistsnew-slug-news-exclude-idnnn-react-hooksnn-usesluggenerationnntypescriptnimport-usesluggeneration-from-libutilsslughooksnnfunction-contentform-title-id-n-const-n-slugn-setslugn-isgeneratingn-validationn-suggestionsn-manuallyeditedn-resettoautogenerationn-applysuggestionn-autofixn-usesluggenerationtitle-news-n-autogenerate-truen-excludeid-idn-debouncems-500n-nn-return-n-divn-input-n-valueslug-n-onchangee-setslugetargetvaluen-n-n-validation-n-div-classnamevalidationisvalid-valid-invalidn-score-validationscore100n-validationerrorsmaperror-n-div-keyerror-classnameerrorerrordivn-n-divn-n-n-suggestionslength-0-n-divn-h4suggestionsh4n-suggestionsmapsuggestion-n-button-n-keysuggestionn-onclick-applysuggestionsuggestionn-n-suggestionn-buttonn-n-divn-n-n-button-onclickautofixauto-fix-issuesbuttonn-button-onclickresettoautogenerationreset-to-autobuttonn-divn-nnnn-usesluglookupnntypescriptnimport-usesluglookup-from-libutilsslughooksnnfunction-contentviewer-identifier-n-const-data-loading-error-foundby-refetch-usesluglookupn-identifiern-newsn-idtitlecontentslugn-nn-if-loading-return-divloadingdivn-if-error-return-diverror-errordivn-if-data-return-divnot-founddivnn-return-n-divn-h1datatitleh1n-pfound-by-foundbypn-divdatacontentdivn-divn-nnnn-useslugavailabilitynntypescriptnimport-useslugavailability-from-libutilsslughooksnnfunction-slugchecker-slug-contenttype-n-const-isavailable-checking-useslugavailabilityslug-contenttypenn-return-n-divn-checking-n-spancheckingspann-isavailable-true-n-span-classnameavailable-availablespann-isavailable-false-n-span-classnametaken-already-takenspann-nulln-divn-nnnn-performance-featuresnn-cachingnntypescriptnimport-slugcacheutils-from-libutilsslugutilsnn-cache-managementnslugcacheutilsclearallnslugcacheutilsclearforcontenttypenewsnslugcacheutilspreloadslugsnews-100nnconst-stats-slugcacheutilsgetstatsnconsolelogcache-size-statssizennn-batch-operationsnntypescriptnimport-generatemultipleslugs-from-libutilsslugutilsnnconst-items-n-text-first-article-id-1-n-text-second-article-id-2-n-text-third-article-id-3-nnnconst-results-await-generatemultipleslugsitems-newsn-results-include-unique-slugs-for-each-itemnnn-seo-optimizationnnthe-utilities-include-comprehensive-seo-optimizationnn-automatic-improvementsn-remove-stop-words-the-and-of-etcn-optimize-length-for-search-enginesn-handle-international-charactersn-prevent-reserved-word-conflictsn-score-slugs-for-seo-quality-0-100nn-best-practicesntypescriptn-good-slugsnultimate-guide-react-hooks-score-95njavascript-tips-beginners-score-90nweb-development-tools-score-85nn-poor-slugsnthe-ultimate-guide-to-the-best-score-45-too-many-stop-wordsna-score-20-too-shortnvery-very-long-slug-with-many-score-30-too-longnnn-migration-guidenn-from-legacy-utilitiesnntypescriptn-old-way-deprecatednimport-generateslug-from-utilsslugutilsnconst-slug-generateslugmy-titlenn-new-waynimport-generateslug-from-libutilsslugutilsnconst-slug-generateslugmy-title-strict-true-nn-with-database-uniquenessnimport-generateuniqueslug-from-libutilsslugutilsnconst-uniqueslug-await-generateuniqueslugmy-title-newsnnn-feature-comparisonnn-feature-legacy-new-n-n-basic-generation-n-unicode-support-n-database-uniqueness-n-seo-validation-n-caching-n-react-hooks-n-batch-operations-n-auto-fixing-nn-configurationnn-environment-specific-settingsnntypescriptn-development-more-permissivenconst-devoptions-n-strict-falsen-maxlength-200n-allowuppercase-truennn-production-strict-seonconst-prodoptions-n-strict-truen-maxlength-80n-allowuppercase-falsennnn-content-type-customizationnntypescriptn-customize-per-content-typenconst-newsoptions-n-maxlength-80n-removestopwords-truen-includedate-falsennnconst-eventoptions-n-maxlength-70n-removestopwords-falsen-includedate-truennnn-error-handlingnntypescriptntry-n-const-slug-await-generateuniqueslugmy-title-newsn-catch-error-n-if-errormessageincludescould-not-generate-unique-slug-n-handle-uniqueness-failuren-consoleerrortoo-many-similar-slugs-existn-else-n-handle-other-errorsn-consoleerrorslug-generation-failed-errorn-nnnn-testingnntypescriptnimport-generateslug-validateslugseo-from-libutilsnndescribeslug-utilities-n-testgenerates-seo-friendly-slugs-n-const-slug-generateslugmy-test-articlen-expectslugtobemy-test-articlen-n-const-validation-validateslugseoslugn-expectvalidationisvalidtobetruen-expectvalidationscoretobegreaterthan80n-nnnn-best-practicesnn1-always-use-content-types-for-database-uniquenessn2-enable-auto-generation-in-forms-for-better-uxn3-validate-slugs-before-saving-to-databasen4-cache-frequently-accessed-slugs-for-performancen5-use-batch-operations-for-bulk-updatesn6-handle-internationalization-with-unicode-supportn7-monitor-seo-scores-to-maintain-qualityn8-test-edge-cases-like-very-long-titlesnn-troubleshootingnn-common-issuesnnslug-generation-failsntypescriptn-check-if-text-is-validnif-text-typeof-text-string-n-throw-new-errorinvalid-text-providednnnndatabase-lookup-failsntypescriptn-verify-content-type-configurationnif-content_type_configcontenttype-n-throw-new-errorunsupported-content-type-contenttypennnncache-not-workingntypescriptn-clear-and-reinitialize-cachenslugcacheutilsclearallnawait-slugcacheutilspreloadslugsnews-100nnn-performance-tipsnn1-preload-common-slugs-during-app-initializationn2-use-debouncing-in-form-inputs-500ms-recommendedn3-batch-operations-when-processing-multiple-itemsn4-monitor-cache-hit-rates-and-adjust-ttl-as-neededn5-use-appropriate-content-type-limits-for-slug-lengthnnthis-comprehensive-slug-system-provides-everything-needed-for-professional-url-management-with-excellent-performance-seo-optimization-and-developer-experiencen" title="Permanent link">&para;</a></h1>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="August 19, 2025 21:51:55 UTC"><span class="timeago" datetime="2025-08-19T21:51:55+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="August 19, 2025 21:51:55 UTC">2025-08-19</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="August 19, 2025 21:51:55 UTC"><span class="timeago" datetime="2025-08-19T21:51:55+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="August 19, 2025 21:51:55 UTC">2025-08-19</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Nelson Tech Community
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nelson-tech.slack.com" target="_blank" rel="noopener" title="nelson-tech.slack.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M94.1 315.1c0 25.9-21.2 47.1-47.1 47.1S0 341 0 315.1 21.2 268 47.1 268h47.1v47.1zm23.7 0c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1v117.8c0 25.9-21.2 47.1-47.1 47.1s-47.1-21.2-47.1-47.1zm47.1-189c-25.9 0-47.1-21.2-47.1-47.1s21.2-47 47.1-47S212 53.2 212 79.1v47.1h-47.1zm0 23.7c25.9 0 47.1 21.2 47.1 47.1S190.8 244 164.9 244H47.1C21.2 244 0 222.8 0 196.9s21.2-47.1 47.1-47.1zm189 47.1c0-25.9 21.2-47.1 47.1-47.1s47 21.2 47 47.1-21.2 47.1-47.1 47.1h-47.1v-47.1zm-23.7 0c0 25.9-21.2 47.1-47.1 47.1S236 222.8 236 196.9V79.1c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1zm-47.1 189c25.9 0 47.1 21.2 47.1 47.1s-21.2 47-47.1 47-47.1-21.2-47.1-47.1v-47.1h47.1zm0-23.7c-25.9 0-47.1-21.2-47.1-47.1s21.2-47.1 47.1-47.1h117.8c25.9 0 47.1 21.2 47.1 47.1s-21.2 47.1-47.1 47.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow", "toc.integrate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../js/timeago.min.js"></script>
+      
+        <script src="../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2097 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive documentation for the Nelson Tech Community Platform - A sophisticated React-based community platform">
+      
+      
+        <meta name="author" content="Nelson Tech Community">
+      
+      
+        <link rel="canonical" href="https://iaminawe.github.io/nelson-tech/archive/PRD/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Product Requirements Document: Hyper Local Community Events Site and Marketplace - Nelson Tech Community Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#product-requirements-document-hyper-local-community-events-site-and-marketplace" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Nelson Tech Community Platform" class="md-header__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nelson Tech Community Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Product Requirements Document: Hyper Local Community Events Site and Marketplace
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../components/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Components
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Patterns & Templates
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DEPLOYMENT_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../THEME_SYSTEM_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Design & Theming
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../business/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Business & Strategy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../implementation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../migrations/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Migrations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../qa-reports/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Testing & QA
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DOCUMENTATION_MAP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../research/github_template_research_report/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Research
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../CHANGELOG.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Nelson Tech Community Platform" class="md-nav__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nelson Tech Community Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Development Guides
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../features/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../components/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Components
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../patterns/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Patterns & Templates
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../DEPLOYMENT_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../THEME_SYSTEM_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Design & Theming
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../business/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Business & Strategy
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../implementation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../migrations/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Migrations
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../qa-reports/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Testing & QA
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../DOCUMENTATION_MAP/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../research/github_template_research_report/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CHANGELOG.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iaminawe/nelson-tech/edit/main/docs/archive/PRD.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech/raw/main/docs/archive/PRD.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
+  
+
+
+<h1 id="product-requirements-document-hyper-local-community-events-site-and-marketplace">Product Requirements Document: Hyper Local Community Events Site and Marketplace<a class="headerlink" href="#product-requirements-document-hyper-local-community-events-site-and-marketplace" title="Permanent link">&para;</a></h1>
+<p><strong>Version:</strong> 1.0
+<strong>Date:</strong> May 25, 2025
+<strong>Prepared For:</strong> SPARC Development Team
+<strong>Prepared By:</strong> Gemini AI (Senior Product Manager &amp; Business Analyst)
+<strong>Source Document:</strong> Zero-Code User Blueprint for SPARC Program Generation (Date: May 24, 2025)</p>
+<hr />
+<h2 id="10-introduction-vision">1.0 Introduction &amp; Vision<a class="headerlink" href="#10-introduction-vision" title="Permanent link">&para;</a></h2>
+<h3 id="11-project-overview">1.1 Project Overview<a class="headerlink" href="#11-project-overview" title="Permanent link">&para;</a></h3>
+<p>The Hyper Local Community Events Site and Marketplace is a web-based platform designed to serve as a centralized hub for a local community. It aims to "supercharge" local engagement by providing a comprehensive solution for discovering and posting local events, forming and joining interest-based groups, facilitating a local marketplace for goods and services, disseminating local news, offering a directory of community resources, and listing local job and volunteer opportunities. The platform's primary objective is to connect local residents, businesses, and organizations, thereby fostering a more vibrant, engaged, and informed community. It addresses the problem of fragmented community information and interaction by consolidating these functions into a single, accessible platform.</p>
+<h3 id="12-goals-objectives">1.2 Goals &amp; Objectives<a class="headerlink" href="#12-goals-objectives" title="Permanent link">&para;</a></h3>
+<p>The primary goals and objectives for this platform are:</p>
+<ul>
+<li><strong>Goal 1:</strong> Foster a thriving, connected, and informed local community.<ul>
+<li><strong>Objective 1.1:</strong> Increase community member participation in local events and activities.</li>
+<li><strong>Objective 1.2:</strong> Facilitate connections between community members with shared interests.</li>
+<li><strong>Objective 1.3:</strong> Provide a reliable source for local news and information.</li>
+</ul>
+</li>
+<li><strong>Goal 2:</strong> Simplify access to local opportunities and resources.<ul>
+<li><strong>Objective 2.1:</strong> Make it easy for community members to find local job and volunteer opportunities.</li>
+<li><strong>Objective 2.2:</strong> Provide a centralized directory for essential community resources and services.</li>
+</ul>
+</li>
+<li><strong>Goal 3:</strong> Support local commerce and organizations.<ul>
+<li><strong>Objective 3.1:</strong> Enable local businesses and residents to easily buy and sell goods and services within the community.</li>
+<li><strong>Objective 3.2:</strong> Provide local organizations and businesses a platform to promote their initiatives and reach community members.</li>
+</ul>
+</li>
+<li><strong>Goal 4:</strong> Centralize fragmented community information.<ul>
+<li><strong>Objective 4.1:</strong> Reduce the effort required for community members to find information about local happenings, services, and opportunities.</li>
+</ul>
+</li>
+</ul>
+<h3 id="13-target-audience-user-personas">1.3 Target Audience &amp; User Personas<a class="headerlink" href="#13-target-audience-user-personas" title="Permanent link">&para;</a></h3>
+<p>The platform caters to several key user groups within a hyperlocal geographic area:</p>
+<ol>
+<li>
+<p><strong>Persona: "Active Community Member" (Corresponds to Community Members/Residents)</strong></p>
+<ul>
+<li><strong>Description:</strong> Individuals of various ages living in the local area who are keen to stay informed, participate in community life, and connect with neighbors.</li>
+<li><strong>Goals:</strong><ul>
+<li>Easily find and register for local events (e.g., festivals, workshops, meetings).</li>
+<li>Discover and join groups aligned with their hobbies or interests (e.g., book clubs, gardening groups).</li>
+<li>Buy unique items or find services from local sellers.</li>
+<li>Sell unused items or offer personal services to neighbors.</li>
+<li>Stay updated on local news and announcements.</li>
+<li>Find local volunteer opportunities or part-time jobs.</li>
+</ul>
+</li>
+<li><strong>Technical Proficiency:</strong> Varies, generally comfortable with web Browse.</li>
+</ul>
+</li>
+<li>
+<p><strong>Persona: "Local Entrepreneur" (Corresponds to Local Businesses)</strong></p>
+<ul>
+<li><strong>Description:</strong> Small to medium-sized business owners operating within the community. They are looking for affordable and effective ways to reach local customers and talent.</li>
+<li><strong>Goals:</strong><ul>
+<li>List products or services in the marketplace to increase local sales.</li>
+<li>Promote special events or workshops hosted by their business.</li>
+<li>Post job openings to find local employees.</li>
+<li>Enhance their business's visibility within the community.</li>
+</ul>
+</li>
+<li><strong>Technical Proficiency:</strong> Comfortable with online tools for business.</li>
+</ul>
+</li>
+<li>
+<p><strong>Persona: "Community Organizer" (Corresponds to Local Organizations &amp; Non-profits)</strong></p>
+<ul>
+<li><strong>Description:</strong> Representatives of local non-profits, clubs, or community organizations focused on community welfare, engagement, or specific causes.</li>
+<li><strong>Goals:</strong><ul>
+<li>Promote community events and initiatives to a wider local audience.</li>
+<li>Recruit volunteers for their programs and activities.</li>
+<li>Share news and updates about their organization's work.</li>
+<li>Create and manage online groups to engage with members and supporters.</li>
+</ul>
+</li>
+<li><strong>Technical Proficiency:</strong> Generally proficient with web-based communication tools.</li>
+</ul>
+</li>
+<li>
+<p><strong>Persona: "Platform Steward" (Corresponds to Platform Administrators &amp; Moderators)</strong></p>
+<ul>
+<li><strong>Description:</strong> Individuals designated with the responsibility of maintaining the platform's integrity, managing content, and supporting users.</li>
+<li><strong>Goals:</strong><ul>
+<li>Ensure content adheres to community guidelines.</li>
+<li>Manage user accounts and roles effectively.</li>
+<li>Keep platform resources and news sections updated and relevant.</li>
+<li>Oversee the overall health and functionality of the platform.</li>
+</ul>
+</li>
+<li><strong>Technical Proficiency:</strong> High, with understanding of platform administration tools.</li>
+</ul>
+</li>
+<li>
+<p><strong>Persona: "Curious Onlooker" (Corresponds to Guest Users)</strong></p>
+<ul>
+<li><strong>Description:</strong> Individuals who may be new to the community or exploring what it has to offer without wanting to commit to creating an account immediately.</li>
+<li><strong>Goals:</strong><ul>
+<li>Browse local events, news, and marketplace listings.</li>
+<li>Get a feel for the community's activities and offerings.</li>
+<li>Access publicly available resources.</li>
+</ul>
+</li>
+<li><strong>Technical Proficiency:</strong> Basic web Browse skills.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="20-functional-requirements">2.0 Functional Requirements<a class="headerlink" href="#20-functional-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="21-core-features">2.1 Core Features<a class="headerlink" href="#21-core-features" title="Permanent link">&para;</a></h3>
+<p>The platform will include the following core modules:
+1.  <strong>User Account Management:</strong> Registration, login, profile management, roles and permissions.
+2.  <strong>Events Management:</strong> Creation, discovery, management of local events.
+3.  <strong>Groups Management:</strong> Creation, discovery, management of community groups.
+4.  <strong>Marketplace:</strong> Listing, Browse, and facilitating connections for buying/selling goods and services.
+5.  <strong>News:</strong> Publication and consumption of local news articles with commenting functionality.
+6.  <strong>Resources:</strong> A curated directory of helpful community resources.
+7.  <strong>Opportunities:</strong> A board for local job, volunteer, and event announcements.
+8.  <strong>Company Profile Management:</strong> (For Company Representatives)</p>
+<h3 id="22-detailed-feature-breakdown-user-stories">2.2 Detailed Feature Breakdown (User Stories)<a class="headerlink" href="#22-detailed-feature-breakdown-user-stories" title="Permanent link">&para;</a></h3>
+<h4 id="221-user-account-management">2.2.1 User Account Management<a class="headerlink" href="#221-user-account-management" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>UAM-001:</strong> As a new user, I want to register for an account using my email address and a password, so that I can access features available to registered members.</li>
+<li><strong>UAM-002:</strong> As a registered user, I want to log in to the platform with my credentials, so that I can access my account and personalized content.</li>
+<li><strong>UAM-003:</strong> As a registered user, I want to log out of my account, so that my session is securely ended.</li>
+<li><strong>UAM-004:</strong> As a registered user, I want to view my user profile, so that I can see my information.</li>
+<li><strong>UAM-005:</strong> As a registered user, I want to edit my user profile (e.g., bio, profile picture), so that I can keep my information up-to-date and personalize my presence.</li>
+<li><strong>UAM-006:</strong> As an Administrator, I want to manage user roles and permissions, so that I can control access to platform functionalities.</li>
+<li><strong>UAM-007:</strong> As a user, I want to be able to reset my password if I forget it, so that I can regain access to my account.</li>
+</ul>
+<h4 id="222-events-management">2.2.2 Events Management<a class="headerlink" href="#222-events-management" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>EVT-001:</strong> As a Registered User (Organizer), I want to create a new event with details such as name, date, time (start/end), location, description, category, a cover image, and registration information, so that I can inform the community about the event.</li>
+<li><strong>EVT-002:</strong> As an Event Organizer, I want to manage attendees for my event (e.g., view list, if applicable), so that I can track participation.</li>
+<li><strong>EVT-003:</strong> As an Event Organizer, I want to update the details of an event I created, so that I can provide current information.</li>
+<li><strong>EVT-004:</strong> As an Event Organizer, I want to be able to communicate with event participants (e.g., send updates or reminders), so that I can keep them informed.</li>
+<li><strong>EVT-005:</strong> As any User (Guest or Registered), I want to discover and search for local events by category, date, location, and keywords/interests, so that I can find events relevant to me.</li>
+<li><strong>EVT-006:</strong> As a Registered User, I want to register for an event (if registration is enabled), so that I can confirm my attendance.</li>
+<li><strong>EVT-007:</strong> As any User, I want to view event details including name, date, time, location, full description, organizer, and how to register/attend, so that I have all necessary information.</li>
+</ul>
+<h5 id="detailed-flow-for-creating-an-event-from-blueprint-key-feature-deep-dive">Detailed Flow for Creating an Event (from Blueprint "Key Feature Deep Dive"):<a class="headerlink" href="#detailed-flow-for-creating-an-event-from-blueprint-key-feature-deep-dive" title="Permanent link">&para;</a></h5>
+<ol>
+<li>As a Registered User/Organizer, I want to log into my account.</li>
+<li>I want to navigate to the "Events" page (e.g., via a main navigation link).</li>
+<li>On the Events page, I expect to see a list of existing events and a prominent "Create Event" button.</li>
+<li>When I click the "Create Event" button, I want to be presented with a form.</li>
+<li>The form should allow me to input: Event Name (text), Date (date picker), Start Time/End Time (time pickers), Location (text input, with potential map integration), Description (rich text editor), Category (dropdown), Cover Image (file upload), Registration Information (e.g., external link, internal collection fields, ticket price), and Contact Person/Email.</li>
+<li>I want to fill in all required details and optionally upload an image.</li>
+<li>After filling the form, I want to click a "Save" or "Publish Event" button.</li>
+<li>The system should validate my input and display clear error messages next to any problematic fields if validation fails.</li>
+<li>Upon successful submission, I want my event to be saved to the database.</li>
+<li>I expect to be redirected to the newly created event's page or my list of managed events.</li>
+<li>I want to see a confirmation message (e.g., "Event Created Successfully!").</li>
+<li>The new event should then be visible in public event listings.</li>
+</ol>
+<h4 id="223-groups-management">2.2.3 Groups Management<a class="headerlink" href="#223-groups-management" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>GRP-001:</strong> As a Registered User, I want to create a new group with a name, description, and defined interests/hobbies/goals, so that I can start a community around a specific topic.</li>
+<li><strong>GRP-002:</strong> As a Group Administrator, I want to manage group members (e.g., approve/remove members, assign roles if applicable), so that I can maintain the group's integrity.</li>
+<li><strong>GRP-003:</strong> As a Group Administrator, I want to organize group activities or post announcements, so that I can engage group members.</li>
+<li><strong>GRP-004:</strong> As a Group Administrator, I want to share resources (e.g., links, documents) within the group, so that members can access relevant information.</li>
+<li><strong>GRP-005:</strong> As a Registered User, I want to discover and search for existing groups, so that I can find communities of interest.</li>
+<li><strong>GRP-006:</strong> As a Registered User, I want to join a group, so that I can participate in its activities and discussions.</li>
+<li><strong>GRP-007:</strong> As a Registered User, I want to leave a group I am a member of, so that I no longer participate.</li>
+</ul>
+<h4 id="224-marketplace">2.2.4 Marketplace<a class="headerlink" href="#224-marketplace" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>MKT-001:</strong> As a Registered User (Seller), I want to list an item or service for sale with a description, price, images, and contact information, so that I can sell to the local community.</li>
+<li><strong>MKT-002:</strong> As a Seller, I want to manage my marketplace listings (e.g., edit details, mark as sold, remove listing), so that I can keep my offerings current.</li>
+<li><strong>MKT-003:</strong> As a Seller, I want to be able to communicate with potential buyers (e.g., via a secure messaging system or by displaying my chosen contact info), so that I can answer questions and arrange sales.</li>
+<li><strong>MKT-004:</strong> As any User (Guest or Registered), I want to browse and search marketplace listings by category, keywords, and price range, so that I can find items or services I need.</li>
+<li><strong>MKT-005:</strong> As a Buyer, I want to contact sellers about their listings, so that I can ask questions or express interest in purchasing.</li>
+<li><strong>MKT-006:</strong> As a Buyer, I want to be able to purchase items (clarification needed on whether this is offline coordination or if the platform facilitates transactions), so that I can acquire goods/services.</li>
+</ul>
+<h4 id="225-news">2.2.5 News<a class="headerlink" href="#225-news" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NWS-001:</strong> As an Administrator or Moderator, I want to publish news articles with a title, content, and publication date, so that I can share local news and announcements.</li>
+<li><strong>NWS-002:</strong> As any User (Guest or Registered), I want to read news articles, so that I can stay informed about what's happening in the community.</li>
+<li><strong>NWS-003:</strong> As a Registered User, I want to comment on news articles, so that I can engage in discussions and share my thoughts.</li>
+<li><strong>NWS-004:</strong> As an Administrator or Moderator, I want to manage comments on news articles (e.g., delete inappropriate comments), so that discussions remain constructive.</li>
+</ul>
+<h4 id="226-resources">2.2.6 Resources<a class="headerlink" href="#226-resources" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>RES-001:</strong> As an Administrator or Moderator, I want to add resources (e.g., links to local services, guides, important information) with a title, description, URL/link, and category, so that community members can find helpful information.</li>
+<li><strong>RES-002:</strong> As any User (Guest or Registered), I want to browse and search the resources library by category and keywords, so that I can find helpful information and services.</li>
+<li><strong>RES-003:</strong> As a Registered User, I want to suggest new resources to be added to the library (subject to moderation), so that I can contribute to the collective knowledge.</li>
+</ul>
+<h4 id="227-opportunities">2.2.7 Opportunities<a class="headerlink" href="#227-opportunities" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>OPP-001:</strong> As a Company Representative or Organization representative (Registered User), I want to post job listings with details like title, description, company, location, and application instructions, so that I can find local talent.</li>
+<li><strong>OPP-002:</strong> As a Company Representative or Organization representative (Registered User), I want to post volunteer opportunities with relevant details, so that I can recruit volunteers.</li>
+<li><strong>OPP-003:</strong> As a Company Representative or Organization representative (Registered User), I want to post event announcements related to my organization, so that I can promote our activities.</li>
+<li><strong>OPP-004:</strong> As any User (Guest or Registered), I want to browse and search the opportunities board (jobs, volunteer positions, event announcements) by type, keywords, and location, so that I can find relevant opportunities.</li>
+<li><strong>OPP-005:</strong> As a Registered User, I want to be able to apply for jobs or volunteer positions (e.g., by following a link or using an on-platform application mechanism if developed), so that I can pursue these opportunities.</li>
+</ul>
+<h4 id="228-company-profile-management">2.2.8 Company Profile Management<a class="headerlink" href="#228-company-profile-management" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>CPF-001:</strong> As a Company Representative (Registered User), I want to create and manage a company profile with details such as company name, description, contact information, and logo, so that I can present my organization on the platform.</li>
+<li><strong>CPF-002:</strong> As a Company Representative, I want my company profile to be associated with the job opportunities I post, so that applicants know who is hiring.</li>
+</ul>
+<h3 id="23-data-requirements">2.3 Data Requirements<a class="headerlink" href="#23-data-requirements" title="Permanent link">&para;</a></h3>
+<h4 id="231-information-to-be-managed">2.3.1 Information to be Managed:<a class="headerlink" href="#231-information-to-be-managed" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>User Account Information:</strong> User ID, username, hashed password, email address, user role (Administrator, Moderator, Registered User, Guest, Company Representative), optional profile picture, optional user bio.</li>
+<li><strong>Event Details:</strong> Event ID, event name, date, start time, end time, location (address, potentially latitude/longitude), description, registration information/link, images, event category, organizer ID, list of attendee IDs.</li>
+<li><strong>Group Details:</strong> Group ID, group name, description, interests/goals, group rules, list of member IDs, group admin ID(s).</li>
+<li><strong>Marketplace Item Details:</strong> Item ID, item name/title, description, price, images, seller contact information (optional to display), category, seller ID, status (e.g., available, sold).</li>
+<li><strong>News Article Details:</strong> Article ID, title, content/body, publication date, author ID, list of comments (each with comment ID, text, commenter ID, timestamp).</li>
+<li><strong>Resource Details:</strong> Resource ID, title, description, URL/link, category, uploader ID.</li>
+<li><strong>Opportunity Details:</strong> Opportunity ID, title, description, type (job, volunteer, event announcement), company/organization name, location, application instructions/link, contact information, poster ID.</li>
+<li><strong>Company Profile Details:</strong> Company ID, company name, description, contact information, logo, representative ID(s).</li>
+</ul>
+<h4 id="232-data-relationships">2.3.2 Data Relationships:<a class="headerlink" href="#232-data-relationships" title="Permanent link">&para;</a></h4>
+<ul>
+<li>An Event has one Organizer (User) and can have many Attendees (Users).</li>
+<li>A Group has one or more Administrators (Users) and many Members (Users).</li>
+<li>A Marketplace Listing belongs to one Seller (User).</li>
+<li>A News Article has one Author (Admin/Moderator User) and can have many Comments. Each Comment belongs to one User.</li>
+<li>An Opportunity is posted by one User (Company Representative/Organization User) and may relate to one Company Profile.</li>
+<li>A Company Profile is managed by one or more Company Representatives (Users).</li>
+<li>A User can: create multiple Events, join/administer multiple Groups, list multiple Marketplace Items, post multiple Opportunities (if a Company Rep), make multiple Comments, and suggest multiple Resources.</li>
+</ul>
+<hr />
+<h2 id="30-non-functional-requirements">3.0 Non-Functional Requirements<a class="headerlink" href="#30-non-functional-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="31-user-interface-ui-user-experience-ux">3.1 User Interface (UI) &amp; User Experience (UX)<a class="headerlink" href="#31-user-interface-ui-user-experience-ux" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>NFR-UI-001:</strong> The platform shall have a <strong>Community-focused &amp; Welcoming, User-Friendly &amp; Accessible, Organized &amp; Informative, Clean &amp; Modern</strong> look and feel.</li>
+<li><strong>NFR-UI-002:</strong> Navigation shall be intuitive, allowing users to easily find core sections (Events, Groups, Marketplace, News, Resources, Opportunities).</li>
+<li><strong>NFR-UI-003:</strong> The UI shall be responsive and provide a consistent experience across common web browsers (Chrome, Safari, Firefox, Edge) and screen sizes (desktop, tablet, mobile).</li>
+<li><strong>NFR-UI-004:</strong> Forms for creating content (events, listings, posts) shall be user-friendly, with clear labels, input validation, and helpful error messages.</li>
+<li><strong>NFR-UI-005:</strong> Search functionality within each module shall be efficient and provide relevant results.</li>
+<li><strong>NFR-UI-006:</strong> The platform should strive for accessibility, adhering to WCAG 2.1 Level AA guidelines where feasible.</li>
+<li><strong>NFR-UX-001:</strong> Visual inspiration for appearance (to be provided by the Visionary) should guide the design. Examples could include a clean local news site, a well-organized community forum, or a modern events platform.</li>
+</ul>
+<h3 id="32-platform-environment">3.2 Platform &amp; Environment<a class="headerlink" href="#32-platform-environment" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>NFR-PLT-001:</strong> The primary environment for the platform shall be a Website, accessible through standard web browsers.</li>
+<li><strong>NFR-PLT-002:</strong> The platform will utilize Supabase for backend-as-a-service (data storage, authentication, real-time updates).</li>
+<li><strong>NFR-PLT-003:</strong> The frontend and backend are implied to be JavaScript-based, given <code>npm</code> usage (Node.js for APIs, a JavaScript framework for UI).</li>
+<li><strong>NFR-PLT-004:</strong> The platform requires an active internet connection for all functionalities. Offline support is not a requirement for this version.</li>
+</ul>
+<h3 id="33-constraints-business-rules">3.3 Constraints &amp; Business Rules<a class="headerlink" href="#33-constraints-business-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>NFR-BR-001:</strong> Guest users shall have read-only access to public content (events, marketplace, news, resources, opportunities). Registration is required for content creation, joining groups, commenting, or applying for opportunities.</li>
+<li><strong>NFR-BR-002:</strong> Only Registered Users can create and manage their own events, group memberships (joining/leaving), and marketplace listings.</li>
+<li><strong>NFR-BR-003:</strong> Only users designated as Company Representatives can create/manage their associated Company Profile and post opportunities on behalf of that company.</li>
+<li><strong>NFR-BR-004:</strong> Administrator users shall have full CRUD (Create, Read, Update, Delete) access over all platform content and user management capabilities.</li>
+<li><strong>NFR-BR-005:</strong> Moderator users shall have permissions to approve/reject user-generated content (e.g., marketplace listings if moderation is enabled, comments, suggested resources) and manage users according to defined community guidelines.</li>
+<li><strong>NFR-BR-006:</strong> Community guidelines (to be defined by the Visionary) must be established and accessible to users. Moderators will enforce these guidelines.</li>
+<li><strong>NFR-BR-007:</strong> User authentication is mandatory for all actions beyond guest Browse.</li>
+</ul>
+<h3 id="34-security-privacy-considerations">3.4 Security &amp; Privacy Considerations<a class="headerlink" href="#34-security-privacy-considerations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>NFR-SEC-001:</strong> User passwords must be securely stored (e.g., hashed and salted).</li>
+<li><strong>NFR-SEC-002:</strong> The platform must implement measures to protect against common web vulnerabilities (e.g., XSS, CSRF, SQL Injection – Supabase helps significantly here, but input validation is still key).</li>
+<li><strong>NFR-SEC-003:</strong> Data privacy for user information (especially email addresses and any other PII collected) must be maintained.</li>
+<li><strong>NFR-SEC-004:</strong> Private user contact information (e.g., email, phone if collected beyond registration email) shall not be publicly displayed without explicit user consent per instance (e.g., a seller choosing to display contact info in a marketplace ad).</li>
+<li><strong>NFR-SEC-005:</strong> Anonymous posting of primary content (events, listings, articles) is not permitted. Resource suggestions may be anonymous but are subject to moderation.</li>
+<li><strong>NFR-SEC-006:</strong> The platform should not automatically enroll users in groups or events.</li>
+<li><strong>NFR-SEC-007:</strong> Session management should be secure.</li>
+</ul>
+<hr />
+<h2 id="40-success-criteria-acceptance-criteria">4.0 Success Criteria &amp; Acceptance Criteria<a class="headerlink" href="#40-success-criteria-acceptance-criteria" title="Permanent link">&para;</a></h2>
+<p>The overall success of the platform will be measured by its adoption within the local community, user engagement levels across its various features, and its ability to meet the goals outlined in Section 1.2.</p>
+<p>Specific acceptance criteria for key features (derived from "Definition of Done"):</p>
+<ol>
+<li>
+<p><strong>AC-EVT-CREATE &amp; DISCOVER (Event Creation &amp; Discovery):</strong></p>
+<ul>
+<li><strong>Given</strong> a Registered User is logged in</li>
+<li><strong>When</strong> they navigate to "Events," click "Create Event," fill in all required fields (name: "Community Picnic," date, time, location: "Central Park," description), and click "Save"</li>
+<li><strong>Then</strong> a success message is displayed, AND the "Community Picnic" event is visible in their list of managed events.</li>
+<li><strong>And Given</strong> another User (Guest or Registered) navigates to the Events page</li>
+<li><strong>When</strong> they search for "picnic" or browse events for the specified date</li>
+<li><strong>Then</strong> the "Community Picnic" event is listed with its correct details.</li>
+</ul>
+</li>
+<li>
+<p><strong>AC-GRP-JOIN (Joining a Group):</strong></p>
+<ul>
+<li><strong>Given</strong> a Registered User is logged in</li>
+<li><strong>When</strong> they navigate to the "Groups" page, browse and find the "Local Gardeners Club," and click "Join Group"</li>
+<li><strong>Then</strong> their request is processed (either auto-joined or request sent for approval, depending on group settings).</li>
+<li><strong>And</strong> if successfully joined/approved, the "Local Gardeners Club" appears in their "My Groups" list, AND they can view group-specific content.</li>
+</ul>
+</li>
+<li>
+<p><strong>AC-MKT-LIST &amp; VIEW (Marketplace Listing &amp; Viewing):</strong></p>
+<ul>
+<li><strong>Given</strong> a Registered User is logged in</li>
+<li><strong>When</strong> they navigate to "Marketplace," click "List Item," fill in required fields (description: "Handmade Wooden Birdhouse," price: "$25"), upload a photo, and click "Save"</li>
+<li><strong>Then</strong> a success message is displayed, AND their listing for "Handmade Wooden Birdhouse" appears in the public marketplace.</li>
+<li><strong>And Given</strong> another User browses the marketplace</li>
+<li><strong>When</strong> they view the "Handmade Wooden Birdhouse" listing</li>
+<li><strong>Then</strong> they can see the photo, description, and price, AND there is a clear way to contact the seller.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="50-future-considerations-roadmap">5.0 Future Considerations / Roadmap<a class="headerlink" href="#50-future-considerations-roadmap" title="Permanent link">&para;</a></h2>
+<p>(Derived from "Nice-to-Haves" and "Long-Term Vision" – these are currently placeholders requiring Visionary input and are out of scope for the initial version.)</p>
+<ul>
+<li><strong>Potential Future Features (Post-MVP):</strong><ul>
+<li>Direct messaging between users.</li>
+<li>Integrated payment processing for marketplace transactions.</li>
+<li>Map-based views for events and marketplace items.</li>
+<li>User reviews and ratings for sellers, events, or services.</li>
+<li>Subscription options for premium features (e.g., for businesses).</li>
+<li>Gamification elements for community participation.</li>
+</ul>
+</li>
+<li><strong>Potential Long-Term Evolution:</strong><ul>
+<li>Expansion to multiple neighboring communities with interconnected platforms.</li>
+<li>Becoming a primary digital hub for local government and community service announcements.</li>
+<li>Deeper integrations with local schools or libraries.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="60-assumptions-open-questions">6.0 Assumptions &amp; Open Questions<a class="headerlink" href="#60-assumptions-open-questions" title="Permanent link">&para;</a></h2>
+<h3 id="601-assumptions">6.0.1 Assumptions<a class="headerlink" href="#601-assumptions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The "hyperlocal community" is a single, defined geographic area for the initial launch.</li>
+<li>Users have reliable internet access to use the web-based platform.</li>
+<li>Supabase will meet all backend requirements for scalability and performance for the initial user load.</li>
+<li>The "Visionary" will provide specific content for community guidelines.</li>
+<li>The "Visionary" will provide examples of "Similar Programs (Appearance)" to guide UI design.</li>
+<li>The initial platform will be in English.</li>
+</ul>
+<h3 id="602-open-questions-for-the-visionary">6.0.2 Open Questions for the Visionary<a class="headerlink" href="#602-open-questions-for-the-visionary" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Marketplace Transactions:</strong> How should transactions in the marketplace be handled?<ul>
+<li>Option A: Platform facilitates contact only, transactions are handled offline between users.</li>
+<li>Option B: Basic integration for online payments (e.g., Stripe, PayPal links) – (This would significantly increase scope).</li>
+<li>The blueprint mentions "Process transactions (details on how this is handled would be needed, e.g., offline, integrated payment)" and "Purchase items (details on process needed)."</li>
+</ul>
+</li>
+<li><strong>Marketplace Listing Moderation:</strong> Should new marketplace listings require moderator approval before becoming public?</li>
+<li><strong>Group Membership Approval:</strong> Should joining a group be automatic, or require approval by a Group Administrator by default? Should this be a configurable option per group?</li>
+<li><strong>Content Moderation Details:</strong> What are the specific community guidelines for content and user behavior? What is the process for handling violations?</li>
+<li><strong>Communication with Event Participants:</strong> What mechanism should be used for organizers to communicate with event participants (e.g., an in-platform messaging system, email notifications via the platform)?</li>
+<li><strong>Company Representative Verification:</strong> Is there a process needed to verify that a user claiming to be a "Company Representative" is legitimate?</li>
+<li><strong>Resource Suggestion Workflow:</strong> What is the exact workflow for users suggesting resources and for admins/moderators approving them?</li>
+<li><strong>Applying for Opportunities:</strong> For job/volunteer applications, should the platform integrate an application system, or simply link out to external application sites/emails?</li>
+<li><strong>Visual Style Guidance:</strong> Could you provide 2-3 examples of existing websites or apps whose visual look (not necessarily function) you admire for the "Community-focused &amp; Welcoming, User-Friendly &amp; Accessible, Organized &amp; Informative, Clean &amp; Modern" style? (From Blueprint Section 5.2)</li>
+<li><strong>Likes/Dislikes of Similar Programs:</strong> Regarding existing similar platforms (Nextdoor, Facebook Events, etc.), what specific features or ways of doing things do you really like or dislike? (From Blueprint Section 9.2)</li>
+<li><strong>Prioritization for Future Dreams:</strong> If resources were available post-launch, which of the "Nice-to-Haves" (Section 5.0) would be the highest priority?</li>
+</ol>
+<hr />
+<h2 id="70-out-of-scope-for-initial-versionmvp">7.0 Out of Scope (for initial version/MVP)<a class="headerlink" href="#70-out-of-scope-for-initial-versionmvp" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Native Mobile Applications:</strong> Separate, installable mobile apps for iOS or Android are not in scope for this version. A responsive web design is expected.</li>
+<li><strong>Integrated Payment Processing:</strong> Unless explicitly clarified and prioritized (see Open Question 1), built-in payment processing for marketplace transactions is out of scope. The platform will facilitate contact.</li>
+<li><strong>Direct User-to-User Private Messaging:</strong> A comprehensive private messaging system between individual users is out of scope for the initial version (communication might be focused within event/group contexts or for marketplace inquiries).</li>
+<li><strong>Advanced Gamification:</strong> Complex badges, points systems, or leaderboards.</li>
+<li><strong>Multi-language Support.</strong></li>
+<li><strong>Features listed in Section 5.0 (Future Considerations / Roadmap)</strong> unless explicitly prioritized and brought into scope by the Visionary.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 27, 2025 21:47:35 UTC"><span class="timeago" datetime="2025-05-27T21:47:35+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 27, 2025 21:47:35 UTC">2025-05-27</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 24, 2025 00:16:20 UTC"><span class="timeago" datetime="2025-05-24T00:16:20+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 24, 2025 00:16:20 UTC">2025-05-24</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Nelson Tech Community
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nelson-tech.slack.com" target="_blank" rel="noopener" title="nelson-tech.slack.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M94.1 315.1c0 25.9-21.2 47.1-47.1 47.1S0 341 0 315.1 21.2 268 47.1 268h47.1v47.1zm23.7 0c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1v117.8c0 25.9-21.2 47.1-47.1 47.1s-47.1-21.2-47.1-47.1zm47.1-189c-25.9 0-47.1-21.2-47.1-47.1s21.2-47 47.1-47S212 53.2 212 79.1v47.1h-47.1zm0 23.7c25.9 0 47.1 21.2 47.1 47.1S190.8 244 164.9 244H47.1C21.2 244 0 222.8 0 196.9s21.2-47.1 47.1-47.1zm189 47.1c0-25.9 21.2-47.1 47.1-47.1s47 21.2 47 47.1-21.2 47.1-47.1 47.1h-47.1v-47.1zm-23.7 0c0 25.9-21.2 47.1-47.1 47.1S236 222.8 236 196.9V79.1c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1zm-47.1 189c25.9 0 47.1 21.2 47.1 47.1s-21.2 47-47.1 47-47.1-21.2-47.1-47.1v-47.1h47.1zm0-23.7c-25.9 0-47.1-21.2-47.1-47.1s21.2-47.1 47.1-47.1h117.8c25.9 0 47.1 21.2 47.1 47.1s-21.2 47.1-47.1 47.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>

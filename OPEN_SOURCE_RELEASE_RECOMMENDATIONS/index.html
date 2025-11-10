@@ -1,0 +1,3686 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive documentation for the Nelson Tech Community Platform - A sophisticated React-based community platform">
+      
+      
+        <meta name="author" content="Nelson Tech Community">
+      
+      
+        <link rel="canonical" href="https://iaminawe.github.io/nelson-tech/OPEN_SOURCE_RELEASE_RECOMMENDATIONS/">
+      
+      
+        <link rel="prev" href="../FEATURE_TOGGLE_INVESTIGATION_REPORT/">
+      
+      
+        <link rel="next" href="../DATABASE_ARCHITECT_SUMMARY/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>OSS Release - Nelson Tech Community Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/timeago.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#open-source-release-readiness-report" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Nelson Tech Community Platform" class="md-header__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nelson Tech Community Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OSS Release
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../guides/README.md" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../features/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../components/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Components
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../patterns/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Patterns & Templates
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DEPLOYMENT_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../THEME_SYSTEM_GUIDE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Design & Theming
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../business/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Business & Strategy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../implementation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Implementation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../migrations/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Migrations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../qa-reports/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Testing & QA
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../DOCUMENTATION_MAP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../research/github_template_research_report/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Research
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../CHANGELOG.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Nelson Tech Community Platform" class="md-nav__button md-logo" aria-label="Nelson Tech Community Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nelson Tech Community Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iaminawe/nelson-tech" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iaminawe/nelson-tech
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../architecture/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../guides/README.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Development Guides
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../features/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Features
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../components/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Components
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../patterns/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Patterns & Templates
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../DEPLOYMENT_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../THEME_SYSTEM_GUIDE/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Design & Theming
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../business/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Business & Strategy
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../implementation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../migrations/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Migrations
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../qa-reports/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Testing & QA
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_MAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentation Map
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KNOWN_ISSUES_AND_LIMITATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Known Issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REMAINING_ISSUES_REPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remaining Issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TODO_RESOLUTION_REPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TODO Resolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TYPESCRIPT_RESOLUTION_REPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    TypeScript Resolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NPM_VULNERABILITY_ANALYSIS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    NPM Vulnerabilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERROR_SANITIZATION_AUDIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Sanitization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FEATURE_TOGGLE_INVESTIGATION_REPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Feature Toggles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    OSS Release
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    OSS Release
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executive Summary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overall-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overall Assessment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#critical-blockers-must-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚨 Critical Blockers (MUST FIX)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚨 Critical Blockers (MUST FIX)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-security-vulnerabilities-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Security Vulnerabilities (CRITICAL)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Security Vulnerabilities (CRITICAL)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-11-development-authentication-bypass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1.1: Development Authentication Bypass
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-12-unsafe-html-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1.2: Unsafe HTML Injection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-13-page-content-sanitization-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1.3: Page Content Sanitization Missing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-14-insecure-session-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1.4: Insecure Session Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-15-missing-security-headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1.5: Missing Security Headers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-code-quality-issues-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Code Quality Issues (HIGH PRIORITY)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Code Quality Issues (HIGH PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-21-extremely-large-component-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2.1: Extremely Large Component Files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-22-unsafe-type-usage-261-occurrences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2.2: Unsafe Type Usage (261 occurrences)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-23-type-definition-redundancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2.3: Type Definition Redundancy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-24-debug-console-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2.4: Debug Console Statements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-25-unresolved-todofixme-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2.5: Unresolved TODO/FIXME Comments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-test-coverage-issues-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Test Coverage Issues (HIGH PRIORITY)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Test Coverage Issues (HIGH PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Missing Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actions-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actions Required
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#high-priority-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ High Priority Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚠️ High Priority Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-documentation-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Documentation Consolidation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Documentation Consolidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-41-redundant-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 4.1: Redundant Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-42-missing-standard-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 4.2: Missing Standard Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-environment-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Environment &amp; Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Environment &amp; Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-51-environment-variable-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 5.1: Environment Variable Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-52-service-keys-exposure-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 5.2: Service Keys Exposure Risk
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medium-priority-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Medium Priority Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📋 Medium Priority Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-code-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Code Organization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Code Organization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-61-import-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 6.1: Import Organization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-62-error-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 6.2: Error Boundaries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-typescript-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. TypeScript Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. TypeScript Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-71-relaxed-strict-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 7.1: Relaxed Strict Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-build-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Build Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Build Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-81-tree-shaking-disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 8.1: Tree-Shaking Disabled
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-good-no-action-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ What's Good (No Action Needed)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ What&#39;s Good (No Action Needed)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture-strengths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Strengths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Completeness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#developer-experience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developer Experience
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-readiness-scorecard" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Release Readiness Scorecard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-release-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗓️ Recommended Release Timeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗓️ Recommended Release Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-critical-security-fixes-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Critical Security Fixes (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-critical-code-quality-week-1-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Critical Code Quality (Week 1-2)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-essential-testing-week-2-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Essential Testing (Week 2-3)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-documentation-cleanup-week-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Documentation Cleanup (Week 3)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-final-review-polish-week-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: Final Review &amp; Polish (Week 4)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-release-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Pre-Release Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📋 Pre-Release Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security ⚠️
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Quality ⚠️
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing 🚫
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration ⚠️
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legal-licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legal &amp; Licensing ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Community Setup
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Priority Matrix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Priority Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p0-release-blockers-must-fix-before-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      P0 - Release Blockers (Must Fix Before Release)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p1-high-priority-should-fix-before-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      P1 - High Priority (Should Fix Before Release)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p2-medium-priority-can-fix-after-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      P2 - Medium Priority (Can Fix After Release)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#effort-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      💰 Effort Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-viable-release-mvr" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Minimal Viable Release (MVR)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Minimal Viable Release (MVR)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#week-1-critical-only-40-hours-5-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 1: Critical Only (40 hours / 5 days)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations-by-audience" class="md-nav__link">
+    <span class="md-ellipsis">
+      📞 Recommendations by Audience
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📞 Recommendations by Audience">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-project-owner" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Project Owner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-lead-developer" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Lead Developer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Contributors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎓 Lessons Learned
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎓 Lessons Learned">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-went-well" class="md-nav__link">
+    <span class="md-ellipsis">
+      What Went Well
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-needs-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      What Needs Improvement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-future-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Future Projects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-quality_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Quality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏁 Conclusion
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏁 Conclusion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Takeaways
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-criteria-for-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria for Release
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#final-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Final Recommendation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DATABASE_ARCHITECT_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Database Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STORAGE_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Storage Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SOCIAL_MEDIA_PLATFORM_SPECIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Social Platform Spec
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../research/github_template_research_report/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iaminawe/nelson-tech/edit/main/docs/OPEN_SOURCE_RELEASE_RECOMMENDATIONS.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech/raw/main/docs/OPEN_SOURCE_RELEASE_RECOMMENDATIONS.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
+  
+
+
+<h1 id="open-source-release-readiness-report">Open Source Release Readiness Report<a class="headerlink" href="#open-source-release-readiness-report" title="Permanent link">&para;</a></h1>
+<p><strong>Project</strong>: Nelson Tech Community Platform
+<strong>Review Date</strong>: November 10, 2025
+<strong>Reviewer</strong>: Comprehensive Automated Review
+<strong>Version</strong>: 0.1.0</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>The Nelson Tech Community Platform is a <strong>well-architected, feature-rich React application</strong> with enterprise-grade patterns. The codebase demonstrates solid foundational architecture with comprehensive features and documentation. However, <strong>critical security issues must be addressed before public release</strong>, along with code quality improvements and documentation consolidation.</p>
+<h3 id="overall-assessment">Overall Assessment<a class="headerlink" href="#overall-assessment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Status</th>
+<th>Grade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Architecture</strong></td>
+<td>✅ Ready</td>
+<td>A- (9/10)</td>
+</tr>
+<tr>
+<td><strong>Features</strong></td>
+<td>✅ Ready</td>
+<td>A (9.5/10)</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>⚠️ <strong>BLOCKERS</strong></td>
+<td>C (5/10)</td>
+</tr>
+<tr>
+<td><strong>Code Quality</strong></td>
+<td>⚠️ Needs Work</td>
+<td>C+ (6.5/10)</td>
+</tr>
+<tr>
+<td><strong>Documentation</strong></td>
+<td>✅ Good</td>
+<td>B+ (8/10)</td>
+</tr>
+<tr>
+<td><strong>Testing</strong></td>
+<td>⚠️ Insufficient</td>
+<td>D (4/10)</td>
+</tr>
+<tr>
+<td><strong>Open Source Readiness</strong></td>
+<td>⚠️ Needs Work</td>
+<td>C (6/10)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h3>
+<p><strong>DO NOT release publicly until critical security issues are resolved.</strong>
+<strong>Estimated time to production-ready</strong>: 2-3 weeks with focused effort.</p>
+<hr />
+<h2 id="critical-blockers-must-fix">🚨 Critical Blockers (MUST FIX)<a class="headerlink" href="#critical-blockers-must-fix" title="Permanent link">&para;</a></h2>
+<h3 id="1-security-vulnerabilities-critical">1. Security Vulnerabilities (CRITICAL)<a class="headerlink" href="#1-security-vulnerabilities-critical" title="Permanent link">&para;</a></h3>
+<h4 id="issue-11-development-authentication-bypass"><strong>Issue 1.1: Development Authentication Bypass</strong><a class="headerlink" href="#issue-11-development-authentication-bypass" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: <code>/src/shared/contexts/AuthContext.tsx:144-192</code></li>
+<li><strong>Severity</strong>: CRITICAL</li>
+<li><strong>Risk</strong>: Anyone can gain admin access with environment variable</li>
+<li><strong>Action</strong>: Complete removal of <code>VITE_DEV_BYPASS_AUTH</code> feature</li>
+<li><strong>Effort</strong>: 1-2 hours</li>
+<li><strong>Priority</strong>: P0 - Block release</li>
+</ul>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// Lines 144-192 - MUST BE REMOVED</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">isDevelopment</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VITE_DEV_BYPASS_AUTH</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;true&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="c1">// Bypasses all authentication</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<h4 id="issue-12-unsafe-html-injection"><strong>Issue 1.2: Unsafe HTML Injection</strong><a class="headerlink" href="#issue-12-unsafe-html-injection" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: <code>/src/lib/themes/utils.ts:164-189</code></li>
+<li><strong>Severity</strong>: CRITICAL</li>
+<li><strong>Risk</strong>: Stored XSS affecting all users via admin panel</li>
+<li><strong>Action</strong>: Add DOMPurify sanitization to <code>custom_head_html</code> and <code>custom_body_html</code></li>
+<li><strong>Effort</strong>: 2-4 hours</li>
+<li><strong>Priority</strong>: P0 - Block release</li>
+</ul>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// CURRENT (UNSAFE):</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">innerHTML</span><span class="o">:</span><span class="w"> </span><span class="kt">settings.custom_head_html</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// REQUIRED:</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">import</span><span class="w"> </span><span class="nx">DOMPurify</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;dompurify&#39;</span><span class="p">;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nx">innerHTML</span><span class="o">:</span><span class="w"> </span><span class="kt">DOMPurify.sanitize</span><span class="p">(</span><span class="nx">settings</span><span class="p">.</span><span class="nx">custom_head_html</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="issue-13-page-content-sanitization-missing"><strong>Issue 1.3: Page Content Sanitization Missing</strong><a class="headerlink" href="#issue-13-page-content-sanitization-missing" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: <code>/src/features/pages/components/PageDetail/index.tsx:187-192</code></li>
+<li><strong>Severity</strong>: HIGH</li>
+<li><strong>Risk</strong>: XSS via page builder content</li>
+<li><strong>Action</strong>: Ensure <code>jsonToHtml()</code> output is sanitized</li>
+<li><strong>Effort</strong>: 2-3 hours</li>
+<li><strong>Priority</strong>: P0 - Block release</li>
+</ul>
+<h4 id="issue-14-insecure-session-storage"><strong>Issue 1.4: Insecure Session Storage</strong><a class="headerlink" href="#issue-14-insecure-session-storage" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: <code>/src/pages/admin/MenuManagementPage.tsx</code></li>
+<li><strong>Severity</strong>: MEDIUM</li>
+<li><strong>Risk</strong>: Session IDs exposed to XSS attacks via sessionStorage</li>
+<li><strong>Action</strong>: Move to secure httpOnly cookies</li>
+<li><strong>Effort</strong>: 4-8 hours</li>
+<li><strong>Priority</strong>: P1 - Pre-launch</li>
+</ul>
+<h4 id="issue-15-missing-security-headers"><strong>Issue 1.5: Missing Security Headers</strong><a class="headerlink" href="#issue-15-missing-security-headers" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: Configuration files (nginx.conf, netlify.toml)</li>
+<li><strong>Severity</strong>: MEDIUM</li>
+<li><strong>Risk</strong>: Clickjacking, MIME sniffing, protocol downgrade attacks</li>
+<li><strong>Action</strong>: Add CSP, X-Frame-Options, X-Content-Type-Options, HSTS</li>
+<li><strong>Effort</strong>: 2-3 hours</li>
+<li><strong>Priority</strong>: P1 - Pre-launch</li>
+</ul>
+<p><strong>Total Security Fix Effort</strong>: 11-20 hours (2-3 days)</p>
+<hr />
+<h3 id="2-code-quality-issues-high-priority">2. Code Quality Issues (HIGH PRIORITY)<a class="headerlink" href="#2-code-quality-issues-high-priority" title="Permanent link">&para;</a></h3>
+<h4 id="issue-21-extremely-large-component-files"><strong>Issue 2.1: Extremely Large Component Files</strong><a class="headerlink" href="#issue-21-extremely-large-component-files" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Count</strong>: 6 files exceed 1,000 lines (38 files &gt; 500 lines)</li>
+<li><strong>Largest</strong>: <code>SimpleUnifiedUsersPage.tsx</code> (1,793 lines)</li>
+<li><strong>Problem</strong>: Unmaintainable, hard to test, performance issues</li>
+<li><strong>Action</strong>: Split into focused components (&lt; 300 lines each)</li>
+<li><strong>Effort</strong>: 2-3 weeks</li>
+<li><strong>Priority</strong>: P1 - Pre-launch (at least split top 6 files)</li>
+</ul>
+<p><strong>Top 6 Files Requiring Immediate Refactoring:</strong>
+1. <code>/src/pages/admin/SimpleUnifiedUsersPage.tsx</code> - 1793 lines
+2. <code>/src/pages/admin/MenuManagementPage.tsx</code> - 1704 lines
+3. <code>/src/pages/UserSettingsPage.tsx</code> - 1560 lines
+4. <code>/src/pages/admin/EnhancedSettingsPage.tsx</code> - 1101 lines
+5. <code>/src/pages/admin/UnifiedUsersPage.tsx</code> - 1016 lines
+6. <code>/src/pages/admin/newsletter/CampaignManager.tsx</code> - 992 lines</p>
+<h4 id="issue-22-unsafe-type-usage-261-occurrences"><strong>Issue 2.2: Unsafe Type Usage (261 occurrences)</strong><a class="headerlink" href="#issue-22-unsafe-type-usage-261-occurrences" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Problem</strong>: <code>any</code> types throughout codebase compromise type safety</li>
+<li><strong>Key Files</strong>:</li>
+<li><code>useGroupQueries.ts</code> - 5+ functions returning <code>any[]</code></li>
+<li><code>useMessagingQueries.ts</code> - Multiple <code>any</code> return types</li>
+<li><code>SimpleUnifiedUsersPage.tsx</code> - <code>any</code> in state management</li>
+<li><strong>Action</strong>: Replace all production <code>any</code> with proper types</li>
+<li><strong>Effort</strong>: 1 week</li>
+<li><strong>Priority</strong>: P1 - Pre-launch (critical files only)</li>
+</ul>
+<h4 id="issue-23-type-definition-redundancy"><strong>Issue 2.3: Type Definition Redundancy</strong><a class="headerlink" href="#issue-23-type-definition-redundancy" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Problem</strong>: 3 duplicate Supabase type files (12,000+ lines total)</li>
+<li><strong>Files</strong>:</li>
+<li><code>/src/types/supabase.ts</code> - 4673 lines</li>
+<li><code>/src/shared/types/database.types.ts</code> - 4183 lines</li>
+<li><code>/src/shared/types/supabase.ts</code> - 4180 lines</li>
+<li><strong>Action</strong>: Consolidate to single source, exclude from linting</li>
+<li><strong>Effort</strong>: 2-3 hours</li>
+<li><strong>Priority</strong>: P2 - Quick win</li>
+</ul>
+<h4 id="issue-24-debug-console-statements"><strong>Issue 2.4: Debug Console Statements</strong><a class="headerlink" href="#issue-24-debug-console-statements" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Count</strong>: 11 files with console.log statements</li>
+<li><strong>Examples</strong>:</li>
+<li><code>useOpportunityQueries.ts</code> - 13 console logs</li>
+<li><code>useImageProcessing.ts</code> - 3 statements</li>
+<li><strong>Action</strong>: Remove all debug logs, use proper logger</li>
+<li><strong>Effort</strong>: 2-3 hours</li>
+<li><strong>Priority</strong>: P1 - Pre-launch</li>
+</ul>
+<h4 id="issue-25-unresolved-todofixme-comments"><strong>Issue 2.5: Unresolved TODO/FIXME Comments</strong><a class="headerlink" href="#issue-25-unresolved-todofixme-comments" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Count</strong>: 15+ unresolved TODO comments</li>
+<li><strong>Examples</strong>:</li>
+<li><code>usePermissions.ts:78</code> - "TODO: Implement condition checking"</li>
+<li><code>FormActions.tsx:67</code> - "TODO: Implement delete group functionality"</li>
+<li><code>visual/index.ts</code> - 7 "TODO: Implement" exports</li>
+<li><strong>Action</strong>: Resolve or create tickets for each</li>
+<li><strong>Effort</strong>: 4-6 hours review + implementation time</li>
+<li><strong>Priority</strong>: P2 - Document if not implementing</li>
+</ul>
+<hr />
+<h3 id="3-test-coverage-issues-high-priority">3. Test Coverage Issues (HIGH PRIORITY)<a class="headerlink" href="#3-test-coverage-issues-high-priority" title="Permanent link">&para;</a></h3>
+<h4 id="current-state"><strong>Current State</strong><a class="headerlink" href="#current-state" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Test files</strong>: 17 (some in tests/, some colocated)</li>
+<li><strong>Source files</strong>: 1,478</li>
+<li><strong>Test ratio</strong>: ~1.2% (industry standard: 30-40%)</li>
+<li><strong>Coverage</strong>: Unknown (run <code>npm run test:coverage</code>)</li>
+</ul>
+<h4 id="missing-tests"><strong>Missing Tests</strong><a class="headerlink" href="#missing-tests" title="Permanent link">&para;</a></h4>
+<ul>
+<li>❌ No tests for largest/most complex files</li>
+<li>❌ Newsletter features minimally tested</li>
+<li>❌ Admin panel features undertested</li>
+<li>❌ Integration tests limited</li>
+<li>❌ E2E tests incomplete</li>
+</ul>
+<h4 id="actions-required"><strong>Actions Required</strong><a class="headerlink" href="#actions-required" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Immediate</strong> (P1): Add tests for critical paths:</li>
+<li>Authentication flow</li>
+<li>User registration/onboarding</li>
+<li>Payment/transaction flows (if any)</li>
+<li>
+<p>Data creation/modification</p>
+</li>
+<li>
+<p><strong>Pre-launch</strong> (P1): Achieve 30% coverage minimum:</p>
+</li>
+<li>All API services</li>
+<li>All custom hooks</li>
+<li>Major page components</li>
+<li>
+<p>Utility functions</p>
+</li>
+<li>
+<p><strong>Post-launch</strong> (P2): Increase to 80% coverage</p>
+</li>
+</ol>
+<p><strong>Effort</strong>: 2-3 weeks (focused testing sprint)
+<strong>Priority</strong>: P1 - Pre-launch (at least critical paths)</p>
+<hr />
+<h2 id="high-priority-issues">⚠️ High Priority Issues<a class="headerlink" href="#high-priority-issues" title="Permanent link">&para;</a></h2>
+<h3 id="4-documentation-consolidation">4. Documentation Consolidation<a class="headerlink" href="#4-documentation-consolidation" title="Permanent link">&para;</a></h3>
+<h4 id="issue-41-redundant-documentation"><strong>Issue 4.1: Redundant Documentation</strong><a class="headerlink" href="#issue-41-redundant-documentation" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Hybrid State Management</strong>: 7 duplicate files (~3000 lines)</li>
+<li><strong>Gallery System</strong>: 6 duplicate files (~2500 lines)</li>
+<li><strong>Admin Documentation</strong>: Scattered across 5+ locations</li>
+<li><strong>API Documentation</strong>: Scattered across 25+ files</li>
+</ul>
+<p><strong>Action Plan</strong>:
+1. Consolidate hybrid state docs (7 → 2 files)
+2. Consolidate gallery docs (6 → 2-3 files)
+3. Create unified API reference
+4. Create admin documentation index</p>
+<p><strong>Effort</strong>: 1 week
+<strong>Priority</strong>: P1 - Pre-launch</p>
+<h4 id="issue-42-missing-standard-documentation"><strong>Issue 4.2: Missing Standard Documentation</strong><a class="headerlink" href="#issue-42-missing-standard-documentation" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ <strong>FIXED</strong>: CONTRIBUTING.md created</li>
+<li>✅ <strong>FIXED</strong>: CODE_OF_CONDUCT.md created</li>
+<li>✅ <strong>FIXED</strong>: SECURITY.md created</li>
+<li>✅ <strong>FIXED</strong>: CHANGELOG.md created</li>
+<li>⚠️ <strong>NEEDS UPDATE</strong>: Contact email placeholders in security docs</li>
+</ul>
+<p><strong>Remaining Actions</strong>:
+- Add security contact email to SECURITY.md
+- Add contact email to CODE_OF_CONDUCT.md
+- Create GETTING_STARTED.md guide
+- Update README.md with open source info</p>
+<p><strong>Effort</strong>: 2-3 hours
+<strong>Priority</strong>: P1 - Pre-launch</p>
+<h3 id="5-environment-configuration">5. Environment &amp; Configuration<a class="headerlink" href="#5-environment-configuration" title="Permanent link">&para;</a></h3>
+<h4 id="issue-51-environment-variable-documentation"><strong>Issue 5.1: Environment Variable Documentation</strong><a class="headerlink" href="#issue-51-environment-variable-documentation" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>.env.example</code> exists but lacks comprehensive documentation</li>
+<li>50+ environment variables without inline explanations</li>
+<li>No setup guide linking env vars to features</li>
+</ul>
+<p><strong>Action</strong>: Create comprehensive environment setup guide
+<strong>Effort</strong>: 3-4 hours
+<strong>Priority</strong>: P1 - Pre-launch</p>
+<h4 id="issue-52-service-keys-exposure-risk"><strong>Issue 5.2: Service Keys Exposure Risk</strong><a class="headerlink" href="#issue-52-service-keys-exposure-risk" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Frontend has VITE_SUPABASE_ANON_KEY (acceptable)</li>
+<li>Must verify no service keys exposed in source</li>
+<li>Must verify no keys committed to git history</li>
+</ul>
+<p><strong>Action</strong>: Audit git history, run secrets scanner
+<strong>Effort</strong>: 1-2 hours
+<strong>Priority</strong>: P0 - Pre-launch</p>
+<hr />
+<h2 id="medium-priority-issues">📋 Medium Priority Issues<a class="headerlink" href="#medium-priority-issues" title="Permanent link">&para;</a></h2>
+<h3 id="6-code-organization">6. Code Organization<a class="headerlink" href="#6-code-organization" title="Permanent link">&para;</a></h3>
+<h4 id="issue-61-import-organization"><strong>Issue 6.1: Import Organization</strong><a class="headerlink" href="#issue-61-import-organization" title="Permanent link">&para;</a></h4>
+<ul>
+<li>19 deeply nested imports (4+ levels: <code>../../../../../../</code>)</li>
+<li>250 barrel exports creating circular dependency risk</li>
+<li>Inconsistent use of <code>@/</code> path alias</li>
+</ul>
+<p><strong>Action</strong>: Enforce path alias usage, reduce barrel exports
+<strong>Effort</strong>: 3-5 hours
+<strong>Priority</strong>: P2 - Post-launch</p>
+<h4 id="issue-62-error-boundaries"><strong>Issue 6.2: Error Boundaries</strong><a class="headerlink" href="#issue-62-error-boundaries" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Only 3 error boundary implementations</li>
+<li>Large features not wrapped (MenuManagement, UserSettings, CampaignManager)</li>
+</ul>
+<p><strong>Action</strong>: Add error boundaries around major features
+<strong>Effort</strong>: 4-6 hours
+<strong>Priority</strong>: P2 - Pre-launch</p>
+<h3 id="7-typescript-configuration">7. TypeScript Configuration<a class="headerlink" href="#7-typescript-configuration" title="Permanent link">&para;</a></h3>
+<h4 id="issue-71-relaxed-strict-mode"><strong>Issue 7.1: Relaxed Strict Mode</strong><a class="headerlink" href="#issue-71-relaxed-strict-mode" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>noUnusedLocals: false</code> (should be true)</li>
+<li><code>noUnusedParameters: false</code> (should be true)</li>
+<li><code>noUncheckedIndexedAccess: false</code> (should be true)</li>
+</ul>
+<p><strong>Action</strong>: Gradually enable strict flags
+<strong>Effort</strong>: 1 week (fixing violations)
+<strong>Priority</strong>: P2 - Post-launch</p>
+<h3 id="8-build-optimization">8. Build Optimization<a class="headerlink" href="#8-build-optimization" title="Permanent link">&para;</a></h3>
+<h4 id="issue-81-tree-shaking-disabled"><strong>Issue 8.1: Tree-Shaking Disabled</strong><a class="headerlink" href="#issue-81-tree-shaking-disabled" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Location</strong>: <code>vite.config.ts:91</code></li>
+<li><strong>Note</strong>: "disabled to fix bundle issue"</li>
+<li><strong>Impact</strong>: Larger bundle sizes</li>
+</ul>
+<p><strong>Action</strong>: Investigate and re-enable if possible
+<strong>Effort</strong>: 4-8 hours debugging
+<strong>Priority</strong>: P2 - Post-launch</p>
+<hr />
+<h2 id="whats-good-no-action-needed">✅ What's Good (No Action Needed)<a class="headerlink" href="#whats-good-no-action-needed" title="Permanent link">&para;</a></h2>
+<h3 id="architecture-strengths">Architecture Strengths<a class="headerlink" href="#architecture-strengths" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>Feature-based architecture</strong> - Excellent organization</li>
+<li>✅ <strong>Hybrid state management</strong> - Redux + React Query pattern is solid</li>
+<li>✅ <strong>Type safety foundation</strong> - TypeScript used throughout</li>
+<li>✅ <strong>Modern React patterns</strong> - Hooks, lazy loading, code splitting</li>
+<li>✅ <strong>Comprehensive database schema</strong> - Well-designed with RLS</li>
+<li>✅ <strong>Multiple deployment options</strong> - Docker, Coolify, Netlify</li>
+</ul>
+<h3 id="feature-completeness">Feature Completeness<a class="headerlink" href="#feature-completeness" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>22 major features</strong> - Comprehensive platform</li>
+<li>✅ <strong>AI integration</strong> - OpenAI + Anthropic support</li>
+<li>✅ <strong>Real-time messaging</strong> - Complete implementation</li>
+<li>✅ <strong>Newsletter system</strong> - Campaign management with analytics</li>
+<li>✅ <strong>Theme system</strong> - 5 presets with dark mode</li>
+<li>✅ <strong>Admin panel</strong> - Feature-rich management interface</li>
+</ul>
+<h3 id="documentation-quality">Documentation Quality<a class="headerlink" href="#documentation-quality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>Architecture docs</strong> - Excellent detail and clarity</li>
+<li>✅ <strong>Deployment guides</strong> - Multiple platforms covered</li>
+<li>✅ <strong>Feature guides</strong> - Gallery, onboarding well-documented</li>
+<li>✅ <strong>Database documentation</strong> - Clear setup instructions</li>
+<li>✅ <strong>LICENSE</strong> - MIT license properly formatted</li>
+</ul>
+<h3 id="developer-experience">Developer Experience<a class="headerlink" href="#developer-experience" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>42+ custom hooks</strong> - Great abstraction patterns</li>
+<li>✅ <strong>Component patterns</strong> - Templates and examples provided</li>
+<li>✅ <strong>Path aliases</strong> - <code>@/</code> configured (needs more usage)</li>
+<li>✅ <strong>Development scripts</strong> - Comprehensive npm scripts</li>
+<li>✅ <strong>Docker setup</strong> - Multiple configurations available</li>
+</ul>
+<hr />
+<h2 id="release-readiness-scorecard">📊 Release Readiness Scorecard<a class="headerlink" href="#release-readiness-scorecard" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Current</th>
+<th>Target</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Security</strong></td>
+<td>5/10</td>
+<td>9/10</td>
+<td>⚠️ BLOCKER</td>
+</tr>
+<tr>
+<td><strong>Code Quality</strong></td>
+<td>6.5/10</td>
+<td>7.5/10</td>
+<td>⚠️ Action needed</td>
+</tr>
+<tr>
+<td><strong>Test Coverage</strong></td>
+<td>1.2%</td>
+<td>30%</td>
+<td>🚫 BLOCKER</td>
+</tr>
+<tr>
+<td><strong>Documentation</strong></td>
+<td>8/10</td>
+<td>8/10</td>
+<td>✅ Good</td>
+</tr>
+<tr>
+<td><strong>Open Source Files</strong></td>
+<td>10/10</td>
+<td>10/10</td>
+<td>✅ Complete</td>
+</tr>
+<tr>
+<td><strong>Architecture</strong></td>
+<td>9/10</td>
+<td>9/10</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td><strong>Features</strong></td>
+<td>9.5/10</td>
+<td>9.5/10</td>
+<td>✅ Complete</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommended-release-timeline">🗓️ Recommended Release Timeline<a class="headerlink" href="#recommended-release-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-critical-security-fixes-week-1">Phase 1: Critical Security Fixes (Week 1)<a class="headerlink" href="#phase-1-critical-security-fixes-week-1" title="Permanent link">&para;</a></h3>
+<p><strong>Duration</strong>: 3-5 days
+<strong>Blockers</strong>: Yes</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Remove development auth bypass (2 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add HTML sanitization (DOMPurify) (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Fix page content sanitization (3 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add security headers (3 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Audit for exposed secrets (2 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Move session management to cookies (8 hours)</li>
+</ul>
+<p><strong>Total</strong>: 22 hours (3 days)</p>
+<h3 id="phase-2-critical-code-quality-week-1-2">Phase 2: Critical Code Quality (Week 1-2)<a class="headerlink" href="#phase-2-critical-code-quality-week-1-2" title="Permanent link">&para;</a></h3>
+<p><strong>Duration</strong>: 5-7 days
+<strong>Priority</strong>: High</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Remove console.log statements (2 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate duplicate type files (3 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Type 10 most-used hooks properly (16 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Split top 3 largest files (24 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add error boundaries to major features (6 hours)</li>
+</ul>
+<p><strong>Total</strong>: 51 hours (6-7 days)</p>
+<h3 id="phase-3-essential-testing-week-2-3">Phase 3: Essential Testing (Week 2-3)<a class="headerlink" href="#phase-3-essential-testing-week-2-3" title="Permanent link">&para;</a></h3>
+<p><strong>Duration</strong>: 10 days
+<strong>Blockers</strong>: Yes</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add tests for authentication (8 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add tests for user management (8 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add tests for content creation (8 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add tests for API services (16 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add tests for hooks (16 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Achieve 30% coverage minimum (24 hours)</li>
+</ul>
+<p><strong>Total</strong>: 80 hours (10 days)</p>
+<h3 id="phase-4-documentation-cleanup-week-3">Phase 4: Documentation Cleanup (Week 3)<a class="headerlink" href="#phase-4-documentation-cleanup-week-3" title="Permanent link">&para;</a></h3>
+<p><strong>Duration</strong>: 3-4 days
+<strong>Priority</strong>: High</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate hybrid state docs (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate gallery docs (3 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create unified API reference (8 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create GETTING_STARTED.md (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update README for open source (3 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add contact emails to security docs (1 hour)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review and update all docs (4 hours)</li>
+</ul>
+<p><strong>Total</strong>: 27 hours (3-4 days)</p>
+<h3 id="phase-5-final-review-polish-week-4">Phase 5: Final Review &amp; Polish (Week 4)<a class="headerlink" href="#phase-5-final-review-polish-week-4" title="Permanent link">&para;</a></h3>
+<p><strong>Duration</strong>: 2-3 days</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run security audit tools (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Final code review (8 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Documentation review (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test deployment processes (4 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create release notes (2 hours)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tag v1.0.0 release (1 hour)</li>
+</ul>
+<p><strong>Total</strong>: 23 hours (3 days)</p>
+<hr />
+<h2 id="pre-release-checklist">📋 Pre-Release Checklist<a class="headerlink" href="#pre-release-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="security">Security ⚠️<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Remove development authentication bypass</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add DOMPurify sanitization to admin HTML injection</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Ensure all page content is sanitized</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Move session management to secure cookies</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add security headers (CSP, X-Frame-Options, HSTS, etc.)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run <code>npm audit</code> and fix vulnerabilities</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Scan git history for exposed secrets</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review environment variable exposure</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test file upload validation</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify RLS policies on all tables</li>
+</ul>
+<h3 id="code-quality">Code Quality ⚠️<a class="headerlink" href="#code-quality" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Split 6 largest files (&gt;1000 lines)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Type all <code>any</code> in production hooks</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate duplicate Supabase types</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Remove all debug console.log statements</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Resolve or document all TODO/FIXME comments</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add JSDoc to complex functions</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement proper error boundaries</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Fix TypeScript ignore comments (add explanations)</li>
+</ul>
+<h3 id="testing">Testing 🚫<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Achieve minimum 30% test coverage</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test authentication flows</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test user management features</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test content creation/editing</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test API services</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test critical user journeys (E2E)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test accessibility (WCAG AA)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test mobile responsiveness</li>
+</ul>
+<h3 id="documentation">Documentation ✅<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add CONTRIBUTING.md</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add CODE_OF_CONDUCT.md</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add SECURITY.md</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add CHANGELOG.md</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add security contact email</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create GETTING_STARTED.md</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update README for open source</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate hybrid state docs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consolidate gallery docs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create unified API reference</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add environment setup guide</li>
+</ul>
+<h3 id="configuration">Configuration ⚠️<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review and update .env.example</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add inline comments to env variables</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify Docker configurations</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify deployment configs (Netlify, Coolify)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update nginx configuration</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Ensure proper .gitignore</li>
+</ul>
+<h3 id="legal-licensing">Legal &amp; Licensing ✅<a class="headerlink" href="#legal-licensing" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> MIT License present and correct</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify third-party license compliance</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add copyright notices where needed</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review terms of service (if applicable)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review privacy policy (if applicable)</li>
+</ul>
+<h3 id="community-setup">Community Setup<a class="headerlink" href="#community-setup" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Set up GitHub Discussions</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create issue templates</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create PR template</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Set up GitHub Actions (if desired)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add repository badges to README</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create project roadmap</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Prepare announcement materials</li>
+</ul>
+<hr />
+<h2 id="priority-matrix">🎯 Priority Matrix<a class="headerlink" href="#priority-matrix" title="Permanent link">&para;</a></h2>
+<h3 id="p0-release-blockers-must-fix-before-release">P0 - Release Blockers (Must Fix Before Release)<a class="headerlink" href="#p0-release-blockers-must-fix-before-release" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Security vulnerabilities (11-20 hours)</li>
+<li>Remove dev auth bypass (2 hours)</li>
+<li>Add HTML sanitization (4 hours)</li>
+<li>Test critical paths (40 hours)</li>
+</ol>
+<p><strong>Total P0 Effort</strong>: 57-66 hours (7-8 days)</p>
+<h3 id="p1-high-priority-should-fix-before-release">P1 - High Priority (Should Fix Before Release)<a class="headerlink" href="#p1-high-priority-should-fix-before-release" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Split largest 6 files (24 hours)</li>
+<li>Type safety in critical hooks (16 hours)</li>
+<li>Add error boundaries (6 hours)</li>
+<li>Remove console logs (2 hours)</li>
+<li>Documentation consolidation (27 hours)</li>
+<li>Achieve 30% test coverage (80 hours)</li>
+</ol>
+<p><strong>Total P1 Effort</strong>: 155 hours (19 days)</p>
+<h3 id="p2-medium-priority-can-fix-after-release">P2 - Medium Priority (Can Fix After Release)<a class="headerlink" href="#p2-medium-priority-can-fix-after-release" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Enable TypeScript strict flags (40 hours)</li>
+<li>Improve import organization (4 hours)</li>
+<li>Refactor remaining large files (80 hours)</li>
+<li>Increase test coverage to 80% (160 hours)</li>
+<li>Re-enable tree-shaking (8 hours)</li>
+</ol>
+<p><strong>Total P2 Effort</strong>: 292 hours (36 days)</p>
+<hr />
+<h2 id="effort-summary">💰 Effort Summary<a class="headerlink" href="#effort-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Duration</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase 1: Critical Security</strong></td>
+<td>3-5 days</td>
+<td>22 hours</td>
+</tr>
+<tr>
+<td><strong>Phase 2: Code Quality</strong></td>
+<td>5-7 days</td>
+<td>51 hours</td>
+</tr>
+<tr>
+<td><strong>Phase 3: Testing</strong></td>
+<td>10 days</td>
+<td>80 hours</td>
+</tr>
+<tr>
+<td><strong>Phase 4: Documentation</strong></td>
+<td>3-4 days</td>
+<td>27 hours</td>
+</tr>
+<tr>
+<td><strong>Phase 5: Final Review</strong></td>
+<td>2-3 days</td>
+<td>23 hours</td>
+</tr>
+<tr>
+<td><strong>Total to Release</strong></td>
+<td><strong>3-4 weeks</strong></td>
+<td><strong>203 hours</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Assuming</strong>:
+- Single developer: 4 weeks
+- Two developers: 2-3 weeks
+- Small team (3-4): 1.5-2 weeks</p>
+<hr />
+<h2 id="minimal-viable-release-mvr">🚀 Minimal Viable Release (MVR)<a class="headerlink" href="#minimal-viable-release-mvr" title="Permanent link">&para;</a></h2>
+<p>If you must release sooner, here's the absolute minimum:</p>
+<h3 id="week-1-critical-only-40-hours-5-days">Week 1: Critical Only (40 hours / 5 days)<a class="headerlink" href="#week-1-critical-only-40-hours-5-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ Remove dev auth bypass (2h)</li>
+<li>✅ Add HTML sanitization (4h)</li>
+<li>✅ Fix content sanitization (3h)</li>
+<li>✅ Add security headers (3h)</li>
+<li>✅ Remove console logs (2h)</li>
+<li>✅ Consolidate type files (3h)</li>
+<li>✅ Add contact emails to docs (1h)</li>
+<li>✅ Test authentication flow (4h)</li>
+<li>✅ Test user creation flow (4h)</li>
+<li>✅ Test content creation flow (4h)</li>
+<li>✅ Security audit scan (2h)</li>
+<li>✅ Final security review (8h)</li>
+</ol>
+<p><strong>Result</strong>: Secure enough for limited release with known code quality debt.</p>
+<hr />
+<h2 id="recommendations-by-audience">📞 Recommendations by Audience<a class="headerlink" href="#recommendations-by-audience" title="Permanent link">&para;</a></h2>
+<h3 id="for-project-owner">For Project Owner<a class="headerlink" href="#for-project-owner" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Focus first</strong>: Security issues (P0)</li>
+<li><strong>Budget for</strong>: 3-4 weeks pre-release work</li>
+<li><strong>Consider</strong>: Soft launch with limited users while improving</li>
+<li><strong>Plan for</strong>: Ongoing code quality improvements post-launch</li>
+<li><strong>Communicate</strong>: Known limitations clearly in docs</li>
+</ul>
+<h3 id="for-lead-developer">For Lead Developer<a class="headerlink" href="#for-lead-developer" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Start with</strong>: Security fixes (days 1-3)</li>
+<li><strong>Prioritize</strong>: Test coverage for critical paths</li>
+<li><strong>Delegate</strong>: Documentation consolidation</li>
+<li><strong>Track</strong>: Technical debt in GitHub issues</li>
+<li><strong>Set up</strong>: Code quality gates for future PRs</li>
+</ul>
+<h3 id="for-contributors">For Contributors<a class="headerlink" href="#for-contributors" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Read</strong>: CONTRIBUTING.md, CODE_OF_CONDUCT.md</li>
+<li><strong>Start with</strong>: Issues labeled "good first issue"</li>
+<li><strong>Focus on</strong>: Test coverage improvements</li>
+<li><strong>Help with</strong>: Documentation consolidation</li>
+<li><strong>Follow</strong>: Code style guidelines strictly</li>
+</ul>
+<hr />
+<h2 id="lessons-learned">🎓 Lessons Learned<a class="headerlink" href="#lessons-learned" title="Permanent link">&para;</a></h2>
+<h3 id="what-went-well">What Went Well<a class="headerlink" href="#what-went-well" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Architecture</strong>: Feature-based structure is maintainable</li>
+<li><strong>Documentation</strong>: Comprehensive but needs consolidation</li>
+<li><strong>Features</strong>: Well-implemented and complete</li>
+<li><strong>Deployment</strong>: Multiple options provide flexibility</li>
+</ol>
+<h3 id="what-needs-improvement">What Needs Improvement<a class="headerlink" href="#what-needs-improvement" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>File Size Management</strong>: Need guidelines and enforcement</li>
+<li><strong>Type Safety</strong>: Too many <code>any</code> escapes</li>
+<li><strong>Testing</strong>: Should have been concurrent with development</li>
+<li><strong>Security</strong>: Security review should be earlier in process</li>
+</ol>
+<h3 id="for-future-projects">For Future Projects<a class="headerlink" href="#for-future-projects" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Enforce file size limits</strong> in PR reviews (&lt; 300 lines)</li>
+<li><strong>Make tests mandatory</strong> for all PRs (minimum coverage)</li>
+<li><strong>Security review checklist</strong> at every milestone</li>
+<li><strong>Documentation templates</strong> from day one</li>
+<li><strong>Code quality gates</strong> in CI/CD pipeline</li>
+</ol>
+<hr />
+<h2 id="resources">📚 Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<h3 id="security_1">Security<a class="headerlink" href="#security_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a></li>
+<li><a href="https://supabase.com/docs/guides/auth">Supabase Security Best Practices</a></li>
+<li><a href="https://reactjs.org/docs/security.html">React Security Guide</a></li>
+</ul>
+<h3 id="testing_1">Testing<a class="headerlink" href="#testing_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://testing-library.com/docs/react-testing-library/intro/">React Testing Library</a></li>
+<li><a href="https://jestjs.io/docs/getting-started">Jest Documentation</a></li>
+<li><a href="https://playwright.dev/">Playwright E2E Testing</a></li>
+</ul>
+<h3 id="code-quality_1">Code Quality<a class="headerlink" href="#code-quality_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/ryanmcdermott/clean-code-javascript">Clean Code JavaScript</a></li>
+<li><a href="https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html">TypeScript Best Practices</a></li>
+<li><a href="https://react.dev/learn">React Best Practices</a></li>
+</ul>
+<h3 id="open-source">Open Source<a class="headerlink" href="#open-source" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://opensource.guide/">Open Source Guides</a></li>
+<li><a href="https://www.firsttimersonly.com/">First Timers Only</a></li>
+<li><a href="https://opensource.guide/how-to-contribute/">How to Contribute to Open Source</a></li>
+</ul>
+<hr />
+<h2 id="conclusion">🏁 Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>The Nelson Tech Community Platform is a <strong>well-built application with strong foundations</strong> but requires <strong>focused effort on security, testing, and code quality</strong> before public release.</p>
+<h3 id="key-takeaways">Key Takeaways<a class="headerlink" href="#key-takeaways" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Do not release</strong> until security issues are resolved</li>
+<li><strong>Prioritize</strong> the 3-4 week timeline for proper preparation</li>
+<li><strong>Focus on</strong> P0 and P1 issues first</li>
+<li><strong>Consider</strong> a limited beta release while improving</li>
+<li><strong>Plan for</strong> ongoing improvements post-launch</li>
+</ol>
+<h3 id="success-criteria-for-release">Success Criteria for Release<a class="headerlink" href="#success-criteria-for-release" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ All P0 security issues resolved</li>
+<li>✅ Minimum 30% test coverage achieved</li>
+<li>✅ Top 6 large files refactored</li>
+<li>✅ Documentation consolidated and complete</li>
+<li>✅ Contact information added to governance docs</li>
+<li>✅ All console.log statements removed</li>
+<li>✅ Critical user flows tested</li>
+</ul>
+<h3 id="final-recommendation">Final Recommendation<a class="headerlink" href="#final-recommendation" title="Permanent link">&para;</a></h3>
+<p><strong>Invest 3-4 weeks</strong> in addressing the issues identified in this report. The platform has excellent potential and deserves a proper launch. Rushing to release with known security vulnerabilities would undermine the quality of the work already completed.</p>
+<hr />
+<p><strong>Report Generated</strong>: November 10, 2025
+<strong>Next Review Recommended</strong>: After Phase 1 completion (security fixes)</p>
+<p>For questions or clarifications, please review the detailed sections above or create an issue in the repository.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="November 10, 2025 18:30:34 UTC"><span class="timeago" datetime="2025-11-10T18:30:34+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="November 10, 2025 18:30:34 UTC">2025-11-10</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="November 10, 2025 18:30:34 UTC"><span class="timeago" datetime="2025-11-10T18:30:34+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="November 10, 2025 18:30:34 UTC">2025-11-10</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../FEATURE_TOGGLE_INVESTIGATION_REPORT/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Feature Toggles">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Feature Toggles
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../DATABASE_ARCHITECT_SUMMARY/" class="md-footer__link md-footer__link--next" aria-label="Next: Database Architecture">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Database Architecture
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Nelson Tech Community
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/iaminawe/nelson-tech" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nelson-tech.slack.com" target="_blank" rel="noopener" title="nelson-tech.slack.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M94.1 315.1c0 25.9-21.2 47.1-47.1 47.1S0 341 0 315.1 21.2 268 47.1 268h47.1v47.1zm23.7 0c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1v117.8c0 25.9-21.2 47.1-47.1 47.1s-47.1-21.2-47.1-47.1zm47.1-189c-25.9 0-47.1-21.2-47.1-47.1s21.2-47 47.1-47S212 53.2 212 79.1v47.1h-47.1zm0 23.7c25.9 0 47.1 21.2 47.1 47.1S190.8 244 164.9 244H47.1C21.2 244 0 222.8 0 196.9s21.2-47.1 47.1-47.1zm189 47.1c0-25.9 21.2-47.1 47.1-47.1s47 21.2 47 47.1-21.2 47.1-47.1 47.1h-47.1v-47.1zm-23.7 0c0 25.9-21.2 47.1-47.1 47.1S236 222.8 236 196.9V79.1c0-25.9 21.2-47.1 47.1-47.1s47.1 21.2 47.1 47.1zm-47.1 189c25.9 0 47.1 21.2 47.1 47.1s-21.2 47-47.1 47-47.1-21.2-47.1-47.1v-47.1h47.1zm0-23.7c-25.9 0-47.1-21.2-47.1-47.1s21.2-47.1 47.1-47.1h117.8c25.9 0 47.1 21.2 47.1 47.1s-21.2 47.1-47.1 47.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow", "toc.integrate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../js/timeago.min.js"></script>
+      
+        <script src="../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>
