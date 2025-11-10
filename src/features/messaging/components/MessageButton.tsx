@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/shared/components/ui/Button';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
-import { useCreateMarketplaceThread, useCreateOpportunityThread } from '@/hooks/useMessagingQueries';
+import { useCreateMarketplaceThread, useCreateOpportunityThread } from '@/hooks/messaging';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { logger } from '@/utils/logger';

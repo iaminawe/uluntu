@@ -448,7 +448,15 @@ const ContactInboxPage: React.FC<ContactInboxPageProps> = () => {
                     </h3>
                     <form onSubmit={(e) => {
                       e.preventDefault();
-                      // TODO: Implement response functionality
+                      // TODO(contact-response): Implement response functionality
+                      // Requires:
+                      // 1. Add state for response message
+                      // 2. Call contactSubmissionsAPI.sendResponse() with message
+                      // 3. Update submission status to 'in_progress' or new status
+                      // 4. Show success/error toast
+                      // 5. Clear form on success
+                      // Estimated effort: 1 hour (including testing)
+                      // See: contactSubmissionsAPI for available methods
                     }}>
                       <textarea
                         rows={6}

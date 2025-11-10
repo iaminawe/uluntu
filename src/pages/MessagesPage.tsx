@@ -5,7 +5,7 @@ import ConversationsList from '@/features/messaging/components/ConversationsList
 import RealtimeMessageThread from '@/features/messaging/components/MessageThread/RealtimeMessageThread';
 import EnhancedNewMessageModal from '@/features/messaging/components/NewMessageModal/EnhancedNewMessageModal';
 import { useMessagingHybrid } from '@/features/messaging/hooks/useMessagingHybrid';
-import { useDeleteConversation, useDeleteConversations } from '@/hooks/useMessagingQueries';
+import { useDeleteConversation, useDeleteConversations } from '@/hooks/messaging';
 import { messagingApi } from '@/features/messaging/api/messagingApi.real';
 import { ContentContainer, PageHeader } from '@/shared/components/ui/PageLayout';
 import { ErrorDisplay } from '@/shared/components/ui/ErrorDisplay';
