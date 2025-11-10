@@ -2,7 +2,7 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { useFeatureToggle } from '@/utils/featureToggle';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
-import { useCreateMarketplaceThread } from '@/hooks/useMessagingQueries';
+import { useCreateMarketplaceThread } from '@/hooks/messaging';
 import { useNavigate } from 'react-router-dom';
 
 interface MessageSellerButtonProps {

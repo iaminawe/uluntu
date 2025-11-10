@@ -65,6 +65,14 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     skills: member.skills || [],
     joinDate: member.joinDate || member.created_at || new Date().toISOString(), // Pass through from MainMember with fallback
     status: member.status || 'published' as ContentStatus,     // Pass through from MainMember with default
+    // TODO(member-relationships): Populate relationship arrays from database
+    // These fields require querying the member_organizations, member_groups, member_events tables
+    // Current implementation: Empty arrays placeholder
+    // To implement:
+    //   1. Add queries to fetch member relationships from Supabase
+    //   2. Parse relationships and map to appropriate types
+    //   3. Consider caching with React Query
+    // Related tables: member_organizations, member_groups, member_events, resources, posts, opportunities, achievements
     organizations: [], // TODO: Populate from relationships
     groups: [], // TODO: Populate from relationships
     events: [], // TODO: Populate from relationships
@@ -78,8 +86,8 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
       // Ensure 'Website' is capitalized consistently if it matters for platform identification
       { platform: 'Website', url: member.social.website || '' }
     ].filter(link => link.url) : [],
-    employmentStatus: 'not-looking' as const, // TODO: Map from member status
-    openToVolunteering: false, // TODO: Add to member type
+    employmentStatus: 'not-looking' as const, // TODO(member-status): Map from member.employment_status field
+    openToVolunteering: false, // TODO(member-volunteering): Add member.open_to_volunteering field to MemberLike type
     arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString()
   };
 }

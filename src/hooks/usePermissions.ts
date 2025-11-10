@@ -18,7 +18,7 @@ export const usePermissions = () => {
   const { user, roles: reduxRoles } = useAppSelector(state => state.auth);
   
   // Fetch custom roles for the current user
-  const { data: customRoles = [] } = useQuery({
+  const { data: customRoles = [], isLoading: customRolesLoading } = useQuery({
     queryKey: ['user-custom-roles', user?.id],
     queryFn: () => user ? adminRolesApi.getUserRoles(user.id) : Promise.resolve([]),
     enabled: !!user?.id,
@@ -80,7 +80,9 @@ export const usePermissions = () => {
     const resourcePermissions = mergedPermissions[resource];
     if (resourcePermissions) {
       if (resourcePermissions.includes('*') || resourcePermissions.includes(action)) {
-        // TODO: Implement condition checking if needed
+        // Conditions are supported via the PermissionCheck interface but not currently evaluated
+        // To implement: evaluate conditions parameter for attribute-based access control (ABAC)
+        // Example: if conditions exist, verify all conditions are met before granting permission
         return true;
       }
     }
@@ -132,7 +134,7 @@ export const usePermissions = () => {
     isSuperAdmin: reduxRoles.list.includes('superadmin'),
     isAdmin: reduxRoles.list.includes('admin') || reduxRoles.list.includes('superadmin'),
     customRolesCount: customRoles.length,
-    customRolesLoading: false, // TODO: Get loading state
+    customRolesLoading,
     allRolesCount: allRoles.length,
     effectiveRoles: effectiveRoles
   };
