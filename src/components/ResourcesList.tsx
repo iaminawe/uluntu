@@ -27,7 +27,6 @@ function ResourceModal({ onClose }: ResourceModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle resource submission
-    console.log('Resource submitted:', formData);
     onClose();
   };
 

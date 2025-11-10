@@ -42,7 +42,6 @@ export default function AIEditorDemo() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     setSavedContent(content);
     setIsSaving(false);
-    console.log('Content saved:', content);
   };
 
   const handleLoad = () => {

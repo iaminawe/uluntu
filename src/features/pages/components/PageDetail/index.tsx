@@ -1,8 +1,27 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { fetchPageBySlug, clearCurrentPage } from '../../store/pagesSlice';
 import { jsonToHtml } from '../../utils/editorUtils';
+
+/**
+ * DOMPurify configuration for rich page content.
+ * Allows formatting tags and blocks scripts/event handlers to prevent XSS attacks.
+ * More permissive than theme HTML sanitization since page content requires rich formatting.
+ */
+const RICH_CONTENT_CONFIG = {
+  ALLOWED_TAGS: [
+    'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img', 'table', 'tr',
+    'td', 'th', 'thead', 'tbody', 'div', 'span', 'hr',
+  ],
+  ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+  ALLOW_DATA_ATTR: false,
+  // Block all script execution
+  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
+};
 
 interface PageDetailProps {
   pageSlug?: string;
@@ -187,7 +206,15 @@ export const PageDetail: React.FC<PageDetailProps> = ({
         {currentPage.content ? (
           <div
             dangerouslySetInnerHTML={{
-              __html: jsonToHtml(currentPage.content),
+              /**
+               * Defense-in-depth: Sanitize HTML even though jsonToHtml generates HTML from JSON.
+               * This protects against XSS if malicious content is stored in the database
+               * or if jsonToHtml has vulnerabilities in href/src attribute handling.
+               */
+              __html: DOMPurify.sanitize(
+                jsonToHtml(currentPage.content),
+                RICH_CONTENT_CONFIG
+              ),
             }}
           />
         ) : (

@@ -8,9 +8,19 @@ The Nelson Tech Community Platform team takes security seriously. We appreciate 
 
 **Please do NOT report security vulnerabilities through public GitHub issues.**
 
-Instead, please report security vulnerabilities by emailing:
+Instead, please report security vulnerabilities using one of these methods:
 
-**[Security contact email to be added]**
+**Option 1: GitHub Security Advisories (Recommended)**
+
+https://github.com/iaminawe/nelson-tech/security/advisories/new
+
+**Option 2: Private Issue**
+
+Create a private issue at https://github.com/iaminawe/nelson-tech/issues and mention it's a security concern
+
+**Option 3: Contact Repository Owner**
+
+Contact the repository owner directly through GitHub: https://github.com/iaminawe
 
 ### What to Include in Your Report
 

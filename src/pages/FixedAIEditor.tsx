@@ -56,7 +56,6 @@ export default function FixedAIEditor() {
 
   const handleSave = () => {
     setSavedContent(content);
-    console.log('Content saved:', content);
   };
 
   const handleLoad = () => {

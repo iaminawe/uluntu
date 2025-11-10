@@ -37,20 +37,19 @@ globalThis.__JEST_IMPORT_META_ENV__ = {
   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'http://localhost:54321',
   VITE_SUPABASE_KEY: process.env.VITE_SUPABASE_KEY || 'your-anon-key',
   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
-  
+
   // Feature flags
-  VITE_DEV_BYPASS_AUTH: process.env.VITE_DEV_BYPASS_AUTH || 'false',
   VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE || 'false',
-  
+
   // Environment indicators
   DEV: true,
   MODE: 'test',
   PROD: false,
   SSR: false,
-  
+
   // Storage buckets
   VITE_PROFILE_IMAGES_BUCKET: 'profile-images',
-  
+
   // Set process.env values as well for code that might bypass our mock
   // This ensures environment variables are available no matter how they're accessed
 };
@@ -60,7 +59,6 @@ process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localho
 process.env.VITE_SUPABASE_KEY = process.env.VITE_SUPABASE_KEY || 'your-anon-key';
 process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 process.env.VITE_USE_SUPABASE = process.env.VITE_USE_SUPABASE || 'false';
-process.env.VITE_DEV_BYPASS_AUTH = process.env.VITE_DEV_BYPASS_AUTH || 'false';
 process.env.VITE_PROFILE_IMAGES_BUCKET = 'profile-images';
 
 

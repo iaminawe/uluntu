@@ -21,14 +21,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>({} as AuthContextType);
 
-// Development bypass for authentication (same as in original AuthContext)
-const DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && import.meta.env.DEV;
-const DEV_USER = {
-  id: 'dev-user-id',
-  email: 'dev@example.com',
-  user_metadata: { name: 'Development User' },
-};
-
 /**
  * AuthProvider that integrates with Redux
  * 
@@ -127,47 +119,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 /**
  * useAuth hook that connects to the Redux-based AuthContext
- * 
+ *
  * This maintains the same API as the original useAuth hook
  */
 export function useAuth() {
   const context = useContext(AuthContext);
-  
-  // In development mode, provide a bypass for authentication (same as original)
-  if (DEV_BYPASS_AUTH && import.meta.env.DEV) {
-    // Create a safe context object that handles the undefined case
-    const safeContext: AuthContextType = context || {
-      session: null,
-      user: null,
-      loading: false,
-      error: null,
-      signIn: async () => ({ data: null, error: null }),
-      signUp: async () => ({ data: null, error: null }),
-      signOut: async () => ({ error: null }),
-      userRoles: [],
-      isAdmin: false,
-      forgotPassword: async () => ({ success: true, error: null }),
-      resetPassword: async () => ({ success: true, error: null })
-    };
-    
-    return {
-      ...safeContext,
-      // Override sign-in to always succeed in development
-      signIn: async (_email: string, _password: string, _rememberMe?: boolean) => ({
-        data: { session: { user: DEV_USER }, user: DEV_USER },
-        error: null
-      }),
-      // Add mock implementations for password reset functions
-      forgotPassword: async () => ({ success: true, error: null }),
-      resetPassword: async () => ({ success: true, error: null }),
-      // Make sure user is always set in development
-      user: DEV_USER,
-      isAdmin: true,
-      userRoles: ['admin', 'user'],
-      loading: false
-    };
-  }
-  
+
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

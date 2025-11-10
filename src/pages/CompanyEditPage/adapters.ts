@@ -1,5 +1,5 @@
 import type { FormData } from './types';
-import type { Database } from '@/shared/types/supabase';
+import type { Database } from '@/types/supabase';
 
 type TablesInsert<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
 type TablesUpdate<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
