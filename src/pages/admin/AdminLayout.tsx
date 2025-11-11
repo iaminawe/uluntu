@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
-import { useSettings } from '@/hooks/useSettings';
+import { useSettings, useEnabledFeatures } from '@/hooks/useSettings';
 import { useTheme } from '@/providers/EnhancedThemeProvider';
 import { useFeatureToggle } from '@/utils/featureToggle';
 import {
@@ -45,10 +45,13 @@ const AdminLayout: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['User Management', 'Content Management']);
-  
+
   // Check if photo galleries feature is enabled
   const { enabled: photoGalleriesEnabled } = useFeatureToggle('photo_galleries');
-  
+
+  // Get enabled features for filtering admin navigation
+  const { isFeatureEnabled } = useEnabledFeatures();
+
   // Get site name from settings
   const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
 
@@ -89,6 +92,21 @@ const AdminLayout: React.FC = () => {
     );
   };
 
+  // Filter content management items based on enabled features
+  const contentManagementChildren = [
+    { name: 'Pages', href: '/admin/pages', icon: FileText },
+    ...(photoGalleriesEnabled ? [{ name: 'Media Gallery', href: '/admin/media', icon: Image }] : []),
+    ...(isFeatureEnabled('members_directory') ? [{ name: 'Members', href: '/admin/entities/members', icon: Users }] : []),
+    ...(isFeatureEnabled('companies_listing') ? [{ name: 'Companies', href: '/admin/entities/companies', icon: Building2 }] : []),
+    ...(isFeatureEnabled('groups_communities') ? [{ name: 'Groups', href: '/admin/entities/groups', icon: UsersRound }] : []),
+    ...(isFeatureEnabled('events_system') ? [{ name: 'Events', href: '/admin/entities/events', icon: Calendar }] : []),
+    ...(isFeatureEnabled('news_blog') ? [{ name: 'News', href: '/admin/entities/news', icon: Newspaper }] : []),
+    ...(isFeatureEnabled('resources_library') ? [{ name: 'Resources', href: '/admin/entities/resources', icon: BookOpen }] : []),
+    ...(isFeatureEnabled('marketplace') ? [{ name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag }] : []),
+    ...(isFeatureEnabled('opportunities_board') ? [{ name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase }] : []),
+    { name: 'Topics', href: '/admin/entities/topics', icon: Tag }
+  ];
+
   const navigation = [
     {
       name: 'Dashboard',
@@ -99,18 +117,7 @@ const AdminLayout: React.FC = () => {
     {
       name: 'Content Management',
       icon: FileText,
-      children: [
-        { name: 'Pages', href: '/admin/pages', icon: FileText },
-        ...(photoGalleriesEnabled ? [{ name: 'Media Gallery', href: '/admin/media', icon: Image }] : []),
-        { name: 'Companies', href: '/admin/entities/companies', icon: Building2 },
-        { name: 'Groups', href: '/admin/entities/groups', icon: UsersRound },
-        { name: 'Events', href: '/admin/entities/events', icon: Calendar },
-        { name: 'News', href: '/admin/entities/news', icon: Newspaper },
-        { name: 'Resources', href: '/admin/entities/resources', icon: BookOpen },
-        { name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag },
-        { name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase },
-        { name: 'Topics', href: '/admin/entities/topics', icon: Tag }
-      ]
+      children: contentManagementChildren
     },
     {
       name: 'User Management',
