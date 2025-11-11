@@ -4,7 +4,6 @@ import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useSettings, useEnabledFeatures } from '@/hooks/useSettings';
 import { useTheme } from '@/providers/EnhancedThemeProvider';
-import { useFeatureToggle } from '@/utils/featureToggle';
 import {
   LayoutDashboard,
   Users,
@@ -46,11 +45,11 @@ const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['User Management', 'Content Management']);
 
-  // Check if photo galleries feature is enabled
-  const { enabled: photoGalleriesEnabled } = useFeatureToggle('photo_galleries');
-
   // Get enabled features for filtering admin navigation
   const { isFeatureEnabled } = useEnabledFeatures();
+
+  // Check if photo galleries feature is enabled
+  const photoGalleriesEnabled = isFeatureEnabled('photo_galleries');
 
   // Get site name from settings
   const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
