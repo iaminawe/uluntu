@@ -19,10 +19,12 @@ export default function UserMenu() {
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
 
-  // Check if messaging and marketplace features are enabled
+  // Check if messaging, marketplace, and groups features are enabled
   const { isFeatureEnabled } = useEnabledFeatures();
   const isMessagingEnabled = isFeatureEnabled('user_messaging');
   const isMarketplaceEnabled = isFeatureEnabled('marketplace');
+  const isGroupsEnabled = isFeatureEnabled('groups_communities');
+  const isResourcesEnabled = isFeatureEnabled('resources_library');
   
   // Debug logging for admin access (disabled)
   /*
@@ -190,8 +192,8 @@ export default function UserMenu() {
                 </Link>
               )}
               
-              {/* User's Groups Section */}
-              {groups.length > 0 && !groupsLoading && (
+              {/* User's Groups Section - Only show if feature is enabled */}
+              {isGroupsEnabled && groups.length > 0 && !groupsLoading && (
                 <>
                   <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
                   <div className="px-4 py-2">
@@ -200,7 +202,7 @@ export default function UserMenu() {
                         <Users className="h-3 w-3 mr-1" />
                         Your Groups
                       </span>
-                      <Link 
+                      <Link
                         to="/groups"
                         className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300"
                         onClick={() => setIsOpen(false)}
@@ -224,8 +226,8 @@ export default function UserMenu() {
                 </>
               )}
               
-              {/* User's Resources Section */}
-              {resources.length > 0 && !resourcesLoading && (
+              {/* User's Resources Section - Only show if feature is enabled */}
+              {isResourcesEnabled && resources.length > 0 && !resourcesLoading && (
                 <>
                   <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
                   <div className="px-4 py-2">
@@ -234,7 +236,7 @@ export default function UserMenu() {
                         <BookOpen className="h-3 w-3 mr-1" />
                         Your Resources
                       </span>
-                      <Link 
+                      <Link
                         to="/resources"
                         className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300"
                         onClick={() => setIsOpen(false)}

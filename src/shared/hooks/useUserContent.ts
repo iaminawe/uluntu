@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 interface UserGroup {
   id: string;
@@ -25,14 +26,24 @@ interface UserMarketplaceItem {
 
 /**
  * Hook to fetch user's groups
+ * Only fetches when groups_communities feature is enabled
  */
 export function useUserGroups() {
   const { user } = useAuth();
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const groupsEnabled = isFeatureEnabled('groups_communities');
   const [groups, setGroups] = useState<UserGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Don't fetch if feature is disabled
+    if (!groupsEnabled) {
+      setGroups([]);
+      setIsLoading(false);
+      return;
+    }
+
     if (!user) {
       setGroups([]);
       setIsLoading(false);
@@ -95,21 +106,31 @@ export function useUserGroups() {
     };
 
     fetchUserGroups();
-  }, [user]);
+  }, [user, groupsEnabled]);
 
   return { groups, isLoading, error };
 }
 
 /**
  * Hook to fetch user's resources
+ * Only fetches when resources_library feature is enabled
  */
 export function useUserResources() {
   const { user } = useAuth();
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const resourcesEnabled = isFeatureEnabled('resources_library');
   const [resources, setResources] = useState<UserResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Don't fetch if feature is disabled
+    if (!resourcesEnabled) {
+      setResources([]);
+      setIsLoading(false);
+      return;
+    }
+
     if (!user) {
       setResources([]);
       setIsLoading(false);
@@ -158,21 +179,31 @@ export function useUserResources() {
     };
 
     fetchUserResources();
-  }, [user]);
+  }, [user, resourcesEnabled]);
 
   return { resources, isLoading, error };
 }
 
 /**
  * Hook to fetch user's marketplace items
+ * Only fetches when marketplace feature is enabled
  */
 export function useUserMarketplaceItems() {
   const { user } = useAuth();
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const marketplaceEnabled = isFeatureEnabled('marketplace');
   const [items, setItems] = useState<UserMarketplaceItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Don't fetch if feature is disabled
+    if (!marketplaceEnabled) {
+      setItems([]);
+      setIsLoading(false);
+      return;
+    }
+
     if (!user) {
       setItems([]);
       setIsLoading(false);
@@ -230,7 +261,7 @@ export function useUserMarketplaceItems() {
     };
 
     fetchUserMarketplaceItems();
-  }, [user]);
+  }, [user, marketplaceEnabled]);
 
   return { items, isLoading, error };
 }
