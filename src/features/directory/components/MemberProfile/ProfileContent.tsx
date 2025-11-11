@@ -4,6 +4,7 @@ import { Member } from './types';
 import { getTypeIcon } from './utils';
 import { useEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
 import { getGroupUrl, getResourceUrl, getEventUrl, getMarketplaceListingUrl, getOpportunityUrl, getGroupPostUrl } from '@/utils/contentUrlUtils';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 // import { MemberContributions } from '../../hooks/useMemberContributions';
 
 interface ProfileContentProps {
@@ -13,6 +14,14 @@ interface ProfileContentProps {
 }
 
 const ProfileContent = ({ member, contributions, isContributionsLoading = false }: ProfileContentProps) => {
+  // Check enabled features
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const groupsEnabled = isFeatureEnabled('groups_communities');
+  const resourcesEnabled = isFeatureEnabled('resources_library');
+  const eventsEnabled = isFeatureEnabled('events_system');
+  const marketplaceEnabled = isFeatureEnabled('marketplace');
+  const opportunitiesEnabled = isFeatureEnabled('opportunities_board');
+
   // Fetch topics for this member
   const { data: memberTopics } = useEntityTopics('member', member.id);
   // Use contributions data if available, otherwise fall back to member data
@@ -76,7 +85,8 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
       
       {/* Main content sections */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Groups section with visual enhancements */}
+        {/* Groups section with visual enhancements - Only show if feature enabled */}
+        {groupsEnabled && (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center mb-6">
             <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
@@ -119,8 +129,10 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
             </div>
           )}
         </div>
+        )}
 
-        {/* Resources section with improved visuals */}
+        {/* Resources section with improved visuals - Only show if feature enabled */}
+        {resourcesEnabled && (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center mb-6">
             <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
@@ -174,8 +186,10 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
             </div>
           )}
         </div>
+        )}
 
-        {/* Events and presentations section */}
+        {/* Events and presentations section - Only show if feature enabled */}
+        {eventsEnabled && (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center mb-6">
             <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
@@ -220,10 +234,12 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
             </div>
           )}
         </div>
+        )}
       </div>
 
 
-      {/* Marketplace listings with enhanced visual appeal */}
+      {/* Marketplace listings with enhanced visual appeal - Only show if feature enabled */}
+      {marketplaceEnabled && (
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
@@ -301,8 +317,10 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
           </div>
         )}
       </div>
+      )}
 
-      {/* Posts section with improved layout */}
+      {/* Posts section with improved layout - Only show if feature enabled */}
+      {groupsEnabled && (
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6">
           <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
@@ -342,8 +360,10 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
           </div>
         )}
       </div>
+      )}
 
-      {/* Opportunities section */}
+      {/* Opportunities section - Only show if feature enabled */}
+      {opportunitiesEnabled && (
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6">
           <div className="bg-orange-100 dark:bg-orange-900/20 p-2 rounded-full mr-3">
@@ -384,7 +404,8 @@ const ProfileContent = ({ member, contributions, isContributionsLoading = false 
           </div>
         )}
       </div>
-      
+      )}
+
 {/* Achievements section - New addition */}
       {/* <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6">
