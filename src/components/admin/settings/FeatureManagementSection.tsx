@@ -30,11 +30,16 @@ const IMPLEMENTED_FEATURES = [
 
   // Social Features - Fully Implemented
   'user_messaging',
+  'content_likes',
+  'content_comments',
+  'content_sharing',
 
   // Admin Features - Fully Implemented
   'newsletter_system',
   'audit_logging',
   'user_management',
+  'content_moderation',
+  'bulk_operations',
 
   // Advanced Features - Fully Implemented
   'analytics_dashboard',

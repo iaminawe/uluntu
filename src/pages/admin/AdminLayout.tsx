@@ -149,7 +149,9 @@ const AdminLayout: React.FC = () => {
         { name: 'Settings', href: '/admin/settings', icon: Settings },
         { name: 'Theme', href: '/admin/theme', icon: Palette },
         { name: 'Menu Management', href: '/admin/menu-management', icon: Menu },
-        { name: 'Moderation', href: '/admin/moderation', icon: FileCheck }
+        ...(isFeatureEnabled('content_moderation') ? [
+          { name: 'Moderation', href: '/admin/moderation', icon: FileCheck }
+        ] : [])
       ]
     },
     {
