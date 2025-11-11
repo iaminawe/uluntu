@@ -122,8 +122,10 @@ const AdminLayout: React.FC = () => {
       name: 'User Management',
       icon: Users,
       children: [
-        { name: 'Users', href: '/admin/users', icon: Users },
-        { name: 'Roles', href: '/admin/roles', icon: Shield }
+        ...(isFeatureEnabled('user_management') ? [
+          { name: 'Users', href: '/admin/users', icon: Users },
+          { name: 'Roles', href: '/admin/roles', icon: Shield }
+        ] : [])
       ]
     },
     {
@@ -157,7 +159,9 @@ const AdminLayout: React.FC = () => {
         ...(isFeatureEnabled('analytics_dashboard') ? [
           { name: 'Performance', href: '/admin/performance', icon: BarChart3 }
         ] : []),
-        { name: 'Audit Log', href: '/admin/audit', icon: FileSearch }
+        ...(isFeatureEnabled('audit_logging') ? [
+          { name: 'Audit Log', href: '/admin/audit', icon: FileSearch }
+        ] : [])
       ]
     }
   ];
