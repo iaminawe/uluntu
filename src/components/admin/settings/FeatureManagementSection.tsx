@@ -31,6 +31,12 @@ const IMPLEMENTED_FEATURES = [
   // Social Features - Fully Implemented
   'user_messaging',
 
+  // Admin Features - Fully Implemented
+  'newsletter_system',
+
+  // Advanced Features - Fully Implemented
+  'analytics_dashboard',
+
   // UI Features - Fully Implemented
   'dynamic_footer_menus',
   'newsletter_signup'
@@ -268,7 +274,7 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                           {!implemented && (
                             <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center space-x-1">
                               <AlertCircle className="h-3 w-3" />
-                              <span>This feature is planned but not yet available. Enabling it will have no effect.</span>
+                              <span>This feature is planned but not yet available.</span>
                             </p>
                           )}
                           {((feature.rollout_percentage ?? 0) < 100) && ((feature.rollout_percentage ?? 0) > 0) && (

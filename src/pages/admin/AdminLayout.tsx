@@ -131,10 +131,12 @@ const AdminLayout: React.FC = () => {
       icon: Mail,
       children: [
         { name: 'Contact Inbox', href: '/admin/contact-inbox', icon: Inbox },
-        { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
-        { name: 'Campaigns', href: '/admin/newsletter/campaigns', icon: Mail },
-        { name: 'Subscribers', href: '/admin/newsletter/subscribers', icon: Users },
-        { name: 'Analytics', href: '/admin/newsletter/analytics', icon: TrendingUp }
+        ...(isFeatureEnabled('newsletter_system') ? [
+          { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
+          { name: 'Campaigns', href: '/admin/newsletter/campaigns', icon: Mail },
+          { name: 'Subscribers', href: '/admin/newsletter/subscribers', icon: Users },
+          { name: 'Analytics', href: '/admin/newsletter/analytics', icon: TrendingUp }
+        ] : [])
       ]
     },
     {
@@ -152,7 +154,9 @@ const AdminLayout: React.FC = () => {
       name: 'Monitoring',
       icon: BarChart3,
       children: [
-        { name: 'Performance', href: '/admin/performance', icon: BarChart3 },
+        ...(isFeatureEnabled('analytics_dashboard') ? [
+          { name: 'Performance', href: '/admin/performance', icon: BarChart3 }
+        ] : []),
         { name: 'Audit Log', href: '/admin/audit', icon: FileSearch }
       ]
     }
