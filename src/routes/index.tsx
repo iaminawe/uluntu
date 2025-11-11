@@ -621,7 +621,14 @@ export const router = createBrowserRouter([
       { path: 'menu-management-enhanced', element: withSuspense(EnhancedMenuManagementPage) },
       { path: 'menu-toggle-demo', element: withSuspense(MenuToggleDemo) },
       { path: 'menu-debug', element: withSuspense(MenuManagementDebug) },
-      { path: 'moderation', element: withSuspense(ModerationPage) },
+      {
+        path: 'moderation',
+        element: (
+          <FeatureGate feature="content_moderation" fallback={<NotFoundError />}>
+            {withSuspense(ModerationPage)}
+          </FeatureGate>
+        )
+      },
       { 
         path: 'settings', 
         element: withSuspense(EnhancedSettingsPage)
