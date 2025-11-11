@@ -51,14 +51,16 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
       color: 'blue',
       features: features.filter(f => [
         'members_directory',
-        'companies_listing', 
+        'companies_listing',
         'events_system',
         'news_blog',
         'groups_communities',
         'resources_library',
         'marketplace',
         'opportunities_board',
-        'photo_galleries'
+        'photo_galleries',
+        'pages_system',
+        'topics_system'
       ].includes(f.feature_key))
     },
     {
