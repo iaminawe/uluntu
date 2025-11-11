@@ -6,7 +6,7 @@ import {
 } from '../utils/companyAdapter';
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
-import { parseCompanyParam } from '../utils/slugUtils';
+import { parseCompanyParam } from '@/utils/slugUtils';
 
 import { adaptItemsList } from '@/shared/api';
 import { logger } from '@/utils/logger';
