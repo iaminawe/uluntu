@@ -5,7 +5,7 @@ import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shared/hooks/useUserContent';
-import { useFeatureToggle } from '@/utils/featureToggle';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 import { UnreadBadge } from '@/features/messaging/components/UnreadBadge';
 import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 import { getGroupUrl, getResourceUrl, getMarketplaceListingUrl } from '@/utils/contentUrlUtils';
@@ -18,10 +18,11 @@ export default function UserMenu() {
   const userRoles = authState.roles.list;
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
-  
+
   // Check if messaging and marketplace features are enabled
-  const { enabled: isMessagingEnabled } = useFeatureToggle('user_messaging');
-  const { enabled: isMarketplaceEnabled } = useFeatureToggle('marketplace');
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const isMessagingEnabled = isFeatureEnabled('user_messaging');
+  const isMarketplaceEnabled = isFeatureEnabled('marketplace');
   
   // Debug logging for admin access (disabled)
   /*
