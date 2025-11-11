@@ -24,3 +24,20 @@ export function validateSlug(slug: string): { isValid: boolean } {
   const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
   return { isValid: slugPattern.test(slug) };
 }
+
+/**
+ * Parse a company parameter to determine if it's an ID or slug
+ * Returns the type and value for proper routing
+ */
+export function parseCompanyParam(param: string): { type: 'id' | 'slug'; value: string } {
+  // UUID pattern (8-4-4-4-12 format)
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  if (uuidPattern.test(param)) {
+    logger.debug('Parsed param as UUID', 'SLUG_UTILS', { param });
+    return { type: 'id', value: param };
+  }
+
+  logger.debug('Parsed param as slug', 'SLUG_UTILS', { param });
+  return { type: 'slug', value: param };
+}
