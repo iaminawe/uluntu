@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Plus, 
-  ChevronDown, 
+import {
+  Plus,
+  ChevronDown,
   Calendar,
   FileText,
   BookOpen,
@@ -13,6 +13,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
+import { useEnabledFeatures } from '@/hooks/useSettings';
+import type { FeatureKey } from '@/types/settings';
 import { cn } from '@/utils/cn';
 
 interface CreateOption {
@@ -23,6 +25,7 @@ interface CreateOption {
   description: string;
   color: string;
   permissions?: string[];
+  feature?: FeatureKey; // Optional feature requirement
 }
 
 const createOptions: CreateOption[] = [
@@ -33,6 +36,7 @@ const createOptions: CreateOption[] = [
     href: '/events/create',
     description: 'Schedule meetings, workshops, and gatherings',
     color: 'blue',
+    feature: 'events_system',
   },
   {
     id: 'news',
@@ -41,6 +45,7 @@ const createOptions: CreateOption[] = [
     href: '/news/create',
     description: 'Share news and announcements',
     color: 'green',
+    feature: 'news_blog',
   },
   {
     id: 'resource',
@@ -49,6 +54,7 @@ const createOptions: CreateOption[] = [
     href: '/resources/create',
     description: 'Upload documents and helpful materials',
     color: 'purple',
+    feature: 'resources_library',
   },
   {
     id: 'group',
@@ -57,6 +63,7 @@ const createOptions: CreateOption[] = [
     href: '/groups/create',
     description: 'Start a new community group',
     color: 'orange',
+    feature: 'groups_communities',
   },
   {
     id: 'marketplace',
@@ -65,6 +72,7 @@ const createOptions: CreateOption[] = [
     href: '/marketplace/create',
     description: 'Sell or trade items',
     color: 'indigo',
+    feature: 'marketplace',
   },
   {
     id: 'opportunity',
@@ -73,6 +81,7 @@ const createOptions: CreateOption[] = [
     href: '/opportunities/create',
     description: 'Share job openings and collaborations',
     color: 'red',
+    feature: 'opportunities_board',
   },
   {
     id: 'gallery',
@@ -81,6 +90,7 @@ const createOptions: CreateOption[] = [
     href: '/galleries/create',
     description: 'Upload and organize photos',
     color: 'pink',
+    feature: 'photo_galleries',
   },
 ];
 
@@ -91,11 +101,20 @@ interface CreateContentDropdownProps {
 export const CreateContentDropdown: React.FC<CreateContentDropdownProps> = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useSession();
+  const { isFeatureEnabled } = useEnabledFeatures();
 
-  const availableOptions = createOptions.filter(option => {
-    if (!option.permissions) return true;
-    return option.permissions.some(permission => user?.permissions?.includes(permission));
-  });
+  const availableOptions = useMemo(() => {
+    return createOptions.filter(option => {
+      // Check feature toggle first
+      if (option.feature && !isFeatureEnabled(option.feature)) {
+        return false;
+      }
+
+      // Then check permissions
+      if (!option.permissions) return true;
+      return option.permissions.some(permission => user?.permissions?.includes(permission));
+    });
+  }, [isFeatureEnabled, user?.permissions]);
 
   return (
     <div className={cn("relative", className)}>
