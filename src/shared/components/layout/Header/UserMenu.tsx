@@ -25,6 +25,19 @@ export default function UserMenu() {
   const isMarketplaceEnabled = isFeatureEnabled('marketplace');
   const isGroupsEnabled = isFeatureEnabled('groups_communities');
   const isResourcesEnabled = isFeatureEnabled('resources_library');
+
+  // Check if any dashboard content features are enabled
+  // Dashboard should be hidden if no content features are available (only analytics/activity would show)
+  const hasDashboardContent =
+    isFeatureEnabled('photo_galleries') ||
+    isFeatureEnabled('events_system') ||
+    isFeatureEnabled('news_blog') ||
+    isResourcesEnabled ||
+    isMarketplaceEnabled ||
+    isFeatureEnabled('opportunities_board') ||
+    isGroupsEnabled ||
+    isFeatureEnabled('companies_listing') ||
+    isMessagingEnabled;
   
   // Debug logging for admin access (disabled)
   /*
@@ -122,18 +135,20 @@ export default function UserMenu() {
                   {user.email}
                 </p>
               </div>
-              
-              {/* Dashboard */}
-              <Link
-                to="/dashboard"
-                className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center">
-                  <Grid3X3 className="h-4 w-4 mr-2" />
-                  Dashboard
-                </div>
-              </Link>
+
+              {/* Dashboard - Only show if user has access to any content features */}
+              {hasDashboardContent && (
+                <Link
+                  to="/dashboard"
+                  className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center">
+                    <Grid3X3 className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </div>
+                </Link>
+              )}
               
               {/* Profile */}
               {member && (
