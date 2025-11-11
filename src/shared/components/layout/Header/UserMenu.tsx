@@ -19,12 +19,13 @@ export default function UserMenu() {
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
 
-  // Check if messaging, marketplace, and groups features are enabled
+  // Check if messaging, marketplace, groups, and directory features are enabled
   const { isFeatureEnabled } = useEnabledFeatures();
   const isMessagingEnabled = isFeatureEnabled('user_messaging');
   const isMarketplaceEnabled = isFeatureEnabled('marketplace');
   const isGroupsEnabled = isFeatureEnabled('groups_communities');
   const isResourcesEnabled = isFeatureEnabled('resources_library');
+  const isDirectoryEnabled = isFeatureEnabled('members_directory');
 
   // Check if any dashboard content features are enabled
   // Dashboard should be hidden if no content features are available (only analytics/activity would show)
@@ -149,9 +150,9 @@ export default function UserMenu() {
                   </div>
                 </Link>
               )}
-              
-              {/* Profile */}
-              {member && (
+
+              {/* Profile - Only show if directory feature is enabled */}
+              {isDirectoryEnabled && member && (
                 <Link
                   to={getMemberProfileUrl(member)}
                   className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
