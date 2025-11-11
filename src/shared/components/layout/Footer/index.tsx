@@ -30,8 +30,33 @@ const Footer: React.FC<FooterProps> = ({
   // Check if dynamic footer menus are enabled via feature flag
   const isDynamicMenuEnabled = enableDynamicMenu && (isDynamic || isFeatureEnabled('dynamic_footer_menus'));
   
+  // Feature mapping for footer links
+  const linkFeatureMap: Record<string, string> = {
+    '/marketplace': 'marketplace',
+    '/opportunities': 'opportunities_board',
+    '/directory': 'members_directory',
+    '/companies': 'companies_listing',
+    '/groups': 'groups_communities',
+    '/events': 'events_system',
+    '/news': 'news_blog',
+    '/resources': 'resources_library',
+    '/galleries': 'photo_galleries'
+  };
+
+  // Filter columns by feature flags
+  const filterColumnsByFeatures = (cols: typeof fallbackColumns) => {
+    if (!cols) return [];
+    return cols.map(column => ({
+      ...column,
+      links: column.links.filter(link => {
+        const feature = linkFeatureMap[link.href];
+        return !feature || isFeatureEnabled(feature);
+      })
+    })).filter(column => column.links.length > 0); // Remove empty columns
+  };
+
   // Default fallback columns if none provided
-  const defaultFallbackColumns = fallbackColumns || [
+  const defaultFallbackColumns = filterColumnsByFeatures(fallbackColumns || [
     {
       id: 'community-fallback',
       title: 'Community',
@@ -71,7 +96,7 @@ const Footer: React.FC<FooterProps> = ({
         { text: 'Terms', href: '/terms' }
       ]
     }
-  ];
+  ]);
 
   // Default social links if none provided and social links are enabled
   const defaultSocialLinks = socialLinks || [
@@ -135,9 +160,9 @@ const Footer: React.FC<FooterProps> = ({
             />
           ) : (
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${Math.min(maxColumns, 4)} gap-8`}>
-              {(columns || defaultFallbackColumns).map((column, index) => (
-                <FooterColumn 
-                  key={column.id || index} 
+              {filterColumnsByFeatures(columns || defaultFallbackColumns).map((column, index) => (
+                <FooterColumn
+                  key={column.id || index}
                   column={column}
                   showIcons={false}
                 />

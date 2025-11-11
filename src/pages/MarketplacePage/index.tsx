@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Navigate } from 'react-router-dom';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
@@ -8,17 +9,32 @@ import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { ListingType, ListingCondition } from '@/features/marketplace/components/MarketplaceList/types';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 export default function MarketplacePage() {
+  // Check if marketplace feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const marketplaceEnabled = isFeatureEnabled('marketplace');
+
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<ListingType | 'all'>('all');
   const [selectedCondition, setSelectedCondition] = useState<ListingCondition | 'all'>('all');
-  
+
   // Use hybrid hook for marketplace data
   const { listings, isLoading, error, refetch } = useMarketplaceHybrid();
-  
+
   const hasListings = listings && listings.length > 0;
+
+  // Redirect if marketplace is disabled
+  if (!featuresLoading && !marketplaceEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />;
+  }
   
   return (
     <>

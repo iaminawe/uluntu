@@ -192,41 +192,71 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Convert menu items to nav links with feature and role filtering
   const processMenuItems = useCallback((items: MenuItem[]): NavLinkItem[] => {
     if (!items || items.length === 0) return [];
-    
+
     // Filter by roles first
     const roleFilteredItems = filterMenuItemsByRoles(items);
-    
+
     // Then filter by feature flags
     const featureFilteredItems = filterMenuItemsByFeatures(roleFilteredItems, isFeatureEnabled);
-    
+
     // Convert to nav links
     return menuItemsToNavLinks(featureFilteredItems);
   }, [isFeatureEnabled, filterMenuItemsByRoles]);
 
+  // Filter static nav links by feature flags
+  const filterNavLinksByFeatures = useCallback((links: NavLinkItem[]): NavLinkItem[] => {
+    return links.map(link => {
+      // If the main link has a feature requirement, check it
+      if (link.feature && !isFeatureEnabled(link.feature as any)) {
+        return null;
+      }
+
+      // Filter children based on their feature requirements
+      if (link.children) {
+        const filteredChildren = link.children.filter(child => {
+          return !child.feature || isFeatureEnabled(child.feature as any);
+        });
+
+        // If no children remain after filtering, hide the parent
+        if (filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          ...link,
+          children: filteredChildren
+        };
+      }
+
+      return link;
+    }).filter((link): link is NavLinkItem => link !== null);
+  }, [isFeatureEnabled]);
+
   // Header navigation
   const headerNavLinks = useMemo(() => {
     if (!isDynamicEnabled) {
-      // Use static fallback when dynamic system is disabled
-      return DEFAULT_HEADER_NAV_LINKS;
+      // Use static fallback when dynamic system is disabled, but apply feature filtering
+      return filterNavLinksByFeatures(DEFAULT_HEADER_NAV_LINKS);
     }
-    
+
     if (headerLoading && headerMenuItems.length === 0) {
       // Show empty array while loading if no cached data
       return [];
     }
-    
+
     if (headerError && headerMenuItems.length === 0) {
-      // Fallback to static links on error with no cached data
+      // Fallback to static links on error with no cached data, but apply feature filtering
       console.warn('Header menu failed to load, falling back to static navigation:', headerError);
-      return DEFAULT_HEADER_NAV_LINKS;
+      return filterNavLinksByFeatures(DEFAULT_HEADER_NAV_LINKS);
     }
-    
+
     // Use dynamic menu items or fallback to static
     const menuItems = headerMenuItems.length > 0 ? headerMenuItems : [];
     const processedLinks = processMenuItems(menuItems);
-    
-    return processedLinks.length > 0 ? processedLinks : DEFAULT_HEADER_NAV_LINKS;
-  }, [isDynamicEnabled, headerMenuItems, headerLoading, headerError, processMenuItems]);
+
+    // Apply feature filtering to fallback as well
+    return processedLinks.length > 0 ? processedLinks : filterNavLinksByFeatures(DEFAULT_HEADER_NAV_LINKS);
+  }, [isDynamicEnabled, headerMenuItems, headerLoading, headerError, processMenuItems, filterNavLinksByFeatures]);
 
   // Footer navigation
   const footerNavLinks = useMemo(() => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
 import { generateSlug } from '@/features/companies/utils/slugUtils';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
@@ -15,11 +15,26 @@ import ErrorState from './ErrorState';
 import { FormData, ListingCondition, ListingType } from './types';
 import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 export default function MarketplaceEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+
+  // Check if marketplace feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const marketplaceEnabled = isFeatureEnabled('marketplace');
+
+  // Redirect if marketplace is disabled
+  if (!featuresLoading && !marketplaceEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <LoadingState />;
+  }
   
   // State for form data
   const [formData, setFormData] = useState<FormData>({
