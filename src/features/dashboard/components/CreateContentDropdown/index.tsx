@@ -116,6 +116,11 @@ export const CreateContentDropdown: React.FC<CreateContentDropdownProps> = ({ cl
     });
   }, [isFeatureEnabled, user?.permissions]);
 
+  // Don't render if no options are available
+  if (availableOptions.length === 0) {
+    return null;
+  }
+
   return (
     <div className={cn("relative", className)}>
       <button
