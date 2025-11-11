@@ -1,16 +1,17 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ContentContainer from '@/shared/components/ui/PageLayout/ContentContainer';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 import { useCompanyByIdOrSlugHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
 import { CompanyAssociations } from '@/features/companies/components/CompanyAssociations';
-import { 
-  ArrowLeft, 
-  Globe, 
-  MapPin, 
-  Calendar, 
-  Building2, 
-  Users, 
+import { useEnabledFeatures } from '@/hooks/useSettings';
+import {
+  ArrowLeft,
+  Globe,
+  MapPin,
+  Calendar,
+  Building2,
+  Users,
   Briefcase,
   BookOpen,
   Image,
@@ -25,12 +26,17 @@ import {
   Activity,
   Award
 } from 'lucide-react';
+import LoadingState from './LoadingState';
 
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   console.log('[CompanyDetailPage] URL param slug:', slug);
   console.log('[CompanyDetailPage] Full URL:', window.location.href);
-  
+
+  // Check if companies feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const companiesEnabled = isFeatureEnabled('companies_listing');
+
   // Use hybrid approach for data fetching with slug support
   const {
     company,
@@ -39,6 +45,16 @@ export default function CompanyDetailPage() {
     error,
     refetch
   } = useCompanyByIdOrSlugHybrid(slug);
+
+  // Redirect if companies feature is disabled
+  if (!featuresLoading && !companiesEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <LoadingState />;
+  }
   
   console.log('[CompanyDetailPage] Hook result:', { company, isLoading, isError, error });
 
