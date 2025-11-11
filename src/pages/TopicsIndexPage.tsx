@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useTopicAnalytics } from '@/features/topics/hooks/useTopicsHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 import { Tag, Search, TrendingUp, Hash, Calendar, Users, Building, Briefcase, BookOpen, Image, ArrowRight } from 'lucide-react';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function TopicsIndexPage() {
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const topicsEnabled = isFeatureEnabled('topics_system');
+
+  // Redirect if topics feature is disabled
+  if (!featuresLoading && !topicsEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (featuresLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'popularity' | 'name' | 'recent'>('popularity');
   

@@ -1,18 +1,26 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { Tag, Calendar, BookOpen, Layers, Briefcase, Users, Building, ArrowLeft } from 'lucide-react';
 import { useTopicBySlug, useTopicContentCounts } from '@/features/topics/hooks/useTopicsHybrid';
 import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 import { useNewsHybrid } from '@/features/news/hooks/useNewsHybrid';
 import { useResourcesHybrid } from '@/features/resources/hooks/useResourcesHybrid';
 import { useOpportunitiesHybrid } from '@/features/opportunities/hooks/useOpportunitiesHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/shared/components/ui/ErrorDisplay';
 import NotFoundError from '@/shared/components/ui/ErrorDisplay/NotFoundError';
 
 const TopicDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const topicsEnabled = isFeatureEnabled('topics_system');
   const { data: topic, isLoading, error } = useTopicBySlug(slug || '');
   const { data: contentCounts } = useTopicContentCounts(slug || '');
+
+  // Redirect if topics feature is disabled
+  if (!featuresLoading && !topicsEnabled) {
+    return <Navigate to="/" replace />;
+  }
   
   // Fetch content for this topic
   const { events } = useEventsHybrid();

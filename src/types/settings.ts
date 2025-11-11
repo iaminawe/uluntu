@@ -98,7 +98,7 @@ export interface SettingsCategory {
 }
 
 // Feature toggle types - must match feature_key values in database
-export type FeatureKey = 
+export type FeatureKey =
   // Core Features
   | 'members_directory'
   | 'companies_listing'
@@ -109,6 +109,8 @@ export type FeatureKey =
   | 'marketplace'
   | 'opportunities_board'
   | 'photo_galleries'
+  | 'pages_system'
+  | 'topics_system'
   
   // Social Features
   | 'user_messaging'
