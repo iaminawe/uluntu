@@ -66,10 +66,11 @@ const DEFAULT_HEADER_NAV_LINKS: NavLinkItem[] = [
     description: "Educational content and guides",
     feature: "resources_library"
   },
-  { 
-    text: "Topics", 
-    href: "/topics", 
-    description: "Browse content by topic"
+  {
+    text: "Topics",
+    href: "/topics",
+    description: "Browse content by topic",
+    feature: "topics_system"
   },
   { 
     text: "About", 

@@ -11,13 +11,17 @@ import {
   Save,
   X,
   Palette,
-  Hash
+  Hash,
+  Lock
 } from 'lucide-react';
 import { useTopicsHybrid, useTopicAnalytics, useCreateTopic, useUpdateTopic, useDeleteTopic } from '@/features/topics/hooks/useTopicsHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 import type { Topic, TopicWithAnalytics, TopicFormData } from '@/features/topics/types';
 
 const AdminTopicsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const topicsEnabled = isFeatureEnabled('topics_system');
   const { topics, isLoading, error, refetch, setSearchTerm } = useTopicsHybrid();
   const { data: topicsWithAnalytics } = useTopicAnalytics();
   const createTopicMutation = useCreateTopic();
@@ -46,6 +50,33 @@ const AdminTopicsPage: React.FC = () => {
       memberCount: analytics?.memberCount || 0
     };
   });
+
+  // Show warning if feature is disabled
+  if (!topicsEnabled) {
+    return (
+      <div className="max-w-2xl mx-auto mt-8">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-6 rounded-lg">
+          <div className="flex items-start">
+            <Lock className="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                Topics System Disabled
+              </h3>
+              <p className="text-yellow-700 dark:text-yellow-300 mb-4">
+                The topics system is currently disabled. Enable it in System Management → Features to access topics management.
+              </p>
+              <a
+                href="/admin/system/features"
+                className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors"
+              >
+                Go to Feature Management
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

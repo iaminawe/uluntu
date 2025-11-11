@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import ComponentBlockEditor from '@/components/BlockEditor/ComponentBlockEditor';
 import DynamicPageRenderer from '@/features/pages/components/DynamicPageRenderer';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 import { toast } from 'react-hot-toast';
 import { Edit, Save, X, Eye } from 'lucide-react';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface PageData {
   id: string;
@@ -30,12 +32,27 @@ export default function DynamicPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const pagesEnabled = isFeatureEnabled('pages_system');
   const [isEditing, setIsEditing] = useState(false);
   const [editedBlocks, setEditedBlocks] = useState<any[]>([]);
   const [editedTitle, setEditedTitle] = useState<string>('');
   const [editedMetaDescription, setEditedMetaDescription] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   // Removed dual editor system - now using unified ComponentBlockEditor
+
+  // Redirect if pages feature is disabled
+  if (!featuresLoading && !pagesEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (featuresLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   // Check if user is admin (direct database check)
   const { data: isAdmin } = useQuery({

@@ -94,7 +94,7 @@ const AdminLayout: React.FC = () => {
 
   // Filter content management items based on enabled features
   const contentManagementChildren = [
-    { name: 'Pages', href: '/admin/pages', icon: FileText },
+    ...(isFeatureEnabled('pages_system') ? [{ name: 'Pages', href: '/admin/pages', icon: FileText }] : []),
     ...(photoGalleriesEnabled ? [{ name: 'Media Gallery', href: '/admin/media', icon: Image }] : []),
     ...(isFeatureEnabled('members_directory') ? [{ name: 'Members', href: '/admin/entities/members', icon: Users }] : []),
     ...(isFeatureEnabled('companies_listing') ? [{ name: 'Companies', href: '/admin/entities/companies', icon: Building2 }] : []),
@@ -104,7 +104,7 @@ const AdminLayout: React.FC = () => {
     ...(isFeatureEnabled('resources_library') ? [{ name: 'Resources', href: '/admin/entities/resources', icon: BookOpen }] : []),
     ...(isFeatureEnabled('marketplace') ? [{ name: 'Marketplace', href: '/admin/entities/marketplace', icon: ShoppingBag }] : []),
     ...(isFeatureEnabled('opportunities_board') ? [{ name: 'Opportunities', href: '/admin/entities/opportunities', icon: Briefcase }] : []),
-    { name: 'Topics', href: '/admin/entities/topics', icon: Tag }
+    ...(isFeatureEnabled('topics_system') ? [{ name: 'Topics', href: '/admin/entities/topics', icon: Tag }] : [])
   ];
 
   const navigation = [
