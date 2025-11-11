@@ -19,7 +19,7 @@ import {
   invalidateMessagingQueries,
   clearConversationCache,
   resetConversationState
-} from '@/hooks/useMessagingQueries';
+} from '@/hooks/messaging';
 import {
   setSelectedConversation,
   setComposing,

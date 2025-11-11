@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { RealtimeChannel, RealtimePresenceState } from '@supabase/supabase-js';
 import { Message } from '../types';
-import { messagingQueryKeys } from '@/hooks/useMessagingQueries';
+import { messagingQueryKeys } from '@/hooks/messaging';
 import { messagingApi } from '../api/messagingApi';
 
 interface PresenceState {
