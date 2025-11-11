@@ -33,6 +33,8 @@ const IMPLEMENTED_FEATURES = [
 
   // Admin Features - Fully Implemented
   'newsletter_system',
+  'audit_logging',
+  'user_management',
 
   // Advanced Features - Fully Implemented
   'analytics_dashboard',

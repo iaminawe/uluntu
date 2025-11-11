@@ -576,11 +576,46 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: withSuspense(AdminDashboard) },
-      { path: 'users', element: withSuspense(SimpleUnifiedUsersPage) },
-      { path: 'users-advanced', element: withSuspense(UnifiedUsersPage) },
-      { path: 'users-debug', element: withSuspense(UnifiedUsersDebug) },
-      { path: 'users-legacy', element: withSuspense(UsersPage) },
-      { path: 'roles', element: withSuspense(RolesPage) },
+      {
+        path: 'users',
+        element: (
+          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
+            {withSuspense(SimpleUnifiedUsersPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'users-advanced',
+        element: (
+          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
+            {withSuspense(UnifiedUsersPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'users-debug',
+        element: (
+          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
+            {withSuspense(UnifiedUsersDebug)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'users-legacy',
+        element: (
+          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
+            {withSuspense(UsersPage)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'roles',
+        element: (
+          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
+            {withSuspense(RolesPage)}
+          </FeatureGate>
+        )
+      },
       { path: 'features', element: withSuspense(FeaturesPage) },
       { path: 'menu-management', element: withSuspense(MenuManagementPage) },
       { path: 'menu-management-enhanced', element: withSuspense(EnhancedMenuManagementPage) },
@@ -614,7 +649,14 @@ export const router = createBrowserRouter([
       { path: 'debug-roles', element: withSuspense(DebugRoles) },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
-      { path: 'audit', element: withSuspense(AuditPage) },
+      {
+        path: 'audit',
+        element: (
+          <FeatureGate feature="audit_logging" fallback={<NotFoundError />}>
+            {withSuspense(AuditPage)}
+          </FeatureGate>
+        )
+      },
       {
         path: 'performance',
         element: (
