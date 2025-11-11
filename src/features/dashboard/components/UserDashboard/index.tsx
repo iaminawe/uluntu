@@ -1,15 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Grid3X3, 
-  List, 
-  Camera, 
-  Calendar, 
-  Newspaper, 
-  BookOpen, 
-  Users, 
-  ShoppingBag, 
-  Briefcase, 
+import {
+  Grid3X3,
+  List,
+  Camera,
+  Calendar,
+  Newspaper,
+  BookOpen,
+  Users,
+  ShoppingBag,
+  Briefcase,
   MessageCircle,
   Activity,
   BarChart3,
@@ -25,26 +25,38 @@ import { ContentType, DashboardLayout } from '../../types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/shared/components/ui/ErrorDisplay';
 import { VerticalTabSet } from '../VerticalTabSet';
+import { useEnabledFeatures } from '@/hooks/useSettings';
+import type { FeatureKey } from '@/types/settings';
 
-// Convert horizontal tabs to vertical content tabs
-const CONTENT_TABS = [
-  { id: 'galleries', label: 'Photo Galleries', icon: Camera, type: 'gallery' as ContentType },
-  { id: 'events', label: 'Events', icon: Calendar, type: 'event' as ContentType },
-  { id: 'news', label: 'News', icon: Newspaper, type: 'news' as ContentType },
-  { id: 'resources', label: 'Resources', icon: BookOpen, type: 'resource' as ContentType },
-  { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag, type: 'marketplace' as ContentType },
-  { id: 'opportunities', label: 'Opportunities', icon: Briefcase, type: 'opportunity' as ContentType },
-  { id: 'groups', label: 'My Groups', icon: Users, type: 'group' as ContentType },
-  { id: 'companies', label: 'My Companies', icon: Building2, type: 'company' as ContentType },
-  { id: 'analytics', label: 'Analytics', icon: BarChart3, type: 'analytics' as ContentType },
-  { id: 'messages', label: 'Messages', icon: MessageCircle, type: 'message' as ContentType },
-  { id: 'activity', label: 'Activity', icon: Activity, type: 'activity' as ContentType },
+// Tab with optional feature requirement
+interface DashboardTab {
+  id: string;
+  label: string;
+  icon: any;
+  type: ContentType;
+  feature?: FeatureKey; // Optional feature requirement
+}
+
+// Convert horizontal tabs to vertical content tabs with feature requirements
+const ALL_CONTENT_TABS: DashboardTab[] = [
+  { id: 'galleries', label: 'Photo Galleries', icon: Camera, type: 'gallery' as ContentType, feature: 'photo_galleries' },
+  { id: 'events', label: 'Events', icon: Calendar, type: 'event' as ContentType, feature: 'events_system' },
+  { id: 'news', label: 'News', icon: Newspaper, type: 'news' as ContentType, feature: 'news_blog' },
+  { id: 'resources', label: 'Resources', icon: BookOpen, type: 'resource' as ContentType, feature: 'resources_library' },
+  { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag, type: 'marketplace' as ContentType, feature: 'marketplace' },
+  { id: 'opportunities', label: 'Opportunities', icon: Briefcase, type: 'opportunity' as ContentType, feature: 'opportunities_board' },
+  { id: 'groups', label: 'My Groups', icon: Users, type: 'group' as ContentType, feature: 'groups_communities' },
+  { id: 'companies', label: 'My Companies', icon: Building2, type: 'company' as ContentType, feature: 'companies_listing' },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3, type: 'analytics' as ContentType }, // No feature requirement
+  { id: 'messages', label: 'Messages', icon: MessageCircle, type: 'message' as ContentType, feature: 'user_messaging' },
+  { id: 'activity', label: 'Activity', icon: Activity, type: 'activity' as ContentType }, // No feature requirement
 ];
 
 export const UserDashboard: React.FC = () => {
   const { user } = useSession();
   const { tab = 'galleries' } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
+  const { isFeatureEnabled } = useEnabledFeatures();
   
   const [layout, setLayout] = useState<DashboardLayout>({
     sidebar: { collapsed: false, pinned: true },
@@ -61,30 +73,56 @@ export const UserDashboard: React.FC = () => {
   }, [tab]);
 
   // Get dashboard overview data
-  const { 
-    data: dashboardData, 
-    isLoading: dashboardLoading, 
-    error: dashboardError 
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    error: dashboardError
   } = useDashboardData();
+
+  // Filter tabs based on enabled features
+  const enabledTabs = useMemo(() => {
+    return ALL_CONTENT_TABS.filter(tab => {
+      // If tab has no feature requirement, always show it
+      if (!tab.feature) return true;
+
+      // Otherwise, check if the feature is enabled
+      return isFeatureEnabled(tab.feature);
+    });
+  }, [isFeatureEnabled]);
 
   // Combine tab data with counts
   const tabsWithCounts = useMemo(() => {
-    return CONTENT_TABS.map(tab => {
+    return enabledTabs.map(tab => {
       // For special tabs (messages, activity, analytics), show with zero count for now
       if (tab.id === 'messages' || tab.id === 'activity' || tab.id === 'analytics') {
         return { ...tab, count: 0 };
       }
-      
+
       if (!dashboardData?.contentSummary) {
         return { ...tab, count: 0 };
       }
-      
+
       const summary = dashboardData.contentSummary.find(item => item.type === tab.type);
       return { ...tab, count: summary?.count || 0 };
     });
-  }, [dashboardData?.contentSummary]);
+  }, [enabledTabs, dashboardData?.contentSummary]);
 
   const handleTabChange = (tabId: string) => {
+    // Check if the tab is enabled
+    const requestedTab = ALL_CONTENT_TABS.find(t => t.id === tabId);
+    if (requestedTab?.feature && !isFeatureEnabled(requestedTab.feature)) {
+      // Redirect to first available tab if requested tab is disabled
+      const firstEnabledTab = enabledTabs[0];
+      if (firstEnabledTab) {
+        if (firstEnabledTab.id === 'galleries') {
+          navigate('/dashboard');
+        } else {
+          navigate(`/dashboard/${firstEnabledTab.id}`);
+        }
+      }
+      return;
+    }
+
     // Navigate to the new tab URL
     if (tabId === 'galleries') {
       navigate('/dashboard');
@@ -92,6 +130,21 @@ export const UserDashboard: React.FC = () => {
       navigate(`/dashboard/${tabId}`);
     }
   };
+
+  // Redirect to first enabled tab if current tab is disabled
+  useEffect(() => {
+    const currentTab = ALL_CONTENT_TABS.find(t => t.id === tab);
+    if (currentTab?.feature && !isFeatureEnabled(currentTab.feature)) {
+      const firstEnabledTab = enabledTabs[0];
+      if (firstEnabledTab) {
+        if (firstEnabledTab.id === 'galleries') {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate(`/dashboard/${firstEnabledTab.id}`, { replace: true });
+        }
+      }
+    }
+  }, [tab, enabledTabs, isFeatureEnabled, navigate]);
 
   if (dashboardLoading) {
     return (
