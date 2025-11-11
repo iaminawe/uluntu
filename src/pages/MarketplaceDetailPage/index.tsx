@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 import { useMarketplaceItem } from '@/hooks/useMarketplaceQueries';
@@ -14,6 +14,7 @@ import RelatedListings from './RelatedListings';
 import ContactModal from './ContactModal';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 // Define a type for Supabase database record format
 interface DatabaseListing {
@@ -38,13 +39,27 @@ interface DatabaseListing {
 export default function MarketplaceDetailPage() {
   const { id } = useParams();
   const [showContactModal, setShowContactModal] = useState(false);
-  
+
+  // Check if marketplace feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const marketplaceEnabled = isFeatureEnabled('marketplace');
+
   // Use both Redux and React Query hooks to support both implementations
   const useRedux = false; // Set to true to use Redux, false to use React Query
-  
+
   // Use hybrid hook for marketplace data
   const { getListing } = useMarketplaceHybrid();
   const { data: sourceData, isLoading, error } = getListing(id || '');
+
+  // Redirect if marketplace is disabled
+  if (!featuresLoading && !marketplaceEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <LoadingState />;
+  }
   
   // Debug logging
   useEffect(() => {

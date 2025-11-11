@@ -38,11 +38,8 @@ const Header: React.FC<HeaderProps> = ({
   // Use provided navLinks as override if available, otherwise use navigation system
   const finalNavLinks = useMemo(() => {
     if (navLinks && navLinks.length > 0) {
-      // Override provided - use as-is but still apply feature filtering
-      if (!features || Object.keys(features).length === 0) {
-        return navLinks;
-      }
-
+      // Override provided - always apply feature filtering, even if features is empty
+      // If features is loading, better to show nothing than show disabled features
       return navLinks.map(link => {
         // If the main link has a feature requirement, check it
         if (link.feature && !isFeatureEnabled(link.feature as any)) {
@@ -69,10 +66,10 @@ const Header: React.FC<HeaderProps> = ({
         return link;
       }).filter(Boolean);
     }
-    
-    // Use navigation system links
+
+    // Use navigation system links (already feature-filtered by NavigationProvider)
     return navigationLinks;
-  }, [navLinks, navigationLinks, features, isFeatureEnabled]);
+  }, [navLinks, navigationLinks, isFeatureEnabled]);
   
   // Show loading skeleton during initial load
   const showLoadingSkeleton = navigationLoading && finalNavLinks.length === 0;

@@ -19,8 +19,9 @@ export default function UserMenu() {
   const isAdmin = authState.roles.isAdmin;
   const navigate = useNavigate();
   
-  // Check if messaging feature is enabled
+  // Check if messaging and marketplace features are enabled
   const { enabled: isMessagingEnabled } = useFeatureToggle('user_messaging');
+  const { enabled: isMarketplaceEnabled } = useFeatureToggle('marketplace');
   
   // Debug logging for admin access (disabled)
   /*
@@ -256,8 +257,8 @@ export default function UserMenu() {
                 </>
               )}
               
-              {/* User's Marketplace Items Section */}
-              {marketplaceItems.length > 0 && !marketplaceLoading && (
+              {/* User's Marketplace Items Section - Only show if feature is enabled */}
+              {isMarketplaceEnabled && marketplaceItems.length > 0 && !marketplaceLoading && (
                 <>
                   <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
                   <div className="px-4 py-2">
@@ -266,7 +267,7 @@ export default function UserMenu() {
                         <ShoppingBag className="h-3 w-3 mr-1" />
                         Your Listings
                       </span>
-                      <Link 
+                      <Link
                         to="/marketplace"
                         className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300"
                         onClick={() => setIsOpen(false)}
