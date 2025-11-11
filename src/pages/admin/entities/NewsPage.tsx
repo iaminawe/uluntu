@@ -1,8 +1,48 @@
 import React from 'react';
 import EntityTable from '@/components/admin/EntityTable';
-import { Newspaper, User, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Newspaper, User, CheckCircle, XCircle, Eye, Lock } from 'lucide-react';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 const AdminNewsPage: React.FC = () => {
+  // Check if news feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const newsEnabled = isFeatureEnabled('news_blog');
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      </div>
+    );
+  }
+
+  // Show disabled message if feature is not enabled
+  if (!newsEnabled) {
+    return (
+      <div className="max-w-2xl mx-auto mt-8">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-6 rounded-lg">
+          <div className="flex items-start">
+            <Lock className="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                News & Blog Feature Disabled
+              </h3>
+              <p className="text-yellow-700 dark:text-yellow-300 mb-4">
+                The news & blog feature is currently disabled. Enable it in System Management → Features to access news management.
+              </p>
+              <a
+                href="/admin/system/features"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-800 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-100 dark:hover:bg-yellow-700 transition-colors"
+              >
+                Go to Feature Management
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const columns = [
     {
       key: 'title',
