@@ -1,6 +1,7 @@
 import React from 'react';
 import { settingsApi } from '@/features/admin/api/settings';
 import type { FeatureKey } from '@/types/settings';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 /**
  * Feature toggle utilities for conditional rendering and functionality
@@ -90,26 +91,27 @@ interface FeatureGateProps {
   children: React.ReactNode;
 }
 
-export function FeatureGate({ 
-  feature, 
-  fallback = null, 
-  loading = null, 
-  children 
+export function FeatureGate({
+  feature,
+  fallback = null,
+  loading = null,
+  children
 }: FeatureGateProps): React.ReactElement {
-  const [enabled, setEnabled] = React.useState<boolean | null>(null);
-  
-  React.useEffect(() => {
-    isFeatureEnabled(feature).then(setEnabled);
-  }, [feature]);
-  
-  if (enabled === null) {
+  // Use the hook-based approach for better performance and caching
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+
+  // Show loading state while features are being fetched
+  if (featuresLoading) {
     return <>{loading}</>;
   }
-  
+
+  // Check if feature is enabled
+  const enabled = isFeatureEnabled(feature);
+
   if (!enabled) {
     return <>{fallback}</>;
   }
-  
+
   return <>{children}</>;
 }
 

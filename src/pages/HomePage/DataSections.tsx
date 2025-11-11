@@ -7,20 +7,29 @@ import { newsApi } from '@/features/news/api/newsApi';
 import { groupsApi } from '@/features/groups/api/groupsApi';
 import { DetailedCard } from '@/shared/components/visual';
 import { getEventUrl, getGroupUrl } from '@/utils/contentUrlUtils';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 export default function DataSections() {
+  // Check enabled features
+  const { isFeatureEnabled } = useEnabledFeatures();
+  const eventsEnabled = isFeatureEnabled('events_system');
+  const groupsEnabled = isFeatureEnabled('groups_communities');
+  const newsEnabled = isFeatureEnabled('news_blog');
+
   // Load data only when this component is rendered
   const { events } = useEventsHybrid();
   const { data: groups = [] } = useQuery({
     queryKey: ['groups-home'],
     queryFn: () => groupsApi.getAll({ limit: 6 }),
     staleTime: 5 * 60 * 1000,
+    enabled: groupsEnabled, // Only fetch if feature is enabled
   });
-  
+
   const { data: news = [] } = useQuery({
     queryKey: ['news-home'],
     queryFn: () => newsApi.getAll({ limit: 4 }),
     staleTime: 5 * 60 * 1000,
+    enabled: newsEnabled, // Only fetch if feature is enabled
   });
 
   // Get upcoming events
@@ -47,7 +56,7 @@ export default function DataSections() {
   return (
     <>
       {/* Upcoming Events */}
-      {upcomingEvents.length > 0 && (
+      {eventsEnabled && upcomingEvents.length > 0 && (
         <section className="py-20 bg-slate-50 dark:bg-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -88,7 +97,7 @@ export default function DataSections() {
       )}
 
       {/* Active Groups */}
-      {featuredGroups.length > 0 && (
+      {groupsEnabled && featuredGroups.length > 0 && (
         <section className="py-20 bg-white dark:bg-slate-800">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -129,7 +138,7 @@ export default function DataSections() {
       )}
 
       {/* Latest News */}
-      {latestNews.length > 0 && (
+      {newsEnabled && latestNews.length > 0 && (
         <section className="py-20 bg-slate-50 dark:bg-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
