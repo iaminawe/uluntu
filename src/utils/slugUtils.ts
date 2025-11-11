@@ -26,6 +26,30 @@ export function validateSlug(slug: string): { isValid: boolean } {
 }
 
 /**
+ * Check if a slug is valid (boolean return)
+ */
+export function isValidSlug(slug: string): boolean {
+  const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  return slugPattern.test(slug);
+}
+
+/**
+ * Make a slug unique by appending a number if it already exists
+ */
+export function makeSlugUnique(baseSlug: string, existingSlugs: string[]): string {
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Keep trying until we find a unique slug
+  while (existingSlugs.includes(slug)) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return slug;
+}
+
+/**
  * Parse a company parameter to determine if it's an ID or slug
  * Returns the type and value for proper routing
  */

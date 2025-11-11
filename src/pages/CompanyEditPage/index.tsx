@@ -11,7 +11,7 @@ import IndustrySection from './IndustrySection';
 import SocialSection from './SocialSection';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { convertFormDataToInsert, convertFormDataToUpdate } from './adapters';
-import { generateSlug } from '@/features/companies/utils/slugUtils';
+import { generateSlug } from '@/utils/slugUtils';
 // Import ContentStatus for proper typing
 import { ContentStatus } from '../../types/common';
 import TopicSelector from '@/components/admin/TopicSelector';

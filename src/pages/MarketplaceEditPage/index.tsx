@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
-import { generateSlug } from '@/features/companies/utils/slugUtils';
+import { generateSlug } from '@/utils/slugUtils';
 import { useMarketplaceHybrid } from '@/features/marketplace/hooks/useMarketplaceHybrid';
 import BasicInfoSection from './BasicInfoSection';
 import ImagesGallerySection from './ImagesGallerySection';

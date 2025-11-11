@@ -7,7 +7,7 @@ import { useMemberByUserId } from '@/hooks/useMemberByUserId';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
-import { generateSlug } from '@/features/companies/utils/slugUtils';
+import { generateSlug } from '@/utils/slugUtils';
 import { supabase } from '@/lib/supabase';
 import FormHeader from './FormHeader';
 import ResourceDetails from './ResourceDetails';

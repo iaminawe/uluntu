@@ -11,7 +11,7 @@ import ImageUpload from './ImageUpload';
 import FormActions from './FormActions';
 import LoadingState from './LoadingState';
 import { FormData } from './types';
-import { generateSlug } from '@/features/companies/utils/slugUtils';
+import { generateSlug } from '@/utils/slugUtils';
 import { supabase, uploadGroupImage } from '@/lib/supabase';
 import { ContentStatus } from '../../types/common';
 import TopicSelector from '@/components/admin/TopicSelector';
