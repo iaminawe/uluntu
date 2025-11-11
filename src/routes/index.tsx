@@ -615,7 +615,14 @@ export const router = createBrowserRouter([
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
       { path: 'audit', element: withSuspense(AuditPage) },
-      { path: 'performance', element: withSuspense(PerformanceMetricsPage) },
+      {
+        path: 'performance',
+        element: (
+          <FeatureGate feature="analytics_dashboard" fallback={<NotFoundError />}>
+            {withSuspense(PerformanceMetricsPage)}
+          </FeatureGate>
+        )
+      },
       { path: 'entities/companies', element: withSuspense(AdminCompaniesPage) },
       { path: 'entities/groups', element: withSuspense(AdminGroupsPage) },
       { path: 'entities/events', element: withSuspense(AdminEventsPage) },
@@ -630,15 +637,78 @@ export const router = createBrowserRouter([
       { path: 'pages/new', element: withSuspense(EnhancedPageEditor) },
       { path: 'pages/:id/edit', element: withSuspense(EnhancedPageEditor) },
       { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
-      { path: 'newsletter', element: withSuspense(NewsletterDashboard) },
-      { path: 'newsletter/campaigns', element: withSuspense(CampaignManager) },
-      { path: 'newsletter/campaigns/new', element: withSuspense(NewsletterEditor) },
-      { path: 'newsletter/campaigns/:id/edit', element: withSuspense(NewsletterEditor) },
-      { path: 'newsletter/campaigns/:id', element: withSuspense(NewsletterEditor) },
-      { path: 'newsletter/calendar', element: withSuspense(CampaignCalendar) },
-      { path: 'newsletter/templates', element: withSuspense(TemplateManager) },
-      { path: 'newsletter/subscribers', element: withSuspense(SubscriberManager) },
-      { path: 'newsletter/analytics', element: withSuspense(AnalyticsDashboard) },
+      {
+        path: 'newsletter',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(NewsletterDashboard)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/campaigns',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(CampaignManager)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/campaigns/new',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(NewsletterEditor)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/campaigns/:id/edit',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(NewsletterEditor)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/campaigns/:id',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(NewsletterEditor)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/calendar',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(CampaignCalendar)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/templates',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(TemplateManager)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/subscribers',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(SubscriberManager)}
+          </FeatureGate>
+        )
+      },
+      {
+        path: 'newsletter/analytics',
+        element: (
+          <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
+            {withSuspense(AnalyticsDashboard)}
+          </FeatureGate>
+        )
+      },
       { path: 'utils/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
       { path: 'utils/update-company-slugs', element: withSuspense(UpdateCompanySlugs) },
       // Temporary development access to slug updaters
