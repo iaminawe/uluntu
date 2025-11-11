@@ -3,7 +3,7 @@ import { FeatureToggle, UpdateFeatureToggleRequest } from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Badge } from '@/components/ui/Badge';
-import { Zap, Users, Wrench, Shield, Globe, Smartphone } from 'lucide-react';
+import { Zap, Users, Wrench, Shield, Globe, Smartphone, Info, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface FeatureManagementSectionProps {
@@ -12,6 +12,34 @@ interface FeatureManagementSectionProps {
   onRefresh: () => Promise<void>;
   isLoading: boolean;
 }
+
+// Define which features are actually implemented
+const IMPLEMENTED_FEATURES = [
+  // Core Features - Fully Implemented
+  'members_directory',
+  'companies_listing',
+  'events_system',
+  'news_blog',
+  'groups_communities',
+  'resources_library',
+  'marketplace',
+  'opportunities_board',
+  'photo_galleries',
+  'pages_system',
+  'topics_system',
+
+  // Social Features - Fully Implemented
+  'user_messaging',
+
+  // UI Features - Fully Implemented
+  'dynamic_footer_menus',
+  'newsletter_signup'
+];
+
+// Check if a feature is implemented
+const isFeatureImplemented = (featureKey: string): boolean => {
+  return IMPLEMENTED_FEATURES.includes(featureKey);
+};
 
 const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
   features,
@@ -22,8 +50,30 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
   const [updatingFeatures, setUpdatingFeatures] = useState<Set<string>>(new Set());
 
   const handleToggleFeature = async (featureKey: string, enabled: boolean) => {
+    // Check if feature is implemented
+    if (enabled && !isFeatureImplemented(featureKey)) {
+      toast((t) => (
+        <div className="flex items-start space-x-3">
+          <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-gray-900 dark:text-gray-100">
+              Feature Not Available
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              The <strong>{featureKey.replace(/_/g, ' ')}</strong> feature has not been implemented yet.
+              Enabling it will have no effect until the feature is developed.
+            </p>
+          </div>
+        </div>
+      ), {
+        duration: 6000,
+        icon: '⚠️',
+      });
+      return;
+    }
+
     setUpdatingFeatures(prev => new Set(prev).add(featureKey));
-    
+
     try {
       await onUpdateFeature({
         feature_key: featureKey,
@@ -187,22 +237,39 @@ const FeatureManagementSection: React.FC<FeatureManagementSectionProps> = ({
                 <div className="space-y-3">
                   {category.features.map((feature) => {
                     const isUpdating = updatingFeatures.has(feature.feature_key);
-                    
+                    const implemented = isFeatureImplemented(feature.feature_key);
+
                     return (
-                      <div key={feature.id} className="flex items-center justify-between p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
+                      <div key={feature.id} className={`flex items-center justify-between p-3 border rounded-lg ${
+                        implemented
+                          ? 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700'
+                          : 'border-orange-200 dark:border-orange-900/30 bg-orange-50 dark:bg-orange-900/10'
+                      }`}>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">
                               {feature.feature_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </h4>
-                            {(feature.enabled || false) && (
+                            {(feature.enabled || false) && implemented && (
                               <Badge variant="success" size="sm">
                                 Active
+                              </Badge>
+                            )}
+                            {!implemented && (
+                              <Badge variant="warning" size="sm" className="flex items-center space-x-1">
+                                <Info className="h-3 w-3" />
+                                <span>Not Implemented</span>
                               </Badge>
                             )}
                           </div>
                           {feature.description && (
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{feature.description}</p>
+                          )}
+                          {!implemented && (
+                            <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center space-x-1">
+                              <AlertCircle className="h-3 w-3" />
+                              <span>This feature is planned but not yet available. Enabling it will have no effect.</span>
+                            </p>
                           )}
                           {((feature.rollout_percentage ?? 0) < 100) && ((feature.rollout_percentage ?? 0) > 0) && (
                             <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
