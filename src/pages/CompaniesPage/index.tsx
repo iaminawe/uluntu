@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { Navigate } from 'react-router-dom';
 import { ContentContainer, EmptyState } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
@@ -6,8 +7,13 @@ import PageHeader from './PageHeader';
 import ActionBar from './ActionBar';
 import { useCompaniesHybrid } from '@/features/companies/hooks/useCompaniesHybrid';
 import CompanyCard from '@/features/companies/components/CompaniesList/CompanyCard';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 export default function CompaniesPage() {
+  // Check if companies feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const companiesEnabled = isFeatureEnabled('companies_listing');
+
   // Use hybrid approach: React Query for data, Redux for UI state
   const {
     companies,
@@ -19,6 +25,16 @@ export default function CompaniesPage() {
     setSearchTerm,
     setIndustries
   } = useCompaniesHybrid();
+
+  // Redirect if companies feature is disabled
+  if (!featuresLoading && !companiesEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />;
+  }
   
   return (
     <>

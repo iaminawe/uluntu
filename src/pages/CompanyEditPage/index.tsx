@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useCompanyByIdOrSlug } from '@/hooks/useCompanyQueries';
-import { supabase } from '@/lib/supabase'; 
+import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Save, Trash2, Eye, EyeOff } from 'lucide-react';
 import { FormData } from './types';
 import { initialFormData } from './data';
@@ -16,6 +16,7 @@ import { generateSlug } from '@/features/companies/utils/slugUtils';
 import { ContentStatus } from '../../types/common';
 import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
+import { useEnabledFeatures } from '@/hooks/useSettings';
 
 // Define an extended company type that includes the optional fields we need
 interface ExtendedCompany {
@@ -51,7 +52,11 @@ export default function CompanyEditPage() {
   // Use string slug consistently instead of converting to number
   const companyId = slug || undefined;
   const navigate = useNavigate();
-  
+
+  // Check if companies feature is enabled
+  const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
+  const companiesEnabled = isFeatureEnabled('companies_listing');
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newIndustry, setNewIndustry] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
@@ -61,15 +66,32 @@ export default function CompanyEditPage() {
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('company', companyId || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
-  const { 
+
+  const {
     data: company,
     isLoading: companyLoading
   } = useCompanyByIdOrSlug(slug);
+
+  // Redirect if companies feature is disabled
+  if (!featuresLoading && !companiesEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   
   // Populate form with company data when in edit mode
   useEffect(() => {
