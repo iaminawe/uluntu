@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Security
-- ⚠️ **BEFORE PUBLIC RELEASE**: Remove development authentication bypass
-- ⚠️ **BEFORE PUBLIC RELEASE**: Add HTML sanitization to admin theme customization
-- ⚠️ **BEFORE PUBLIC RELEASE**: Implement secure session management
-- ⚠️ **BEFORE PUBLIC RELEASE**: Add security headers (CSP, X-Frame-Options, HSTS)
+- Removed `setSession` dev auth bypass from `useAuth` public API
+- Removed debug console.log statements from auth hooks and ProtectedRoute that leaked user PII (email, user ID) to browser console
+- HTML sanitization confirmed in place via DOMPurify for admin theme customization and newsletter editor
+- Session management confirmed secure via Supabase SDK (no token leakage to localStorage)
+- Added security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) to Vite dev and preview servers
+- Production security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) confirmed in nginx.conf
 
 ### Changed
 - Preparing for open source release

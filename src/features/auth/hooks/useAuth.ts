@@ -39,45 +39,29 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Log which Supabase client we're using
-      console.log('Using Supabase client from:', supabase);
-      
-      // Add a safety check before calling signInWithPassword
       if (!supabase || !supabase.auth) {
-        console.error('Supabase client or auth is not properly initialized');
         dispatch(setAuthError('Authentication service unavailable'));
         return;
       }
-      
-      // Log the auth object to check its structure
-      console.log('Auth object:', supabase.auth);
-      
-      // Use a safer approach with explicit error handling
+
       const response = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
-      // Log the response to see its structure
-      console.log('Sign-in response:', response);
-      
-      // Safely destructure with a check
+
       if (!response) {
-        console.error('Sign-in response is undefined or null');
         dispatch(setAuthError('Invalid response from authentication service'));
         return;
       }
-      
+
       const { data, error } = response;
 
       if (error) {
-        console.error('Sign-in error:', error);
         dispatch(setAuthError(error.message));
         return;
       }
 
       if (data?.user && data?.session) {
-        console.log('Sign-in successful, user:', data.user.id);
         dispatch(signInWithSession({
           user: {
             id: data.user.id,
@@ -86,15 +70,12 @@ export const useAuth = () => {
           },
           session: convertSession(data.session)
         }));
-        
+
         // Role fetching is handled by SessionContextWithRedux
-        // No need to duplicate here
       } else {
-        console.error('Sign-in data incomplete:', data);
         dispatch(setAuthError('Incomplete authentication data'));
       }
     } catch (err) {
-      console.error('Sign-in exception:', err);
       handleAuthError(dispatch, err);
     }
   };
@@ -184,13 +165,7 @@ export const useAuth = () => {
    * This method checks user.role which may be undefined. Use the modern permission system instead.
    */
   const hasRole = (role: string) => {
-    console.warn('useAuth.hasRole is deprecated. Use usePermissions() hook instead.');
     return user?.role === role;
-  };
-
-  // For testing purposes
-  const setSession = (data: { user: User; session: Session }) => {
-    dispatch(signInWithSession(data));
   };
 
   return {
@@ -206,7 +181,6 @@ export const useAuth = () => {
     forgotPassword: resetPassword,
     resetPassword,
     refreshSession,
-    hasRole,
-    setSession
+    hasRole
   };
 };
