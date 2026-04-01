@@ -134,10 +134,10 @@ export default defineConfig((): UserConfig => ({
           return `assets/[name]-[hash][extname]`;
         },
       },
-      // Tree shaking enabled — reduces dead code from vendor packages
+      // Tree shaking — conservative settings to avoid eliminating app code
       treeshake: {
-        moduleSideEffects: false,
-        propertyReadSideEffects: false,
+        moduleSideEffects: 'no-external',
+        propertyReadSideEffects: true,
       },
     },
     // Esbuild options for better minification
