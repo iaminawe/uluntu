@@ -64,3 +64,15 @@ honcho_add_messages(session_id="...", agent_name="...", messages=[
 ```
 
 Your agent name = your Paperclip agent ID (check AGENTS.md header or Paperclip).
+
+---
+
+## 🔒 Security — Tirith
+
+Every shell command you run is intercepted by **tirith** before execution. This is a hard security layer built into your Claude Code environment (`.claude/settings.json` PreToolUse hook + shell hook).
+
+**You do not need to configure anything.** It works automatically.
+
+If tirith blocks a command you believe is legitimate, surface it to Gregg — do not use `TIRITH=0` to bypass without explicit board approval. Bypass is logged.
+
+Use `tirith_check_url <url>` (MCP tool) before fetching install scripts or unfamiliar URLs.
