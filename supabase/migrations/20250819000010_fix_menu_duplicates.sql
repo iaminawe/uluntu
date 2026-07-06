@@ -36,64 +36,64 @@ BEGIN
     -- Main Navigation Items
     
     -- Community dropdown parent
-    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon)
-    VALUES (main_container_id, 'Community', NULL, 100, true, true, 'dropdown', 'users')
+    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon, menu_type)
+    VALUES (main_container_id, 'Community', NULL, 100, true, true, 'dropdown', 'users', 'main')
     RETURNING id INTO community_id;
     
     -- Community children
-    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties) VALUES
-    (main_container_id, community_id, 'Events', '/events', 'Workshops, meetups, and tech talks', 110, true, true, 'link', 'calendar', '{"feature": "events_system"}'),
-    (main_container_id, community_id, 'Directory', '/directory', 'Connect with tech professionals', 120, true, true, 'link', 'users', '{"feature": "members_directory"}'),
-    (main_container_id, community_id, 'Groups', '/groups', 'Join communities of interest', 130, true, true, 'link', 'user-group', '{"feature": "groups_communities"}'),
-    (main_container_id, community_id, 'News', '/news', 'Latest tech news and articles', 140, true, true, 'link', 'newspaper', '{"feature": "news_blog"}'),
-    (main_container_id, community_id, 'Galleries', '/galleries', 'Browse community photo galleries', 150, true, true, 'link', 'photo', '{"feature": "photo_galleries"}');
+    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties, menu_type) VALUES
+    (main_container_id, community_id, 'Events', '/events', 'Workshops, meetups, and tech talks', 110, true, true, 'link', 'calendar', '{"feature": "events_system"}', 'main'),
+    (main_container_id, community_id, 'Directory', '/directory', 'Connect with tech professionals', 120, true, true, 'link', 'users', '{"feature": "members_directory"}', 'main'),
+    (main_container_id, community_id, 'Groups', '/groups', 'Join communities of interest', 130, true, true, 'link', 'user-group', '{"feature": "groups_communities"}', 'main'),
+    (main_container_id, community_id, 'News', '/news', 'Latest tech news and articles', 140, true, true, 'link', 'newspaper', '{"feature": "news_blog"}', 'main'),
+    (main_container_id, community_id, 'Galleries', '/galleries', 'Browse community photo galleries', 150, true, true, 'link', 'photo', '{"feature": "photo_galleries"}', 'main');
     
     -- Business dropdown parent
-    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon)
-    VALUES (main_container_id, 'Business', NULL, 200, true, true, 'dropdown', 'briefcase')
+    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon, menu_type)
+    VALUES (main_container_id, 'Business', NULL, 200, true, true, 'dropdown', 'briefcase', 'main')
     RETURNING id INTO business_id;
     
     -- Business children
-    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties) VALUES
-    (main_container_id, business_id, 'Companies', '/companies', 'Explore local tech companies', 210, true, true, 'link', 'building', '{"feature": "companies_listing"}'),
-    (main_container_id, business_id, 'Opportunities', '/opportunities', 'Find jobs and volunteer roles', 220, true, true, 'link', 'briefcase', '{"feature": "opportunities_board"}'),
-    (main_container_id, business_id, 'Marketplace', '/marketplace', 'Buy and sell tech items', 230, true, true, 'link', 'shopping-bag', '{"feature": "marketplace"}');
+    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties, menu_type) VALUES
+    (main_container_id, business_id, 'Companies', '/companies', 'Explore local tech companies', 210, true, true, 'link', 'building', '{"feature": "companies_listing"}', 'main'),
+    (main_container_id, business_id, 'Opportunities', '/opportunities', 'Find jobs and volunteer roles', 220, true, true, 'link', 'briefcase', '{"feature": "opportunities_board"}', 'main'),
+    (main_container_id, business_id, 'Marketplace', '/marketplace', 'Buy and sell tech items', 230, true, true, 'link', 'shopping-bag', '{"feature": "marketplace"}', 'main');
     
     -- Resources standalone
-    INSERT INTO menu_items (menu_container_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties)
-    VALUES (main_container_id, 'Resources', '/resources', 'Educational content and guides', 300, true, true, 'link', 'book-open', '{"feature": "resources_library"}');
+    INSERT INTO menu_items (menu_container_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, custom_properties, menu_type)
+    VALUES (main_container_id, 'Resources', '/resources', 'Educational content and guides', 300, true, true, 'link', 'book-open', '{"feature": "resources_library"}', 'main');
     
     -- Topics standalone
-    INSERT INTO menu_items (menu_container_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon)
-    VALUES (main_container_id, 'Topics', '/topics', 'Browse content by topic', 400, true, true, 'link', 'tag');
+    INSERT INTO menu_items (menu_container_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, menu_type)
+    VALUES (main_container_id, 'Topics', '/topics', 'Browse content by topic', 400, true, true, 'link', 'tag', 'main');
     
     -- About dropdown parent
-    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon)
-    VALUES (main_container_id, 'About', NULL, 500, true, true, 'dropdown', 'info')
+    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, icon, menu_type)
+    VALUES (main_container_id, 'About', NULL, 500, true, true, 'dropdown', 'info', 'main')
     RETURNING id INTO about_id;
     
     -- About children
-    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon) VALUES
-    (main_container_id, about_id, 'About Us', '/about', 'Learn about our mission', 510, true, true, 'link', 'info'),
-    (main_container_id, about_id, 'About Uluntu', '/about-uluntu', 'Learn about the Uluntu platform', 520, true, true, 'link', 'globe'),
-    (main_container_id, about_id, 'Partners', '/partners', 'Our community partners and sponsors', 530, true, true, 'link', 'handshake'),
-    (main_container_id, about_id, 'Contact', '/contact', 'Get in touch with us', 540, true, true, 'link', 'mail'),
-    (main_container_id, about_id, 'Privacy', '/privacy', 'Privacy policy and data protection', 550, true, true, 'link', 'shield'),
-    (main_container_id, about_id, 'Terms', '/terms', 'Terms of service and guidelines', 560, true, true, 'link', 'file-text');
+    INSERT INTO menu_items (menu_container_id, parent_id, title, url, description, sort_order, is_enabled, is_visible, item_type, icon, menu_type) VALUES
+    (main_container_id, about_id, 'About Us', '/about', 'Learn about our mission', 510, true, true, 'link', 'info', 'main'),
+    (main_container_id, about_id, 'About Uluntu', '/about-uluntu', 'Learn about the Uluntu platform', 520, true, true, 'link', 'globe', 'main'),
+    (main_container_id, about_id, 'Partners', '/partners', 'Our community partners and sponsors', 530, true, true, 'link', 'handshake', 'main'),
+    (main_container_id, about_id, 'Contact', '/contact', 'Get in touch with us', 540, true, true, 'link', 'mail', 'main'),
+    (main_container_id, about_id, 'Privacy', '/privacy', 'Privacy policy and data protection', 550, true, true, 'link', 'shield', 'main'),
+    (main_container_id, about_id, 'Terms', '/terms', 'Terms of service and guidelines', 560, true, true, 'link', 'file-text', 'main');
     
     -- Footer Navigation Items (flat structure)
-    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type) VALUES
-    (footer_container_id, 'Community', '/community', 100, true, true, 'link'),
-    (footer_container_id, 'Directory', '/directory', 200, true, true, 'link'),
-    (footer_container_id, 'Companies', '/companies', 300, true, true, 'link'),
-    (footer_container_id, 'Groups', '/groups', 400, true, true, 'link'),
-    (footer_container_id, 'Resources', '/resources', 500, true, true, 'link'),
-    (footer_container_id, 'Events', '/events', 600, true, true, 'link'),
-    (footer_container_id, 'News', '/news', 700, true, true, 'link'),
-    (footer_container_id, 'About', '/about', 800, true, true, 'link'),
-    (footer_container_id, 'Contact', '/contact', 900, true, true, 'link'),
-    (footer_container_id, 'Privacy', '/privacy', 1000, true, true, 'link'),
-    (footer_container_id, 'Terms', '/terms', 1100, true, true, 'link');
+    INSERT INTO menu_items (menu_container_id, title, url, sort_order, is_enabled, is_visible, item_type, menu_type) VALUES
+    (footer_container_id, 'Community', '/community', 100, true, true, 'link', 'footer'),
+    (footer_container_id, 'Directory', '/directory', 200, true, true, 'link', 'footer'),
+    (footer_container_id, 'Companies', '/companies', 300, true, true, 'link', 'footer'),
+    (footer_container_id, 'Groups', '/groups', 400, true, true, 'link', 'footer'),
+    (footer_container_id, 'Resources', '/resources', 500, true, true, 'link', 'footer'),
+    (footer_container_id, 'Events', '/events', 600, true, true, 'link', 'footer'),
+    (footer_container_id, 'News', '/news', 700, true, true, 'link', 'footer'),
+    (footer_container_id, 'About', '/about', 800, true, true, 'link', 'footer'),
+    (footer_container_id, 'Contact', '/contact', 900, true, true, 'link', 'footer'),
+    (footer_container_id, 'Privacy', '/privacy', 1000, true, true, 'link', 'footer'),
+    (footer_container_id, 'Terms', '/terms', 1100, true, true, 'link', 'footer');
     
     RAISE NOTICE 'Menu items populated successfully';
 END $$;

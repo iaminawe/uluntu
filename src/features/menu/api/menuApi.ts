@@ -133,15 +133,21 @@ class MenuAPI {
       .filter(item => item.menu_type === targetType || !item.menu_type)
       .map(structure => {
         // Validate required fields
-        if (!structure.id || !structure.label || !structure.href) {
+        if (!structure.id || !structure.label) {
           console.warn('Skipping invalid menu structure item:', structure);
+          return null;
+        }
+
+        // href is optional for dropdown items
+        if (!structure.href && structure.item_type !== 'dropdown') {
+          console.warn('Skipping invalid menu structure item (missing href):', structure);
           return null;
         }
 
         return {
           id: structure.id,
           title: structure.label,
-          url: structure.href,
+          url: structure.href || '#',
           description: structure.description || undefined,
           menu_type: targetType,
           sort_order: Number(structure.order_index) || Number(structure.sort_order) || 0,
