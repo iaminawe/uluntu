@@ -258,8 +258,8 @@ class MenuManagementAPI {
     items.forEach(item => {
       itemMap.set(item.id, {
         id: item.id,
-        label: item.label,
-        href: item.href,
+        label: item.title,
+        href: item.url || '#',
         description: item.description,
         icon: item.icon,
         feature_flag: item.feature_flag,

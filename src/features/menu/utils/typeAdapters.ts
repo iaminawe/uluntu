@@ -10,8 +10,13 @@ import { MenuItem, MenuItemDatabaseRow, MenuType, MenuTarget, MenuVisibility } f
  */
 export function convertDatabaseRowToMenuItem(row: MenuItemDatabaseRow): MenuItem {
   // Validate required fields
-  if (!row.id || !row.title || !row.url) {
-    throw new Error('Invalid menu item data: missing required fields (id, title, url)');
+  if (!row.id || !row.title) {
+    throw new Error('Invalid menu item data: missing required fields (id, title)');
+  }
+
+  // URL is optional for dropdown/divider items
+  if (!row.url && row.item_type !== 'dropdown' && row.item_type !== 'divider') {
+    throw new Error('Invalid menu item data: missing required field (url) for non-dropdown items');
   }
 
   // Validate and convert menu_type
@@ -35,7 +40,7 @@ export function convertDatabaseRowToMenuItem(row: MenuItemDatabaseRow): MenuItem
   return {
     id: row.id,
     title: row.title,
-    url: row.url,
+    url: row.url || '#', // Default to '#' for dropdown/divider items with no URL
     description: row.description || undefined,
     menu_type: menuType,
     parent_id: row.parent_id || undefined,
