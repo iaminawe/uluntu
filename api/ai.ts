@@ -1,16 +1,11 @@
-// Server-side AI proxy. Keeps the Anthropic/OpenAI keys off the client.
-// The browser POSTs { messages, maxTokens?, temperature? } with the user's
-// Supabase access token; this function calls the provider server-side and
-// streams plain text back.
+// Server-side AI proxy (Vercel Node.js runtime). Keeps the Anthropic/OpenAI
+// keys off the client. The browser POSTs { messages, maxTokens?, temperature? }
+// with the user's Supabase access token; this calls the provider server-side
+// and streams plain text back.
 import { streamText, type CoreMessage } from 'ai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
-import { getUserFromRequest, json } from './_lib/auth.js';
-
-// Node.js runtime (not edge): the AI SDK / provider packages reference modules
-// the edge runtime does not support. Node supports the Web Request/Response
-// handler signature and streaming responses.
-export const config = { runtime: 'nodejs' };
+import { getUser, parseBody, type ApiReq, type ApiRes } from './_lib/auth.js';
 
 const PROVIDER = process.env.AI_PROVIDER || 'openai';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
@@ -29,42 +24,56 @@ function resolveModel() {
   return createOpenAI({ apiKey: OPENAI_KEY })(OPENAI_MODEL);
 }
 
-export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
 
   // Require an authenticated Supabase user — this endpoint spends AI credits.
-  const user = await getUserFromRequest(req);
-  if (!user) return json({ error: 'Unauthorized' }, 401);
+  const user = await getUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
 
   const model = resolveModel();
-  if (!model) return json({ error: 'AI provider not configured' }, 503);
+  if (!model) {
+    res.status(503).json({ error: 'AI provider not configured' });
+    return;
+  }
 
-  let body: {
+  const body = parseBody<{
     messages?: CoreMessage[];
     maxTokens?: number;
     temperature?: number;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: 'Invalid JSON body' }, 400);
-  }
-
-  const messages = body.messages;
+  }>(req);
+  const messages = body?.messages;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return json({ error: 'messages is required' }, 400);
+    res.status(400).json({ error: 'messages is required' });
+    return;
   }
 
   try {
     const result = streamText({
       model,
       messages,
-      maxOutputTokens: body.maxTokens ?? DEFAULT_MAX_TOKENS,
-      temperature: body.temperature ?? DEFAULT_TEMPERATURE,
+      maxOutputTokens: body?.maxTokens ?? DEFAULT_MAX_TOKENS,
+      temperature: body?.temperature ?? DEFAULT_TEMPERATURE,
     });
-    return result.toTextStreamResponse();
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    for await (const chunk of result.textStream) {
+      res.write(chunk);
+    }
+    res.end();
   } catch (err) {
     console.error('AI proxy error:', err);
-    return json({ error: 'AI request failed' }, 502);
+    // Headers may already be sent once streaming starts.
+    try {
+      res.status(502).json({ error: 'AI request failed' });
+    } catch {
+      res.end();
+    }
   }
 }
