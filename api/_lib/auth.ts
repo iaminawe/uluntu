@@ -13,7 +13,9 @@ const SUPABASE_SECRET_KEY =
 // Minimal shapes for Vercel Node.js request/response (avoids a type dependency).
 export interface ApiReq {
   method?: string;
+  url?: string;
   headers: Record<string, string | string[] | undefined>;
+  query?: Record<string, string | string[] | undefined>;
   body?: unknown;
 }
 export interface ApiRes {
