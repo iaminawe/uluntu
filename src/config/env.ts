@@ -9,11 +9,17 @@
  * Safely gets environment variables from various sources based on the runtime environment.
  * This function avoids direct references to import.meta that would cause syntax errors in Jest.
  */
-function getMetaEnvVariable(key: string): string | undefined {
+function getMetaEnvVariable(key: 'VITE_USE_SUPABASE'): string | undefined {
   // For Vite/browser environment - check if import.meta is available (prioritize this for browser)
+  // SECURITY: vars are read statically (import.meta.env.VITE_X). Dynamic access
+  // (import.meta.env[key]) makes Vite inline the ENTIRE env object into the
+  // client bundle, leaking any secret that carries a VITE_ prefix.
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    if (import.meta.env[key] !== undefined) {
-      return import.meta.env[key];
+    const staticEnv: Record<typeof key, string | undefined> = {
+      VITE_USE_SUPABASE: import.meta.env.VITE_USE_SUPABASE,
+    };
+    if (staticEnv[key] !== undefined) {
+      return staticEnv[key];
     }
   }
   
