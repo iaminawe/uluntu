@@ -5,8 +5,9 @@ import {
   CustomAIMenuItem,
 } from '@blocknote/xl-ai';
 import { BlockNoteEditor } from '@blocknote/core';
-import { CoreMessage, streamText } from 'ai';
-import { getAIProvider, getAIConfig, createSystemPrompt, formatUserPrompt } from './provider';
+import { CoreMessage } from 'ai';
+import { getAIConfig, isAIEnabled, createSystemPrompt, formatUserPrompt } from './provider';
+import { postAIMessages } from './aiClient';
 
 // Custom AI Commands for content creation
 export const customAICommands: CustomAIMenuItem[] = [
@@ -150,29 +151,24 @@ export const customPromptBuilder: PromptBuilder = (editor: BlockNoteEditor, deta
 
 // Create the AI Extension
 export const createBlockNoteAI = () => {
-  const aiProvider = getAIProvider();
   const aiConfig = getAIConfig();
-  
-  if (!aiProvider || !aiConfig.isEnabled) {
+
+  if (!aiConfig.isEnabled) {
     console.warn('AI features are disabled or not configured');
     return null;
   }
-  
+
   return createAIExtension({
-    // LLM configuration
+    // LLM configuration — routed through the server-side /api/ai proxy so no
+    // provider key is ever present in the client bundle.
     callLLM: async (messages: CoreMessage[]) => {
       try {
-        const model = aiProvider.getModel();
-        
-        const result = await streamText({
-          model,
-          messages,
+        const res = await postAIMessages(messages, {
           maxTokens: aiConfig.maxTokens,
           temperature: aiConfig.temperature,
         });
-        
-        // Return the stream
-        return result.toDataStream();
+        // The proxy streams plain text; hand the stream to the AI extension.
+        return res.body;
       } catch (error) {
         console.error('AI call failed:', error);
         throw new Error('Failed to generate AI response. Please check your API configuration.');
@@ -193,9 +189,5 @@ export const createBlockNoteAI = () => {
   });
 };
 
-// Helper to check if AI is available
-export const isAIAvailable = (): boolean => {
-  const provider = getAIProvider();
-  const config = getAIConfig();
-  return !!provider && config.isEnabled;
-};
+// Helper to check if AI is available (server owns actual key availability)
+export const isAIAvailable = (): boolean => isAIEnabled();
