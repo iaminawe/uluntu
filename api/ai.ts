@@ -7,7 +7,10 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
 import { getUserFromRequest, json } from './_lib/auth';
 
-export const config = { runtime: 'edge' };
+// Node.js runtime (not edge): the AI SDK / provider packages reference modules
+// the edge runtime does not support. Node supports the Web Request/Response
+// handler signature and streaming responses.
+export const config = { runtime: 'nodejs' };
 
 const PROVIDER = process.env.AI_PROVIDER || 'openai';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
@@ -56,7 +59,7 @@ export default async function handler(req: Request): Promise<Response> {
     const result = streamText({
       model,
       messages,
-      maxTokens: body.maxTokens ?? DEFAULT_MAX_TOKENS,
+      maxOutputTokens: body.maxTokens ?? DEFAULT_MAX_TOKENS,
       temperature: body.temperature ?? DEFAULT_TEMPERATURE,
     });
     return result.toTextStreamResponse();

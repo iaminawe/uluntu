@@ -9,7 +9,8 @@
 import { Resend } from 'resend';
 import { getUserFromRequest, secretRestSelect, json } from './_lib/auth';
 
-export const config = { runtime: 'edge' };
+// Node.js runtime: the Resend SDK is not supported on the edge runtime.
+export const config = { runtime: 'nodejs' };
 
 const RESEND_KEY = process.env.RESEND_API_KEY || '';
 const DEFAULT_FROM = process.env.EMAIL_FROM || 'noreply@uluntu.io';
