@@ -7,7 +7,7 @@
 //    must be either the submission's own email or the configured support
 //    address. This prevents the endpoint from being an open mail relay.
 import { Resend } from 'resend';
-import { getUserFromRequest, secretRestSelect, json } from './_lib/auth';
+import { getUserFromRequest, secretRestSelect, json } from './_lib/auth.js';
 
 // Node.js runtime: the Resend SDK is not supported on the edge runtime.
 export const config = { runtime: 'nodejs' };

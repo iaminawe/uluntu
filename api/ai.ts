@@ -5,7 +5,7 @@
 import { streamText, type CoreMessage } from 'ai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
-import { getUserFromRequest, json } from './_lib/auth';
+import { getUserFromRequest, json } from './_lib/auth.js';
 
 // Node.js runtime (not edge): the AI SDK / provider packages reference modules
 // the edge runtime does not support. Node supports the Web Request/Response
