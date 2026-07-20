@@ -87,6 +87,8 @@ BEGIN
   FOREACH t IN ARRAY tables LOOP
     EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I',
                    'authenticated_can_manage_' || t, t);
+    EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I',
+                   'admins_can_manage_' || t, t);
     EXECUTE format($f$
       CREATE POLICY %I ON public.%I FOR ALL
         TO authenticated
