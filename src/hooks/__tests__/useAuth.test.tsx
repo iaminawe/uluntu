@@ -157,13 +157,20 @@ describe('useAuth Hook with Redux', () => {
 
   describe('Sign Out', () => {
     it('should handle successful sign out', async () => {
+      mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
+        data: {
+          user: { id: mockUser.id, email: mockUser.email, user_metadata: { role: mockUser.role } },
+          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() }
+        },
+        error: null
+      });
       mockSupabaseClient.auth.signOut.mockResolvedValueOnce({ error: null });
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       // First sign in
       await act(async () => {
-        result.current.setSession({ user: mockUser, session: mockSession });
+        await result.current.signIn('test@example.com', 'password');
       });
 
       // Then sign out
@@ -272,10 +279,18 @@ describe('useAuth Hook with Redux', () => {
     it('should check user role permissions', async () => {
       const adminUser = { ...mockUser, role: 'admin' };
 
+      mockSupabaseClient.auth.signInWithPassword.mockResolvedValueOnce({
+        data: {
+          user: { id: adminUser.id, email: adminUser.email, user_metadata: { role: 'admin' } },
+          session: { access_token: mockSession.access_token, expires_at: new Date(mockSession.expires_at).getTime() }
+        },
+        error: null
+      });
+
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       await act(async () => {
-        result.current.setSession({ user: adminUser, session: mockSession });
+        await result.current.signIn('admin@example.com', 'password');
       });
 
       expect(result.current.user?.role).toBe('admin');

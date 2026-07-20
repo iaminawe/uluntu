@@ -21,6 +21,12 @@ export default defineConfig((): UserConfig => ({
   server: {
     port: 5555, // Using a different port to avoid conflicts
     strictPort: false, // Allow fallback to other ports if occupied
+    headers: {
+      'X-Frame-Options': 'SAMEORIGIN',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    },
   },
   resolve: {
     alias: {
@@ -68,8 +74,8 @@ export default defineConfig((): UserConfig => ({
     assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        // Let Vite automatically split chunks with default strategy
-        manualChunks: undefined,
+        // Let Rollup handle chunking automatically — manual chunking was causing
+        // circular dependency / load-order errors (vendor-state importing React before vendor-react loaded)
         // Optimized chunk and asset naming
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
@@ -87,8 +93,11 @@ export default defineConfig((): UserConfig => ({
           return `assets/[name]-[hash][extname]`;
         },
       },
-      // Tree shaking optimizations - disabled to fix bundle issue
-      treeshake: false,
+      // Tree shaking — conservative settings to avoid eliminating app code
+      treeshake: {
+        moduleSideEffects: 'no-external',
+        propertyReadSideEffects: true,
+      },
     },
     // Esbuild options for better minification
     esbuild: {
@@ -104,7 +113,13 @@ export default defineConfig((): UserConfig => ({
   // Preview server configuration
   preview: {
     port: 4173,
-    strictPort: false
+    strictPort: false,
+    headers: {
+      'X-Frame-Options': 'SAMEORIGIN',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    },
   },
   // CSS configuration
   css: {

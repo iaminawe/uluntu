@@ -14,17 +14,6 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
   const userRoles = authState.roles.list;
   const location = useLocation();
   
-  console.log('🔐 ProtectedRoute Debug:', {
-    path: location.pathname,
-    user: user?.email,
-    loading,
-    userRoles,
-    requiredRoles,
-    hasUser: !!user,
-    authStatus: authState.status
-  });
-  
-
   // Check loading states
   const rolesLoading = authState.roles.loading;
   
@@ -33,7 +22,6 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
   const isActuallyLoading = loading && !user;
   
   if (isActuallyLoading) {
-    console.log('🔐 ProtectedRoute: Loading initial auth...', { sessionLoading: loading, rolesLoading, user: !!user });
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
@@ -43,7 +31,6 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
 
   // If user is not authenticated, redirect to sign in
   if (!user) {
-    console.log('🔐 ProtectedRoute: No user, redirecting to signin');
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
