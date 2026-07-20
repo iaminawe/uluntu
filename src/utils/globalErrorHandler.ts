@@ -55,13 +55,15 @@ export function checkRuntimeEnvironment() {
   const issues: string[] = [];
 
   // Check for required environment variables
-  const requiredEnvVars = [
-    'VITE_SUPABASE_URL',
-    'VITE_SUPABASE_ANON_KEY',
-  ];
+  // SECURITY: read statically — dynamic access (import.meta.env[varName]) makes
+  // Vite inline the entire env object into the client bundle.
+  const requiredEnvVars: Record<string, string | undefined> = {
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  };
 
-  requiredEnvVars.forEach((varName) => {
-    if (!import.meta.env[varName]) {
+  Object.entries(requiredEnvVars).forEach(([varName, value]) => {
+    if (!value) {
       issues.push(`Missing required environment variable: ${varName}`);
     }
   });

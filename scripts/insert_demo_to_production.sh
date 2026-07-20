@@ -9,8 +9,8 @@ echo "🚀 Inserting fresh demo content into production Supabase..."
 echo ""
 
 # Check if environment variables are set
-if [ -z "$VITE_SUPABASE_SERVICE_ROLE_KEY" ]; then
-    echo "❌ Error: VITE_SUPABASE_SERVICE_ROLE_KEY not found"
+if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+    echo "❌ Error: SUPABASE_SERVICE_ROLE_KEY not found"
     echo "Please make sure your .env file is loaded"
     exit 1
 fi

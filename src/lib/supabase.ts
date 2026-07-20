@@ -3,17 +3,13 @@ import { Database } from '@/types/supabase';
 import { AuthError } from '@supabase/supabase-js';
 import { logger } from '@/utils/logger';
 
-// Get environment variables from Vite's import.meta.env
-const getEnvVar = (key: string): string | undefined => {
-  // In browser environment with Vite, use import.meta.env
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key];
-  }
-  return undefined;
-};
-
-const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+// Get environment variables from Vite's import.meta.env.
+// SECURITY: reference ONLY specific properties (import.meta.env.VITE_X). Any
+// bare `import.meta.env` reference — even a truthiness guard — makes Vite
+// inline the ENTIRE env object into the client bundle, leaking every VITE_*
+// secret. Never write bare `import.meta.env`.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 // Log Supabase configuration for debugging
 logger.debug('Supabase configuration loaded', 'SUPABASE', { 
