@@ -1,5 +1,5 @@
-import { Resend } from 'resend';
-import { 
+import { createEmailTransport, type EmailTransport } from './emailTransport';
+import {
   NewsletterCampaign, 
   NewsletterSubscription,
   EmailPreview,
@@ -9,22 +9,13 @@ import {
 } from '@/types/newsletter';
 
 class ResendService {
-  private client: Resend;
+  // Sends are proxied server-side via /api/email; no API key in the client.
+  private client: EmailTransport;
   private fromEmail: string;
   private fromName: string;
 
   constructor() {
-    const apiKey = import.meta.env.VITE_RESEND_API_KEY;
-    if (!apiKey) {
-      console.warn('Resend API key not found. Email functionality will be disabled.');
-      // Use a placeholder key to prevent errors
-      this.client = new Resend('re_placeholder_key');
-      this.fromEmail = 'noreply@example.com';
-      this.fromName = 'Nelson Tech Community';
-      return;
-    }
-
-    this.client = new Resend(apiKey);
+    this.client = createEmailTransport();
     this.fromEmail = import.meta.env.VITE_FROM_EMAIL || 'newsletter@kootenaytech.community';
     this.fromName = import.meta.env.VITE_FROM_NAME || 'Kootenay Tech Community';
   }
