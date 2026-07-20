@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import { createEmailTransport, type EmailTransport } from './emailTransport';
 import { settingsApi } from '@/features/admin/api/settings';
 import { sendTransactionalEmail, sendContactAutoReply } from '@/api/newsletter/transactional';
 
@@ -113,7 +113,8 @@ export interface NotificationPreferences {
 }
 
 export class EmailNotificationService {
-  private client: Resend;
+  // Sends are proxied server-side via /api/email; no API key in the client.
+  private client: EmailTransport;
   private fromEmail: string;
   private fromName: string;
   private queue: EmailQueueItem[] = [];
@@ -121,19 +122,10 @@ export class EmailNotificationService {
   private newsletterTemplates: Map<string, NewsletterTemplate> = new Map();
 
   constructor() {
-    const apiKey = import.meta.env.VITE_RESEND_API_KEY;
-    if (!apiKey) {
-      console.warn('Resend API key not found. Email notifications will be disabled.');
-      this.client = new Resend('re_placeholder_key');
-      this.fromEmail = 'noreply@example.com';
-      this.fromName = 'Support Team';
-      return;
-    }
-
-    this.client = new Resend(apiKey);
+    this.client = createEmailTransport();
     this.fromEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@kootenaytech.community';
     this.fromName = import.meta.env.VITE_SUPPORT_NAME || 'Kootenay Tech Community Support';
-    
+
     // Load newsletter templates on initialization
     this.loadNewsletterTemplates();
   }
