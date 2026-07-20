@@ -421,12 +421,6 @@ railway up
 # One-click deploy with database provisioning
 ```
 
-**Cloudflare Pages**
-```bash
-wrangler pages deploy dist
-# Edge deployment with Workers
-```
-
 ### Environment Configuration
 
 Create `.env.production`:

@@ -37,7 +37,6 @@ This document provides a comprehensive map of all documentation in the Nelson Te
 - **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - **PRIMARY**: Production deployment guide
 - **[README.md](deployment/README.md)** - Deployment overview
 - **[netlify.md](deployment/netlify.md)** - Netlify deployment
-- **[cloudflare.md](deployment/cloudflare.md)** - Cloudflare deployment
 - **[DOCKER_TROUBLESHOOTING.md](deployment/DOCKER_TROUBLESHOOTING.md)** - Docker deployment issues
 - **[COOLIFY_DEPLOYMENT.md](deployment/COOLIFY_DEPLOYMENT.md)** - Coolify deployment guide
 - **[COOLIFY_MINIMAL_DEPLOYMENT.md](deployment/COOLIFY_MINIMAL_DEPLOYMENT.md)** - Minimal Coolify setup

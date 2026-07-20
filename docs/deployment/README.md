@@ -40,12 +40,6 @@ Before deploying, ensure you have:
 - Generous free tier
 - Built-in form handling
 
-### [Cloudflare Pages](./cloudflare.md) - Best for performance
-- Global edge network
-- Unlimited bandwidth
-- Superior DDoS protection
-- Fast build times
-
 ### [Coolify](./coolify.md) - Best for control
 - Self-hosted solution
 - Full control over infrastructure
@@ -54,17 +48,17 @@ Before deploying, ensure you have:
 
 ## 📊 Platform Comparison
 
-| Feature | Netlify | Cloudflare Pages | Coolify |
-|---------|---------|------------------|---------|
-| **Setup Ease** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Free Tier** | 100GB/month | Unlimited | Self-hosted |
-| **Build Minutes** | 300/month | 500/month | Unlimited |
-| **SSL** | Automatic | Automatic | Manual/Auto |
-| **Custom Domain** | ✅ | ✅ | ✅ |
-| **Edge Network** | ✅ | ✅ (Best) | ❌ |
-| **Preview Deploys** | ✅ | ✅ | ✅ |
-| **Rollbacks** | ✅ | ✅ | ✅ |
-| **Server Functions** | ✅ | ✅ | ✅ (Full) |
+| Feature | Netlify | Coolify |
+|---------|---------|---------|
+| **Setup Ease** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Free Tier** | 100GB/month | Self-hosted |
+| **Build Minutes** | 300/month | Unlimited |
+| **SSL** | Automatic | Manual/Auto |
+| **Custom Domain** | ✅ | ✅ |
+| **Edge Network** | ✅ | ❌ |
+| **Preview Deploys** | ✅ | ✅ |
+| **Rollbacks** | ✅ | ✅ |
+| **Server Functions** | ✅ | ✅ (Full) |
 
 ## 🔐 Security Considerations
 

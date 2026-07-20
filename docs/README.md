@@ -143,7 +143,7 @@ We use SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) f
 - **Styling**: Tailwind CSS
 - **Testing**: Jest, React Testing Library
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Deployment**: Vercel/Netlify/Cloudflare
+- **Deployment**: Coolify (app) + Vercel (API routes)
 
 ## 📊 Documentation Reorganization Summary
 
