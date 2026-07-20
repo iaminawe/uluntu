@@ -191,6 +191,8 @@ tsconfig.tsbuildinfo
 .bolt/
 .roo/
 .roomodes
+graphify-out/
+.vercel/
 
 # Development artifacts
 .project
