@@ -206,14 +206,6 @@ This document provides a comprehensive map of all documentation in the Nelson Te
 #### 🧪 Testing (`/docs/testing/`)
 - **[menu-management-test-documentation.md](testing/menu-management-test-documentation.md)** - Menu testing
 
-#### 🤖 Swarm Outputs (`/docs/swarm-outputs/`)
-Contains AI agent collaboration outputs and reports.
-
-#### 💾 Memory (`/docs/memory/`)
-- **[claude-flow-data.json](memory/claude-flow-data.json)** - Claude Flow data
-- **[agents/README.md](memory/agents/README.md)** - Agent memory documentation
-- **[sessions/README.md](memory/sessions/README.md)** - Session memory documentation
-
 #### 🗂️ Archive (`/docs/archive/`)
 Historical documentation organized by date:
 

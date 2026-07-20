@@ -20,17 +20,9 @@ src/features/[feature-name]/
 
 ## Creating a New Feature
 
-### 1. Plan with SPARC
+### 1. Plan the Feature
 
-Start by planning your feature using SPARC methodology:
-
-```bash
-# Define requirements
-npx claude-flow sparc run spec-pseudocode "Define [feature] requirements"
-
-# Design architecture
-npx claude-flow sparc run architect "Design [feature] architecture"
-```
+Start by defining the feature's requirements and sketching its architecture: what data it needs, which components it exposes, and how it integrates with existing features.
 
 ### 2. Create Feature Structure
 

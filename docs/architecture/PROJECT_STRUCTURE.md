@@ -112,7 +112,6 @@ sql-scripts/                # SQL utility scripts
 .claude/                    # Claude Code configuration
 .git/                       # Git repository
 node_modules/               # NPM dependencies
-memory/                     # Claude-flow memory
 ```
 
 ## 🗂️ Archived Files
@@ -121,7 +120,6 @@ The following have been moved to `.archive/` for cleanliness:
 - Debug Docker files (docker-debug.sh, Dockerfile.debug)
 - Test scripts (test-docker-fix.sh)
 - Old reports (BUILD_VALIDATION_REPORT.md, IMPORT_FIXES_SUMMARY.md)
-- Swarm session directories
 - Duplicate config files (vite.config.performance.ts, jest.config.js)
 - TypeScript build info (.tsbuildinfo)
 - Test environment files (.env.test, .env.coolify-minimal)
