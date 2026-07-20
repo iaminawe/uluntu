@@ -38,6 +38,7 @@ const IsolatedAIEditor = lazy(() => import('../pages/IsolatedAIEditor'));
 const FixedAIEditor = lazy(() => import('../pages/FixedAIEditor'));
 const EditorFeatureDemo = lazy(() => import('../pages/EditorFeatureDemo'));
 const DynamicPage = lazy(() => import('../pages/DynamicPage'));
+const DynamicPageBlockNote = lazy(() => import('../pages/DynamicPageBlockNote'));
 const CheckAdminStatus = lazy(() => import('../pages/CheckAdminStatus'));
 const SimplePageTest = lazy(() => import('../pages/SimplePageTest'));
 const DebugAdminAccess = lazy(() => import('../pages/debug/DebugAdminAccess'));
@@ -205,7 +206,8 @@ export const router = createBrowserRouter([
       { path: 'feature-test', element: withSuspense(FeatureTestPage) },
       
       // Dynamic pages (must come after specific routes)
-      { path: 'pages/:slug', element: withSuspense(DynamicPage) },
+      // Using BlockNote editor for rich text editing experience
+      { path: 'pages/:slug', element: withSuspense(DynamicPageBlockNote) },
       {
         path: 'directory',
         element: (

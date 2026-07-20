@@ -2,6 +2,21 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
+  safelist: [
+    // Puck editor dark mode backgrounds
+    'dark:bg-slate-800',
+    'dark:bg-slate-900',
+    'dark:bg-orange-900/20',
+    'bg-slate-50',
+    'bg-slate-100',
+    'bg-orange-50',
+    // Puck editor dark mode text colors
+    'dark:text-white',
+    'dark:text-slate-100',
+    'dark:text-slate-300',
+    'text-slate-900',
+    'text-slate-600',
+  ],
   theme: {
     extend: {
       colors: {

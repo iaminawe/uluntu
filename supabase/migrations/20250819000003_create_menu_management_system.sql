@@ -32,7 +32,7 @@ CREATE TABLE menu_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     menu_container_id UUID NOT NULL REFERENCES menu_containers(id) ON DELETE CASCADE,
     parent_id UUID REFERENCES menu_items(id) ON DELETE CASCADE,
-    
+
     -- Content properties
     title VARCHAR(200) NOT NULL,
     subtitle VARCHAR(300),
@@ -40,10 +40,11 @@ CREATE TABLE menu_items (
     url VARCHAR(1000),
     icon VARCHAR(100), -- Icon name/class or SVG path
     image_url VARCHAR(1000),
-    
+
     -- Behavior properties
     item_type menu_item_type DEFAULT 'link',
     target VARCHAR(20) DEFAULT '_self' CHECK (target IN ('_self', '_blank', '_parent', '_top')),
+    menu_type VARCHAR(50) CHECK (menu_type IN ('main', 'footer', 'mobile', 'admin')),
     is_enabled BOOLEAN DEFAULT true,
     is_visible BOOLEAN DEFAULT true,
     requires_auth BOOLEAN DEFAULT false,
