@@ -129,14 +129,6 @@ The project uses a feature-based architecture where each feature is self-contain
 - Types
 - Tests
 
-### SPARC Methodology
-We use SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) for systematic development:
-1. **Specification** - Define requirements
-2. **Pseudocode** - Plan logic and flow
-3. **Architecture** - Design structure
-4. **Refinement** - Implement with TDD
-5. **Completion** - Integrate and document
-
 ### Technology Stack
 - **Frontend**: React 18, TypeScript, Vite
 - **State Management**: React Query + Redux Toolkit (Hybrid)

@@ -302,7 +302,7 @@ npm run test:integration   # Integration test suite
 ## 📚 Documentation
 
 ### **🎯 Essential Reading (Start Here)**
-- **[CLAUDE.md](./CLAUDE.md)** - **⭐ CRITICAL**: Development guidelines, SPARC methodology, and architectural patterns
+- **[CLAUDE.md](./CLAUDE.md)** - **⭐ CRITICAL**: Development guidelines and architectural patterns
 - **[Documentation Map](./docs/DOCUMENTATION_MAP.md)** - Complete index of all documentation with quick links
 - **[Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)** - Production deployment instructions and best practices
 
@@ -483,15 +483,6 @@ VITE_SENTRY_DSN=your-sentry-dsn
 
 ## 🔄 Development Workflow
 
-### SPARC Methodology
-We use **SPARC** (Specification, Pseudocode, Architecture, Refinement, Completion) for systematic development:
-
-1. **Specification** - Define clear requirements
-2. **Pseudocode** - Plan logic and data flows  
-3. **Architecture** - Design component structure
-4. **Refinement** - Implement with TDD
-5. **Completion** - Integrate and document
-
 ### Git Workflow
 - **Feature branches** - `feature/feature-name`
 - **Conventional commits** - Clear commit messages
@@ -557,12 +548,12 @@ npm test -- --updateSnapshot
 
 - **Documentation**: Comprehensive guides in `/docs`
   - [Documentation Map](./docs/DOCUMENTATION_MAP.md) - Complete index of all documentation
-  - [CLAUDE.md](./CLAUDE.md) - Development guidelines and SPARC methodology
+  - [CLAUDE.md](./CLAUDE.md) - Development guidelines
   - [Hybrid Pattern Guide](./docs/guides/HYBRID_PATTERN_GUIDE.md) - State management architecture
   - [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) - Production deployment instructions
   - [Feature Documentation](./docs/features/) - All feature-specific guides
 - **Issue Tracker**: GitHub issues for bugs/features
-- **Development**: Follow SPARC methodology in [CLAUDE.md](./CLAUDE.md)
+- **Development**: Follow the guidelines in [CLAUDE.md](./CLAUDE.md)
 - **Community**: Nelson Tech Community Slack/Discord
 
 ---

@@ -7,7 +7,7 @@ This document provides a comprehensive map of all documentation in the Nelson Te
 
 ### 📂 Root Level Documentation
 - **[README.md](../README.md)** - Project overview and quick start guide
-- **[CLAUDE.md](../CLAUDE.md)** - **ESSENTIAL**: Development guidelines, SPARC methodology, and architectural patterns
+- **[CLAUDE.md](../CLAUDE.md)** - **ESSENTIAL**: Development guidelines and architectural patterns
 - **[CHANGELOG.md](../CHANGELOG.md)** - Version history and release notes
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Contribution guidelines
 - **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** - Community code of conduct
@@ -248,7 +248,7 @@ Historical documentation organized by date:
 ## 🚀 Quick Navigation for Developers
 
 ### Essential Reading Order
-1. **[CLAUDE.md](../CLAUDE.md)** - **START HERE**: Development guidelines, SPARC methodology, and patterns
+1. **[CLAUDE.md](../CLAUDE.md)** - **START HERE**: Development guidelines and patterns
 2. **[guides/HYBRID_PATTERN_GUIDE.md](guides/HYBRID_PATTERN_GUIDE.md)** - Complete implementation guide
 3. **[architecture/HYBRID_STATE_MANAGEMENT.md](architecture/HYBRID_STATE_MANAGEMENT.md)** - State management
 4. **[patterns/PATTERNS.md](patterns/PATTERNS.md)** - Code patterns and standards

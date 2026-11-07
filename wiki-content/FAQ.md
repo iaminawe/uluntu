@@ -83,13 +83,7 @@ See: [Hybrid State Management Docs](https://iaminawe.github.io/nelson-tech/archi
 
 ### How do I add a new feature?
 
-Follow the SPARC methodology:
-
-1. **Specification** - Define requirements
-2. **Pseudocode** - Plan logic and data flows
-3. **Architecture** - Design component structure
-4. **Refinement** - Implement with TDD
-5. **Completion** - Integrate and document
+Write the requirements first, build on a feature branch with tests, then integrate and document.
 
 See: [Feature Development Guide](https://iaminawe.github.io/nelson-tech/guides/feature-development/)
 

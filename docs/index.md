@@ -105,7 +105,7 @@ A sophisticated React-based community platform connecting tech professionals in 
 <div class="annotate" markdown>
 
 !!! tip "Essential Reading for New Developers"
-    1. **[CLAUDE.md](../CLAUDE.md)** - Development guidelines and SPARC methodology (1)
+    1. **[CLAUDE.md](../CLAUDE.md)** - Development guidelines (1)
     2. **[Hybrid Pattern Guide](guides/HYBRID_PATTERN_GUIDE.md)** - Complete implementation guide
     3. **[Project Structure](architecture/PROJECT_STRUCTURE.md)** - Codebase organization
     4. **[Feature Development](guides/feature-development.md)** - Development workflow
