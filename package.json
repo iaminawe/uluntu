@@ -1,5 +1,5 @@
 {
-  "name": "kootenay-tech-community",
+  "name": "uluntu",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,7 +8,6 @@
     "build": "vite build",
     "build:full": "npm run typecheck && vite build",
     "build:skip-typecheck": "vite build --mode production",
-    "build:analyze": "vite build --config vite.config.performance.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf dist build coverage .tsbuildinfo node.tsbuildinfo tsconfig.tsbuildinfo",
@@ -22,13 +21,7 @@
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "typecheck:watch": "tsc --noEmit --skipLibCheck --watch",
-    "typecheck:strict": "tsc --noEmit",
-    "perf:analyze": "npm run build:analyze",
-    "perf:baseline": "npm run build && node -e \"console.log('Bundle size baseline captured')\"",
-    "perf:report": "npm run build:analyze && open dist/stats.html",
-    "migrate:topics": "./database/migrations/apply_topics_migration.sh",
-    "validate:topics": "node scripts/simple-topics-validation.js",
-    "validate:topics-full": "npx ts-node scripts/validate-topics-integration.ts"
+    "typecheck:strict": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.6",
