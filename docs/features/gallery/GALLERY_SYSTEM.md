@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Gallery System is a comprehensive photo management solution built for the Nelson Tech Community platform. It provides full-featured gallery management with batch uploading, image processing, mobile optimization, and robust error handling.
+The Gallery System is a comprehensive photo management solution built for the Uluntu. It provides full-featured gallery management with batch uploading, image processing, mobile optimization, and robust error handling.
 
 ## Table of Contents
 

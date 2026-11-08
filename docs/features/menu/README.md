@@ -6,27 +6,23 @@ This comprehensive menu management system provides a flexible, hierarchical stru
 
 ## Documentation Index
 
-- **[System Analysis](./ANALYSIS.md)** - Architecture and design analysis
 - **[Security Implementation](./SECURITY.md)** - Security controls and permissions
-- **[API Type Fixes](./API_TYPE_FIXES.md)** - TypeScript type definitions and fixes
 - **[Toggle System](./TOGGLE_SYSTEM.md)** - Menu visibility and toggle controls
 - **[Drag & Drop](./DRAG_DROP.md)** - Drag-and-drop functionality implementation
 
 ## Database Fixes
 
-Menu-related SQL scripts and database migrations are located in: [/database/menu-fixes/](../../../database/menu-fixes/)
+Menu-related SQL scripts and database migrations are located in: /database/menu-fixes/
 
 ## Quick Links
 
-- Main Project: [../../../README.md](../../../README.md)
+- Main Project: [../../../README.md](https://github.com/iaminawe/uluntu#readme)
 - Architecture: [../../architecture/](../../architecture/)
 - Admin Interface: [../admin/](../admin/)
 
 ## Related Documentation
 
-- [Navigation System](../../navigation/)
 - [Admin Features](../admin/)
-- [Component Library](../../components/)
 
 ## Architecture
 

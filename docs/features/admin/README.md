@@ -10,20 +10,18 @@ Admin features provide comprehensive tools for platform administrators to manage
 
 ### Gallery Management
 - **[Management System](./gallery/MANAGEMENT_SYSTEM.md)** - Admin gallery management interface
-- **[Implementation Plan](./gallery/IMPLEMENTATION_PLAN.md)** - Implementation roadmap
 - **[Database Schema](./gallery/DATABASE_SCHEMA.sql)** - Gallery database schema
 
 ### User Management
 - **[User Management Guide](./users/GUIDE.md)** - Complete user management guide
-- **[Enhancement Documentation](./users/ENHANCEMENT.md)** - User management enhancements
 
 ### Settings & Configuration
 
-For super-admin settings, see: [../../implementation/super-admin-settings/](../../implementation/super-admin-settings/)
+For super-admin settings, see: ../../implementation/super-admin-settings/
 
 ## Quick Links
 
-- Main Project: [../../../README.md](../../../README.md)
+- Main Project: [../../../README.md](https://github.com/iaminawe/uluntu#readme)
 - Architecture: [../../architecture/](../../architecture/)
 - User Dashboard: [../dashboard/](../dashboard/)
 

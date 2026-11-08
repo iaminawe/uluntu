@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive admin gallery management system design for the Nelson Tech platform. Building on the existing gallery infrastructure, this system provides administrators with powerful tools to manage galleries, photos, and user-generated content through an intuitive interface.
+This document outlines the comprehensive admin gallery management system design for the Uluntu. Building on the existing gallery infrastructure, this system provides administrators with powerful tools to manage galleries, photos, and user-generated content through an intuitive interface.
 
 ## System Architecture Overview
 

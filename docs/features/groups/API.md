@@ -8,7 +8,7 @@ The Groups feature provides comprehensive functionality for creating and managin
 
 1. [Database Schema](#database-schema)
 2. [API Endpoints](#api-endpoints)
-3. [Authentication & Permissions](#authentication--permissions)
+3. [Authentication & Permissions](#authentication-permissions)
 4. [Usage Examples](#usage-examples)
 5. [Error Handling](#error-handling)
 6. [Migration Guide](#migration-guide)

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Nelson Tech Community Platform will be documented in this file.
+All notable changes to Uluntu are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Production security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) confirmed in nginx.conf
 
 ### Changed
-- Preparing for open source release
-- Documentation consolidation and cleanup
+- Open-source readiness: rebranded consistently as Uluntu, rewrote the README, CONTRIBUTING, SECURITY and docs site, and added issue/PR templates, CI and automated Claude PR reviews
+- Removed outdated docs, one-off scripts, legacy SQL, test artefacts and scraped third-party data from the repository
 
 ## [0.1.0] - 2024-11-10
 
@@ -167,5 +167,5 @@ First feature-complete version of the platform with:
 
 **Note**: This changelog will be updated with each release. For detailed changes, see individual commit messages and pull requests.
 
-[unreleased]: https://github.com/iaminawe/nelson-tech/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/iaminawe/nelson-tech/releases/tag/v0.1.0
+[unreleased]: https://github.com/iaminawe/uluntu/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/iaminawe/uluntu/releases/tag/v0.1.0

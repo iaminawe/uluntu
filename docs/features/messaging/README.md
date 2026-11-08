@@ -8,14 +8,11 @@ The Messaging System enables direct user-to-user communication and group convers
 
 ## Documentation Index
 
-- **[Conversations Testing](./CONVERSATIONS_TESTING.md)** - Testing strategy and test cases
 - **[Conversation Deletion](./CONVERSATION_DELETION.md)** - Deletion implementation and logic
-- **[Flow Analysis](./FLOW_ANALYSIS.md)** - Message flow and architecture analysis
-- **[System Fix](./SYSTEM_FIX.md)** - System fixes and improvements
 
 ## Quick Links
 
-- Main Project: [../../../README.md](../../../README.md)
+- Main Project: [../../../README.md](https://github.com/iaminawe/uluntu#readme)
 - Architecture: [../../architecture/](../../architecture/)
 - User Dashboard: [../dashboard/](../dashboard/)
 

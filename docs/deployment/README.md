@@ -1,129 +1,50 @@
-# Deployment Guide
+# Deployment
 
-This guide covers deploying the Nelson Tech Community Platform to various hosting providers.
+Uluntu is two pieces:
 
-## 🚀 Quick Start
+1. **A static single-page app** (Vite + React) built into `dist/`.
+2. **A few server-side API routes** in `api/` (Vercel serverless functions) that hold secrets the browser must never see:
+    - `/api/ai` and `/api/ai/provider` proxy AI requests (Anthropic or OpenAI) for the editor's writing assistant.
+    - `/api/email` sends email through Resend.
 
-The platform is a single-page application (SPA) built with Vite + React that connects to a hosted Supabase backend. It can be deployed to any static hosting provider.
+Both talk to a Supabase project for the database, auth, storage and realtime.
 
-## 📋 Prerequisites
+## Option A: Vercel (simplest)
 
-Before deploying, ensure you have:
+Deploying the repository to Vercel serves the SPA and the `api/` functions from the same origin, so the app's relative `/api/...` calls work with no extra setup.
 
-1. **Production Supabase instance** configured
-2. **Environment variables** ready
-3. **Domain name** (optional but recommended)
-4. **SSL certificate** (provided automatically by most hosts)
+Set these environment variables in the Vercel project:
 
-## 🔧 Pre-deployment Steps
+| Variable | Where it's used | Secret? |
+|----------|-----------------|---------|
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Browser | No (public by design) |
+| `VITE_APP_URL`, `VITE_FROM_EMAIL`, `VITE_FROM_NAME` | Browser | No |
+| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (or `SUPABASE_SERVICE_ROLE_KEY`) | `api/` auth checks | **Yes** |
+| `RESEND_API_KEY`, `EMAIL_FROM`, `SUPPORT_EMAIL` | `api/email` | **Yes** (key) |
+| `AI_PROVIDER`, `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`, `AI_ANTHROPIC_MODEL` / `AI_OPENAI_MODEL` | `api/ai` | **Yes** (keys) |
 
-1. **Test the production build locally:**
-   ```bash
-   npm run build
-   npm run preview
-   ```
+See `.env.example` for the full list.
 
-2. **Update environment variables for production:**
-   - Set `VITE_APP_URL` to your production domain
-   - Ensure `VITE_ENVIRONMENT=production`
-   - Verify all API keys are production keys
+## Option B: Docker, nginx or Coolify (self-hosted)
 
-3. **Remove sensitive data:**
-   - Ensure `.env` is in `.gitignore`
-   - Never commit API keys or secrets
+The `Dockerfile` builds the SPA and serves it with nginx (`nginx.conf` handles SPA routing and security headers). This works on any container host, including [Coolify](coolify.md).
 
-## 🌐 Deployment Options
+The `api/` routes are **not** included in the container. Without them, the AI assistant and outgoing email are unavailable. Everything else works. To keep them, either:
 
-### [Netlify](./netlify.md) - Recommended for simplicity
-- Zero-configuration deployment
-- Automatic SSL and CI/CD
-- Generous free tier
-- Built-in form handling
+- deploy the repository to Vercel as well and proxy `/api/` to it from nginx, or
+- port the handlers in `api/` to a small Node server alongside the container.
 
-### [Coolify](./coolify.md) - Best for control
-- Self-hosted solution
-- Full control over infrastructure
-- Supports additional services
-- Docker-based deployment
+Only `VITE_*` variables are needed at **build time** for the static app, because Vite inlines them into the bundle.
 
-## 📊 Platform Comparison
+## Supabase
 
-| Feature | Netlify | Coolify |
-|---------|---------|---------|
-| **Setup Ease** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Free Tier** | 100GB/month | Self-hosted |
-| **Build Minutes** | 300/month | Unlimited |
-| **SSL** | Automatic | Manual/Auto |
-| **Custom Domain** | ✅ | ✅ |
-| **Edge Network** | ✅ | ❌ |
-| **Preview Deploys** | ✅ | ✅ |
-| **Rollbacks** | ✅ | ✅ |
-| **Server Functions** | ✅ | ✅ (Full) |
+- Hosted Supabase works out of the box.
+- `docker-compose.yml` and `docker-compose.coolify.yml` contain a self-hosted Supabase stack. The image versions there are from 2024 and need updating before production use. Coolify's one-click Supabase service is a maintained alternative.
 
-## 🔐 Security Considerations
+## After deploying
 
-1. **Environment Variables:**
-   - Never expose service role keys in frontend
-   - Use only public anon keys in client code
-   - Store sensitive keys in hosting provider's environment settings
-
-2. **Headers Configuration:**
-   - All deployment configs include security headers
-   - CSP policies are configured for Supabase integration
-   - CORS is handled by Supabase
-
-3. **API Security:**
-   - Row Level Security (RLS) enabled on all tables
-   - Authentication required for protected routes
-   - Rate limiting handled by Supabase
-
-## 🚨 Post-deployment Checklist
-
-- [ ] Verify all environment variables are set correctly
-- [ ] Test authentication flow (sign up, sign in, sign out)
-- [ ] Check that images load from Supabase Storage
-- [ ] Verify API calls work (load some data)
-- [ ] Test responsive design on mobile devices
-- [ ] Check browser console for errors
-- [ ] Verify custom domain and SSL certificate
-- [ ] Set up monitoring/analytics (optional)
-
-## 📈 Monitoring & Maintenance
-
-1. **Application Monitoring:**
-   - Use browser error tracking (e.g., Sentry)
-   - Monitor Supabase dashboard for API usage
-   - Check hosting provider analytics
-
-2. **Performance Optimization:**
-   - Enable caching headers (included in configs)
-   - Use CDN for static assets
-   - Monitor Core Web Vitals
-
-3. **Regular Updates:**
-   - Keep dependencies updated
-   - Monitor security advisories
-   - Backup Supabase data regularly
-
-## 🆘 Troubleshooting
-
-### Build Failures
-- Check Node.js version (requires 18+)
-- Clear cache and reinstall dependencies
-- Verify all environment variables are set
-
-### API Connection Issues
-- Verify Supabase URL and anon key
-- Check Supabase project is active
-- Ensure RLS policies allow access
-
-### Routing Problems
-- Verify SPA redirect rules are configured
-- Check that `_redirects` or equivalent is in place
-- Test direct URL access to routes
-
-## 📚 Additional Resources
-
-- [Vite Deployment Guide](https://vitejs.dev/guide/static-deploy.html)
-- [Supabase Production Checklist](https://supabase.com/docs/guides/platform/going-into-prod)
-- [Security Best Practices](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html)
+- Sign up, sign in and sign out.
+- Upload an image (checks storage buckets and policies).
+- Open a conversation in two browsers (checks realtime).
+- Check the browser console and network tab for failing requests.
+- Confirm no secret keys are in the bundle: `grep -rl "service_role\|sb_secret_" dist/` should print nothing.

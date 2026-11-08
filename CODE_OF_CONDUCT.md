@@ -52,14 +52,10 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement using one of these methods:
 
-**GitHub Issues (Private):**
-https://github.com/iaminawe/nelson-tech/issues/new (mark as confidential)
+**Privately to the maintainers:**
+Open a private report through the repository's [Security tab](https://github.com/iaminawe/uluntu/security/advisories/new) and say it is a Code of Conduct report. Only maintainers can see these. You can also message the project maintainer, [iaminawe](https://github.com/iaminawe), on GitHub.
 
-**Direct Contact:**
-Contact the repository maintainers through GitHub: https://github.com/iaminawe
-
-**Email:**
-For sensitive matters, you may also contact the project lead directly (email available on GitHub profile)
+Please don't report conduct issues in public issues or pull requests.
 
 All complaints will be reviewed and investigated promptly and fairly.
 
