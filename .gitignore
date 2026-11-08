@@ -197,7 +197,7 @@ graphify-out/
 # Development artifacts
 .project
 codereport/
-research/
+/research/
 /config/
 .archive/
 reports/
@@ -279,3 +279,9 @@ src/types/generated/
 site/
 .vercel
 .env*
+
+# Local-only artefacts (never commit)
+playwright-report/
+/data/
+.dead-code-archive-*/
+/agents/
