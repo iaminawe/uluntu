@@ -275,7 +275,7 @@ VITE_OPENAI_MODEL=gpt-4o-mini
 # Or Anthropic
 VITE_AI_PROVIDER=anthropic
 VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
-VITE_ANTHROPIC_MODEL=claude-3-haiku-20240307
+VITE_ANTHROPIC_MODEL=claude-haiku-5-5
 
 # AI Settings
 VITE_AI_MAX_TOKENS=4000

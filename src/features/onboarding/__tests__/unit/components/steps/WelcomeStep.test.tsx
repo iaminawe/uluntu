@@ -269,7 +269,7 @@ describe('WelcomeStep', () => {
 
       // Then: Should show generic message
       expect(screen.getByTestId('welcome-message')).toHaveTextContent(
-        'Welcome to Nelson Tech Community! Let\'s get you started.'
+        'Welcome to Uluntu Community! Let\'s get you started.'
       );
     });
   });

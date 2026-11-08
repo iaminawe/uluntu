@@ -7,15 +7,23 @@
 // request to the provider — so BlockNote's streaming AI menu works without any
 // key in the bundle.
 import { getUser, type ApiReq, type ApiRes } from '../_lib/auth.js';
-
-// SSRF guard: only these hosts may ever be proxied.
-const ALLOWED_HOST: Record<string, string> = {
-  openai: 'api.openai.com',
-  anthropic: 'api.anthropic.com',
-};
+import {
+  DEFAULT_MODEL,
+  checkTargetUrl,
+  isAIProvider,
+  limitBody,
+} from '../_lib/ai-limits.js';
 
 const OPENAI_KEY = process.env.OPENAI_API_KEY || '';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+
+// The server decides which model is used and how much it may generate.
+const MODEL = {
+  openai: process.env.AI_OPENAI_MODEL || DEFAULT_MODEL.openai,
+  anthropic: process.env.AI_ANTHROPIC_MODEL || DEFAULT_MODEL.anthropic,
+};
+const MAX_OUTPUT_TOKENS = parseInt(process.env.AI_MAX_OUTPUT_TOKENS_CAP || '4000', 10);
+const MAX_BODY_BYTES = 200_000;
 
 function q(v: string | string[] | undefined): string {
   return Array.isArray(v) ? v[0] || '' : v || '';
@@ -36,22 +44,28 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
 
   const provider = q(req.query?.provider);
   const targetUrl = q(req.query?.url);
-  const allowedHost = ALLOWED_HOST[provider];
-  if (!allowedHost || !targetUrl) {
+  if (!isAIProvider(provider) || !targetUrl) {
     res.status(400).json({ error: 'Invalid provider or url' });
     return;
   }
 
-  // SSRF guard — the target must be the exact provider host.
-  let parsed: URL;
-  try {
-    parsed = new URL(targetUrl);
-  } catch {
-    res.status(400).json({ error: 'Invalid url' });
+  // SSRF guard: exact provider host and an allowed generation endpoint.
+  if (!checkTargetUrl(provider, targetUrl)) {
+    res.status(400).json({ error: 'Target not allowed' });
     return;
   }
-  if (parsed.protocol !== 'https:' || parsed.host !== allowedHost) {
-    res.status(400).json({ error: 'Host not allowed' });
+
+  const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+  if (rawBody.length > MAX_BODY_BYTES) {
+    res.status(413).json({ error: 'Request too large' });
+    return;
+  }
+  const outboundBody = limitBody(provider, req.body, {
+    model: MODEL[provider],
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+  });
+  if (!outboundBody) {
+    res.status(400).json({ error: 'Invalid JSON body' });
     return;
   }
 
@@ -68,7 +82,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     headers['anthropic-version'] =
       q(req.headers['anthropic-version']) || '2023-06-01';
     const beta = q(req.headers['anthropic-beta']);
-    if (beta) headers['anthropic-beta'] = beta;
+    if (beta && /^[a-z0-9-]+(,[a-z0-9-]+)*$/.test(beta)) headers['anthropic-beta'] = beta;
   } else {
     headers['authorization'] = `Bearer ${key}`;
   }
@@ -77,7 +91,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     const upstream = await fetch(targetUrl, {
       method: 'POST',
       headers,
-      body: typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {}),
+      body: outboundBody,
     });
 
     res.status(upstream.status);
