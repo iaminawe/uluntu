@@ -6,7 +6,7 @@ import type { OnboardingStepProps } from '../../types';
 
 // Mock company data - in real implementation, this would come from API
 const mockCompanies = [
-  { id: '1', name: 'Nelson Tech Solutions', industry: ['Software Development'], employeeCount: 25 },
+  { id: '1', name: 'Uluntu Solutions', industry: ['Software Development'], employeeCount: 25 },
   { id: '2', name: 'Kootenay Digital', industry: ['Web Design', 'Marketing'], employeeCount: 12 },
   { id: '3', name: 'Mountain View Systems', industry: ['IT Consulting'], employeeCount: 8 },
   { id: '4', name: 'Selkirk Software', industry: ['Mobile Development'], employeeCount: 15 },

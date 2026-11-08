@@ -1,5 +1,5 @@
 /**
- * Centralized logging utility for Nelson Tech platform
+ * Centralized logging utility for Uluntu platform
  * Provides structured logging with proper levels and environment-based control
  */
 

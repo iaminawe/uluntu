@@ -25,7 +25,7 @@ interface SettingsProviderProps {
  */
 const DEFAULT_SETTINGS: Partial<PublicSettings> = {
   site: {
-    name: { value: 'Nelson Tech', type: 'string' as SettingDataType },
+    name: { value: 'Uluntu', type: 'string' as SettingDataType },
     tagline: { value: 'Growing Together', type: 'string' as SettingDataType },
     description: { value: 'A community platform for technology professionals', type: 'string' as SettingDataType },
   },

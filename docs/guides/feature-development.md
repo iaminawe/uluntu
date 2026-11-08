@@ -1,6 +1,6 @@
 # Feature Development Guide
 
-This guide explains how to develop new features in the Nelson Tech platform using our feature-based architecture.
+This guide explains how to develop new features in the Uluntu using our feature-based architecture.
 
 ## Feature Structure
 

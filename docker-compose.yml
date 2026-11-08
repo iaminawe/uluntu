@@ -5,23 +5,23 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
       args:
         - NODE_ENV=production
         - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
         - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
         - VITE_APP_URL=${VITE_APP_URL:-http://localhost:3000}
         - VITE_ENVIRONMENT=${VITE_ENVIRONMENT:-production}
-    container_name: nelson-tech-frontend
+    container_name: uluntu-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     environment:
       - NODE_ENV=production
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
-      - nelson-tech
+      - uluntu
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
@@ -32,7 +32,7 @@ services:
   # Backend Services (Supabase)
   postgres:
     image: supabase/postgres:15.1.0.117
-    container_name: nelson-tech-postgres
+    container_name: uluntu-postgres
     restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -43,7 +43,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./supabase/migrations:/docker-entrypoint-initdb.d
     networks:
-      - nelson-tech
+      - uluntu
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
@@ -53,7 +53,7 @@ services:
   # Supabase Studio (Database UI)
   studio:
     image: supabase/studio:20240422-5cf8f30
-    container_name: nelson-tech-studio
+    container_name: uluntu-studio
     restart: unless-stopped
     ports:
       - "${STUDIO_PORT:-54323}:3000"
@@ -62,7 +62,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       
       DEFAULT_ORGANIZATION_NAME: ${STUDIO_DEFAULT_ORGANIZATION_NAME}
-      DEFAULT_PROJECT_NAME: ${STUDIO_DEFAULT_PROJECT_NAME:-Nelson Tech Community}
+      DEFAULT_PROJECT_NAME: ${STUDIO_DEFAULT_PROJECT_NAME:-Uluntu}
       
       SUPABASE_URL: http://kong:8000
       SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL}
@@ -76,12 +76,12 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
 
   # Supabase Kong API Gateway  
   kong:
     image: kong:2.8.1
-    container_name: nelson-tech-kong
+    container_name: uluntu-kong
     restart: unless-stopped
     ports:
       - "${KONG_HTTP_PORT:-8000}:8000/tcp"
@@ -94,12 +94,12 @@ services:
     volumes:
       - ./supabase/kong.yml:/var/lib/kong/kong.yml:ro
     networks:
-      - nelson-tech
+      - uluntu
 
   # Supabase Auth
   auth:
     image: supabase/gotrue:v2.151.0
-    container_name: nelson-tech-auth
+    container_name: uluntu-auth
     restart: unless-stopped
     environment:
       GOTRUE_API_HOST: 0.0.0.0
@@ -147,12 +147,12 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
 
   # Supabase Realtime
   realtime:
     image: supabase/realtime:v2.28.32
-    container_name: nelson-tech-realtime
+    container_name: uluntu-realtime
     restart: unless-stopped
     environment:
       PORT: 4000
@@ -171,14 +171,14 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
     command: >
       bash -c "./prod/rel/realtime/bin/realtime eval Realtime.Release.migrate && ./prod/rel/realtime/bin/realtime start"
 
   # Supabase Storage
   storage:
     image: supabase/storage-api:v0.43.11
-    container_name: nelson-tech-storage
+    container_name: uluntu-storage
     restart: unless-stopped
     environment:
       ANON_KEY: ${SUPABASE_ANON_KEY}
@@ -199,12 +199,12 @@ services:
       - postgres
       - rest
     networks:
-      - nelson-tech
+      - uluntu
 
   # Supabase PostgREST
   rest:
     image: postgrest/postgrest:v12.0.1
-    container_name: nelson-tech-rest
+    container_name: uluntu-rest
     restart: unless-stopped
     environment:
       PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@postgres:5432/postgres
@@ -217,12 +217,12 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
 
   # PostgreSQL Meta API
   postgres-meta:
     image: supabase/postgres-meta:v0.79.0
-    container_name: nelson-tech-postgres-meta
+    container_name: uluntu-postgres-meta
     restart: unless-stopped
     environment:
       PG_META_PORT: 8080
@@ -234,12 +234,12 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
 
   # Analytics (optional)
   analytics:
     image: supabase/logflare:1.4.0
-    container_name: nelson-tech-analytics
+    container_name: uluntu-analytics
     restart: unless-stopped
     environment:
       LOGFLARE_NODE_HOST: 127.0.0.1
@@ -259,10 +259,10 @@ services:
     depends_on:
       - postgres
     networks:
-      - nelson-tech
+      - uluntu
 
 networks:
-  nelson-tech:
+  uluntu:
     driver: bridge
 
 volumes:

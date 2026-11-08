@@ -324,7 +324,7 @@ export default function OpportunityEditPage() {
   return (
     <>
       <Helmet>
-        <title>{isEditMode ? 'Edit Opportunity' : 'Create New Opportunity'} - Kootenay Tech Community</title>
+        <title>{isEditMode ? 'Edit Opportunity' : 'Create New Opportunity'} - Uluntu</title>
         <meta name="description" content={isEditMode ? 'Edit an existing opportunity' : 'Create a new opportunity listing'} />
       </Helmet>
       

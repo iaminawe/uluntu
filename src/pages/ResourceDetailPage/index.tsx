@@ -47,7 +47,7 @@ export default function ResourceDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{resource.title} - Kootenay Tech Community</title>
+        <title>{resource.title} - Uluntu</title>
         <meta name="description" content={resource.description.substring(0, 160)} />
       </Helmet>
       

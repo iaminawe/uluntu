@@ -5,8 +5,8 @@ import { useSetting } from '@/hooks/useSettings';
 export default function PrivacyPage() {
   // Get contact settings with fallbacks
   const { value: privacyEmail } = useSetting('contact', 'privacy_email', 'privacy@nelsontech.community');
-  const { value: privacyAddress } = useSetting('contact', 'privacy_address', 'Nelson Tech Community, Privacy Officer, Nelson, BC, Canada');
-  const { value: organizationName } = useSetting('contact', 'organization_name', 'Nelson Tech Community');
+  const { value: privacyAddress } = useSetting('contact', 'privacy_address', 'Uluntu Community, Privacy Officer, Nelson, BC, Canada');
+  const { value: organizationName } = useSetting('contact', 'organization_name', 'Uluntu Community');
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">

@@ -17,7 +17,7 @@ const SAMPLE_EVENTS: Event[] = [
     description: 'Join us for an interactive workshop exploring AI applications in healthcare.',
     organizer: {
       id: '1',
-      name: 'Nelson Tech Collective',
+      name: 'Uluntu Collective',
       image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg'
     },
     type: 'in-person',

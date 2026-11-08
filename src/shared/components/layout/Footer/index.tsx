@@ -102,7 +102,7 @@ const Footer: React.FC<FooterProps> = ({
   const defaultSocialLinks = socialLinks || [
     {
       platform: 'GitHub',
-      href: 'https://github.com/kootenaytechcommunity',
+      href: 'https://github.com/iaminawe/uluntu',
       icon: <Github className="h-5 w-5" />,
       ariaLabel: 'Follow us on GitHub'
     },
@@ -120,7 +120,7 @@ const Footer: React.FC<FooterProps> = ({
     },
     {
       platform: 'Email',
-      href: 'mailto:info@kootenaytechcommunity.com',
+      href: 'mailto:info@uluntu.io',
       icon: <Mail className="h-5 w-5" />,
       ariaLabel: 'Email us'
     }
@@ -128,7 +128,7 @@ const Footer: React.FC<FooterProps> = ({
 
   // Default copyright text if none provided
   const defaultCopyrightText = copyrightText || 
-    `© ${new Date().getFullYear()} Kootenay Tech Community. All rights reserved.`;
+    `© ${new Date().getFullYear()} Uluntu. All rights reserved.`;
 
   // Handle error from dynamic footer menu
   const handleMenuError = (error: string) => {

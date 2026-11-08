@@ -23,7 +23,7 @@ export default function DirectoryDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{member.name} - Kootenay Tech Community</title>
+        <title>{member.name} - Uluntu</title>
         <meta name="description" content={`${member.name} - ${member.title}${member.company ? ` at ${member.company}` : ''}`} />
       </Helmet>
       

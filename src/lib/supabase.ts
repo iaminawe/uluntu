@@ -50,7 +50,7 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here</pre>
 VITE_SUPABASE_URL=${supabaseUrl || 'undefined'}
 VITE_SUPABASE_ANON_KEY=${supabaseAnonKey ? '[REDACTED]' : 'undefined'}</pre>
             <p style="margin-top: 16px; color: #6b7280; font-size: 14px;">
-              These variables must be set as build arguments in your deployment platform (e.g., Coolify, Vercel, Netlify).
+              These variables must be set as build arguments in your deployment platform (for example in your Vercel project settings).
             </p>
           </div>
         </details>

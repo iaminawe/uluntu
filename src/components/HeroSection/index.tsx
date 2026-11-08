@@ -23,7 +23,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   const { settings } = useSettings();
   
   // Get settings with fallbacks
-  const siteName = settings?.site?.site_name?.value || "Nelson Tech";
+  const siteName = settings?.site?.site_name?.value || "Uluntu";
   const siteDescription = settings?.site?.site_description?.value || "Connecting and empowering the Kootenay region's thriving tech community through collaboration, innovation, and knowledge sharing.";
   
   const displayTitle = title || siteName;

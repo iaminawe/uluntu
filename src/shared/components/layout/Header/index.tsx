@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
   const isDark = theme === 'dark';
   
   // Get site settings with fallbacks
-  const siteName = settings?.site?.site_name?.value || "Nelson Tech";
+  const siteName = settings?.site?.site_name?.value || "Uluntu";
   const siteLogo = settings?.site?.site_logo?.value;
   const displayLogo = logo || siteLogo || siteName;
 

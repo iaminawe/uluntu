@@ -95,7 +95,7 @@ const senderFields: SettingField[] = [
     key: 'from_email',
     label: 'From Email Address',
     type: 'email',
-    placeholder: 'noreply@kootenaytech.ca',
+    placeholder: 'noreply@example.com',
     description: 'Default sender email address for outgoing emails',
     required: true
   },
@@ -103,7 +103,7 @@ const senderFields: SettingField[] = [
     key: 'from_name',
     label: 'From Name',
     type: 'text',
-    placeholder: 'Kootenay Tech Community',
+    placeholder: 'Uluntu',
     description: 'Default sender name displayed in emails',
     required: true
   },
@@ -111,7 +111,7 @@ const senderFields: SettingField[] = [
     key: 'reply_to_email',
     label: 'Reply-To Email',
     type: 'email',
-    placeholder: 'support@kootenaytech.ca',
+    placeholder: 'support@example.com',
     description: 'Email address for replies (optional)'
   }
 ];

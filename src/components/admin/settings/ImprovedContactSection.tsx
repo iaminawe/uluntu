@@ -49,7 +49,7 @@ const contactInfoFields: SettingField[] = [
     key: 'contact_email',
     label: 'Primary Contact Email',
     type: 'email',
-    placeholder: 'contact@kootenaytech.ca',
+    placeholder: 'contact@example.com',
     description: 'Main email address for general inquiries',
     required: true
   },
@@ -57,14 +57,14 @@ const contactInfoFields: SettingField[] = [
     key: 'support_email',
     label: 'Support Email',
     type: 'email',
-    placeholder: 'support@kootenaytech.ca',
+    placeholder: 'support@example.com',
     description: 'Email address for technical support requests'
   },
   {
     key: 'business_email',
     label: 'Business Email',
     type: 'email',
-    placeholder: 'business@kootenaytech.ca',
+    placeholder: 'business@example.com',
     description: 'Email address for business inquiries and partnerships'
   },
   {
@@ -104,7 +104,7 @@ const locationFields: SettingField[] = [
     key: 'organization_name',
     label: 'Organization Name',
     type: 'text',
-    placeholder: 'Kootenay Tech Community',
+    placeholder: 'Uluntu',
     description: 'Official name of the organization',
     required: true
   },
@@ -151,35 +151,35 @@ const socialFields: SettingField[] = [
     key: 'website_url',
     label: 'Website URL',
     type: 'url',
-    placeholder: 'https://kootenaytech.ca',
+    placeholder: 'https://example.com',
     description: 'Main website URL'
   },
   {
     key: 'facebook_url',
     label: 'Facebook URL',
     type: 'url',
-    placeholder: 'https://facebook.com/kootenaytech',
+    placeholder: 'https://facebook.com/your-community',
     description: 'Facebook page URL (optional)'
   },
   {
     key: 'twitter_url',
     label: 'Twitter/X URL',
     type: 'url',
-    placeholder: 'https://twitter.com/kootenaytech',
+    placeholder: 'https://twitter.com/your-community',
     description: 'Twitter/X profile URL (optional)'
   },
   {
     key: 'linkedin_url',
     label: 'LinkedIn URL',
     type: 'url',
-    placeholder: 'https://linkedin.com/company/kootenaytech',
+    placeholder: 'https://linkedin.com/company/your-community',
     description: 'LinkedIn company page URL (optional)'
   },
   {
     key: 'github_url',
     label: 'GitHub URL',
     type: 'url',
-    placeholder: 'https://github.com/kootenaytech',
+    placeholder: 'https://github.com/your-community',
     description: 'GitHub organization URL (optional)'
   }
 ];

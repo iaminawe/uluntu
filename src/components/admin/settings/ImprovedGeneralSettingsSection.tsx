@@ -46,7 +46,7 @@ const siteSettingFields: SettingField[] = [
     key: 'site_title',
     label: 'Site Title',
     type: 'text',
-    placeholder: 'Kootenay Tech Community',
+    placeholder: 'Uluntu',
     description: 'Main site title displayed in header and browser tab',
     required: true,
     validation: { maxLength: 100 }
@@ -185,7 +185,7 @@ const headerFields: SettingField[] = [
     key: 'hero_title',
     label: 'Hero Title',
     type: 'text',
-    placeholder: 'Welcome to Kootenay Tech',
+    placeholder: 'Welcome to our community',
     description: 'Main heading displayed in the hero section',
     validation: { maxLength: 100 }
   },
@@ -216,7 +216,7 @@ const navigationFields: SettingField[] = [
     key: 'footer_text',
     label: 'Footer Text',
     type: 'textarea',
-    placeholder: '© 2024 Kootenay Tech Community. All rights reserved.',
+    placeholder: '© 2024 Uluntu. All rights reserved.',
     description: 'Custom footer text displayed site-wide',
     validation: { maxLength: 200 }
   }

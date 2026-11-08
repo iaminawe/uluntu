@@ -68,7 +68,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
       {/* Join Date */}
       <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Member of Kootenay Tech Community since {new Date(member.joinDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          Member of Uluntu since {new Date(member.joinDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
     </div>

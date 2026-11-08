@@ -43,7 +43,7 @@ export default function NewsDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{article.title} - Kootenay Tech Community</title>
+        <title>{article.title} - Uluntu</title>
         <meta name="description" content={article.excerpt} />
       </Helmet>
       

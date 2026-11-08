@@ -9,7 +9,7 @@ export default function ResourcesPage() {
   return (
     <>
       <Helmet>
-        <title>Resources - Kootenay Tech Community</title>
+        <title>Resources - Uluntu</title>
         <meta name="description" content="Tech resources and learning materials for the Kootenay tech community" />
       </Helmet>
       

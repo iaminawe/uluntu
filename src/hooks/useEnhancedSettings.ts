@@ -31,7 +31,7 @@ export function useSiteInfo() {
   const { getSetting } = useSettingsContext();
   
   return useMemo(() => ({
-    name: getSetting('site', 'name', 'Nelson Tech'),
+    name: getSetting('site', 'name', 'Uluntu'),
     tagline: getSetting('site', 'tagline', 'Growing Together'),
     description: getSetting('site', 'description', ''),
     email: getSetting('contact', 'email', ''),

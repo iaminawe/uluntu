@@ -14,7 +14,7 @@ export function useSettings(): UseSettingsReturn {
   // Return default settings immediately
   const defaultSettings: PublicSettings = {
     site: {
-      name: { value: 'Nelson Tech', type: 'string' },
+      name: { value: 'Uluntu', type: 'string' },
       tagline: { value: 'Growing Together', type: 'string' },
       description: { value: 'A community platform for technology professionals', type: 'string' },
     },

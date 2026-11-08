@@ -126,7 +126,7 @@ const ResourceModal = ({ onClose }: ResourceModalProps) => {
               >
                 <option value="">Select Group</option>
                 <option value="1">AI Enthusiasts Kootenay</option>
-                <option value="2">Nelson Tech Meetup</option>
+                <option value="2">Uluntu Meetup</option>
               </select>
             </div>
             <div>

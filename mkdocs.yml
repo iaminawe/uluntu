@@ -1,15 +1,15 @@
-site_name: Nelson Tech Community Platform
-site_description: Comprehensive documentation for the Nelson Tech Community Platform - A sophisticated React-based community platform
-site_author: Nelson Tech Community
-site_url: https://iaminawe.github.io/nelson-tech/
+site_name: Uluntu Docs
+site_description: Documentation for Uluntu, an open-source community platform for local and professional communities
+site_author: Uluntu contributors
+site_url: https://iaminawe.github.io/uluntu/
 
 # Repository
-repo_name: iaminawe/nelson-tech
-repo_url: https://github.com/iaminawe/nelson-tech
+repo_name: iaminawe/uluntu
+repo_url: https://github.com/iaminawe/uluntu
 edit_uri: edit/main/docs/
 
 # Copyright
-copyright: Copyright &copy; 2025 Nelson Tech Community
+copyright: Copyright &copy; 2024-2026 Uluntu contributors &middot; MIT License
 
 # Theme Configuration
 theme:
@@ -71,6 +71,8 @@ plugins:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - git-revision-date-localized:
       enable_creation_date: true
+      enable_git_follow: false
+      fallback_to_build_date: true
       type: timeago
 
 # Extensions
@@ -103,12 +105,10 @@ markdown_extensions:
       normalize_issue_symbols: true
       repo_url_shorthand: true
       user: iaminawe
-      repo: nelson-tech
+      repo: uluntu
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.snippets:
-      auto_append:
-        - includes/abbreviations.md
+  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -128,9 +128,9 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/iaminawe/nelson-tech
-    - icon: fontawesome/brands/slack
-      link: https://nelson-tech.slack.com
+      link: https://github.com/iaminawe/uluntu
+    - icon: fontawesome/solid/globe
+      link: https://uluntu.io
   analytics:
     provider: google
     property: !ENV GOOGLE_ANALYTICS_KEY
@@ -145,194 +145,54 @@ extra_css:
 # Navigation
 nav:
   - Home: index.md
-  - Getting Started:
-      - Quick Start: README.md
-      - Development Setup: guides/feature-development.md
-      - Contributing: ../CONTRIBUTING.md
-      - Code of Conduct: ../CODE_OF_CONDUCT.md
-      - Security: ../SECURITY.md
-
+  - Getting started: guides/getting-started.md
   - Architecture:
-      - Overview: architecture/README.md
-      - Hybrid State Management: architecture/HYBRID_STATE_MANAGEMENT.md
-      - Project Structure: architecture/PROJECT_STRUCTURE.md
-      - Admin Redux Migration: architecture/admin-redux-migration-report.md
-      - API Consolidation: architecture/api-consolidation-audit.md
-      - Best Practices Research: architecture/best-practices-research-report.md
-      - Role Management: architecture/role-management-requirements-analysis.md
-
-  - Development Guides:
-      - Overview: guides/README.md
-      - Hybrid Pattern Guide: guides/HYBRID_PATTERN_GUIDE.md
-      - API Structure: guides/API_STRUCTURE.md
-      - Error Handling: guides/ERROR_HANDLING_GUIDE.md
-      - Hybrid Migration: guides/HYBRID_MIGRATION_GUIDE.md
-      - Quick Reference: guides/QUICK_REFERENCE.md
-      - Form Integration: guides/STANDARD_FORM_INTEGRATION_GUIDE.md
-
+      - Project structure: architecture/project-structure.md
+      - State management: architecture/state-management.md
+      - Storage: architecture/storage.md
+  - Guides:
+      - Building a feature: guides/feature-development.md
+      - Hybrid data hooks: guides/hybrid-hooks.md
+      - Forms: guides/forms.md
+      - Error handling: guides/error-handling.md
+      - Storage setup: guides/storage-setup.md
   - Features:
       - Overview: features/README.md
-      - Gallery System:
-          - Overview: features/gallery/README.md
-          - Complete System: features/gallery/GALLERY_SYSTEM.md
-          - API Reference: features/gallery/GALLERY_API_REFERENCE.md
-          - Deployment Guide: features/gallery/GALLERY_DEPLOYMENT_GUIDE.md
-          - Mobile Guide: features/gallery/GALLERY_MOBILE_GUIDE.md
-          - Implementation: features/gallery/PHOTO_GALLERY_IMPLEMENTATION.md
-          - Database Schema: features/gallery/PHOTO_GALLERY_DATABASE_SCHEMA.md
-          - Seed Data: features/gallery/PHOTO_GALLERY_SEED_DATA_DOCUMENTATION.md
+      - Events: features/events/README.md
       - Groups:
           - Overview: features/groups/README.md
-          - API Documentation: features/groups/API.md
-          - Deployment: features/groups/DEPLOYMENT.md
-          - Implementation Status: features/groups/IMPLEMENTATION_STATUS.md
-      - Menu System:
-          - Overview: features/menu/README.md
-          - System Analysis: features/menu/ANALYSIS.md
-          - Security: features/menu/SECURITY.md
-          - API Types: features/menu/API_TYPE_FIXES.md
-          - Toggle System: features/menu/TOGGLE_SYSTEM.md
-          - Drag & Drop: features/menu/DRAG_DROP.md
-      - Admin Features:
-          - Overview: features/admin/README.md
-          - Gallery Management: features/admin/gallery/MANAGEMENT_SYSTEM.md
-          - Gallery Implementation: features/admin/gallery/IMPLEMENTATION_PLAN.md
-          - User Management: features/admin/users/GUIDE.md
-          - User Enhancements: features/admin/users/ENHANCEMENT.md
-      - Dashboard:
-          - Overview: features/dashboard/README.md
-          - Component Specs: features/dashboard/COMPONENT_SPECS.md
-          - Architecture: features/dashboard/ARCHITECTURE.md
-          - Implementation Guide: features/dashboard/IMPLEMENTATION_GUIDE.md
-          - API Documentation: features/dashboard/API.md
+          - API: features/groups/API.md
       - Messaging:
           - Overview: features/messaging/README.md
-          - Conversations Testing: features/messaging/CONVERSATIONS_TESTING.md
-          - Deletion Implementation: features/messaging/CONVERSATION_DELETION.md
-          - Flow Analysis: features/messaging/FLOW_ANALYSIS.md
-          - System Fixes: features/messaging/SYSTEM_FIX.md
-      - Onboarding:
-          - Overview: onboarding/ONBOARDING_SYSTEM_DOCUMENTATION.md
-          - Complete Implementation: onboarding/COMPLETE_ONBOARDING_IMPLEMENTATION.md
-          - Implementation Guide: onboarding/IMPLEMENTATION_GUIDE.md
-          - Phase 1 Requirements: onboarding/phase_1_requirements.md
-          - Phase 2 Pseudocode: onboarding/phase_2_pseudocode.md
-          - Phase 3 Modules: onboarding/phase_3_modules.md
-          - Phase 4 Testing: onboarding/phase_4_testing.md
-
-  - Components:
-      - Overview: components/README.md
-      - Common Patterns: components/common-patterns.md
-      - Error Handling: components/error-handling.md
-      - Form Components: components/form-components.md
-      - Form Analysis: components/form-functionality-analysis.md
-      - Layout: components/layout.md
-      - Loading States: components/loading-states.md
-      - Page Components: components/page-components.md
-
-  - Patterns & Templates:
-      - Overview: patterns/README.md
-      - Development Patterns: patterns/PATTERNS.md
-      - Migration Guide: patterns/MIGRATION-GUIDE.md
-      - Templates:
-          - API Service: patterns/templates/api-service-template.ts
-          - Component: patterns/templates/component-template.tsx
-          - Component Types: patterns/templates/component-types-template.ts
-          - Hook: patterns/templates/hook-template.ts
-          - Redux Slice: patterns/templates/redux-slice-template.ts
-          - Test: patterns/templates/test-template.test.tsx
-
-  - Deployment:
-      - Main Guide: DEPLOYMENT_GUIDE.md
-      - Overview: deployment/README.md
-      - Netlify: deployment/netlify.md
-      - Cloudflare: deployment/cloudflare.md
-      - Docker Troubleshooting: deployment/DOCKER_TROUBLESHOOTING.md
-      - Coolify:
-          - Main Guide: deployment/COOLIFY_DEPLOYMENT.md
-          - Minimal Setup: deployment/COOLIFY_MINIMAL_DEPLOYMENT.md
-          - Routing Fix: deployment/COOLIFY_ROUTING_FIX.md
-          - Troubleshooting: deployment/COOLIFY_SERVER_TROUBLESHOOTING.md
-
-  - Design & Theming:
-      - Theme System Guide: THEME_SYSTEM_GUIDE.md
-      - Theme Architecture: theme-system-architecture.md
-      - Font System: FONT_SYSTEM_DOCUMENTATION.md
-      - Brand Strategy: ULUNTU_BRAND_STRATEGY.md
-      - Navigation System: navigation/NAVIGATION_AND_PAGES_SYSTEM.md
-
-  - Business & Strategy:
-      - Overview: business/README.md
-      - AI Strategy:
-          - Strategy Plan: business/AI_STRATEGY_PLAN.md
-          - Implementation Guide: business/AI_STRATEGY_IMPLEMENTATION_GUIDE.md
-          - Executive Summary: business/AI_EXECUTIVE_SUMMARY.md
-          - Implementation Roadmap: business/AI_IMPLEMENTATION_ROADMAP.md
-          - Assistant Architecture: business/AI_ASSISTANT_ARCHITECTURE.md
-          - Vector Embedding Spec: business/AI_VECTOR_EMBEDDING_SPECIFICATION.md
-          - UI/UX Design: business/AI_UI_UX_DESIGN_SPECIFICATION.md
-          - Editor Analysis: business/AI_EDITOR_ANALYSIS_REPORT.md
-          - Performance Recommendations: business/AI_EDITOR_PERFORMANCE_RECOMMENDATIONS.md
-          - Test Strategy: business/AI_EDITOR_TEST_STRATEGY.md
-          - Cost-Benefit Analysis: business/AI_COST_BENEFIT_ANALYSIS.md
-      - SaaS & Multi-Tenancy:
-          - Business Plan: business/SAAS_BUSINESS_PLAN.md
-          - Architecture Plan: business/MULTI_TENANT_ARCHITECTURE_PLAN.md
-      - Business Planning:
-          - Lean Canvas: business/LEAN_CANVAS.md
-          - Pitch Deck: business/PITCH_DECK_OUTLINE.md
-
-  - Implementation:
-      - Overview: implementation/README.md
-      - Hybrid Pattern Completion: implementation/HYBRID_PATTERN_COMPLETION_2025_06_23.md
-      - Implementation Status: implementation/IMPLEMENTATION_STATUS_2025_06_23.md
-      - Migration Summary: implementation/MIGRATION_COMPLETION_SUMMARY.md
-      - Contact Submissions:
-          - API Implementation: implementation/contact-submissions/api-implementation.md
-          - Schema Design: implementation/contact-submissions/schema-design.md
-      - Email Integration:
-          - Integration Summary: implementation/email-integration/integration-summary.md
-          - Notification System: implementation/email-integration/notification-system-implementation.md
-      - Super Admin Settings:
-          - Implementation: implementation/super-admin-settings/implementation.md
-          - Summary: implementation/super-admin-settings/implementation-summary.md
-          - Improvement Plan: implementation/super-admin-settings/improvement-plan.md
-          - Improvements Summary: implementation/super-admin-settings/improvements-summary.md
-
-  - Migrations:
-      - Overview: migrations/README.md
-      - Redux to Hybrid: migrations/REDUX_TO_HYBRID_MIGRATION_GUIDE.md
-      - Contact Settings: migrations/CONTACT_SETTINGS_MIGRATION.md
-      - Migration Instructions: migrations/migration-instructions.md
-      - Safe Migration: migrations/safe-migration-instructions.md
-
-  - Testing & QA:
-      - QA Reports:
-          - Overview: qa-reports/README.md
-          - Gallery Validation: qa-reports/gallery-system-validation-report.md
-          - Live Data Verification: qa-reports/live-data-verification-report.md
-          - Performance Baseline: qa-reports/performance-baseline-report.md
-          - Performance Tracking: qa-reports/performance-improvement-tracking.md
-          - QA Validation: qa-reports/qa-validation-report.md
-          - Admin Settings Validation: qa-reports/super-admin-settings-validation-report.md
-      - Testing:
-          - Menu Testing: testing/menu-management-test-documentation.md
-
-  - Reference:
-      - Documentation Map: DOCUMENTATION_MAP.md
-      - Known Issues: KNOWN_ISSUES_AND_LIMITATIONS.md
-      - Remaining Issues: REMAINING_ISSUES_REPORT.md
-      - TODO Resolution: TODO_RESOLUTION_REPORT.md
-      - TypeScript Resolution: TYPESCRIPT_RESOLUTION_REPORT.md
-      - NPM Vulnerabilities: NPM_VULNERABILITY_ANALYSIS.md
-      - Error Sanitization: ERROR_SANITIZATION_AUDIT.md
-      - Feature Toggles: FEATURE_TOGGLE_INVESTIGATION_REPORT.md
-      - OSS Release: OPEN_SOURCE_RELEASE_RECOMMENDATIONS.md
-      - Database Architecture: DATABASE_ARCHITECT_SUMMARY.md
-      - Storage Architecture: STORAGE_ARCHITECTURE.md
-      - Social Platform Spec: SOCIAL_MEDIA_PLATFORM_SPECIFICATION.md
-
+          - Conversation deletion: features/messaging/CONVERSATION_DELETION.md
+      - Photo galleries:
+          - System: features/gallery/GALLERY_SYSTEM.md
+          - API reference: features/gallery/GALLERY_API_REFERENCE.md
+          - Database schema: features/gallery/PHOTO_GALLERY_DATABASE_SCHEMA.md
+          - Admin guide: features/gallery/admin-guide.md
+          - Admin API reference: features/gallery/admin-api-reference.md
+      - Menus and navigation:
+          - Overview: features/menu/README.md
+          - Feature toggles: features/menu/TOGGLE_SYSTEM.md
+          - Drag and drop: features/menu/DRAG_DROP.md
+          - Security: features/menu/SECURITY.md
+      - Dashboard:
+          - Overview: features/dashboard/README.md
+          - Architecture: features/dashboard/ARCHITECTURE.md
+          - API: features/dashboard/API.md
+      - Admin:
+          - Overview: features/admin/README.md
+          - User management: features/admin/users/GUIDE.md
+          - Gallery management: features/admin/gallery/MANAGEMENT_SYSTEM.md
+      - Content:
+          - Authors: features/content/authors.md
+          - Slugs: features/content/slugs.md
+      - Editors:
+          - BlockNote (AI-assisted): features/editor/blocknote.md
+          - Tiptap: features/editor/tiptap.md
+      - Theming:
+          - Themes: features/theming/README.md
+          - Fonts: features/theming/fonts.md
+  - Deployment: deployment/README.md
   - Research:
-      - GitHub Templates: research/github_template_research_report.md
-
-  - Changelog: ../CHANGELOG.md
+      - PocketBase evaluation: research/pocketbase-evaluation.md

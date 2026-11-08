@@ -39,7 +39,7 @@ export default function CompaniesPage() {
   return (
     <>
       <Helmet>
-        <title>Tech Companies - Kootenay Tech Community</title>
+        <title>Tech Companies - Uluntu</title>
         <meta name="description" content="Explore tech companies and startups in the Kootenay region" />
       </Helmet>
       

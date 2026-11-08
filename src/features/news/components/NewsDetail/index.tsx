@@ -62,7 +62,7 @@ const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
   return (
     <>
       <Helmet>
-        <title>{article.title} | Kootenay Tech Directory</title>
+        <title>{article.title} | Uluntu</title>
         <meta name="description" content={article.content.substring(0, 155)} />
       </Helmet>
       

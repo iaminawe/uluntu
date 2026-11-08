@@ -224,7 +224,7 @@ export default function AcceptInvitationPage() {
   return (
     <>
       <Helmet>
-        <title>Accept Invitation - Kootenay Tech Community</title>
+        <title>Accept Invitation - Uluntu</title>
         <meta name="description" content="Accept your invitation to join a group" />
       </Helmet>
 

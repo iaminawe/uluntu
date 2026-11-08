@@ -98,8 +98,8 @@ export default function TopicsIndexPage() {
   return (
     <>
       <Helmet>
-        <title>Topics Hub - Discover Content by Category - Kootenay Tech Community</title>
-        <meta name="description" content="Browse all topics and discover content organized by category in the Kootenay Tech Community" />
+        <title>Topics Hub - Discover Content by Category - Uluntu</title>
+        <meta name="description" content="Browse all topics and discover content organized by category in Uluntu" />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">

@@ -6,7 +6,7 @@ export default function UnauthorizedPage() {
   return (
     <>
       <Helmet>
-        <title>Unauthorized - Kootenay Tech Community</title>
+        <title>Unauthorized - Uluntu</title>
         <meta name="description" content="You don't have permission to access this page" />
       </Helmet>
       

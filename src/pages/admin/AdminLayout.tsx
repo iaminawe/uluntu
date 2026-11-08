@@ -52,7 +52,7 @@ const AdminLayout: React.FC = () => {
   const photoGalleriesEnabled = isFeatureEnabled('photo_galleries');
 
   // Get site name from settings
-  const siteName = settings?.site?.site_name?.value || 'Nelson Tech';
+  const siteName = settings?.site?.site_name?.value || 'Uluntu';
 
   // Debug logging for troubleshooting (disabled)
   /*

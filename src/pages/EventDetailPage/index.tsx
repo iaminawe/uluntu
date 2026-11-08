@@ -55,7 +55,7 @@ export default function EventDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{event.title} - Kootenay Tech Community</title>
+        <title>{event.title} - Uluntu</title>
         <meta name="description" content={event.description} />
       </Helmet>
       

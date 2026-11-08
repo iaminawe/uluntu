@@ -4,7 +4,7 @@ export const presetThemes: PresetTheme[] = [
   {
     name: 'Default Orange',
     slug: 'default-orange',
-    description: 'The default Nelson Tech theme with vibrant orange accents',
+    description: 'The default Uluntu theme with vibrant orange accents',
     preview_url: '/themes/default-orange-preview.png',
     configurations: {
       colors: {

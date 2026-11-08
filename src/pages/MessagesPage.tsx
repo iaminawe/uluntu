@@ -190,7 +190,7 @@ const MessagesPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Messages - Nelson Tech Community</title>
+        <title>Messages - Uluntu Community</title>
         <meta name="description" content="Communicate with other community members" />
       </Helmet>
       

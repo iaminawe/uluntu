@@ -20,7 +20,7 @@ export default function ErrorPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4">
       <Helmet>
-        <title>Error - Kootenay Tech Community</title>
+        <title>Error - Uluntu</title>
       </Helmet>
       <ErrorContent errorMessage={errorMessage} />
     </div>

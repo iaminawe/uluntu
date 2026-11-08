@@ -1,0 +1,46 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. **Security problems should not be reported here.** See [SECURITY.md](https://github.com/iaminawe/uluntu/blob/main/SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect to see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See error ...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did this happen?
+      options:
+        - My own Uluntu install (local)
+        - My own Uluntu install (deployed)
+        - uluntu.io
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+      description: Output of `git rev-parse --short HEAD`, if you're running your own copy.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console errors or logs
+      description: Anything relevant from the browser console or server logs. Remove any keys or personal data first.
+      render: shell

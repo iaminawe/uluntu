@@ -102,8 +102,8 @@ export default function TopicLandingPage() {
   return (
     <>
       <Helmet>
-        <title>{topic.name} - Topic Hub - Kootenay Tech Community</title>
-        <meta name="description" content={topic.description || `Explore all content related to ${topic.name} in the Kootenay Tech Community`} />
+        <title>{topic.name} - Topic Hub - Uluntu</title>
+        <meta name="description" content={topic.description || `Explore all content related to ${topic.name} in Uluntu`} />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900">

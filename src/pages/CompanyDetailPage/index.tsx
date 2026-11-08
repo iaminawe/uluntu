@@ -63,7 +63,7 @@ export default function CompanyDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{company?.name || 'Company Details'} - Kootenay Tech Community</title>
+        <title>{company?.name || 'Company Details'} - Uluntu</title>
         <meta name="description" content={company?.description || 'Company details page'} />
       </Helmet>
       

@@ -5,14 +5,14 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Helmet>
-        <title>Reset Password - Kootenay Tech Community</title>
-        <meta name="description" content="Set a new password for your Kootenay Tech Community account" />
+        <title>Reset Password - Uluntu</title>
+        <meta name="description" content="Set a new password for your Uluntu account" />
       </Helmet>
       
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-50 dark:bg-slate-900">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Kootenay Tech Community</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Uluntu</h1>
             <p className="mt-2 text-slate-600 dark:text-slate-400">Set a new password</p>
           </div>
           

@@ -472,7 +472,7 @@ class NewsletterTemplateAPI {
       subscriber_email: 'john@example.com',
       unsubscribe_url: 'https://example.com/unsubscribe',
       web_view_url: 'https://example.com/newsletter/view',
-      company_name: 'Kootenay Tech Community',
+      company_name: 'Uluntu',
       company_logo: 'https://example.com/logo.png',
       primary_color: '#3B82F6',
       secondary_color: '#64748B',

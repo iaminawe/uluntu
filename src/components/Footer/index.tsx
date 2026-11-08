@@ -57,7 +57,7 @@ const Footer: React.FC<FooterProps> = ({
 
   // Default copyright text if none provided
   const defaultCopyrightText = copyrightText || 
-    `© ${new Date().getFullYear()} Kootenay Tech Community. All rights reserved.`;
+    `© ${new Date().getFullYear()} Uluntu. All rights reserved.`;
 
   return (
     <footer className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">

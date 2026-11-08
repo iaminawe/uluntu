@@ -267,11 +267,11 @@ export default function GroupEditPage() {
     <React.Fragment>
       <Helmet>
         <title>
-          {isEditMode ? `Edit Group: ${group?.name || 'Loading...'}` : 'Create New Group'} - Kootenay Tech Community
+          {isEditMode ? `Edit Group: ${group?.name || 'Loading...'}` : 'Create New Group'} - Uluntu
         </title>
         <meta 
           name="description" 
-          content={`${isEditMode ? 'Edit' : 'Create'} a group for the Kootenay Tech Community.`} 
+          content={`${isEditMode ? 'Edit' : 'Create'} a group for Uluntu.`} 
         />
       </Helmet>
       

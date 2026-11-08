@@ -84,12 +84,12 @@ export default function HomePage() {
     return (
       <>
         <Helmet>
-          <title>Nelson Tech Community - Connecting Kootenay Tech Professionals</title>
+          <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
           <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
         </Helmet>
         
         <DynamicHero
-          title="Nelson Tech Community"
+          title="Uluntu Community"
           subtitle="Kootenay Innovation Hub"
           description="Connecting tech professionals in the heart of British Columbia's mountain paradise"
           images={heroImages}
@@ -114,12 +114,12 @@ export default function HomePage() {
     return (
       <>
         <Helmet>
-          <title>Nelson Tech Community - Connecting Kootenay Tech Professionals</title>
+          <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
           <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
         </Helmet>
         
         <DynamicHero
-          title="Nelson Tech Community"
+          title="Uluntu Community"
           subtitle="Kootenay Innovation Hub"
           description="Connecting tech professionals in the heart of British Columbia's mountain paradise"
           images={heroImages}
@@ -151,13 +151,13 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>Nelson Tech Community - Connecting Kootenay Tech Professionals</title>
+        <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
         <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
       </Helmet>
 
       {/* Dynamic Hero Section */}
       <DynamicHero
-        title="Nelson Tech Community"
+        title="Uluntu Community"
         subtitle="Kootenay Innovation Hub"
         description="Connecting tech professionals in the heart of British Columbia's mountain paradise"
         images={heroImages}

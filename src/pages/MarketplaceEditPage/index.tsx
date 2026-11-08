@@ -223,7 +223,7 @@ export default function MarketplaceEditPage() {
   return (
     <>
       <Helmet>
-        <title>{isEditing ? 'Edit Marketplace Listing' : 'Create New Listing'} | Nelson Tech</title>
+        <title>{isEditing ? 'Edit Marketplace Listing' : 'Create New Listing'} | Uluntu</title>
       </Helmet>
       
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">

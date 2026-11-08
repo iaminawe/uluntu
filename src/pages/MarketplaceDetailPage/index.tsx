@@ -153,7 +153,7 @@ export default function MarketplaceDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{listing.title} - Kootenay Tech Marketplace</title>
+        <title>{listing.title} - Uluntu Marketplace</title>
         <meta name="description" content={`${listing.title} - ${listing.price} - ${listing.description.substring(0, 150)}...`} />
       </Helmet>
       

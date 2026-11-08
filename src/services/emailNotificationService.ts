@@ -123,8 +123,8 @@ export class EmailNotificationService {
 
   constructor() {
     this.client = createEmailTransport();
-    this.fromEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@kootenaytech.community';
-    this.fromName = import.meta.env.VITE_SUPPORT_NAME || 'Kootenay Tech Community Support';
+    this.fromEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@uluntu.io';
+    this.fromName = import.meta.env.VITE_SUPPORT_NAME || 'Uluntu Support';
 
     // Load newsletter templates on initialization
     this.loadNewsletterTemplates();
@@ -226,7 +226,7 @@ export class EmailNotificationService {
       primary_color: '#3B82F6',
       secondary_color: '#64748B',
       logo_url: import.meta.env.VITE_LOGO_URL || '',
-      footer_text: 'Kootenay Tech Community',
+      footer_text: 'Uluntu',
       social_links: [],
     };
   }
@@ -694,7 +694,7 @@ export class EmailNotificationService {
       // Default configuration
       const defaultConfig: EmailNotificationConfig = {
         enabled: true,
-        admin_emails: ['admin@kootenaytech.community'],
+        admin_emails: ['admin@uluntu.io'],
         notification_types: {
           new_submission: true,
           status_change: true,
@@ -728,7 +728,7 @@ export class EmailNotificationService {
       // Return default config as fallback
       return {
         enabled: true,
-        admin_emails: ['admin@kootenaytech.community'],
+        admin_emails: ['admin@uluntu.io'],
         notification_types: {
           new_submission: true,
           status_change: true,
@@ -784,7 +784,7 @@ export class EmailNotificationService {
     try {
       // This would query your users table
       // For now, return a placeholder
-      return `user-${userId}@kootenaytech.community`;
+      return `user-${userId}@uluntu.io`;
     } catch (error) {
       console.error('Error getting user email:', error);
       return null;
@@ -839,7 +839,7 @@ export class EmailNotificationService {
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-              <p>This is an automated notification from the Kootenay Tech Community contact system.</p>
+              <p>This is an automated notification from Uluntu contact system.</p>
             </div>
           </div>
         `,
@@ -1000,7 +1000,7 @@ View ticket: {{ticket_url}}
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-              <p>Best regards,<br>The Kootenay Tech Community Team</p>
+              <p>Best regards,<br>The Uluntu Team</p>
             </div>
           </div>
         `,
@@ -1022,7 +1022,7 @@ If you have any urgent questions, please don't hesitate to reach out to us direc
 Visit our support center: {{support_url}}
 
 Best regards,
-The Kootenay Tech Community Team
+The Uluntu Team
         `,
         variables: ['submission', 'support_url', 'estimated_response_time']
       }

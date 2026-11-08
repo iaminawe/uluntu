@@ -39,7 +39,7 @@ export default function MarketplacePage() {
   return (
     <>
       <Helmet>
-        <title>Marketplace - Kootenay Tech Community</title>
+        <title>Marketplace - Uluntu</title>
         <meta name="description" content="Tech marketplace for services, products, and equipment in the Kootenay region" />
       </Helmet>
       

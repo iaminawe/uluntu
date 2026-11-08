@@ -484,7 +484,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           </a>
           <a href="https://linkedin.com/company/nelson-tech" className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
             <Linkedin className="h-5 w-5" />
-            Nelson Tech Community
+            Uluntu Community
           </a>
           <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
             <MapPin className="h-5 w-5" />
@@ -520,7 +520,7 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
     return (
       <div className="max-w-7xl mx-auto">
         <ComponentRenderers.hero 
-          content="Welcome to Nelson Tech Community" 
+          content="Welcome to Uluntu Community" 
           metadata={{ 
             subtitle: "Connect with the vibrant tech community in Nelson, New Zealand",
             cta: true 
@@ -533,7 +533,7 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
         <ComponentRenderers.cta 
           content="Ready to Join?" 
           metadata={{ 
-            description: "Whether you're a developer, designer, entrepreneur, or tech enthusiast, there's a place for you in Nelson Tech." 
+            description: "Whether you're a developer, designer, entrepreneur, or tech enthusiast, there's a place for you in Uluntu." 
           }} 
         />
       </div>
@@ -545,9 +545,9 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
     return (
       <div className="max-w-4xl mx-auto">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-6">About Nelson Tech Community</h1>
+          <h1 className="text-4xl font-bold mb-6">About Uluntu Community</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Nelson Tech is a community-driven platform that connects technology professionals, 
+            Uluntu is a community-driven platform that connects technology professionals, 
             companies, and enthusiasts in the Nelson-Tasman region.
           </p>
         </div>
