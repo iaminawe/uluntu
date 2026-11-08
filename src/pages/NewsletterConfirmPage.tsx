@@ -156,7 +156,7 @@ const NewsletterConfirmPage: React.FC = () => {
           {/* Footer */}
           <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-600">
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Kootenay Tech Community Newsletter
+              Uluntu Newsletter
             </p>
           </div>
         </div>

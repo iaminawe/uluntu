@@ -50,7 +50,7 @@ export default function GroupsPage() {
   return (
     <>
       <Helmet>
-        <title>Tech Groups - Kootenay Tech Community</title>
+        <title>Tech Groups - Uluntu</title>
         <meta name="description" content="Tech groups and communities in the Kootenay region" />
       </Helmet>
       

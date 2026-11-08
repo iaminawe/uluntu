@@ -1,4 +1,4 @@
-// Visual Component Library for Nelson Tech Community
+// Visual Component Library for Uluntu Community
 // This library provides stunning, image-heavy components for the home page
 
 // Hero Components

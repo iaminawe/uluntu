@@ -68,7 +68,7 @@ const NewsletterEditor: React.FC = () => {
       primary_color: '#3B82F6',
       secondary_color: '#64748B',
       logo_url: '',
-      footer_text: 'Kootenay Tech Community'
+      footer_text: 'Uluntu'
     }
   });
 
@@ -682,7 +682,7 @@ const NewsletterEditor: React.FC = () => {
               {/* Email Header */}
               <div className="bg-gray-50 px-6 py-4 border-b">
                 <div className="text-sm text-gray-600">
-                  <strong>From:</strong> Kootenay Tech Community &lt;newsletter@kootenaytech.ca&gt;
+                  <strong>From:</strong> Uluntu &lt;newsletter@example.com&gt;
                 </div>
                 <div className="text-sm text-gray-600">
                   <strong>Subject:</strong> {campaignSettings.subject || 'Your Newsletter Subject'}

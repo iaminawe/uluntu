@@ -167,7 +167,7 @@ export default function PartnersPage() {
               Strengthening Our Tech Community Together
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              Our partners are the backbone of the Nelson Tech Community. Through strategic partnerships, 
+              Our partners are the backbone of the Uluntu Community. Through strategic partnerships, 
               we create opportunities for innovation, education, and economic growth that benefit everyone 
               in our region.
             </p>

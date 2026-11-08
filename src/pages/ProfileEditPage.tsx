@@ -307,7 +307,7 @@ export default function ProfileEditPage() {
   return (
     <>
       <Helmet>
-        <title>Edit Profile - Kootenay Tech Community</title>
+        <title>Edit Profile - Uluntu</title>
         <meta name="description" content="Edit your profile information" />
       </Helmet>
       

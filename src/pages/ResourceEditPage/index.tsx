@@ -214,7 +214,7 @@ export default function ResourceEditPage() {
   return (
     <>
       <Helmet>
-        <title>{isEditing ? 'Edit Resource' : 'Add New Resource'} - Kootenay Tech Community</title>
+        <title>{isEditing ? 'Edit Resource' : 'Add New Resource'} - Uluntu</title>
       </Helmet>
       
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12">

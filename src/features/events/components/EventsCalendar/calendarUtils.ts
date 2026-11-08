@@ -13,7 +13,7 @@ export const generateICalendar = (events: Event[]): string => {
   let icalContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Kootenay Tech Community//Events Calendar//EN',
+    'PRODID:-//Uluntu//Events Calendar//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
   ];
@@ -29,14 +29,14 @@ export const generateICalendar = (events: Event[]): string => {
     
     icalContent = icalContent.concat([
       'BEGIN:VEVENT',
-      `UID:${event.id}@kootenaytechcommunity.com`,
+      `UID:${event.id}@uluntu.io`,
       `DTSTAMP:${formatDate(now)}`,
       `DTSTART:${formatDate(startDate)}`,
       `DTEND:${formatDate(endDate)}`,
       `SUMMARY:${event.title.replace(/,/g, '\\,')}`,
       `DESCRIPTION:${description}`,
       `LOCATION:${location}`,
-      `URL:https://kootenaytechcommunity.com${getEventUrl(event)}`,
+      `URL:https://uluntu.io${getEventUrl(event)}`,
       'END:VEVENT'
     ]);
   });

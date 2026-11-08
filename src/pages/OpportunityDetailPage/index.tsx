@@ -159,7 +159,7 @@ export default function OpportunityDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{opportunity.title} - Kootenay Tech Community</title>
+        <title>{opportunity.title} - Uluntu</title>
         <meta name="description" content={opportunity.description.substring(0, 160)} />
       </Helmet>
       

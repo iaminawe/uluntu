@@ -3,7 +3,7 @@ import { HeroSectionProps } from './types';
 import HeroButton from './HeroButton';
 
 const HeroSection: React.FC<HeroSectionProps> = ({
-  title = "Nelson Tech",
+  title = "Uluntu",
   description = "Connecting and empowering the Kootenay region's thriving tech community through collaboration, innovation, and knowledge sharing.",
   backgroundImage = "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg",
   buttons = [
@@ -24,7 +24,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="absolute inset-0 overflow-hidden">
         <img 
           src={backgroundImage}
-          alt="Nelson Tech Community"
+          alt="Uluntu Community"
           className="w-full h-full object-cover opacity-20"
         />
       </div>

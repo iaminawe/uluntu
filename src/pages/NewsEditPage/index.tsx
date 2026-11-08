@@ -256,7 +256,7 @@ export default function NewsEditPage() {
           {isEditMode 
             ? `Edit Article: ${article?.title || 'Loading...'}`
             : 'Create New Article'
-          } - Kootenay Tech Community
+          } - Uluntu
         </title>
       </Helmet>
       

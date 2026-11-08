@@ -21,7 +21,7 @@ export default function NewsPage() {
   return (
     <>
       <Helmet>
-        <title>Tech News - Kootenay Tech Community</title>
+        <title>Tech News - Uluntu</title>
         <meta name="description" content="Latest tech news from the Kootenay region and beyond." />
       </Helmet>
       

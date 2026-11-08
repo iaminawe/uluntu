@@ -247,7 +247,7 @@ export default function EventEditPage() {
           {isEditMode 
             ? `Edit Event: ${event?.title || 'Loading...'}`
             : 'Create New Event'
-          } - Kootenay Tech Community
+          } - Uluntu
         </title>
       </Helmet>
       

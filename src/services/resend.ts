@@ -16,8 +16,8 @@ class ResendService {
 
   constructor() {
     this.client = createEmailTransport();
-    this.fromEmail = import.meta.env.VITE_FROM_EMAIL || 'newsletter@kootenaytech.community';
-    this.fromName = import.meta.env.VITE_FROM_NAME || 'Kootenay Tech Community';
+    this.fromEmail = import.meta.env.VITE_FROM_EMAIL || 'newsletter@uluntu.io';
+    this.fromName = import.meta.env.VITE_FROM_NAME || 'Uluntu';
   }
 
   /**
@@ -441,13 +441,13 @@ class ResendService {
       <div class="container">
         <h1>Confirm Your Newsletter Subscription</h1>
         <p>Hi there!</p>
-        <p>Thanks for subscribing to the Kootenay Tech Community newsletter. To complete your subscription, please click the button below:</p>
+        <p>Thanks for subscribing to Uluntu newsletter. To complete your subscription, please click the button below:</p>
         <div style="text-align: center;">
           <a href="${confirmationUrl}" class="button">Confirm Subscription</a>
         </div>
         <p>If you didn't request this subscription, you can safely ignore this email.</p>
         <div class="footer">
-          <p>Kootenay Tech Community<br>
+          <p>Uluntu<br>
           Building connections in the Kootenay tech ecosystem</p>
         </div>
       </div>

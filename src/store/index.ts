@@ -53,7 +53,7 @@ export const store = configureStore({
     getDefaultMiddleware(),
   devTools: (typeof window !== 'undefined' && import.meta.env.MODE !== 'production') ? {
     // Custom name for the instance shown in DevTools
-    name: 'Kootenay Tech Community',
+    name: 'Uluntu',
     // Trace action execution path through middleware, enhancers, and reducers
     trace: true,
     // Maximum number of actions to keep in history

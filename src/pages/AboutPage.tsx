@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 py-16 sm:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-              About Nelson Tech Community
+              About Uluntu Community
             </h1>
             <p className="text-xl text-orange-100">
               Connecting tech professionals, entrepreneurs, and innovators in the Nelson region
@@ -27,7 +27,7 @@ export default function AboutPage() {
             Our Mission
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
-            The Nelson Tech Community is dedicated to fostering innovation, collaboration, 
+            The Uluntu Community is dedicated to fostering innovation, collaboration, 
             and growth in the technology sector throughout the Nelson region. We bring 
             together developers, entrepreneurs, designers, and tech enthusiasts to share 
             knowledge, build connections, and drive the future of technology in our community.

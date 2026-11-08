@@ -67,14 +67,14 @@ export async function sendWelcomeEmail(
     to: userEmail,
     template_data: {
       user: userData,
-      community_name: options?.community_name || 'Kootenay Tech Community',
+      community_name: options?.community_name || 'Uluntu',
       platform_url: options?.platform_url || window.location.origin,
-      support_email: options?.support_email || 'support@kootenaytech.community',
+      support_email: options?.support_email || 'support@uluntu.io',
       branding: {
         primary_color: '#3B82F6',
         secondary_color: '#64748B',
         logo_url: '/logo.png',
-        footer_text: 'Kootenay Tech Community',
+        footer_text: 'Uluntu',
       },
     },
     options: {
@@ -106,15 +106,15 @@ export async function sendPasswordResetEmail(
     to: userEmail,
     template_data: {
       user: userData,
-      community_name: options?.community_name || 'Kootenay Tech Community',
+      community_name: options?.community_name || 'Uluntu',
       reset_url: resetUrl,
       expiry_hours: options?.expiry_hours || 24,
-      support_email: options?.support_email || 'support@kootenaytech.community',
+      support_email: options?.support_email || 'support@uluntu.io',
       branding: {
         primary_color: '#3B82F6',
         secondary_color: '#64748B',
         logo_url: '/logo.png',
-        footer_text: 'Kootenay Tech Community',
+        footer_text: 'Uluntu',
       },
     },
     options: {
@@ -145,14 +145,14 @@ export async function sendEmailVerification(
     to: userEmail,
     template_data: {
       user: userData,
-      community_name: options?.community_name || 'Kootenay Tech Community',
+      community_name: options?.community_name || 'Uluntu',
       verification_url: verificationUrl,
       expiry_hours: options?.expiry_hours || 48,
       branding: {
         primary_color: '#3B82F6',
         secondary_color: '#64748B',
         logo_url: '/logo.png',
-        footer_text: 'Kootenay Tech Community',
+        footer_text: 'Uluntu',
       },
     },
     options: {
@@ -187,15 +187,15 @@ export async function sendContactAutoReply(
     to: submission.email,
     template_data: {
       submission,
-      community_name: options?.community_name || 'Kootenay Tech Community',
+      community_name: options?.community_name || 'Uluntu',
       estimated_response_time: estimatedResponseTime,
-      support_email: options?.support_email || 'support@kootenaytech.community',
+      support_email: options?.support_email || 'support@uluntu.io',
       support_url: options?.support_url || `${window.location.origin}/support`,
       branding: {
         primary_color: '#3B82F6',
         secondary_color: '#64748B',
         logo_url: '/logo.png',
-        footer_text: 'Kootenay Tech Community',
+        footer_text: 'Uluntu',
       },
     },
     options: {
@@ -250,14 +250,14 @@ export async function sendNewsletterCampaign(
     template_data: {
       newsletter: newsletterData,
       content,
-      community_name: options?.community_name || 'Kootenay Tech Community',
+      community_name: options?.community_name || 'Uluntu',
       view_online_url: viewOnlineUrl,
       unsubscribe_url: unsubscribeUrl,
       branding: {
         primary_color: '#3B82F6',
         secondary_color: '#64748B',
         logo_url: '/logo.png',
-        footer_text: 'Kootenay Tech Community',
+        footer_text: 'Uluntu',
         social_links: [],
       },
     },
@@ -346,9 +346,9 @@ function generateSampleData(templateName: string): Record<string, any> {
         last_name: 'Doe',
         id: 'test-user-123',
       },
-      community_name: 'Kootenay Tech Community',
+      community_name: 'Uluntu',
       platform_url: window.location.origin,
-      support_email: 'support@kootenaytech.community',
+      support_email: 'support@uluntu.io',
     };
   }
   
@@ -358,10 +358,10 @@ function generateSampleData(templateName: string): Record<string, any> {
         first_name: 'John',
         id: 'test-user-123',
       },
-      community_name: 'Kootenay Tech Community',
+      community_name: 'Uluntu',
       reset_url: `${window.location.origin}/auth/reset-password?token=test-token`,
       expiry_hours: 24,
-      support_email: 'support@kootenaytech.community',
+      support_email: 'support@uluntu.io',
     };
   }
   
@@ -371,7 +371,7 @@ function generateSampleData(templateName: string): Record<string, any> {
         first_name: 'John',
         id: 'test-user-123',
       },
-      community_name: 'Kootenay Tech Community',
+      community_name: 'Uluntu',
       verification_url: `${window.location.origin}/auth/verify-email?token=test-token`,
       expiry_hours: 48,
     };
@@ -387,9 +387,9 @@ function generateSampleData(templateName: string): Record<string, any> {
         message: 'This is a test message for the contact form auto-reply.',
         type: 'general',
       },
-      community_name: 'Kootenay Tech Community',
+      community_name: 'Uluntu',
       estimated_response_time: '24-48 hours',
-      support_email: 'support@kootenaytech.community',
+      support_email: 'support@uluntu.io',
       support_url: `${window.location.origin}/support`,
     };
   }
@@ -419,7 +419,7 @@ function generateSampleData(templateName: string): Record<string, any> {
           },
         ],
       },
-      community_name: 'Kootenay Tech Community',
+      community_name: 'Uluntu',
       view_online_url: '#',
       unsubscribe_url: '#',
     };

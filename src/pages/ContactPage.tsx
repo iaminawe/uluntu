@@ -21,7 +21,7 @@ export default function ContactPage() {
   const { value: contactEmail } = useSetting('contact', 'contact_email', 'hello@nelsontech.community');
   const { value: contactPhone } = useSetting('contact', 'contact_phone', '+1 (250) 555-0123');
   const { value: contactAddress } = useSetting('contact', 'contact_address', 'Nelson, British Columbia\nCanada');
-  const { value: organizationName } = useSetting('contact', 'organization_name', 'Nelson Tech Community');
+  const { value: organizationName } = useSetting('contact', 'organization_name', 'Uluntu Community');
   const { value: responseTimeGeneral } = useSetting('contact', 'response_time_general', '24-48 hours');
   const { value: responseTimePartnership } = useSetting('contact', 'response_time_partnership', '3-5 business days');
   const { value: responseTimeSupport } = useSetting('contact', 'response_time_support', '12-24 hours');

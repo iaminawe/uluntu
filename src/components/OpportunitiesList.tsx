@@ -133,7 +133,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     title: 'Smart City Initiative Contributors',
     description: 'Looking for community members to participate in developing smart city solutions.',
     type: 'community',
-    organization: 'Nelson Tech Coalition',
+    organization: 'Uluntu Coalition',
     location: 'Nelson, BC',
     commitment: 'Flexible',
     contactEmail: 'community@nelsontech.org',

@@ -93,7 +93,7 @@ const NewsletterSection: React.FC = () => {
                   </div>
                 )}
                 <p className="text-xs text-purple-300 mt-3">
-                  We respect your privacy. Your email will only be used for Kootenay Tech Community communications.
+                  We respect your privacy. Your email will only be used for Uluntu communications.
                   You can unsubscribe at any time.
                 </p>
               </form>

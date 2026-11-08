@@ -77,7 +77,7 @@ export default function GroupDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{group.name} - Kootenay Tech Community</title>
+        <title>{group.name} - Uluntu</title>
         <meta name="description" content={group.description?.substring(0, 160)} />
       </Helmet>
       

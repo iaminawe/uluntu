@@ -37,13 +37,13 @@ export default function TermsPage() {
             </h2>
           </div>
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
-            By accessing and using the Nelson Tech Community platform ("Service"), you accept and agree 
+            By accessing and using the Uluntu Community platform ("Service"), you accept and agree 
             to be bound by the terms and provision of this agreement. If you do not agree to abide by 
             the above, please do not use this service.
           </p>
           <p className="text-lg text-slate-600 dark:text-slate-300">
             These Terms of Service ("Terms") govern your use of our website and services operated by 
-            Nelson Tech Community ("us", "we", or "our").
+            Uluntu Community ("us", "we", or "our").
           </p>
         </section>
 
@@ -155,7 +155,7 @@ export default function TermsPage() {
                 Platform Content
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                The Service and its original content, features, and functionality are owned by Nelson Tech 
+                The Service and its original content, features, and functionality are owned by Uluntu 
                 Community and are protected by international copyright, trademark, patent, trade secret, 
                 and other intellectual property laws.
               </p>
@@ -298,7 +298,7 @@ export default function TermsPage() {
             <div className="space-y-2 text-slate-600 dark:text-slate-300">
               <p><strong>Email:</strong> legal@nelsontech.community</p>
               <p><strong>Contact Page:</strong> <Link to="/contact" className="text-orange-600 dark:text-orange-400 hover:underline">nelsontech.community/contact</Link></p>
-              <p><strong>Mail:</strong> Nelson Tech Community, Legal Department, Nelson, BC, Canada</p>
+              <p><strong>Mail:</strong> Uluntu Community, Legal Department, Nelson, BC, Canada</p>
             </div>
           </div>
         </section>

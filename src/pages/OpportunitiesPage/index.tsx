@@ -197,7 +197,7 @@ export default function OpportunitiesPage() {
   return (
     <>
       <Helmet>
-        <title>Opportunities - Kootenay Tech Community</title>
+        <title>Opportunities - Uluntu</title>
         <meta name="description" content="Tech opportunities, jobs, and volunteer positions in the Kootenay region" />
       </Helmet>
       

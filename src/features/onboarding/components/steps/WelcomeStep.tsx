@@ -7,7 +7,7 @@ const WelcomeStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-          Welcome to the Nelson Tech Community! 🎉
+          Welcome to the Uluntu Community! 🎉
         </h2>
         <p className="text-lg text-slate-600 dark:text-slate-400">
           We're excited to have you join our vibrant community of tech professionals, 

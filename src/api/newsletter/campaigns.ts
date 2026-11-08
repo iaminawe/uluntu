@@ -133,7 +133,7 @@ class NewsletterCampaignsApi {
             secondary_color: '#64748B',
             logo_url: '',
             header_image: '',
-            footer_text: 'Kootenay Tech Community',
+            footer_text: 'Uluntu',
             social_links: []
           },
           status: campaign.status || 'draft',

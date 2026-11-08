@@ -171,7 +171,7 @@ const SupabaseDiagnosticPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Helmet>
-        <title>Supabase Diagnostics | Nelson Tech</title>
+        <title>Supabase Diagnostics | Uluntu</title>
       </Helmet>
       
       <div className="flex justify-between items-center mb-6">
