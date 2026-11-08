@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 
 // Model names are non-secret (safe as VITE_). The actual provider API keys live
 // server-side and are injected by /api/ai/provider.
-const ANTHROPIC_MODEL = import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
+const ANTHROPIC_MODEL = import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-haiku-5-5';
 const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini';
 
 // Custom fetch: rewrite every provider call to our transparent proxy and attach

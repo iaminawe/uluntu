@@ -84,7 +84,10 @@ CREATE TRIGGER protect_member_featured
 --    their own row with no column restrictions, so they could change their
 --    role or move the row into another conversation. Members may still update
 --    their own read/leave state; role and membership changes need a
---    conversation admin or a site admin.
+--    conversation admin or a site admin. Production (checked 2026-11-08) has
+--    no UPDATE policy for other participants' rows, so in practice a
+--    conversation admin can only change their own role here. Letting admins
+--    manage other participants would need a separate UPDATE policy.
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.protect_conversation_participant()
 RETURNS trigger
@@ -182,6 +185,8 @@ CREATE POLICY "Users can delete their own group images"
 -- message-attachments is a private bucket, but its read policy allowed anyone,
 -- including signed-out visitors, to read any file. Limit reads to the
 -- uploader's own folder, matching the existing upload and delete policies.
+-- No client code uses this bucket yet; when attachments ship, recipients
+-- should get signed URLs created server-side or by the sender.
 DROP POLICY IF EXISTS "Users can view message attachments" ON storage.objects;
 CREATE POLICY "Users can view message attachments"
   ON storage.objects

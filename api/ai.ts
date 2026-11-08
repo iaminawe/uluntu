@@ -10,7 +10,7 @@ import { getUser, parseBody, type ApiReq, type ApiRes } from './_lib/auth.js';
 const PROVIDER = process.env.AI_PROVIDER || 'openai';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
 const OPENAI_KEY = process.env.OPENAI_API_KEY || '';
-const ANTHROPIC_MODEL = process.env.AI_ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
+const ANTHROPIC_MODEL = process.env.AI_ANTHROPIC_MODEL || 'claude-haiku-5-5';
 const OPENAI_MODEL = process.env.AI_OPENAI_MODEL || 'gpt-4o-mini';
 const DEFAULT_MAX_TOKENS = parseInt(process.env.AI_MAX_TOKENS || '2000', 10);
 const DEFAULT_TEMPERATURE = parseFloat(process.env.AI_TEMPERATURE || '0.7');
