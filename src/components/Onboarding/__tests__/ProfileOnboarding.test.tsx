@@ -122,7 +122,7 @@ describe('ProfileOnboarding', () => {
         </TestWrapper>
       );
 
-      expect(screen.getByText('Welcome to Nelson Tech!')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to Uluntu!')).toBeInTheDocument();
       expect(screen.getByText('Profile Completion')).toBeInTheDocument();
       expect(screen.getByText('Required Information:')).toBeInTheDocument();
     });

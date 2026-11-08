@@ -17,7 +17,7 @@ const mockEvent: Event = {
   type: 'in-person',
   organizer: {
     id: 'org1',
-    name: 'Nelson Tech Association',
+    name: 'Uluntu Association',
     image: 'https://example.com/organizer-image.jpg'
   },
   attendees: 120
@@ -54,7 +54,7 @@ describe('EventCard Component', () => {
     expect(screen.getByText('In-Person')).toBeInTheDocument();
     
     // Check if organizer info is displayed
-    expect(screen.getByText('Nelson Tech Association')).toBeInTheDocument();
+    expect(screen.getByText('Uluntu Association')).toBeInTheDocument();
     expect(screen.getByText(/Organized by/)).toBeInTheDocument();
     
     // Check if attendee count is displayed
@@ -70,7 +70,7 @@ describe('EventCard Component', () => {
     expect(eventImage).toHaveAttribute('src', 'https://example.com/event-image.jpg');
     
     // Check if organizer image is rendered
-    const organizerImage = screen.getByAltText('Nelson Tech Association');
+    const organizerImage = screen.getByAltText('Uluntu Association');
     expect(organizerImage).toBeInTheDocument();
     expect(organizerImage).toHaveAttribute('src', 'https://example.com/organizer-image.jpg');
   });

@@ -104,7 +104,7 @@ describe('HomePage Integration', () => {
   it('should display the correct title and branding', () => {
     renderWithProviders(<HomePage />);
     
-    expect(screen.getByText('Nelson Tech Community')).toBeInTheDocument();
+    expect(screen.getByText('Uluntu Community')).toBeInTheDocument();
     expect(screen.getByText('Kootenay Innovation Hub')).toBeInTheDocument();
     expect(screen.getByText(/Connecting tech professionals/)).toBeInTheDocument();
   });
@@ -133,7 +133,7 @@ describe('HomePage Integration', () => {
     
     // Should still render hero while loading
     expect(screen.getByTestId('dynamic-hero')).toBeInTheDocument();
-    expect(screen.getByText('Nelson Tech Community')).toBeInTheDocument();
+    expect(screen.getByText('Uluntu Community')).toBeInTheDocument();
   });
 
   it('should render with error state', () => {
@@ -149,7 +149,7 @@ describe('HomePage Integration', () => {
     
     // Should still render hero with error state
     expect(screen.getByTestId('dynamic-hero')).toBeInTheDocument();
-    expect(screen.getByText('Nelson Tech Community')).toBeInTheDocument();
+    expect(screen.getByText('Uluntu Community')).toBeInTheDocument();
   });
 
   it('should render with populated data', () => {
@@ -183,6 +183,6 @@ describe('HomePage Integration', () => {
     renderWithProviders(<HomePage />);
     
     // Check that Helmet component was rendered (title would be set)
-    expect(document.title).toContain('Nelson Tech Community');
+    expect(document.title).toContain('Uluntu Community');
   });
 });

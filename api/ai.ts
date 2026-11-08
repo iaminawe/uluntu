@@ -15,6 +15,19 @@ const OPENAI_MODEL = process.env.AI_OPENAI_MODEL || 'gpt-4o-mini';
 const DEFAULT_MAX_TOKENS = parseInt(process.env.AI_MAX_TOKENS || '2000', 10);
 const DEFAULT_TEMPERATURE = parseFloat(process.env.AI_TEMPERATURE || '0.7');
 
+// Spend limits: this endpoint pays for every token, so clients can lower these
+// values but never raise them.
+const MAX_OUTPUT_TOKENS = parseInt(process.env.AI_MAX_OUTPUT_TOKENS_CAP || '4000', 10);
+const MAX_MESSAGES = 50;
+const MAX_INPUT_CHARS = 100_000;
+
+function inputChars(messages: CoreMessage[]): number {
+  return messages.reduce((n, m) => {
+    const c = (m as { content?: unknown }).content;
+    return n + (typeof c === 'string' ? c.length : JSON.stringify(c ?? '').length);
+  }, 0);
+}
+
 function resolveModel() {
   if (PROVIDER === 'anthropic') {
     if (!ANTHROPIC_KEY) return null;
@@ -53,13 +66,22 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     res.status(400).json({ error: 'messages is required' });
     return;
   }
+  if (messages.length > MAX_MESSAGES || inputChars(messages) > MAX_INPUT_CHARS) {
+    res.status(413).json({ error: 'Request too large' });
+    return;
+  }
+
+  const requestedTokens = Number(body?.maxTokens) || DEFAULT_MAX_TOKENS;
+  const requestedTemperature = Number(body?.temperature);
 
   try {
     const result = streamText({
       model,
       messages,
-      maxOutputTokens: body?.maxTokens ?? DEFAULT_MAX_TOKENS,
-      temperature: body?.temperature ?? DEFAULT_TEMPERATURE,
+      maxOutputTokens: Math.max(1, Math.min(requestedTokens, MAX_OUTPUT_TOKENS)),
+      temperature: Number.isFinite(requestedTemperature)
+        ? Math.min(Math.max(requestedTemperature, 0), 1)
+        : DEFAULT_TEMPERATURE,
     });
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');

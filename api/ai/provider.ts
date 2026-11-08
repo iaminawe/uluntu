@@ -14,8 +14,43 @@ const ALLOWED_HOST: Record<string, string> = {
   anthropic: 'api.anthropic.com',
 };
 
+// Only the generation endpoints the editor uses may be proxied, so a signed-in
+// user can't reach other paid APIs (images, batches, files) with our key.
+const ALLOWED_PATHS: Record<string, string[]> = {
+  openai: ['/v1/chat/completions', '/v1/responses'],
+  anthropic: ['/v1/messages'],
+};
+
 const OPENAI_KEY = process.env.OPENAI_API_KEY || '';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+
+// The server decides which model is used and how much it may generate.
+const MODEL: Record<string, string | undefined> = {
+  openai: process.env.AI_OPENAI_MODEL,
+  anthropic: process.env.AI_ANTHROPIC_MODEL,
+};
+const MAX_OUTPUT_TOKENS = parseInt(process.env.AI_MAX_OUTPUT_TOKENS_CAP || '4000', 10);
+const MAX_BODY_BYTES = 200_000;
+const TOKEN_FIELDS = ['max_tokens', 'max_completion_tokens', 'max_output_tokens'];
+
+function limitBody(provider: string, raw: unknown): string | null {
+  let body: Record<string, unknown>;
+  try {
+    body = (typeof raw === 'string' ? JSON.parse(raw) : raw ?? {}) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+  if (MODEL[provider]) body.model = MODEL[provider];
+  for (const field of TOKEN_FIELDS) {
+    if (typeof body[field] === 'number') {
+      body[field] = Math.min(body[field] as number, MAX_OUTPUT_TOKENS);
+    }
+  }
+  if (provider === 'anthropic' && typeof body.max_tokens !== 'number') {
+    body.max_tokens = MAX_OUTPUT_TOKENS;
+  }
+  return JSON.stringify(body);
+}
 
 function q(v: string | string[] | undefined): string {
   return Array.isArray(v) ? v[0] || '' : v || '';
@@ -54,6 +89,21 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     res.status(400).json({ error: 'Host not allowed' });
     return;
   }
+  if (!ALLOWED_PATHS[provider].includes(parsed.pathname) || parsed.search) {
+    res.status(400).json({ error: 'Path not allowed' });
+    return;
+  }
+
+  const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+  if (rawBody.length > MAX_BODY_BYTES) {
+    res.status(413).json({ error: 'Request too large' });
+    return;
+  }
+  const outboundBody = limitBody(provider, req.body);
+  if (!outboundBody) {
+    res.status(400).json({ error: 'Invalid JSON body' });
+    return;
+  }
 
   const key = provider === 'anthropic' ? ANTHROPIC_KEY : OPENAI_KEY;
   if (!key) {
@@ -68,7 +118,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     headers['anthropic-version'] =
       q(req.headers['anthropic-version']) || '2023-06-01';
     const beta = q(req.headers['anthropic-beta']);
-    if (beta) headers['anthropic-beta'] = beta;
+    if (beta && /^[a-z0-9-]+(,[a-z0-9-]+)*$/.test(beta)) headers['anthropic-beta'] = beta;
   } else {
     headers['authorization'] = `Bearer ${key}`;
   }
@@ -77,7 +127,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     const upstream = await fetch(targetUrl, {
       method: 'POST',
       headers,
-      body: typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {}),
+      body: outboundBody,
     });
 
     res.status(upstream.status);
