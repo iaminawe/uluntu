@@ -196,3 +196,4 @@ nav:
   - Deployment: deployment/README.md
   - Research:
       - PocketBase evaluation: research/pocketbase-evaluation.md
+      - Nostr federation: research/nostr-federation.md
