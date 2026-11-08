@@ -95,6 +95,30 @@ Stages 1–2 are worth doing even if federation goes no further. They give membe
 - Who hosts the relay for each instance, and is that a requirement for self-hosters or optional?
 - Should ActivityPub be evaluated alongside Nostr? It reaches more people today (Mastodon, Lemmy groups via FEP-1b12), but it ties identity to the server, which fits Supabase's account model more naturally.
 
+## 7. Keycloak
+
+Keycloak is an open-source identity provider (OIDC/SAML, current release 26.7). A community that already runs it, or wants one login across Uluntu, a forum, a wiki and a chat server, could use it alongside Nostr. The two solve different problems: Keycloak manages **accounts and single sign-on**, while Nostr gives **portable keys and content federation**. They fit together rather than compete.
+
+### 7.1 Ways to connect Keycloak to Uluntu
+
+| Option | How | Changes to Uluntu | Fit |
+|---|---|---|---|
+| **A. Keycloak as a login provider in Supabase Auth** | Supabase's Keycloak provider, or a custom OIDC provider (generally available since April 2026, up to 3 per project). Members click "Sign in with <community>"; Supabase still creates `auth.users` rows and issues its own sessions. | Configuration and a sign-in button only. RLS, `auth.uid()`, `api/_lib/auth.ts` and the Nostr link flow work unchanged. | **Recommended.** |
+| **B. Keycloak as the only identity (Supabase Third-Party Auth)** | Supabase trusts Keycloak-issued JWTs directly (HTTPS issuer, asymmetric keys, a `role: authenticated` claim added by a protocol mapper). | Large. There are no `auth.users` rows, so foreign keys such as `members.user_id` break. `api/_lib/auth.ts` must verify tokens against Keycloak's JWKS instead of calling `/auth/v1/user`. Supabase's email flows (sign-up, password reset) stop applying. Keycloak user IDs are UUIDs, so `auth.uid()` itself still works. | Only if Uluntu moves off Supabase Auth entirely. |
+
+### 7.2 Where Nostr fits with Keycloak
+
+- **Key as a Keycloak attribute (small).** Store the verified `nostr_pubkey` as a Keycloak user attribute too, and add a protocol mapper that puts it in tokens. Every app in the realm then knows the member's Nostr key without its own linking flow. Uluntu would still be what verifies the signature (stage 1).
+- **"Sign in with Nostr" in Keycloak (medium, custom code).** No Keycloak Nostr authenticator exists as far as this research found. It would be a custom Authenticator SPI (Java) that issues a one-time challenge and checks a NIP-07 signature (kind 27235, as in stage 1), or supports NIP-46 remote signers for mobile. NIP-07 signatures aren't bound to the requesting site, so the challenge must be single-use, short-lived and tied to the expected URL. Otherwise a phishing site could relay it.
+- **Never store members' secret keys in Keycloak.** Attributes are visible to realm admins and exported with realm backups. If a community wants keys managed for members, use a NIP-46 remote signer (a "bunker") instead. Keycast, a NIP-46 signer service for teams, came up in this research but hasn't been evaluated.
+- **Account federation between instances (medium).** Keycloak's identity brokering lets instance B accept logins from instance A's Keycloak over OIDC, so a member of one town's community can sign in to a neighbouring one. That is account federation. Nostr stage 3 is content federation. A regional network could use both: Keycloak brokering for "my account works there", and Nostr for "their events show up here".
+
+### 7.3 Suggested path
+
+1. If a community wants SSO, use option A. It's configuration, not code, and it doesn't conflict with anything in stages 1–2.
+2. Once members link Nostr keys, mirror the pubkey into a Keycloak attribute and claim so other apps in the realm can use it.
+3. Only build a Keycloak Nostr authenticator if members actually want to sign in with keys. A NIP-07 login inside Uluntu itself is simpler and doesn't need Keycloak.
+
 ## Sources
 
 - [NIP-29: Relay-based Groups](https://github.com/nostr-protocol/nips/blob/master/29.md)
@@ -104,3 +128,8 @@ Stages 1–2 are worth doing even if federation goes no further. They give membe
 - [Chachi: relay-based group chat client](https://nobsbitcoin.com/chachi-chat)
 - [Nostrord: NIP-29 group chat client](https://nostrord.com/blog/introducing-nostrord.html)
 - [NIP index](https://nips.nostr.com/)
+- [Supabase: custom OIDC providers (April 2026)](https://supabase.com/blog/custom-oauth-oidc-providers)
+- [Supabase Third-Party Auth: custom OIDC issuer](https://supabase.com/docs/guides/auth/third-party/custom-oidc)
+- [Keycloak releases (26.7)](https://versionlog.com/keycloak/26.7/)
+- [BTCPay Nostr login plugin: NIP-07 sign-in and its phishing caveat](https://github.com/pretyflaco/btcpay-nostr-login/pull/9)
+- [Keycast (NIP-46 signer service)](https://github.com/divinevideo/keycast)
