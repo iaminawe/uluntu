@@ -14,7 +14,6 @@ import { router } from './routes';
 import { createQueryClient, setupQueryPerformanceMonitoring } from './config/queryClient';
 import { setupGlobalErrorHandlers, checkRuntimeEnvironment } from './utils/globalErrorHandler';
 import './index.css';
-import { DebugUserRoles } from './components/DebugUserRoles';
 import { DynamicAppConfig } from './components/DynamicAppConfig';
 import { SettingsDebugger } from './components/SettingsDebugger';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -61,7 +60,6 @@ createRoot(document.getElementById('root')!).render(
                       }}
                     />
                     {/* Debug components */}
-                    {/* <DebugUserRoles /> */}
                     {/* <SettingsDebugger /> */}
                   </EnhancedThemeProvider>
                 </SettingsProvider>
