@@ -27,7 +27,7 @@ npm run build
 - **Never read `import.meta.env` dynamically** (`import.meta.env[key]`, spreading it, `Object.keys`). Vite then inlines every `VITE_*` var into the public bundle. This leaked the service-role key once. Read vars statically. Secrets never get a `VITE_` prefix; they live only in `api/` (server) code.
 - **The database has no single baseline migration.** Core tables exist only in `database/comprehensive_schema_and_data.sql` (a mid-2025 dump), and `supabase/migrations/` builds on top of it. Don't assume `supabase db reset` produces a working schema.
 - **Admin role names are inconsistent:** `useAuth` checks `super_admin`, while `usePermissions` and `useConditionalUI` check `superadmin`. Check both before changing role logic.
-- The `api/` routes run only on Vercel (`vercel dev` locally). Static or Docker deployments don't include them.
+- Production runs on Vercel (`vercel.json` holds the SPA rewrite and headers). The `api/` routes only exist there (`vercel dev` locally); the Docker/nginx self-hosting option doesn't include them.
 
 ## Repo hygiene
 

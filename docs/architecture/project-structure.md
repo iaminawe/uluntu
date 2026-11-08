@@ -1,144 +1,45 @@
-# Uluntu - Project Structure
+# Project structure
 
-## 📁 Root Directory Organization
+## Top level
 
-### Configuration Files
 ```
-.
-├── package.json            # Project dependencies and scripts
-├── package-lock.json       # Locked dependency versions
-├── tsconfig.json           # TypeScript configuration
-├── tsconfig.app.json       # App-specific TypeScript config
-├── tsconfig.node.json      # Node-specific TypeScript config
-├── vite.config.ts          # Vite bundler configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-├── postcss.config.js       # PostCSS configuration
-├── eslint.config.js        # ESLint configuration
-├── jest.config.ts          # Jest testing configuration
-├── .gitignore              # Git ignore patterns
-├── .npmrc                  # NPM configuration
-└── .env.example            # Environment variables template
+api/                 Vercel serverless functions (AI and email proxies; hold server-side keys)
+database/            Base schema snapshot and demo seed data (see database/README.md)
+docs/                This documentation site (MkDocs; nav in mkdocs.yml)
+public/              Static assets copied as-is into the build
+scripts/             Maintenance scripts (storage buckets, menus, bundle analysis)
+src/                 The React application
+supabase/            Migrations, local Supabase config
+tests/               Integration and end-to-end tests
+.github/             CI, Claude PR review, issue/PR templates, CODEOWNERS
+vercel.json          SPA rewrites and security headers for Vercel
+vite.config.ts       Build config (dev server on port 5555)
 ```
 
-### Documentation
-```
-├── README.md               # Project overview and setup
-├── CLAUDE.md               # AI development guidelines
-├── LICENSE                 # MIT License
-└── PROJECT_STRUCTURE.md    # This file
-```
+## `src/`
 
-### Deployment Files
-```
-├── docker-compose.yml              # Full-stack deployment
-├── docker-compose.coolify.yml      # Coolify deployment
-├── docker-compose.coolify-minimal.yml  # Minimal deployment
-├── Dockerfile                      # Production Dockerfile
-├── Dockerfile.minimal              # Minimal Dockerfile
-├── nginx.conf                      # Nginx configuration
-├── netlify.toml                    # Netlify deployment config
-└── index.html                      # Main HTML entry point
-```
-
-## 📂 Directory Structure
-
-### Source Code
 ```
 src/
-├── features/               # Feature-based modules (main architecture)
-├── shared/                 # Shared components and utilities
-├── pages/                  # Route page components
-├── hooks/                  # Global React hooks
-├── store/                  # Redux store configuration
-├── config/                 # Application configuration
-├── utils/                  # Global utilities
-├── styles/                 # Global styles
-├── types/                  # Global TypeScript types
-├── providers/              # React context providers
-├── services/               # External service integrations
-├── test-utils/             # Testing utilities
-├── tests/                  # Test files
-├── App.tsx                 # Main app component
-├── main.tsx                # Application entry point
-└── types.ts                # Root type definitions
+  main.tsx           Entry point; mounts providers and the router
+  routes/            Route table (lazy-loaded pages)
+  pages/             Route-level page components
+  features/          Feature modules — the main place new code goes
+    <feature>/
+      api/           Data access (Supabase queries) for the feature
+      hooks/         React Query hooks wrapping the api layer
+      components/    Feature UI
+      types/         Feature types
+  components/        Shared UI components
+  shared/            Shared layout, contexts and UI primitives
+  hooks/             Cross-feature hooks
+  lib/               Clients and helpers (Supabase client, AI client)
+  services/          Email and other integrations that call `api/`
+  store/             Redux store (UI state only)
+  types/             Shared TypeScript types
 ```
 
-### Documentation
-```
-docs/
-├── architecture/           # Architecture documentation
-├── development/            # Development guides
-├── api/                    # API documentation
-├── components/             # Component documentation
-├── migrations/             # Migration guides
-├── COOLIFY_DEPLOYMENT.md   # Coolify deployment guide
-├── COOLIFY_MINIMAL_DEPLOYMENT.md  # Minimal deployment guide
-└── DOCKER_TROUBLESHOOTING.md     # Docker troubleshooting
-```
+Feature modules include `admin`, `auth`, `companies`, `contact`, `dashboard`, `directory`, `events`, `gallery`, `groups`, `marketplace`, `menu`, `messaging`, `news`, `newsletter`, `onboarding`, `opportunities`, `pages`, `profile`, `resources` and `topics`.
 
-### Database
-```
-database/
-├── migrations/             # Database migrations
-├── seeds/                  # Seed data
-└── scripts/                # Database utilities
-```
+Some older code still lives outside `src/features/` (for example duplicate components in `src/components/` and query hooks in `src/hooks/`). Much of it is unused, and removing it is ongoing work. When in doubt, follow what the routes in `src/routes/index.tsx` actually import.
 
-### Supabase
-```
-supabase/
-├── migrations/             # Supabase migrations
-├── functions/              # Edge functions
-├── seed.sql                # Seed data
-└── config.toml             # Supabase configuration
-```
-
-### Build & Distribution
-```
-dist/                       # Production build output
-public/                     # Static assets
-```
-
-### Development Tools
-```
-scripts/                    # Build and utility scripts
-tests/                      # Additional test files
-sql-scripts/                # SQL utility scripts
-```
-
-### Hidden/Ignored Directories
-```
-.archive/                   # Archived files (gitignored)
-.claude/                    # Claude Code configuration
-.git/                       # Git repository
-node_modules/               # NPM dependencies
-```
-
-## 🗂️ Archived Files
-
-The following have been moved to `.archive/` for cleanliness:
-- Debug Docker files (docker-debug.sh, Dockerfile.debug)
-- Test scripts (test-docker-fix.sh)
-- Old reports (BUILD_VALIDATION_REPORT.md, IMPORT_FIXES_SUMMARY.md)
-- Duplicate config files (vite.config.performance.ts, jest.config.js)
-- TypeScript build info (.tsbuildinfo)
-- Test environment files (.env.test, .env.coolify-minimal)
-
-## 🔑 Key Files to Know
-
-1. **CLAUDE.md** - Essential development guidelines, MUST READ
-2. **src/features/** - All feature code lives here
-3. **docker-compose.yml** - Main deployment configuration
-4. **.env.example** - Environment variable reference
-5. **docs/** - All documentation
-
-## 📋 Clean Root Directory
-
-After cleanup, the root should only contain:
-- Essential config files
-- Documentation (README, LICENSE, etc.)
-- Deployment files (Docker, compose)
-- Package files (package.json, lock files)
-- Entry points (index.html)
-
-Everything else should be organized into appropriate directories.
+See [building a feature](../guides/feature-development.md) for how to add a new module.

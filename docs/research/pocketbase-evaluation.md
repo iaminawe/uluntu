@@ -66,7 +66,7 @@ There are two typing implementations. One uses broadcast (`useRealtimeChat.ts`).
 
 - One edge function: `supabase/functions/send-transactional-email/index.ts` (314 lines, Deno, Resend), invoked from `src/api/newsletter/transactional.ts:30`.
 - Vercel routes: `api/email.ts`, `api/ai.ts`, `api/ai/provider.ts`, `api/_lib/auth.ts` (~400 lines).
-- **Already in the repo:** `docker-compose.yml` and `docker-compose.coolify.yml` define a self-hosted Supabase stack. The images date from 2024: gotrue v2.151.0, realtime v2.28.32, storage-api v0.43.11, postgrest v12.0.1. There is no edge-runtime container.
+- **Already in the repo:** `docker-compose.yml` defines a self-hosted Supabase stack. The images date from 2024: gotrue v2.151.0, realtime v2.28.32, storage-api v0.43.11, postgrest v12.0.1. There is no edge-runtime container.
 
 ---
 
@@ -132,7 +132,7 @@ This is a backend rewrite plus a refactor of the client data layer, not a driver
 
 ### 3.4 Alternatives if the goal is easier self-hosting
 
-1. **Self-hosted Supabase on Coolify (recommended path).** Coolify lists Supabase as a one-click service. Uluntu already ships compose files for this (`docker-compose.yml`, `docker-compose.coolify.yml`), but their 2024-era images should be updated to match the official `supabase/docker` compose, and an edge-runtime container added (or `send-transactional-email` moved into `api/email.ts`). This keeps all 105 migrations, the RLS and RPCs, and the client code. The cost is ~8 containers and ~2–4 GB RAM. Write a "self-host in 15 minutes" guide in `docs/`.
+1. **Self-hosted Supabase on Coolify (recommended path).** Coolify lists Supabase as a one-click service. Uluntu already ships a compose file for this (`docker-compose.yml`), but its 2024-era images should be updated to match the official `supabase/docker` compose, and an edge-runtime container added (or `send-transactional-email` moved into `api/email.ts`). This keeps all 105 migrations, the RLS and RPCs, and the client code. The cost is ~8 containers and ~2–4 GB RAM. Write a "self-host in 15 minutes" guide in `docs/`.
 2. **Reduce Supabase-specific surface first.** Consolidate the 105 migrations into a single baseline schema, finish the `api/` layering, and pick one typing implementation. Each of these makes self-hosting easier and keeps a future backend swap possible.
 3. **Plain Postgres plus PostgREST plus a separate auth service** (e.g. Better Auth) is possible but reproduces most of Supabase by hand. Only consider it if Supabase's stack proves too heavy.
 

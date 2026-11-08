@@ -193,8 +193,6 @@ nav:
       - Theming:
           - Themes: features/theming/README.md
           - Fonts: features/theming/fonts.md
-  - Deployment:
-      - Overview: deployment/README.md
-      - Coolify: deployment/coolify.md
+  - Deployment: deployment/README.md
   - Research:
       - PocketBase evaluation: research/pocketbase-evaluation.md

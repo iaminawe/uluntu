@@ -50,12 +50,7 @@ Setting up the database takes a few more steps. **[docs/guides/getting-started.m
 
 ## Running your own community
 
-Uluntu can be deployed in two ways:
-
-- **Vercel**: serves the app and the `api/` functions together, so everything works out of the box.
-- **Docker, nginx or Coolify**: serves the static app. The AI assistant and outgoing email need the `api/` routes hosted separately.
-
-Both need a Supabase project, hosted or self-hosted. See **[docs/deployment](docs/deployment/README.md)** for environment variables and a post-deploy checklist.
+The recommended setup is **Vercel** plus a **Supabase** project, which is how uluntu.io runs. Vercel serves the app and the `api/` functions (AI assistant and email) together. For running on your own server, `docker-compose.yml` builds the app with nginx and can start a self-hosted Supabase stack. See **[docs/deployment](docs/deployment/README.md)** for environment variables, the Docker option and a post-deploy checklist.
 
 Community-specific details such as the site name, contact information, menus and theme are set from the admin dashboard, not in code.
 

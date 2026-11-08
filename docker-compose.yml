@@ -5,7 +5,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
       args:
         - NODE_ENV=production
         - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
@@ -19,7 +19,7 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - uluntu
     healthcheck:

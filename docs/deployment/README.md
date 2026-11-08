@@ -1,50 +1,59 @@
 # Deployment
 
-Uluntu is two pieces:
+The recommended way to run Uluntu is **[Vercel](https://vercel.com)** with **Supabase** for the database, auth, storage and realtime. This is how [uluntu.io](https://uluntu.io) runs. You can also [self-host with Docker](#self-hosting-with-docker).
 
-1. **A static single-page app** (Vite + React) built into `dist/`.
-2. **A few server-side API routes** in `api/` (Vercel serverless functions) that hold secrets the browser must never see:
+A Vercel deployment serves two things from the same domain:
+
+1. **The single-page app**, built by Vite into `dist/`.
+2. **The serverless functions in `api/`**, which hold the secrets the browser must never see:
     - `/api/ai` and `/api/ai/provider` proxy AI requests (Anthropic or OpenAI) for the editor's writing assistant.
     - `/api/email` sends email through Resend.
 
-Both talk to a Supabase project for the database, auth, storage and realtime.
+`vercel.json` sends every non-`/api` route to `index.html`, so deep links work, and sets the security headers.
 
-## Option A: Vercel (simplest)
+## Set up a Vercel project
 
-Deploying the repository to Vercel serves the SPA and the `api/` functions from the same origin, so the app's relative `/api/...` calls work with no extra setup.
+1. Import the repository in Vercel. The Vite framework preset is detected automatically (build command `npm run build`, output directory `dist`).
+2. Add the environment variables below for Production and Preview.
+3. Deploy, then add your domain under **Settings → Domains**.
 
-Set these environment variables in the Vercel project:
-
-| Variable | Where it's used | Secret? |
-|----------|-----------------|---------|
+| Variable | Used by | Secret? |
+|----------|---------|---------|
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Browser | No (public by design) |
 | `VITE_APP_URL`, `VITE_FROM_EMAIL`, `VITE_FROM_NAME` | Browser | No |
-| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (or `SUPABASE_SERVICE_ROLE_KEY`) | `api/` auth checks | **Yes** |
-| `RESEND_API_KEY`, `EMAIL_FROM`, `SUPPORT_EMAIL` | `api/email` | **Yes** (key) |
+| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | `api/` (auth and role checks) | **Yes** |
+| `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_FROM_NAME`, `SUPPORT_EMAIL` | `api/email` | **Yes** (key) |
 | `AI_PROVIDER`, `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`, `AI_ANTHROPIC_MODEL` / `AI_OPENAI_MODEL` | `api/ai` | **Yes** (keys) |
 
-See `.env.example` for the full list.
+`VITE_*` variables are read at **build time** and inlined into the JavaScript bundle, so never give a secret a `VITE_` prefix. See `.env.example` for the full list.
 
-## Option B: Docker, nginx or Coolify (self-hosted)
+Pull requests get preview deployments automatically. Only `main` deploys to production.
 
-The `Dockerfile` builds the SPA and serves it with nginx (`nginx.conf` handles SPA routing and security headers). This works on any container host, including [Coolify](coolify.md).
+## Self-hosting with Docker
 
-The `api/` routes are **not** included in the container. Without them, the AI assistant and outgoing email are unavailable. Everything else works. To keep them, either:
+For running Uluntu on your own server instead of Vercel, `docker-compose.yml` builds the app with the `Dockerfile` and serves it with nginx (`nginx.conf` handles SPA routing and security headers). It also starts a self-hosted Supabase stack.
 
-- deploy the repository to Vercel as well and proxy `/api/` to it from nginx, or
-- port the handlers in `api/` to a small Node server alongside the container.
+```bash
+cp .env.example .env    # fill in the browser values and the docker-compose section
+docker compose up -d --build
+```
 
-Only `VITE_*` variables are needed at **build time** for the static app, because Vite inlines them into the bundle.
+Things to know:
+
+- The `api/` functions are **not** included, so the AI writing assistant and outgoing email don't work. To keep them, deploy the repository to Vercel as well and proxy `/api/` to it from nginx, or port the handlers in `api/` to a small Node server.
+- `VITE_*` variables are build arguments: rebuild the image after changing them.
+- The Supabase image versions in `docker-compose.yml` are from 2024. Update them (compare with Supabase's [self-hosting guide](https://supabase.com/docs/guides/self-hosting/docker)) before relying on the stack in production, or point the app at a hosted Supabase project and run only the `frontend` service.
 
 ## Supabase
 
-- Hosted Supabase works out of the box.
-- `docker-compose.yml` and `docker-compose.coolify.yml` contain a self-hosted Supabase stack. The image versions there are from 2024 and need updating before production use. Coolify's one-click Supabase service is a maintained alternative.
+Use a hosted Supabase project (the free tier is enough to start). Apply the schema and migrations as described in [getting started](../guides/getting-started.md#3-set-up-the-database), and use the project's new API keys (`sb_publishable_…` in the browser, `sb_secret_…` on the server).
 
 ## After deploying
 
+- Visit a deep link such as `/events` directly and refresh it (checks the SPA rewrite).
 - Sign up, sign in and sign out.
 - Upload an image (checks storage buckets and policies).
 - Open a conversation in two browsers (checks realtime).
+- Send a test newsletter as an admin (checks `api/email` and `SUPABASE_SECRET_KEY`).
 - Check the browser console and network tab for failing requests.
-- Confirm no secret keys are in the bundle: `grep -rl "service_role\|sb_secret_" dist/` should print nothing.
+- Confirm no secrets are in the bundle: `grep -rlE --exclude='*.map' "service_role|sb_secret_" dist/` should print nothing.
