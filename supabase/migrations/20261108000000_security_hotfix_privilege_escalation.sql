@@ -26,8 +26,11 @@ REVOKE ALL ON FUNCTION public.is_site_admin() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_site_admin() TO authenticated;
 
 -- ---------------------------------------------------------------------------
--- 1. group_members: UPDATE was USING (true) WITH CHECK (true), and INSERT
---    didn't constrain role, so any member could make themselves a group admin.
+-- 1. group_members: earlier migrations created an UPDATE policy with
+--    USING (true) and an INSERT policy that didn't constrain role. Production
+--    (checked 2026-11-08) only has a read policy, so the safe end state is
+--    read-only for clients. Membership changes go through SECURITY DEFINER
+--    functions (join_group, change_member_role, create_group_with_admin).
 -- ---------------------------------------------------------------------------
 DO $$
 BEGIN
@@ -38,7 +41,7 @@ BEGIN
 END $$;
 
 -- Permissive policies are OR'd together, so a leftover policy under any other
--- name would bypass these. Drop every policy on the table and recreate the set.
+-- name would bypass this. Drop every policy on the table and recreate the set.
 DO $$
 DECLARE
   pol record;
@@ -53,38 +56,11 @@ END $$;
 
 ALTER TABLE public.group_members ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "group_members_select_all"
+CREATE POLICY "group_members_read_all"
   ON public.group_members
   FOR SELECT
   USING (true);
-
-CREATE POLICY "group_members_delete_own"
-  ON public.group_members
-  FOR DELETE
-  TO authenticated
-  USING (
-    member_id IN (SELECT id FROM public.members WHERE user_id = auth.uid())
-    OR public.is_group_admin(group_id)
-    OR public.is_site_admin()
-  );
-
-CREATE POLICY "group_members_update_admin"
-  ON public.group_members
-  FOR UPDATE
-  TO authenticated
-  USING (public.is_group_admin(group_id) OR public.is_site_admin())
-  WITH CHECK (public.is_group_admin(group_id) OR public.is_site_admin());
-
-CREATE POLICY "group_members_insert_authenticated"
-  ON public.group_members
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    member_id IN (SELECT id FROM public.members WHERE user_id = auth.uid())
-    AND role = 'member'
-  );
--- Group creators still become admins through the SECURITY DEFINER
--- handle_group_creation() trigger and create_group_with_admin(), which bypass RLS.
+-- No INSERT/UPDATE/DELETE policies: clients can't write group_members directly.
 
 -- ---------------------------------------------------------------------------
 -- 2. join_group: callers could pass p_role => 'admin' and p_user_id => anyone.
