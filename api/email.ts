@@ -14,7 +14,14 @@
 //    (e.g. newsletter confirmation), with the default `from`.
 //  - Everything else is rejected.
 import { Resend } from 'resend';
-import { getUser, secretRestSelect, parseBody, type ApiReq, type ApiRes } from './_lib/auth.js';
+import {
+  getUser,
+  isSiteAdmin,
+  secretRestSelect,
+  parseBody,
+  type ApiReq,
+  type ApiRes,
+} from './_lib/auth.js';
 
 const SUPABASE_CONFIGURED = Boolean(
   (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) &&
@@ -28,7 +35,6 @@ const SUPPORT_EMAIL = (process.env.SUPPORT_EMAIL || DEFAULT_FROM).toLowerCase();
 
 const SUBMISSION_MAX_AGE_MS = 15 * 60 * 1000;
 const MAX_HTML_BYTES = 200_000;
-const ADMIN_ROLES = ['admin', 'superadmin', 'super_admin'];
 
 interface EmailPayload {
   from?: string;
@@ -60,14 +66,6 @@ function safeFrom(requested: string | undefined): string {
 // Returns null when the lookup itself failed (for example a missing or revoked
 // secret key), so callers can report a server error instead of silently
 // treating an admin as an ordinary member.
-async function isSiteAdmin(userId: string): Promise<boolean | null> {
-  const rows = await secretRestSelect(
-    `user_roles?user_id=eq.${encodeURIComponent(userId)}&role=in.(${ADMIN_ROLES.join(',')})&select=role&limit=1`
-  );
-  if (!Array.isArray(rows)) return null;
-  return rows.length > 0;
-}
-
 function acknowledgement(to: string) {
   return {
     from: DEFAULT_FROM,

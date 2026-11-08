@@ -159,6 +159,7 @@ nav:
   - Features:
       - Overview: features/README.md
       - Events: features/events/README.md
+      - Nostr: features/nostr.md
       - Groups:
           - Overview: features/groups/README.md
           - API: features/groups/API.md

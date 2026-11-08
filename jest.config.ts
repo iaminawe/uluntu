@@ -55,7 +55,7 @@ const config: Config.InitialOptions = {
   
   // Transform ignore patterns
   transformIgnorePatterns: [
-    'node_modules/(?!(@supabase|@reduxjs|@testing-library|@tanstack|uuid|browser-image-compression)/)'
+    'node_modules/(?!(@supabase|@reduxjs|@testing-library|@tanstack|uuid|browser-image-compression|nostr-tools|@noble|@scure)/)'
   ],
   
   // Test match patterns

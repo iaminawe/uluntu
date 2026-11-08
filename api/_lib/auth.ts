@@ -75,6 +75,49 @@ export async function secretRestSelect(path: string): Promise<unknown[] | null> 
   }
 }
 
+/**
+ * Server-side privileged write against PostgREST using the secret key.
+ * Returns the response status, or null if the key isn't configured or the
+ * request failed.
+ */
+export async function secretRestWrite(
+  method: 'POST' | 'PATCH' | 'DELETE',
+  path: string,
+  body?: unknown,
+  prefer = 'return=minimal'
+): Promise<number | null> {
+  if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) return null;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      method,
+      headers: {
+        apikey: SUPABASE_SECRET_KEY,
+        Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: prefer,
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    return res.status;
+  } catch {
+    return null;
+  }
+}
+
+const ADMIN_ROLES = ['admin', 'superadmin', 'super_admin'];
+
+/**
+ * Is the user a site admin? Returns null when the lookup itself failed, so
+ * callers can fail closed instead of treating an admin as a member.
+ */
+export async function isSiteAdmin(userId: string): Promise<boolean | null> {
+  const rows = await secretRestSelect(
+    `user_roles?user_id=eq.${encodeURIComponent(userId)}&role=in.(${ADMIN_ROLES.join(',')})&select=role&limit=1`
+  );
+  if (!Array.isArray(rows)) return null;
+  return rows.length > 0;
+}
+
 /** Parse a JSON body whether Vercel pre-parsed it or handed us a string. */
 export function parseBody<T>(req: ApiReq): T | null {
   const b = req.body;
