@@ -26,8 +26,6 @@ const ContactPage = lazy(() => import('../pages/ContactPage'));
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
 const PartnersPage = lazy(() => import('../pages/PartnersPage'));
-const TestPage = lazy(() => import('../pages/TestPage'));
-const DebugPage = lazy(() => import('../pages/DebugPage'));
 const TestFontsPage = lazy(() => import('../pages/TestFontsPage'));
 const TestBlockEditor = lazy(() => import('../pages/TestBlockEditor'));
 const AIEditorDemo = lazy(() => import('../pages/AIEditorDemo'));
@@ -35,16 +33,10 @@ const TestSimpleEditor = lazy(() => import('../pages/TestSimpleEditor'));
 const TestNoEditor = lazy(() => import('../pages/TestNoEditor'));
 const WorkingAIEditor = lazy(() => import('../pages/WorkingAIEditor'));
 const IsolatedAIEditor = lazy(() => import('../pages/IsolatedAIEditor'));
-const FixedAIEditor = lazy(() => import('../pages/FixedAIEditor'));
 const EditorFeatureDemo = lazy(() => import('../pages/EditorFeatureDemo'));
 const DynamicPage = lazy(() => import('../pages/DynamicPage'));
 const DynamicPageBlockNote = lazy(() => import('../pages/DynamicPageBlockNote'));
-const CheckAdminStatus = lazy(() => import('../pages/CheckAdminStatus'));
-const SimplePageTest = lazy(() => import('../pages/SimplePageTest'));
-const DebugAdminAccess = lazy(() => import('../pages/debug/DebugAdminAccess'));
-const DirectAdminPages = lazy(() => import('../pages/admin/DirectAdminPages'));
 const AdvancedPageEdit = lazy(() => import('../pages/admin/AdvancedPageEdit'));
-const FeatureTestPage = lazy(() => import('../pages/debug/FeatureTestPage'));
 
 // Lazy load page builder components
 const EditablePageDisplay = lazy(() => import('../features/pages/components/EditablePageDisplay'));
@@ -88,8 +80,6 @@ const CurrentUserProfilePage = lazy(() => import('../pages/CurrentUserProfilePag
 const AcceptInvitationPage = lazy(() => import('../pages/AcceptInvitationPage'));
 const UserSettingsPage = lazy(() => import('../pages/UserSettingsPage'));
 const NewsletterConfirmPage = lazy(() => import('../pages/NewsletterConfirmPage'));
-const AdminSetupPage = lazy(() => import('../pages/AdminSetupPage'));
-const UnifiedUsersDebug = lazy(() => import('../pages/admin/UnifiedUsersDebug'));
 const SimpleUnifiedUsersPage = lazy(() => import('../pages/admin/SimpleUnifiedUsersPage'));
 
 // Lazy load admin pages
@@ -114,7 +104,6 @@ const AdminTopicsPage = lazy(() => import('../pages/admin/entities/TopicsPage'))
 const AdminPagesPage = lazy(() => import('../pages/admin/entities/PagesPage'));
 const PagesAdminTable = lazy(() => import('../pages/admin/PagesAdminTable'));
 const PagesManagement = lazy(() => import('../pages/admin/PagesManagement'));
-const QuickPageTest = lazy(() => import('../pages/admin/QuickPageTest'));
 const AuditPage = lazy(() => import('../pages/admin/AuditPage'));
 const ContactInboxPage = lazy(() => import('../pages/admin/ContactInboxPage'));
 const ContactInboxDetailPage = lazy(() => import('../pages/admin/ContactInboxDetailPage'));
@@ -135,8 +124,6 @@ const FeaturesPage = lazy(() => import('../pages/admin/FeaturesPage'));
 const MenuManagementPage = lazy(() => import('../pages/admin/MenuManagementPage'));
 const EnhancedMenuManagementPage = lazy(() => import('../pages/admin/EnhancedMenuManagementPage'));
 const MenuToggleDemo = lazy(() => import('../features/menu/components/MenuToggleDemo'));
-const MenuManagementDebug = lazy(() => import('../pages/admin/MenuManagementDebug'));
-const DebugRoles = lazy(() => import('../pages/admin/DebugRoles'));
 
 // Lazy load topic pages
 const TopicsIndexPage = lazy(() => import('../pages/TopicsIndexPage'));
@@ -169,7 +156,6 @@ const TopicDetailPage = lazy(() => import('../pages/TopicDetailPage'));
 
 // Lazy load messaging pages
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
-const TestConversations = lazy(() => import('../components/TestConversations'));
 
 // Lazy load dashboard pages
 const UserDashboard = lazy(() => import('../features/dashboard/components/UserDashboard'));
@@ -187,8 +173,6 @@ export const router = createBrowserRouter([
       { path: 'privacy', element: withSuspense(PrivacyPage) },
       { path: 'terms', element: withSuspense(TermsPage) },
       { path: 'partners', element: withSuspense(PartnersPage) },
-      { path: 'test', element: withSuspense(TestPage) },
-      { path: 'debug', element: withSuspense(DebugPage) },
       { path: 'test-fonts', element: withSuspense(TestFontsPage) },
       { path: 'test-editor', element: withSuspense(TestBlockEditor) },
       { path: 'ai-editor', element: withSuspense(WorkingAIEditor) },
@@ -196,14 +180,8 @@ export const router = createBrowserRouter([
       { path: 'test-no-editor', element: withSuspense(TestNoEditor) },
       { path: 'working-ai', element: withSuspense(WorkingAIEditor) },
       { path: 'isolated-ai', element: withSuspense(IsolatedAIEditor) },
-      { path: 'fixed-ai', element: withSuspense(FixedAIEditor) },
       { path: 'editor-demo', element: withSuspense(EditorFeatureDemo) },
-      { path: 'check-admin', element: withSuspense(CheckAdminStatus) },
-      { path: 'simple-page-test', element: withSuspense(SimplePageTest) },
-      { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
-      { path: 'direct-admin-pages', element: withSuspense(DirectAdminPages) },
       { path: 'pages/:id/advanced', element: withSuspense(AdvancedPageEdit) },
-      { path: 'feature-test', element: withSuspense(FeatureTestPage) },
       
       // Dynamic pages (must come after specific routes)
       // Using BlockNote editor for rich text editing experience
@@ -490,10 +468,6 @@ export const router = createBrowserRouter([
         path: 'newsletter/confirm', 
         element: withSuspense(NewsletterConfirmPage)
       },
-      {
-        path: 'admin-setup',
-        element: <ProtectedRoute>{withSuspense(AdminSetupPage)}</ProtectedRoute>
-      },
       
       // Gallery routes
       { 
@@ -535,10 +509,6 @@ export const router = createBrowserRouter([
             <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute>
           </FeatureGate>
         )
-      },
-      {
-        path: 'test-conversations',
-        element: withSuspense(TestConversations)
       },
       
       // Topics routes
@@ -595,14 +565,6 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'users-debug',
-        element: (
-          <FeatureGate feature="user_management" fallback={<NotFoundError />}>
-            {withSuspense(UnifiedUsersDebug)}
-          </FeatureGate>
-        )
-      },
-      {
         path: 'users-legacy',
         element: (
           <FeatureGate feature="user_management" fallback={<NotFoundError />}>
@@ -622,7 +584,6 @@ export const router = createBrowserRouter([
       { path: 'menu-management', element: withSuspense(MenuManagementPage) },
       { path: 'menu-management-enhanced', element: withSuspense(EnhancedMenuManagementPage) },
       { path: 'menu-toggle-demo', element: withSuspense(MenuToggleDemo) },
-      { path: 'menu-debug', element: withSuspense(MenuManagementDebug) },
       {
         path: 'moderation',
         element: (
@@ -655,7 +616,6 @@ export const router = createBrowserRouter([
           </FeatureGate>
         )
       },
-      { path: 'debug-roles', element: withSuspense(DebugRoles) },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
       {
@@ -684,10 +644,8 @@ export const router = createBrowserRouter([
       { path: 'entities/topics', element: withSuspense(AdminTopicsPage) },
       { path: 'entities/pages', element: withSuspense(AdminPagesPage) },
       { path: 'pages', element: withSuspense(PagesAdminTable) },
-      { path: 'pages/test', element: withSuspense(QuickPageTest) },
       { path: 'pages/new', element: withSuspense(EnhancedPageEditor) },
       { path: 'pages/:id/edit', element: withSuspense(EnhancedPageEditor) },
-      { path: 'debug-admin', element: withSuspense(DebugAdminAccess) },
       {
         path: 'newsletter',
         element: (
