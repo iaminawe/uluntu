@@ -59,7 +59,7 @@ export default function DataSections() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Upcoming Events</h2>
-              <p className="text-xl text-slate-600 dark:text-slate-400">Don't miss these upcoming tech events</p>
+              <p className="text-xl text-slate-600 dark:text-slate-400">Don't miss these upcoming community events</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,7 +106,7 @@ export default function DataSections() {
                   id={group.id}
                   title={group.name}
                   excerpt={group.description || ''}
-                  image={group.heroImage || group.coverImage || '/placeholder-group.png'}
+                  image={group.heroImage || group.coverImage || '/placeholder-image.png'}
                   category="Community Group"
                   readTime={`${group.memberCount || 0} members`}
                   link={getGroupUrl(group)}

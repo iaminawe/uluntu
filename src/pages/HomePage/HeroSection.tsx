@@ -31,9 +31,9 @@ const HeroSection: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">Connecting Kootenay Tech Professionals</h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">Connecting the Uluntu Community</h1>
           <p className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
-            Join our growing tech community to connect, collaborate, and grow together.
+            Join our growing community to connect, collaborate, and grow together.
           </p>
           {actionButtons}
         </div>

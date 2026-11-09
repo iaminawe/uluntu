@@ -8,8 +8,7 @@ const WelcomeStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Welcome to the Uluntu Community! 🎉</h2>
         <p className="text-lg text-slate-600 dark:text-slate-400">
-          We're excited to have you join our vibrant community of tech professionals, entrepreneurs, and innovators in
-          the Kootenay region.
+          We're excited to have you join our vibrant community of neighbours, makers, and organizers on Uluntu.
         </p>
       </div>
 
@@ -73,7 +72,7 @@ const WelcomeStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <Users className="w-8 h-8 text-orange-500 mb-2" />
           <h4 className="font-medium text-slate-800 dark:text-slate-200 mb-1">Connect & Network</h4>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Meet fellow tech professionals and build meaningful connections
+            Meet fellow members and build meaningful connections
           </p>
         </div>
         <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">

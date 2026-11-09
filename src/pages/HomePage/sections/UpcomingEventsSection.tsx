@@ -24,7 +24,7 @@ export default function UpcomingEventsSection() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Upcoming Events</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
-            Join the most exciting tech events happening in the Kootenays
+            Join the latest events happening in the Uluntu community
           </p>
         </div>
 

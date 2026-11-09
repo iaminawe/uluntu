@@ -70,7 +70,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ title = 'About the Collecti
     title: 'Location',
     address: ['Nelson Innovation Centre', 'Box 752 - 560 Baker Street', 'Nelson, BC V1L 4E5'],
     hostedBy: {
-      name: 'Kootenay Association for Science & Technology (KAST)',
+      name: 'Uluntu Association for Science & Technology (KAST)',
       url: '#',
     },
     mapEmbedUrl:

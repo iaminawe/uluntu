@@ -6,7 +6,7 @@ const PageHeader: React.FC = () => {
   return (
     <SharedPageHeader
       title="Community Directory"
-      subtitle="Connect with tech professionals in the Kootenay region"
+      subtitle="Connect with members of the Uluntu community"
       isHero={true}
       backgroundImage={MOUNTAIN_BACKGROUNDS.directory}
     />

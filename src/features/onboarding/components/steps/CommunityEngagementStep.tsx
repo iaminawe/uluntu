@@ -80,7 +80,7 @@ const mockGroups = [
   },
   {
     id: '2',
-    name: 'Kootenay Entrepreneurs',
+    name: 'Uluntu Entrepreneurs',
     description: 'Supporting local startups and business owners',
     memberCount: 89,
     category: 'business',

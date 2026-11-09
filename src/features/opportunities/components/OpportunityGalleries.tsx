@@ -39,9 +39,9 @@ export const OpportunityGalleries: React.FC<OpportunityGalleriesProps> = ({
   const getCoverImageUrl = (gallery: any) => {
     if (gallery?.cover_photo_id) {
       // Use the storage_path from the database
-      return gallery.storage_path || '/placeholder-gallery.jpg';
+      return gallery.storage_path || '/placeholder-image.png';
     }
-    return '/placeholder-gallery.jpg';
+    return '/placeholder-image.png';
   };
 
   if (loading) {

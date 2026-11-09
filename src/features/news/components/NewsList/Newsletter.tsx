@@ -25,7 +25,7 @@ const Newsletter = () => {
         </div>
         <h2 className="text-3xl font-bold mb-4">Stay Connected</h2>
         <p className="text-white/80 mb-6">
-          Get the latest updates from the Kootenay tech community, including events, job opportunities, and news.
+          Get the latest updates from the Uluntu community, including events, opportunities, and news.
         </p>
         {subscribed ? (
           <div className="bg-white/10 rounded-lg p-4">
