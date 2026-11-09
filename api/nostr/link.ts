@@ -1,7 +1,9 @@
 // Link or unlink a member's Nostr key (NIP-05 identity, stage 1).
 //
+// GET: returns the URL the member must sign (built from SITE_URL, so the
+//   check doesn't rely on forwarded host headers).
 // POST { event }: the member signs a kind 27235 event in their browser
-// extension (NIP-07) naming this URL and their account. We verify it and store
+// extension (NIP-07) naming that URL and their account. We verify it and store
 // the pubkey, which makes <slug>@<domain> resolve via /.well-known/nostr.json.
 // DELETE: unlink.
 import {
@@ -13,11 +15,16 @@ import {
   type ApiRes,
 } from '../_lib/auth.js';
 import { verifyLinkEvent } from '../_lib/nostr.js';
-import { requestOrigin, siteUrl } from '../_lib/nostr-config.js';
+import { siteUrl } from '../_lib/nostr-config.js';
 
 export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
-  if (req.method !== 'POST' && req.method !== 'DELETE') {
+  if (req.method !== 'GET' && req.method !== 'POST' && req.method !== 'DELETE') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+  const linkUrl = `${siteUrl(req)}/api/nostr/link`;
+  if (req.method === 'GET') {
+    res.status(200).json({ url: linkUrl });
     return;
   }
 
@@ -53,7 +60,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
 
   const body = parseBody<{ event?: unknown }>(req);
   const result = verifyLinkEvent(body?.event, {
-    url: `${requestOrigin(req)}/api/nostr/link`,
+    url: linkUrl,
     userId: user.id,
     now: Math.floor(Date.now() / 1000),
   });
@@ -68,6 +75,12 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     return;
   }
   if (status === null || status >= 300) {
+    res.status(502).json({ error: 'Could not link key' });
+    return;
+  }
+  // The column is guarded by a trigger; confirm the write actually stuck.
+  const saved = await secretRestSelect(`${memberPath}&select=nostr_pubkey`);
+  if (!Array.isArray(saved) || (saved[0] as { nostr_pubkey?: string })?.nostr_pubkey !== result.pubkey) {
     res.status(502).json({ error: 'Could not link key' });
     return;
   }

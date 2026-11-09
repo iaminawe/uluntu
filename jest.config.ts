@@ -29,7 +29,10 @@ const config: Config.InitialOptions = {
     '\\.(gif|ttf|eot|svg|png|jpg|jpeg|webp)$': '<rootDir>/src/__mocks__/fileMock.js',
     
     // Supabase mocking
-    '^@/lib/supabase$': '<rootDir>/src/__mocks__/lib/supabase.ts'
+    '^@/lib/supabase$': '<rootDir>/src/__mocks__/lib/supabase.ts',
+
+    // api/ uses Node ESM-style relative imports ending in .js
+    '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   
   // Transform configuration

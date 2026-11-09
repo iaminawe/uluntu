@@ -46,7 +46,7 @@ async function accessToken(): Promise<string> {
   return session.access_token;
 }
 
-async function callLinkEndpoint(method: 'POST' | 'DELETE', body?: unknown) {
+async function callLinkEndpoint(method: 'GET' | 'POST' | 'DELETE', body?: unknown) {
   const res = await fetch('/api/nostr/link', {
     method,
     headers: {
@@ -55,7 +55,11 @@ async function callLinkEndpoint(method: 'POST' | 'DELETE', body?: unknown) {
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  const json = (await res.json().catch(() => ({}))) as { error?: string; pubkey?: string | null };
+  const json = (await res.json().catch(() => ({}))) as {
+    error?: string;
+    pubkey?: string | null;
+    url?: string;
+  };
   if (!res.ok) throw new Error(json.error || 'Request failed');
   return json;
 }
@@ -68,11 +72,14 @@ function linkMessage(userId: string): string {
 /** Asks the browser signer to prove key ownership, then links the key. */
 export async function linkNostrKey(userId: string): Promise<void> {
   if (!window.nostr) throw new Error('No Nostr signer extension found');
+  // The server says which URL to sign (its canonical SITE_URL).
+  const { url } = await callLinkEndpoint('GET');
+  if (!url) throw new Error('Could not start linking');
   const event = await window.nostr.signEvent({
     kind: 27235,
     created_at: Math.floor(Date.now() / 1000),
     tags: [
-      ['u', `${window.location.origin}/api/nostr/link`],
+      ['u', url],
       ['method', 'POST'],
     ],
     content: linkMessage(userId),

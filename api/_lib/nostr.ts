@@ -303,6 +303,112 @@ export function contentHash(t: EventTemplate): string {
 }
 
 // ---------------------------------------------------------------------------
+// Publishing plan
+// ---------------------------------------------------------------------------
+
+export interface SourceRows {
+  events: EventRow[];
+  news: NewsRow[];
+  opportunities: OpportunityRow[];
+}
+
+/** A row of public.nostr_publications. */
+export interface Publication {
+  source_table: string;
+  source_id: string;
+  kind: number;
+  d_tag: string;
+  event_id: string;
+  content_hash: string;
+  deleted_at: string | null;
+}
+
+export interface SourceTemplate {
+  source_table: string;
+  source_id: string;
+  title?: string;
+  d_tag: string;
+  template: EventTemplate;
+}
+
+export type PlanAction = 'create' | 'update' | 'unchanged' | 'delete';
+
+export interface PlannedItem extends SourceTemplate {
+  action: PlanAction;
+  hash: string;
+}
+
+/**
+ * Everything that should currently be on relays: the instance profile plus
+ * every published row. News with a future publish_date waits until that day.
+ */
+export function buildTemplates(
+  rows: SourceRows,
+  profile: InstanceProfile,
+  ctx: BuildContext,
+  today: string
+): SourceTemplate[] {
+  const out: SourceTemplate[] = [
+    { source_table: 'profile', source_id: 'instance', d_tag: '', template: profileTemplate(profile, ctx) },
+  ];
+  for (const row of rows.events) {
+    const template = eventTemplate(row, ctx);
+    if (template) out.push({ source_table: 'events', source_id: row.id, title: row.title, d_tag: row.id, template });
+  }
+  for (const row of rows.news) {
+    if (row.publish_date && row.publish_date.slice(0, 10) > today) continue;
+    out.push({ source_table: 'news', source_id: row.id, title: row.title, d_tag: row.id, template: newsTemplate(row, ctx) });
+  }
+  for (const row of rows.opportunities) {
+    out.push({
+      source_table: 'opportunities',
+      source_id: row.id,
+      title: row.title,
+      d_tag: row.id,
+      template: opportunityTemplate(row, ctx),
+    });
+  }
+  return out;
+}
+
+/**
+ * Compares what should be public with what was published before. Deletions
+ * come first so a per-run cap never delays a takedown behind new posts.
+ */
+export function planActions(
+  current: SourceTemplate[],
+  publications: Publication[],
+  pubkey: string
+): PlannedItem[] {
+  const existing = new Map(publications.map((p) => [`${p.source_table}:${p.source_id}`, p]));
+  const upserts: PlannedItem[] = current.map((c) => {
+    const key = `${c.source_table}:${c.source_id}`;
+    const hash = contentHash(c.template);
+    const prev = existing.get(key);
+    existing.delete(key);
+    const action: PlanAction =
+      !prev || prev.deleted_at ? 'create' : prev.content_hash === hash ? 'unchanged' : 'update';
+    return { ...c, hash, action };
+  });
+
+  // Anything published before that is no longer public.
+  const deletions: PlannedItem[] = [];
+  for (const prev of existing.values()) {
+    if (prev.deleted_at || prev.source_table === 'profile') continue;
+    const template = deletionTemplate(prev.kind, pubkey, prev.d_tag, prev.event_id);
+    deletions.push({
+      source_table: prev.source_table,
+      source_id: prev.source_id,
+      d_tag: prev.d_tag,
+      template,
+      hash: contentHash(template),
+      action: 'delete',
+    });
+  }
+  return [...deletions, ...upserts];
+}
+
+// ---------------------------------------------------------------------------
 // Linking a member's key
 // ---------------------------------------------------------------------------
 

@@ -48,7 +48,10 @@ function headerValue(v: string | string[] | undefined): string {
   return Array.isArray(v) ? v[0] || '' : v || '';
 }
 
-/** Origin of the current request, e.g. https://uluntu.io. */
+/**
+ * Origin of the current request, e.g. https://uluntu.io. Derived from
+ * forwarded headers, which Vercel sets; prefer siteUrl() where it matters.
+ */
 export function requestOrigin(req: ApiReq): string {
   const host = headerValue(req.headers['x-forwarded-host']) || headerValue(req.headers['host']);
   const proto = headerValue(req.headers['x-forwarded-proto']) || 'https';

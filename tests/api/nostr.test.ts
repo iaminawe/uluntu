@@ -1,7 +1,9 @@
 import { finalizeEvent, generateSecretKey, getPublicKey, verifyEvent } from 'nostr-tools/pure';
 import {
   KIND,
+  buildTemplates,
   contentHash,
+  planActions,
   deletionTemplate,
   eventTemplate,
   geohash,
@@ -211,5 +213,76 @@ describe('isNip05Name', () => {
     expect(isNip05Name('Jane')).toBe(false);
     expect(isNip05Name('a b')).toBe(false);
     expect(isNip05Name('')).toBe(false);
+  });
+});
+
+describe('buildTemplates and planActions', () => {
+  const pubkey = 'ab'.repeat(32);
+  const rows = {
+    events: [{ id: 'e1', title: 'Meetup', date: '2026-11-20T18:00:00Z' }, { id: 'e2', title: 'Bad', date: 'nope' }],
+    news: [
+      { id: 'n1', title: 'Out now', publish_date: '2026-11-01' },
+      { id: 'n2', title: 'Later', publish_date: '2026-12-01' },
+    ],
+    opportunities: [{ id: 'o1', title: 'Job' }],
+  };
+  const current = buildTemplates(rows, { name: 'Uluntu' }, ctx, '2026-11-08');
+  const ids = (items: { source_table: string; source_id: string }[]) =>
+    items.map((i) => `${i.source_table}:${i.source_id}`);
+  const published = (table: string, id: string, hash: string, extra: Partial<Record<string, unknown>> = {}) => ({
+    source_table: table,
+    source_id: id,
+    kind: 31923,
+    d_tag: id,
+    event_id: 'ee'.repeat(32),
+    content_hash: hash,
+    deleted_at: null,
+    ...extra,
+  });
+  const hashOf = (key: string) => {
+    const t = current.find((c) => `${c.source_table}:${c.source_id}` === key)!;
+    return contentHash(t.template);
+  };
+
+  it('includes the profile and skips unusable or future rows', () => {
+    expect(ids(current)).toEqual(['profile:instance', 'events:e1', 'news:n1', 'opportunities:o1']);
+  });
+
+  it('creates everything on the first run', () => {
+    const plan = planActions(current, [], pubkey);
+    expect(plan.every((p) => p.action === 'create')).toBe(true);
+  });
+
+  it('marks unchanged, updated and re-published rows', () => {
+    const plan = planActions(
+      current,
+      [
+        published('events', 'e1', hashOf('events:e1')),
+        published('news', 'n1', 'stale-hash'),
+        published('opportunities', 'o1', hashOf('opportunities:o1'), { deleted_at: '2026-11-01T00:00:00Z' }),
+      ],
+      pubkey
+    );
+    const action = (key: string) => plan.find((p) => `${p.source_table}:${p.source_id}` === key)!.action;
+    expect(action('events:e1')).toBe('unchanged');
+    expect(action('news:n1')).toBe('update');
+    expect(action('opportunities:o1')).toBe('create');
+    expect(action('profile:instance')).toBe('create');
+  });
+
+  it('requests deletion for rows that are no longer public, before anything else', () => {
+    const plan = planActions(
+      current,
+      [
+        published('events', 'gone', 'h'),
+        published('news', 'already-deleted', 'h', { deleted_at: '2026-11-01T00:00:00Z' }),
+        published('profile', 'old-profile', 'h'),
+      ],
+      pubkey
+    );
+    expect(plan[0]).toMatchObject({ source_table: 'events', source_id: 'gone', action: 'delete' });
+    expect(plan[0].template.kind).toBe(KIND.deletion);
+    expect(plan[0].template.tags[0]).toEqual(['a', `31923:${pubkey}:gone`]);
+    expect(plan.filter((p) => p.action === 'delete')).toHaveLength(1);
   });
 });
