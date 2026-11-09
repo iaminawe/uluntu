@@ -50,8 +50,8 @@ export default function GroupsPage() {
   return (
     <>
       <Helmet>
-        <title>Tech Groups - Uluntu</title>
-        <meta name="description" content="Tech groups and communities in the Kootenay region" />
+        <title>Groups - Uluntu</title>
+        <meta name="description" content="Groups and interest communities on Uluntu" />
       </Helmet>
       
       <PageHeader />
@@ -77,7 +77,7 @@ export default function GroupsPage() {
         ) : !hasGroups ? (
           <EmptyState
             title="No Groups Found"
-            description="There are no tech groups in the directory yet."
+            description="There are no groups in the directory yet."
             primaryActionUrl="/groups/create"
             primaryAction={{
               text: "Create a Group",

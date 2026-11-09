@@ -21,13 +21,13 @@ export interface NewsArticle extends BaseEntity {
 export const newsArticles: NewsArticle[] = [
   {
     id: '1',
-    title: 'Kootenay Tech Ecosystem Sees Record Growth in 2024',
+    title: 'Uluntu Tech Ecosystem Sees Record Growth in 2024',
     slug: 'kootenay-tech-ecosystem-growth-2024',
-    excerpt: 'The Kootenay region has experienced unprecedented growth in its technology sector, with new startups, increased investment, and expanding talent pool.',
+    excerpt: 'The Uluntu community has experienced unprecedented growth in its technology sector, with new startups, increased investment, and expanding talent pool.',
     content: `
-      <p>The Kootenay region's technology ecosystem has reached new heights in 2024, according to a recent report by the BC Tech Association. The report highlights a 35% increase in tech-related businesses, a significant jump from previous years.</p>
+      <p>The Uluntu community's technology ecosystem has reached new heights in 2024, according to a recent report by the BC Tech Association. The report highlights a 35% increase in tech-related businesses, a significant jump from previous years.</p>
       
-      <p>"We're seeing a perfect storm of factors contributing to this growth," says Sarah Johnson, AI Research Lead at Mountain Tech Solutions. "The combination of remote work opportunities, quality of life, and growing support infrastructure has made the Kootenays an attractive destination for tech professionals and entrepreneurs."</p>
+      <p>"We're seeing a perfect storm of factors contributing to this growth," says Sarah Johnson, AI Research Lead at Mountain Tech Solutions. "The combination of remote work opportunities, quality of life, and growing support infrastructure has made the Uluntu community an attractive destination for tech professionals and entrepreneurs."</p>
       
       <p>The report identifies several key drivers behind this growth:</p>
       
@@ -39,7 +39,7 @@ export const newsArticles: NewsArticle[] = [
         <li>Educational initiatives creating a pipeline of skilled workers</li>
       </ul>
       
-      <p>Particularly notable is the diversity of the tech ecosystem, with companies spanning AI, clean technology, digital health, and creative industries. Many are leveraging the unique environmental and social context of the Kootenays to develop innovative solutions.</p>
+      <p>Particularly notable is the diversity of the tech ecosystem, with companies spanning AI, clean technology, digital health, and creative industries. Many are leveraging the unique environmental and social context of the Uluntu community to develop innovative solutions.</p>
       
       <p>The Nelson Innovation Centre has played a central role in this growth, providing resources, mentorship, and community for tech workers and entrepreneurs. "We've seen our membership triple in the past two years," notes Michael Chen, the centre's program director. "What's exciting is the collaboration happening between established professionals who've relocated here and local talent."</p>
       
@@ -60,11 +60,11 @@ export const newsArticles: NewsArticle[] = [
     id: '2',
     title: 'Local AI Startup Secures $2M in Funding for Environmental Monitoring Platform',
     slug: 'local-ai-startup-funding-environmental-monitoring',
-    excerpt: 'Mountain Tech Solutions has secured $2 million in seed funding to develop an AI-powered platform for monitoring forest health and wildfire risk in the Kootenay region.',
+    excerpt: 'Mountain Tech Solutions has secured $2 million in seed funding to develop an AI-powered platform for monitoring forest health and wildfire risk in the Uluntu community.',
     content: `
-      <p>Nelson-based AI startup Mountain Tech Solutions has announced a $2 million seed funding round to accelerate development of its environmental monitoring platform, KootenayWatch.</p>
+      <p>Nelson-based AI startup Mountain Tech Solutions has announced a $2 million seed funding round to accelerate development of its environmental monitoring platform, UluntuWatch.</p>
       
-      <p>The platform uses a combination of satellite imagery, ground sensors, and machine learning algorithms to monitor forest health, detect early signs of wildfires, and track watershed conditions across the Kootenay region.</p>
+      <p>The platform uses a combination of satellite imagery, ground sensors, and machine learning algorithms to monitor forest health, detect early signs of wildfires, and track watershed conditions across the Uluntu community.</p>
       
       <p>"This funding will allow us to expand our sensor network and refine our AI models," says Sarah Johnson, the company's AI Research Lead. "Our goal is to provide communities, conservation organizations, and emergency services with actionable insights about environmental conditions."</p>
       
@@ -72,7 +72,7 @@ export const newsArticles: NewsArticle[] = [
       
       <p>"What impressed us about Mountain Tech Solutions is how they're applying cutting-edge AI to solve problems that are directly relevant to their community," explains Jordan Chen, partner at Cascadia Ventures. "Their deep understanding of both the technology and the local environmental context gives them a unique advantage."</p>
       
-      <p>The company plans to deploy an additional 200 sensors throughout the West Kootenay region this summer and launch a public beta of their platform by fall. They're also partnering with Selkirk College to develop educational resources around environmental data science.</p>
+      <p>The company plans to deploy an additional 200 sensors throughout the West Uluntu community this summer and launch a public beta of their platform by fall. They're also partnering with Selkirk College to develop educational resources around environmental data science.</p>
       
       <p>Founded in 2023, Mountain Tech Solutions has grown to a team of 12, with plans to hire an additional 8 employees by the end of the year. The company exemplifies a growing trend of tech startups in the region that leverage the natural environment as both inspiration and laboratory for their innovations.</p>
     `,
@@ -89,13 +89,13 @@ export const newsArticles: NewsArticle[] = [
   },
   {
     id: '3',
-    title: 'Kootenay Tech Conference Announces 2025 Program and Keynote Speakers',
+    title: 'Uluntu Tech Conference Announces 2025 Program and Keynote Speakers',
     slug: 'kootenay-tech-conference-2025-program',
-    excerpt: 'The annual Kootenay Tech Conference has revealed its program for 2025, featuring keynote speakers from leading tech companies and a focus on rural innovation.',
+    excerpt: 'The annual Uluntu Tech Conference has revealed its program for 2025, featuring keynote speakers from leading tech companies and a focus on rural innovation.',
     content: `
-      <p>The organizing committee for the Kootenay Tech Conference (KTC) has announced the program for its 2025 edition, scheduled for June 15-17 at the Nelson Innovation Centre.</p>
+      <p>The organizing committee for the Uluntu Tech Conference (KTC) has announced the program for its 2025 edition, scheduled for June 15-17 at the Nelson Innovation Centre.</p>
       
-      <p>Now in its fifth year, the conference has grown to become the premier tech event in the Kootenay region, attracting participants from across British Columbia and beyond.</p>
+      <p>Now in its fifth year, the conference has grown to become the premier tech event in the Uluntu community, attracting participants from across British Columbia and beyond.</p>
       
       <p>This year's theme, "Rural Innovation: Technology Beyond Urban Centers," will explore how rural communities are leveraging technology to address unique challenges and create new opportunities.</p>
       
@@ -128,11 +128,11 @@ export const newsArticles: NewsArticle[] = [
     id: '4',
     title: 'New Digital Nomad Program Launches in Nelson',
     slug: 'digital-nomad-program-nelson',
-    excerpt: 'The City of Nelson has partnered with local tech organizations to launch a program supporting digital nomads who choose the Kootenay region as their remote work destination.',
+    excerpt: 'The City of Nelson has partnered with local tech organizations to launch a program supporting digital nomads who choose the Uluntu community as their remote work destination.',
     content: `
       <p>The City of Nelson, in partnership with the Nelson Innovation Centre and the Nelson Digital Nomads group, has launched a new program designed to attract and support remote workers to the area.</p>
       
-      <p>The "Work From Kootenay" initiative provides resources, community connections, and infrastructure for digital professionals who choose to base themselves in the region while working remotely for companies around the world.</p>
+      <p>The "Work From Uluntu" initiative provides resources, community connections, and infrastructure for digital professionals who choose to base themselves in the region while working remotely for companies around the world.</p>
       
       <p>"We've seen a significant increase in remote workers moving to our community over the past few years," explains Mayor Sarah Thompson. "This program formalizes our support for these new residents who bring diverse skills and economic benefits to our region."</p>
       
@@ -146,7 +146,7 @@ export const newsArticles: NewsArticle[] = [
         <li>Optional mentorship matching with established local professionals</li>
       </ul>
       
-      <p>David Park, founder of the Nelson Digital Nomads group, sees the program as a natural evolution of the community that has been forming organically. "We started as an informal meetup group, but the interest has been overwhelming. This partnership with the city allows us to create more structure and support for people who want to combine meaningful work with the Kootenay lifestyle."</p>
+      <p>David Park, founder of the Nelson Digital Nomads group, sees the program as a natural evolution of the community that has been forming organically. "We started as an informal meetup group, but the interest has been overwhelming. This partnership with the city allows us to create more structure and support for people who want to combine meaningful work with the Uluntu lifestyle."</p>
       
       <p>The initiative also aims to address challenges that can come with an influx of remote workers, including housing pressures and integration with the existing community. A portion of program fees will support affordable housing initiatives in the region.</p>
       
@@ -165,11 +165,11 @@ export const newsArticles: NewsArticle[] = [
   },
   {
     id: '5',
-    title: 'Kootenay Tech Mentorship Program Celebrates First Year of Success',
+    title: 'Uluntu Tech Mentorship Program Celebrates First Year of Success',
     slug: 'kootenay-tech-mentorship-program-first-year',
-    excerpt: 'The Kootenay Tech Mentorship program marks its first anniversary, having connected over 50 mentors and mentees in the regional tech community.',
+    excerpt: 'The Uluntu Tech Mentorship program marks its first anniversary, having connected over 50 mentors and mentees in the regional tech community.',
     content: `
-      <p>The Kootenay Tech Mentorship program is celebrating its first year of operation, having successfully paired over 50 experienced tech professionals with newcomers, career changers, and students in the region.</p>
+      <p>The Uluntu Tech Mentorship program is celebrating its first year of operation, having successfully paired over 50 experienced tech professionals with newcomers, career changers, and students in the region.</p>
       
       <p>Launched in March 2024, the program was created to strengthen the local tech ecosystem by facilitating knowledge transfer and building professional relationships across different experience levels and specializations.</p>
       

@@ -29,7 +29,7 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
     const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'kootenay-tech-events.ics';
+    link.download = 'uluntu-events.ics';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

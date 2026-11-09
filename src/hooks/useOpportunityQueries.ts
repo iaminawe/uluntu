@@ -255,7 +255,7 @@ export function useCreateOpportunity(): UseMutationResult<FrontendOpportunity | 
           deadline: data.deadline === undefined ? null : data.deadline,
           postedBy: data.posted_by || '1',
           organization: data.organization || 'Unknown Company',
-          image: data.image || '/placeholder-company.png',
+          image: data.image || '/placeholder-image.png',
           status: data.status === undefined ? null : data.status as 'draft' | 'published' | 'archived',
           featured: data.featured === undefined ? null : data.featured
         };

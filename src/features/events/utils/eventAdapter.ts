@@ -42,7 +42,7 @@ export function adaptEventFromDatabase(
       description: 'There was an error loading this event.',
       date: new Date().toISOString(),
       location: 'Unknown',
-      image: '/placeholder-event.jpg',
+      image: '/placeholder-image.png',
       organizer: {
         id: 'error-organizer-id',
         name: 'Unknown Organizer',
@@ -95,7 +95,7 @@ export function adaptEventFromDatabase(
     address: dbEvent.address || undefined,
     latitude: undefined, // Not in SupabaseEvent
     longitude: undefined, // Not in SupabaseEvent
-    image: dbEvent.image || '/placeholder-event.jpg', // Default placeholder
+    image: dbEvent.image || '/placeholder-image.png', // Default placeholder
     organizer: organizer,
     attendees: dbEvent.current_attendees || 0, // FrontendEvent.attendees is number | undefined
     max_attendees: dbEvent.max_attendees,      // FrontendEvent.max_attendees is number | null | undefined

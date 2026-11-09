@@ -115,7 +115,7 @@ export const SAMPLE_MEMBER: Member = {
   bio: `Sarah is a passionate developer with over 8 years of experience in web development and AI. 
         She specializes in building scalable applications and mentoring junior developers. 
         Originally from Vancouver, she moved to Nelson to pursue a better work-life balance 
-        and contribute to the growing tech community in the Kootenays.`,
+        and contribute to the growing tech community in the Uluntu community.`,
   location: 'Nelson, BC',
   image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
   skills: ['React', 'Node.js', 'TypeScript', 'AI/ML', 'Python'],
@@ -140,20 +140,20 @@ export const SAMPLE_MEMBER: Member = {
     },
     {
       id: '2',
-      name: 'Kootenay Code Club',
+      name: 'Uluntu Code Club',
       role: 'Mentor'
     }
   ],
   groups: [
     {
       id: '1',
-      name: 'AI Enthusiasts Kootenay',
+      name: 'AI Enthusiasts Uluntu',
       role: 'admin',
       joinedDate: '2024-01-15'
     },
     {
       id: '2',
-      name: 'Kootenay Tech Organizers',
+      name: 'Uluntu Tech Organizers',
       role: 'member',
       joinedDate: '2024-02-01'
     }
@@ -194,7 +194,7 @@ export const SAMPLE_MEMBER: Member = {
       title: 'Recap: February AI Ethics Workshop',
       group: {
         id: '1',
-        name: 'AI Enthusiasts Kootenay'
+        name: 'AI Enthusiasts Uluntu'
       },
       date: '2024-02-16'
     }
@@ -230,20 +230,20 @@ export const SAMPLE_MEMBER: Member = {
       id: '2',
       title: 'Tech Mentor for Youth Program',
       type: 'volunteer',
-      location: 'Kootenay Region',
+      location: 'Uluntu Community',
       remote: false,
       description: 'Seeking experienced developers to mentor high school students in our after-school coding program. 2 hours per week commitment.'
     }
   ],
   achievements: [
     {
-      title: 'Kootenay Tech Innovation Award',
+      title: 'Uluntu Tech Innovation Award',
       description: 'Recognized for contributions to the local tech community and innovative solutions',
       date: '2023-11-15'
     },
     {
       title: 'Open Source Contributor',
-      description: 'Top 10 contributor to the React Kootenay library',
+      description: 'Top 10 contributor to the React Uluntu library',
       date: '2023-08-22'
     },
     {

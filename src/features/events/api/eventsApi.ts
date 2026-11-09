@@ -181,7 +181,7 @@ export const eventsApi = {
             type: (item.type as any) || 'in-person',
             status: (item.status as any) || 'published',
             featured: item.featured || false,
-            image: item.image || '/placeholder-event.jpg',
+            image: item.image || '/placeholder-image.png',
             organizer: {
               id: item.organizer_id || 'unknown',
               name: 'Unknown Organizer',

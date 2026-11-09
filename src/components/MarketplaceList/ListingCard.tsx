@@ -10,7 +10,7 @@ interface ListingCardProps {
 }
 
 const ListingCard = ({ listing }: ListingCardProps) => {
-  const defaultImage = '/api/placeholder/400/300';
+  const defaultImage = '/placeholder-image.png';
   
   // Add debug link and ID display to help troubleshoot the detail page issue
   console.log('ListingCard receiving listing with ID:', listing.id, typeof listing.id);

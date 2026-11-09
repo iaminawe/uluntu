@@ -207,7 +207,7 @@ const GalleryDetailPageContent: React.FC = () => {
                 
                 <div className="flex items-center gap-6 text-sm text-gray-500 mb-4">
                   <div>
-                    By <AuthorLink userId={gallery.owner_id} className="font-medium text-gray-700" linkToProfile={true} />
+                    By <AuthorLink memberId={gallery.owner_id} className="font-medium text-gray-700" linkToProfile={true} />
                   </div>
                   <div>
                     {photos.length} {photos.length === 1 ? 'photo' : 'photos'}

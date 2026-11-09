@@ -72,15 +72,15 @@ const getOrganizer = (id: string) => {
 export const events: Event[] = [
   {
     id: '1',
-    title: 'Kootenay Tech Conference 2025',
+    title: 'Uluntu Tech Conference 2025',
     date: '2025-06-15',
     endDate: '2025-06-17',
-    description: 'The annual Kootenay Tech Conference brings together tech professionals, entrepreneurs, and enthusiasts from across the region to share knowledge, network, and explore the latest trends in technology.',
+    description: 'The annual Uluntu Tech Conference brings together tech professionals, entrepreneurs, and enthusiasts from across the region to share knowledge, network, and explore the latest trends in technology.',
     location: 'Nelson Innovation Centre',
     image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg',
     organizer: {
       id: '1',
-      name: 'Kootenay Tech Society',
+      name: 'Uluntu Tech Society',
       image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg'
     },
     attendees: 145,
@@ -92,7 +92,7 @@ export const events: Event[] = [
       {
         id: '1',
         title: 'Opening Keynote: The Future of Tech in Rural Communities',
-        description: 'Exploring how technology is transforming rural economies and creating new opportunities in regions like the Kootenays.',
+        description: 'Exploring how technology is transforming rural economies and creating new opportunities in regions like the Uluntu community.',
         startTime: '2025-06-15T09:00:00',
         endTime: '2025-06-15T10:30:00',
         presenters: [
@@ -109,7 +109,7 @@ export const events: Event[] = [
       {
         id: '2',
         title: 'AI Applications in Environmental Monitoring',
-        description: 'How machine learning and AI are being used to monitor and protect the unique ecosystems of the Kootenay region.',
+        description: 'How machine learning and AI are being used to monitor and protect the unique ecosystems of the Uluntu community.',
         startTime: '2025-06-15T11:00:00',
         endTime: '2025-06-15T12:30:00',
         presenters: [
@@ -119,7 +119,7 @@ export const events: Event[] = [
             image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
             bio: 'Machine learning engineer specializing in computer vision and natural language processing.',
             title: 'ML Engineer',
-            company: 'Kootenay AI Solutions'
+            company: 'Uluntu AI Solutions'
           },
           {
             id: '3',
@@ -127,7 +127,7 @@ export const events: Event[] = [
             image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
             bio: 'Data scientist with a background in statistics and environmental science.',
             title: 'Data Scientist',
-            company: 'Kootenay Data Insights'
+            company: 'Uluntu Data Insights'
           }
         ],
         resources: [
@@ -178,7 +178,7 @@ export const events: Event[] = [
     title: 'AI for Good Hackathon',
     date: '2025-05-15',
     endDate: '2025-05-16',
-    description: 'A 24-hour hackathon focused on developing AI solutions for social and environmental challenges facing the Kootenay region.',
+    description: 'A 24-hour hackathon focused on developing AI solutions for social and environmental challenges facing the Uluntu community.',
     location: 'Selkirk College, Nelson Campus',
     address: '820 Tenth Street, Nelson, BC',
     latitude: 49.4950,
@@ -199,7 +199,7 @@ export const events: Event[] = [
     title: 'Kaslo Jazz Etc. Festival 2025',
     date: '2025-07-30',
     endDate: '2025-08-01',
-    description: 'Annual music festival featuring jazz, blues, and more on the shores of Kootenay Lake, with a tech pavilion showcasing digital art and music technology.',
+    description: 'Annual music festival featuring jazz, blues, and more on the shores of Uluntu Lake, with a tech pavilion showcasing digital art and music technology.',
     location: 'Kaslo Bay Park',
     address: 'Front Street, Kaslo, BC',
     latitude: 49.9122,
@@ -220,7 +220,7 @@ export const events: Event[] = [
     title: 'Community Coding Night - Open Source Contributions',
     date: '2025-04-20',
     endDate: '2025-04-20',
-    description: 'Join us for a night of collaborative coding and contributing to open source projects that benefit the Kootenay community.',
+    description: 'Join us for a night of collaborative coding and contributing to open source projects that benefit the Uluntu community.',
     location: 'Nelson Innovation Centre',
     address: '450 Ward Street, Nelson, BC',
     latitude: 49.4928,
@@ -238,7 +238,7 @@ export const events: Event[] = [
   },
   {
     id: '6',
-    title: 'Kootenay Tech Startup Weekend',
+    title: 'Uluntu Tech Startup Weekend',
     date: '2025-06-05',
     endDate: '2025-06-07',
     description: 'A weekend-long event where aspiring entrepreneurs form teams, develop ideas, and launch startup concepts focused on solving local challenges.',
@@ -331,7 +331,7 @@ export const events: Event[] = [
     title: 'Data Science for Environmental Monitoring',
     date: '2024-09-20',
     endDate: '2024-09-20',
-    description: 'Workshop on using data science techniques to analyze environmental data from the Kootenay region.',
+    description: 'Workshop on using data science techniques to analyze environmental data from the Uluntu community.',
     location: 'Selkirk College, Castlegar Campus',
     address: '301 Frank Beinder Way, Castlegar, BC',
     latitude: 49.3150,
@@ -350,7 +350,7 @@ export const events: Event[] = [
       {
         id: '4',
         title: 'Analyzing Water Quality Data with Python',
-        description: 'Hands-on session working with real water quality data from Kootenay Lake.',
+        description: 'Hands-on session working with real water quality data from Uluntu Lake.',
         startTime: '2024-09-20T13:00:00',
         endTime: '2024-09-20T16:00:00',
         presenters: [
@@ -359,7 +359,7 @@ export const events: Event[] = [
             name: 'Emma Wilson',
             image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
             title: 'Data Scientist',
-            company: 'Kootenay Data Insights'
+            company: 'Uluntu Data Insights'
           }
         ],
         videoUrl: 'https://www.youtube.com/watch?v=example2',
@@ -382,10 +382,10 @@ export const events: Event[] = [
   },
   {
     id: '10',
-    title: 'Kootenay AI Meetup: Machine Learning Basics',
+    title: 'Uluntu AI Meetup: Machine Learning Basics',
     date: '2024-10-05',
     endDate: '2024-10-05',
-    description: 'Monthly meetup of the Kootenay AI community, focusing on the fundamentals of machine learning.',
+    description: 'Monthly meetup of the Uluntu AI community, focusing on the fundamentals of machine learning.',
     location: 'Nelson Innovation Centre',
     address: '450 Ward Street, Nelson, BC',
     latitude: 49.4928,
@@ -407,7 +407,7 @@ export const events: Event[] = [
     date: '2024-08-15',
     endDate: '2024-08-15',
     description: 'Workshop exploring how to design digital experiences that meet the unique needs of mountain and rural communities.',
-    location: 'Kootenay Gallery of Art',
+    location: 'Uluntu Gallery of Art',
     address: '120 Heritage Way, Castlegar, BC',
     latitude: 49.3230,
     longitude: -117.6360,
@@ -434,7 +434,7 @@ export const events: Event[] = [
             name: 'Olivia Martinez',
             image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
             title: 'UX/UI Designer',
-            company: 'Kootenay Creative'
+            company: 'Uluntu Creative'
           }
         ],
         videoUrl: 'https://www.youtube.com/watch?v=example3',
@@ -472,10 +472,10 @@ export const events: Event[] = [
   },
   {
     id: '13',
-    title: 'Kootenay Tech Showcase 2024',
+    title: 'Uluntu Tech Showcase 2024',
     date: '2024-06-10',
     endDate: '2024-06-11',
-    description: 'Annual showcase of technology projects and startups from across the Kootenay region.',
+    description: 'Annual showcase of technology projects and startups from across the Uluntu community.',
     location: 'Prestige Lakeside Resort',
     address: '701 Lakeside Drive, Nelson, BC',
     latitude: 49.4960,
@@ -494,7 +494,7 @@ export const events: Event[] = [
       {
         id: '6',
         title: 'Startup Showcase: Pitches from Local Tech Companies',
-        description: 'Five-minute pitches from emerging tech startups in the Kootenay region.',
+        description: 'Five-minute pitches from emerging tech startups in the Uluntu community.',
         startTime: '2024-06-10T13:00:00',
         endTime: '2024-06-10T15:00:00',
         presenters: [

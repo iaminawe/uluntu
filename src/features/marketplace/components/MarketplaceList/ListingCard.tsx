@@ -10,7 +10,7 @@ interface ListingCardProps {
 }
 
 const ListingCard = ({ listing, onClick }: ListingCardProps) => {
-  const defaultImage = '/api/placeholder/400/300';
+  const defaultImage = '/placeholder-image.png';
   const { navigateToListing } = useMarketplaceNavigation();
   
   const handleCardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

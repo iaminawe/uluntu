@@ -67,10 +67,10 @@ export function getOpportunityUrl(opportunity: SlugEntity): string {
 }
 
 /**
- * Get gallery URL using slug if available, fallback to ID
+ * Get gallery URL. Always the ID: the gallery page and its photo query only resolve UUIDs.
  */
 export function getGalleryUrl(gallery: SlugEntity): string {
-  return gallery.slug ? `/galleries/${gallery.slug}` : `/galleries/${gallery.id}`;
+  return `/galleries/${gallery.id}`;
 }
 
 /**

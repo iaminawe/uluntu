@@ -102,7 +102,7 @@ export const OpportunityGalleryManager: React.FC<OpportunityGalleryManagerProps>
       // Construct cover photo URL from storage path
       return `/api/gallery-photos/${gallery.cover_photo_id}`;
     }
-    return '/placeholder-gallery.jpg';
+    return '/placeholder-image.png';
   };
 
   if (loading) {

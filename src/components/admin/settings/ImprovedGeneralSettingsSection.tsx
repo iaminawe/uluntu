@@ -55,7 +55,7 @@ const siteSettingFields: SettingField[] = [
     key: 'site_description',
     label: 'Site Description',
     type: 'textarea',
-    placeholder: 'A vibrant tech community in the Kootenays',
+    placeholder: 'A vibrant, welcoming community',
     description: 'Site description for SEO and meta tags',
     validation: { maxLength: 300 }
   },

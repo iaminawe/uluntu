@@ -29,8 +29,8 @@ export default function EventsPage() {
   return (
     <>
       <Helmet>
-        <title>Tech Events - Uluntu</title>
-        <meta name="description" content="Upcoming tech events, workshops, and meetups in the Kootenay region" />
+        <title>Events - Uluntu</title>
+        <meta name="description" content="Upcoming events, workshops, and meetups in the Uluntu community" />
       </Helmet>
       
       <PageHeader />

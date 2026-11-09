@@ -10,8 +10,8 @@ const AboutContent: React.FC<AboutContentProps> = ({ features = [] }) => {
   return (
     <div>
       <p className="text-lg text-slate-700 mb-6">
-        The Kootenay AI Collective is a community-driven initiative bringing together 
-        individuals passionate about artificial intelligence in the Kootenay region. 
+        The Uluntu AI Collective is a community-driven initiative bringing together 
+        individuals passionate about artificial intelligence in the Uluntu community. 
         We believe in fostering an inclusive environment where knowledge sharing, 
         ethical discussions, and human-centric approaches to AI are prioritized.
       </p>

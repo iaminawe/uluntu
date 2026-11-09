@@ -65,9 +65,9 @@ export interface Group extends BaseEntity {
 export const groups: Group[] = [
   {
     id: '1',
-    name: 'Kootenay Coders Collective',
-    description: 'A community of developers, designers, and tech enthusiasts in the Kootenay region.',
-    longDescription: 'The Kootenay Coders Collective brings together developers, designers, and tech enthusiasts from across the Kootenay region to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
+    name: 'Uluntu Coders Collective',
+    description: 'A community of developers, designers, and tech enthusiasts in the Uluntu community.',
+    longDescription: 'The Uluntu Coders Collective brings together developers, designers, and tech enthusiasts from across the Uluntu community to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
     heroImage: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
     coverImage: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg',
     visibility: 'open',
@@ -108,9 +108,9 @@ export const groups: Group[] = [
     events: [
       {
         id: '1',
-        title: 'Kootenay Tech Conference 2025',
+        title: 'Uluntu Tech Conference 2025',
         date: '2025-06-15',
-        description: 'Annual tech conference bringing together the Kootenay tech community.',
+        description: 'Annual tech conference bringing together the Uluntu tech community.',
         image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg'
       },
       {
@@ -124,11 +124,11 @@ export const groups: Group[] = [
     resources: [
       {
         id: '1',
-        title: 'Getting Started with AI in the Kootenays',
+        title: 'Getting Started with AI in the Uluntu community',
         type: 'guide',
         url: 'https://example.com/guides/ai-kootenays',
         addedDate: '2024-02-10',
-        description: 'A comprehensive guide to AI resources and opportunities in the Kootenay region.'
+        description: 'A comprehensive guide to AI resources and opportunities in the Uluntu community.'
       },
       {
         id: '2',
@@ -143,7 +143,7 @@ export const groups: Group[] = [
       {
         id: '1',
         title: 'Reflecting on Our First Year as a Tech Community',
-        excerpt: 'Looking back at the growth and achievements of the Kootenay Coders Collective in its first year.',
+        excerpt: 'Looking back at the growth and achievements of the Uluntu Coders Collective in its first year.',
         author: {
           name: 'Sarah Johnson',
           image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
@@ -154,7 +154,7 @@ export const groups: Group[] = [
       {
         id: '2',
         title: 'Building a Tech Ecosystem in Rural BC',
-        excerpt: 'Challenges and opportunities in developing a thriving tech community in the Kootenays.',
+        excerpt: 'Challenges and opportunities in developing a thriving tech community in the Uluntu community.',
         author: {
           name: 'Michael Chen',
           image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
@@ -167,7 +167,7 @@ export const groups: Group[] = [
     id: '2',
     name: 'Nelson Digital Nomads',
     description: 'A community for remote workers and digital nomads living in or visiting the Nelson area.',
-    longDescription: 'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Kootenay lifestyle.',
+    longDescription: 'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Uluntu lifestyle.',
     heroImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
     coverImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
     visibility: 'open',
@@ -209,9 +209,9 @@ export const groups: Group[] = [
   },
   {
     id: '3',
-    name: 'Kootenay Tech Mentorship',
-    description: 'Connecting experienced tech professionals with newcomers and students in the Kootenay region.',
-    longDescription: 'Kootenay Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Kootenays.',
+    name: 'Uluntu Tech Mentorship',
+    description: 'Connecting experienced tech professionals with newcomers and students in the Uluntu community.',
+    longDescription: 'Uluntu Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Uluntu community.',
     heroImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
     coverImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
     visibility: 'closed',
@@ -244,9 +244,9 @@ export const groups: Group[] = [
   },
   {
     id: '4',
-    name: 'Kootenay Hikers & Adventurers',
-    description: 'A group for tech professionals who love exploring the outdoors in the Kootenay region.',
-    longDescription: 'Kootenay Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Kootenay landscape.',
+    name: 'Uluntu Hikers & Adventurers',
+    description: 'A group for tech professionals who love exploring the outdoors in the Uluntu community.',
+    longDescription: 'Uluntu Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Uluntu landscape.',
     heroImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
     coverImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
     visibility: 'open',
@@ -296,9 +296,9 @@ export const groups: Group[] = [
   },
   {
     id: '5',
-    name: 'West Kootenay Arts Council',
-    description: 'Supporting the intersection of art and technology in the West Kootenay region.',
-    longDescription: 'The West Kootenay Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
+    name: 'West Uluntu Arts Council',
+    description: 'Supporting the intersection of art and technology in the West Uluntu community.',
+    longDescription: 'The West Uluntu Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
     heroImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
     coverImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
     visibility: 'open',
@@ -333,7 +333,7 @@ export const groups: Group[] = [
         id: '4',
         title: 'Kaslo Jazz Etc. Festival 2025',
         date: '2025-07-30',
-        description: 'Annual music festival featuring jazz, blues, and more on the shores of Kootenay Lake.',
+        description: 'Annual music festival featuring jazz, blues, and more on the shores of Uluntu Lake.',
         image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg'
       }
     ]

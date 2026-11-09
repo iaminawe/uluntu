@@ -70,7 +70,7 @@ describe('GroupCard Component', () => {
       );
       
       const image = screen.getByRole('img', { name: /Kootenay Coders Collective/i });
-      expect(image).toHaveAttribute('src', '/placeholder-image.jpg');
+      expect(image).toHaveAttribute('src', '/placeholder-image.png');
     });
 
     it('GC-004: should format and display last active date', () => {

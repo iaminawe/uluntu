@@ -103,7 +103,7 @@ const BasicInfoSection = ({
               onChange={onChange}
               disabled={isSubmitting}
               className="block w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500"
-              placeholder="Nelson, BC"
+              placeholder="City, Region"
             />
           </div>
         </div>

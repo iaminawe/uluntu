@@ -24,7 +24,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   
   // Get settings with fallbacks
   const siteName = settings?.site?.site_name?.value || "Uluntu";
-  const siteDescription = settings?.site?.site_description?.value || "Connecting and empowering the Kootenay region's thriving tech community through collaboration, innovation, and knowledge sharing.";
+  const siteDescription = settings?.site?.site_description?.value || "Connecting and empowering the Uluntu community through collaboration and knowledge sharing.";
   
   const displayTitle = title || siteName;
   const displayDescription = description || siteDescription;

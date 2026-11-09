@@ -51,16 +51,6 @@ export default function MarketplaceDetailPage() {
   const { getListing } = useMarketplaceHybrid();
   const { data: sourceData, isLoading, error } = getListing(id || '');
 
-  // Redirect if marketplace is disabled
-  if (!featuresLoading && !marketplaceEnabled) {
-    return <Navigate to="/" replace />;
-  }
-
-  // Show loading while checking features
-  if (featuresLoading) {
-    return <LoadingState />;
-  }
-  
   // Debug logging
   useEffect(() => {
     console.log('MarketplaceDetailPage Debug:', {
@@ -118,6 +108,7 @@ export default function MarketplaceDetailPage() {
         createdAt: sourceData.datePosted || new Date().toISOString(),
         seller: {
           id: sourceData.seller?.id || 'unknown',
+          slug: sourceData.seller?.slug,
           name: sourceData.seller?.name || 'Unknown Seller',
           image: sourceData.seller?.image || '/placeholder-avatar.png',
           title: '',
@@ -141,6 +132,17 @@ export default function MarketplaceDetailPage() {
         return <Package className="h-5 w-5" />;
     }
   };
+  
+  // Early returns go after all hooks (React error #310 otherwise)
+  // Redirect if marketplace is disabled
+  if (!featuresLoading && !marketplaceEnabled) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Show loading while checking features
+  if (featuresLoading) {
+    return <LoadingState />;
+  }
   
   if (isLoading) {
     return <LoadingState />;

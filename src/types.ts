@@ -205,6 +205,7 @@ export interface MarketplaceItem extends BaseEntity {
   image?: string;
   seller: {
     id: string;
+    slug?: string;
     name: string;
     image: string;
   };

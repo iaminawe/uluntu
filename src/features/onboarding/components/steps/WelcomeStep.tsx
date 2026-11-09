@@ -10,8 +10,8 @@ const WelcomeStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           Welcome to the Uluntu Community! 🎉
         </h2>
         <p className="text-lg text-slate-600 dark:text-slate-400">
-          We're excited to have you join our vibrant community of tech professionals, 
-          entrepreneurs, and innovators in the Kootenay region.
+          We're excited to have you join our vibrant community of neighbours, 
+          makers, and organizers on Uluntu.
         </p>
       </div>
 
@@ -84,7 +84,7 @@ const WelcomeStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
             Connect & Network
           </h4>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Meet fellow tech professionals and build meaningful connections
+            Meet fellow members and build meaningful connections
           </p>
         </div>
         <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">

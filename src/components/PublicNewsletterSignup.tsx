@@ -142,7 +142,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
               Stay Updated
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-              Get the latest from the Nelson tech community - events, opportunities, and news.
+              Get the latest from the Uluntu community - events, opportunities, and news.
             </p>
             
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -265,7 +265,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
           <div>
             <h2 className="text-3xl font-bold mb-4">Stay Connected</h2>
             <p className="text-white/80 mb-6">
-              Get the latest updates from the Nelson tech community, including events, job opportunities, and news.
+              Get the latest updates from the Uluntu community, including events, opportunities, and news.
             </p>
             
             <form onSubmit={handleSubmit} className="flex gap-4 max-w-md mx-auto">

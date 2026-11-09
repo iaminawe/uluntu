@@ -142,13 +142,13 @@ export default function OpportunitiesPage() {
       title: 'Community Outreach Coordinator',
       company: {
         id: 3,
-        name: 'Kootenay Tech Association',
+        name: 'Uluntu Tech Association',
         logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg'
       },
       type: 'volunteer',
       location: 'Remote',
       remote: true,
-      description: 'Help us connect with the local tech community and organize events.',
+      description: 'Help us connect with the local community and organize events.',
       postedDate: '2025-04-20',
       status: 'published'
     }
@@ -198,7 +198,7 @@ export default function OpportunitiesPage() {
     <>
       <Helmet>
         <title>Opportunities - Uluntu</title>
-        <meta name="description" content="Tech opportunities, jobs, and volunteer positions in the Kootenay region" />
+        <meta name="description" content="Jobs, volunteer positions, and other opportunities in the Uluntu community" />
       </Helmet>
       
       <PageHeader />
@@ -231,7 +231,7 @@ export default function OpportunitiesPage() {
             </div>
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No opportunities yet</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
-              The opportunities board is empty, but that's about to change! Be the first to post a position and help grow our tech community.
+              The opportunities board is empty, but that's about to change! Be the first to post a position and help grow our community.
             </p>
             <a 
               href="/opportunities/create" 

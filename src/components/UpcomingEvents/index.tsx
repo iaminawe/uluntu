@@ -32,7 +32,7 @@ const SAMPLE_EVENTS: Event[] = [
     description: 'Weekly study group for machine learning enthusiasts.',
     organizer: {
       id: '2',
-      name: 'Kootenay Data Science Network',
+      name: 'Uluntu Data Science Network',
       image: 'https://images.pexels.com/photos/3184603/pexels-photo-3184603.jpeg'
     },
     type: 'online',

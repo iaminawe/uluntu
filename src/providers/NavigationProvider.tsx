@@ -44,10 +44,10 @@ const DEFAULT_HEADER_NAV_LINKS: NavLinkItem[] = [
     text: "Community", 
     href: "/community",
     children: [
-      { text: "Events", href: "/events", description: "Workshops, meetups, and tech talks", feature: "events_system" },
-      { text: "Directory", href: "/directory", description: "Connect with tech professionals", feature: "members_directory" },
+      { text: "Events", href: "/events", description: "Workshops, meetups, and gatherings", feature: "events_system" },
+      { text: "Directory", href: "/directory", description: "Connect with community members", feature: "members_directory" },
       { text: "Groups", href: "/groups", description: "Join communities of interest", feature: "groups_communities" },
-      { text: "News", href: "/news", description: "Latest tech news and articles", feature: "news_blog" },
+      { text: "News", href: "/news", description: "Latest community news and articles", feature: "news_blog" },
       { text: "Galleries", href: "/galleries", description: "Browse community photo galleries", feature: "photo_galleries" }
     ]
   },
@@ -55,7 +55,7 @@ const DEFAULT_HEADER_NAV_LINKS: NavLinkItem[] = [
     text: "Business", 
     href: "/business",
     children: [
-      { text: "Companies", href: "/companies", description: "Explore local tech companies", feature: "companies_listing" },
+      { text: "Companies", href: "/companies", description: "Explore local businesses and organizations", feature: "companies_listing" },
       { text: "Opportunities", href: "/opportunities", description: "Find jobs and volunteer roles", feature: "opportunities_board" },
       { text: "Marketplace", href: "/marketplace", description: "Buy and sell tech items", feature: "marketplace" }
     ]
@@ -76,9 +76,7 @@ const DEFAULT_HEADER_NAV_LINKS: NavLinkItem[] = [
     text: "About", 
     href: "/about",
     children: [
-      { text: "About Us", href: "/about", description: "Learn about our mission" },
-      { text: "About Uluntu", href: "/about-uluntu", description: "Learn about the Uluntu platform" },
-      { text: "Partners", href: "/partners", description: "Our community partners and sponsors" },
+      { text: "About Us", href: "/about", description: "Learn about Uluntu" },
       { text: "Contact", href: "/contact", description: "Get in touch with us" },
       { text: "Privacy", href: "/privacy", description: "Privacy policy and data protection" },
       { text: "Terms", href: "/terms", description: "Terms of service and guidelines" }

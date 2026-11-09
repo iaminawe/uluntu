@@ -5,8 +5,8 @@ import { MOUNTAIN_BACKGROUNDS } from '../../constants/backgroundImages';
 const PageHeader: React.FC = () => {
   return (
     <SharedPageHeader
-      title="Tech Companies"
-      subtitle="Discover innovative companies and startups in the Kootenay region"
+      title="Organizations"
+      subtitle="Discover businesses and organizations in the Uluntu community"
       isHero={true}
       backgroundImage={MOUNTAIN_BACKGROUNDS.companies}
     />

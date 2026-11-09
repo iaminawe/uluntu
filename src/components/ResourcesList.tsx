@@ -129,8 +129,8 @@ function ResourceModal({ onClose }: ResourceModalProps) {
                          focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">None</option>
-                <option value="1">AI Enthusiasts Kootenay</option>
-                <option value="2">Kootenay Tech Organizers</option>
+                <option value="1">AI Enthusiasts Uluntu</option>
+                <option value="2">Uluntu Tech Organizers</option>
               </select>
             </div>
             <div>

@@ -130,7 +130,7 @@ export default function AboutUluntuPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <UseCaseCard
               title="Professional Networks"
-              description="Tech communities, industry associations, and professional groups use Uluntu to connect members, share knowledge, and advance careers."
+              description="Industry associations, alumni networks, and professional groups use Uluntu to connect members, share knowledge, and advance careers."
               features={["Job boards", "Skill matching", "Mentorship programs", "Industry events"]}
               gradient="from-blue-500 to-indigo-600"
             />
@@ -159,7 +159,7 @@ export default function AboutUluntuPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <TestimonialCard
-              quote="Uluntu transformed how our tech community connects. The event management and member directory features have been game-changers for us."
+              quote="Uluntu transformed how our community connects. The event management and member directory features have been game-changers for us."
               author="Sarah Chen"
               role="Founder, DevConnect Portland"
               rating={5}

@@ -6,8 +6,8 @@ const PageHeader: React.FC = () => {
   return (
     <div className="groups-page-header">
       <SharedPageHeader
-        title="Tech Community Groups"
-        subtitle="Connect with like-minded tech professionals in your area of interest"
+        title="Community Groups"
+        subtitle="Connect with like-minded people around shared interests"
         isHero={true}
         backgroundImage={MOUNTAIN_BACKGROUNDS.groups}
       />

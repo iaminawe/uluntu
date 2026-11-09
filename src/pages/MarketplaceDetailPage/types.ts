@@ -17,6 +17,7 @@ export interface Listing {
   createdAt: string; // Note: This is datePosted in the main MarketplaceItem type
   seller: {
     id: string | number; // Support both string UUIDs from Supabase and numeric IDs
+    slug?: string;
     name: string;
     image: string;
     title?: string;

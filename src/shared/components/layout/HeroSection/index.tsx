@@ -4,7 +4,7 @@ import HeroButton from './HeroButton';
 
 const HeroSection: React.FC<HeroSectionProps> = ({
   title = "Uluntu",
-  description = "Connecting and empowering the Kootenay region's thriving tech community through collaboration, innovation, and knowledge sharing.",
+  description = "Connecting and empowering the Uluntu community through collaboration and knowledge sharing.",
   backgroundImage = "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg",
   buttons = [
     {

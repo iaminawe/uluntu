@@ -195,8 +195,8 @@ const ContactSection: React.FC = () => {
             
             <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-600 text-center text-sm text-slate-600 dark:text-slate-400">
               <p>
-                Kootenay AI Collective is supported by the{' '}
-                <a href="#" className="text-orange-600 dark:text-orange-400 hover:underline">Kootenay Association for Science & Technology (KAST)</a>
+                Uluntu AI Collective is supported by the{' '}
+                <a href="#" className="text-orange-600 dark:text-orange-400 hover:underline">Uluntu Association for Science & Technology (KAST)</a>
               </p>
             </div>
           </div>

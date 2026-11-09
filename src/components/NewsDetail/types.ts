@@ -88,15 +88,15 @@ export const adaptLocalNewsArticleToMain = (localArticle: NewsArticle): MainNews
 // Sample data
 export const SAMPLE_ARTICLE: NewsArticle = {
   id: 1,
-  title: 'Kootenay Tech Scene Continues to Grow',
+  title: 'Uluntu Tech Scene Continues to Grow',
   slug: 'kootenay-tech-scene-continues-to-grow',
-  excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
-  content: `The Kootenay region's technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.
+  excerpt: 'The Uluntu community\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
+  content: `The Uluntu community's technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.
 
 This trend is driven by several factors, including:
 
 - The rise of remote work
-- High quality of life in the Kootenays
+- High quality of life in the Uluntu community
 - Growing tech community and support networks
 - Affordable housing compared to major tech hubs
 
@@ -113,11 +113,11 @@ Looking ahead, community leaders are focused on sustainable growth that maintain
     name: 'Sarah Johnson',
     title: 'Tech Community Lead',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
-    bio: 'Sarah has been involved in the Kootenay tech scene for over 5 years and is passionate about building inclusive tech communities.'
+    bio: 'Sarah has been involved in the Uluntu tech scene for over 5 years and is passionate about building inclusive tech communities.'
   },
   associations: [
     { type: 'company', id: 1, name: 'Mountain Tech Solutions' },
-    { type: 'group', id: 1, name: 'Kootenay Tech Organizers' }
+    { type: 'group', id: 1, name: 'Uluntu Tech Organizers' }
   ],
   tags: ['Community', 'Growth', 'Startups'],
   comments: [

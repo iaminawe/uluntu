@@ -49,7 +49,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Sarah Johnson',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       title: 'HR Manager',
-      bio: 'Passionate about building great tech teams in the Kootenays.'
+      bio: 'Passionate about building great tech teams in the Uluntu community.'
     },
     requirements: [
       '5+ years of full-stack development experience',
@@ -75,7 +75,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     title: 'Tech Mentor for Youth Program',
     description: 'Volunteer to teach coding to local youth.',
     type: 'volunteer',
-    organization: 'Kootenay Code Club',
+    organization: 'Uluntu Code Club',
     location: 'Rossland, BC',
     commitment: '4 hours/week',
     deadline: '2025-04-15',
@@ -87,7 +87,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Michael Chen',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       title: 'Program Coordinator',
-      bio: 'Working to make tech education accessible to all youth in the Kootenays.'
+      bio: 'Working to make tech education accessible to all youth in the Uluntu community.'
     },
     requirements: [
       'Basic programming knowledge',
@@ -107,7 +107,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     title: 'Community AI Project Funding',
     description: 'Seeking funding for an AI-powered local environmental monitoring system.',
     type: 'funding',
-    organization: 'Kootenay Innovation Initiative',
+    organization: 'Uluntu Innovation Initiative',
     location: 'Cranbrook, BC',
     fundingAmount: '$25,000',
     deadline: '2025-05-01',

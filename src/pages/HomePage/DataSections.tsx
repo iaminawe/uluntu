@@ -64,7 +64,7 @@ export default function DataSections() {
                 Upcoming Events
               </h2>
               <p className="text-xl text-slate-600 dark:text-slate-400">
-                Don't miss these upcoming tech events
+                Don't miss these upcoming community events
               </p>
             </div>
             
@@ -116,7 +116,7 @@ export default function DataSections() {
                   id={group.id}
                   title={group.name}
                   excerpt={group.description || ''}
-                  image={group.heroImage || group.coverImage || '/placeholder-group.png'}
+                  image={group.heroImage || group.coverImage || '/placeholder-image.png'}
                   category="Community Group"
                   readTime={`${group.memberCount || 0} members`}
                   link={getGroupUrl(group)}

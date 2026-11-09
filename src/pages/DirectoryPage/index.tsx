@@ -84,7 +84,7 @@ export default function DirectoryPage() {
     <>
       <Helmet>
         <title>Member Directory - Uluntu</title>
-        <meta name="description" content="Connect with tech professionals in the Kootenay region" />
+        <meta name="description" content="Connect with members of the Uluntu community" />
       </Helmet>
       
       <PageHeader />

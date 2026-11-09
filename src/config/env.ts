@@ -43,7 +43,9 @@ export function getIsSupabaseEnabled(): boolean {
   const envValue = getMetaEnvVariable('VITE_USE_SUPABASE');
   console.log('[config/env.ts] Dynamic check - VITE_USE_SUPABASE:', envValue);
   
-  return envValue === 'true';
+  // Trim: a value saved with a trailing newline (e.g. `echo true | vercel env add`)
+  // silently put production on mock data.
+  return envValue?.trim() === 'true';
 }
 
 // For backward compatibility, export a getter that checks dynamically

@@ -69,7 +69,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
   // This prevents TypeScript errors when accessing potentially undefined properties
   const safeId = group?.id ?? ''; 
   const safeName = group?.name ?? 'Unnamed Group';
-  const safeHeroImage = group?.heroImage ?? '/placeholder-image.jpg';
+  const safeHeroImage = group?.heroImage ?? '/placeholder-image.png';
   const safeDescription = group?.description ?? 'No description available';
   const safeVisibility = mapVisibility(group?.visibility ?? 'public');
   const safeMemberCount = group?.memberCount ?? 0;

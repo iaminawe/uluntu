@@ -33,7 +33,7 @@ const SAMPLE_RESOURCE = {
   tags: ['AI', 'Ethics', 'Technology', 'Guidelines'],
   group: {
     id: '1', // Use string ID for consistency across the application
-    name: 'AI Enthusiasts Kootenay'
+    name: 'AI Enthusiasts Uluntu'
   },
   status: 'published' as ContentStatus,
   featured: true // Example resource is featured

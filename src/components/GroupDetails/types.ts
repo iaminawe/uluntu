@@ -116,7 +116,7 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
 // Sample data
 export const SAMPLE_GROUP: Group = {
   id: 1,
-  name: 'AI Enthusiasts Kootenay',
+  name: 'AI Enthusiasts Uluntu',
   description: 'A group for anyone interested in artificial intelligence and its applications.',
   longDescription: `Our group brings together professionals, enthusiasts, and learners passionate about artificial intelligence and its real-world applications. We focus on:
 

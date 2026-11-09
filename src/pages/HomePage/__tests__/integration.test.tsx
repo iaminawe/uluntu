@@ -105,15 +105,15 @@ describe('HomePage Integration', () => {
     renderWithProviders(<HomePage />);
     
     expect(screen.getByText('Uluntu Community')).toBeInTheDocument();
-    expect(screen.getByText('Kootenay Innovation Hub')).toBeInTheDocument();
-    expect(screen.getByText(/Connecting tech professionals/)).toBeInTheDocument();
+    expect(screen.getByText('I am because we are')).toBeInTheDocument();
+    expect(screen.getByText(/A place for members to connect/)).toBeInTheDocument();
   });
 
   it('should render feature cards section', () => {
     renderWithProviders(<HomePage />);
     
     expect(screen.getByText('Everything You Need')).toBeInTheDocument();
-    expect(screen.getByText('Your gateway to the Kootenay tech ecosystem')).toBeInTheDocument();
+    expect(screen.getByText('Your gateway to the Uluntu community')).toBeInTheDocument();
     
     // Check for feature cards
     const featureCards = screen.getAllByTestId('feature-card');
@@ -175,7 +175,7 @@ describe('HomePage Integration', () => {
     expect(screen.getByTestId('dynamic-hero')).toBeInTheDocument();
     
     // Should show dynamic counts in feature descriptions
-    expect(screen.getByText(/Connect with 1\+ tech professionals/)).toBeInTheDocument();
+    expect(screen.getByText(/Connect with 1\+ members of the Uluntu community/)).toBeInTheDocument();
     expect(screen.getByText(/Explore 1\+ innovative tech companies/)).toBeInTheDocument();
   });
 

@@ -165,7 +165,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     title: 'Community Outreach Coordinator',
     company: {
       id: 3,
-      name: 'Kootenay Tech Association',
+      name: 'Uluntu Tech Association',
       logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
     },
     type: 'volunteer',

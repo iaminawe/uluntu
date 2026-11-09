@@ -128,7 +128,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
               className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Nelson, BC"
+              placeholder="City, Region"
             />
           </div>
         </SettingsField>
@@ -151,7 +151,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
           </select>
         </SettingsField>
 
-        <SettingsField label="When did you arrive in Nelson?">
+        <SettingsField label="When did you join the community?">
           <input
             type="text"
             value={arrivedInNelson}
@@ -178,7 +178,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                    bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                    focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Tell us about yourself, your work, and what brings you to Nelson..."
+          placeholder="Tell us about yourself, your work, and what brings you to the community..."
           required
         />
       </SettingsField>

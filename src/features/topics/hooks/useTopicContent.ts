@@ -102,10 +102,11 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
       .select(`
         news!inner (
           id,
+          slug,
           title,
           excerpt,
-          date,
-          image,
+          publish_date,
+          hero_image,
           status,
           author_id,
           members!news_author_id_fkey (
@@ -123,8 +124,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         id: item.news.id,
         title: item.news.title,
         excerpt: item.news.excerpt,
-        date: item.news.date,
-        image: item.news.image,
+        date: item.news.publish_date,
+        image: item.news.hero_image,
         author: {
           id: item.news.members?.id || '',
           name: item.news.members?.name || 'Unknown',
@@ -301,14 +302,14 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
     const { data: galleries } = await supabase
       .from('gallery_topics')
       .select(`
-        galleries!inner (
+        user_galleries!inner (
           id,
+          slug,
           title,
           description,
-          cover_image,
-          status,
-          created_by,
-          members!galleries_created_by_fkey (
+          privacy_level,
+          user_id,
+          members!user_galleries_user_id_fkey (
             id,
             name,
             image
@@ -316,21 +317,21 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         )
       `)
       .eq('topic_id', topicId)
-      .eq('galleries.status', 'published');
+      .eq('user_galleries.privacy_level', 'public');
 
     if (galleries) {
       content.galleries = galleries.map((item: any) => ({
-        id: item.galleries.id,
-        title: item.galleries.title,
-        excerpt: item.galleries.description,
-        image: item.galleries.cover_image,
+        id: item.user_galleries.id,
+        title: item.user_galleries.title,
+        excerpt: item.user_galleries.description,
+        image: undefined,
         author: {
-          id: item.galleries.members?.id || '',
-          name: item.galleries.members?.name || 'Unknown',
-          image: item.galleries.members?.image
+          id: item.user_galleries.members?.id || '',
+          name: item.user_galleries.members?.name || 'Unknown',
+          image: item.user_galleries.members?.image
         },
         type: 'gallery',
-        url: getGalleryUrl(item.galleries)
+        url: getGalleryUrl(item.user_galleries)
       }));
     }
 

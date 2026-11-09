@@ -1,4 +1,4 @@
-import { supabase, handleSupabaseError, adaptItemsList } from '@/shared/api';
+import { supabase, handleSupabaseError } from '@/shared/api';
 import {
   adaptMarketplaceItemFromSupabase,
   adaptMarketplaceItemToSupabase,
@@ -6,6 +6,8 @@ import {
 } from '@/adapters/marketplaceAdapters';
 import { MarketplaceItem } from '../types';
 import { ContentStatus } from '@/types/common';
+import type { Database } from '@/types/supabase';
+import { parseContentIdentifier } from '@/utils/contentUrlUtils';
 
 
 // Define the input type for marketplace item data passed from the application
@@ -24,335 +26,143 @@ export interface MarketplaceItemInput {
   featured?: boolean;
 }
 
+type ListingRow = Database['public']['Tables']['marketplace_listings']['Row'];
+type ListingUpdate = Database['public']['Tables']['marketplace_listings']['Update'];
+
+const TABLE = 'marketplace_listings';
+const SELECT_WITH_SELLER = '*, members!seller_id(id, name, image, slug)';
+
+function adaptListing(row: unknown): MarketplaceItem {
+  // `image` exists on the live table but is missing from the generated types
+  const listing = row as ListingRow & {
+    image?: string | null;
+    members?: Database['public']['Tables']['members']['Row'];
+    contact_info?: { email?: string; phone?: string } | null;
+  };
+  const item = adaptMarketplaceItemFromSupabase(listing);
+  return {
+    ...item,
+    // Seller slug lets profile links use /directory/<slug> instead of the member UUID
+    seller: { ...item.seller, slug: listing.members?.slug || undefined },
+    image: listing.image || listing.images?.[0] || undefined,
+    slug: listing.slug || undefined,
+    condition: listing.condition || undefined,
+    location: listing.location || undefined,
+    tags: listing.tags || undefined,
+    status: listing.status as ContentStatus,
+    featured: listing.featured || false,
+    contactEmail: listing.contact_info?.email,
+    contactPhone: listing.contact_info?.phone,
+    like_count: listing.like_count ?? 0,
+    comment_count: listing.comment_count ?? 0,
+  } as MarketplaceItem;
+}
+
 export const marketplaceApi = {
   async getAll(filters?: MarketplaceItemsQueryOptions): Promise<MarketplaceItem[]> {
-    try {
-      console.log('[MarketplaceAPI] getAll called with filters:', filters);
-      console.log('[MarketplaceAPI] Using resources table as marketplace data source');
-      
-      // Use resources table instead of non-existent marketplace_listings
-      let query = supabase
-        .from('resources')
-        .select('*')
-        .eq('status', 'published');
+    let query = supabase
+      .from(TABLE)
+      .select(SELECT_WITH_SELLER)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false });
 
-      // Apply filters if provided
-      if (filters) {
-        // Add search filter if provided
-        if (filters.search) {
-          query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-        }
-
-        // Add type filter if provided
-        if (filters.type && filters.type !== 'all') {
-          query = query.eq('type', filters.type);
-        }
-
-        // Add condition filter if provided
-        if (filters.condition && filters.condition !== 'all') {
-          query = query.eq('condition', filters.condition);
-        }
-
-        // Add seller filter if provided
-        if (filters.sellerId) {
-          query = query.eq('seller_id', filters.sellerId);
-        }
-
-        // Add tags filter if provided
-        if (filters.tags && filters.tags.length > 0) {
-          // This assumes the tags column is an array type in Supabase
-          // For each tag in the filters.tags array, check if it's contained in the tags column
-          filters.tags.forEach((tag: any) => {
-            query = query.contains('tags', [tag]);
-          });
-        }
+    if (filters) {
+      if (filters.search) {
+        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
       }
-
-      console.log('[MarketplaceAPI] Executing query...');
-      const { data, error } = await query;
-      console.log('[MarketplaceAPI] Query result:', { dataLength: data?.length, error });
-      console.log('[MarketplaceAPI] Raw data:', data);
-
-      if (error) {
-        console.error('[MarketplaceAPI] Supabase error:', error);
-        throw handleSupabaseError(error);
+      if (filters.type && filters.type !== 'all') {
+        query = query.eq('type', filters.type);
       }
-
-      // Transform resources data to marketplace format
-      const marketplaceItems = (data || []).map(resource => ({
-        id: resource.id,
-        title: resource.title,
-        description: resource.description || '',
-        type: (resource.type || 'service') as any,
-        price: 0,
-        category: resource.type || 'service',
-        image: resource.image || undefined,
-        seller: {
-          id: resource.contributor_id || '1',
-          name: (resource as any).contributor?.name || 'Community Member',
-          image: (resource as any).contributor?.image || ''
-        },
-        datePosted: resource.created_at || new Date().toISOString(),
-        status: resource.status as ContentStatus,
-        featured: resource.featured || false
-      }));
-      
-      console.log('[MarketplaceAPI] Transformed resources to marketplace items:', marketplaceItems.length);
-      console.log('[MarketplaceAPI] First marketplace item:', marketplaceItems[0]);
-      return marketplaceItems as any;
-    } catch (error) {
-      console.error('Error fetching marketplace items:', error);
-      throw error;
+      if (filters.condition && filters.condition !== 'all') {
+        query = query.eq('condition', filters.condition);
+      }
+      if (filters.sellerId) {
+        query = query.eq('seller_id', filters.sellerId);
+      }
+      if (filters.tags && filters.tags.length > 0) {
+        query = query.contains('tags', filters.tags);
+      }
     }
+
+    const { data, error } = await query;
+    if (error) handleSupabaseError(error, 'fetching marketplace items');
+    return (data || []).map(adaptListing);
   },
 
-  async getById(id: string): Promise<MarketplaceItem | null> {
-    try {
-      // Enhanced debug logging
-      console.log('MarketplaceAPI: Fetching item with ID:', id, 'Type:', typeof id);
-      
-      // Check for valid ID format
-      if (!id) {
-        console.error('MarketplaceAPI: Invalid ID provided', id);
-        return null;
-      }
-      
-      // Ensure ID is properly formatted (for UUID format)
-      const formattedId = id.toString().trim();
-      
-      console.log('MarketplaceAPI: Using formatted ID:', formattedId);
-      
-      // First try a basic query to see if the item exists
-      const { data: checkData, error: checkError } = await supabase
-        .from('resources')
-        .select('id')
-        .eq('id', formattedId)
-        .maybeSingle();
-        
-      if (checkError) {
-        console.error('MarketplaceAPI: Error checking if item exists:', checkError);
-      }
-      
-      console.log('MarketplaceAPI: Item exists check:', checkData);
-      
-      // Now perform the full query
-      const { data, error } = await supabase
-        .from('resources')
-        .select('*')
-        .eq('id', formattedId)
-        .single();
+  // Accepts either the listing UUID or its slug
+  async getById(idOrSlug: string): Promise<MarketplaceItem | null> {
+    if (!idOrSlug) return null;
+    const { type, value } = parseContentIdentifier(idOrSlug.trim());
 
-      if (error) {
-        console.error('MarketplaceAPI: Error fetching item details:', error);
-        handleSupabaseError(error, 'fetching marketplace item by id');
-        return null;
-      }
-      
-      console.log('MarketplaceAPI: Successfully retrieved item data:', data);
-      
-      // Transform resource to marketplace item format
-      if (!data) return null;
-      
-      const marketplaceItem: MarketplaceItem = {
-        id: data.id,
-        title: data.title,
-        description: data.description || '',
-        type: (data.type || 'service') as any,
-        price: 0,
-        category: data.type || 'service',
-        image: data.image || undefined,
-        seller: {
-          id: data.contributor_id || '1',
-          name: (data as any).contributor?.name || 'Community Member',
-          image: (data as any).contributor?.image || ''
-        },
-        datePosted: data.created_at || new Date().toISOString(),
-        status: data.status as ContentStatus,
-        featured: data.featured || false
-      };
-      
-      return marketplaceItem;
-    } catch (error) {
-      console.error('MarketplaceAPI: Exception in getById:', error);
-      handleSupabaseError(error, 'fetching marketplace item by id');
-      return null;
-    }
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select(SELECT_WITH_SELLER)
+      .eq(type, value)
+      .maybeSingle();
+
+    if (error) handleSupabaseError(error, 'fetching marketplace item by id');
+    return data ? adaptListing(data) : null;
   },
 
   async getRelated(itemId: string, limit: number = 3): Promise<MarketplaceItem[]> {
-    try {
-      // Get current item details
-      const { data: currentItem } = await supabase
-        .from('resources')
-        .select('type')
-        .eq('id', itemId)
-        .single();
+    const current = await this.getById(itemId);
+    if (!current) return [];
 
-      if (!currentItem) return [];
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select(SELECT_WITH_SELLER)
+      .eq('status', 'published')
+      .neq('id', current.id)
+      .eq('type', current.type)
+      .order('created_at', { ascending: false })
+      .limit(limit);
 
-      // Find related items
-      const { data, error } = await supabase
-        .from('resources')
-        .select('*')
-        .eq('status', 'published')
-        .neq('id', itemId)
-        .eq('type', currentItem.type)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        handleSupabaseError(error, 'fetching related marketplace items');
-        return [];
-      }
-      
-      // Transform resources to marketplace items
-      const marketplaceItems = (data || []).map(resource => ({
-        id: resource.id,
-        title: resource.title,
-        description: resource.description || '',
-        type: (resource.type || 'service') as any,
-        price: 0,
-        category: resource.type || 'service',
-        image: resource.image || undefined,
-        seller: {
-          id: resource.contributor_id || '1',
-          name: (resource as any).contributor?.name || 'Community Member',
-          image: (resource as any).contributor?.image || ''
-        },
-        datePosted: resource.created_at || new Date().toISOString(),
-        status: resource.status as ContentStatus,
-        featured: resource.featured || false
-      }));
-      
-      return marketplaceItems as any;
-    } catch (error) {
-      handleSupabaseError(error, 'fetching marketplace items by seller');
-      return []; // Return empty array on error
-    }
+    if (error) handleSupabaseError(error, 'fetching related marketplace items');
+    return (data || []).map(adaptListing);
   },
 
   async create(itemData: MarketplaceItemInput): Promise<MarketplaceItem | null> {
-    try {
-      // Transform marketplace item to resource format
-      const resourceData = {
-        title: itemData.title,
-        description: itemData.description || '',
-        type: itemData.type as any,
-        url: '', // Resources require a URL field
-        image: itemData.images?.[0] || '',
-        status: itemData.status || 'published',
-        featured: itemData.featured || false,
-        contributor_id: itemData.sellerId,
-        tags: itemData.tags || []
-      };
-      
-      const { data, error } = await supabase
-        .from('resources')
-        .insert(resourceData)
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from(TABLE)
+      .insert(adaptMarketplaceItemToSupabase({ ...itemData, status: itemData.status || 'published' }))
+      .select(SELECT_WITH_SELLER)
+      .single();
 
-      if (error) {
-        handleSupabaseError(error, 'creating marketplace item');
-        return null;
-      }
-      
-      // Transform created resource back to marketplace item
-      if (!data) return null;
-      
-      const marketplaceItem: MarketplaceItem = {
-        id: data.id,
-        title: data.title,
-        description: data.description || '',
-        type: (data.type || 'service') as any,
-        price: 0,
-        category: data.type || 'service',
-        image: data.image || undefined,
-        seller: {
-          id: data.contributor_id || '1',
-          name: (data as any).contributor?.name || 'Community Member',
-          image: (data as any).contributor?.image || ''
-        },
-        datePosted: data.created_at || new Date().toISOString(),
-        status: data.status as ContentStatus,
-        featured: data.featured || false
-      };
-      
-      return marketplaceItem;
-    } catch (error) {
-      handleSupabaseError(error, 'creating marketplace item');
-      return null;
-    }
+    if (error) handleSupabaseError(error, 'creating marketplace item');
+    return data ? adaptListing(data) : null;
   },
 
   async update(id: string, itemData: Partial<MarketplaceItemInput>): Promise<MarketplaceItem | null> {
-    try {
-      // Transform marketplace updates to resource format
-      const resourceData: any = {};
-      if (itemData.title) resourceData.title = itemData.title;
-      if (itemData.description !== undefined) resourceData.description = itemData.description;
-      if (itemData.type) resourceData.type = itemData.type;
-      if (itemData.images) resourceData.image = itemData.images[0] || '';
-      if (itemData.status) resourceData.status = itemData.status;
-      if (itemData.featured !== undefined) resourceData.featured = itemData.featured;
-      if (itemData.sellerId) resourceData.contributor_id = itemData.sellerId;
-      if (itemData.tags) resourceData.tags = itemData.tags;
-      
-      const { data, error } = await supabase
-        .from('resources')
-        .update(resourceData)
-        .eq('id', id)
-        .select()
-        .single();
+    const updates: ListingUpdate = {};
+    if (itemData.title !== undefined) updates.title = itemData.title;
+    if (itemData.description !== undefined) updates.description = itemData.description;
+    if (itemData.type !== undefined) updates.type = itemData.type;
+    if (itemData.price !== undefined) updates.price = itemData.price;
+    if (itemData.condition !== undefined) updates.condition = itemData.condition;
+    if (itemData.images !== undefined) updates.images = itemData.images;
+    if (itemData.location !== undefined) updates.location = itemData.location;
+    if (itemData.tags !== undefined) updates.tags = itemData.tags;
+    if (itemData.status !== undefined) updates.status = itemData.status;
+    if (itemData.featured !== undefined) updates.featured = itemData.featured;
 
-      if (error) {
-        handleSupabaseError(error, 'updating marketplace item');
-        return null;
-      }
-      
-      // Transform updated resource back to marketplace item
-      if (!data) return null;
-      
-      const marketplaceItem: MarketplaceItem = {
-        id: data.id,
-        title: data.title,
-        description: data.description || '',
-        type: (data.type || 'service') as any,
-        price: 0,
-        category: data.type || 'service',
-        image: data.image || undefined,
-        seller: {
-          id: data.contributor_id || '1',
-          name: (data as any).contributor?.name || 'Community Member',
-          image: (data as any).contributor?.image || ''
-        },
-        datePosted: data.created_at || new Date().toISOString(),
-        status: data.status as ContentStatus,
-        featured: data.featured || false
-      };
-      
-      return marketplaceItem;
-    } catch (error) {
-      handleSupabaseError(error, 'updating marketplace item');
-      return null;
-    }
+    const { data, error } = await supabase
+      .from(TABLE)
+      .update(updates)
+      .eq('id', id)
+      .select(SELECT_WITH_SELLER)
+      .single();
+
+    if (error) handleSupabaseError(error, 'updating marketplace item');
+    return data ? adaptListing(data) : null;
   },
 
   async delete(id: string): Promise<boolean> {
-    try {
-      const { error } = await supabase
-        .from('resources')
-        .delete()
-        .eq('id', id);
+    const { error } = await supabase
+      .from(TABLE)
+      .delete()
+      .eq('id', id);
 
-      if (error) {
-        handleSupabaseError(error, 'deleting marketplace item');
-        return false;
-      }
-      return true; // Operation was successful
-    } catch (error) {
-      handleSupabaseError(error, 'deleting marketplace item');
-      return false;
-    }
+    if (error) handleSupabaseError(error, 'deleting marketplace item');
+    return true;
   }
 };

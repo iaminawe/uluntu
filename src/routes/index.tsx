@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import AppLayout from '../layouts/AppLayout';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -20,12 +20,10 @@ import UnauthorizedPage from '../pages/auth/UnauthorizedPage';
 import ErrorPage from '../pages/ErrorPage';
 
 // Lazy load main pages
-const AboutPage = lazy(() => import('../pages/AboutPage'));
 const AboutUluntuPage = lazy(() => import('../pages/AboutUluntuPage'));
 const ContactPage = lazy(() => import('../pages/ContactPage'));
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
-const PartnersPage = lazy(() => import('../pages/PartnersPage'));
 const TestFontsPage = lazy(() => import('../pages/TestFontsPage'));
 const TestBlockEditor = lazy(() => import('../pages/TestBlockEditor'));
 const AIEditorDemo = lazy(() => import('../pages/AIEditorDemo'));
@@ -167,12 +165,12 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'about', element: withSuspense(AboutPage) },
-      { path: 'about-uluntu', element: withSuspense(AboutUluntuPage) },
+      { path: 'about', element: withSuspense(AboutUluntuPage) },
+      { path: 'about-uluntu', element: <Navigate to="/about" replace /> },
       { path: 'contact', element: withSuspense(ContactPage) },
       { path: 'privacy', element: withSuspense(PrivacyPage) },
       { path: 'terms', element: withSuspense(TermsPage) },
-      { path: 'partners', element: withSuspense(PartnersPage) },
+      { path: 'partners', element: <Navigate to="/about" replace /> },
       { path: 'test-fonts', element: withSuspense(TestFontsPage) },
       { path: 'test-editor', element: withSuspense(TestBlockEditor) },
       { path: 'ai-editor', element: withSuspense(WorkingAIEditor) },
@@ -211,7 +209,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'directory/:slug/edit',
+        path: 'directory/:id/edit',
         element: (
           <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute>
@@ -275,7 +273,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'events/:slug/edit',
+        path: 'events/:id/edit',
         element: (
           <FeatureGate feature="events_system" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute>
@@ -339,7 +337,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'groups/:slug/edit',
+        path: 'groups/:id/edit',
         element: (
           <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
             <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute>
@@ -363,7 +361,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'resources/:slug',
+        path: 'resources/:id',
         element: (
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             {withSuspense(ResourceDetailPage)}
@@ -371,7 +369,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'resources/:slug/edit',
+        path: 'resources/:id/edit',
         element: (
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute>
@@ -395,7 +393,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'marketplace/:slug',
+        path: 'marketplace/:id',
         element: (
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             {withSuspense(MarketplaceDetailPage)}
@@ -403,7 +401,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'marketplace/:slug/edit',
+        path: 'marketplace/:id/edit',
         element: (
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute>
@@ -427,7 +425,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'opportunities/:slug',
+        path: 'opportunities/:id',
         element: (
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             {withSuspense(OpportunityDetailPage)}
@@ -435,7 +433,7 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: 'opportunities/:slug/edit',
+        path: 'opportunities/:id/edit',
         element: (
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute>
@@ -487,7 +485,7 @@ export const router = createBrowserRouter([
         )
       },
       { 
-        path: 'galleries/:slug', 
+        path: 'galleries/:id', 
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             {withSuspense(GalleryDetailPage)}
@@ -495,7 +493,7 @@ export const router = createBrowserRouter([
         )
       },
       { 
-        path: 'galleries/:slug/edit', 
+        path: 'galleries/:id/edit', 
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute>
@@ -533,7 +531,10 @@ export const router = createBrowserRouter([
       { 
         path: 'dashboard/:tab', 
         element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute> 
-      }
+      },
+
+      // Unknown URLs get a 404 inside the site layout instead of the error page
+      { path: '*', element: <NotFoundError resourceType="page" /> }
     ]
   },
   {

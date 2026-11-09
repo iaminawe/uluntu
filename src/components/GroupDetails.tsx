@@ -38,7 +38,7 @@ interface GroupPost {
 // This would come from your database
 const SAMPLE_GROUP = {
   id: '550e8400-e29b-41d4-a716-446655440001',
-  name: 'AI Enthusiasts Kootenay',
+  name: 'AI Enthusiasts Uluntu',
   description: 'A group for anyone interested in artificial intelligence and its applications.',
   longDescription: `Our group brings together professionals, enthusiasts, and learners passionate about artificial intelligence and its real-world applications. We focus on:
 

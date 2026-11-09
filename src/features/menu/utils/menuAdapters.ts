@@ -239,7 +239,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           id: 'events',
           title: 'Events',
           url: '/events',
-          description: 'Workshops, meetups, and tech talks',
+          description: 'Workshops, meetups, and gatherings',
           feature_flag: 'events_system',
           sort_order: 10
         }),
@@ -247,7 +247,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           id: 'directory',
           title: 'Directory',
           url: '/directory',
-          description: 'Connect with tech professionals',
+          description: 'Connect with community members',
           feature_flag: 'members_directory',
           sort_order: 20
         }),
@@ -263,7 +263,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           id: 'news',
           title: 'News',
           url: '/news',
-          description: 'Latest tech news and articles',
+          description: 'Latest community news and articles',
           feature_flag: 'news_blog',
           sort_order: 40
         }),
@@ -287,7 +287,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           id: 'companies',
           title: 'Companies',
           url: '/companies',
-          description: 'Explore local tech companies',
+          description: 'Explore local businesses and organizations',
           feature_flag: 'companies_listing',
           sort_order: 10
         }),
@@ -334,22 +334,8 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           id: 'about-us',
           title: 'About Us',
           url: '/about',
-          description: 'Learn about our mission',
+          description: 'Learn about Uluntu',
           sort_order: 10
-        }),
-        createMenuItem({
-          id: 'about-uluntu',
-          title: 'About Uluntu',
-          url: '/about-uluntu',
-          description: 'Learn about the Uluntu platform',
-          sort_order: 20
-        }),
-        createMenuItem({
-          id: 'partners',
-          title: 'Partners',
-          url: '/partners',
-          description: 'Our community partners and sponsors',
-          sort_order: 30
         }),
         createMenuItem({
           id: 'contact',

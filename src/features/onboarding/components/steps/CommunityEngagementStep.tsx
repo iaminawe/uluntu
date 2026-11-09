@@ -36,7 +36,7 @@ const interestCategories = [
 
 const mockGroups = [
   { id: '1', name: 'Uluntu Meetup', description: 'Monthly tech talks and networking', memberCount: 124, category: 'technology' },
-  { id: '2', name: 'Kootenay Entrepreneurs', description: 'Supporting local startups and business owners', memberCount: 89, category: 'business' },
+  { id: '2', name: 'Uluntu Entrepreneurs', description: 'Supporting local startups and business owners', memberCount: 89, category: 'business' },
   { id: '3', name: 'Web Developers Circle', description: 'Frontend and backend web development community', memberCount: 67, category: 'technology' },
   { id: '4', name: 'UX/UI Design Guild', description: 'Design thinking and user experience focus', memberCount: 45, category: 'creative' },
   { id: '5', name: 'Women in Tech Nelson', description: 'Empowering women in technology careers', memberCount: 78, category: 'technology' },

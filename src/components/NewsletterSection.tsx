@@ -51,7 +51,7 @@ const NewsletterSection: React.FC = () => {
           <div className="w-20 h-1 bg-purple-400 mx-auto mb-6"></div>
           <p className="text-lg text-purple-200 mb-8">
             Subscribe to our newsletter to get monthly recaps of our meetups,
-            early announcements about upcoming speakers, and AI news from the Kootenays.
+            early announcements about upcoming speakers, and AI news from the Uluntu community.
           </p>
           
           <div className="bg-purple-800/50 p-6 rounded-lg">

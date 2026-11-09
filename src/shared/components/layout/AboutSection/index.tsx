@@ -45,7 +45,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({
       "Nelson, BC V1L 4E5"
     ],
     hostedBy: {
-      name: "Kootenay Association for Science & Technology (KAST)",
+      name: "Uluntu Association for Science & Technology (KAST)",
       url: "#"
     },
     mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2599.3982126901476!2d-117.2931246!3d49.4938073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x537cb6a0878e85b7%3A0xb2217c37b07c8c3a!2sNelson%20Innovation%20Centre!5e0!3m2!1sen!2sca!4v1696376047294!5m2!1sen!2sca"

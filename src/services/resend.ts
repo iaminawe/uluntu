@@ -448,7 +448,7 @@ class ResendService {
         <p>If you didn't request this subscription, you can safely ignore this email.</p>
         <div class="footer">
           <p>Uluntu<br>
-          Building connections in the Kootenay tech ecosystem</p>
+          Building connections in the Uluntu community</p>
         </div>
       </div>
     </body>

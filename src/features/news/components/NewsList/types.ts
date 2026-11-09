@@ -38,10 +38,10 @@ export interface FilterOptions {
 export const SAMPLE_ARTICLES: NewsArticle[] = [
   {
     id: "1",
-    title: 'Kootenay Tech Scene Continues to Grow',
+    title: 'Uluntu Tech Scene Continues to Grow',
     slug: 'kootenay-tech-scene-continues-to-grow',
-    excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
-    content: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base. This trend is driven by several factors, including the rise of remote work, high quality of life in the Kootenays, growing tech community and support networks, and affordable housing compared to major tech hubs.',
+    excerpt: 'The Uluntu community\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
+    content: 'The Uluntu community\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base. This trend is driven by several factors, including the rise of remote work, high quality of life in the Uluntu community, growing tech community and support networks, and affordable housing compared to major tech hubs.',
     image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
     publishedAt: '2025-03-15',
     author: {
@@ -70,8 +70,8 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
     id: "3",
     title: 'Tech Community Hosts Successful Developer Conference',
     slug: 'tech-community-hosts-successful-developer-conference',
-    excerpt: 'The annual Kootenay Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region.',
-    content: 'The annual Kootenay Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region. The two-day event featured workshops, keynote speeches, and networking opportunities for developers, designers, and tech entrepreneurs from across British Columbia and beyond.',
+    excerpt: 'The annual Uluntu Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region.',
+    content: 'The annual Uluntu Developer Conference attracted over 300 participants this year, highlighting the growing tech ecosystem in the region. The two-day event featured workshops, keynote speeches, and networking opportunities for developers, designers, and tech entrepreneurs from across British Columbia and beyond.',
     image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg',
     publishedAt: '2025-03-05',
     author: {
@@ -98,7 +98,7 @@ export const SAMPLE_ARTICLES: NewsArticle[] = [
   },
   {
     id: "5",
-    title: 'Kootenay Tech Companies Commit to Sustainability Goals',
+    title: 'Uluntu Tech Companies Commit to Sustainability Goals',
     slug: 'kootenay-tech-companies-commit-to-sustainability-goals',
     excerpt: 'A consortium of local tech companies has pledged to achieve carbon neutrality by 2030, setting an example for sustainable business practices.',
     content: 'A consortium of local tech companies has pledged to achieve carbon neutrality by 2030, setting an example for sustainable business practices. The initiative includes transitioning to renewable energy sources, implementing green office policies, and developing eco-friendly products and services.',

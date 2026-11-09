@@ -10,7 +10,7 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     company: {
       id: dbOpportunity.organization ?? dbOpportunity.posted_by ?? '1',
       name: dbOpportunity.organization ?? 'Unknown Company',
-      logo: dbOpportunity.image ?? '/placeholder-company.png'
+      logo: dbOpportunity.image ?? '/placeholder-image.png'
     },
     type: (dbOpportunity.type as 'full-time' | 'part-time' | 'contract' | 'volunteer') ?? 'full-time',
     location: dbOpportunity.location ?? 'Remote',

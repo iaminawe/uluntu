@@ -9,8 +9,12 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 export default function TopicsIndexPage() {
   const { isFeatureEnabled, loading: featuresLoading } = useEnabledFeatures();
   const topicsEnabled = isFeatureEnabled('topics_system');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'popularity' | 'name' | 'recent'>('popularity');
 
-  // Redirect if topics feature is disabled
+  const { data: topics, isLoading } = useTopicAnalytics();
+
+  // Hooks above must run on every render (React error #310 otherwise)
   if (!featuresLoading && !topicsEnabled) {
     return <Navigate to="/" replace />;
   }
@@ -22,10 +26,6 @@ export default function TopicsIndexPage() {
       </div>
     );
   }
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'popularity' | 'name' | 'recent'>('popularity');
-  
-  const { data: topics, isLoading } = useTopicAnalytics();
 
   const filteredTopics = topics?.filter(topic =>
     topic.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -117,7 +117,7 @@ export default function TopicsIndexPage() {
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 Discover content organized by topic. Find events, articles, resources, and more 
-                related to your interests in the Kootenay tech community.
+                related to your interests in the Uluntu community.
               </p>
             </div>
 

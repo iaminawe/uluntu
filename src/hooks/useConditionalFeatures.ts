@@ -310,7 +310,7 @@ export function getFeatureDescription(feature: FeatureKey): string {
   const descriptions: Record<FeatureKey, string> = {
     // Core Features
     'members_directory': 'Browse and connect with community members',
-    'companies_listing': 'Discover local tech companies and businesses',
+    'companies_listing': 'Discover local businesses and organizations',
     'events_system': 'Create and attend community events',
     'news_blog': 'Stay updated with community news and announcements',
     'groups_communities': 'Join special interest groups and communities',
