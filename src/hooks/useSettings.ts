@@ -51,8 +51,10 @@ export function useFeatureToggle(feature: FeatureKey): UseFeatureToggleReturn {
   } = useQuery({
     queryKey: ['feature-toggle', feature],
     queryFn: async () => {
-      const enabled = await settingsApi.isFeatureEnabled(feature);
-      const allFeatures = await settingsApi.getAllFeatureToggles();
+      const [enabled, allFeatures] = await Promise.all([
+        settingsApi.isFeatureEnabled(feature),
+        settingsApi.getAllFeatureToggles(),
+      ]);
       const featureConfig = allFeatures.find(f => f.feature_key === feature);
       
       return {

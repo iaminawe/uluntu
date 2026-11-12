@@ -211,19 +211,22 @@ export class UnsplashService {
       // Extract keywords for section images
       const keywords = this.extractKeywords(content, topic);
 
-      // Get section images based on keywords
-      for (let i = 0; i < Math.min(keywords.length, count - 1); i++) {
-        const sectionPhotos = await this.searchPhotos(keywords[i], {
+      // Get section images based on keywords; the searches are independent.
+      const sectionKeywords = keywords.slice(0, Math.max(0, count - 1));
+      const sectionResults = await Promise.all(
+        sectionKeywords.map(keyword => this.searchPhotos(keyword, {
           perPage: 1,
           orientation: 'landscape'
-        });
+        }))
+      );
+      sectionResults.forEach((sectionPhotos, i) => {
         if (sectionPhotos.length > 0) {
           photos.push({
             photo: sectionPhotos[0],
             placement: i === keywords.length - 1 ? 'conclusion' : 'section'
           });
         }
-      }
+      });
 
       // If we don't have enough photos, get some random ones related to the topic
       if (photos.length < count) {

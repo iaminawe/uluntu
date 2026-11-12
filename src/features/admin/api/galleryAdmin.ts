@@ -500,37 +500,39 @@ export class AdminGalleryAPI {
         };
       }
 
-      // Delete photos and files
-      for (const photo of photos || []) {
-        try {
-          // Delete from storage
-          const { error: storageError } = await supabase.storage
-            .from('gallery-photos')
-            .remove([photo.storage_path]);
+      // Delete the rows in one request, then their files in one request.
+      // Rows go first so a failure never leaves a row pointing at a missing file.
+      const ids = (photos || []).map(photo => photo.id);
+      if (ids.length > 0) {
+        const { data: deleted, error: deleteError } = await supabase
+          .from('gallery_photos')
+          .delete()
+          .in('id', ids)
+          .select('id');
 
-          if (storageError) {
-            logger.warn(`Failed to delete storage file: ${photo.storage_path}`, 'ADMIN_GALLERY', storageError);
-          }
-
-          // Delete from database
-          const { error: deleteError } = await supabase
-            .from('gallery_photos')
-            .delete()
-            .eq('id', photo.id);
-
-          if (deleteError) {
+        const deletedIds = new Set((deleted || []).map(row => row.id));
+        for (const photo of photos || []) {
+          if (deletedIds.has(photo.id)) {
+            successfulItems.push(photo.id);
+          } else {
             failedItems.push({
               id: photo.id,
-              error: deleteError.message
+              error: deleteError?.message || 'Photo was not deleted'
             });
-          } else {
-            successfulItems.push(photo.id);
           }
-        } catch (error) {
-          failedItems.push({
-            id: photo.id,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
+        }
+
+        const paths = (photos || [])
+          .filter(photo => deletedIds.has(photo.id) && photo.storage_path)
+          .map(photo => photo.storage_path);
+        if (paths.length > 0) {
+          const { error: storageError } = await supabase.storage
+            .from('gallery-photos')
+            .remove(paths);
+
+          if (storageError) {
+            logger.warn(`Failed to delete ${paths.length} storage files`, 'ADMIN_GALLERY', storageError);
+          }
         }
       }
 

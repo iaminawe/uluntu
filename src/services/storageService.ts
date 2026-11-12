@@ -279,8 +279,8 @@ export class StorageService {
     const config = this.config || this.getDefaultConfig();
 
     try {
-      // Create thumbnail versions
-      for (const [sizeKey, dimensions] of Object.entries(config.thumbnailSizes)) {
+      // Create thumbnail versions; each size is independent.
+      await Promise.all(Object.entries(config.thumbnailSizes).map(async ([sizeKey, dimensions]) => {
         const thumbnailFile = await this.resizeImage(originalFile, dimensions);
         
         if (thumbnailFile) {
@@ -298,7 +298,7 @@ export class StorageService {
               upsert: false
             });
         }
-      }
+      }));
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Storage Service - Generate Thumbnails');
       throw new Error(sanitized.userMessage);

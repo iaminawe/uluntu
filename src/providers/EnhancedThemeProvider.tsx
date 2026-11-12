@@ -49,6 +49,14 @@ interface ThemeSpacing {
   container_padding: string;
 }
 
+interface ThemeConfigurationUpdate {
+  colors?: Partial<ThemeColors>;
+  typography?: Partial<ThemeTypography>;
+  spacing?: Partial<ThemeSpacing>;
+  borders?: Partial<ThemeBorders>;
+  shadows?: Partial<ThemeShadows>;
+}
+
 interface ThemeBorders {
   radius_sm: string;
   radius_md: string;
@@ -136,6 +144,7 @@ interface ThemeContextValue {
   updateThemeBorders: (themeId: string, borders: Partial<ThemeBorders>) => Promise<boolean>;
   updateThemeShadows: (themeId: string, shadows: Partial<ThemeShadows>) => Promise<boolean>;
   updateThemeMetadata: (themeId: string, metadata: Partial<ThemeMetadata>) => Promise<boolean>;
+  updateThemeConfigurations: (themeId: string, configs: ThemeConfigurationUpdate) => Promise<boolean>;
   
   // Assets
   uploadThemeAsset: (themeId: string, assetType: ThemeAsset['asset_type'], file: File) => Promise<boolean>;
@@ -694,6 +703,34 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [loadThemes]);
 
+  // Saves several configuration types in one upsert and reloads once, instead
+  // of one upsert and one full reload per type.
+  const updateThemeConfigurations = useCallback(async (themeId: string, configs: ThemeConfigurationUpdate): Promise<boolean> => {
+    const rows = Object.entries(configs)
+      .filter(([, data]) => data !== undefined)
+      .map(([configType, data]) => ({ theme_id: themeId, config_type: configType, config_data: data }));
+    if (rows.length === 0) return true;
+
+    try {
+      const { error } = await supabase
+        .from('theme_configurations')
+        .upsert(rows as any, { onConflict: 'theme_id,config_type' });
+
+      if (error) {
+        if (error.code === '42501') {
+          toast.error('Permission denied. Please ensure you have admin privileges.');
+        }
+        throw error;
+      }
+
+      await loadThemes();
+      return true;
+    } catch (error) {
+      console.error('Error updating theme configuration:', error);
+      return false;
+    }
+  }, [loadThemes]);
+
   const updateThemeMetadata = useCallback(async (themeId: string, metadata: Partial<ThemeMetadata>): Promise<boolean> => {
     try {
       const { error } = await supabase
@@ -807,6 +844,7 @@ export const EnhancedThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     updateThemeBorders,
     updateThemeShadows,
     updateThemeMetadata,
+    updateThemeConfigurations,
     uploadThemeAsset,
     deleteThemeAsset
   };

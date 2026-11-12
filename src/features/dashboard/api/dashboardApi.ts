@@ -36,14 +36,12 @@ class DashboardApi {
         };
       }
 
-      // Get content summary by type
-      const contentSummary = await this.getContentSummary(user.id);
-      
-      // Get recent activity
-      const recentActivity = await this.getRecentActivity(user.id, 10);
-      
-      // Get analytics data
-      const analytics = await this.getUserAnalytics(user.id);
+      // Content summary, recent activity and analytics are independent.
+      const [contentSummary, recentActivity, analytics] = await Promise.all([
+        this.getContentSummary(user.id),
+        this.getRecentActivity(user.id, 10),
+        this.getUserAnalytics(user.id),
+      ]);
 
       // Calculate totals
       const totalContent = contentSummary.reduce((sum, item) => sum + item.count, 0);

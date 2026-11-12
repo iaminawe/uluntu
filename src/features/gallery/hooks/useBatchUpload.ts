@@ -172,8 +172,10 @@ export const useBatchUpload = ({
         // Create preview for images
         if (file.type.startsWith('image/')) {
           try {
-            preview = await createImagePreview(file);
-            metadata = await getImageDimensions(file);
+            [preview, metadata] = await Promise.all([
+              createImagePreview(file),
+              getImageDimensions(file),
+            ]);
           } catch (error) {
             logger.warn(`Failed to create preview for ${file.name}`, 'BATCH_UPLOAD', error);
           }

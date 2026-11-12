@@ -139,21 +139,29 @@ const EntityGalleryManager: React.FC = () => {
       
       if (error) throw error;
 
-      // For each entity, get their gallery assignments
-      const entitiesWithGalleries: EntityWithGalleries[] = await Promise.all(
-        (entities || []).map(async (entity) => {
-          // Get galleries assigned to this entity
-          const { data: galleries } = await supabase
-            .from('user_galleries')
-            .select('*')
-            .eq('owner_type', activeTab.slice(0, -1)) // Remove 's' from end
-            .eq('owner_id', entity.id);
+      // One query for every gallery of this entity type, grouped by owner,
+      // instead of two queries per entity.
+      const { data: typeGalleries, error: galleriesError } = await supabase
+        .from('user_galleries')
+        .select('*')
+        .eq('owner_type', activeTab.slice(0, -1)); // Remove 's' from end
 
-          // Get total available galleries for this entity type
-          const { count: totalGalleries } = await supabase
-            .from('user_galleries')
-            .select('*', { count: 'exact', head: true })
-            .eq('owner_type', activeTab.slice(0, -1));
+      if (galleriesError) throw galleriesError;
+
+      // owner_type/owner_id exist on user_galleries but are missing from the
+      // generated types.
+      type OwnedGallery = NonNullable<typeof typeGalleries>[number] & { owner_id: string };
+      const owned = (typeGalleries || []) as OwnedGallery[];
+      const totalGalleries = owned.length;
+      const galleriesByOwner = new Map<string, OwnedGallery[]>();
+      for (const gallery of owned) {
+        const list = galleriesByOwner.get(gallery.owner_id) || [];
+        list.push(gallery);
+        galleriesByOwner.set(gallery.owner_id, list);
+      }
+
+      const entitiesWithGalleries: EntityWithGalleries[] = (entities || []).map((entity) => {
+          const galleries = galleriesByOwner.get(entity.id);
 
           return {
             id: entity.id,
@@ -162,14 +170,13 @@ const EntityGalleryManager: React.FC = () => {
             type: activeTab.slice(0, -1) as EntityWithGalleries['type'],
             galleries: galleries || [],
             assignedGalleries: galleries?.length || 0,
-            totalGalleries: totalGalleries || 0,
+            totalGalleries,
             lastUpdated: entity.created_at,
             status: entity.status || entity.published,
             description: entity.description || entity.excerpt,
             image: entity.hero_image || entity.thumbnail || entity.avatar_url || entity.logo || entity.images?.[0]
           };
-        })
-      );
+        });
 
       return entitiesWithGalleries;
     }
