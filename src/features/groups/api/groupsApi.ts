@@ -304,25 +304,12 @@ export const groupsApi = {
     }
   },
 
-  async leaveGroup(groupId: string, userId: string): Promise<boolean> {
+  async leaveGroup(groupId: string): Promise<boolean> {
     try {
-      // First get the member ID from user ID
-      const { data: member } = await supabase
-        .from('members')
-        .select('id')
-        .eq('user_id', userId)
-        .single();
-      
-      if (!member) {
-        console.error('Member not found for user:', userId);
-        return false;
-      }
-
-      // Use the database function to safely leave the group
+      // leave_group acts on the caller's own membership (auth.uid()).
       const { data, error } = await supabase
         .rpc('leave_group', {
-          p_group_id: groupId,
-          p_member_id: member.id
+          p_group_id: groupId
         });
 
       if (error) {
