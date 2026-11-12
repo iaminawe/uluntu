@@ -48,10 +48,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ group, setShowJoinModal }) => {
 
     setIsProcessing(true);
     try {
-      await leaveGroup.mutateAsync({
-        groupId: group.id,
-        memberId: currentMember.id
-      });
+      await leaveGroup.mutateAsync({ groupId: group.id });
     } catch (error) {
     } finally {
       setIsProcessing(false);

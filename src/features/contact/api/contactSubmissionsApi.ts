@@ -1,5 +1,16 @@
 import { supabase } from '@/lib/supabase';
 
+// crypto.randomUUID() only exists in secure contexts (HTTPS or localhost);
+// a self-hosted site served over plain HTTP falls back to getRandomValues.
+function newSubmissionId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
 export interface ContactSubmissionData {
   name: string;
   email: string;
@@ -85,7 +96,7 @@ class ContactSubmissionsAPI {
    * generated here rather than read back from the inserted row.
    */
   async submitContactForm(data: ContactSubmissionData): Promise<{ success: true; id: string }> {
-    const id = crypto.randomUUID();
+    const id = newSubmissionId();
     const { error } = await (supabase as any)
       .from('contact_submissions')
       .insert({

@@ -353,10 +353,10 @@ export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: str
   });
 }
 
-export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
+export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: string }> {
   const queryClient = useQueryClient();
 
-  return useMutation<boolean, Error, { groupId: string; memberId: string }>({
+  return useMutation<boolean, Error, { groupId: string }>({
     mutationFn: ({ groupId }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock leave group
