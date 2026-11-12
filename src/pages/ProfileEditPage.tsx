@@ -15,6 +15,7 @@ import { FormData } from './DirectoryEditPage/types';
 import { initialFormData } from './DirectoryEditPage/data';
 import TopicSelector from '@/components/admin/TopicSelector';
 import { useEntityTopics, useSetEntityTopics } from '@/features/topics/hooks/useTopicsHybrid';
+import NostrIdentitySection from '@/features/nostr/components/NostrIdentitySection';
 
 export default function ProfileEditPage() {
   const navigate = useNavigate();
@@ -422,6 +423,13 @@ export default function ProfileEditPage() {
                   errors={errors}
                   isSubmitting={isSubmitting}
                 />
+                
+                {member && (
+                  <>
+                    <hr className="border-t border-slate-200 dark:border-slate-700" />
+                    <NostrIdentitySection userId={userId} />
+                  </>
+                )}
                 
                 <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
