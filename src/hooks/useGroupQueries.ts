@@ -357,12 +357,12 @@ export function useLeaveGroup(): UseMutationResult<boolean, Error, { groupId: st
   const queryClient = useQueryClient();
 
   return useMutation<boolean, Error, { groupId: string; memberId: string }>({
-    mutationFn: ({ groupId, memberId }) => {
+    mutationFn: ({ groupId }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock leave group
         return Promise.resolve(true);
       }
-      return groupsApi.leaveGroup(groupId, memberId);
+      return groupsApi.leaveGroup(groupId);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['supabase', 'groups'] });

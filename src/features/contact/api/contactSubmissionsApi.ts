@@ -3,13 +3,14 @@ import { supabase } from '@/lib/supabase';
 export interface ContactSubmissionData {
   name: string;
   email: string;
-  phone?: string;
   subject: string;
   message: string;
-  submission_type?: string;
-  source?: string;
-  user_agent?: string;
-  referrer_url?: string;
+  // Enquiry type from the form (general, support, ...); stored as a tag.
+  type?: string;
+  metadata?: {
+    user_agent?: string;
+    referrer?: string;
+  };
 }
 
 export interface ContactSubmissionFilter {
@@ -78,43 +79,28 @@ export interface ContactSubmissionStats {
 
 class ContactSubmissionsAPI {
   /**
-   * Submit a new contact form
+   * Submit a new contact form. Only writes columns that exist on
+   * contact_submissions; status is left to the column default ('new').
+   * Visitors may insert but not read submissions (RLS), so the id is
+   * generated here rather than read back from the inserted row.
    */
-  async submitContactForm(data: ContactSubmissionData): Promise<ContactSubmission> {
-    // Check if user is a member based on email
-    const { data: member } = await supabase
-      .from('members')
-      .select('id, user_id')
-      .eq('email', data.email)
-      .single();
-
-    const submissionData = {
-      ...data,
-      submission_type: data.submission_type || 'general',
-      source: data.source || 'contact_form',
-      is_member: !!member,
-      member_id: member?.id,
-      priority: 'medium' as const,
-      status: 'open' as const,
-      response_count: 0,
-    };
-
-    const { data: submission, error } = await (supabase as any)
+  async submitContactForm(data: ContactSubmissionData): Promise<{ success: true; id: string }> {
+    const id = crypto.randomUUID();
+    const { error } = await (supabase as any)
       .from('contact_submissions')
-      .insert(submissionData)
-      .select()
-      .single();
+      .insert({
+        id,
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message,
+        tags: data.type ? [data.type] : [],
+        user_agent: data.metadata?.user_agent || null,
+        referrer: data.metadata?.referrer || null,
+      });
 
     if (error) throw error;
-    
-    // Type assertion to handle interface mismatches
-    return {
-      ...submission,
-      submission_type: submission.submission_type || 'general',
-      response_count: submission.response_count || 0,
-      is_member: submission.is_member || false,
-      source: submission.source || 'contact_form'
-    } as any as ContactSubmission;
+    return { success: true, id };
   }
 
   /**

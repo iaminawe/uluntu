@@ -94,7 +94,7 @@ export function useGroupsHybrid() {
   });
   
   const leaveGroup = useMutation({
-    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) => groupsApi.leaveGroup(groupId, userId),
+    mutationFn: ({ groupId }: { groupId: string; userId?: string }) => groupsApi.leaveGroup(groupId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.groups });
       queryClient.invalidateQueries({ queryKey: queryKeys.userGroups });
