@@ -1,9 +1,11 @@
 -- Regression checks for join_group, leave_group and accept_invitation
--- (migrations 20261112000000 and 20261112010000).
+-- (migrations 20261112000000, 20261112010000 and 20261112020000).
 --
 -- Creates its own users, members, group and invitations, calls the functions
 -- as those users through the authenticated role, and always rolls back.
--- Raises on the first failed check. Run against a database that has the
+-- Raises on the first failed check. Concurrency (two admins leaving at once)
+-- can't be exercised from one session; leave_group locks the group row for it.
+-- Run against a database that has the
 -- migrations applied, as a role that can write auth.users:
 --
 --   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/group_membership_functions.sql
@@ -191,6 +193,18 @@ BEGIN
   v_ok := public.leave_group(g);
   RESET ROLE;
   PERFORM pg_temp.check(v_ok, 'an admin can leave once another admin exists');
+
+  -- A group's only member, who is necessarily its only admin, may leave.
+  INSERT INTO public.groups (name, description, hero_image, visibility, status, created_by)
+  VALUES ('Sole member test', 'test', '', 'open', 'published', m_b)
+  RETURNING id INTO g;
+  DELETE FROM public.group_members WHERE group_id = g;
+  INSERT INTO public.group_members (group_id, member_id, role, status, joined_at)
+  VALUES (g, m_b, 'admin', 'active', now());
+  PERFORM pg_temp.act_as(u_b);
+  v_ok := public.leave_group(g);
+  RESET ROLE;
+  PERFORM pg_temp.check(v_ok, 'a sole member can leave');
 
   RAISE NOTICE 'group membership checks passed';
 END $test$;
