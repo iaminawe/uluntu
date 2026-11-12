@@ -1077,22 +1077,22 @@ class MessagingApiReal {
 
     if (error) throw error;
 
-    // Find a conversation that has both users as participants
-    for (const conversation of conversations || []) {
-      const { data: otherParticipant } = await supabase
-        .from('conversation_participants')
-        .select('user_id')
-        .eq('conversation_id', conversation.id)
-        .eq('user_id', participantId)
-        .is('left_at', null)
-        .single();
+    if (!conversations || conversations.length === 0) return null;
 
-      if (otherParticipant) {
-        return conversation;
-      }
-    }
+    // Find a conversation that has both users as participants, in one query
+    // rather than one per conversation.
+    const { data: shared, error: sharedError } = await supabase
+      .from('conversation_participants')
+      .select('conversation_id')
+      .in('conversation_id', conversations.map(c => c.id))
+      .eq('user_id', participantId)
+      .is('left_at', null)
+      .limit(1);
 
-    return null;
+    if (sharedError) throw sharedError;
+    if (!shared || shared.length === 0) return null;
+
+    return conversations.find(c => c.id === shared[0].conversation_id) ?? null;
   }
 
 

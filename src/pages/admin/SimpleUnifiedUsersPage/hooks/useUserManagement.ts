@@ -204,6 +204,15 @@ export const useUserManagement = () => {
     }
   };
 
+  // One request for all selected members instead of one per member.
+  const setMemberStatus = async (userIds: string[], status: string) => {
+    const { error } = await supabase
+      .from('members')
+      .update({ status, updated_at: new Date().toISOString() })
+      .in('user_id', userIds);
+    if (error) throw error;
+  };
+
   // Handle bulk actions
   const handleBulkAction = async (action: string, users: AdminUser[]) => {
     const userIds = Array.from(selectedUsers);
@@ -211,32 +220,17 @@ export const useUserManagement = () => {
     try {
       switch (action) {
         case 'block':
-          for (const userId of userIds) {
-            await supabase
-              .from('members')
-              .update({ status: 'blocked', updated_at: new Date().toISOString() })
-              .eq('user_id', userId);
-          }
+          await setMemberStatus(userIds, 'blocked');
           toast.success(`Blocked ${userIds.length} users`);
           break;
 
         case 'unblock':
-          for (const userId of userIds) {
-            await supabase
-              .from('members')
-              .update({ status: 'published', updated_at: new Date().toISOString() })
-              .eq('user_id', userId);
-          }
+          await setMemberStatus(userIds, 'published');
           toast.success(`Unblocked ${userIds.length} users`);
           break;
 
         case 'archive':
-          for (const userId of userIds) {
-            await supabase
-              .from('members')
-              .update({ status: 'archived', updated_at: new Date().toISOString() })
-              .eq('user_id', userId);
-          }
+          await setMemberStatus(userIds, 'archived');
           toast.success(`Archived ${userIds.length} users`);
           break;
 
@@ -314,32 +308,45 @@ export const useUserManagement = () => {
     try {
       const userId = showDeleteModal.user_id;
 
-      // Handle content based on options
+      // The content tables are independent, so update them in parallel.
+      // Not atomic: a failure part-way leaves some tables changed.
+      const failed = (results: { error: unknown }[]) => {
+        const hit = results.find(r => r.error);
+        if (hit) throw hit.error;
+      };
       if (deleteOptions.deleteContent) {
         // Delete all user content
-        await supabase.from('news').delete().eq('author_id', userId);
-        await supabase.from('events').delete().eq('created_by', userId);
-        await supabase.from('groups').delete().eq('created_by', userId);
-        await supabase.from('companies').delete().eq('created_by', userId);
-        await supabase.from('resources').delete().eq('created_by', userId);
+        failed(await Promise.all([
+          supabase.from('news').delete().eq('author_id', userId),
+          supabase.from('events').delete().eq('created_by', userId),
+          supabase.from('groups').delete().eq('created_by', userId),
+          supabase.from('companies').delete().eq('created_by', userId),
+          supabase.from('resources').delete().eq('created_by', userId),
+        ]));
       } else if (deleteOptions.reassignTo) {
         // Reassign content to another user
-        await supabase.from('news').update({ author_id: deleteOptions.reassignTo }).eq('author_id', userId);
-        await supabase.from('events').update({ created_by: deleteOptions.reassignTo }).eq('created_by', userId);
-        await supabase.from('groups').update({ created_by: deleteOptions.reassignTo }).eq('created_by', userId);
-        await supabase.from('companies').update({ created_by: deleteOptions.reassignTo }).eq('created_by', userId);
-        await supabase.from('resources').update({ created_by: deleteOptions.reassignTo }).eq('created_by', userId);
+        const to = deleteOptions.reassignTo;
+        failed(await Promise.all([
+          supabase.from('news').update({ author_id: to }).eq('author_id', userId),
+          supabase.from('events').update({ created_by: to }).eq('created_by', userId),
+          supabase.from('groups').update({ created_by: to }).eq('created_by', userId),
+          supabase.from('companies').update({ created_by: to }).eq('created_by', userId),
+          supabase.from('resources').update({ created_by: to }).eq('created_by', userId),
+        ]));
       } else if (deleteOptions.makeAnonymous) {
         // Set content as anonymous (null author)
-        await supabase.from('news').update({ author_id: null }).eq('author_id', userId);
-        await supabase.from('events').update({ created_by: null }).eq('created_by', userId);
-        await supabase.from('groups').update({ created_by: null }).eq('created_by', userId);
-        await supabase.from('companies').update({ created_by: null }).eq('created_by', userId);
-        await supabase.from('resources').update({ created_by: null }).eq('created_by', userId);
+        failed(await Promise.all([
+          supabase.from('news').update({ author_id: null }).eq('author_id', userId),
+          supabase.from('events').update({ created_by: null }).eq('created_by', userId),
+          supabase.from('groups').update({ created_by: null }).eq('created_by', userId),
+          supabase.from('companies').update({ created_by: null }).eq('created_by', userId),
+          supabase.from('resources').update({ created_by: null }).eq('created_by', userId),
+        ]));
       }
 
       // Delete user profile
-      await supabase.from('members').delete().eq('user_id', userId);
+      const { error: memberError } = await supabase.from('members').delete().eq('user_id', userId);
+      if (memberError) throw memberError;
 
       // Delete user roles using server-side function (get all roles first)
       const { data: userRoles } = await supabase
@@ -349,13 +356,13 @@ export const useUserManagement = () => {
 
       // Remove each role using the server function
       if (userRoles && userRoles.length > 0) {
-        for (const { role } of userRoles) {
-          await supabase.rpc('manage_user_roles', {
+        failed(await Promise.all(userRoles.map(({ role }) =>
+          supabase.rpc('manage_user_roles', {
             target_user_id: userId,
             target_role: role,
             action: 'remove'
-          });
-        }
+          })
+        )));
       }
 
       toast.success('User deleted successfully');

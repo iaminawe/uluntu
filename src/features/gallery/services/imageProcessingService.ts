@@ -127,8 +127,10 @@ export class ImageProcessingService {
     options: ProcessingOptions = {}
   ): Promise<ProcessedImages> {
     const variants = { ...DEFAULT_VARIANTS, ...options.variants };
-    const img = await this.loadImage(file);
-    const originalDimensions = await this.getImageDimensions(file);
+    const [img, originalDimensions] = await Promise.all([
+      this.loadImage(file),
+      this.getImageDimensions(file),
+    ]);
     
     const processed: ProcessedImages = {
       original: file
@@ -270,13 +272,13 @@ export class ImageProcessingService {
     options: ProcessingOptions = {}
   ): Promise<PhotoUploadInput> {
     try {
-      // Get image metadata
-      const dimensions = await this.getImageDimensions(file);
-      const placeholder = await this.generatePlaceholder(file);
-      const dominantColor = await this.getDominantColor(file);
-      
-      // Process image variants
-      const processedImages = await this.processImage(file, options);
+      // Metadata and variants are independent reads of the same file.
+      const [dimensions, placeholder, dominantColor, processedImages] = await Promise.all([
+        this.getImageDimensions(file),
+        this.generatePlaceholder(file),
+        this.getDominantColor(file),
+        this.processImage(file, options),
+      ]);
       
       return {
         file,

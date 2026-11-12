@@ -145,12 +145,8 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     updateTheme,
     deleteTheme,
     duplicateTheme,
-    updateThemeColors,
-    updateThemeTypography,
-    updateThemeSpacing,
-    updateThemeBorders,
-    updateThemeShadows,
     updateThemeMetadata,
+    updateThemeConfigurations,
     uploadThemeAsset
   } = useTheme();
   
@@ -432,60 +428,58 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
       });
       
       if (success) {
-        // Update colors
-        await updateThemeColors(activeTheme.id, currentTheme.colors);
-        
-        // Update typography
         const fontFamily = currentTheme.typography.fontFamily;
         const fallback = currentTheme.typography.fontFallback || 'system-ui, -apple-system, sans-serif';
-        await updateThemeTypography(activeTheme.id, {
-          font_family: `${fontFamily}, ${fallback}`,
-          font_family_heading: `${fontFamily}, ${fallback}`,
-          font_size_base: currentTheme.typography.fontSize.base,
-          font_size_sm: currentTheme.typography.fontSize.sm,
-          font_size_lg: currentTheme.typography.fontSize.lg,
-          font_size_xl: currentTheme.typography.fontSize.xl,
-          font_size_2xl: currentTheme.typography.fontSize['2xl'],
-          font_size_3xl: currentTheme.typography.fontSize['3xl'],
-          font_size_4xl: currentTheme.typography.fontSize['4xl'],
-          line_height_base: currentTheme.typography.lineHeight.normal.toString(),
-          line_height_tight: currentTheme.typography.lineHeight.tight.toString(),
-          line_height_loose: currentTheme.typography.lineHeight.relaxed.toString()
+        const unit = currentTheme.spacing.unit;
+        const scale = currentTheme.spacing.scale;
+
+        // All five configuration types in one request.
+        const saved = await updateThemeConfigurations(activeTheme.id, {
+          colors: currentTheme.colors,
+          typography: {
+            font_family: `${fontFamily}, ${fallback}`,
+            font_family_heading: `${fontFamily}, ${fallback}`,
+            font_size_base: currentTheme.typography.fontSize.base,
+            font_size_sm: currentTheme.typography.fontSize.sm,
+            font_size_lg: currentTheme.typography.fontSize.lg,
+            font_size_xl: currentTheme.typography.fontSize.xl,
+            font_size_2xl: currentTheme.typography.fontSize['2xl'],
+            font_size_3xl: currentTheme.typography.fontSize['3xl'],
+            font_size_4xl: currentTheme.typography.fontSize['4xl'],
+            line_height_base: currentTheme.typography.lineHeight.normal.toString(),
+            line_height_tight: currentTheme.typography.lineHeight.tight.toString(),
+            line_height_loose: currentTheme.typography.lineHeight.relaxed.toString()
+          },
+          spacing: {
+            spacing_xs: `${scale.xs * unit}px`,
+            spacing_sm: `${scale.sm * unit}px`,
+            spacing_md: `${scale.md * unit}px`,
+            spacing_lg: `${scale.lg * unit}px`,
+            spacing_xl: `${scale.xl * unit}px`,
+            spacing_2xl: `${scale['2xl'] * unit}px`,
+            spacing_3xl: `${scale['3xl'] * unit}px`,
+            container_max_width: currentTheme.layout.containerWidth,
+            container_padding: '1rem'
+          },
+          borders: {
+            radius_sm: currentTheme.layout.borderRadius.sm,
+            radius_md: currentTheme.layout.borderRadius.md,
+            radius_lg: currentTheme.layout.borderRadius.lg,
+            radius_xl: currentTheme.layout.borderRadius.xl,
+            radius_full: currentTheme.layout.borderRadius.full,
+            width_thin: '1px',
+            width_medium: '2px',
+            width_thick: '4px'
+          },
+          shadows: {
+            shadow_sm: currentTheme.layout.shadow.sm,
+            shadow_md: currentTheme.layout.shadow.md,
+            shadow_lg: currentTheme.layout.shadow.lg,
+            shadow_xl: currentTheme.layout.shadow.xl
+          }
         });
-        
-        // Update spacing
-        await updateThemeSpacing(activeTheme.id, {
-          spacing_xs: `${currentTheme.spacing.scale.xs * currentTheme.spacing.unit}px`,
-          spacing_sm: `${currentTheme.spacing.scale.sm * currentTheme.spacing.unit}px`,
-          spacing_md: `${currentTheme.spacing.scale.md * currentTheme.spacing.unit}px`,
-          spacing_lg: `${currentTheme.spacing.scale.lg * currentTheme.spacing.unit}px`,
-          spacing_xl: `${currentTheme.spacing.scale.xl * currentTheme.spacing.unit}px`,
-          spacing_2xl: `${currentTheme.spacing.scale['2xl'] * currentTheme.spacing.unit}px`,
-          spacing_3xl: `${currentTheme.spacing.scale['3xl'] * currentTheme.spacing.unit}px`,
-          container_max_width: currentTheme.layout.containerWidth,
-          container_padding: '1rem'
-        });
-        
-        // Update borders
-        await updateThemeBorders(activeTheme.id, {
-          radius_sm: currentTheme.layout.borderRadius.sm,
-          radius_md: currentTheme.layout.borderRadius.md,
-          radius_lg: currentTheme.layout.borderRadius.lg,
-          radius_xl: currentTheme.layout.borderRadius.xl,
-          radius_full: currentTheme.layout.borderRadius.full,
-          width_thin: '1px',
-          width_medium: '2px',
-          width_thick: '4px'
-        });
-        
-        // Update shadows
-        await updateThemeShadows(activeTheme.id, {
-          shadow_sm: currentTheme.layout.shadow.sm,
-          shadow_md: currentTheme.layout.shadow.md,
-          shadow_lg: currentTheme.layout.shadow.lg,
-          shadow_xl: currentTheme.layout.shadow.xl
-        });
-        
+        if (!saved) throw new Error('Theme configuration was not saved');
+
         setHasChanges(false);
         toast.success('Theme saved successfully');
       }
@@ -495,7 +489,7 @@ export default function ThemeEditor({ settings, onRefresh }: ThemeEditorProps) {
     } finally {
       setLoading(false);
     }
-  }, [activeTheme, currentTheme, updateTheme, updateThemeColors, updateThemeTypography, updateThemeSpacing, updateThemeBorders, updateThemeShadows]);
+  }, [activeTheme, currentTheme, updateTheme, updateThemeConfigurations]);
 
   const handleResetTheme = useCallback(() => {
     setCurrentTheme(defaultTheme);

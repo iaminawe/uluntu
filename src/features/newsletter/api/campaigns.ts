@@ -459,9 +459,7 @@ class NewsletterCampaignAPI {
       const sendResult = await resendService.sendNewsletterCampaign(campaign, mappedSubscribers);
 
       // Record analytics
-      for (const subscriber of mappedSubscribers) {
-        await this.recordAnalytics(campaignId, subscriber.id, 'sent');
-      }
+      await this.recordSentAnalytics(campaignId, mappedSubscribers.map(s => s.id));
 
       return sendResult;
     } catch (error) {
@@ -537,9 +535,7 @@ class NewsletterCampaignAPI {
       }
 
       // Record analytics for each sent email
-      for (const subscriber of successfulSubscribers) {
-        await this.recordAnalytics(id, subscriber.id, 'sent');
-      }
+      await this.recordSentAnalytics(id, successfulSubscribers.map(s => s.id));
 
       console.log(`Campaign ${id} sent to ${sendResult.sent_count} subscribers`);
 
@@ -749,23 +745,17 @@ class NewsletterCampaignAPI {
       .trim();
   }
 
-  private async recordAnalytics(
-    campaignId: string, 
-    subscriptionId: string, 
-    eventType: 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained',
-    eventData?: Record<string, unknown>
-  ): Promise<void> {
-    try {
-      await supabase
-        .from('newsletter_analytics')
-        .insert({
-          campaign_id: campaignId,
-          subscription_id: subscriptionId,
-          event_type: eventType,
-          event_data: eventData as any
-        });
-    } catch (error) {
-      console.error('Error recording analytics:', error);
+  // One insert per chunk rather than one round trip per subscriber.
+  private async recordSentAnalytics(campaignId: string, subscriptionIds: string[]): Promise<void> {
+    const CHUNK = 500;
+    for (let i = 0; i < subscriptionIds.length; i += CHUNK) {
+      const rows = subscriptionIds.slice(i, i + CHUNK).map(subscriptionId => ({
+        campaign_id: campaignId,
+        subscription_id: subscriptionId,
+        event_type: 'sent'
+      }));
+      const { error } = await supabase.from('newsletter_analytics').insert(rows);
+      if (error) console.error('Error recording analytics:', error);
     }
   }
 }
