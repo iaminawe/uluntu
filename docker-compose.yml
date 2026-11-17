@@ -80,7 +80,7 @@ services:
 
   # Supabase Kong API Gateway  
   kong:
-    image: kong:2.8.1
+    image: kong:2.8.5
     container_name: uluntu-kong
     restart: unless-stopped
     ports:
