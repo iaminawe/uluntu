@@ -6,6 +6,9 @@ name: Claude PR review
 # access to secrets on the `pull_request` event. Switching to `pull_request_target`
 # would run with secrets against untrusted code. For a fork PR, a maintainer can
 # comment "@claude review this PR" instead (see claude.yml).
+#
+# Renovate PRs are skipped too: the action refuses bot-initiated runs, and
+# lockfile bumps are reviewed by the maintainer who merges them.
 
 on:
   pull_request:
@@ -19,7 +22,8 @@ jobs:
   review:
     if: >-
       github.event.pull_request.draft == false &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'renovate[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
