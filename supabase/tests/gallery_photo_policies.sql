@@ -161,6 +161,22 @@ BEGIN
 
   PERFORM pg_temp.act_as(u_owner);
   BEGIN
+    UPDATE public.gallery_photos SET gallery_id = g_other WHERE id = p_pending;
+    v_err := NULL;
+  EXCEPTION WHEN others THEN v_err := SQLSTATE;
+  END;
+  RESET ROLE;
+  PERFORM pg_temp.check(v_err = '42501', 'the owner cannot move a photo into someone else''s gallery');
+
+  PERFORM pg_temp.act_as(u_owner);
+  UPDATE public.gallery_photos SET visibility = 'hidden' WHERE id = p_pending;
+  UPDATE public.gallery_photos SET visibility = 'visible' WHERE id = p_pending;
+  GET DIAGNOSTICS v_n = ROW_COUNT;
+  RESET ROLE;
+  PERFORM pg_temp.check(v_n = 1, 'the owner can hide and unhide their own photo');
+
+  PERFORM pg_temp.act_as(u_owner);
+  BEGIN
     INSERT INTO public.gallery_photos
       (gallery_id, user_id, file_name, original_file_name, file_size, mime_type, storage_path, is_featured)
     VALUES (g_public, m_owner, 'f.jpg', 'f.jpg', 1, 'image/jpeg', 'gp-test/f', true);

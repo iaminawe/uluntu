@@ -14,7 +14,9 @@
 -- Moderation: now that owners can write, a trigger stops non-admins from
 --   changing moderation_status or the featured fields on an existing photo,
 --   or featuring a photo when uploading. Uploads keep whatever
---   moderation_status the app sends (it auto-approves today).
+--   moderation_status the app sends (it auto-approves today). visibility
+--   stays owner-controlled (owners hide and unhide their own photos); admins
+--   take a photo down by rejecting or flagging it, which owners can't undo.
 -- Checks are in supabase/tests/gallery_photo_policies.sql.
 
 BEGIN;
@@ -36,11 +38,19 @@ CREATE POLICY "Users can upload photos to their galleries" ON public.gallery_pho
     )
   );
 
+-- The gallery check stops an owner moving a photo into someone else's gallery.
 DROP POLICY IF EXISTS "Users can update their own photos" ON public.gallery_photos;
 CREATE POLICY "Users can update their own photos" ON public.gallery_photos
   FOR UPDATE TO authenticated
   USING (user_id = (select public.get_current_member_id()))
-  WITH CHECK (user_id = (select public.get_current_member_id()));
+  WITH CHECK (
+    user_id = (select public.get_current_member_id())
+    AND EXISTS (
+      SELECT 1 FROM public.user_galleries g
+      WHERE g.id = gallery_photos.gallery_id
+        AND g.user_id = (select public.get_current_member_id())
+    )
+  );
 
 DROP POLICY IF EXISTS "Users can delete their own photos" ON public.gallery_photos;
 CREATE POLICY "Users can delete their own photos" ON public.gallery_photos
