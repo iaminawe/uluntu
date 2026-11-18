@@ -9,7 +9,9 @@
 --              marketplace_listings (seller) already have own-row policies;
 --              events (organizer) and resources (contributor) get one here.
 --              The resources one also lets INSERT ... RETURNING read back a
---              new row.
+--              new row. companies has no owner column and no write policy
+--              for client roles (only admins and the service role create or
+--              edit companies), so unpublished companies are admin-only.
 --   admins:    the existing "Superadmins can manage" policies only match the
 --              'superadmin' role, so plain admins saw drafts only through the
 --              read-all policies. Add an is_site_admin() read policy, except
