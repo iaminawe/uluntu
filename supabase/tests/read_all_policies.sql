@@ -141,30 +141,37 @@ BEGIN
   RESET ROLE;
   PERFORM pg_temp.check(v_id IS NOT NULL, 'a contributor can insert a draft resource and read it back');
 
-  -- Published content is still public.
-  PERFORM pg_temp.act_as(NULL);
-  PERFORM pg_temp.check((SELECT count(*) FROM public.members WHERE status = 'published') > 0,
-    'anon still reads published members');
-  PERFORM pg_temp.check((SELECT count(*) FROM public.events WHERE status = 'published') > 0,
-    'anon still reads published events');
-  PERFORM pg_temp.check((SELECT count(*) FROM public.companies WHERE status = 'published') > 0,
-    'anon still reads published companies');
-  RESET ROLE;
+  -- Published content is still readable by anon and by signed-in members.
+  -- Needs published rows in every table (true of uluntu.io; a fresh database
+  -- would need seeding).
+  FOR t IN SELECT unnest(ARRAY['members', 'companies', 'events', 'news', 'opportunities',
+                               'resources', 'marketplace_listings', 'tags', 'resource_photos']) LOOP
+    FOREACH v_id IN ARRAY ARRAY[NULL, u_other]::uuid[] LOOP
+      PERFORM pg_temp.act_as(v_id);
+      EXECUTE CASE t
+        WHEN 'tags' THEN 'SELECT count(*) FROM public.tags WHERE status = ''active'''
+        WHEN 'resource_photos' THEN 'SELECT count(*) FROM public.resource_photos'
+        ELSE format('SELECT count(*) FROM public.%I WHERE status = ''published''', t)
+      END INTO v_n;
+      RESET ROLE;
+      PERFORM pg_temp.check(v_n > 0, format('%s still reads published %s',
+        CASE WHEN v_id IS NULL THEN 'anon' ELSE 'a member' END, t));
+    END LOOP;
+  END LOOP;
 
-  PERFORM pg_temp.act_as(u_other);
-  PERFORM pg_temp.check((SELECT count(*) FROM public.resources WHERE status = 'published') > 0,
-    'a member still reads published resources');
-  PERFORM pg_temp.check((SELECT count(*) FROM public.tags WHERE status = 'active') > 0,
-    'a member still reads active tags');
-  RESET ROLE;
-
-  -- No read-everything policy is left on these tables.
+  -- No read-everything policy is left on these tables: no USING (true) and no
+  -- condition that only asks whether the caller is signed in.
   SELECT count(*) INTO v_n FROM pg_policies
   WHERE schemaname = 'public'
     AND tablename IN ('members', 'companies', 'events', 'news', 'opportunities', 'resources',
                       'marketplace_listings', 'resource_photos', 'tags')
     AND cmd IN ('SELECT', 'ALL')
-    AND (qual = 'true' OR qual = '(auth.role() = ''authenticated''::text)');
+    AND regexp_replace(qual, '[()\s]', '', 'g') IN (
+      'true',
+      'auth.role=''authenticated''::text',
+      'selectauth.roleASrole=''authenticated''::text',
+      'auth.uidISNOTNULL',
+      'selectauth.uidASuidISNOTNULL');
   PERFORM pg_temp.check(v_n = 0, 'no USING (true) or any-signed-in-user read policies remain');
 
   RAISE NOTICE 'read-all policy checks passed';
