@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Photo } from '@/features/gallery/types';
+import { requireCurrentMember } from '@/features/gallery/api/currentMember';
 import {
   Check,
   X,
@@ -69,13 +70,12 @@ const PhotoModerationQueue: React.FC = () => {
         .from('gallery_photos')
         .select(`
           *,
-          user_galleries(
+          user_galleries!gallery_photos_gallery_id_fkey(
             title,
             user_id
           ),
-          members(
-            name,
-            email
+          members:members!gallery_photos_user_id_fkey(
+            name
           )
         `, { count: 'exact' });
 
@@ -119,7 +119,7 @@ const PhotoModerationQueue: React.FC = () => {
       const updates: any = {
         moderation_status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'flagged',
         reviewed_at: new Date().toISOString(),
-        reviewed_by: (await supabase.auth.getUser()).data.user?.id
+        reviewed_by: (await requireCurrentMember()).memberId
       };
 
       if (reason) {
@@ -156,7 +156,7 @@ const PhotoModerationQueue: React.FC = () => {
       const updates: any = {
         moderation_status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'flagged',
         reviewed_at: new Date().toISOString(),
-        reviewed_by: (await supabase.auth.getUser()).data.user?.id
+        reviewed_by: (await requireCurrentMember()).memberId
       };
 
       if (reason) {
@@ -434,9 +434,6 @@ const PhotoModerationQueue: React.FC = () => {
                       <div>
                         <div className="text-sm text-gray-900 dark:text-gray-100">
                           {(photo as any).members?.name || 'Unknown User'}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {(photo as any).members?.email}
                         </div>
                       </div>
                     </div>

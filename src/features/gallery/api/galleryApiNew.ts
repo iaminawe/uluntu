@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
 import { storageService } from '@/services/storageService';
+import { requireCurrentMember } from './currentMember';
 
 export const galleryApiNew = {
   // Gallery CRUD operations
@@ -139,16 +140,12 @@ export const galleryApiNew = {
   },
 
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     // Ensure user_id is set
     const galleryData = {
       ...gallery,
-      user_id: user.id
+      user_id: memberId
     };
 
     const { data, error } = await supabase
@@ -166,18 +163,14 @@ export const galleryApiNew = {
   },
 
   async updateGallery(id: string, updates: Partial<Gallery>): Promise<Gallery> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     // Update with ownership verification
     const { data, error } = await supabase
       .from('user_galleries')
       .update(updates as any)
       .eq('id', id)
-      .eq('user_id', user.id)
+      .eq('user_id', memberId)
       .select()
       .single();
 
@@ -190,18 +183,14 @@ export const galleryApiNew = {
   },
 
   async deleteGallery(id: string): Promise<boolean> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { userId, memberId } = await requireCurrentMember();
 
     // Verify ownership
     const { data: gallery, error: galleryError } = await supabase
       .from('user_galleries')
       .select('user_id')
       .eq('id', id)
-      .eq('user_id', user.id)
+      .eq('user_id', memberId)
       .single();
 
     if (galleryError || !gallery) {
@@ -209,14 +198,14 @@ export const galleryApiNew = {
     }
 
     // Delete all gallery files from storage
-    await storageService.deleteGalleryFiles(user.id, id);
+    await storageService.deleteGalleryFiles(userId, id);
 
     // Delete gallery record (photos will be deleted by CASCADE)
     const { error } = await supabase
       .from('user_galleries')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id);
+      .eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting gallery:', error);
@@ -265,11 +254,7 @@ export const galleryApiNew = {
     // Initialize storage service
     await storageService.initialize();
 
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required for photo upload');
-    }
+    const { userId, memberId } = await requireCurrentMember();
 
     // Validate gallery ownership
     if (input.galleryId) {
@@ -277,7 +262,7 @@ export const galleryApiNew = {
         .from('user_galleries')
         .select('user_id')
         .eq('id', input.galleryId)
-        .eq('user_id', user.id)
+        .eq('user_id', memberId)
         .single();
 
       if (galleryError || !gallery) {
@@ -287,7 +272,7 @@ export const galleryApiNew = {
 
     // Upload using storage service with user folder structure
     const uploadResult = await storageService.uploadGalleryPhoto({
-      userId: user.id,
+      userId,
       galleryId: input.galleryId || '',
       file: input.file,
       generateThumbnails: true
@@ -306,7 +291,7 @@ export const galleryApiNew = {
     // Create photo record with user folder structure
     const photoData = {
       gallery_id: input.galleryId,
-      user_id: user.id,
+      user_id: memberId,
       file_name: storagePath.split('/').pop() || input.file.name,
       original_file_name: input.file.name,
       file_size: size,
@@ -348,17 +333,13 @@ export const galleryApiNew = {
   },
 
   async updatePhoto(id: string, updates: Partial<Photo>): Promise<Photo> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     const { data, error } = await supabase
       .from('gallery_photos')
       .update(updates)
       .eq('id', id)
-      .eq('user_id', user.id)
+      .eq('user_id', memberId)
       .select()
       .single();
 
@@ -387,18 +368,14 @@ export const galleryApiNew = {
   },
 
   async deletePhoto(id: string): Promise<boolean> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     // Get photo with ownership verification
     const { data: photo, error: fetchError } = await supabase
       .from('gallery_photos')
       .select('storage_path, thumbnail_path, medium_path, user_id')
       .eq('id', id)
-      .eq('user_id', user.id)
+      .eq('user_id', memberId)
       .single();
 
     if (fetchError) {
@@ -434,7 +411,7 @@ export const galleryApiNew = {
       .from('gallery_photos')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id);
+      .eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting photo record:', error);
@@ -445,18 +422,14 @@ export const galleryApiNew = {
   },
 
   async batchDeletePhotos(photoIds: string[]): Promise<boolean> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     // Get photos with ownership verification
     const { data: photos, error: fetchError } = await supabase
       .from('gallery_photos')
       .select('storage_path, thumbnail_path, medium_path, user_id')
       .in('id', photoIds)
-      .eq('user_id', user.id);
+      .eq('user_id', memberId);
 
     if (fetchError) {
       console.error('Error fetching photos:', fetchError);
@@ -501,7 +474,7 @@ export const galleryApiNew = {
       .from('gallery_photos')
       .delete()
       .in('id', photoIds)
-      .eq('user_id', user.id);
+      .eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting photo records:', error);
@@ -512,18 +485,14 @@ export const galleryApiNew = {
   },
 
   async reorderPhotos(galleryId: string, photoOrders: { id: string; order: number }[]): Promise<boolean> {
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Authentication required');
-    }
+    const { memberId } = await requireCurrentMember();
 
     // Verify gallery ownership
     const { data: gallery, error: galleryError } = await supabase
       .from('user_galleries')
       .select('user_id')
       .eq('id', galleryId)
-      .eq('user_id', user.id)
+      .eq('user_id', memberId)
       .single();
 
     if (galleryError || !gallery) {
@@ -536,7 +505,7 @@ export const galleryApiNew = {
         .update({ sort_order: order })
         .eq('id', id)
         .eq('gallery_id', galleryId)
-        .eq('user_id', user.id)
+        .eq('user_id', memberId)
     );
 
     const results = await Promise.all(updates);
