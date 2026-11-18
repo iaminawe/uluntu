@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
 import { logger } from '@/utils/logger';
 import { requirePhotoGalleriesFeature } from './featureCheck';
+import { requireCurrentMember } from './currentMember';
 
 export interface GalleriesResponse {
   galleries: Gallery[];
@@ -237,9 +238,10 @@ export const galleryApi = {
   async createGallery(gallery: Partial<Gallery>): Promise<Gallery> {
     // Check if feature is enabled
     await requirePhotoGalleriesFeature();
+    const { memberId } = await requireCurrentMember();
     const { data, error } = await supabase
       .from('user_galleries')
-      .insert([gallery as any])
+      .insert([{ ...gallery, user_id: memberId } as any])
       .select()
       .single();
 
@@ -392,37 +394,26 @@ export const galleryApi = {
         await Promise.all(sizePromises);
       }
 
-      // Get dimensions
-      const dimensions = input.dimensions || { width: 0, height: 0, aspectRatio: 1 };
+      const { memberId } = await requireCurrentMember();
 
-      // Create photo record with all variants
+      // Create photo record. gallery_photos only stores the original, medium
+      // and thumbnail variants; width and height must be positive or null.
       const photoData = {
         gallery_id: input.galleryId,
-        user_id: (await supabase.auth.getUser()).data.user?.id || '',
+        user_id: memberId,
         file_name: `${baseFileName}.${fileExtension}`,
         original_file_name: input.file.name,
         file_size: originalFile.size,
         mime_type: input.file.type,
         // Storage paths
         storage_path: storagePaths.original, // Main path for compatibility
-        original_path: uploadedPaths.original,
-        large_path: uploadedPaths.large,
         medium_path: uploadedPaths.medium,
-        small_path: uploadedPaths.small,
         thumbnail_path: uploadedPaths.thumbnail,
         // URLs
-        original_url: uploadedUrls.original,
-        large_url: uploadedUrls.large,
         medium_url: uploadedUrls.medium,
-        small_url: uploadedUrls.small,
         thumbnail_url: uploadedUrls.thumbnail,
-        // Dimensions
-        width: dimensions.width,
-        height: dimensions.height,
-        aspect_ratio: dimensions.aspectRatio,
-        // Processing metadata
-        placeholder_data: input.placeholder,
-        dominant_color: input.dominantColor,
+        width: input.dimensions?.width || null,
+        height: input.dimensions?.height || null,
         processing_status: 'completed' as const,
         // Standard fields
         title: input.title || input.file.name,
@@ -632,15 +623,14 @@ export const galleryApi = {
 
   async likePhoto(photoId: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { memberId } = await requireCurrentMember();
 
       const { data: existing } = await (supabase as any)
         .from('photo_likes')
         .select()
         .eq('photo_id', photoId)
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', memberId)
+        .maybeSingle();
 
       if (existing) {
         // Unlike
@@ -648,7 +638,7 @@ export const galleryApi = {
           .from('photo_likes')
           .delete()
           .eq('photo_id', photoId)
-          .eq('user_id', user.id);
+          .eq('user_id', memberId);
 
         if (error) throw error;
         return false;
@@ -656,7 +646,7 @@ export const galleryApi = {
         // Like
         const { error } = await (supabase as any)
           .from('photo_likes')
-          .insert([{ photo_id: photoId, user_id: user.id }]);
+          .insert([{ photo_id: photoId, user_id: memberId }]);
 
         if (error) throw error;
         return true;
@@ -669,14 +659,13 @@ export const galleryApi = {
 
   async addComment(photoId: string, content: string): Promise<any> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { memberId } = await requireCurrentMember();
 
       const { data, error } = await (supabase as any)
         .from('photo_comments')
         .insert([{ 
           photo_id: photoId, 
-          user_id: user.id,
+          user_id: memberId,
           content: content.trim(),
           moderation_status: 'approved' // Auto-approve for now
         }])
@@ -725,8 +714,7 @@ export const galleryApi = {
 
   async updateComment(commentId: string, content: string): Promise<any> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { memberId } = await requireCurrentMember();
 
       const { data, error } = await (supabase as any)
         .from('photo_comments')
@@ -736,7 +724,7 @@ export const galleryApi = {
           is_edited: true
         })
         .eq('id', commentId)
-        .eq('user_id', user.id) // Ensure user owns the comment
+        .eq('user_id', memberId) // Ensure user owns the comment
         .select()
         .single();
 
@@ -750,14 +738,13 @@ export const galleryApi = {
 
   async deleteComment(commentId: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { memberId } = await requireCurrentMember();
 
       const { error } = await (supabase as any)
         .from('photo_comments')
         .delete()
         .eq('id', commentId)
-        .eq('user_id', user.id); // Ensure user owns the comment
+        .eq('user_id', memberId); // Ensure user owns the comment
 
       if (error) throw error;
       return true;
