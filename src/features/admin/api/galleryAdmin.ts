@@ -922,6 +922,10 @@ export class AdminGalleryAPI {
 
         if (approveError) {
           logger.warn('Failed to approve uploaded photos', 'ADMIN_GALLERY', approveError);
+          // Uploaded but left pending: report them rather than claim success.
+          for (const id of successfulItems.splice(0)) {
+            failedItems.push({ id, error: `Uploaded but not approved: ${approveError.message}` });
+          }
         }
       }
 
