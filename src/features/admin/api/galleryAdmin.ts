@@ -51,7 +51,7 @@ export class AdminGalleryAPI {
         .from('gallery_photos')
         .select(`
           *,
-          user:members!gallery_photos_user_id_fkey(id, name, email),
+          user:members!gallery_photos_user_id_fkey(id, name),
           gallery:user_galleries!gallery_photos_gallery_id_fkey(id, title, privacy_level),
           photo_likes(count),
           photo_comments(count)
@@ -128,8 +128,7 @@ export class AdminGalleryAPI {
         moderation_status: photo.moderation_status || 'pending',
         user: {
           id: photo.user.id,
-          name: photo.user.name,
-          email: photo.user.email
+          name: photo.user.name
         },
         gallery: {
           id: photo.gallery.id,
@@ -186,7 +185,7 @@ export class AdminGalleryAPI {
       // Get photo details for audit log
       const { data: photo, error: fetchError } = await supabase
         .from('gallery_photos')
-        .select('*, user:members(name, email), gallery:user_galleries(title)')
+        .select('*, user:members(name), gallery:user_galleries(title)')
         .eq('id', photoId)
         .single();
 
@@ -302,7 +301,7 @@ export class AdminGalleryAPI {
         .eq('id', photoId)
         .select(`
           *,
-          user:members!gallery_photos_user_id_fkey(id, name, email),
+          user:members!gallery_photos_user_id_fkey(id, name),
           gallery:user_galleries!gallery_photos_gallery_id_fkey(id, title, privacy_level)
         `)
         .single();
@@ -347,8 +346,7 @@ export class AdminGalleryAPI {
         moderation_status: updatedPhoto.moderation_status || 'pending',
         user: {
           id: updatedPhoto.user.id,
-          name: updatedPhoto.user.name,
-          email: updatedPhoto.user.email
+          name: updatedPhoto.user.name
         },
         gallery: {
           id: updatedPhoto.gallery.id,
@@ -668,7 +666,7 @@ export class AdminGalleryAPI {
         .from('user_galleries')
         .select(`
           *,
-          user:members(name, email),
+          user:members(name),
           gallery_photos(id, storage_path, file_name)
         `)
         .eq('id', galleryId)
@@ -789,7 +787,7 @@ export class AdminGalleryAPI {
         .eq('id', galleryId)
         .select(`
           *,
-          user:members(id, name, email)
+          user:members(id, name)
         `)
         .single();
 
@@ -833,8 +831,7 @@ export class AdminGalleryAPI {
         updated_at: updatedGallery.updated_at,
         user: {
           id: updatedGallery.user.id,
-          name: updatedGallery.user.name,
-          email: updatedGallery.user.email
+          name: updatedGallery.user.name
         },
         recent_activity: updatedGallery.updated_at,
         flagged_photos_count: 0 // TODO: Calculate
@@ -1136,7 +1133,7 @@ export class AdminGalleryAPI {
         .from('admin_activity_logs')
         .select(`
           *,
-          admin:members!admin_activity_logs_admin_id_fkey(name, email)
+          admin:members!admin_activity_logs_admin_id_fkey(name)
         `, { count: 'exact' })
         .order('created_at', { ascending: false });
 
@@ -1182,7 +1179,6 @@ export class AdminGalleryAPI {
         id: log.id,
         admin_id: log.admin_id,
         admin_name: log.admin?.name || 'Unknown',
-        admin_email: log.admin?.email || 'Unknown',
         action: log.action,
         entity_type: log.entity_type,
         entity_id: log.entity_id,

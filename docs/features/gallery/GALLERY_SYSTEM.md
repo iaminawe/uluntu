@@ -176,7 +176,6 @@ reorderPhotos(galleryId: string, photoOrders: { id: string; order: number }[]): 
 
 // Gallery interactions
 incrementViewCount(galleryId: string): Promise<void>
-toggleLike(galleryId: string, userId: string): Promise<boolean>
 likePhoto(photoId: string): Promise<boolean>
 ```
 

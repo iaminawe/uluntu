@@ -360,7 +360,7 @@ export class GalleryAuditLogger {
         .from('admin_activity_logs')
         .select(`
           *,
-          admin:members!admin_activity_logs_admin_id_fkey(name, email)
+          admin:members!admin_activity_logs_admin_id_fkey(name)
         `, { count: 'exact' })
         .eq('entity_type', params.entityType)
         .order('created_at', { ascending: false });
@@ -399,7 +399,6 @@ export class GalleryAuditLogger {
         id: log.id,
         admin_id: log.admin_id,
         admin_name: log.admin?.name || 'Unknown',
-        admin_email: log.admin?.email || 'Unknown',
         action: log.action,
         entity_type: log.entity_type,
         entity_id: log.entity_id,
@@ -468,7 +467,7 @@ export class GalleryAuditLogger {
       const { data: recentActivity } = await baseQuery
         .select(`
           *,
-          admin:members!admin_activity_logs_admin_id_fkey(name, email)
+          admin:members!admin_activity_logs_admin_id_fkey(name)
         `)
         .order('created_at', { ascending: false })
         .limit(10);
@@ -477,7 +476,6 @@ export class GalleryAuditLogger {
         id: log.id,
         admin_id: log.admin_id,
         admin_name: log.admin?.name || 'Unknown',
-        admin_email: log.admin?.email || 'Unknown',
         action: log.action,
         entity_type: log.entity_type,
         entity_id: log.entity_id,

@@ -441,26 +441,6 @@ export function useReorderPhotos(): UseMutationResult<
 }
 
 /**
- * Toggle like on a gallery
- */
-export function useToggleGalleryLike(): UseMutationResult<boolean, Error, { galleryId: string; userId: string }> {
-  const queryClient = useQueryClient();
-  
-  return useMutation<boolean, Error, { galleryId: string; userId: string }>({
-    mutationFn: async ({ galleryId, userId }) => {
-      if (!USE_SUPABASE) {
-        return Promise.resolve(true);
-      }
-      
-      return galleryApi.toggleLike(galleryId, userId);
-    },
-    onSuccess: (_, { galleryId }) => {
-      queryClient.invalidateQueries({ queryKey: galleryQueryKeys.detail(galleryId) });
-    },
-  });
-}
-
-/**
  * Toggle like on a photo
  */
 export function useTogglePhotoLike(): UseMutationResult<boolean, Error, string> {

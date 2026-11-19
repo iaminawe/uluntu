@@ -27,7 +27,6 @@ interface PageData {
   author_id?: string;
   author?: {
     name: string;
-    email: string;
   };
 }
 
@@ -74,7 +73,7 @@ export default function AdvancedPageEdit() {
         .from('pages')
         .select(`
           *,
-          author:members!author_id(name, email)
+          author:members!author_id(name)
         `)
         .eq('id', id)
         .single();
@@ -102,7 +101,7 @@ export default function AdvancedPageEdit() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('members')
-        .select('id, name, email')
+        .select('id, name')
         .order('name');
       
       if (error) throw error;
@@ -441,7 +440,7 @@ export default function AdvancedPageEdit() {
                   <option value="">Select author...</option>
                   {authors?.map((author) => (
                     <option key={author.id} value={author.id}>
-                      {author.name} ({author.email})
+                      {author.name}
                     </option>
                   ))}
                 </select>
