@@ -19,6 +19,7 @@ import type {
   PhotoUploadValidation
 } from '@/types/adminGallery';
 import { logger } from '@/utils/logger';
+import { storedFilePaths } from '@/features/gallery/api/storagePaths';
 import { adminActivityLogger } from '@/services/adminActivityLogger';
 import { ApiResponse, PaginationParams } from '@/shared/api/types';
 
@@ -197,13 +198,16 @@ export class AdminGalleryAPI {
         };
       }
 
-      // Delete from storage first
-      const { error: storageError } = await supabase.storage
-        .from('gallery-photos')
-        .remove([photo.storage_path]);
+      // Delete every size from storage first
+      const filePaths = storedFilePaths([photo]);
+      if (filePaths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('gallery-photos')
+          .remove(filePaths);
 
-      if (storageError) {
-        logger.warn('Failed to delete photo from storage', 'ADMIN_GALLERY', storageError);
+        if (storageError) {
+          logger.warn('Failed to delete photo from storage', 'ADMIN_GALLERY', storageError);
+        }
       }
 
       // Delete from database
@@ -483,7 +487,7 @@ export class AdminGalleryAPI {
       // Get photo details for cleanup and audit
       const { data: photos, error: fetchError } = await supabase
         .from('gallery_photos')
-        .select('id, file_name, storage_path, user:members(name), gallery:user_galleries(title)')
+        .select('id, file_name, storage_path, medium_path, thumbnail_path, user:members(name), gallery:user_galleries(title)')
         .in('id', photoIds);
 
       if (fetchError) {
@@ -520,9 +524,9 @@ export class AdminGalleryAPI {
           }
         }
 
-        const paths = (photos || [])
-          .filter(photo => deletedIds.has(photo.id) && photo.storage_path)
-          .map(photo => photo.storage_path);
+        const paths = storedFilePaths(
+          (photos || []).filter(photo => deletedIds.has(photo.id))
+        );
         if (paths.length > 0) {
           const { error: storageError } = await supabase.storage
             .from('gallery-photos')
@@ -667,7 +671,7 @@ export class AdminGalleryAPI {
         .select(`
           *,
           user:members(name),
-          gallery_photos(id, storage_path, file_name)
+          gallery_photos(id, storage_path, medium_path, thumbnail_path, file_name)
         `)
         .eq('id', galleryId)
         .single();
@@ -681,7 +685,7 @@ export class AdminGalleryAPI {
       }
 
       // Delete all photos from storage
-      const photoPaths = gallery.gallery_photos?.map(p => p.storage_path) || [];
+      const photoPaths = storedFilePaths(gallery.gallery_photos || []);
       if (photoPaths.length > 0) {
         const { error: storageError } = await supabase.storage
           .from('gallery-photos')
