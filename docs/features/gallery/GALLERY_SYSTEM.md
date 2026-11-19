@@ -650,6 +650,16 @@ function CustomUpload() {
 - User permission checks
 - Secure file upload to Supabase Storage
 
+### Photo moderation
+
+The database sets a new photo's `moderation_status`, whatever the app sends:
+
+- Photos a member uploads start as `pending`. Only the owner and site admins can see them until an admin approves them in the moderation queue.
+- Photos a site admin uploads are `approved`, with the admin recorded in `reviewed_by`.
+- Only site admins can change `moderation_status`, the review fields (`reviewed_by`, `reviewed_at`, `moderation_notes`) or the featured fields.
+
+Photos belong to the gallery's owner, also when an admin uploads them, and their files live under `users/<owner's auth id>/galleries/<gallery id>/` in the `gallery-photos` bucket.
+
 ## Future Enhancements
 
 - [ ] Resumable uploads for large files
