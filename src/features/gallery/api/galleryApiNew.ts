@@ -65,13 +65,13 @@ export const galleryApiNew = {
           ...photo,
           url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
           thumbnail_url: photo.thumbnail_path 
-            ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
+            ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
             : undefined,
           medium_url: photo.medium_path
-            ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+            ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
             : undefined,
           small_url: (photo as any).small_path
-            ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+            ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
             : undefined,
           original_url: (photo as any).original_path
             ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
@@ -118,13 +118,13 @@ export const galleryApiNew = {
         ...photo,
         url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
         thumbnail_url: photo.thumbnail_path 
-          ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
+          ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
           : undefined,
         medium_url: photo.medium_path
-          ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+          ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
           : undefined,
         small_url: (photo as any).small_path
-          ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+          ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
           : undefined,
         original_url: (photo as any).original_path
           ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
@@ -233,13 +233,13 @@ export const galleryApiNew = {
       ...photo,
       url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
       thumbnail_url: photo.thumbnail_path 
-        ? storageService.getPublicUrl('gallery-thumbnails', photo.thumbnail_path)
+        ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
         : undefined,
       medium_url: photo.medium_path
-        ? storageService.getPublicUrl('gallery-thumbnails', photo.medium_path)
+        ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
         : undefined,
       small_url: (photo as any).small_path
-        ? storageService.getPublicUrl('gallery-thumbnails', (photo as any).small_path)
+        ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
         : undefined,
       original_url: (photo as any).original_path
         ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
@@ -282,11 +282,14 @@ export const galleryApiNew = {
       throw new Error(uploadResult.error || 'Upload failed');
     }
 
-    const { path: storagePath, url: publicUrl, size, mimeType } = uploadResult.data;
-
-    // Generate thumbnail paths
-    const thumbnailPath = storageService.generateThumbnailPath(storagePath, 'thumb');
-    const mediumPath = storageService.generateThumbnailPath(storagePath, 'medium');
+    const {
+      path: storagePath,
+      url: publicUrl,
+      size,
+      mimeType,
+      thumbnailPath = null,
+      mediumPath = null
+    } = uploadResult.data;
 
     // Create photo record with user folder structure
     const photoData = {
@@ -316,8 +319,12 @@ export const galleryApiNew = {
 
     if (error) {
       console.error('Error creating photo record:', error);
-      // Clean up uploaded file using storage service
-      await storageService.deleteFile('gallery-photos', storagePath);
+      // Clean up uploaded files using storage service
+      await Promise.all(
+        [storagePath, thumbnailPath, mediumPath]
+          .filter((path): path is string => !!path)
+          .map(path => storageService.deleteFile('gallery-photos', path))
+      );
       throw error;
     }
 
@@ -325,8 +332,8 @@ export const galleryApiNew = {
     return {
       ...data,
       url: publicUrl,
-      thumbnail_url: storageService.getPublicUrl('gallery-thumbnails', thumbnailPath),
-      medium_url: storageService.getPublicUrl('gallery-thumbnails', mediumPath),
+      thumbnail_url: thumbnailPath ? storageService.getPublicUrl('gallery-photos', thumbnailPath) : undefined,
+      medium_url: mediumPath ? storageService.getPublicUrl('gallery-photos', mediumPath) : undefined,
       small_url: undefined,
       original_url: publicUrl
     } as Photo;
@@ -353,13 +360,13 @@ export const galleryApiNew = {
       ...data,
       url: storageService.getPublicUrl('gallery-photos', data.storage_path),
       thumbnail_url: data.thumbnail_path 
-        ? storageService.getPublicUrl('gallery-thumbnails', data.thumbnail_path)
+        ? storageService.getPublicUrl('gallery-photos', data.thumbnail_path)
         : undefined,
       medium_url: data.medium_path
-        ? storageService.getPublicUrl('gallery-thumbnails', data.medium_path)
+        ? storageService.getPublicUrl('gallery-photos', data.medium_path)
         : undefined,
       small_url: (data as any).small_path
-        ? storageService.getPublicUrl('gallery-thumbnails', (data as any).small_path)
+        ? storageService.getPublicUrl('gallery-photos', (data as any).small_path)
         : undefined,
       original_url: (data as any).original_path
         ? storageService.getPublicUrl('gallery-photos', (data as any).original_path)
@@ -391,11 +398,11 @@ export const galleryApiNew = {
     }
     
     if (photo.thumbnail_path) {
-      deletePromises.push(storageService.deleteFile('gallery-thumbnails', photo.thumbnail_path));
+      deletePromises.push(storageService.deleteFile('gallery-photos', photo.thumbnail_path));
     }
     
     if (photo.medium_path) {
-      deletePromises.push(storageService.deleteFile('gallery-thumbnails', photo.medium_path));
+      deletePromises.push(storageService.deleteFile('gallery-photos', photo.medium_path));
     }
 
     // Execute deletions in parallel
@@ -457,7 +464,7 @@ export const galleryApiNew = {
     
     if (thumbnailPaths.length > 0) {
       deletePromises.push(
-        Promise.all(thumbnailPaths.map(path => storageService.deleteFile('gallery-thumbnails', path)))
+        Promise.all(thumbnailPaths.map(path => storageService.deleteFile('gallery-photos', path)))
       );
     }
 

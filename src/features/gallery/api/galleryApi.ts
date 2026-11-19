@@ -3,6 +3,21 @@ import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
 import { logger } from '@/utils/logger';
 import { requirePhotoGalleriesFeature } from './featureCheck';
 import { requireCurrentMember } from './currentMember';
+import { storageService } from '@/services/storageService';
+
+type StoredPaths = {
+  storage_path: string | null;
+  medium_path?: string | null;
+  thumbnail_path?: string | null;
+};
+
+// Every size of each photo that lives in the gallery-photos bucket. Sample
+// photos point at external URLs and have nothing to delete.
+function storedFilePaths(photos: StoredPaths[]): string[] {
+  return photos
+    .flatMap(p => [p.storage_path, p.medium_path, p.thumbnail_path])
+    .filter((path): path is string => !!path && !/^https?:\/\//.test(path));
+}
 
 export interface GalleriesResponse {
   galleries: Gallery[];
@@ -337,17 +352,20 @@ export const galleryApi = {
   async uploadPhoto(input: PhotoUploadInput): Promise<Photo> {
     // Check if feature is enabled
     await requirePhotoGalleriesFeature();
-    const baseFileName = `${Date.now()}-${input.file.name.replace(/\.[^/.]+$/, "")}`;
-    const fileExtension = input.file.name.split('.').pop() || 'jpg';
-    
-    // Storage paths for different sizes
-    const storagePaths = {
-      original: `gallery/original/${baseFileName}.${fileExtension}`,
-      large: `gallery/large/${baseFileName}.${fileExtension}`,
-      medium: `gallery/medium/${baseFileName}.${fileExtension}`,
-      small: `gallery/small/${baseFileName}.${fileExtension}`,
-      thumbnail: `gallery/thumbnail/${baseFileName}.${fileExtension}`
+    if (!input.galleryId) {
+      throw new Error('A gallery is required to upload a photo');
+    }
+    const { userId, memberId } = await requireCurrentMember();
+
+    // Storage policies only allow uploads under the uploader's own
+    // users/<auth id>/galleries/<gallery id>/ folder. gallery_photos only
+    // stores the original, medium and thumbnail sizes, so only those are uploaded.
+    const storagePaths: Record<string, string> = {
+      original: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'originals'),
+      medium: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'medium'),
+      thumbnail: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'thumbs')
     };
+    const fileName = storagePaths.original.split('/').pop() as string;
 
     const uploadedPaths: Record<string, string> = {};
     const uploadedUrls: Record<string, string> = {};
@@ -373,7 +391,7 @@ export const galleryApi = {
         const sizePromises = Object.entries(input.processedImages).map(async ([sizeType, file]) => {
           if (!file || sizeType === 'original') return; // Original already handled
           
-          const sizePath = storagePaths[sizeType as keyof typeof storagePaths];
+          const sizePath = storagePaths[sizeType];
           if (!sizePath) return;
 
           const { error } = await supabase.storage
@@ -394,14 +412,12 @@ export const galleryApi = {
         await Promise.all(sizePromises);
       }
 
-      const { memberId } = await requireCurrentMember();
-
       // Create photo record. gallery_photos only stores the original, medium
       // and thumbnail variants; width and height must be positive or null.
       const photoData = {
         gallery_id: input.galleryId,
         user_id: memberId,
-        file_name: `${baseFileName}.${fileExtension}`,
+        file_name: fileName,
         original_file_name: input.file.name,
         file_size: originalFile.size,
         mime_type: input.file.type,
@@ -476,7 +492,7 @@ export const galleryApi = {
     // Get photo to delete file
     const { data: photo, error: fetchError } = await supabase
       .from('gallery_photos')
-      .select('storage_path')
+      .select('storage_path, medium_path, thumbnail_path')
       .eq('id', id)
       .single();
 
@@ -485,16 +501,15 @@ export const galleryApi = {
       throw fetchError;
     }
 
-    // Use storage_path directly
-    const filePath = photo.storage_path;
+    const filePaths = storedFilePaths([photo]);
+    if (filePaths.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from('gallery-photos')
+        .remove(filePaths);
 
-    // Delete from storage
-    const { error: storageError } = await supabase.storage
-      .from('gallery-photos')
-      .remove([filePath]);
-
-    if (storageError) {
-      logger.error('Error deleting photo file', 'GALLERY', storageError);
+      if (storageError) {
+        logger.error('Error deleting photo file', 'GALLERY', storageError);
+      }
     }
 
     // Delete record
@@ -515,7 +530,7 @@ export const galleryApi = {
     // Get photos to delete files
     const { data: photos, error: fetchError } = await supabase
       .from('gallery_photos')
-      .select('storage_path')
+      .select('storage_path, medium_path, thumbnail_path')
       .in('id', photoIds);
 
     if (fetchError) {
@@ -523,8 +538,7 @@ export const galleryApi = {
       throw fetchError;
     }
 
-    // Use storage_path directly
-    const filePaths = photos.map(photo => photo.storage_path);
+    const filePaths = storedFilePaths(photos);
 
     // Delete from storage
     if (filePaths.length > 0) {

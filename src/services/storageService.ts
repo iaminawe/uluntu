@@ -20,6 +20,9 @@ export interface UploadResult {
     url: string;
     size: number;
     mimeType: string;
+    /** Paths of the resized copies that were uploaded, if any. */
+    thumbnailPath?: string;
+    mediumPath?: string;
   };
   error?: string;
 }
@@ -240,27 +243,26 @@ export class StorageService {
         .from('gallery-photos')
         .getPublicUrl(storagePath);
 
-      const result: UploadResult = {
-        success: true,
-        data: {
-          path: storagePath,
-          url: publicUrl,
-          size: options.file.size,
-          mimeType: options.file.type
-        }
+      const data: NonNullable<UploadResult['data']> = {
+        path: storagePath,
+        url: publicUrl,
+        size: options.file.size,
+        mimeType: options.file.type
       };
 
       // Generate thumbnails if requested
       if (options.generateThumbnails) {
         try {
-          await this.generateThumbnails(options.userId, options.galleryId, options.file, storagePath);
+          const sizes = await this.generateThumbnails(options.userId, options.galleryId, options.file);
+          data.thumbnailPath = sizes.thumbs;
+          data.mediumPath = sizes.medium;
         } catch (thumbnailError) {
           logAndSanitizeError(thumbnailError, 'Storage Service - Thumbnail Generation');
           // Don't fail the main upload if thumbnails fail
         }
       }
 
-      return result;
+      return { success: true, data };
     } catch (error: any) {
       const sanitized = logAndSanitizeError(error, 'Storage Service - Upload Failed');
       return { success: false, error: sanitized.userMessage };
@@ -273,10 +275,10 @@ export class StorageService {
   private async generateThumbnails(
     userId: string,
     galleryId: string,
-    originalFile: File,
-    originalPath: string
-  ): Promise<void> {
+    originalFile: File
+  ): Promise<Partial<Record<'thumbs' | 'medium', string>>> {
     const config = this.config || this.getDefaultConfig();
+    const uploaded: Partial<Record<'thumbs' | 'medium', string>> = {};
 
     try {
       // Create thumbnail versions; each size is independent.
@@ -284,21 +286,26 @@ export class StorageService {
         const thumbnailFile = await this.resizeImage(originalFile, dimensions);
         
         if (thumbnailFile) {
+          const folder = sizeKey === 'thumb' ? 'thumbs' : 'medium';
           const thumbnailPath = this.generateStoragePath(
             userId,
             galleryId,
             `${sizeKey}_${originalFile.name}`,
-            sizeKey as 'thumbs' | 'medium'
+            folder
           );
 
-          await supabase.storage
-            .from('gallery-thumbnails')
+          const { error } = await supabase.storage
+            .from('gallery-photos')
             .upload(thumbnailPath, thumbnailFile, {
               cacheControl: '3600',
               upsert: false
             });
+          if (!error) {
+            uploaded[folder] = thumbnailPath;
+          }
         }
       }));
+      return uploaded;
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Storage Service - Generate Thumbnails');
       throw new Error(sanitized.userMessage);
