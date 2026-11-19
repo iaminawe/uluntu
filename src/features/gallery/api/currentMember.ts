@@ -28,3 +28,28 @@ export async function requireCurrentMember(): Promise<CurrentMember> {
 
   return { userId: user.id, memberId: member.id };
 }
+
+export interface GalleryOwner {
+  /** members.id of the gallery's owner: new photos get this as user_id. */
+  memberId: string;
+  /** The owner's auth.users id, or null if the member has no login. */
+  userId: string | null;
+}
+
+/**
+ * The owner of a gallery. Photos belong to the gallery's owner even when a
+ * site admin uploads them, so the owner can still edit and delete them.
+ */
+export async function getGalleryOwner(galleryId: string): Promise<GalleryOwner> {
+  const { data: gallery, error } = await supabase
+    .from('user_galleries')
+    .select('user_id, owner:members!user_galleries_user_id_fkey(user_id)')
+    .eq('id', galleryId)
+    .single();
+
+  if (error) throw error;
+  if (!gallery?.user_id) throw new Error('Gallery not found');
+
+  const owner = gallery.owner as { user_id: string | null } | null;
+  return { memberId: gallery.user_id, userId: owner?.user_id ?? null };
+}

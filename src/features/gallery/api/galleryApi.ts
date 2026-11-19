@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { Photo, Gallery, PhotoUploadInput, GalleryFilters } from '../types';
 import { logger } from '@/utils/logger';
 import { requirePhotoGalleriesFeature } from './featureCheck';
-import { requireCurrentMember } from './currentMember';
+import { requireCurrentMember, getGalleryOwner } from './currentMember';
 import { storageService } from '@/services/storageService';
 import { storedFilePaths } from './storagePaths';
 
@@ -342,15 +342,21 @@ export const galleryApi = {
     if (!input.galleryId) {
       throw new Error('A gallery is required to upload a photo');
     }
-    const { userId, memberId } = await requireCurrentMember();
+    // The photo belongs to the gallery's owner, also when a site admin
+    // uploads it, so the owner can still edit and delete it. Files go in the
+    // owner's users/<auth id>/galleries/<gallery id>/ folder: members may only
+    // upload to their own, admins to any. A gallery owner without a login gets
+    // the uploader's folder.
+    const owner = await getGalleryOwner(input.galleryId);
+    const folderUserId = owner.userId ?? (await requireCurrentMember()).userId;
+    const memberId = owner.memberId;
 
-    // Storage policies only allow uploads under the uploader's own
-    // users/<auth id>/galleries/<gallery id>/ folder. gallery_photos only
-    // stores the original, medium and thumbnail sizes, so only those are uploaded.
+    // gallery_photos only stores the original, medium and thumbnail sizes,
+    // so only those are uploaded.
     const storagePaths: Record<string, string> = {
-      original: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'originals'),
-      medium: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'medium'),
-      thumbnail: storageService.generateStoragePath(userId, input.galleryId, input.file.name, 'thumbs')
+      original: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'originals'),
+      medium: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'medium'),
+      thumbnail: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'thumbs')
     };
     const fileName = storagePaths.original.split('/').pop() as string;
 

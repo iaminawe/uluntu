@@ -20,6 +20,8 @@ import type {
 } from '@/types/adminGallery';
 import { logger } from '@/utils/logger';
 import { storedFilePaths } from '@/features/gallery/api/storagePaths';
+import { galleryApi } from '@/features/gallery/api/galleryApi';
+import { imageProcessingService } from '@/features/gallery/services/imageProcessingService';
 import { adminActivityLogger } from '@/services/adminActivityLogger';
 import { ApiResponse, PaginationParams } from '@/shared/api/types';
 
@@ -895,61 +897,31 @@ export class AdminGalleryAPI {
       const successfulItems: string[] = [];
       const failedItems: Array<{ id: string; error: string }> = [];
 
-      // Process files individually
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileName = `${Date.now()}-${i}-${file.name}`;
-        
+      // Same path as the member and admin upload screens: resize in the
+      // browser, then galleryApi stores every size in the gallery owner's
+      // folder and creates the gallery_photos row owned by them.
+      for (const file of files) {
         try {
-          // Upload to storage
-          const { error: uploadError, data: uploadData } = await supabase.storage
-            .from('gallery-photos')
-            .upload(`gallery/${fileName}`, file);
-
-          if (uploadError) {
-            failedItems.push({
-              id: fileName,
-              error: uploadError.message
-            });
-            continue;
-          }
-
-          // Create photo record
-          const { error: createError, data: photoData } = await supabase
-            .from('gallery_photos')
-            .insert({
-              gallery_id: galleryId,
-              user_id: user.id,
-              file_name: fileName,
-              original_file_name: file.name,
-              file_size: file.size,
-              mime_type: file.type,
-              storage_path: uploadData.path,
-              title: file.name,
-              visibility: 'visible',
-              moderation_status: 'approved', // Admin uploads are auto-approved
-              sort_order: i,
-              processing_status: 'completed'
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            // Clean up uploaded file
-            await supabase.storage.from('gallery-photos').remove([uploadData.path]);
-            failedItems.push({
-              id: fileName,
-              error: createError.message
-            });
-          } else {
-            successfulItems.push(photoData.id);
-          }
-
+          const input = await imageProcessingService.enhanceUploadInput(file, galleryId);
+          const photo = await galleryApi.uploadPhoto(input);
+          successfulItems.push(photo.id);
         } catch (error) {
           failedItems.push({
-            id: fileName,
+            id: file.name,
             error: error instanceof Error ? error.message : 'Unknown error'
           });
+        }
+      }
+
+      // Admin uploads are auto-approved; photos otherwise start as pending.
+      if (successfulItems.length > 0) {
+        const { error: approveError } = await supabase
+          .from('gallery_photos')
+          .update({ moderation_status: 'approved' })
+          .in('id', successfulItems);
+
+        if (approveError) {
+          logger.warn('Failed to approve uploaded photos', 'ADMIN_GALLERY', approveError);
         }
       }
 
