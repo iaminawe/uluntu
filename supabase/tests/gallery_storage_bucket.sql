@@ -1,7 +1,7 @@
 -- Regression checks for 20261119010000_gallery_storage_bucket.sql.
 --
 -- Creates a gallery owner, another member and a site admin with a gallery
--- each, then checks who can upload, read and delete objects in the
+-- each, then checks who can upload, read, move and delete objects in the
 -- gallery-photos bucket. Writes storage.objects rows directly, as the Storage
 -- API does, and always rolls back, so no files are created. Raises on the
 -- first failed check. Run against a database that has the migration applied,
@@ -125,6 +125,35 @@ BEGIN
   SELECT count(*) INTO v_n FROM storage.objects WHERE bucket_id = 'gallery-photos' AND name LIKE base || '%';
   RESET ROLE;
   PERFORM pg_temp.check(v_n = 0, 'anon cannot list gallery files');
+
+  -- Moves ---------------------------------------------------------------------
+  PERFORM pg_temp.act_as(u_owner);
+  UPDATE storage.objects SET name = base || 'originals/a_2.jpg'
+  WHERE bucket_id = 'gallery-photos' AND name = base || 'originals/a_1.jpg';
+  GET DIAGNOSTICS v_n = ROW_COUNT;
+  RESET ROLE;
+  PERFORM pg_temp.check(v_n = 1, 'the owner can rename a file within their gallery folder');
+
+  PERFORM pg_temp.act_as(u_owner);
+  BEGIN
+    UPDATE storage.objects
+    SET name = 'users/' || u_owner || '/galleries/' || g_other || '/originals/a_2.jpg'
+    WHERE bucket_id = 'gallery-photos' AND name = base || 'originals/a_2.jpg';
+    v_n := NULL;
+  EXCEPTION WHEN insufficient_privilege THEN v_n := -1;
+  END;
+  RESET ROLE;
+  PERFORM pg_temp.check(v_n = -1, 'the owner cannot move a file into a gallery they do not own');
+
+  PERFORM pg_temp.act_as(u_owner);
+  BEGIN
+    UPDATE storage.objects SET name = 'users/' || u_owner || '/elsewhere/a_2.jpg'
+    WHERE bucket_id = 'gallery-photos' AND name = base || 'originals/a_2.jpg';
+    v_n := NULL;
+  EXCEPTION WHEN insufficient_privilege THEN v_n := -1;
+  END;
+  RESET ROLE;
+  PERFORM pg_temp.check(v_n = -1, 'the owner cannot move a file outside the gallery layout');
 
   -- Deletes -------------------------------------------------------------------
   PERFORM pg_temp.act_as(u_other);

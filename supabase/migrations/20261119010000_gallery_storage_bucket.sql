@@ -9,8 +9,9 @@
 -- The folder is keyed on the auth user id (not the member id) because that's
 -- what storage policies can check directly.
 --
--- Members can upload only into their own folder and only for a gallery they
--- own, and can list, replace and delete only their own files. Site admins can
+-- Members can upload (or move a file) only into their own folder and only
+-- for a gallery they own, and can list, replace and delete only their own
+-- files. Site admins can
 -- manage every file. The bucket is public, as the app builds public URLs for
 -- every photo, so a file in a private gallery can be fetched by anyone who has
 -- its URL; paths include the user id, gallery id and a timestamp, so they
@@ -77,6 +78,14 @@ CREATE POLICY "Members can replace their own gallery files" ON storage.objects
     bucket_id = 'gallery-photos'
     AND (storage.foldername(name))[1] = 'users'
     AND (storage.foldername(name))[2] = (select auth.uid())::text
+    AND (storage.foldername(name))[3] = 'galleries'
+    AND (storage.foldername(name))[5] IN ('originals', 'medium', 'thumbs')
+    AND array_length(storage.foldername(name), 1) = 5
+    AND EXISTS (
+      SELECT 1 FROM public.user_galleries g
+      WHERE g.id::text = (storage.foldername(name))[4]
+        AND g.user_id = (select public.get_current_member_id())
+    )
   );
 
 DROP POLICY IF EXISTS "Members can delete their own gallery files" ON storage.objects;

@@ -1,5 +1,6 @@
 import { supabase, handleSupabaseError } from '@/shared/api/client';
 import { galleryApi } from './galleryApi';
+import { imageProcessingService } from '../services/imageProcessingService';
 import {
   PhotoUploadInput,
   BatchUploadConfig,
@@ -43,12 +44,16 @@ class UploadApi {
     try {
       this.validateFile(file);
 
-      // galleryApi stores the file under the uploader's own folder in the
+      // Same path as the batch upload dialog: resize in the browser, then
+      // galleryApi stores every size under the uploader's own folder in the
       // gallery-photos bucket and creates the gallery_photos row.
-      const photo = await galleryApi.uploadPhoto({
+      const input = await imageProcessingService.enhanceUploadInput(
         file,
-        galleryId: options.galleryId || options.gallery_id,
-        title: options.title || file.name.split('.')[0],
+        options.galleryId || options.gallery_id
+      );
+      const photo = await galleryApi.uploadPhoto({
+        ...input,
+        title: options.title || input.title,
         description: options.description,
         tags: options.tags || [],
       });
