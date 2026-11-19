@@ -899,7 +899,8 @@ export class AdminGalleryAPI {
 
       // Same path as the member and admin upload screens: resize in the
       // browser, then galleryApi stores every size in the gallery owner's
-      // folder and creates the gallery_photos row owned by them.
+      // folder and creates the gallery_photos row owned by them. The
+      // database approves photos a site admin uploads.
       for (const file of files) {
         try {
           const input = await imageProcessingService.enhanceUploadInput(file, galleryId);
@@ -910,22 +911,6 @@ export class AdminGalleryAPI {
             id: file.name,
             error: error instanceof Error ? error.message : 'Unknown error'
           });
-        }
-      }
-
-      // Admin uploads are auto-approved; photos otherwise start as pending.
-      if (successfulItems.length > 0) {
-        const { error: approveError } = await supabase
-          .from('gallery_photos')
-          .update({ moderation_status: 'approved' })
-          .in('id', successfulItems);
-
-        if (approveError) {
-          logger.warn('Failed to approve uploaded photos', 'ADMIN_GALLERY', approveError);
-          // Uploaded but left pending: report them rather than claim success.
-          for (const id of successfulItems.splice(0)) {
-            failedItems.push({ id, error: `Uploaded but not approved: ${approveError.message}` });
-          }
         }
       }
 
