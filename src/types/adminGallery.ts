@@ -13,7 +13,6 @@ export interface AdminPhotoStats {
   user: {
     id: string;
     name: string;
-    email: string;
   };
   gallery: {
     id: string;
@@ -36,7 +35,6 @@ export interface AdminGalleryStats {
   user: {
     id: string;
     name: string;
-    email: string;
   };
   recent_activity: string;
   flagged_photos_count: number;
@@ -67,7 +65,6 @@ export interface PhotoModerationQueue {
   user: {
     id: string;
     name: string;
-    email: string;
   };
   gallery: {
     id: string;
@@ -183,7 +180,6 @@ export interface AdminAuditLog {
   id: string;
   admin_id: string;
   admin_name: string;
-  admin_email: string;
   action: string;
   entity_type: 'gallery' | 'photo' | 'user' | 'system';
   entity_id?: string;

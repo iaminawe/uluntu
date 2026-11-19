@@ -10,7 +10,6 @@ import {
   deletePhoto,
   batchOperation,
   reorderPhotos,
-  toggleLike,
   setFilters,
   clearFilters,
   togglePhotoSelection,
@@ -72,10 +71,6 @@ export const useGallery = () => {
     return dispatch(reorderPhotos({ galleryId, photoOrders }));
   }, [dispatch]);
 
-  const toggleGalleryLike = useCallback((galleryId: string, userId: string) => {
-    return dispatch(toggleLike({ galleryId, userId }));
-  }, [dispatch]);
-
   const updateFilters = useCallback((newFilters: GalleryFilters) => {
     dispatch(setFilters(newFilters));
   }, [dispatch]);
@@ -117,7 +112,6 @@ export const useGallery = () => {
     deleteExistingPhoto,
     performBatchOperation,
     reorderGalleryPhotos,
-    toggleGalleryLike,
     updateFilters,
     resetFilters,
     togglePhotoSelect,

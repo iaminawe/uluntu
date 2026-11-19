@@ -45,7 +45,6 @@ import {
   useDeletePhoto,
   useBatchDeletePhotos,
   useReorderPhotos,
-  useToggleGalleryLike,
   useTogglePhotoLike,
   useAddPhotoComment,
 } from './useGalleryQueries';
@@ -72,7 +71,6 @@ export const useGalleryHybrid = (galleryId?: string) => {
   const deletePhotoMutation = useDeletePhoto();
   const batchDeleteMutation = useBatchDeletePhotos();
   const reorderPhotosMutation = useReorderPhotos();
-  const toggleLikeMutation = useToggleGalleryLike();
   const togglePhotoLikeMutation = useTogglePhotoLike();
   const addCommentMutation = useAddPhotoComment();
   
@@ -272,7 +270,6 @@ export const useGalleryHybrid = (galleryId?: string) => {
     deletePhoto: deletePhotoMutation.mutateAsync,
     performBatchDelete,
     reorderPhotos: reorderPhotosMutation.mutateAsync,
-    toggleLike: toggleLikeMutation.mutateAsync,
     togglePhotoLike: togglePhotoLikeMutation.mutateAsync,
     addPhotoComment: addCommentMutation.mutateAsync,
     

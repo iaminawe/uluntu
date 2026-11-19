@@ -196,18 +196,6 @@ export const reorderPhotos = createAsyncThunk(
   }
 );
 
-export const toggleLike = createAsyncThunk(
-  'gallery/toggleLike',
-  async ({ galleryId, userId }: { galleryId: string; userId: string }, { rejectWithValue }) => {
-    try {
-      const liked = await galleryApi.toggleLike(galleryId, userId);
-      return { galleryId, liked };
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to toggle like');
-    }
-  }
-);
-
 // Create the gallery slice
 const gallerySlice = createSlice({
   name: 'gallery',
@@ -347,17 +335,6 @@ const gallerySlice = createSlice({
           });
           // Sort photos by order
           (state.currentGallery.photos || []).sort((a, b) => (a.order || 0) - (b.order || 0));
-        }
-      })
-      
-      // toggleLike
-      .addCase(toggleLike.fulfilled, (state, action) => {
-        const gallery = state.galleries.find(g => g.id === ((action.payload as any).gallery_id || (action.payload as any).galleryId));
-        if (gallery && gallery.stats) {
-          gallery.stats.likeCount += action.payload.liked ? 1 : -1;
-        }
-        if (state.currentGallery?.id === ((action.payload as any).gallery_id || (action.payload as any).galleryId) && state.currentGallery?.stats) {
-          state.currentGallery.stats.likeCount += action.payload.liked ? 1 : -1;
         }
       });
   }

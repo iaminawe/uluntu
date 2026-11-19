@@ -547,35 +547,6 @@ export const galleryApiNew = {
     }
   },
 
-  async toggleLike(galleryId: string, userId: string): Promise<boolean> {
-    const { data: existing } = await (supabase as any)
-      .from('gallery_likes')
-      .select()
-      .eq('gallery_id', galleryId)
-      .eq('user_id', userId)
-      .single();
-
-    if (existing) {
-      // Unlike
-      const { error } = await (supabase as any)
-        .from('gallery_likes')
-        .delete()
-        .eq('gallery_id', galleryId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-      return false;
-    } else {
-      // Like
-      const { error } = await (supabase as any)
-        .from('gallery_likes')
-        .insert([{ gallery_id: galleryId, user_id: userId }]);
-
-      if (error) throw error;
-      return true;
-    }
-  },
-
   // Storage management functions
   async getUserStorageUsage(userId?: string): Promise<any> {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
