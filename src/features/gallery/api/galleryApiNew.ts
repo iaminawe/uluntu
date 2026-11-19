@@ -307,8 +307,9 @@ export const galleryApiNew = {
       tags: input.tags || [],
       sort_order: 0,
       visibility: 'visible' as const,
-      processing_status: 'completed',
-      moderation_status: 'approved'
+      // moderation_status is set by the database: pending for members,
+      // approved for site admins.
+      processing_status: 'completed'
     };
 
     const { data, error } = await supabase
