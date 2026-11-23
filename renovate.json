@@ -1,6 +1,46 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "description": "Weekly, grouped dependency PRs. Every PR used to get its own Vercel build on a Turbo machine; Vercel now only builds main, and CI (ci.yml) checks each PR.",
+  "extends": ["config:recommended", ":semanticCommits", ":semanticCommitTypeAll(chore)"],
+  "timezone": "America/Vancouver",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "minimumReleaseAge": "3 days",
+  "prConcurrentLimit": 4,
+  "prHourlyLimit": 2,
+  "dependencyDashboard": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"]
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["dependencies", "security"],
+    "schedule": ["at any time"],
+    "minimumReleaseAge": null
+  },
+  "packageRules": [
+    {
+      "description": "All non-major npm updates arrive as one weekly PR.",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "npm non-major"
+    },
+    {
+      "description": "GitHub Actions updates arrive as one PR.",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "Majors wait for approval on the Dependency Dashboard.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "@types/node follows the Node runtime major (Vercel runs Node 24). Bump it deliberately.",
+      "matchPackageNames": ["node", "@types/node"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
   ]
 }
