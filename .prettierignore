@@ -1,0 +1,42 @@
+# Lockfiles
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Dependencies and build/test output
+node_modules/
+dist/
+dist-ssr/
+build/
+out/
+.next/
+coverage/
+playwright-report/
+test-results/
+site/
+.tsbuildinfo
+*.tsbuildinfo
+
+# Generated Supabase types
+src/types/supabase.ts
+src/types/supabase-generated.ts
+
+# Vendored / minified files
+*.min.js
+*.min.css
+
+# Agent, tool and archive folders
+.claude/
+.agents/
+.superpowers/
+graphify-out/
+.archive/
+.dead-code-archive-*/
+.vercel/
+logs/
+reports/
+supabase/.temp/
+
+# Markdown (docs, specs and proof files stay as written)
+*.md
+*.mdx
