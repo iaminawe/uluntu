@@ -23,9 +23,7 @@ export interface TransactionalEmailResponse {
 /**
  * Send transactional email using Supabase Edge Function
  */
-export async function sendTransactionalEmail(
-  request: TransactionalEmailRequest
-): Promise<TransactionalEmailResponse> {
+export async function sendTransactionalEmail(request: TransactionalEmailRequest): Promise<TransactionalEmailResponse> {
   try {
     const { data, error } = await supabase.functions.invoke('send-transactional-email', {
       body: request,
@@ -100,7 +98,7 @@ export async function sendPasswordResetEmail(
   }
 ): Promise<TransactionalEmailResponse> {
   const resetUrl = `${window.location.origin}/auth/reset-password?token=${resetToken}`;
-  
+
   return sendTransactionalEmail({
     template_name: 'Password Reset',
     to: userEmail,
@@ -139,7 +137,7 @@ export async function sendEmailVerification(
   }
 ): Promise<TransactionalEmailResponse> {
   const verificationUrl = `${window.location.origin}/auth/verify-email?token=${verificationToken}`;
-  
+
   return sendTransactionalEmail({
     template_name: 'Email Verification',
     to: userEmail,
@@ -181,7 +179,7 @@ export async function sendContactAutoReply(
   }
 ): Promise<TransactionalEmailResponse> {
   const estimatedResponseTime = options?.estimated_response_time || getEstimatedResponseTime(submission.type);
-  
+
   return sendTransactionalEmail({
     template_name: 'Contact Form Auto-Reply',
     to: submission.email,
@@ -200,7 +198,7 @@ export async function sendContactAutoReply(
     },
     options: {
       // Custom tracking for auto-reply emails
-    }
+    },
   });
 }
 
@@ -243,7 +241,7 @@ export async function sendNewsletterCampaign(
 ): Promise<TransactionalEmailResponse> {
   const unsubscribeUrl = `${window.location.origin}/newsletter/unsubscribe?id=${subscriberId}`;
   const viewOnlineUrl = `${window.location.origin}/newsletter/view/${campaignId}`;
-  
+
   return sendTransactionalEmail({
     template_name: 'Newsletter Digest',
     to: subscriberEmail,
@@ -273,12 +271,12 @@ export async function sendNewsletterCampaign(
  */
 function getEstimatedResponseTime(type: string): string {
   const responseTimes: Record<string, string> = {
-    'urgent': '2-4 hours',
-    'support': '12-24 hours',
-    'general': '24-48 hours',
-    'partnership': '3-5 business days',
-    'volunteer': '2-3 business days',
-    'speaker_request': '1-2 weeks',
+    urgent: '2-4 hours',
+    support: '12-24 hours',
+    general: '24-48 hours',
+    partnership: '3-5 business days',
+    volunteer: '2-3 business days',
+    speaker_request: '1-2 weeks',
   };
 
   return responseTimes[type] || '24-48 hours';
@@ -338,7 +336,7 @@ export async function testTransactionalTemplate(
  */
 function generateSampleData(templateName: string): Record<string, any> {
   const lowerName = templateName.toLowerCase();
-  
+
   if (lowerName.includes('welcome')) {
     return {
       user: {
@@ -351,7 +349,7 @@ function generateSampleData(templateName: string): Record<string, any> {
       support_email: 'support@uluntu.io',
     };
   }
-  
+
   if (lowerName.includes('password') || lowerName.includes('reset')) {
     return {
       user: {
@@ -364,7 +362,7 @@ function generateSampleData(templateName: string): Record<string, any> {
       support_email: 'support@uluntu.io',
     };
   }
-  
+
   if (lowerName.includes('verification') || lowerName.includes('verify')) {
     return {
       user: {
@@ -376,7 +374,7 @@ function generateSampleData(templateName: string): Record<string, any> {
       expiry_hours: 48,
     };
   }
-  
+
   if (lowerName.includes('contact') || lowerName.includes('auto-reply')) {
     return {
       submission: {
@@ -393,13 +391,13 @@ function generateSampleData(templateName: string): Record<string, any> {
       support_url: `${window.location.origin}/support`,
     };
   }
-  
+
   if (lowerName.includes('newsletter') || lowerName.includes('digest')) {
     return {
       newsletter: {
         title: 'Weekly Tech Digest',
         date: new Date().toLocaleDateString(),
-        custom_message: 'Welcome to this week\'s digest of community updates!',
+        custom_message: "Welcome to this week's digest of community updates!",
       },
       content: {
         events: [
@@ -414,7 +412,7 @@ function generateSampleData(templateName: string): Record<string, any> {
         news: [
           {
             title: 'New Partnership Announcement',
-            excerpt: 'We\'re excited to announce our new partnership...',
+            excerpt: "We're excited to announce our new partnership...",
             url: '#',
           },
         ],
@@ -424,6 +422,6 @@ function generateSampleData(templateName: string): Record<string, any> {
       unsubscribe_url: '#',
     };
   }
-  
+
   return {};
 }

@@ -29,7 +29,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   resource,
   action,
   conditions,
-  fallback = null
+  fallback = null,
 }) => {
   const { hasPermission, isLoading } = usePermissions();
 
@@ -50,7 +50,7 @@ export const MultiplePermissionGuard: React.FC<MultiplePermissionGuardProps> = (
   children,
   permissions,
   requireAll = true,
-  fallback = null
+  fallback = null,
 }) => {
   const { hasAllPermissions, hasAnyPermission, isLoading } = usePermissions();
 
@@ -59,9 +59,7 @@ export const MultiplePermissionGuard: React.FC<MultiplePermissionGuardProps> = (
     return <div className="animate-pulse bg-gray-200 h-4 w-16 rounded"></div>;
   }
 
-  const hasAccess = requireAll 
-    ? hasAllPermissions(permissions)
-    : hasAnyPermission(permissions);
+  const hasAccess = requireAll ? hasAllPermissions(permissions) : hasAnyPermission(permissions);
 
   return hasAccess ? <>{children}</> : <>{fallback}</>;
 };
@@ -76,12 +74,7 @@ interface RoleGuardProps {
   fallback?: React.ReactNode;
 }
 
-export const RoleGuard: React.FC<RoleGuardProps> = ({
-  children,
-  roles,
-  requireAll = false,
-  fallback = null
-}) => {
+export const RoleGuard: React.FC<RoleGuardProps> = ({ children, roles, requireAll = false, fallback = null }) => {
   const { hasRole, hasAllRoles, hasAnyRole, isLoading, systemRoles } = usePermissions();
 
   // Only show loading if we don't have any roles yet
@@ -91,7 +84,7 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   }
 
   const roleArray = Array.isArray(roles) ? roles : [roles];
-  
+
   let hasAccess = false;
   if (roleArray.length === 1) {
     hasAccess = hasRole(roleArray[0]);
@@ -142,7 +135,7 @@ export function withRole<P extends object>(
  */
 export const AdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
   children,
-  fallback
+  fallback,
 }) => (
   <RoleGuard roles={['admin', 'superadmin']} fallback={fallback}>
     {children}
@@ -151,7 +144,7 @@ export const AdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.R
 
 export const SuperAdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
   children,
-  fallback
+  fallback,
 }) => (
   <RoleGuard roles="superadmin" fallback={fallback}>
     {children}
@@ -160,7 +153,7 @@ export const SuperAdminOnly: React.FC<{ children: React.ReactNode; fallback?: Re
 
 export const AuthenticatedOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
   children,
-  fallback
+  fallback,
 }) => (
   <RoleGuard roles="authenticated" fallback={fallback}>
     {children}
@@ -169,7 +162,7 @@ export const AuthenticatedOnly: React.FC<{ children: React.ReactNode; fallback?:
 
 export const GroupMemberOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
   children,
-  fallback
+  fallback,
 }) => (
   <RoleGuard roles="group_member" fallback={fallback}>
     {children}
@@ -177,40 +170,40 @@ export const GroupMemberOnly: React.FC<{ children: React.ReactNode; fallback?: R
 );
 
 // Content management guards
-export const CanCreate: React.FC<{ 
-  children: React.ReactNode; 
-  resource: string; 
-  fallback?: React.ReactNode 
+export const CanCreate: React.FC<{
+  children: React.ReactNode;
+  resource: string;
+  fallback?: React.ReactNode;
 }> = ({ children, resource, fallback }) => (
   <PermissionGuard resource={resource} action="create" fallback={fallback}>
     {children}
   </PermissionGuard>
 );
 
-export const CanEdit: React.FC<{ 
-  children: React.ReactNode; 
-  resource: string; 
-  fallback?: React.ReactNode 
+export const CanEdit: React.FC<{
+  children: React.ReactNode;
+  resource: string;
+  fallback?: React.ReactNode;
 }> = ({ children, resource, fallback }) => (
   <PermissionGuard resource={resource} action="update" fallback={fallback}>
     {children}
   </PermissionGuard>
 );
 
-export const CanDelete: React.FC<{ 
-  children: React.ReactNode; 
-  resource: string; 
-  fallback?: React.ReactNode 
+export const CanDelete: React.FC<{
+  children: React.ReactNode;
+  resource: string;
+  fallback?: React.ReactNode;
 }> = ({ children, resource, fallback }) => (
   <PermissionGuard resource={resource} action="delete" fallback={fallback}>
     {children}
   </PermissionGuard>
 );
 
-export const CanManage: React.FC<{ 
-  children: React.ReactNode; 
-  resource: string; 
-  fallback?: React.ReactNode 
+export const CanManage: React.FC<{
+  children: React.ReactNode;
+  resource: string;
+  fallback?: React.ReactNode;
 }> = ({ children, resource, fallback }) => (
   <PermissionGuard resource={resource} action="*" fallback={fallback}>
     {children}

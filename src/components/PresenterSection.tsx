@@ -7,7 +7,7 @@ interface Presenter {
   talkTitle: string;
   bio: string;
   image: string;
-  socialLinks: { platform: string; url: string; }[];
+  socialLinks: { platform: string; url: string }[];
 }
 
 // Sample presenter data - replace with actual data from your API
@@ -20,9 +20,9 @@ const presenters: Presenter[] = [
     image: 'https://via.placeholder.com/300x300',
     socialLinks: [
       { platform: 'LinkedIn', url: '#' },
-      { platform: 'Twitter', url: '#' }
-    ]
-  }
+      { platform: 'Twitter', url: '#' },
+    ],
+  },
 ];
 
 const PresenterSection: React.FC = () => {
@@ -36,19 +36,15 @@ const PresenterSection: React.FC = () => {
             Meet our upcoming speakers who will share their knowledge and insights on AI.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {presenters.map((presenter, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-white dark:bg-slate-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
             >
               <div className="h-56 overflow-hidden">
-                <img 
-                  src={presenter.image} 
-                  alt={presenter.name} 
-                  className="w-full h-full object-cover object-center"
-                />
+                <img src={presenter.image} alt={presenter.name} className="w-full h-full object-cover object-center" />
               </div>
               <div className="p-6">
                 <h3 className="font-bold text-xl mb-1 dark:text-white">{presenter.name}</h3>
@@ -57,9 +53,9 @@ const PresenterSection: React.FC = () => {
                 <p className="text-slate-600 dark:text-slate-300 mb-4">{presenter.bio}</p>
                 <div className="flex space-x-3">
                   {presenter.socialLinks.map((link, i) => (
-                    <a 
-                      key={i} 
-                      href={link.url} 
+                    <a
+                      key={i}
+                      href={link.url}
                       className="text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
                       aria-label={`${presenter.name}'s ${link.platform}`}
                     >
@@ -72,12 +68,12 @@ const PresenterSection: React.FC = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-12">
-          <a 
-            href="#contact" 
+          <a
+            href="#contact"
             className="inline-block px-6 py-3 bg-purple-500 text-white rounded-md font-medium hover:bg-purple-600 transition-colors"
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault();
               const contactForm = document.getElementById('contact-form');
               if (contactForm) {

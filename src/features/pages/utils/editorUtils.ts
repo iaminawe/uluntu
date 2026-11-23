@@ -112,16 +112,16 @@ function convertNodeToHtml(node: EditorContent): string {
   switch (node.type) {
     case 'doc':
       return node.content ? node.content.map(convertNodeToHtml).join('') : '';
-    
+
     case 'paragraph':
       const pContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<p>${pContent}</p>`;
-    
+
     case 'heading':
       const level = node.attrs?.level || 1;
       const hContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<h${level}>${hContent}</h${level}>`;
-    
+
     case 'text':
       let text = node.text || '';
       if (node.marks) {
@@ -144,40 +144,40 @@ function convertNodeToHtml(node: EditorContent): string {
         }
       }
       return text;
-    
+
     case 'bulletList':
       const ulContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<ul>${ulContent}</ul>`;
-    
+
     case 'orderedList':
       const olContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<ol>${olContent}</ol>`;
-    
+
     case 'listItem':
       const liContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<li>${liContent}</li>`;
-    
+
     case 'blockquote':
       const blockquoteContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       return `<blockquote>${blockquoteContent}</blockquote>`;
-    
+
     case 'codeBlock':
       const codeContent = node.content ? node.content.map(convertNodeToHtml).join('') : '';
       const language = node.attrs?.language || '';
       return `<pre><code class="language-${language}">${codeContent}</code></pre>`;
-    
+
     case 'image':
       const src = node.attrs?.src || '';
       const alt = node.attrs?.alt || '';
       const title = node.attrs?.title || '';
       return `<img src="${src}" alt="${alt}" title="${title}" />`;
-    
+
     case 'hardBreak':
       return '<br>';
-    
+
     case 'horizontalRule':
       return '<hr>';
-    
+
     default:
       return node.content ? node.content.map(convertNodeToHtml).join('') : '';
   }

@@ -35,18 +35,21 @@ export default function MarketplacePage() {
   if (featuresLoading) {
     return <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />;
   }
-  
+
   return (
     <>
       <Helmet>
         <title>Marketplace - Uluntu</title>
-        <meta name="description" content="Tech marketplace for services, products, and equipment in the Kootenay region" />
+        <meta
+          name="description"
+          content="Tech marketplace for services, products, and equipment in the Kootenay region"
+        />
       </Helmet>
-      
+
       <PageHeader />
-      
+
       <ContentContainer>
-        <ActionBar 
+        <ActionBar
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
           selectedType={selectedType}
@@ -54,13 +57,13 @@ export default function MarketplacePage() {
           selectedCondition={selectedCondition}
           setSelectedCondition={setSelectedCondition}
         />
-        
+
         {isLoading ? (
           <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
         ) : error ? (
-          <QueryError 
-            error={error} 
-            retry={refetch} 
+          <QueryError
+            error={error}
+            retry={refetch}
             message="We couldn't load the marketplace listings. Please try again."
           />
         ) : !hasListings ? (
@@ -69,8 +72,8 @@ export default function MarketplacePage() {
             description="There are no marketplace listings available yet."
             primaryActionUrl="/marketplace/create"
             primaryAction={{
-              text: "Create a Listing",
-              onClick: () => console.log('Navigate to create listing')
+              text: 'Create a Listing',
+              onClick: () => console.log('Navigate to create listing'),
             }}
           />
         ) : (
@@ -78,7 +81,7 @@ export default function MarketplacePage() {
             {/* MarketplaceList Component with filters */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Marketplace Listings</h2>
-              <MarketplaceList 
+              <MarketplaceList
                 searchTerm={searchTerm}
                 selectedType={selectedType}
                 selectedCondition={selectedCondition}

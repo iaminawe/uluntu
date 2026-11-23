@@ -1,6 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings, UserPlus, LogIn, Edit, Users, BookOpen, ShoppingBag, ChevronRight, Camera, MessageCircle, Grid3X3 } from 'lucide-react';
+import {
+  User,
+  LogOut,
+  Settings,
+  UserPlus,
+  LogIn,
+  Edit,
+  Users,
+  BookOpen,
+  ShoppingBag,
+  ChevronRight,
+  Camera,
+  MessageCircle,
+  Grid3X3,
+} from 'lucide-react';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import { useAppSelector } from '@/store/hooks';
 import { useMemberByUserId } from '@/hooks/useMemberByUserId';
@@ -39,7 +53,7 @@ export default function UserMenu() {
     isGroupsEnabled ||
     isFeatureEnabled('companies_listing') ||
     isMessagingEnabled;
-  
+
   // Debug logging for admin access (disabled)
   /*
   console.log('🔍 UserMenu Debug:', {
@@ -50,10 +64,10 @@ export default function UserMenu() {
     shouldShowAdmin: !!user && isAdmin
   });
   */
-  
+
   // Get the member profile for the current user
   const { data: member } = useMemberByUserId(user?.id);
-  
+
   // Get user's content
   const { groups, isLoading: groupsLoading } = useUserGroups();
   const { resources, isLoading: resourcesLoading } = useUserResources();
@@ -98,9 +112,9 @@ export default function UserMenu() {
         {user ? (
           <div className="flex items-center space-x-2">
             {member?.image ? (
-              <img 
-                src={member.image} 
-                alt={member.name || 'User avatar'} 
+              <img
+                src={member.image}
+                alt={member.name || 'User avatar'}
                 className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
               />
             ) : (
@@ -128,13 +142,9 @@ export default function UserMenu() {
             <>
               <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
                 {member?.name && (
-                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                    {member.name}
-                  </p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{member.name}</p>
                 )}
-                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  {user.email}
-                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
               </div>
 
               {/* Dashboard - Only show if user has access to any content features */}
@@ -164,7 +174,7 @@ export default function UserMenu() {
                   </div>
                 </Link>
               )}
-              
+
               {/* Messages - Only show if feature is enabled */}
               {isMessagingEnabled && (
                 <Link
@@ -181,7 +191,7 @@ export default function UserMenu() {
                   </div>
                 </Link>
               )}
-              
+
               {/* Settings */}
               <Link
                 to="/settings"
@@ -193,7 +203,7 @@ export default function UserMenu() {
                   Settings
                 </div>
               </Link>
-              
+
               {/* Admin - Only show if user is admin */}
               {isAdmin && (
                 <Link
@@ -207,7 +217,7 @@ export default function UserMenu() {
                   </div>
                 </Link>
               )}
-              
+
               {/* User's Groups Section - Only show if feature is enabled */}
               {isGroupsEnabled && groups.length > 0 && !groupsLoading && (
                 <>
@@ -227,7 +237,7 @@ export default function UserMenu() {
                       </Link>
                     </div>
                     <div className="space-y-1">
-                      {groups.slice(0, 3).map((group) => (
+                      {groups.slice(0, 3).map(group => (
                         <Link
                           key={group.id}
                           to={getGroupUrl(group)}
@@ -241,7 +251,7 @@ export default function UserMenu() {
                   </div>
                 </>
               )}
-              
+
               {/* User's Resources Section - Only show if feature is enabled */}
               {isResourcesEnabled && resources.length > 0 && !resourcesLoading && (
                 <>
@@ -261,7 +271,7 @@ export default function UserMenu() {
                       </Link>
                     </div>
                     <div className="space-y-1">
-                      {resources.slice(0, 3).map((resource) => (
+                      {resources.slice(0, 3).map(resource => (
                         <Link
                           key={resource.id}
                           to={getResourceUrl(resource)}
@@ -275,7 +285,7 @@ export default function UserMenu() {
                   </div>
                 </>
               )}
-              
+
               {/* User's Marketplace Items Section - Only show if feature is enabled */}
               {isMarketplaceEnabled && marketplaceItems.length > 0 && !marketplaceLoading && (
                 <>
@@ -295,7 +305,7 @@ export default function UserMenu() {
                       </Link>
                     </div>
                     <div className="space-y-1">
-                      {marketplaceItems.slice(0, 3).map((item) => (
+                      {marketplaceItems.slice(0, 3).map(item => (
                         <Link
                           key={item.id}
                           to={getMarketplaceListingUrl(item)}

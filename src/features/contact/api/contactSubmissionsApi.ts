@@ -7,7 +7,7 @@ function newSubmissionId(): string {
   const b = crypto.getRandomValues(new Uint8Array(16));
   b[6] = (b[6] & 0x0f) | 0x40;
   b[8] = (b[8] & 0x3f) | 0x80;
-  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
@@ -97,18 +97,16 @@ class ContactSubmissionsAPI {
    */
   async submitContactForm(data: ContactSubmissionData): Promise<{ success: true; id: string }> {
     const id = newSubmissionId();
-    const { error } = await (supabase as any)
-      .from('contact_submissions')
-      .insert({
-        id,
-        name: data.name,
-        email: data.email,
-        subject: data.subject,
-        message: data.message,
-        tags: data.type ? [data.type] : [],
-        user_agent: data.metadata?.user_agent || null,
-        referrer: data.metadata?.referrer || null,
-      });
+    const { error } = await (supabase as any).from('contact_submissions').insert({
+      id,
+      name: data.name,
+      email: data.email,
+      subject: data.subject,
+      message: data.message,
+      tags: data.type ? [data.type] : [],
+      user_agent: data.metadata?.user_agent || null,
+      referrer: data.metadata?.referrer || null,
+    });
 
     if (error) throw error;
     return { success: true, id };
@@ -122,15 +120,16 @@ class ContactSubmissionsAPI {
     page: number = 1,
     pageSize: number = 20
   ): Promise<{ submissions: ContactSubmission[]; total: number }> {
-    let query = (supabase as any)
-      .from('contact_submissions')
-      .select(`
+    let query = (supabase as any).from('contact_submissions').select(
+      `
         *,
         assigned_user:assigned_to(email),
         member:member_id(name, image),
         contact_submission_tags(tag_name, tag_color),
         notes_count:contact_submission_notes(count)
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Apply filters
     if (filters.status && filters.status !== 'all') {
@@ -155,7 +154,9 @@ class ContactSubmissionsAPI {
 
     // Search functionality
     if (filters.search_term) {
-      query = query.or(`name.ilike.%${filters.search_term}%,email.ilike.%${filters.search_term}%,subject.ilike.%${filters.search_term}%`);
+      query = query.or(
+        `name.ilike.%${filters.search_term}%,email.ilike.%${filters.search_term}%,subject.ilike.%${filters.search_term}%`
+      );
     }
 
     // Date range filter
@@ -184,9 +185,7 @@ class ContactSubmissionsAPI {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const { data, error, count } = await query
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    const { data, error, count } = await query.order('created_at', { ascending: false }).range(from, to);
 
     if (error) throw error;
 
@@ -196,12 +195,12 @@ class ContactSubmissionsAPI {
       submission_type: submission.submission_type || 'general',
       response_count: submission.response_count || 0,
       is_member: submission.is_member || false,
-      source: submission.source || 'contact_form'
+      source: submission.source || 'contact_form',
     }));
 
     return {
       submissions: transformedSubmissions as any as ContactSubmission[],
-      total: count || 0
+      total: count || 0,
     };
   }
 
@@ -211,23 +210,25 @@ class ContactSubmissionsAPI {
   async getSubmission(id: string): Promise<ContactSubmission> {
     const { data, error } = await (supabase as any)
       .from('contact_submissions')
-      .select(`
+      .select(
+        `
         *,
         assigned_user:assigned_to(email),
         member:member_id(name, image)
-      `)
+      `
+      )
       .eq('id', id)
       .single();
 
     if (error) throw error;
-    
+
     // Transform data to ensure all required fields are present
     return {
       ...data,
       submission_type: data.submission_type || 'general',
       response_count: data.response_count || 0,
       is_member: data.is_member || false,
-      source: data.source || 'contact_form'
+      source: data.source || 'contact_form',
     } as any as ContactSubmission;
   }
 
@@ -235,10 +236,7 @@ class ContactSubmissionsAPI {
    * Update a contact submission
    */
   async updateSubmission(id: string, updates: Partial<ContactSubmission>): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('contact_submissions')
-      .update(updates)
-      .eq('id', id);
+    const { error } = await (supabase as any).from('contact_submissions').update(updates).eq('id', id);
 
     if (error) throw error;
   }
@@ -247,10 +245,7 @@ class ContactSubmissionsAPI {
    * Bulk update contact submissions
    */
   async bulkUpdateSubmissions(ids: string[], updates: Partial<ContactSubmission>): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('contact_submissions')
-      .update(updates)
-      .in('id', ids);
+    const { error } = await (supabase as any).from('contact_submissions').update(updates).in('id', ids);
 
     if (error) throw error;
   }
@@ -259,10 +254,7 @@ class ContactSubmissionsAPI {
    * Delete a contact submission
    */
   async deleteSubmission(id: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('contact_submissions')
-      .delete()
-      .eq('id', id);
+    const { error } = await (supabase as any).from('contact_submissions').delete().eq('id', id);
 
     if (error) throw error;
   }
@@ -273,15 +265,17 @@ class ContactSubmissionsAPI {
   async getSubmissionNotes(submissionId: string): Promise<ContactSubmissionNote[]> {
     const { data, error } = await (supabase as any)
       .from('contact_submission_notes')
-      .select(`
+      .select(
+        `
         *,
         creator:created_by(email)
-      `)
+      `
+      )
       .eq('submission_id', submissionId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map((note: any) => ({ ...note } as any)) as ContactSubmissionNote[];
+    return (data || []).map((note: any) => ({ ...note }) as any) as ContactSubmissionNote[];
   }
 
   /**
@@ -301,18 +295,18 @@ class ContactSubmissionsAPI {
         note_type: noteType,
         is_internal: true,
         is_important: isImportant,
-        created_by: (window as any).user?.id || 'system' // Add default created_by
+        created_by: (window as any).user?.id || 'system', // Add default created_by
       } as any)
       .select()
       .single();
 
     if (error) throw error;
-    return { 
+    return {
       ...data,
       note_text: data?.note_text || noteText,
       note_type: data?.note_type || noteType,
       is_important: data?.is_important || isImportant,
-      created_by: data?.created_by || 'system'
+      created_by: data?.created_by || 'system',
     } as any as ContactSubmissionNote;
   }
 
@@ -320,10 +314,7 @@ class ContactSubmissionsAPI {
    * Delete a submission note
    */
   async deleteSubmissionNote(noteId: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('contact_submission_notes')
-      .delete()
-      .eq('id', noteId);
+    const { error } = await (supabase as any).from('contact_submission_notes').delete().eq('id', noteId);
 
     if (error) throw error;
   }
@@ -339,7 +330,7 @@ class ContactSubmissionsAPI {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map((tag: any) => ({ ...tag } as any)) as ContactSubmissionTag[];
+    return (data || []).map((tag: any) => ({ ...tag }) as any) as ContactSubmissionTag[];
   }
 
   /**
@@ -355,7 +346,7 @@ class ContactSubmissionsAPI {
       .insert({
         submission_id: submissionId,
         tag_name: tagName,
-        tag_color: tagColor
+        tag_color: tagColor,
       })
       .select()
       .single();
@@ -368,10 +359,7 @@ class ContactSubmissionsAPI {
    * Remove a tag from a submission
    */
   async removeSubmissionTag(tagId: string): Promise<void> {
-    const { error } = await (supabase as any)
-      .from('contact_submission_tags')
-      .delete()
-      .eq('id', tagId);
+    const { error } = await (supabase as any).from('contact_submission_tags').delete().eq('id', tagId);
 
     if (error) throw error;
   }
@@ -395,7 +383,7 @@ class ContactSubmissionsAPI {
     if (error) throw error;
 
     const submissions = data || [];
-    
+
     return {
       total: submissions.length,
       open: submissions.filter((s: any) => s.status === 'open').length,
@@ -403,7 +391,7 @@ class ContactSubmissionsAPI {
       closed: submissions.filter((s: any) => s.status === 'closed').length,
       urgent: submissions.filter((s: any) => s.priority === 'urgent').length,
       unassigned: submissions.filter((s: any) => !s.assigned_to).length,
-      response_needed: submissions.filter((s: any) => !s.first_response_at && s.status !== 'closed').length
+      response_needed: submissions.filter((s: any) => !s.first_response_at && s.status !== 'closed').length,
     };
   }
 
@@ -413,17 +401,19 @@ class ContactSubmissionsAPI {
   async getAdminUsers(): Promise<Array<{ id: string; email: string }>> {
     const { data, error } = await supabase
       .from('user_roles')
-      .select(`
+      .select(
+        `
         user_id,
         users:user_id(email)
-      `)
+      `
+      )
       .in('role', ['admin', 'superadmin']);
 
     if (error) throw error;
-    
+
     return (data?.map(item => ({
       id: item.user_id,
-      email: (item as any).users?.email
+      email: (item as any).users?.email,
     })) || []) as any;
   }
 
@@ -447,7 +437,7 @@ class ContactSubmissionsAPI {
       'Source',
       'Is Member',
       'Created At',
-      'First Response At'
+      'First Response At',
     ];
 
     const rows = submissions.map(submission => [
@@ -464,7 +454,7 @@ class ContactSubmissionsAPI {
       submission.source,
       submission.is_member ? 'Yes' : 'No',
       submission.created_at,
-      submission.first_response_at || ''
+      submission.first_response_at || '',
     ]);
 
     return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');

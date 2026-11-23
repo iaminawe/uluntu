@@ -10,7 +10,7 @@ export default function ActiveGroupsSection() {
     queryFn: () => groupsApi.getAll({ limit: 10 }),
     staleTime: 5 * 60 * 1000,
   });
-  
+
   const recentActiveGroups = useMemo(() => {
     return groups
       .filter(group => group.visibility === 'public')
@@ -24,7 +24,7 @@ export default function ActiveGroupsSection() {
         category: 'Community Group',
         readTime: `${group.memberCount || 0} members`,
         link: getGroupUrl(group),
-        type: 'group' as const
+        type: 'group' as const,
       }));
   }, [groups]);
 
@@ -36,16 +36,14 @@ export default function ActiveGroupsSection() {
     <section className="py-20 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            Active Groups
-          </h2>
+          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Active Groups</h2>
           <p className="text-xl text-slate-600 dark:text-slate-400">
             Join thriving community groups and connect with like-minded professionals
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentActiveGroups.map((group) => (
+          {recentActiveGroups.map(group => (
             <DetailedCard
               key={`group-${group.id}`}
               id={group.id}

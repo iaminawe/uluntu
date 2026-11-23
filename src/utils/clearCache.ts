@@ -3,13 +3,13 @@ import { QueryClient } from '@tanstack/react-query';
 export function clearAllCaches(queryClient: QueryClient) {
   // Clear React Query cache
   queryClient.clear();
-  
+
   // Clear localStorage
   localStorage.clear();
-  
-  // Clear sessionStorage  
+
+  // Clear sessionStorage
   sessionStorage.clear();
-  
+
   console.log('All caches cleared!');
 }
 

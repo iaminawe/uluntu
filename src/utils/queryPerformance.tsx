@@ -21,7 +21,7 @@ class QueryPerformanceMonitor {
       queryKey: key,
       startTime: performance.now(),
       success: false,
-      cached: false
+      cached: false,
     };
     this.activeQueries.set(key, tracker);
     markPerformance(`query-start-${key}`);
@@ -30,16 +30,16 @@ class QueryPerformanceMonitor {
   trackQueryEnd(queryKey: string[], success: boolean, cached: boolean) {
     const key = JSON.stringify(queryKey);
     const tracker = this.activeQueries.get(key);
-    
+
     if (tracker) {
       tracker.endTime = performance.now();
       tracker.success = success;
       tracker.cached = cached;
       tracker.duration = tracker.endTime - tracker.startTime;
-      
+
       this.queryMetrics.push(tracker);
       this.activeQueries.delete(key);
-      
+
       markPerformance(`query-end-${key}`);
       measurePerformance(`query-${key}`, `query-start-${key}`, `query-end-${key}`);
     }
@@ -50,10 +50,8 @@ class QueryPerformanceMonitor {
       totalQueries: this.queryMetrics.length,
       cachedQueries: this.queryMetrics.filter(q => q.cached).length,
       averageDuration: this.queryMetrics.reduce((sum, q) => sum + (q.duration || 0), 0) / this.queryMetrics.length,
-      slowestQueries: [...this.queryMetrics]
-        .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-        .slice(0, 5),
-      failedQueries: this.queryMetrics.filter(q => !q.success).length
+      slowestQueries: [...this.queryMetrics].sort((a, b) => (b.duration || 0) - (a.duration || 0)).slice(0, 5),
+      failedQueries: this.queryMetrics.filter(q => !q.success).length,
     };
   }
 
@@ -70,11 +68,11 @@ export function useQueryPerformance() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+    const unsubscribe = queryClient.getQueryCache().subscribe(event => {
       if (event.type === 'added' && event.query.queryKey) {
         queryPerformanceMonitor.trackQueryStart(event.query.queryKey as string[]);
       }
-      
+
       if (event.type === 'updated' && event.query.queryKey) {
         const { state } = event.query;
         if (state.status === 'success' || state.status === 'error') {
@@ -120,7 +118,10 @@ export function QueryPerformanceDevTools() {
       <h3 className="font-bold mb-2">Query Performance</h3>
       <div className="space-y-1">
         <div>Total Queries: {metrics.totalQueries}</div>
-        <div>Cached: {metrics.cachedQueries} ({metrics.totalQueries > 0 ? ((metrics.cachedQueries / metrics.totalQueries) * 100).toFixed(1) : 0}%)</div>
+        <div>
+          Cached: {metrics.cachedQueries} (
+          {metrics.totalQueries > 0 ? ((metrics.cachedQueries / metrics.totalQueries) * 100).toFixed(1) : 0}%)
+        </div>
         <div>Avg Duration: {metrics.averageDuration.toFixed(2)}ms</div>
         <div>Failed: {metrics.failedQueries}</div>
       </div>

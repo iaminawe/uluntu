@@ -19,10 +19,10 @@ export default function EventDetailPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
-  
+
   // Use hybrid approach for data fetching - slug will work as the API handles both
   const { event, isLoading, error } = useEventHybrid(slug);
-  
+
   const handleRegister = () => {
     setIsRegistering(true);
     // Simulate API call for registration
@@ -31,7 +31,7 @@ export default function EventDetailPage() {
       setRegistrationSuccess(true);
     }, 1000);
   };
-  
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -44,7 +44,7 @@ export default function EventDetailPage() {
   const eventDate = parseISO(event.date);
   const formattedDate = format(eventDate, 'EEEE, MMMM d, yyyy');
   const formattedTime = format(eventDate, 'h:mm a');
-  
+
   // If end date exists and is different from start date
   let dateRangeDisplay = formattedDate;
   if (event.endDate && event.endDate !== event.date) {
@@ -58,63 +58,50 @@ export default function EventDetailPage() {
         <title>{event.title} - Uluntu</title>
         <meta name="description" content={event.description} />
       </Helmet>
-      
+
       <ContentContainer>
-          <PageHeader id={slug as string} />
-          
-          <Card className="overflow-hidden">
-            {/* Hero Section with image and title */}
-            <EventHero event={event} dateRangeDisplay={dateRangeDisplay} />
-            
-            {/* Content */}
-            <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content */}
-                <div className="lg:col-span-2">
-                  <EventInfo event={event} formattedDate={formattedDate} formattedTime={formattedTime} />
-                  
-                  {/* Like and Comment Section */}
-                  <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div className="flex items-center gap-4 mb-6">
-                      <LikeButton
-                        entityType="event"
-                        entityId={event.id}
-                        initialLikeCount={0}
-                      />
-                    </div>
-                    
-                    <CommentsList
-                      entityType="event"
-                      entityId={event.id}
-                      showToggle
-                      defaultExpanded={false}
-                    />
+        <PageHeader id={slug as string} />
+
+        <Card className="overflow-hidden">
+          {/* Hero Section with image and title */}
+          <EventHero event={event} dateRangeDisplay={dateRangeDisplay} />
+
+          {/* Content */}
+          <div className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main Content */}
+              <div className="lg:col-span-2">
+                <EventInfo event={event} formattedDate={formattedDate} formattedTime={formattedTime} />
+
+                {/* Like and Comment Section */}
+                <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    <LikeButton entityType="event" entityId={event.id} initialLikeCount={0} />
                   </div>
+
+                  <CommentsList entityType="event" entityId={event.id} showToggle defaultExpanded={false} />
                 </div>
-                
-                {/* Sidebar */}
-                <div>
-                  <RegisterSidebar 
-                    event={event}
-                    formattedDate={formattedDate}
-                    formattedTime={formattedTime}
-                    isRegistering={isRegistering}
-                    registrationSuccess={registrationSuccess}
-                    isAlreadyRegistered={isAlreadyRegistered}
-                    onRegister={handleRegister}
-                  />
-                  
-                  <div className="mt-6">
-                    <EventDetailsCard 
-                      event={event} 
-                      formattedDate={formattedDate} 
-                      formattedTime={formattedTime} 
-                    />
-                  </div>
+              </div>
+
+              {/* Sidebar */}
+              <div>
+                <RegisterSidebar
+                  event={event}
+                  formattedDate={formattedDate}
+                  formattedTime={formattedTime}
+                  isRegistering={isRegistering}
+                  registrationSuccess={registrationSuccess}
+                  isAlreadyRegistered={isAlreadyRegistered}
+                  onRegister={handleRegister}
+                />
+
+                <div className="mt-6">
+                  <EventDetailsCard event={event} formattedDate={formattedDate} formattedTime={formattedTime} />
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
+        </Card>
       </ContentContainer>
     </>
   );

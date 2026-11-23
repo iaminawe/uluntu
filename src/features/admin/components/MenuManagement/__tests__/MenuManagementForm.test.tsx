@@ -72,13 +72,11 @@ describe('MenuManagementForm', () => {
 
       await userEvent.type(screen.getByTestId('label-input'), 'Test Label');
       await userEvent.type(screen.getByTestId('href-input'), 'invalid-url');
-      
+
       fireEvent.click(screen.getByTestId('save-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('href-error')).toHaveTextContent(
-          'URL must start with / or http(s)://'
-        );
+        expect(screen.getByTestId('href-error')).toHaveTextContent('URL must start with / or http(s)://');
       });
     });
 
@@ -87,25 +85,21 @@ describe('MenuManagementForm', () => {
 
       // Test label max length
       await userEvent.type(screen.getByTestId('label-input'), 'a'.repeat(101));
-      
+
       fireEvent.blur(screen.getByTestId('label-input'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('label-error')).toHaveTextContent(
-          'Label must be 100 characters or less'
-        );
+        expect(screen.getByTestId('label-error')).toHaveTextContent('Label must be 100 characters or less');
       });
 
       // Test description max length
       await userEvent.clear(screen.getByTestId('description-input'));
       await userEvent.type(screen.getByTestId('description-input'), 'a'.repeat(256));
-      
+
       fireEvent.blur(screen.getByTestId('description-input'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('description-error')).toHaveTextContent(
-          'Description must be 255 characters or less'
-        );
+        expect(screen.getByTestId('description-error')).toHaveTextContent('Description must be 255 characters or less');
       });
     });
 
@@ -156,7 +150,7 @@ describe('MenuManagementForm', () => {
 
       await userEvent.type(screen.getByTestId('label-input'), 'Test Item');
       await userEvent.type(screen.getByTestId('href-input'), '/test');
-      
+
       fireEvent.click(screen.getByTestId('save-button'));
 
       await waitFor(() => {
@@ -171,12 +165,7 @@ describe('MenuManagementForm', () => {
     const mockExistingItem = mockMenuItems[0];
 
     it('should render edit form with populated fields', () => {
-      render(
-        <MenuManagementForm 
-          {...defaultProps} 
-          menuItem={mockExistingItem}
-        />
-      );
+      render(<MenuManagementForm {...defaultProps} menuItem={mockExistingItem} />);
 
       expect(screen.getByText('Edit Menu Item')).toBeInTheDocument();
       expect(screen.getByTestId('label-input')).toHaveValue(mockExistingItem.label);
@@ -190,12 +179,7 @@ describe('MenuManagementForm', () => {
       const updatedItem = { ...mockExistingItem, label: 'Updated Label' };
       mockApi.updateMenuItem.mockResolvedValue(updatedItem);
 
-      render(
-        <MenuManagementForm 
-          {...defaultProps} 
-          menuItem={mockExistingItem}
-        />
-      );
+      render(<MenuManagementForm {...defaultProps} menuItem={mockExistingItem} />);
 
       // Update the label
       await userEvent.clear(screen.getByTestId('label-input'));
@@ -225,16 +209,11 @@ describe('MenuManagementForm', () => {
       const errorMessage = 'Update failed';
       mockApi.updateMenuItem.mockRejectedValue(new Error(errorMessage));
 
-      render(
-        <MenuManagementForm 
-          {...defaultProps} 
-          menuItem={mockExistingItem}
-        />
-      );
+      render(<MenuManagementForm {...defaultProps} menuItem={mockExistingItem} />);
 
       await userEvent.clear(screen.getByTestId('label-input'));
       await userEvent.type(screen.getByTestId('label-input'), 'New Label');
-      
+
       fireEvent.click(screen.getByTestId('save-button'));
 
       await waitFor(() => {
@@ -246,8 +225,8 @@ describe('MenuManagementForm', () => {
 
     it('should prevent self-parenting in parent options', () => {
       render(
-        <MenuManagementForm 
-          {...defaultProps} 
+        <MenuManagementForm
+          {...defaultProps}
           menuItem={mockExistingItem}
           parentOptions={mockMenuItems} // Include the item being edited
         />
@@ -273,7 +252,7 @@ describe('MenuManagementForm', () => {
       fireEvent.click(screen.getByTestId('cancel-button'));
 
       expect(mockOnCancel).toHaveBeenCalled();
-      
+
       // Fields should be reset (though this depends on implementation)
       expect(screen.getByTestId('label-input')).toHaveValue('');
       expect(screen.getByTestId('href-input')).toHaveValue('');
@@ -307,13 +286,13 @@ describe('MenuManagementForm', () => {
       render(<MenuManagementForm {...defaultProps} />);
 
       const parentSelect = screen.getByTestId('parent-select');
-      
+
       // Should have "None" option plus parent options
       expect(parentSelect.children).toHaveLength(mockParentOptions.length + 1);
 
       // Select a parent
       await userEvent.selectOptions(parentSelect, mockParentOptions[0].id);
-      
+
       expect(parentSelect).toHaveValue(mockParentOptions[0].id);
     });
 
@@ -321,10 +300,10 @@ describe('MenuManagementForm', () => {
       render(<MenuManagementForm {...defaultProps} />);
 
       const flagSelect = screen.getByTestId('feature-flag-select');
-      
+
       // Select a feature flag
       await userEvent.selectOptions(flagSelect, 'events_system');
-      
+
       expect(flagSelect).toHaveValue('events_system');
     });
 
@@ -332,10 +311,10 @@ describe('MenuManagementForm', () => {
       render(<MenuManagementForm {...defaultProps} />);
 
       const iconSelect = screen.getByTestId('icon-select');
-      
+
       // Select an icon
       await userEvent.selectOptions(iconSelect, 'users');
-      
+
       expect(iconSelect).toHaveValue('users');
     });
 
@@ -343,14 +322,14 @@ describe('MenuManagementForm', () => {
       render(<MenuManagementForm {...defaultProps} />);
 
       const enabledCheckbox = screen.getByTestId('enabled-checkbox');
-      
+
       // Should be enabled by default
       expect(enabledCheckbox).toBeChecked();
-      
+
       // Toggle it off
       await userEvent.click(enabledCheckbox);
       expect(enabledCheckbox).not.toBeChecked();
-      
+
       // Toggle it back on
       await userEvent.click(enabledCheckbox);
       expect(enabledCheckbox).toBeChecked();
@@ -362,13 +341,11 @@ describe('MenuManagementForm', () => {
       // Try negative order index
       await userEvent.clear(screen.getByTestId('order-input'));
       await userEvent.type(screen.getByTestId('order-input'), '-1');
-      
+
       fireEvent.blur(screen.getByTestId('order-input'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('order-error')).toHaveTextContent(
-          'Order index must be 0 or greater'
-        );
+        expect(screen.getByTestId('order-error')).toHaveTextContent('Order index must be 0 or greater');
       });
     });
   });

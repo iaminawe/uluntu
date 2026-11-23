@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Block } from '@blocknote/core';
-import { 
-  useCreateBlockNote,
-  SuggestionMenuController,
-  getDefaultReactSlashMenuItems
-} from '@blocknote/react';
+import { useCreateBlockNote, SuggestionMenuController, getDefaultReactSlashMenuItems } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/react/style.css';
 import '@blocknote/mantine/style.css';
@@ -26,7 +22,12 @@ interface SimpleBlockEditorProps {
 
 // AI Commands - separated into categories
 const AI_EDIT_COMMANDS = [
-  { id: 'improve', label: '✨ Improve Writing', prompt: 'Improve the writing quality, grammar, and clarity', needsSelection: true },
+  {
+    id: 'improve',
+    label: '✨ Improve Writing',
+    prompt: 'Improve the writing quality, grammar, and clarity',
+    needsSelection: true,
+  },
   { id: 'shorten', label: '📝 Make Shorter', prompt: 'Make this text more concise', needsSelection: true },
   { id: 'expand', label: '📖 Make Longer', prompt: 'Expand this text with more details', needsSelection: true },
   { id: 'professional', label: '👔 Professional', prompt: 'Rewrite in a professional tone', needsSelection: true },
@@ -36,21 +37,120 @@ const AI_EDIT_COMMANDS = [
 ];
 
 const AI_CREATE_COMMANDS = [
-  { id: 'blog-post', label: '📄 Blog Post', prompt: 'Write a comprehensive, engaging blog post of 1000-1500 words (8-12 paragraphs) with introduction, main body sections, and conclusion about: ', needsInput: true, needsSelection: false },
-  { id: 'article-outline', label: '📋 Article Outline', prompt: 'Create a detailed article outline with at least 5 main sections and 3-4 subsections each for: ', needsInput: true, needsSelection: false },
-  { id: 'introduction', label: '🎯 Introduction', prompt: 'Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ', needsInput: true, needsSelection: false },
-  { id: 'conclusion', label: '🏁 Conclusion', prompt: 'Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ', needsInput: true, needsSelection: false },
-  { id: 'summary', label: '📊 Executive Summary', prompt: 'Write a comprehensive executive summary of 300-500 words covering all key points, findings, and recommendations for: ', needsInput: true, needsSelection: false },
-  { id: 'social-post', label: '📱 Social Media Post', prompt: 'Create an engaging social media post (150-200 words) with relevant hashtags about: ', needsInput: true, needsSelection: false },
-  { id: 'email', label: '✉️ Email Draft', prompt: 'Write a complete professional email (250-400 words) with subject line, greeting, detailed body paragraphs, and professional closing about: ', needsInput: true, needsSelection: false },
-  { id: 'press-release', label: '📰 Press Release', prompt: 'Write a professional press release of 400-600 words with headline, dateline, lead paragraph, body paragraphs, boilerplate, and contact info for: ', needsInput: true, needsSelection: false },
-  { id: 'product-description', label: '🛍️ Product Description', prompt: 'Write a detailed product description of 300-500 words covering features, benefits, specifications, and use cases for: ', needsInput: true, needsSelection: false },
-  { id: 'faq', label: '❓ FAQ Section', prompt: 'Create a comprehensive FAQ section with 8-10 questions and detailed answers (50-100 words each) about: ', needsInput: true, needsSelection: false },
-  { id: 'how-to', label: '📖 How-To Guide', prompt: 'Write a detailed step-by-step guide of 600-1000 words with numbered steps, tips, and explanations on how to: ', needsInput: true, needsSelection: false },
-  { id: 'comparison', label: '⚖️ Comparison', prompt: 'Write a detailed comparison of 500-800 words with introduction, feature-by-feature analysis, pros/cons, and recommendations for: ', needsInput: true, needsSelection: false },
-  { id: 'continue', label: '➡️ Continue Writing', prompt: 'Continue writing the next 300-500 words (3-5 paragraphs) from where this text ends, maintaining the same style, tone, and depth', needsSelection: false },
-  { id: 'ideas', label: '💡 Generate Ideas', prompt: 'Generate 10-15 creative and actionable ideas with brief explanations (30-50 words each) about: ', needsInput: true, needsSelection: false },
-  { id: 'headlines', label: '📰 Headlines', prompt: 'Generate 15-20 catchy, compelling headlines with variety in style and approach for: ', needsInput: true, needsSelection: false },
+  {
+    id: 'blog-post',
+    label: '📄 Blog Post',
+    prompt:
+      'Write a comprehensive, engaging blog post of 1000-1500 words (8-12 paragraphs) with introduction, main body sections, and conclusion about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'article-outline',
+    label: '📋 Article Outline',
+    prompt: 'Create a detailed article outline with at least 5 main sections and 3-4 subsections each for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'introduction',
+    label: '🎯 Introduction',
+    prompt:
+      'Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'conclusion',
+    label: '🏁 Conclusion',
+    prompt:
+      'Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'summary',
+    label: '📊 Executive Summary',
+    prompt:
+      'Write a comprehensive executive summary of 300-500 words covering all key points, findings, and recommendations for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'social-post',
+    label: '📱 Social Media Post',
+    prompt: 'Create an engaging social media post (150-200 words) with relevant hashtags about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'email',
+    label: '✉️ Email Draft',
+    prompt:
+      'Write a complete professional email (250-400 words) with subject line, greeting, detailed body paragraphs, and professional closing about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'press-release',
+    label: '📰 Press Release',
+    prompt:
+      'Write a professional press release of 400-600 words with headline, dateline, lead paragraph, body paragraphs, boilerplate, and contact info for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'product-description',
+    label: '🛍️ Product Description',
+    prompt:
+      'Write a detailed product description of 300-500 words covering features, benefits, specifications, and use cases for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'faq',
+    label: '❓ FAQ Section',
+    prompt: 'Create a comprehensive FAQ section with 8-10 questions and detailed answers (50-100 words each) about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'how-to',
+    label: '📖 How-To Guide',
+    prompt:
+      'Write a detailed step-by-step guide of 600-1000 words with numbered steps, tips, and explanations on how to: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'comparison',
+    label: '⚖️ Comparison',
+    prompt:
+      'Write a detailed comparison of 500-800 words with introduction, feature-by-feature analysis, pros/cons, and recommendations for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'continue',
+    label: '➡️ Continue Writing',
+    prompt:
+      'Continue writing the next 300-500 words (3-5 paragraphs) from where this text ends, maintaining the same style, tone, and depth',
+    needsSelection: false,
+  },
+  {
+    id: 'ideas',
+    label: '💡 Generate Ideas',
+    prompt: 'Generate 10-15 creative and actionable ideas with brief explanations (30-50 words each) about: ',
+    needsInput: true,
+    needsSelection: false,
+  },
+  {
+    id: 'headlines',
+    label: '📰 Headlines',
+    prompt: 'Generate 15-20 catchy, compelling headlines with variety in style and approach for: ',
+    needsInput: true,
+    needsSelection: false,
+  },
 ];
 
 const AI_COMMANDS = [...AI_CREATE_COMMANDS, ...AI_EDIT_COMMANDS];
@@ -65,14 +165,14 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
   const [aiProcessing, setAiProcessing] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const editorRef = useRef<any>(null);
-  
+
   const aiConfig = checkAIConfiguration();
 
   // Handle AI command - moved up so it's available for slash menu
-  const handleAICommand = async (command: typeof AI_COMMANDS[0]) => {
+  const handleAICommand = async (command: (typeof AI_COMMANDS)[0]) => {
     // Get current selection
     const hasSelection = handleTextSelection();
-    
+
     // Check if command needs selection
     if (command.needsSelection && !hasSelection) {
       alert('Please select some text first for this command');
@@ -89,29 +189,29 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
 
     setAiProcessing(true);
     setShowAIMenu(false);
-    
+
     try {
       // Build the full prompt
       let fullPrompt = command.prompt;
       if (command.needsInput) {
         fullPrompt = command.prompt + userInput;
       }
-      
+
       const result = await callAI(fullPrompt, command.needsSelection ? selectedText : '');
-      
+
       // Insert the AI result using BlockNote's API
       if (result && editorRef.current) {
         const editor = editorRef.current;
-        
+
         try {
           // Convert markdown to BlockNote blocks
           const blocks = markdownToBlocks(result);
-          
+
           console.log('Generated blocks from markdown:', blocks);
-          
+
           // Get current position
           const currentPosition = editor.getTextCursorPosition();
-          
+
           if (currentPosition && currentPosition.block) {
             // If replacing selected text, we need to handle differently
             if (command.needsSelection && hasSelection) {
@@ -123,7 +223,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
               // Insert new content as blocks after current position
               editor.insertBlocks(blocks, currentPosition.block, 'after');
             }
-            
+
             // Focus back on editor
             editor.focus();
           } else {
@@ -140,7 +240,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
             const paragraphs = result.split('\n\n').filter(p => p.trim());
             const fallbackBlocks = paragraphs.map(p => ({
               type: 'paragraph' as const,
-              content: p.trim()
+              content: p.trim(),
             }));
             editor.insertBlocks(fallbackBlocks);
           } catch (fallbackError) {
@@ -149,7 +249,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
           }
         }
       }
-      
+
       setSelectedText('');
     } catch (error) {
       console.error('AI processing failed:', error);
@@ -175,10 +275,10 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
           handleAICommand(command);
         },
         aliases: [command.id, command.label.toLowerCase(), 'ai'],
-        group: "AI Content Creation",
+        group: 'AI Content Creation',
         subtext: `Generate ${command.label.toLowerCase()}`,
       })),
-      // AI Edit Commands  
+      // AI Edit Commands
       ...AI_EDIT_COMMANDS.map(command => ({
         title: command.label,
         onItemClick: () => {
@@ -189,7 +289,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
           handleAICommand(command);
         },
         aliases: [command.id, command.label.toLowerCase(), 'ai'],
-        group: "AI Text Editing", 
+        group: 'AI Text Editing',
         subtext: `Apply ${command.label.toLowerCase()} to selected text`,
       })),
     ];
@@ -233,7 +333,6 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
     return false;
   };
 
-
   if (!editor) {
     return <div>Loading editor...</div>;
   }
@@ -254,12 +353,12 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
           >
             {aiProcessing ? '⏳ Processing...' : '✨ AI Assistant'}
           </Button>
-          
+
           {showAIMenu && (
             <div className="ai-menu-dropdown">
               <div className="ai-menu-section">
                 <div className="ai-menu-section-title">Create Content</div>
-                {AI_CREATE_COMMANDS.map((cmd) => (
+                {AI_CREATE_COMMANDS.map(cmd => (
                   <button
                     key={cmd.id}
                     className="ai-menu-item"
@@ -272,7 +371,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
               </div>
               <div className="ai-menu-section">
                 <div className="ai-menu-section-title">Edit Selected Text</div>
-                {AI_EDIT_COMMANDS.map((cmd) => (
+                {AI_EDIT_COMMANDS.map(cmd => (
                   <button
                     key={cmd.id}
                     className="ai-menu-item"
@@ -288,24 +387,19 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
         </div>
       )}
 
-      <BlockNoteView 
-        editor={editor} 
-        editable={editable}
-        theme="light"
-        slashMenu={false}
-      >
+      <BlockNoteView editor={editor} editable={editable} theme="light" slashMenu={false}>
         <SuggestionMenuController
-          triggerCharacter={"/"}
-          getItems={async (query) => {
+          triggerCharacter={'/'}
+          getItems={async query => {
             const items = getCustomSlashMenuItems(editor);
             if (!query) return items;
-            
+
             // Simple filtering logic
-            const filtered = items.filter(item => 
-              item.title.toLowerCase().includes(query.toLowerCase()) ||
-              (item.aliases && item.aliases.some((alias: string) => 
-                alias.toLowerCase().includes(query.toLowerCase())
-              ))
+            const filtered = items.filter(
+              item =>
+                item.title.toLowerCase().includes(query.toLowerCase()) ||
+                (item.aliases &&
+                  item.aliases.some((alias: string) => alias.toLowerCase().includes(query.toLowerCase())))
             );
             return filtered;
           }}
@@ -315,9 +409,7 @@ export const SimpleBlockEditor: React.FC<SimpleBlockEditorProps> = ({
       {/* AI Status Indicator */}
       <div className="ai-status-indicator">
         {aiConfig.isConfigured ? (
-          <span className="ai-available">
-            ✨ AI Ready ({aiConfig.provider})
-          </span>
+          <span className="ai-available">✨ AI Ready ({aiConfig.provider})</span>
         ) : (
           <span className="ai-unavailable">Configure API keys in .env.local to enable AI</span>
         )}

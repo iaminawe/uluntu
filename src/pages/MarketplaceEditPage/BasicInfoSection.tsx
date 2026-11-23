@@ -8,7 +8,7 @@ import { useState } from 'react';
 const typeOptions = [
   { value: 'product', label: 'Product' },
   { value: 'service', label: 'Service' },
-  { value: 'equipment', label: 'Equipment' }
+  { value: 'equipment', label: 'Equipment' },
 ];
 
 const conditionOptions = [
@@ -17,42 +17,37 @@ const conditionOptions = [
   { value: 'like-new', label: 'Like New' },
   { value: 'good', label: 'Good' },
   { value: 'fair', label: 'Fair' },
-  { value: 'poor', label: 'Poor' }
+  { value: 'poor', label: 'Poor' },
 ];
 
 const statusOptions = [
   { value: 'draft', label: 'Save as Draft' },
   { value: 'published', label: 'Publish Now' },
-  { value: 'archived', label: 'Archive' }
+  { value: 'archived', label: 'Archive' },
 ];
 
-const BasicInfoSection = ({
-  formData,
-  handleChange,
-  getTypeIcon,
-  isSubmitting
-}: BasicInfoSectionProps) => {
+const BasicInfoSection = ({ formData, handleChange, getTypeIcon, isSubmitting }: BasicInfoSectionProps) => {
   const [includeImages, setIncludeImages] = useState(true);
-  
+
   const handleDescriptionChange = (content: string) => {
     const syntheticEvent = {
-      target: { name: 'description', value: content }
+      target: { name: 'description', value: content },
     } as React.ChangeEvent<HTMLTextAreaElement>;
-    
+
     handleChange(syntheticEvent);
   };
-  
+
   // Custom handler for featured checkbox
   const handleFeaturedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const syntheticEvent = {
       target: {
         name: 'featured',
-        value: e.target.checked
-      }
+        value: e.target.checked,
+      },
     } as unknown as React.ChangeEvent<HTMLInputElement>;
     handleChange(syntheticEvent);
   };
-  
+
   return (
     <div className="space-y-6">
       <FormInput
@@ -65,16 +60,16 @@ const BasicInfoSection = ({
         disabled={isSubmitting}
         placeholder="Enter a descriptive title"
       />
-      
+
       <SlugField
         value={formData.slug}
-        onChange={(value) => handleChange({ target: { name: 'slug', value } } as any)}
+        onChange={value => handleChange({ target: { name: 'slug', value } } as any)}
         sourceValue={formData.title}
         required
         baseUrl="/marketplace/"
         disabled={isSubmitting}
       />
-      
+
       <div>
         <div className="flex items-center justify-between mb-2">
           <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -102,7 +97,7 @@ const BasicInfoSection = ({
           disabled={isSubmitting}
         />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="relative">
           <FormSelect
@@ -120,7 +115,7 @@ const BasicInfoSection = ({
             {getTypeIcon(formData.type as ListingType)}
           </div>
         </div>
-        
+
         <div className="relative">
           <FormInput
             id="price"
@@ -139,7 +134,7 @@ const BasicInfoSection = ({
             <DollarSign className="h-5 w-5 text-slate-400" />
           </div>
         </div>
-        
+
         {formData.type !== 'service' && (
           <FormSelect
             id="condition"
@@ -152,7 +147,7 @@ const BasicInfoSection = ({
             disabled={isSubmitting}
           />
         )}
-        
+
         <div className="relative">
           <FormInput
             id="location"
@@ -170,7 +165,7 @@ const BasicInfoSection = ({
             <MapPin className="h-5 w-5 text-slate-400" />
           </div>
         </div>
-        
+
         <FormSelect
           id="status"
           name="status"
@@ -182,7 +177,7 @@ const BasicInfoSection = ({
           disabled={isSubmitting}
         />
       </div>
-      
+
       <FormCheckbox
         id="featured"
         name="featured"

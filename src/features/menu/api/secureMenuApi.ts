@@ -2,11 +2,7 @@
 // Enhanced API layer with security checks, validation, and audit logging
 
 import { supabase } from '@/lib/supabase';
-import { 
-  MenuSecurity, 
-  MenuPermissionContext, 
-  MenuAction 
-} from '../security/MenuPermissions';
+import { MenuSecurity, MenuPermissionContext, MenuAction } from '../security/MenuPermissions';
 import { MenuItem, MenuItemInput, MenuItemUpdate, MenuType, MenuTarget, MenuVisibility } from '@/types/menu';
 import { logger } from '@/utils/logger';
 
@@ -37,7 +33,7 @@ export class SecureMenuApi {
       userId: this.context.userId,
       userRoles: this.context.userRoles,
       sessionId: this.context.sessionId,
-      ipAddress: this.context.ipAddress
+      ipAddress: this.context.ipAddress,
     };
   }
 
@@ -47,11 +43,7 @@ export class SecureMenuApi {
   async getMenuItems(menuType?: MenuType): Promise<SecureApiResponse<MenuItem[]>> {
     try {
       // Check read permissions
-      const permission = await MenuSecurity.checkPermission(
-        this.permissionContext,
-        'menu_management',
-        'read'
-      );
+      const permission = await MenuSecurity.checkPermission(this.permissionContext, 'menu_management', 'read');
 
       if (!permission.allowed) {
         return {
@@ -70,7 +62,7 @@ export class SecureMenuApi {
         logger.error('Database error fetching containers', 'SECURE_MENU_API', containerError);
         return {
           success: false,
-          error: 'Failed to fetch menu containers'
+          error: 'Failed to fetch menu containers',
         };
       }
 
@@ -80,7 +72,8 @@ export class SecureMenuApi {
       // Fetch menu items with proper selection
       const { data, error } = await supabase
         .from('menu_items')
-        .select(`
+        .select(
+          `
           id,
           menu_container_id,
           parent_id,
@@ -103,14 +96,15 @@ export class SecureMenuApi {
           data_attributes,
           created_at,
           updated_at
-        `)
+        `
+        )
         .order('sort_order', { ascending: true });
 
       if (error) {
         logger.error('Database error fetching menu items', 'SECURE_MENU_API', error);
         return {
           success: false,
-          error: 'Failed to fetch menu items'
+          error: 'Failed to fetch menu items',
         };
       }
 
@@ -129,44 +123,37 @@ export class SecureMenuApi {
           target: (item.target || '_self') as MenuTarget,
           icon: item.icon || null,
           css_classes: item.css_classes || null,
-          visibility: item.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+          visibility: item.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
           required_roles: item.custom_properties?.required_roles || null,
           is_external: item.url?.startsWith('http') || false,
           created_at: item.created_at,
-          updated_at: item.updated_at
+          updated_at: item.updated_at,
         };
       });
 
       // Filter by menu type if specified
-      let filteredItems = menuType 
-        ? mappedItems.filter(item => item.menu_type === menuType)
-        : mappedItems;
+      let filteredItems = menuType ? mappedItems.filter(item => item.menu_type === menuType) : mappedItems;
 
       // Filter items based on permissions and visibility
-      filteredItems = MenuSecurity.filterMenuItemsByPermissions(
-        filteredItems,
-        this.permissionContext,
-        { id: this.context.userId, email: this.context.userEmail } as any
-      );
+      filteredItems = MenuSecurity.filterMenuItemsByPermissions(filteredItems, this.permissionContext, {
+        id: this.context.userId,
+        email: this.context.userEmail,
+      } as any);
 
       // Log access
-      await MenuSecurity.logMenuAction(
-        'read',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        { metadata: { itemCount: filteredItems.length, menuType } }
-      );
+      await MenuSecurity.logMenuAction('read', 'menu_item', this.permissionContext, this.context.userEmail, {
+        metadata: { itemCount: filteredItems.length, menuType },
+      });
 
       return {
         success: true,
-        data: filteredItems
+        data: filteredItems,
       };
     } catch (error) {
       logger.error('Error in secure getMenuItems', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -192,16 +179,13 @@ export class SecureMenuApi {
       }
 
       // Validate menu item security
-      const validation = MenuSecurity.validateMenuItemSecurity(
-        data,
-        this.permissionContext
-      );
+      const validation = MenuSecurity.validateMenuItemSecurity(data, this.permissionContext);
 
       if (!validation.valid) {
         return {
           success: false,
           error: 'Validation failed',
-          validationErrors: validation.errors
+          validationErrors: validation.errors,
         };
       }
 
@@ -209,7 +193,7 @@ export class SecureMenuApi {
       if (!data.title?.trim() || !data.url?.trim()) {
         return {
           success: false,
-          error: 'Title and URL are required'
+          error: 'Title and URL are required',
         };
       }
 
@@ -223,7 +207,7 @@ export class SecureMenuApi {
       if (existing && existing.length > 0) {
         return {
           success: false,
-          error: 'A menu item with this URL already exists'
+          error: 'A menu item with this URL already exists',
         };
       }
 
@@ -243,11 +227,13 @@ export class SecureMenuApi {
       // Create the menu item
       const { data: newItem, error } = await supabase
         .from('menu_items')
-        .insert([{
-          ...data,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }])
+        .insert([
+          {
+            ...data,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ])
         .select()
         .single();
 
@@ -255,32 +241,26 @@ export class SecureMenuApi {
         logger.error('Database error creating menu item', 'SECURE_MENU_API', error);
         return {
           success: false,
-          error: 'Failed to create menu item'
+          error: 'Failed to create menu item',
         };
       }
 
       // Log the action
-      await MenuSecurity.logMenuAction(
-        'create',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        {
-          menuItemId: newItem.id,
-          newValues: data,
-          metadata: { menuType: data.menu_type }
-        }
-      );
+      await MenuSecurity.logMenuAction('create', 'menu_item', this.permissionContext, this.context.userEmail, {
+        menuItemId: newItem.id,
+        newValues: data,
+        metadata: { menuType: data.menu_type },
+      });
 
       return {
         success: true,
-        data: newItem
+        data: newItem,
       };
     } catch (error) {
       logger.error('Error in secure createMenuItem', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -300,7 +280,7 @@ export class SecureMenuApi {
       if (fetchError || !existingItem) {
         return {
           success: false,
-          error: 'Menu item not found'
+          error: 'Menu item not found',
         };
       }
 
@@ -320,16 +300,13 @@ export class SecureMenuApi {
       }
 
       // Validate menu item security
-      const validation = MenuSecurity.validateMenuItemSecurity(
-        data,
-        this.permissionContext
-      );
+      const validation = MenuSecurity.validateMenuItemSecurity(data, this.permissionContext);
 
       if (!validation.valid) {
         return {
           success: false,
           error: 'Validation failed',
-          validationErrors: validation.errors
+          validationErrors: validation.errors,
         };
       }
 
@@ -345,7 +322,7 @@ export class SecureMenuApi {
         if (!visibilityPermission.allowed) {
           return {
             success: false,
-            error: `Cannot change visibility: ${visibilityPermission.reason}`
+            error: `Cannot change visibility: ${visibilityPermission.reason}`,
           };
         }
       }
@@ -355,7 +332,7 @@ export class SecureMenuApi {
         .from('menu_items')
         .update({
           ...data,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', data.id)
         .select()
@@ -365,37 +342,29 @@ export class SecureMenuApi {
         logger.error('Database error updating menu item', 'SECURE_MENU_API', error);
         return {
           success: false,
-          error: 'Failed to update menu item'
+          error: 'Failed to update menu item',
         };
       }
 
       // Log the action with change tracking
-      await MenuSecurity.logMenuAction(
-        'update',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        {
-          menuItemId: data.id,
-          oldValues: existingItem,
-          newValues: data,
-          metadata: { 
-            changedFields: Object.keys(data).filter(key => 
-              data[key as keyof MenuItemUpdate] !== existingItem[key]
-            )
-          }
-        }
-      );
+      await MenuSecurity.logMenuAction('update', 'menu_item', this.permissionContext, this.context.userEmail, {
+        menuItemId: data.id,
+        oldValues: existingItem,
+        newValues: data,
+        metadata: {
+          changedFields: Object.keys(data).filter(key => data[key as keyof MenuItemUpdate] !== existingItem[key]),
+        },
+      });
 
       return {
         success: true,
-        data: updatedItem
+        data: updatedItem,
       };
     } catch (error) {
       logger.error('Error in secure updateMenuItem', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -415,7 +384,7 @@ export class SecureMenuApi {
       if (fetchError || !existingItem) {
         return {
           success: false,
-          error: 'Menu item not found'
+          error: 'Menu item not found',
         };
       }
 
@@ -435,67 +404,52 @@ export class SecureMenuApi {
       }
 
       // Find all child items
-      const { data: children } = await supabase
-        .from('menu_items')
-        .select('id, title')
-        .eq('parent_id', id);
+      const { data: children } = await supabase.from('menu_items').select('id, title').eq('parent_id', id);
 
       const childrenCount = children?.length || 0;
 
       // Delete child items first (cascade)
       if (childrenCount > 0) {
-        const { error: childrenError } = await supabase
-          .from('menu_items')
-          .delete()
-          .eq('parent_id', id);
+        const { error: childrenError } = await supabase.from('menu_items').delete().eq('parent_id', id);
 
         if (childrenError) {
           logger.error('Error deleting child menu items', 'SECURE_MENU_API', childrenError);
           return {
             success: false,
-            error: 'Failed to delete child menu items'
+            error: 'Failed to delete child menu items',
           };
         }
       }
 
       // Delete the parent item
-      const { error } = await supabase
-        .from('menu_items')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('menu_items').delete().eq('id', id);
 
       if (error) {
         logger.error('Database error deleting menu item', 'SECURE_MENU_API', error);
         return {
           success: false,
-          error: 'Failed to delete menu item'
+          error: 'Failed to delete menu item',
         };
       }
 
       // Log the action
-      await MenuSecurity.logMenuAction(
-        'delete',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        {
-          menuItemId: id,
-          oldValues: existingItem,
-          metadata: { 
-            deletedChildren: childrenCount,
-            cascadeDelete: childrenCount > 0
-          }
-        }
-      );
+      await MenuSecurity.logMenuAction('delete', 'menu_item', this.permissionContext, this.context.userEmail, {
+        menuItemId: id,
+        oldValues: existingItem,
+        metadata: {
+          deletedChildren: childrenCount,
+          cascadeDelete: childrenCount > 0,
+        },
+      });
 
       return {
-        success: true
+        success: true,
       };
     } catch (error) {
       logger.error('Error in secure deleteMenuItem', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -515,7 +469,7 @@ export class SecureMenuApi {
       if (fetchError || !existingItem) {
         return {
           success: false,
-          error: 'Menu item not found'
+          error: 'Menu item not found',
         };
       }
 
@@ -541,7 +495,7 @@ export class SecureMenuApi {
         .from('menu_items')
         .update({
           [field]: newValue,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', id)
         .select()
@@ -551,33 +505,27 @@ export class SecureMenuApi {
         logger.error('Database error toggling menu item', 'SECURE_MENU_API', error);
         return {
           success: false,
-          error: 'Failed to toggle menu item'
+          error: 'Failed to toggle menu item',
         };
       }
 
       // Log the action
-      await MenuSecurity.logMenuAction(
-        'toggle',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        {
-          menuItemId: id,
-          oldValues: { [field]: existingItem[field] },
-          newValues: { [field]: newValue },
-          metadata: { toggledField: field }
-        }
-      );
+      await MenuSecurity.logMenuAction('toggle', 'menu_item', this.permissionContext, this.context.userEmail, {
+        menuItemId: id,
+        oldValues: { [field]: existingItem[field] },
+        newValues: { [field]: newValue },
+        metadata: { toggledField: field },
+      });
 
       return {
         success: true,
-        data: updatedItem
+        data: updatedItem,
       };
     } catch (error) {
       logger.error('Error in secure toggleMenuItem', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -591,15 +539,12 @@ export class SecureMenuApi {
     try {
       // Get all items to be updated
       const ids = updates.map(u => u.id);
-      const { data: existingItems, error: fetchError } = await supabase
-        .from('menu_items')
-        .select('*')
-        .in('id', ids);
+      const { data: existingItems, error: fetchError } = await supabase.from('menu_items').select('*').in('id', ids);
 
       if (fetchError) {
         return {
           success: false,
-          error: 'Failed to fetch menu items for bulk update'
+          error: 'Failed to fetch menu items for bulk update',
         };
       }
 
@@ -614,7 +559,7 @@ export class SecureMenuApi {
         return {
           success: false,
           error: 'Bulk operation not allowed',
-          validationErrors: bulkValidation.errors
+          validationErrors: bulkValidation.errors,
         };
       }
 
@@ -632,7 +577,7 @@ export class SecureMenuApi {
         // Update individual item
         const result = await this.updateMenuItem({
           id: update.id,
-          ...update.updates
+          ...update.updates,
         });
 
         if (result.success && result.data) {
@@ -645,13 +590,13 @@ export class SecureMenuApi {
       return {
         success: errors.length === 0,
         data: results,
-        validationErrors: errors.length > 0 ? errors : undefined
+        validationErrors: errors.length > 0 ? errors : undefined,
       };
     } catch (error) {
       logger.error('Error in secure bulkUpdateMenuItems', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }
@@ -659,17 +604,10 @@ export class SecureMenuApi {
   /**
    * Secure menu export with permission check
    */
-  async exportMenuStructure(
-    menuType?: MenuType,
-    includeDisabled = false
-  ): Promise<SecureApiResponse<MenuItem[]>> {
+  async exportMenuStructure(menuType?: MenuType, includeDisabled = false): Promise<SecureApiResponse<MenuItem[]>> {
     try {
       // Check export permissions
-      const permission = await MenuSecurity.checkPermission(
-        this.permissionContext,
-        'menu_items',
-        'export'
-      );
+      const permission = await MenuSecurity.checkPermission(this.permissionContext, 'menu_items', 'export');
 
       if (!permission.allowed) {
         return {
@@ -692,29 +630,23 @@ export class SecureMenuApi {
       }
 
       // Log export action
-      await MenuSecurity.logMenuAction(
-        'export',
-        'menu_item',
-        this.permissionContext,
-        this.context.userEmail,
-        {
-          metadata: {
-            menuType,
-            includeDisabled,
-            exportedCount: exportData.length
-          }
-        }
-      );
+      await MenuSecurity.logMenuAction('export', 'menu_item', this.permissionContext, this.context.userEmail, {
+        metadata: {
+          menuType,
+          includeDisabled,
+          exportedCount: exportData.length,
+        },
+      });
 
       return {
         success: true,
-        data: exportData
+        data: exportData,
       };
     } catch (error) {
       logger.error('Error in secure exportMenuStructure', 'SECURE_MENU_API', error);
       return {
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       };
     }
   }

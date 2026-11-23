@@ -33,25 +33,24 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         )}
         {/* Overlay for the gradient */}
         <div className="absolute inset-0 bg-black opacity-50 z-10"></div> {/* Simple opacity, adjust as needed */}
-
-        <div className="container mx-auto px-4 relative z-20"> {/* Content needs higher z-index */}
+        <div className="container mx-auto px-4 relative z-20">
+          {' '}
+          {/* Content needs higher z-index */}
           <div className="max-w-7xl mx-auto text-center">
-            <div className="flex justify-center items-center mb-4">
-              {icon && <div className="mr-3">{icon}</div>}
-            </div>
-            <h1 className={`text-3xl font-bold ${shouldUseWhiteText ? 'text-white' : 'text-slate-900 dark:text-white'} mb-2`}>
+            <div className="flex justify-center items-center mb-4">{icon && <div className="mr-3">{icon}</div>}</div>
+            <h1
+              className={`text-3xl font-bold ${shouldUseWhiteText ? 'text-white' : 'text-slate-900 dark:text-white'} mb-2`}
+            >
               {title}
             </h1>
             {subtitle && (
-              <p className={`text-lg ${shouldUseWhiteText ? 'text-white/90' : 'text-slate-600 dark:text-slate-400'} mt-2 max-w-3xl mx-auto`}>
+              <p
+                className={`text-lg ${shouldUseWhiteText ? 'text-white/90' : 'text-slate-600 dark:text-slate-400'} mt-2 max-w-3xl mx-auto`}
+              >
                 {subtitle}
               </p>
             )}
-            {actions && (
-              <div className="mt-6 flex flex-wrap justify-center gap-4">
-                {actions}
-              </div>
-            )}
+            {actions && <div className="mt-6 flex flex-wrap justify-center gap-4">{actions}</div>}
           </div>
         </div>
       </div>
@@ -66,16 +65,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           {icon && <div className="mr-3 text-orange-500 dark:text-orange-400">{icon}</div>}
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-            {subtitle && (
-              <p className="text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>}
           </div>
         </div>
-        {actions && (
-          <div className="mt-4 md:mt-0 flex flex-wrap gap-3 items-center">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="mt-4 md:mt-0 flex flex-wrap gap-3 items-center">{actions}</div>}
       </div>
     </div>
   );

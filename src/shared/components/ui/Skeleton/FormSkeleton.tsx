@@ -39,7 +39,7 @@ const FormSkeleton: React.FC<FormSkeletonProps> = ({
           <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
         </div>
       )}
-      
+
       {/* Form Fields Skeleton */}
       <div className="space-y-6">
         {Array.from({ length: fields }).map((_, index) => (
@@ -54,16 +54,12 @@ const FormSkeleton: React.FC<FormSkeletonProps> = ({
           </div>
         ))}
       </div>
-      
+
       {/* Form Actions Skeleton */}
       {(hasSubmitButton || hasCancelButton) && (
         <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-          {hasCancelButton && (
-            <div className="h-10 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          )}
-          {hasSubmitButton && (
-            <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          )}
+          {hasCancelButton && <div className="h-10 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>}
+          {hasSubmitButton && <div className="h-10 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>}
         </div>
       )}
     </div>

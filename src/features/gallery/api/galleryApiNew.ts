@@ -8,7 +8,8 @@ export const galleryApiNew = {
   async getAllGalleries(filters?: GalleryFilters): Promise<Gallery[]> {
     let query = supabase
       .from('user_galleries')
-      .select(`
+      .select(
+        `
         *,
         gallery_photos!gallery_photos_gallery_id_fkey (*),
         owner:members!user_id (
@@ -16,7 +17,8 @@ export const galleryApiNew = {
           name,
           image
         )
-      `)
+      `
+      )
       .order('created_at', { ascending: false });
 
     if (filters?.search) {
@@ -25,9 +27,9 @@ export const galleryApiNew = {
 
     if (filters?.privacy) {
       const privacyMap = {
-        'public': 'public',
-        'private': 'private',
-        'unlisted': 'members_only'
+        public: 'public',
+        private: 'private',
+        unlisted: 'members_only',
       };
       query = query.eq('privacy_level', privacyMap[filters.privacy] || filters.privacy);
     }
@@ -45,9 +47,7 @@ export const galleryApiNew = {
     }
 
     if (filters?.dateRange) {
-      query = query
-        .gte('created_at', filters.dateRange.start)
-        .lte('created_at', filters.dateRange.end);
+      query = query.gte('created_at', filters.dateRange.start).lte('created_at', filters.dateRange.end);
     }
 
     const { data, error } = await query;
@@ -58,41 +58,47 @@ export const galleryApiNew = {
     }
 
     // Transform data to match interface with storage URLs
-    const galleries = await Promise.all((data || []).map(async gallery => {
-      const transformedGallery = {
-        ...gallery,
-        photos: await Promise.all((gallery.gallery_photos || []).map(async photo => ({
-          ...photo,
-          url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-          thumbnail_url: photo.thumbnail_path 
-            ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
-            : undefined,
-          medium_url: photo.medium_path
-            ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
-            : undefined,
-          small_url: (photo as any).small_path
-            ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
-            : undefined,
-          original_url: (photo as any).original_path
-            ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
-            : undefined
-        }))),
-        createdAt: gallery.created_at,
-        updatedAt: gallery.updated_at,
-        ownerId: gallery.user_id,
-        privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as 'public' | 'private' | 'unlisted'
-      };
+    const galleries = await Promise.all(
+      (data || []).map(async gallery => {
+        const transformedGallery = {
+          ...gallery,
+          photos: await Promise.all(
+            (gallery.gallery_photos || []).map(async photo => ({
+              ...photo,
+              url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
+              thumbnail_url: photo.thumbnail_path
+                ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
+                : undefined,
+              medium_url: photo.medium_path
+                ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
+                : undefined,
+              small_url: (photo as any).small_path
+                ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
+                : undefined,
+              original_url: (photo as any).original_path
+                ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
+                : undefined,
+            }))
+          ),
+          createdAt: gallery.created_at,
+          updatedAt: gallery.updated_at,
+          ownerId: gallery.user_id,
+          privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as
+            'public' | 'private' | 'unlisted',
+        };
 
-      return transformedGallery;
-    }));
-    
+        return transformedGallery;
+      })
+    );
+
     return galleries as Gallery[];
   },
 
   async getGallery(id: string): Promise<Gallery | null> {
     const { data, error } = await supabase
       .from('user_galleries')
-      .select(`
+      .select(
+        `
         *,
         gallery_photos!gallery_photos_gallery_id_fkey (*),
         owner:members!user_id (
@@ -100,7 +106,8 @@ export const galleryApiNew = {
           name,
           image
         )
-      `)
+      `
+      )
       .eq('id', id)
       .single();
 
@@ -110,30 +117,31 @@ export const galleryApiNew = {
     }
 
     if (!data) return null;
-    
+
     // Transform data with storage URLs
     const transformedGallery = {
       ...data,
-      photos: await Promise.all((data.gallery_photos || []).map(async photo => ({
-        ...photo,
-        url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-        thumbnail_url: photo.thumbnail_path 
-          ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
-          : undefined,
-        medium_url: photo.medium_path
-          ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
-          : undefined,
-        small_url: (photo as any).small_path
-          ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
-          : undefined,
-        original_url: (photo as any).original_path
-          ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
-          : undefined
-      }))),
+      photos: await Promise.all(
+        (data.gallery_photos || []).map(async photo => ({
+          ...photo,
+          url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
+          thumbnail_url: photo.thumbnail_path
+            ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
+            : undefined,
+          medium_url: photo.medium_path ? storageService.getPublicUrl('gallery-photos', photo.medium_path) : undefined,
+          small_url: (photo as any).small_path
+            ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
+            : undefined,
+          original_url: (photo as any).original_path
+            ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
+            : undefined,
+        }))
+      ),
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       ownerId: data.user_id,
-      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as 'public' | 'private' | 'unlisted'
+      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as
+        'public' | 'private' | 'unlisted',
     };
 
     return transformedGallery as Gallery;
@@ -145,7 +153,7 @@ export const galleryApiNew = {
     // Ensure user_id is set
     const galleryData = {
       ...gallery,
-      user_id: memberId
+      user_id: memberId,
     };
 
     const { data, error } = await supabase
@@ -201,11 +209,7 @@ export const galleryApiNew = {
     await storageService.deleteGalleryFiles(userId, id);
 
     // Delete gallery record (photos will be deleted by CASCADE)
-    const { error } = await supabase
-      .from('user_galleries')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', memberId);
+    const { error } = await supabase.from('user_galleries').delete().eq('id', id).eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting gallery:', error);
@@ -232,18 +236,16 @@ export const galleryApiNew = {
     const photosWithUrls = (data || []).map(photo => ({
       ...photo,
       url: storageService.getPublicUrl('gallery-photos', photo.storage_path),
-      thumbnail_url: photo.thumbnail_path 
+      thumbnail_url: photo.thumbnail_path
         ? storageService.getPublicUrl('gallery-photos', photo.thumbnail_path)
         : undefined,
-      medium_url: photo.medium_path
-        ? storageService.getPublicUrl('gallery-photos', photo.medium_path)
-        : undefined,
+      medium_url: photo.medium_path ? storageService.getPublicUrl('gallery-photos', photo.medium_path) : undefined,
       small_url: (photo as any).small_path
         ? storageService.getPublicUrl('gallery-photos', (photo as any).small_path)
         : undefined,
       original_url: (photo as any).original_path
         ? storageService.getPublicUrl('gallery-photos', (photo as any).original_path)
-        : undefined
+        : undefined,
     }));
 
     return photosWithUrls as Photo[];
@@ -275,7 +277,7 @@ export const galleryApiNew = {
       userId,
       galleryId: input.galleryId || '',
       file: input.file,
-      generateThumbnails: true
+      generateThumbnails: true,
     });
 
     if (!uploadResult.success || !uploadResult.data) {
@@ -288,7 +290,7 @@ export const galleryApiNew = {
       size,
       mimeType,
       thumbnailPath = null,
-      mediumPath = null
+      mediumPath = null,
     } = uploadResult.data;
 
     // Create photo record with user folder structure
@@ -309,7 +311,7 @@ export const galleryApiNew = {
       visibility: 'visible' as const,
       // moderation_status is set by the database: pending for members,
       // approved for site admins.
-      processing_status: 'completed'
+      processing_status: 'completed',
     };
 
     const { data, error } = await supabase
@@ -336,7 +338,7 @@ export const galleryApiNew = {
       thumbnail_url: thumbnailPath ? storageService.getPublicUrl('gallery-photos', thumbnailPath) : undefined,
       medium_url: mediumPath ? storageService.getPublicUrl('gallery-photos', mediumPath) : undefined,
       small_url: undefined,
-      original_url: publicUrl
+      original_url: publicUrl,
     } as Photo;
   },
 
@@ -360,18 +362,16 @@ export const galleryApiNew = {
     return {
       ...data,
       url: storageService.getPublicUrl('gallery-photos', data.storage_path),
-      thumbnail_url: data.thumbnail_path 
+      thumbnail_url: data.thumbnail_path
         ? storageService.getPublicUrl('gallery-photos', data.thumbnail_path)
         : undefined,
-      medium_url: data.medium_path
-        ? storageService.getPublicUrl('gallery-photos', data.medium_path)
-        : undefined,
+      medium_url: data.medium_path ? storageService.getPublicUrl('gallery-photos', data.medium_path) : undefined,
       small_url: (data as any).small_path
         ? storageService.getPublicUrl('gallery-photos', (data as any).small_path)
         : undefined,
       original_url: (data as any).original_path
         ? storageService.getPublicUrl('gallery-photos', (data as any).original_path)
-        : undefined
+        : undefined,
     } as Photo;
   },
 
@@ -393,15 +393,15 @@ export const galleryApiNew = {
 
     // Delete files from storage using storage service
     const deletePromises = [];
-    
+
     if (photo.storage_path) {
       deletePromises.push(storageService.deleteFile('gallery-photos', photo.storage_path));
     }
-    
+
     if (photo.thumbnail_path) {
       deletePromises.push(storageService.deleteFile('gallery-photos', photo.thumbnail_path));
     }
-    
+
     if (photo.medium_path) {
       deletePromises.push(storageService.deleteFile('gallery-photos', photo.medium_path));
     }
@@ -409,17 +409,13 @@ export const galleryApiNew = {
     // Execute deletions in parallel
     const deleteResults = await Promise.allSettled(deletePromises);
     const hasStorageErrors = deleteResults.some(result => result.status === 'rejected');
-    
+
     if (hasStorageErrors) {
       console.warn('Some storage files could not be deleted');
     }
 
     // Delete record
-    const { error } = await supabase
-      .from('gallery_photos')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', memberId);
+    const { error } = await supabase.from('gallery_photos').delete().eq('id', id).eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting photo record:', error);
@@ -456,33 +452,25 @@ export const galleryApiNew = {
 
     // Delete files from storage using batch operations
     const deletePromises = [];
-    
+
     if (mainPaths.length > 0) {
-      deletePromises.push(
-        Promise.all(mainPaths.map(path => storageService.deleteFile('gallery-photos', path)))
-      );
+      deletePromises.push(Promise.all(mainPaths.map(path => storageService.deleteFile('gallery-photos', path))));
     }
-    
+
     if (thumbnailPaths.length > 0) {
-      deletePromises.push(
-        Promise.all(thumbnailPaths.map(path => storageService.deleteFile('gallery-photos', path)))
-      );
+      deletePromises.push(Promise.all(thumbnailPaths.map(path => storageService.deleteFile('gallery-photos', path))));
     }
 
     // Execute deletions in parallel
     const deleteResults = await Promise.allSettled(deletePromises);
     const hasStorageErrors = deleteResults.some(result => result.status === 'rejected');
-    
+
     if (hasStorageErrors) {
       console.warn('Some storage files could not be deleted');
     }
 
     // Delete records
-    const { error } = await supabase
-      .from('gallery_photos')
-      .delete()
-      .in('id', photoIds)
-      .eq('user_id', memberId);
+    const { error } = await supabase.from('gallery_photos').delete().in('id', photoIds).eq('user_id', memberId);
 
     if (error) {
       console.error('Error deleting photo records:', error);
@@ -507,7 +495,7 @@ export const galleryApiNew = {
       throw new Error('Gallery not found or access denied');
     }
 
-    const updates = photoOrders.map(({ id, order }) => 
+    const updates = photoOrders.map(({ id, order }) =>
       supabase
         .from('gallery_photos')
         .update({ sort_order: order })
@@ -530,18 +518,14 @@ export const galleryApiNew = {
   // Gallery stats
   async incrementViewCount(galleryId: string): Promise<void> {
     // Direct update since RPC might not exist
-    const { data: gallery } = await supabase
-      .from('user_galleries')
-      .select('view_count')
-      .eq('id', galleryId)
-      .single();
-      
+    const { data: gallery } = await supabase.from('user_galleries').select('view_count').eq('id', galleryId).single();
+
     if (gallery) {
       const { error } = await supabase
         .from('user_galleries')
         .update({ view_count: (gallery.view_count || 0) + 1 })
         .eq('id', galleryId);
-        
+
       if (error) {
         console.error('Error incrementing view count:', error);
       }
@@ -550,7 +534,10 @@ export const galleryApiNew = {
 
   // Storage management functions
   async getUserStorageUsage(userId?: string): Promise<any> {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       throw new Error('Authentication required');
     }
@@ -561,5 +548,5 @@ export const galleryApiNew = {
 
   async cleanupOrphanedFiles(): Promise<number> {
     return await storageService.cleanupOrphanedFiles();
-  }
+  },
 };

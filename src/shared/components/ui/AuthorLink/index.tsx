@@ -36,42 +36,42 @@ const sizeConfig = {
     avatar: 24,
     textSize: 'text-sm',
     titleSize: 'text-xs',
-    gap: 'gap-2'
+    gap: 'gap-2',
   },
   md: {
     avatar: 32,
     textSize: 'text-base',
     titleSize: 'text-sm',
-    gap: 'gap-3'
+    gap: 'gap-3',
   },
   lg: {
     avatar: 40,
     textSize: 'text-lg',
     titleSize: 'text-base',
-    gap: 'gap-4'
-  }
+    gap: 'gap-4',
+  },
 };
 
 /**
  * AuthorLink Component
- * 
+ *
  * A reusable component for displaying author information with optional linking to their profile.
  * Handles loading states, error states, and provides flexible display options.
- * 
+ *
  * @example
  * // Basic usage with author ID
  * <AuthorLink authorId="123" showAvatar showTitle />
- * 
+ *
  * @example
  * // Usage with content object
  * <AuthorLink content={post} showAvatar />
- * 
+ *
  * @example
  * // Custom styling and behavior
- * <AuthorLink 
- *   authorId="123" 
- *   size="lg" 
- *   noLink 
+ * <AuthorLink
+ *   authorId="123"
+ *   size="lg"
+ *   noLink
  *   onClick={(author) => console.log(author)}
  *   className="custom-author-style"
  * />
@@ -88,12 +88,10 @@ export function AuthorLink({
   onClick,
   loadingFallback,
   errorFallback,
-  unknownAuthorText = 'Unknown Author'
+  unknownAuthorText = 'Unknown Author',
 }: AuthorLinkProps) {
   // Use appropriate hook based on provided props
-  const authorQuery = authorId 
-    ? useAuthorById(authorId)
-    : useAuthorFromContent(content);
+  const authorQuery = authorId ? useAuthorById(authorId) : useAuthorFromContent(content);
 
   const { data: author, isLoading, error } = authorQuery;
   const config = sizeConfig[size];
@@ -104,15 +102,11 @@ export function AuthorLink({
     if (loadingFallback) {
       return <>{loadingFallback}</>;
     }
-    
+
     return (
       <div className={`flex items-center ${config.gap} ${className}`}>
         {showAvatar && (
-          <Skeleton 
-            className="rounded-full" 
-            width={`${finalAvatarSize}px`}
-            height={`${finalAvatarSize}px`}
-          />
+          <Skeleton className="rounded-full" width={`${finalAvatarSize}px`} height={`${finalAvatarSize}px`} />
         )}
         <div className="flex flex-col">
           <Skeleton className={`h-4 w-24 ${config.textSize}`} />
@@ -127,21 +121,13 @@ export function AuthorLink({
     if (errorFallback) {
       return <>{errorFallback}</>;
     }
-    
-    return (
-      <span className={`text-gray-500 ${config.textSize} ${className}`}>
-        {unknownAuthorText}
-      </span>
-    );
+
+    return <span className={`text-gray-500 ${config.textSize} ${className}`}>{unknownAuthorText}</span>;
   }
 
   // Handle no author found or invalid author data
   if (!author || !author.id || !author.name) {
-    return (
-      <span className={`text-gray-500 ${config.textSize} ${className}`}>
-        {unknownAuthorText}
-      </span>
-    );
+    return <span className={`text-gray-500 ${config.textSize} ${className}`}>{unknownAuthorText}</span>;
   }
 
   const handleClick = (e: React.MouseEvent) => {
@@ -166,9 +152,7 @@ export function AuthorLink({
           {author.name || unknownAuthorText}
         </span>
         {showTitle && author.title && (
-          <span className={`text-gray-600 dark:text-gray-400 truncate ${config.titleSize}`}>
-            {author.title}
-          </span>
+          <span className={`text-gray-600 dark:text-gray-400 truncate ${config.titleSize}`}>{author.title}</span>
         )}
       </div>
     </div>
@@ -176,10 +160,7 @@ export function AuthorLink({
 
   if (noLink) {
     return onClick ? (
-      <button 
-        onClick={handleClick}
-        className="text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-      >
+      <button onClick={handleClick} className="text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
         {authorContent}
       </button>
     ) : (
@@ -188,7 +169,7 @@ export function AuthorLink({
   }
 
   const profileUrl = author.profileUrl || `/directory/${author.slug || author.id}`;
-  
+
   return (
     <Link
       to={profileUrl}
@@ -278,17 +259,7 @@ export function AuthorCard({
 /**
  * AuthorAvatarImage - Internal component with fallback to initials
  */
-function AuthorAvatarImage({
-  src,
-  alt,
-  name,
-  size
-}: {
-  src: string;
-  alt: string;
-  name: string;
-  size: number;
-}) {
+function AuthorAvatarImage({ src, alt, name, size }: { src: string; alt: string; name: string; size: number }) {
   const [imageError, setImageError] = React.useState(false);
 
   if (imageError || !src || src === '/placeholder-avatar.png') {

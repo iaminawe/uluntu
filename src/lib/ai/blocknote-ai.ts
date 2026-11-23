@@ -25,9 +25,7 @@ const proxyFetch =
     const headers = new Headers(init?.headers ?? original.headers);
     headers.set('Authorization', `Bearer ${session?.access_token ?? ''}`);
 
-    const proxyUrl = `/api/ai/provider?provider=${provider}&url=${encodeURIComponent(
-      original.url
-    )}`;
+    const proxyUrl = `/api/ai/provider?provider=${provider}&url=${encodeURIComponent(original.url)}`;
     return fetch(proxyUrl, {
       method: original.method || 'POST',
       headers,

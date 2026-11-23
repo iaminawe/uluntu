@@ -13,24 +13,24 @@ const forgotPassword = async (email: string) => {
     if (!isConnected) {
       return {
         success: false,
-        error: new Error('Unable to connect to authentication service')
+        error: new Error('Unable to connect to authentication service'),
       };
     }
-    
+
     // Call the mock resetPasswordForEmail
     const { error } = await mockResetPasswordForEmail(email, {
       redirectTo: 'https://example.com/reset-password',
     });
-    
+
     if (error) {
       return { success: false, error };
     }
-    
+
     return { success: true, error: null };
   } catch (err) {
     return {
       success: false,
-      error: err instanceof Error ? err : new Error('An unexpected error occurred')
+      error: err instanceof Error ? err : new Error('An unexpected error occurred'),
     };
   }
 };
@@ -42,24 +42,24 @@ const resetPassword = async (newPassword: string) => {
     if (!isConnected) {
       return {
         success: false,
-        error: new Error('Unable to connect to authentication service')
+        error: new Error('Unable to connect to authentication service'),
       };
     }
-    
+
     // Call the mock updateUser
     const { error } = await mockUpdateUser({
-      password: newPassword
+      password: newPassword,
     });
-    
+
     if (error) {
       return { success: false, error };
     }
-    
+
     return { success: true, error: null };
   } catch (err) {
     return {
       success: false,
-      error: err instanceof Error ? err : new Error('An unexpected error occurred')
+      error: err instanceof Error ? err : new Error('An unexpected error occurred'),
     };
   }
 };
@@ -79,7 +79,7 @@ const originalConsoleLog = console.log;
 describe('Supabase Auth Functions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock checkConnection to return true by default
     mockCheckConnection.mockResolvedValue(true);
 
@@ -150,9 +150,7 @@ describe('Supabase Auth Functions', () => {
 
     it('should handle unexpected exceptions', async () => {
       // Mock exception during password reset request
-      mockResetPasswordForEmail.mockRejectedValue(
-        new Error('Unexpected error')
-      );
+      mockResetPasswordForEmail.mockRejectedValue(new Error('Unexpected error'));
 
       const email = 'test@example.com';
       const result = await forgotPassword(email);
@@ -222,9 +220,7 @@ describe('Supabase Auth Functions', () => {
 
     it('should handle unexpected exceptions', async () => {
       // Mock exception during password update
-      mockUpdateUser.mockRejectedValue(
-        new Error('Unexpected error')
-      );
+      mockUpdateUser.mockRejectedValue(new Error('Unexpected error'));
 
       const newPassword = 'Password123';
       const result = await resetPassword(newPassword);

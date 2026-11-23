@@ -22,7 +22,7 @@ import type {
   MenuTreeNode,
   UseMenuTreeReturn,
   UseMenuItemReturn,
-  UseMenuPermissionsReturn
+  UseMenuPermissionsReturn,
 } from '../types/menu';
 
 // Query Keys
@@ -36,7 +36,7 @@ const MENU_QUERY_KEYS = {
   auditLogs: (itemId?: string, userId?: string) => ['menu-audit-logs', itemId, userId],
   translations: (itemId: string) => ['menu-translations', itemId],
   stats: (containerId?: string) => ['menu-stats', containerId],
-  validation: (containerId: string) => ['menu-validation', containerId]
+  validation: (containerId: string) => ['menu-validation', containerId],
 };
 
 // Hook for menu containers
@@ -51,45 +51,39 @@ export function useMenuContainers() {
 
   const createMutation = useMutation({
     mutationFn: menuApi.createMenuContainer,
-    onSuccess: (newContainer) => {
-      queryClient.setQueryData<MenuContainer[]>(
-        MENU_QUERY_KEYS.containers,
-        (old) => [...(old || []), newContainer]
-      );
+    onSuccess: newContainer => {
+      queryClient.setQueryData<MenuContainer[]>(MENU_QUERY_KEYS.containers, old => [...(old || []), newContainer]);
       toast.success('Menu container created successfully');
     },
     onError: (error: any) => {
       toast.error(`Failed to create container: ${error.message}`);
-    }
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: Partial<MenuContainer> }) =>
       menuApi.updateMenuContainer(id, updates),
-    onSuccess: (updatedContainer) => {
+    onSuccess: updatedContainer => {
       queryClient.setQueryData<MenuContainer[]>(
         MENU_QUERY_KEYS.containers,
-        (old) => old?.map(c => c.id === updatedContainer.id ? updatedContainer : c) || []
+        old => old?.map(c => (c.id === updatedContainer.id ? updatedContainer : c)) || []
       );
       toast.success('Menu container updated successfully');
     },
     onError: (error: any) => {
       toast.error(`Failed to update container: ${error.message}`);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: menuApi.deleteMenuContainer,
     onSuccess: (_, id) => {
-      queryClient.setQueryData<MenuContainer[]>(
-        MENU_QUERY_KEYS.containers,
-        (old) => old?.filter(c => c.id !== id) || []
-      );
+      queryClient.setQueryData<MenuContainer[]>(MENU_QUERY_KEYS.containers, old => old?.filter(c => c.id !== id) || []);
       toast.success('Menu container deleted successfully');
     },
     onError: (error: any) => {
       toast.error(`Failed to delete container: ${error.message}`);
-    }
+    },
   });
 
   return {
@@ -102,7 +96,7 @@ export function useMenuContainers() {
     remove: deleteMutation.mutate,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
-    isDeleting: deleteMutation.isPending
+    isDeleting: deleteMutation.isPending,
   };
 }
 
@@ -124,7 +118,7 @@ export function useMenuTree(request: GetMenuTreeRequest = {}): UseMenuTreeReturn
     },
     onError: (error: any) => {
       toast.error(`Failed to reorder items: ${error.message}`);
-    }
+    },
   });
 
   const moveMutation = useMutation({
@@ -135,7 +129,7 @@ export function useMenuTree(request: GetMenuTreeRequest = {}): UseMenuTreeReturn
     },
     onError: (error: any) => {
       toast.error(`Failed to move item: ${error.message}`);
-    }
+    },
   });
 
   const duplicateMutation = useMutation({
@@ -146,7 +140,7 @@ export function useMenuTree(request: GetMenuTreeRequest = {}): UseMenuTreeReturn
     },
     onError: (error: any) => {
       toast.error(`Failed to duplicate item: ${error.message}`);
-    }
+    },
   });
 
   return {
@@ -156,7 +150,7 @@ export function useMenuTree(request: GetMenuTreeRequest = {}): UseMenuTreeReturn
     refresh: query.refetch,
     reorderItems: reorderMutation.mutate,
     moveItem: moveMutation.mutate,
-    duplicateItem: duplicateMutation.mutateAsync
+    duplicateItem: duplicateMutation.mutateAsync,
   };
 }
 
@@ -179,20 +173,20 @@ export function useMenuItem(id?: string): UseMenuItemReturn {
         return menuApi.createMenuItem(data);
       }
     },
-    onSuccess: (savedItem) => {
+    onSuccess: savedItem => {
       // Update item cache
       queryClient.setQueryData(MENU_QUERY_KEYS.item(savedItem.id), savedItem);
-      
+
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['menu-tree'] });
       queryClient.invalidateQueries({ queryKey: ['menu-items'] });
-      
+
       const action = 'id' in savedItem ? 'updated' : 'created';
       toast.success(`Menu item ${action} successfully`);
     },
     onError: (error: any) => {
       toast.error(`Failed to save menu item: ${error.message}`);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
@@ -205,12 +199,11 @@ export function useMenuItem(id?: string): UseMenuItemReturn {
     },
     onError: (error: any) => {
       toast.error(`Failed to delete menu item: ${error.message}`);
-    }
+    },
   });
 
   const toggleMutation = useMutation({
-    mutationFn: (field: 'is_enabled' | 'is_visible') => 
-      menuApi.toggleMenuItem(id!, field),
+    mutationFn: (field: 'is_enabled' | 'is_visible') => menuApi.toggleMenuItem(id!, field),
     onSuccess: (updatedItem, field) => {
       queryClient.setQueryData(MENU_QUERY_KEYS.item(id!), updatedItem);
       queryClient.invalidateQueries({ queryKey: ['menu-tree'] });
@@ -219,7 +212,7 @@ export function useMenuItem(id?: string): UseMenuItemReturn {
     },
     onError: (error: any) => {
       toast.error(`Failed to toggle menu item: ${error.message}`);
-    }
+    },
   });
 
   return {
@@ -228,7 +221,7 @@ export function useMenuItem(id?: string): UseMenuItemReturn {
     error: query.error,
     save: saveMutation.mutate,
     remove: deleteMutation.mutate,
-    toggle: toggleMutation.mutate
+    toggle: toggleMutation.mutate,
   };
 }
 
@@ -251,23 +244,24 @@ export function useMenuPermissions(itemId: string): UseMenuPermissionsReturn {
     },
     onError: (error: any) => {
       toast.error(`Failed to save permissions: ${error.message}`);
-    }
+    },
   });
 
-  const checkPermission = useCallback((roleNames: string[]): boolean => {
-    if (!query.data || roleNames.length === 0) return false;
-    
-    return query.data.some(permission => 
-      roleNames.includes(permission.role_name) && permission.is_allowed
-    );
-  }, [query.data]);
+  const checkPermission = useCallback(
+    (roleNames: string[]): boolean => {
+      if (!query.data || roleNames.length === 0) return false;
+
+      return query.data.some(permission => roleNames.includes(permission.role_name) && permission.is_allowed);
+    },
+    [query.data]
+  );
 
   return {
     permissions: query.data || [],
     isLoading: query.isLoading,
     error: query.error,
     save: saveMutation.mutate,
-    checkPermission
+    checkPermission,
   };
 }
 
@@ -299,19 +293,18 @@ export function useMenuItemTranslations(itemId: string) {
     },
     onError: (error: any) => {
       toast.error(`Failed to save translation: ${error.message}`);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ languageCode }: { languageCode: string }) =>
-      menuApi.deleteMenuItemTranslation(itemId, languageCode),
+    mutationFn: ({ languageCode }: { languageCode: string }) => menuApi.deleteMenuItemTranslation(itemId, languageCode),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MENU_QUERY_KEYS.translations(itemId) });
       toast.success('Translation deleted successfully');
     },
     onError: (error: any) => {
       toast.error(`Failed to delete translation: ${error.message}`);
-    }
+    },
   });
 
   return {
@@ -319,7 +312,7 @@ export function useMenuItemTranslations(itemId: string) {
     isLoading: query.isLoading,
     error: query.error,
     save: saveMutation.mutate,
-    remove: deleteMutation.mutate
+    remove: deleteMutation.mutate,
   };
 }
 
@@ -370,7 +363,7 @@ export function useMenuSearch() {
     setContainerName,
     results: searchQuery.data || [],
     isLoading: searchQuery.isLoading,
-    error: searchQuery.error
+    error: searchQuery.error,
   };
 }
 
@@ -380,11 +373,11 @@ export function useBulkMenuOperations() {
 
   const bulkUpdateMutation = useMutation({
     mutationFn: menuApi.bulkUpdateMenuItems,
-    onSuccess: (results) => {
+    onSuccess: results => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['menu-tree'] });
       queryClient.invalidateQueries({ queryKey: ['menu-items'] });
-      
+
       results.forEach(item => {
         queryClient.setQueryData(MENU_QUERY_KEYS.item(item.id), item);
       });
@@ -393,7 +386,7 @@ export function useBulkMenuOperations() {
     },
     onError: (error: any) => {
       toast.error(`Failed to bulk update items: ${error.message}`);
-    }
+    },
   });
 
   const bulkDeleteMutation = useMutation({
@@ -412,14 +405,14 @@ export function useBulkMenuOperations() {
     },
     onError: (error: any) => {
       toast.error(`Failed to bulk delete items: ${error.message}`);
-    }
+    },
   });
 
   return {
     bulkUpdate: bulkUpdateMutation.mutate,
     bulkDelete: bulkDeleteMutation.mutate,
     isBulkUpdating: bulkUpdateMutation.isPending,
-    isBulkDeleting: bulkDeleteMutation.isPending
+    isBulkDeleting: bulkDeleteMutation.isPending,
   };
 }
 
@@ -444,11 +437,11 @@ export function useMenuExport() {
     },
     onError: (error: any) => {
       toast.error(`Failed to export menu: ${error.message}`);
-    }
+    },
   });
 
   return {
     exportMenu: exportMutation.mutate,
-    isExporting: exportMutation.isPending
+    isExporting: exportMutation.isPending,
   };
 }

@@ -11,19 +11,18 @@ interface PrivacyTabProps {
 /**
  * Privacy Tab
  */
-export const PrivacyTab: React.FC<PrivacyTabProps> = ({
-  privacySettings,
-  setPrivacySettings
-}) => {
+export const PrivacyTab: React.FC<PrivacyTabProps> = ({ privacySettings, setPrivacySettings }) => {
   return (
     <div className="space-y-6">
       <SettingsField label="Profile Visibility">
         <select
           value={privacySettings.profileVisibility}
-          onChange={(e) => setPrivacySettings({
-            ...privacySettings,
-            profileVisibility: e.target.value as 'public' | 'members' | 'private'
-          })}
+          onChange={e =>
+            setPrivacySettings({
+              ...privacySettings,
+              profileVisibility: e.target.value as 'public' | 'members' | 'private',
+            })
+          }
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                    bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                    focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -35,9 +34,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
       </SettingsField>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          Profile Information
-        </h3>
+        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Profile Information</h3>
 
         {[
           { key: 'showEmail', label: 'Show email address', icon: Mail },
@@ -53,10 +50,12 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
             <input
               type="checkbox"
               checked={privacySettings[key as keyof PrivacySettings] as boolean}
-              onChange={(e) => setPrivacySettings({
-                ...privacySettings,
-                [key]: e.target.checked
-              })}
+              onChange={e =>
+                setPrivacySettings({
+                  ...privacySettings,
+                  [key]: e.target.checked,
+                })
+              }
               className="rounded border-slate-300 dark:border-slate-600 text-orange-500
                        focus:ring-orange-500 dark:bg-slate-700"
             />
@@ -65,9 +64,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          Communication
-        </h3>
+        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Communication</h3>
 
         {[
           { key: 'allowMessages', label: 'Allow direct messages', icon: MessageSquare },
@@ -81,10 +78,12 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
             <input
               type="checkbox"
               checked={privacySettings[key as keyof PrivacySettings] as boolean}
-              onChange={(e) => setPrivacySettings({
-                ...privacySettings,
-                [key]: e.target.checked
-              })}
+              onChange={e =>
+                setPrivacySettings({
+                  ...privacySettings,
+                  [key]: e.target.checked,
+                })
+              }
               className="rounded border-slate-300 dark:border-slate-600 text-orange-500
                        focus:ring-orange-500 dark:bg-slate-700"
             />

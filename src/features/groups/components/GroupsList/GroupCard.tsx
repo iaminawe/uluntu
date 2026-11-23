@@ -16,7 +16,7 @@ const formatDate = (dateString: string): string => {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return 'Today';
     } else if (diffDays === 1) {
@@ -40,10 +40,14 @@ const formatDate = (dateString: string): string => {
 // Map main Group visibility to local component visibility
 const mapVisibility = (visibility: 'public' | 'private' | 'members_only'): GroupVisibility => {
   switch (visibility) {
-    case 'public': return 'public';
-    case 'private': return 'private';
-    case 'members_only': return 'members_only';
-    default: return 'public';
+    case 'public':
+      return 'public';
+    case 'private':
+      return 'private';
+    case 'members_only':
+      return 'members_only';
+    default:
+      return 'public';
   }
 };
 
@@ -59,15 +63,15 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
   const { data: isMember } = useGroupMembership(group?.id, user?.id);
   const joinGroup = useJoinGroup();
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Feature flags
   const galleriesEnabled = useFeature('photo_galleries');
   const opportunitiesEnabled = useFeature('opportunities_board');
   const marketplaceEnabled = useFeature('marketplace');
-  
+
   // Safely extract values from the group object with defaults
   // This prevents TypeScript errors when accessing potentially undefined properties
-  const safeId = group?.id ?? ''; 
+  const safeId = group?.id ?? '';
   const safeName = group?.name ?? 'Unnamed Group';
   const safeHeroImage = group?.heroImage ?? '/placeholder-image.jpg';
   const safeDescription = group?.description ?? 'No description available';
@@ -100,7 +104,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
     setIsProcessing(true);
     try {
       await joinGroup.mutateAsync({
-        groupId: group.id
+        groupId: group.id,
       });
     } catch (error) {
       console.error('Error joining group:', error);
@@ -114,11 +118,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
       <div className="h-48 overflow-hidden">
-        <img
-          src={safeHeroImage}
-          alt={safeName}
-          className="w-full h-full object-cover"
-        />
+        <img src={safeHeroImage} alt={safeName} className="w-full h-full object-cover" />
       </div>
       <div className="p-6">
         <div className="mb-4">
@@ -133,9 +133,7 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
               {getVisibilityLabel(safeVisibility)}
             </span>
           </div>
-          <p className="text-slate-600 dark:text-slate-300 mt-2 mb-4">
-            {safeDescription}
-          </p>
+          <p className="text-slate-600 dark:text-slate-300 mt-2 mb-4">{safeDescription}</p>
           {safeVisibility !== 'members_only' && (
             <div className="flex">
               {isMember ? (
@@ -151,9 +149,11 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
                   disabled={isProcessing}
                   className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isProcessing ? 'Processing...' : 
-                    ((group.visibility === 'public' || (group as any).visibility === 'open') ? 'Join Group' : 'Request to Join')
-                  }
+                  {isProcessing
+                    ? 'Processing...'
+                    : group.visibility === 'public' || (group as any).visibility === 'open'
+                      ? 'Join Group'
+                      : 'Request to Join'}
                 </button>
               )}
             </div>
@@ -164,42 +164,56 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             <div className="flex items-center text-slate-600 dark:text-slate-300">
               <Users className="h-4 w-4 mr-1.5 text-slate-400" />
-              <span>{safeMemberCount} {safeMemberCount === 1 ? 'member' : 'members'}</span>
+              <span>
+                {safeMemberCount} {safeMemberCount === 1 ? 'member' : 'members'}
+              </span>
             </div>
             {safeEventCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <CalendarDays className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safeEventCount} {safeEventCount === 1 ? 'event' : 'events'}</span>
+                <span>
+                  {safeEventCount} {safeEventCount === 1 ? 'event' : 'events'}
+                </span>
               </div>
             )}
             {safeResourceCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Folder className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safeResourceCount} {safeResourceCount === 1 ? 'resource' : 'resources'}</span>
+                <span>
+                  {safeResourceCount} {safeResourceCount === 1 ? 'resource' : 'resources'}
+                </span>
               </div>
             )}
             {safePostCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <FileText className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safePostCount} {safePostCount === 1 ? 'post' : 'posts'}</span>
+                <span>
+                  {safePostCount} {safePostCount === 1 ? 'post' : 'posts'}
+                </span>
               </div>
             )}
             {galleriesEnabled && safeGalleryCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Image className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safeGalleryCount} {safeGalleryCount === 1 ? 'gallery' : 'galleries'}</span>
+                <span>
+                  {safeGalleryCount} {safeGalleryCount === 1 ? 'gallery' : 'galleries'}
+                </span>
               </div>
             )}
             {opportunitiesEnabled && safeOpportunityCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Briefcase className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safeOpportunityCount} {safeOpportunityCount === 1 ? 'opportunity' : 'opportunities'}</span>
+                <span>
+                  {safeOpportunityCount} {safeOpportunityCount === 1 ? 'opportunity' : 'opportunities'}
+                </span>
               </div>
             )}
             {marketplaceEnabled && safeMarketplaceCount > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <ShoppingBag className="h-4 w-4 mr-1.5 text-slate-400" />
-                <span>{safeMarketplaceCount} {safeMarketplaceCount === 1 ? 'listing' : 'listings'}</span>
+                <span>
+                  {safeMarketplaceCount} {safeMarketplaceCount === 1 ? 'listing' : 'listings'}
+                </span>
               </div>
             )}
           </div>
@@ -219,10 +233,10 @@ const GroupCard = ({ group, onJoinClick }: GroupCardProps) => {
 
 export default GroupCard;
 
-// Adapter function for component compatibility  
+// Adapter function for component compatibility
 export const adaptMainGroupToLocalGroup = (mainGroup: any): Group => {
   return {
     ...mainGroup,
-    visibility: mapVisibility(mainGroup.visibility)
+    visibility: mapVisibility(mainGroup.visibility),
   };
 };

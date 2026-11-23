@@ -12,13 +12,12 @@ import ErrorState from './ErrorState';
 import { Resource } from '../../types';
 import { useResource } from '@/hooks/useResourceQueries';
 
-
 export default function ResourceDetailPage() {
   const { id } = useParams<{ id: string }>();
-  
+
   // Use React Query to fetch resource data
   const { data: resource, isLoading, isError } = useResource(id);
-  
+
   const getTypeIcon = (type: Resource['type']) => {
     switch (type) {
       case 'document':
@@ -50,31 +49,22 @@ export default function ResourceDetailPage() {
         <title>{resource.title} - Uluntu</title>
         <meta name="description" content={resource.description.substring(0, 160)} />
       </Helmet>
-      
+
       <ContentContainer>
         <PageHeader id={id || ''} />
-        
+
         <Card className="overflow-hidden">
           <div className="p-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2">
-                <ResourceInfo 
-                  resource={resource} 
-                  getTypeIcon={getTypeIcon} 
-                />
-                
-                <RelatedResources 
-                  relatedResources={[]} 
-                  getTypeIcon={getTypeIcon} 
-                />
+                <ResourceInfo resource={resource} getTypeIcon={getTypeIcon} />
+
+                <RelatedResources relatedResources={[]} getTypeIcon={getTypeIcon} />
               </div>
-              
+
               {/* Sidebar */}
-              <ResourceSidebar 
-                resource={resource} 
-                getTypeIcon={getTypeIcon} 
-              />
+              <ResourceSidebar resource={resource} getTypeIcon={getTypeIcon} />
             </div>
           </div>
         </Card>

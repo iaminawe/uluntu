@@ -11,11 +11,8 @@ const DirectListings = () => {
     async function fetchDirectFromSupabase() {
       try {
         console.log('DirectListings: Querying marketplace_listings table directly...');
-        const { data, error } = await supabase
-          .from('marketplace_listings')
-          .select('*')
-          .limit(10);
-        
+        const { data, error } = await supabase.from('marketplace_listings').select('*').limit(10);
+
         if (error) {
           console.error('DirectListings: Database query error:', error);
           setError(`Error: ${error.message}`);
@@ -42,7 +39,9 @@ const DirectListings = () => {
     return (
       <div className="p-4 bg-red-50 text-red-800 rounded-md">
         <h3 className="font-bold">Error</h3>
-        <p>{typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : String(error)}</p>
+        <p>
+          {typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : String(error)}
+        </p>
       </div>
     );
   }
@@ -59,7 +58,7 @@ const DirectListings = () => {
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-4">Direct Marketplace Listings</h2>
       <p className="mb-4 text-sm text-slate-500">Showing {listings.length} listings directly from the database</p>
-      
+
       <div className="overflow-auto">
         <table className="min-w-full border-collapse">
           <thead>
@@ -84,7 +83,7 @@ const DirectListings = () => {
           </tbody>
         </table>
       </div>
-      
+
       {/* Raw data display for debugging */}
       <details className="mt-6 border-t dark:border-slate-700 pt-4">
         <summary className="cursor-pointer text-sm font-medium">View Raw Data</summary>

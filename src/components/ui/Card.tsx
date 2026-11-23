@@ -30,10 +30,7 @@ export const Card: React.FC<CardProps> = ({ children, className, ...props }) => 
 );
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className, ...props }) => (
-  <div
-    className={cn('flex flex-col space-y-1.5 p-6', className)}
-    {...props}
-  >
+  <div className={cn('flex flex-col space-y-1.5 p-6', className)} {...props}>
     {children}
   </div>
 );

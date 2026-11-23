@@ -13,14 +13,20 @@ export const useMenuCache = () => {
   }, [clearCache]);
 
   // Clear cache for specific menu position
-  const clearPositionCache = useCallback((position: string) => {
-    clearCache(position);
-  }, [clearCache]);
+  const clearPositionCache = useCallback(
+    (position: string) => {
+      clearCache(position);
+    },
+    [clearCache]
+  );
 
   // Refresh specific menu position
-  const refreshPosition = useCallback(async (position: string) => {
-    await refreshMenu(position);
-  }, [refreshMenu]);
+  const refreshPosition = useCallback(
+    async (position: string) => {
+      await refreshMenu(position);
+    },
+    [refreshMenu]
+  );
 
   // Refresh all common menu positions
   const refreshAllMenus = useCallback(async () => {
@@ -39,6 +45,6 @@ export const useMenuCache = () => {
     clearPositionCache,
     refreshPosition,
     refreshAllMenus,
-    preloadMenus
+    preloadMenus,
   };
 };

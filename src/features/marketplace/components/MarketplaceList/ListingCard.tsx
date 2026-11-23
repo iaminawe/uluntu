@@ -12,10 +12,10 @@ interface ListingCardProps {
 const ListingCard = ({ listing, onClick }: ListingCardProps) => {
   const defaultImage = '/api/placeholder/400/300';
   const { navigateToListing } = useMarketplaceNavigation();
-  
+
   const handleCardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
+
     // Use custom click handler if provided, otherwise use navigation hook
     if (onClick) {
       onClick(listing);
@@ -28,7 +28,7 @@ const ListingCard = ({ listing, onClick }: ListingCardProps) => {
     // Handle keyboard navigation
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      
+
       if (onClick) {
         onClick(listing);
       } else {
@@ -36,7 +36,7 @@ const ListingCard = ({ listing, onClick }: ListingCardProps) => {
       }
     }
   };
-  
+
   return (
     <Link
       to={getMarketplaceListingUrl(listing)}
@@ -95,8 +95,10 @@ const ListingCard = ({ listing, onClick }: ListingCardProps) => {
               </span>
             ))}
             {listing.tags.length > 2 && (
-              <span className="inline-block px-2 py-1 bg-slate-100 dark:bg-slate-700
-                             text-slate-600 dark:text-slate-300 rounded text-xs font-medium">
+              <span
+                className="inline-block px-2 py-1 bg-slate-100 dark:bg-slate-700
+                             text-slate-600 dark:text-slate-300 rounded text-xs font-medium"
+              >
                 +{listing.tags.length - 2}
               </span>
             )}

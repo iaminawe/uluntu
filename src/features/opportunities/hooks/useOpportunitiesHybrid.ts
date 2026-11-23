@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { opportunitiesApi, OpportunityInput } from '../api/opportunitiesApi';
-import { 
+import {
   selectOpportunityFilters,
   selectSelectedOpportunityId,
   selectOpportunitiesViewMode,
@@ -24,7 +24,7 @@ import { queryKeys } from '@/config/queryClient';
 export function useOpportunitiesHybrid() {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  
+
   // UI state from Redux
   const filters = useAppSelector(selectOpportunityFilters);
   const selectedOpportunityId = useAppSelector(selectSelectedOpportunityId);
@@ -33,20 +33,20 @@ export function useOpportunitiesHybrid() {
   const sortOrder = useAppSelector(selectOpportunitiesSortOrder);
   const showRemoteOnly = useAppSelector(selectShowRemoteOnly);
   const expandedOpportunities = useAppSelector(selectExpandedOpportunities);
-  
+
   // React Query for server state
   const opportunitiesQuery = useQuery({
     queryKey: queryKeys.opportunitiesWithFilters(filters),
     queryFn: () => opportunitiesApi.getAll(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
+
   const featuredQuery = useQuery({
     queryKey: ['opportunities', 'featured'],
     queryFn: () => opportunitiesApi.getAll({ status: 'active', featured: true }),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
-  
+
   // Get single opportunity
   const getOpportunity = (id: string) => {
     return useQuery({
@@ -55,7 +55,7 @@ export function useOpportunitiesHybrid() {
       enabled: !!id,
     });
   };
-  
+
   // Get opportunities by company
   const getOpportunitiesByCompany = (companyId: string) => {
     return useQuery({
@@ -64,7 +64,7 @@ export function useOpportunitiesHybrid() {
       enabled: !!companyId,
     });
   };
-  
+
   // Mutations
   const createOpportunity = useMutation({
     mutationFn: (data: OpportunityInput) => opportunitiesApi.create(data),
@@ -72,57 +72,55 @@ export function useOpportunitiesHybrid() {
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities });
     },
   });
-  
+
   const updateOpportunity = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<OpportunityInput> }) => 
-      opportunitiesApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<OpportunityInput> }) => opportunitiesApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities });
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunity(id) });
     },
   });
-  
+
   const deleteOpportunity = useMutation({
     mutationFn: (id: string) => opportunitiesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.opportunities });
     },
   });
-  
+
   // UI actions
   const setSearchTerm = (search?: string) => {
     dispatch(updateFilters({ search }));
   };
-  
+
   const setTypeFilter = (type?: string[]) => {
     dispatch(updateFilters({ type }));
   };
-  
+
   const setLocationFilter = (location?: string[]) => {
     dispatch(updateFilters({ location }));
   };
-  
+
   const setStatusFilter = (status?: string) => {
     dispatch(updateFilters({ status }));
   };
-  
+
   const setRemoteFilter = (remote?: boolean) => {
     dispatch(updateFilters({ remote }));
     dispatch(setShowRemoteOnly(!!remote));
   };
-  
+
   const resetFilters = () => {
     dispatch(clearFilters());
   };
-  
+
   // Sort opportunities
   const sortedOpportunities = [...(opportunitiesQuery.data || [])].sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case 'date':
-        comparison = new Date(a.created_at || '').getTime() - 
-                    new Date(b.created_at || '').getTime();
+        comparison = new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime();
         break;
       case 'title':
         comparison = (a.title || '').localeCompare(b.title || '');
@@ -134,10 +132,10 @@ export function useOpportunitiesHybrid() {
         comparison = (a.type || '').localeCompare(b.type || '');
         break;
     }
-    
+
     return sortOrder === 'asc' ? comparison : -comparison;
   });
-  
+
   return {
     // Data
     opportunities: sortedOpportunities,
@@ -145,7 +143,7 @@ export function useOpportunitiesHybrid() {
     isLoading: opportunitiesQuery.isLoading,
     isFeaturedLoading: featuredQuery.isLoading,
     error: opportunitiesQuery.error,
-    
+
     // UI state
     filters,
     selectedOpportunityId,
@@ -154,7 +152,7 @@ export function useOpportunitiesHybrid() {
     sortOrder,
     showRemoteOnly,
     expandedOpportunities,
-    
+
     // Actions
     setSearchTerm,
     setTypeFilter,
@@ -168,12 +166,12 @@ export function useOpportunitiesHybrid() {
     setSortOrder: (order: 'asc' | 'desc') => dispatch(setSortOrder(order)),
     setShowRemoteOnly: (show: boolean) => dispatch(setShowRemoteOnly(show)),
     toggleOpportunityExpanded: (id: string) => dispatch(toggleOpportunityExpanded(id)),
-    
+
     // Queries
     getOpportunity,
     getOpportunitiesByCompany,
     refetch: opportunitiesQuery.refetch,
-    
+
     // Mutations
     createOpportunity,
     updateOpportunity,

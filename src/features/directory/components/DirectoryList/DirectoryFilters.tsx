@@ -9,37 +9,33 @@ interface DirectoryFiltersProps {
   availableSkills: string[];
 }
 
-const DirectoryFilters = ({ 
-  filters, 
-  setFilters, 
-  availableSkills 
-}: DirectoryFiltersProps) => {
+const DirectoryFilters = ({ filters, setFilters, availableSkills }: DirectoryFiltersProps) => {
   // Local state for search input (before debounce)
   const [searchInput, setSearchInput] = useState(filters.search);
-  
+
   // Handle skill selection
   const toggleSkill = (skill: string) => {
     setFilters(prev => {
       if (prev.skills.includes(skill)) {
         return {
           ...prev,
-          skills: prev.skills.filter(s => s !== skill)
+          skills: prev.skills.filter(s => s !== skill),
         };
       } else {
         return {
           ...prev,
-          skills: [...prev.skills, skill]
+          skills: [...prev.skills, skill],
         };
       }
     });
   };
-  
+
   // Clear search input
   const clearSearch = () => {
     setSearchInput('');
     setFilters(prev => ({ ...prev, search: '' }));
   };
-  
+
   // Reset all filters
   const clearFilters = () => {
     setSearchInput('');
@@ -51,7 +47,7 @@ const DirectoryFilters = ({
     const handler = setTimeout(() => {
       setFilters(prev => ({ ...prev, search: searchInput }));
     }, 300);
-    
+
     return () => {
       clearTimeout(handler);
     };
@@ -67,7 +63,7 @@ const DirectoryFilters = ({
           type="text"
           placeholder="Search by name, title, company, or location..."
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={e => setSearchInput(e.target.value)}
           className="w-full px-4 py-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg 
                    bg-white dark:bg-slate-800 text-slate-900 dark:text-white
                    focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -95,15 +91,16 @@ const DirectoryFilters = ({
                 key={skill}
                 onClick={() => toggleSkill(skill)}
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-                  ${filters.skills.includes(skill)
-                    ? 'bg-orange-500 text-white'
-                    : `${getSkillColor(skill)} hover:opacity-80`
+                  ${
+                    filters.skills.includes(skill)
+                      ? 'bg-orange-500 text-white'
+                      : `${getSkillColor(skill)} hover:opacity-80`
                   }`}
               >
                 {skill}
               </button>
             ))}
-            
+
             {(filters.search || filters.skills.length > 0) && (
               <button
                 onClick={clearFilters}

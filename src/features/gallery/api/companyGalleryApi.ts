@@ -7,21 +7,27 @@ export const companyGalleryApi = {
   /**
    * Get all galleries for a specific company
    */
-  async getCompanyGalleries(companyId: string, filters?: Omit<GalleryFilters, 'ownerId' | 'ownerType'>): Promise<Gallery[]> {
-    return (galleryApi.getAllGalleries({
+  async getCompanyGalleries(
+    companyId: string,
+    filters?: Omit<GalleryFilters, 'ownerId' | 'ownerType'>
+  ): Promise<Gallery[]> {
+    return galleryApi.getAllGalleries({
       ...filters,
       ownerType: 'company',
-      ownerId: companyId
-    }) as any) as Gallery[];
+      ownerId: companyId,
+    }) as any as Gallery[];
   },
 
   /**
    * Create a new gallery for a company
    */
-  async createCompanyGallery(companyId: string, galleryData: Omit<CreateGalleryInput, 'owner_type' | 'owner_id'>): Promise<Gallery> {
+  async createCompanyGallery(
+    companyId: string,
+    galleryData: Omit<CreateGalleryInput, 'owner_type' | 'owner_id'>
+  ): Promise<Gallery> {
     // Check if user is a company admin using the new permission system
     const isCompanyAdmin = await entityPermissions.isCompanyAdmin(companyId);
-    
+
     if (!isCompanyAdmin) {
       throw new Error('Only verified company administrators can create galleries');
     }
@@ -29,7 +35,7 @@ export const companyGalleryApi = {
     return galleryApi.createGallery({
       ...galleryData,
       owner_type: 'company',
-      owner_id: companyId
+      owner_id: companyId,
     });
   },
 
@@ -50,10 +56,9 @@ export const companyGalleryApi = {
     totalLikes: number;
   }> {
     try {
-      const { data, error } = await supabase
-        .rpc('get_gallery_stats', {
-          gallery_uuid: companyId
-        } as any);
+      const { data, error } = await supabase.rpc('get_gallery_stats', {
+        gallery_uuid: companyId,
+      } as any);
 
       if (error) throw error;
 
@@ -61,7 +66,7 @@ export const companyGalleryApi = {
         totalGalleries: (data as any)?.total_galleries || 0,
         totalPhotos: (data as any)?.total_photos || 0,
         totalViews: (data as any)?.total_views || 0,
-        totalLikes: (data as any)?.total_likes || 0
+        totalLikes: (data as any)?.total_likes || 0,
       };
     } catch (error) {
       console.error('Error fetching company gallery stats:', error);
@@ -69,8 +74,8 @@ export const companyGalleryApi = {
         totalGalleries: 0,
         totalPhotos: 0,
         totalViews: 0,
-        totalLikes: 0
+        totalLikes: 0,
       };
     }
-  }
+  },
 };

@@ -1,6 +1,13 @@
 import { supabase } from '@/lib/supabase';
 import { menuManagementApi } from '@/features/admin/api/menuManagement';
-import type { MenuItem, MenuFilterParams, MenuType, MenuTarget, MenuVisibility, MenuItemDatabaseRow } from '@/types/menu';
+import type {
+  MenuItem,
+  MenuFilterParams,
+  MenuType,
+  MenuTarget,
+  MenuVisibility,
+  MenuItemDatabaseRow,
+} from '@/types/menu';
 import { convertDatabaseRowToMenuItem, convertDatabaseRowsToMenuItems } from '@/features/menu/utils/typeAdapters';
 
 /**
@@ -15,7 +22,7 @@ class MenuAPI {
     try {
       // Map position to menu type
       const menuType = this.mapPositionToMenuType(position);
-      
+
       if (!menuType) {
         console.warn(`Unknown menu position: ${position}`);
         return [];
@@ -23,10 +30,10 @@ class MenuAPI {
 
       // Fetch from database using the menu management API
       const structure = await menuManagementApi.getEnabledMenuStructure();
-      
+
       // Convert to MenuItem format and filter by type
       const menuItems = this.convertStructureToMenuItems(structure, menuType);
-      
+
       return menuItems;
     } catch (error) {
       console.error(`Error fetching menu hierarchy for position ${position}:`, error);
@@ -39,10 +46,7 @@ class MenuAPI {
    */
   async fetchMenuItems(filters: MenuFilterParams = {}): Promise<MenuItem[]> {
     try {
-      const { data, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .order('sort_order', { ascending: true });
+      const { data, error } = await supabase.from('menu_items').select('*').order('sort_order', { ascending: true });
 
       if (error) {
         throw new Error(`Failed to fetch menu items: ${error.message}`);
@@ -50,45 +54,44 @@ class MenuAPI {
 
       // Apply filters
       let filteredData = data || [];
-      
+
       if (filters.menu_type) {
         const types = Array.isArray(filters.menu_type) ? filters.menu_type : [filters.menu_type];
         filteredData = filteredData.filter(item => types.includes(item.menu_type as MenuType));
       }
-      
+
       if (filters.is_enabled !== undefined) {
         filteredData = filteredData.filter(item => item.is_enabled === filters.is_enabled);
       }
-      
+
       if (filters.visibility) {
         const visibilities = Array.isArray(filters.visibility) ? filters.visibility : [filters.visibility];
         filteredData = filteredData.filter(item => visibilities.includes(item.visibility));
       }
-      
+
       if (filters.parent_id !== undefined) {
         filteredData = filteredData.filter(item => item.parent_id === filters.parent_id);
       }
-      
+
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
-        filteredData = filteredData.filter(item => 
-          item.title.toLowerCase().includes(searchTerm) ||
-          item.description?.toLowerCase().includes(searchTerm)
+        filteredData = filteredData.filter(
+          item => item.title.toLowerCase().includes(searchTerm) || item.description?.toLowerCase().includes(searchTerm)
         );
       }
 
       // Convert to MenuItem format using type adapter
       const { items: menuItems, errors } = convertDatabaseRowsToMenuItems(filteredData);
-      
+
       if (errors.length > 0) {
         console.warn('Menu item conversion errors:', errors);
       }
-      
+
       // Build hierarchy if requested
       if (filters.include_children) {
         return this.buildMenuHierarchy(menuItems);
       }
-      
+
       return menuItems;
     } catch (error) {
       console.error('Error fetching menu items with filters:', error);
@@ -103,7 +106,7 @@ class MenuAPI {
     return this.fetchMenuItems({
       menu_type: 'footer',
       is_enabled: true,
-      include_children: true
+      include_children: true,
     });
   }
 
@@ -112,16 +115,16 @@ class MenuAPI {
    */
   private mapPositionToMenuType(position: string): MenuType | null {
     const positionMap: Record<string, MenuType> = {
-      'main_navigation': 'main',
-      'main_header': 'main',  // Support legacy position name
-      'header_menu': 'main',
-      'footer_links': 'footer',
-      'main_footer': 'footer',  // Support legacy position name
-      'footer_menu': 'footer',
-      'mobile_menu': 'mobile',
-      'admin_menu': 'admin'
+      main_navigation: 'main',
+      main_header: 'main', // Support legacy position name
+      header_menu: 'main',
+      footer_links: 'footer',
+      main_footer: 'footer', // Support legacy position name
+      footer_menu: 'footer',
+      mobile_menu: 'mobile',
+      admin_menu: 'admin',
     };
-    
+
     return positionMap[position] || null;
   }
 
@@ -157,8 +160,7 @@ class MenuAPI {
           is_external: Boolean(structure.href?.startsWith('http')),
           icon: structure.icon || undefined,
           feature_flag: structure.feature_flag || undefined,
-          children: structure.children ? 
-            this.convertStructureToMenuItems(structure.children, targetType) : undefined
+          children: structure.children ? this.convertStructureToMenuItems(structure.children, targetType) : undefined,
         };
       })
       .filter((item): item is MenuItem => item !== null);
@@ -208,7 +210,7 @@ class MenuAPI {
       is_external: Boolean(row.is_external),
       feature_flag: row.custom_properties?.feature_flag || undefined,
       created_at: row.created_at || undefined,
-      updated_at: row.updated_at || undefined
+      updated_at: row.updated_at || undefined,
     };
   }
 
@@ -218,16 +220,16 @@ class MenuAPI {
   private buildMenuHierarchy(items: MenuItem[]): MenuItem[] {
     const itemMap = new Map<string, MenuItem>();
     const rootItems: MenuItem[] = [];
-    
+
     // Create map of all items
     items.forEach(item => {
       itemMap.set(item.id, { ...item, children: [] });
     });
-    
+
     // Build hierarchy
     items.forEach(item => {
       const menuItem = itemMap.get(item.id)!;
-      
+
       if (item.parent_id) {
         const parent = itemMap.get(item.parent_id);
         if (parent) {
@@ -238,15 +240,17 @@ class MenuAPI {
         rootItems.push(menuItem);
       }
     });
-    
+
     // Sort by sort_order
     const sortItems = (items: MenuItem[]): MenuItem[] => {
-      return items.sort((a, b) => a.sort_order - b.sort_order).map(item => ({
-        ...item,
-        children: item.children ? sortItems(item.children) : undefined
-      }));
+      return items
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map(item => ({
+          ...item,
+          children: item.children ? sortItems(item.children) : undefined,
+        }));
     };
-    
+
     return sortItems(rootItems);
   }
 }

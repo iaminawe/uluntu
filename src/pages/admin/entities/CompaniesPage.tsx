@@ -29,7 +29,8 @@ const AdminCompaniesPage: React.FC = () => {
                 Companies Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The companies listing feature is currently disabled. Enable it in System Management → Features to access companies management.
+                The companies listing feature is currently disabled. Enable it in System Management → Features to access
+                companies management.
               </p>
               <a
                 href="/admin/system/features"
@@ -62,7 +63,7 @@ const AdminCompaniesPage: React.FC = () => {
           )}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'location',
@@ -73,7 +74,7 @@ const AdminCompaniesPage: React.FC = () => {
           {value}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'size',
@@ -84,15 +85,19 @@ const AdminCompaniesPage: React.FC = () => {
           {value}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'is_verified',
       label: 'Status',
       render: (value: boolean) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          value ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300'
-        }`}>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            value
+              ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+              : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300'
+          }`}
+        >
           {value ? (
             <>
               <CheckCircle className="w-3 h-3 mr-1" />
@@ -106,14 +111,14 @@ const AdminCompaniesPage: React.FC = () => {
           )}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Created',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

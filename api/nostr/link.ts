@@ -6,14 +6,7 @@
 // extension (NIP-07) naming that URL and their account. We verify it and store
 // the pubkey, which makes <slug>@<domain> resolve via /.well-known/nostr.json.
 // DELETE: unlink.
-import {
-  getUser,
-  parseBody,
-  secretRestSelect,
-  secretRestWrite,
-  type ApiReq,
-  type ApiRes,
-} from '../_lib/auth.js';
+import { getUser, parseBody, secretRestSelect, secretRestWrite, type ApiReq, type ApiRes } from '../_lib/auth.js';
 import { verifyLinkEvent } from '../_lib/nostr.js';
 import { siteUrl } from '../_lib/nostr-config.js';
 
@@ -34,9 +27,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     return;
   }
 
-  const rows = await secretRestSelect(
-    `members?user_id=eq.${encodeURIComponent(user.id)}&select=id,slug&limit=1`
-  );
+  const rows = await secretRestSelect(`members?user_id=eq.${encodeURIComponent(user.id)}&select=id,slug&limit=1`);
   if (!Array.isArray(rows)) {
     res.status(503).json({ error: 'Member lookup unavailable' });
     return;

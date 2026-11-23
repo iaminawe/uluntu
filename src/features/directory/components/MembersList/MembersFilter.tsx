@@ -16,10 +16,10 @@ const MembersFilter = ({ filters, setFilters, clearFilters }: MembersFilterProps
       const newSkills = currentSkills.includes(skill)
         ? currentSkills.filter(s => s !== skill)
         : [...currentSkills, skill];
-      
+
       return {
         ...prev,
-        skills: newSkills.length > 0 ? newSkills : undefined
+        skills: newSkills.length > 0 ? newSkills : undefined,
       };
     });
   };
@@ -40,11 +40,11 @@ const MembersFilter = ({ filters, setFilters, clearFilters }: MembersFilterProps
                      bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
               value={filters.search}
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              onChange={e => setFilters(prev => ({ ...prev, search: e.target.value }))}
             />
           </div>
         </div>
-        
+
         {/* Clear filters button */}
         <div className="flex flex-wrap gap-2 md:w-auto">
           {(filters.search || (filters.skills && filters.skills.length > 0)) && (
@@ -58,20 +58,18 @@ const MembersFilter = ({ filters, setFilters, clearFilters }: MembersFilterProps
           )}
         </div>
       </div>
-      
+
       {/* Skill Filters */}
       <div className="mt-4">
-        <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-          Filter by skills:
-        </div>
+        <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Filter by skills:</div>
         <div className="flex flex-wrap gap-2">
           {SKILL_OPTIONS.map(skill => (
             <button
               key={skill}
               onClick={() => handleSkillToggle(skill)}
               className={`px-3 py-1 rounded-full text-sm ${
-                filters.skills?.includes(skill) 
-                  ? 'bg-orange-500 text-white' 
+                filters.skills?.includes(skill)
+                  ? 'bg-orange-500 text-white'
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
             >

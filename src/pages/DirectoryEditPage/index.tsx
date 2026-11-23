@@ -18,7 +18,7 @@ export default function DirectoryEditPage() {
   // Use the original string ID which is what useMember expects
   const memberIdString = id || '';
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newSkill, setNewSkill] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof FormData | 'social', string>>>({});
@@ -26,12 +26,9 @@ export default function DirectoryEditPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  
-  const { 
-    data: member, 
-    isLoading: memberLoading
-  } = useMember(memberIdString);
-  
+
+  const { data: member, isLoading: memberLoading } = useMember(memberIdString);
+
   // Populate form with member data when in edit mode
   useEffect(() => {
     if (isEditMode && member) {
@@ -43,10 +40,10 @@ export default function DirectoryEditPage() {
         github?: string;
         website?: string;
       } = member.social || {};
-      
+
       setFormData({
         name: member.name || '',
-        slug: (member.slug && typeof member.slug === 'string') ? member.slug : '',
+        slug: member.slug && typeof member.slug === 'string' ? member.slug : '',
         title: typeof member.title === 'string' ? member.title : '',
         company: typeof member.company === 'string' ? member.company : '',
         location: typeof member.location === 'string' ? member.location : '',
@@ -61,53 +58,53 @@ export default function DirectoryEditPage() {
           linkedin: typeof memberSocial.linkedin === 'string' ? memberSocial.linkedin : '',
           twitter: typeof memberSocial.twitter === 'string' ? memberSocial.twitter : '',
           github: typeof memberSocial.github === 'string' ? memberSocial.github : '',
-          website: typeof memberSocial.website === 'string' ? memberSocial.website : ''
-        }
+          website: typeof memberSocial.website === 'string' ? memberSocial.website : '',
+        },
       });
     }
   }, [isEditMode, member]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     if (name.startsWith('social.')) {
       const socialField = name.split('.')[1];
       setFormData(prev => ({
         ...prev,
         social: {
           ...prev.social,
-          [socialField]: value
-        }
+          [socialField]: value,
+        },
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
-    
+
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
-  
+
   const handleAddSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
       setFormData(prev => ({
         ...prev,
-        skills: [...prev.skills, newSkill.trim()]
+        skills: [...prev.skills, newSkill.trim()],
       }));
       setNewSkill('');
-      
+
       // Clear skill error if it exists
       if (errors.skills) {
         setErrors(prev => ({ ...prev, skills: undefined }));
       }
     }
   };
-  
+
   const handleRemoveSkill = (skillToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
+      skills: prev.skills.filter(skill => skill !== skillToRemove),
     }));
   };
 
@@ -117,79 +114,79 @@ export default function DirectoryEditPage() {
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
-        image: objectUrl
+        image: objectUrl,
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        image: ''
+        image: '',
       }));
     }
   };
-  
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData | 'social', string>> = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    
+
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    
+
     if (!formData.image.trim()) {
       newErrors.image = 'Profile image is required';
     }
-    
+
     if (!formData.bio.trim()) {
       newErrors.bio = 'Bio is required';
     }
-    
+
     if (!formData.skills.length) {
       newErrors.skills = 'At least one skill is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     let finalImageUrl = formData.image;
-    
+
     try {
       // Upload image if a new file was selected
       if (imageFile) {
         setIsUploadingImage(true);
         const directoryId = id || `temp-${Date.now()}`;
         const { url, error } = await uploadDirectoryImage(imageFile, directoryId);
-        
+
         if (error) {
           console.error('Error uploading image:', error);
           setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
           return;
         }
-        
+
         finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
-      
+
       // Update form data with final image URL
       const finalFormData = { ...formData, image: finalImageUrl };
-      
+
       // In a real implementation this would make an API call with finalFormData
       console.log('Submitting directory profile with data:', finalFormData);
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       setSubmitSuccess(true);
-      
+
       // Redirect after successful submission
       setTimeout(() => {
         navigate(isEditMode ? `/directory/${id}` : '/directory');
@@ -207,9 +204,12 @@ export default function DirectoryEditPage() {
     <>
       <Helmet>
         <title>{isEditMode ? 'Edit Profile' : 'Create Profile'}</title>
-        <meta name="description" content={isEditMode ? 'Edit your community profile' : 'Create a new community profile'} />
+        <meta
+          name="description"
+          content={isEditMode ? 'Edit your community profile' : 'Create a new community profile'}
+        />
       </Helmet>
-      
+
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
         <div className="mb-6">
           <Link
@@ -219,18 +219,18 @@ export default function DirectoryEditPage() {
             <ArrowLeft className="h-5 w-5 mr-1" />
             Back to Directory
           </Link>
-          
+
           <h1 className="mt-4 text-3xl font-bold text-slate-900 dark:text-white">
             {isEditMode ? 'Edit Profile' : 'Create Profile'}
           </h1>
-          
+
           <p className="mt-2 text-slate-600 dark:text-slate-400">
-            {isEditMode 
+            {isEditMode
               ? 'Update your profile information in the community directory'
               : 'Tell the community about yourself and your expertise'}
           </p>
         </div>
-        
+
         <div className="bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
           {memberLoading ? (
             <div className="p-8 text-center">
@@ -247,12 +247,7 @@ export default function DirectoryEditPage() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h3 className="mt-4 text-lg font-medium text-slate-900 dark:text-white">
@@ -264,17 +259,17 @@ export default function DirectoryEditPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="p-6 space-y-8">
-              <BasicInfoSection 
+              <BasicInfoSection
                 formData={formData}
                 errors={errors}
                 onChange={handleChange}
                 onImageChange={handleImageChange}
                 isSubmitting={isSubmitting || isUploadingImage}
               />
-              
+
               <hr className="border-t border-slate-200 dark:border-slate-700" />
-              
-              <SkillsSection 
+
+              <SkillsSection
                 skills={formData.skills}
                 newSkill={newSkill}
                 setNewSkill={setNewSkill}
@@ -283,16 +278,16 @@ export default function DirectoryEditPage() {
                 isSubmitting={isSubmitting}
                 error={errors.skills}
               />
-              
+
               <hr className="border-t border-slate-200 dark:border-slate-700" />
-              
-              <SocialSection 
+
+              <SocialSection
                 social={formData.social}
                 onChange={handleChange}
                 errors={errors}
                 isSubmitting={isSubmitting}
               />
-              
+
               <div className="flex justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
@@ -303,7 +298,7 @@ export default function DirectoryEditPage() {
                 >
                   Cancel
                 </button>
-                
+
                 <div className="flex gap-2">
                   {isEditMode && (
                     <button
@@ -316,11 +311,11 @@ export default function DirectoryEditPage() {
                       Delete
                     </button>
                   )}
-                  
+
                   {formData.status === 'published' ? (
                     <button
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft'  }))}
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'draft' }))}
                       className="px-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                                 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 
                                 transition-colors flex items-center gap-2"
@@ -331,7 +326,7 @@ export default function DirectoryEditPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, status: 'published'  }))}
+                      onClick={() => setFormData(prev => ({ ...prev, status: 'published' }))}
                       className="px-6 py-2 border border-green-600 text-green-600 rounded-lg 
                                 hover:bg-green-50 transition-colors flex items-center gap-2"
                     >
@@ -339,7 +334,7 @@ export default function DirectoryEditPage() {
                       Publish
                     </button>
                   )}
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}

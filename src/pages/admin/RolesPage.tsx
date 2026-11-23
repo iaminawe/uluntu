@@ -15,7 +15,7 @@ import {
   CheckSquare,
   Square,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 const RolesPage: React.FC = () => {
@@ -25,7 +25,7 @@ const RolesPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    permissions: {} as Record<string, string[]>
+    permissions: {} as Record<string, string[]>,
   });
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
@@ -35,39 +35,37 @@ const RolesPage: React.FC = () => {
   // Fetch roles
   const { data: roles, isLoading } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   // Create role mutation
   const createRoleMutation = useMutation({
-    mutationFn: (data: Omit<Role, 'id' | 'created_at' | 'updated_at'>) =>
-      adminRolesApi.createRole(data),
+    mutationFn: (data: Omit<Role, 'id' | 'created_at' | 'updated_at'>) => adminRolesApi.createRole(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setShowCreateModal(false);
       resetForm();
       setNotification({
         type: 'success',
-        message: 'Role created successfully!'
+        message: 'Role created successfully!',
       });
       setTimeout(() => setNotification(null), 5000);
-    }
+    },
   });
 
   // Update role mutation
   const updateRoleMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Role> }) =>
-      adminRolesApi.updateRole(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Role> }) => adminRolesApi.updateRole(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setEditingRole(null);
       resetForm();
       setNotification({
         type: 'success',
-        message: 'Role updated successfully!'
+        message: 'Role updated successfully!',
       });
       setTimeout(() => setNotification(null), 5000);
-    }
+    },
   });
 
   // Delete role mutation
@@ -77,17 +75,17 @@ const RolesPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setNotification({
         type: 'success',
-        message: 'Role deleted successfully!'
+        message: 'Role deleted successfully!',
       });
       setTimeout(() => setNotification(null), 5000);
-    }
+    },
   });
 
   const resetForm = () => {
     setFormData({
       name: '',
       description: '',
-      permissions: {}
+      permissions: {},
     });
   };
 
@@ -102,7 +100,7 @@ const RolesPage: React.FC = () => {
     { key: 'opportunities', label: 'Opportunities', icon: '💼' },
     { key: 'users', label: 'Users', icon: '👥' },
     { key: 'moderation', label: 'Moderation', icon: '🛡️' },
-    { key: 'settings', label: 'Settings', icon: '⚙️' }
+    { key: 'settings', label: 'Settings', icon: '⚙️' },
   ];
 
   const actions = ['create', 'read', 'update', 'delete'];
@@ -117,8 +115,8 @@ const RolesPage: React.FC = () => {
       ...formData,
       permissions: {
         ...formData.permissions,
-        [resource]: newActions.length > 0 ? newActions : []
-      }
+        [resource]: newActions.length > 0 ? newActions : [],
+      },
     });
   };
 
@@ -128,46 +126,52 @@ const RolesPage: React.FC = () => {
       ...formData,
       permissions: {
         ...formData.permissions,
-        [resource]: hasWildcard ? [] : ['*']
-      }
+        [resource]: hasWildcard ? [] : ['*'],
+      },
     });
   };
 
   const handleSubmit = () => {
     // Clean up empty permission arrays
-    const cleanedPermissions = Object.entries(formData.permissions).reduce((acc, [key, value]) => {
-      if (value && value.length > 0) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, string[]>);
+    const cleanedPermissions = Object.entries(formData.permissions).reduce(
+      (acc, [key, value]) => {
+        if (value && value.length > 0) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
 
     const data = {
       name: formData.name,
       description: formData.description || null,
       permissions: cleanedPermissions,
-      is_system: false
+      is_system: false,
     };
 
     if (editingRole) {
-      updateRoleMutation.mutate({ id: editingRole.id, data }, {
-        onError: (error: any) => {
-          setNotification({
-            type: 'error',
-            message: error?.message || 'Failed to update role. Please try again.'
-          });
-          setTimeout(() => setNotification(null), 5000);
+      updateRoleMutation.mutate(
+        { id: editingRole.id, data },
+        {
+          onError: (error: any) => {
+            setNotification({
+              type: 'error',
+              message: error?.message || 'Failed to update role. Please try again.',
+            });
+            setTimeout(() => setNotification(null), 5000);
+          },
         }
-      });
+      );
     } else {
       createRoleMutation.mutate(data, {
         onError: (error: any) => {
           setNotification({
             type: 'error',
-            message: error?.message || 'Failed to create role. Please try again.'
+            message: error?.message || 'Failed to create role. Please try again.',
           });
           setTimeout(() => setNotification(null), 5000);
-        }
+        },
       });
     }
   };
@@ -177,7 +181,7 @@ const RolesPage: React.FC = () => {
     setFormData({
       name: role.name,
       description: role.description || '',
-      permissions: role.permissions
+      permissions: role.permissions,
     });
   };
 
@@ -185,11 +189,13 @@ const RolesPage: React.FC = () => {
     <div>
       {/* Notification Banner */}
       {notification && (
-        <div className={`mb-4 p-4 rounded-lg flex items-center ${
-          notification.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
-            : 'bg-red-50 text-red-800 border border-red-200'
-        }`}>
+        <div
+          className={`mb-4 p-4 rounded-lg flex items-center ${
+            notification.type === 'success'
+              ? 'bg-green-50 text-green-800 border border-green-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
+          }`}
+        >
           {notification.type === 'success' ? (
             <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
           ) : (
@@ -218,12 +224,13 @@ const RolesPage: React.FC = () => {
       {/* Roles List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-            Loading roles...
-          </div>
+          <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Loading roles...</div>
         ) : roles && roles.length > 0 ? (
-          roles.map((role) => (
-            <div key={role.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+          roles.map(role => (
+            <div
+              key={role.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
                   <Shield className="h-6 w-6 text-blue-600 mr-3" />
@@ -248,7 +255,11 @@ const RolesPage: React.FC = () => {
                     <div key={resource} className="text-sm">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{resource}:</span>
                       <span className="ml-2 text-gray-600 dark:text-gray-400">
-                        {Array.isArray(actions) && actions.includes('*') ? 'All permissions' : Array.isArray(actions) ? actions.join(', ') : 'No permissions'}
+                        {Array.isArray(actions) && actions.includes('*')
+                          ? 'All permissions'
+                          : Array.isArray(actions)
+                            ? actions.join(', ')
+                            : 'No permissions'}
                       </span>
                     </div>
                   ))
@@ -274,10 +285,10 @@ const RolesPage: React.FC = () => {
                           onError: (error: any) => {
                             setNotification({
                               type: 'error',
-                              message: error?.message || 'Failed to delete role. Please try again.'
+                              message: error?.message || 'Failed to delete role. Please try again.',
                             });
                             setTimeout(() => setNotification(null), 5000);
-                          }
+                          },
                         });
                       }
                     }}
@@ -321,13 +332,11 @@ const RolesPage: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6">
               {/* Basic Info */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Role Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role Name</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="e.g., Content Manager"
                 />
@@ -339,7 +348,7 @@ const RolesPage: React.FC = () => {
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Brief description of this role's purpose"
@@ -349,7 +358,7 @@ const RolesPage: React.FC = () => {
               {/* Permissions */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Permissions</h4>
-                
+
                 {/* Super Admin Wildcard */}
                 <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <label className="flex items-center cursor-pointer">
@@ -372,7 +381,7 @@ const RolesPage: React.FC = () => {
                 {/* Resource Permissions */}
                 {!formData.permissions['*']?.includes('*') && (
                   <div className="space-y-4">
-                    {resources.map((resource) => (
+                    {resources.map(resource => (
                       <div key={resource.key} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
@@ -391,10 +400,10 @@ const RolesPage: React.FC = () => {
                             All Permissions
                           </button>
                         </div>
-                        
+
                         {!formData.permissions[resource.key]?.includes('*') && (
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            {actions.map((action) => (
+                            {actions.map(action => (
                               <label key={action} className="flex items-center cursor-pointer">
                                 <input
                                   type="checkbox"

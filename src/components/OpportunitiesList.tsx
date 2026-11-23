@@ -49,26 +49,26 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Sarah Johnson',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       title: 'HR Manager',
-      bio: 'Passionate about building great tech teams in the Kootenays.'
+      bio: 'Passionate about building great tech teams in the Kootenays.',
     },
     requirements: [
       '5+ years of full-stack development experience',
       'Strong knowledge of React and Node.js',
       'Experience with cloud platforms (AWS/GCP)',
-      'Excellent communication skills'
+      'Excellent communication skills',
     ],
     responsibilities: [
       'Lead development of new features',
       'Mentor junior developers',
       'Contribute to technical architecture decisions',
-      'Collaborate with product and design teams'
+      'Collaborate with product and design teams',
     ],
     benefits: [
       'Flexible remote work options',
       'Extended health benefits',
       'Professional development budget',
-      'Regular team events'
-    ]
+      'Regular team events',
+    ],
   },
   {
     id: 2,
@@ -87,20 +87,20 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Michael Chen',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       title: 'Program Coordinator',
-      bio: 'Working to make tech education accessible to all youth in the Kootenays.'
+      bio: 'Working to make tech education accessible to all youth in the Kootenays.',
     },
     requirements: [
       'Basic programming knowledge',
       'Experience working with youth',
       'Reliable and committed',
-      'Police record check required'
+      'Police record check required',
     ],
     responsibilities: [
       'Lead weekly coding workshops',
       'Prepare lesson materials',
       'Provide mentorship to students',
-      'Participate in program planning'
-    ]
+      'Participate in program planning',
+    ],
   },
   {
     id: 3,
@@ -119,14 +119,14 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Emma Wilson',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
       title: 'Project Lead',
-      bio: 'Leading initiatives at the intersection of technology and environmental conservation.'
+      bio: 'Leading initiatives at the intersection of technology and environmental conservation.',
     },
     requirements: [
       'Clear project timeline and milestones',
       'Detailed budget breakdown',
       'Environmental impact assessment',
-      'Community engagement plan'
-    ]
+      'Community engagement plan',
+    ],
   },
   {
     id: 4,
@@ -144,21 +144,21 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       name: 'Alex Thompson',
       image: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg',
       title: 'Community Manager',
-      bio: 'Building bridges between technology and community needs in Nelson.'
+      bio: 'Building bridges between technology and community needs in Nelson.',
     },
     requirements: [
       'Interest in smart city technologies',
       'Commitment to community improvement',
       'Ability to attend monthly meetings',
-      'Willingness to collaborate'
+      'Willingness to collaborate',
     ],
     responsibilities: [
       'Participate in planning sessions',
       'Contribute ideas and feedback',
       'Help with community outreach',
-      'Test proposed solutions'
-    ]
-  }
+      'Test proposed solutions',
+    ],
+  },
 ];
 
 interface OpportunityModalProps {
@@ -177,7 +177,7 @@ function OpportunityModal({ onClose }: OpportunityModalProps) {
     compensation: '',
     fundingAmount: '',
     contactEmail: '',
-    website: ''
+    website: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -196,7 +196,10 @@ function OpportunityModal({ onClose }: OpportunityModalProps) {
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Post Opportunity</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -220,7 +223,7 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
     email: '',
     phone: '',
     coverLetter: '',
-    resume: null as File | null
+    resume: null as File | null,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -245,7 +248,10 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">{opportunity.title}</h2>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -256,11 +262,7 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
               <div className="space-y-6">
                 {opportunity.image && (
                   <div className="rounded-lg overflow-hidden">
-                    <img
-                      src={opportunity.image}
-                      alt={opportunity.title}
-                      className="w-full h-64 object-cover"
-                    />
+                    <img src={opportunity.image} alt={opportunity.title} className="w-full h-64 object-cover" />
                   </div>
                 )}
                 <div>
@@ -278,7 +280,7 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-6">
                 <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
                   <div className="flex flex-wrap gap-4 text-sm text-slate-600 dark:text-slate-300 mb-4">
@@ -418,7 +420,10 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
               </div>
 
               <div>
-                <label htmlFor="coverLetter" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label
+                  htmlFor="coverLetter"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                >
                   Cover Letter
                 </label>
                 <textarea
@@ -449,9 +454,7 @@ function OpportunityDetailsModal({ opportunity, onClose }: OpportunityDetailsMod
                            focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                 />
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Accepted formats: PDF, DOC, DOCX
-                </p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Accepted formats: PDF, DOC, DOCX</p>
               </div>
 
               <div className="flex justify-end gap-3">
@@ -501,7 +504,8 @@ export default function OpportunitiesList() {
   const types: OpportunityType[] = ['job', 'volunteer', 'funding', 'community'];
 
   const filteredOpportunities = SAMPLE_OPPORTUNITIES.filter(opportunity => {
-    const matchesSearch = opportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      opportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       opportunity.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || opportunity.type === selectedType;
     return matchesSearch && matchesType;
@@ -516,7 +520,7 @@ export default function OpportunitiesList() {
               type="text"
               placeholder="Search opportunities..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg 
                        bg-white dark:bg-slate-800 text-slate-900 dark:text-white
                        focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -538,9 +542,10 @@ export default function OpportunitiesList() {
           <button
             onClick={() => setSelectedType('all')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-              ${selectedType === 'all'
-                ? 'bg-orange-500 text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              ${
+                selectedType === 'all'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
               }`}
           >
             All Types
@@ -550,9 +555,10 @@ export default function OpportunitiesList() {
               key={type}
               onClick={() => setSelectedType(type)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors flex items-center
-                ${selectedType === type
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                ${
+                  selectedType === type
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }`}
             >
               {getTypeIcon(type)}
@@ -571,11 +577,7 @@ export default function OpportunitiesList() {
           >
             {opportunity.image && (
               <div className="h-48 overflow-hidden">
-                <img
-                  src={opportunity.image}
-                  alt={opportunity.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={opportunity.image} alt={opportunity.title} className="w-full h-full object-cover" />
               </div>
             )}
             <div className="p-6">
@@ -585,9 +587,7 @@ export default function OpportunitiesList() {
                     {getTypeIcon(opportunity.type)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">
-                      {opportunity.title}
-                    </h3>
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-1">{opportunity.title}</h3>
                     <p className="text-orange-600 dark:text-orange-400 mb-1">
                       {opportunity.organization} • {opportunity.location}
                     </p>
@@ -615,8 +615,7 @@ export default function OpportunitiesList() {
                 {opportunity.deadline && (
                   <div className="flex items-center text-slate-600 dark:text-slate-300">
                     <Calendar className="h-4 w-4 mr-2" />
-                    <span className="font-medium">Deadline:</span>{' '}
-                    {new Date(opportunity.deadline).toLocaleDateString()}
+                    <span className="font-medium">Deadline:</span> {new Date(opportunity.deadline).toLocaleDateString()}
                   </div>
                 )}
               </div>
@@ -638,15 +637,10 @@ export default function OpportunitiesList() {
         ))}
       </div>
 
-      {showModal && (
-        <OpportunityModal onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <OpportunityModal onClose={() => setShowModal(false)} />}
 
       {selectedOpportunity && (
-        <OpportunityDetailsModal
-          opportunity={selectedOpportunity}
-          onClose={() => setSelectedOpportunity(null)}
-        />
+        <OpportunityDetailsModal opportunity={selectedOpportunity} onClose={() => setSelectedOpportunity(null)} />
       )}
     </div>
   );

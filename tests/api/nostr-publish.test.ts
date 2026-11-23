@@ -54,10 +54,17 @@ function mockFetch() {
 function call(handler: Handler, opts: { auth?: string; method?: string; query?: Record<string, string> }) {
   const res: { code?: number; body?: Record<string, unknown> } & Record<string, unknown> = {};
   Object.assign(res, {
-    status(c: number) { res.code = c; return res; },
+    status(c: number) {
+      res.code = c;
+      return res;
+    },
     setHeader() {},
-    json(b: Record<string, unknown>) { res.body = b; },
-    write() { return true; },
+    json(b: Record<string, unknown>) {
+      res.body = b;
+    },
+    write() {
+      return true;
+    },
     end() {},
   });
   return handler(
@@ -135,7 +142,7 @@ describe('api/nostr/publish', () => {
     const res = await call(handler, { auth: 'Bearer cron-secret' });
     expect(res.code).toBe(200);
     expect(publishMock).toHaveBeenCalledTimes(2);
-    expect(restWrites.filter((w) => w.path.startsWith('nostr_publications'))).toHaveLength(2);
+    expect(restWrites.filter(w => w.path.startsWith('nostr_publications'))).toHaveLength(2);
   });
 
   it('stops the run when a publication record cannot be saved', async () => {

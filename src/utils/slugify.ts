@@ -15,11 +15,7 @@ export function generateSlug(
     strict?: boolean;
   } = {}
 ): string {
-  const {
-    lowercase = true,
-    separator = '-',
-    strict = false
-  } = options;
+  const { lowercase = true, separator = '-', strict = false } = options;
 
   let slug = text
     .trim()
@@ -48,7 +44,7 @@ export function ensureUniqueSlug(baseSlug: string, existingSlugs: string[]): str
 
   let counter = 1;
   let uniqueSlug = `${baseSlug}-${counter}`;
-  
+
   while (existingSlugs.includes(uniqueSlug)) {
     counter++;
     uniqueSlug = `${baseSlug}-${counter}`;

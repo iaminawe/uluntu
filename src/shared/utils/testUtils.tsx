@@ -40,9 +40,7 @@ function render(
     return (
       <Provider store={store}>
         <BrowserRouter>
-          <HelmetProvider>
-            {children}
-          </HelmetProvider>
+          <HelmetProvider>{children}</HelmetProvider>
         </BrowserRouter>
       </Provider>
     );

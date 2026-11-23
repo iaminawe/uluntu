@@ -186,9 +186,7 @@ describe('ImprovedUserManagementSection', () => {
       });
 
       // Should show warning when disabling
-      expect(toast.warning).toHaveBeenCalledWith(
-        'Disabling registration will prevent new users from signing up'
-      );
+      expect(toast.warning).toHaveBeenCalledWith('Disabling registration will prevent new users from signing up');
     });
 
     it('handles admin approval toggle', async () => {
@@ -278,7 +276,7 @@ describe('ImprovedUserManagementSection', () => {
       render(<ImprovedUserManagementSection {...defaultProps} />);
 
       const sizeInput = screen.getByLabelText('Max Profile Image Size (MB)');
-      
+
       // Try to set invalid value
       fireEvent.change(sizeInput, { target: { value: '0' } });
 
@@ -337,7 +335,7 @@ describe('ImprovedUserManagementSection', () => {
       render(<ImprovedUserManagementSection {...defaultProps} />);
 
       const cooldownInput = screen.getByLabelText('Username Change Cooldown (days)');
-      
+
       // Set valid value
       fireEvent.change(cooldownInput, { target: { value: '60' } });
 
@@ -428,7 +426,7 @@ describe('ImprovedUserManagementSection', () => {
       await waitFor(() => {
         expect(approvalToggle).not.toBeChecked();
         expect(roleSelect).toHaveValue('authenticated');
-        
+
         // Save button should show no changes
         const saveButton = screen.getByRole('button', { name: /save changes/i });
         expect(saveButton).toHaveTextContent('Save Changes');

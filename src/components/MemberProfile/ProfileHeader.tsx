@@ -20,18 +20,14 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
             className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-contain bg-slate-50 dark:bg-slate-700"
           />
         </div>
-        
+
         <div className="flex-1">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                {member.name}
-              </h1>
-              <p className="text-lg text-orange-500 dark:text-orange-400">
-                {member.title}
-              </p>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{member.name}</h1>
+              <p className="text-lg text-orange-500 dark:text-orange-400">{member.title}</p>
             </div>
-            
+
             <div className="flex mt-4 md:mt-0 space-x-3">
               <button
                 onClick={onContactClick}
@@ -47,13 +43,13 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
               </button>
             </div>
           </div>
-          
+
           <div className="mb-4 space-y-2">
             <div className="flex items-center text-slate-600 dark:text-slate-300">
               <MapPin className="h-5 w-5 mr-2 text-orange-500" />
               <span>{member.location}</span>
             </div>
-            
+
             {member.social?.website && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Globe className="h-5 w-5 mr-2 text-orange-500" />
@@ -67,17 +63,14 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
                 </a>
               </div>
             )}
-            
+
             {member.organizations.length > 0 && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Building className="h-5 w-5 mr-2 text-orange-500" />
                 <div>
                   {member.organizations.map((org, index) => (
                     <span key={org.id}>
-                      <Link
-                        to={getCompanyUrl(org)}
-                        className="hover:text-orange-500 dark:hover:text-orange-400"
-                      >
+                      <Link to={getCompanyUrl(org)} className="hover:text-orange-500 dark:hover:text-orange-400">
                         {org.name}
                       </Link>
                       <span className="text-sm ml-1">({org.role})</span>
@@ -91,10 +84,13 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
             {member.arrivedInNelson && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Clock className="h-5 w-5 mr-2 text-orange-500" />
-                <span>In Nelson since {new Date(member.arrivedInNelson).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                <span>
+                  In Nelson since{' '}
+                  {new Date(member.arrivedInNelson).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </span>
               </div>
             )}
-            
+
             {member.openToVolunteering && (
               <div className="flex items-center text-slate-600 dark:text-slate-300">
                 <Heart className="h-5 w-5 mr-2 text-orange-500" />
@@ -102,20 +98,14 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
               </div>
             )}
           </div>
-          
+
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              About
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">
-              {member.bio}
-            </p>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">About</h2>
+            <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">{member.bio}</p>
           </div>
-          
+
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              Skills
-            </h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Skills</h2>
             <div className="flex flex-wrap gap-2">
               {(member.skills || []).map(skill => (
                 <span
@@ -127,7 +117,7 @@ const ProfileHeader = ({ member, onContactClick, onEditClick }: ProfileHeaderPro
               ))}
             </div>
           </div>
-          
+
           {member.socialLinks && member.socialLinks.length > 0 && (
             <div className="mt-4 flex space-x-3">
               {member.socialLinks.map(link => (

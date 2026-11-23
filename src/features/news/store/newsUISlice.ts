@@ -37,7 +37,7 @@ const newsUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<NewsFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {};
     },
     setSelectedArticle: (state, action: PayloadAction<string | null>) => {
@@ -56,15 +56,8 @@ const newsUISlice = createSlice({
 });
 
 // Actions
-export const {
-  setFilters,
-  updateFilters,
-  clearFilters,
-  setSelectedArticle,
-  setViewMode,
-  setSortBy,
-  setSortOrder,
-} = newsUISlice.actions;
+export const { setFilters, updateFilters, clearFilters, setSelectedArticle, setViewMode, setSortBy, setSortOrder } =
+  newsUISlice.actions;
 
 // Selectors
 export const selectNewsFilters = (state: RootState) => state.newsUI.filters;

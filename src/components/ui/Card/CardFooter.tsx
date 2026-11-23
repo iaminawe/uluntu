@@ -5,12 +5,7 @@ import { CardFooterProps } from '@/shared/components/ui/Card/types';
  * Card footer component
  * Used for displaying metadata, actions, and other information at the bottom of cards
  */
-const CardFooter: React.FC<CardFooterProps> = ({
-  children,
-  actions,
-  meta,
-  className = '',
-}) => {
+const CardFooter: React.FC<CardFooterProps> = ({ children, actions, meta, className = '' }) => {
   // If children are provided, render them directly
   if (children) {
     return <div className={`mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>;
@@ -30,13 +25,9 @@ const CardFooter: React.FC<CardFooterProps> = ({
             ))}
           </div>
         )}
-        
+
         {/* Actions (e.g., buttons, links) */}
-        {actions && (
-          <div className="flex items-center space-x-2">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="flex items-center space-x-2">{actions}</div>}
       </div>
     </div>
   );

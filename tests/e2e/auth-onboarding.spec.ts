@@ -32,23 +32,23 @@ test.describe('Authentication and Onboarding Flow', () => {
         'a[href*="signup"]',
         'a[href*="register"]',
         'button:has-text("Sign Up")',
-        'button:has-text("Get Started")'
+        'button:has-text("Get Started")',
       ];
-      
+
       let clicked = false;
       for (const selector of signupSelectors) {
-        if (await page.locator(selector).count() > 0) {
+        if ((await page.locator(selector).count()) > 0) {
           await page.click(selector);
           clicked = true;
           break;
         }
       }
-      
+
       if (!clicked) {
         // If no signup button found, navigate directly
         await page.goto('http://localhost:5555/signup');
       }
-      
+
       await expect(page).toHaveURL(/.*\/(signup|register)/);
       await page.waitForLoadState('networkidle');
     });
@@ -58,16 +58,16 @@ test.describe('Authentication and Onboarding Flow', () => {
       // Fill in the signup form
       await page.fill('input[type="email"]', testUser.email);
       await page.fill('input[type="password"]', testUser.password);
-      
+
       // Look for confirm password field if it exists
       const confirmPasswordField = page.locator('input[placeholder*="Confirm"]');
-      if (await confirmPasswordField.count() > 0) {
+      if ((await confirmPasswordField.count()) > 0) {
         await confirmPasswordField.fill(testUser.password);
       }
 
       // Accept terms if checkbox exists
       const termsCheckbox = page.locator('input[type="checkbox"]');
-      if (await termsCheckbox.count() > 0) {
+      if ((await termsCheckbox.count()) > 0) {
         await termsCheckbox.check();
       }
 
@@ -82,18 +82,18 @@ test.describe('Authentication and Onboarding Flow', () => {
     await test.step('Check for onboarding prompt', async () => {
       // Wait for either onboarding modal or redirect
       await page.waitForTimeout(2000); // Give time for redirect/modal
-      
+
       // Check if we see onboarding content
       const onboardingIndicators = [
         'text=/Welcome to.*Nelson/i',
         'text=/Complete.*Profile/i',
         'text=/Start Onboarding/i',
-        'text=/Profile Completion/i'
+        'text=/Profile Completion/i',
       ];
 
       let foundOnboarding = false;
       for (const indicator of onboardingIndicators) {
-        if (await page.locator(indicator).count() > 0) {
+        if ((await page.locator(indicator).count()) > 0) {
           foundOnboarding = true;
           break;
         }
@@ -101,13 +101,16 @@ test.describe('Authentication and Onboarding Flow', () => {
 
       if (foundOnboarding) {
         console.log('Onboarding prompt detected');
-        
+
         // Look for start/complete onboarding button
-        const onboardingButton = page.locator('a, button').filter({ 
-          hasText: /Start Onboarding|Complete Onboarding|Complete Profile/i 
-        }).first();
-        
-        if (await onboardingButton.count() > 0) {
+        const onboardingButton = page
+          .locator('a, button')
+          .filter({
+            hasText: /Start Onboarding|Complete Onboarding|Complete Profile/i,
+          })
+          .first();
+
+        if ((await onboardingButton.count()) > 0) {
           await onboardingButton.click();
           await page.waitForLoadState('networkidle');
         }
@@ -121,31 +124,34 @@ test.describe('Authentication and Onboarding Flow', () => {
         console.log('Onboarding wizard detected');
 
         // Step 1: Welcome (if present)
-        if (await page.locator('text=/Welcome to.*Community/i').count() > 0) {
-          const nextButton = page.locator('button').filter({ hasText: /Next|Continue|Get Started/i }).first();
-          if (await nextButton.count() > 0) {
+        if ((await page.locator('text=/Welcome to.*Community/i').count()) > 0) {
+          const nextButton = page
+            .locator('button')
+            .filter({ hasText: /Next|Continue|Get Started/i })
+            .first();
+          if ((await nextButton.count()) > 0) {
             await nextButton.click();
             await page.waitForTimeout(500);
           }
         }
 
         // Step 2: Professional Info
-        if (await page.locator('text=/Professional.*Info/i').count() > 0) {
+        if ((await page.locator('text=/Professional.*Info/i').count()) > 0) {
           // Fill bio
           const bioField = page.locator('textarea').first();
-          if (await bioField.count() > 0) {
+          if ((await bioField.count()) > 0) {
             await bioField.fill(testUser.bio);
           }
 
           // Fill title
           const titleField = page.locator('input[placeholder*="title" i], input[placeholder*="position" i]').first();
-          if (await titleField.count() > 0) {
+          if ((await titleField.count()) > 0) {
             await titleField.fill(testUser.title);
           }
 
           // Add skills if field exists
           const skillsInput = page.locator('input[placeholder*="skill" i]').first();
-          if (await skillsInput.count() > 0) {
+          if ((await skillsInput.count()) > 0) {
             await skillsInput.fill('JavaScript');
             await page.keyboard.press('Enter');
             await skillsInput.fill('React');
@@ -153,36 +159,51 @@ test.describe('Authentication and Onboarding Flow', () => {
           }
 
           // Click next
-          await page.locator('button').filter({ hasText: /Next|Continue/i }).first().click();
+          await page
+            .locator('button')
+            .filter({ hasText: /Next|Continue/i })
+            .first()
+            .click();
           await page.waitForTimeout(500);
         }
 
         // Step 3: Company Association (optional, may be skipped)
-        if (await page.locator('text=/Company|Organization/i').count() > 0) {
+        if ((await page.locator('text=/Company|Organization/i').count()) > 0) {
           // Skip this step
-          const skipButton = page.locator('button').filter({ hasText: /Skip|Later/i }).first();
-          if (await skipButton.count() > 0) {
+          const skipButton = page
+            .locator('button')
+            .filter({ hasText: /Skip|Later/i })
+            .first();
+          if ((await skipButton.count()) > 0) {
             await skipButton.click();
           } else {
-            await page.locator('button').filter({ hasText: /Next|Continue/i }).first().click();
+            await page
+              .locator('button')
+              .filter({ hasText: /Next|Continue/i })
+              .first()
+              .click();
           }
           await page.waitForTimeout(500);
         }
 
         // Step 4: Privacy Settings
-        if (await page.locator('text=/Privacy.*Settings/i').count() > 0) {
+        if ((await page.locator('text=/Privacy.*Settings/i').count()) > 0) {
           // Select public profile if option exists
           const publicOption = page.locator('text=Public').first();
-          if (await publicOption.count() > 0) {
+          if ((await publicOption.count()) > 0) {
             await publicOption.click();
           }
 
-          await page.locator('button').filter({ hasText: /Next|Continue/i }).first().click();
+          await page
+            .locator('button')
+            .filter({ hasText: /Next|Continue/i })
+            .first()
+            .click();
           await page.waitForTimeout(500);
         }
 
         // Step 5: Community Engagement
-        if (await page.locator('text=/Community|Interests/i').count() > 0) {
+        if ((await page.locator('text=/Community|Interests/i').count()) > 0) {
           // Select some interests
           const interests = page.locator('button').filter({ hasText: /Web Development|JavaScript|React/i });
           for (let i = 0; i < Math.min(3, await interests.count()); i++) {
@@ -190,11 +211,18 @@ test.describe('Authentication and Onboarding Flow', () => {
           }
 
           // Complete onboarding
-          const completeButton = page.locator('button').filter({ hasText: /Complete|Finish|Done/i }).first();
-          if (await completeButton.count() > 0) {
+          const completeButton = page
+            .locator('button')
+            .filter({ hasText: /Complete|Finish|Done/i })
+            .first();
+          if ((await completeButton.count()) > 0) {
             await completeButton.click();
           } else {
-            await page.locator('button').filter({ hasText: /Next|Continue/i }).first().click();
+            await page
+              .locator('button')
+              .filter({ hasText: /Next|Continue/i })
+              .first()
+              .click();
           }
           await page.waitForLoadState('networkidle');
         }
@@ -204,7 +232,7 @@ test.describe('Authentication and Onboarding Flow', () => {
     // Step 5: Verify user is logged in and onboarding complete
     await test.step('Verify successful onboarding completion', async () => {
       await page.waitForTimeout(2000);
-      
+
       // Check if we're redirected to a logged-in area
       const loggedInIndicators = [
         'button[aria-label*="user" i]',
@@ -213,12 +241,12 @@ test.describe('Authentication and Onboarding Flow', () => {
         'text=Sign Out',
         'text=Log Out',
         'text=Profile',
-        'text=Dashboard'
+        'text=Dashboard',
       ];
 
       let isLoggedIn = false;
       for (const indicator of loggedInIndicators) {
-        if (await page.locator(indicator).count() > 0) {
+        if ((await page.locator(indicator).count()) > 0) {
           isLoggedIn = true;
           break;
         }
@@ -233,7 +261,7 @@ test.describe('Authentication and Onboarding Flow', () => {
     // Create a test user first (in real scenario, this would be an existing user)
     const existingUser = {
       email: 'test@example.com',
-      password: 'Password123!'
+      password: 'Password123!',
     };
 
     // Step 1: Navigate to signin page
@@ -246,23 +274,23 @@ test.describe('Authentication and Onboarding Flow', () => {
         'text=Log In',
         'a[href*="signin"]',
         'a[href*="login"]',
-        'button:has-text("Sign In")'
+        'button:has-text("Sign In")',
       ];
-      
+
       let clicked = false;
       for (const selector of signinSelectors) {
-        if (await page.locator(selector).count() > 0) {
+        if ((await page.locator(selector).count()) > 0) {
           await page.click(selector);
           clicked = true;
           break;
         }
       }
-      
+
       if (!clicked) {
         // If no signin button found, navigate directly
         await page.goto('http://localhost:5555/signin');
       }
-      
+
       await expect(page).toHaveURL(/.*\/(signin|login)/);
     });
 
@@ -271,7 +299,7 @@ test.describe('Authentication and Onboarding Flow', () => {
       await page.fill('input[type="email"]', existingUser.email);
       await page.fill('input[type="password"]', existingUser.password);
       await page.click('button[type="submit"]');
-      
+
       // Wait for navigation
       await page.waitForLoadState('networkidle');
     });
@@ -279,15 +307,15 @@ test.describe('Authentication and Onboarding Flow', () => {
     // Step 3: Check login result
     await test.step('Verify signin result', async () => {
       await page.waitForTimeout(2000);
-      
+
       // Check for error message (if credentials are invalid)
       const errorMessage = page.locator('text=/Invalid|Error|Failed/i');
-      if (await errorMessage.count() > 0) {
+      if ((await errorMessage.count()) > 0) {
         console.log('Login failed - invalid credentials (expected for test user)');
       } else {
         // Check if logged in successfully
         const profileButton = page.locator('button[aria-label*="profile" i], text=Profile');
-        if (await profileButton.count() > 0) {
+        if ((await profileButton.count()) > 0) {
           console.log('Login successful');
         }
       }
@@ -296,20 +324,20 @@ test.describe('Authentication and Onboarding Flow', () => {
 
   test('profile completion check for incomplete profiles', async ({ page }) => {
     // This test checks if the onboarding prompt appears for users with incomplete profiles
-    
+
     // First, try to sign in (assuming a test user exists)
     await page.goto('http://localhost:5555/signin');
-    
+
     // Use a test account that might have incomplete profile
     await page.fill('input[type="email"]', 'incomplete@example.com');
     await page.fill('input[type="password"]', 'Password123!');
     await page.click('button[type="submit"]');
-    
+
     await page.waitForTimeout(2000);
-    
+
     // Check if onboarding prompt appears
     const onboardingPrompt = page.locator('text=/Complete.*Profile|Profile.*Incomplete/i');
-    if (await onboardingPrompt.count() > 0) {
+    if ((await onboardingPrompt.count()) > 0) {
       console.log('Onboarding prompt shown for incomplete profile');
       expect(await onboardingPrompt.count()).toBeGreaterThan(0);
     }

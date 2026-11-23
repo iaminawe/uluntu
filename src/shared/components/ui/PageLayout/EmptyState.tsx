@@ -23,17 +23,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           {icon}
         </div>
       )}
-      
-      <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-        {title}
-      </h3>
-      
-      {description && (
-        <p className="text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
-          {description}
-        </p>
-      )}
-      
+
+      <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">{title}</h3>
+
+      {description && <p className="text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">{description}</p>}
+
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         {primaryActionUrl ? (
           <Link
@@ -42,15 +36,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           >
             {primaryAction?.text || 'Get Started'}
           </Link>
-        ) : primaryAction && (
-          <button
-            onClick={primaryAction.onClick}
-            className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
-          >
-            {primaryAction.text}
-          </button>
+        ) : (
+          primaryAction && (
+            <button
+              onClick={primaryAction.onClick}
+              className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+            >
+              {primaryAction.text}
+            </button>
+          )
         )}
-        
+
         {secondaryActionUrl ? (
           <Link
             to={secondaryActionUrl}
@@ -58,13 +54,15 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           >
             {secondaryAction?.text || 'Learn More'}
           </Link>
-        ) : secondaryAction && (
-          <button
-            onClick={secondaryAction.onClick}
-            className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-          >
-            {secondaryAction.text}
-          </button>
+        ) : (
+          secondaryAction && (
+            <button
+              onClick={secondaryAction.onClick}
+              className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            >
+              {secondaryAction.text}
+            </button>
+          )
         )}
       </div>
     </div>

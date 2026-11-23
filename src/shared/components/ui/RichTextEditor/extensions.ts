@@ -5,7 +5,7 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 export const defaultExtensions = [
   StarterKit,
   Placeholder.configure({
-    placeholder: 'Type \'/\' for commands or start writing...',
+    placeholder: "Type '/' for commands or start writing...",
     emptyEditorClass: 'is-editor-empty',
   }),
 ];

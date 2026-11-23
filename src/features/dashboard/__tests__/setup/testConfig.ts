@@ -11,11 +11,9 @@ export const jestConfig: Config.InitialOptions = {
   displayName: 'Dashboard Tests',
   testMatch: [
     '<rootDir>/src/features/dashboard/**/__tests__/**/*.test.{ts,tsx}',
-    '<rootDir>/src/features/dashboard/**/*.test.{ts,tsx}'
+    '<rootDir>/src/features/dashboard/**/*.test.{ts,tsx}',
   ],
-  setupFilesAfterEnv: [
-    '<rootDir>/src/features/dashboard/__tests__/setup/setupTests.ts'
-  ],
+  setupFilesAfterEnv: ['<rootDir>/src/features/dashboard/__tests__/setup/setupTests.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
@@ -27,35 +25,38 @@ export const jestConfig: Config.InitialOptions = {
     '!src/features/dashboard/**/*.spec.{ts,tsx}',
     '!src/features/dashboard/**/__tests__/**',
     '!src/features/dashboard/**/types.ts',
-    '!src/features/dashboard/**/index.ts'
+    '!src/features/dashboard/**/index.ts',
   ],
   coverageThreshold: {
     global: {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
+      statements: 80,
     },
     './src/features/dashboard/components/': {
       branches: 85,
       functions: 85,
       lines: 85,
-      statements: 85
+      statements: 85,
     },
     './src/features/dashboard/api/': {
       branches: 90,
       functions: 90,
       lines: 90,
-      statements: 90
-    }
+      statements: 90,
+    },
   },
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx'
-      }
-    }]
-  }
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+        },
+      },
+    ],
+  },
 };
 
 // Playwright Configuration for E2E Tests
@@ -63,21 +64,18 @@ export const playwrightConfig: PlaywrightTestConfig = {
   testDir: './src/features/dashboard/__tests__/e2e',
   timeout: 30 * 1000,
   expect: {
-    timeout: 5000
+    timeout: 5000,
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [
-    ['html'],
-    ['json', { outputFile: 'test-results/dashboard-e2e-results.json' }]
-  ],
+  reporter: [['html'], ['json', { outputFile: 'test-results/dashboard-e2e-results.json' }]],
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure'
+    video: 'retain-on-failure',
   },
   projects: [
     {
@@ -104,8 +102,8 @@ export const playwrightConfig: PlaywrightTestConfig = {
   webServer: {
     command: 'npm run dev',
     port: 3000,
-    reuseExistingServer: !process.env.CI
-  }
+    reuseExistingServer: !process.env.CI,
+  },
 };
 
 // Test Data Configuration
@@ -116,22 +114,22 @@ export const testData = {
       email: 'member@test.com',
       password: 'TestPassword123!',
       fullName: 'Test Member',
-      role: 'member'
+      role: 'member',
     },
     moderator: {
       id: 'test-moderator-123',
       email: 'moderator@test.com',
       password: 'TestPassword123!',
       fullName: 'Test Moderator',
-      role: 'moderator'
+      role: 'moderator',
     },
     admin: {
       id: 'test-admin-123',
       email: 'admin@test.com',
       password: 'TestPassword123!',
       fullName: 'Test Admin',
-      role: 'admin'
-    }
+      role: 'admin',
+    },
   },
   content: {
     posts: [
@@ -142,7 +140,7 @@ export const testData = {
         status: 'published',
         views: 42,
         likes: 8,
-        comments: 3
+        comments: 3,
       },
       {
         id: 'post-2',
@@ -151,8 +149,8 @@ export const testData = {
         status: 'draft',
         views: 0,
         likes: 0,
-        comments: 0
-      }
+        comments: 0,
+      },
     ],
     photos: [
       {
@@ -161,8 +159,8 @@ export const testData = {
         url: '/test-images/photo1.jpg',
         thumbnail: '/test-images/photo1-thumb.jpg',
         views: 156,
-        likes: 24
-      }
+        likes: 24,
+      },
     ],
     events: [
       {
@@ -170,9 +168,9 @@ export const testData = {
         title: 'Test Event',
         description: 'A test event for dashboard testing.',
         date: new Date(Date.now() + 86400000).toISOString(),
-        attendees: 15
-      }
-    ]
+        attendees: 15,
+      },
+    ],
   },
   analytics: {
     overview: {
@@ -180,14 +178,14 @@ export const testData = {
       totalLikes: 32,
       totalComments: 3,
       totalFollowers: 45,
-      growthRate: 12.5
+      growthRate: 12.5,
     },
     chartData: {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       views: [20, 35, 42, 38, 50, 28, 33],
-      engagement: [5, 8, 12, 9, 15, 7, 10]
-    }
-  }
+      engagement: [5, 8, 12, 9, 15, 7, 10],
+    },
+  },
 };
 
 // Test Utilities Configuration
@@ -196,7 +194,7 @@ export const testUtils = {
     short: 100,
     medium: 500,
     long: 1000,
-    network: 2000
+    network: 2000,
   },
   selectors: {
     dashboard: {
@@ -206,25 +204,25 @@ export const testUtils = {
         overview: '[role="tab"][name*="overview"]',
         content: '[role="tab"][name*="content"]',
         analytics: '[role="tab"][name*="analytics"]',
-        activity: '[role="tab"][name*="activity"]'
-      }
+        activity: '[role="tab"][name*="activity"]',
+      },
     },
     content: {
       item: '[data-testid="content-item"]',
       createButton: 'button:has-text("Create New Post")',
       editButton: '[data-testid="edit-button"]',
-      deleteButton: '[data-testid="delete-button"]'
+      deleteButton: '[data-testid="delete-button"]',
     },
     analytics: {
       viewsChart: '[data-testid="views-chart"]',
       engagementChart: '[data-testid="engagement-chart"]',
-      timeRangeSelect: '[name="timeRange"]'
+      timeRangeSelect: '[name="timeRange"]',
     },
     activity: {
       item: '[data-testid="activity-item"]',
       notification: '[data-testid="notification-item"]',
-      unreadNotification: '[data-testid="unread-notification"]'
-    }
+      unreadNotification: '[data-testid="unread-notification"]',
+    },
   },
   mockData: {
     generateMockUser: (role: 'member' | 'moderator' | 'admin' = 'member') => ({
@@ -233,7 +231,7 @@ export const testUtils = {
       fullName: `Mock ${role}`,
       role,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }),
     generateMockPost: (overrides: Partial<any> = {}) => ({
       id: `mock-post-${Date.now()}`,
@@ -245,7 +243,7 @@ export const testUtils = {
       comments: Math.floor(Math.random() * 10),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      ...overrides
+      ...overrides,
     }),
     generateMockAnalytics: () => ({
       overview: {
@@ -253,35 +251,39 @@ export const testUtils = {
         totalLikes: Math.floor(Math.random() * 100),
         totalComments: Math.floor(Math.random() * 50),
         totalFollowers: Math.floor(Math.random() * 200),
-        growthRate: Math.random() * 50
+        growthRate: Math.random() * 50,
       },
       chartData: {
         labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        views: Array(7).fill(0).map(() => Math.floor(Math.random() * 60)),
-        engagement: Array(7).fill(0).map(() => Math.floor(Math.random() * 20))
-      }
-    })
-  }
+        views: Array(7)
+          .fill(0)
+          .map(() => Math.floor(Math.random() * 60)),
+        engagement: Array(7)
+          .fill(0)
+          .map(() => Math.floor(Math.random() * 20)),
+      },
+    }),
+  },
 };
 
 // Performance Testing Configuration
 export const performanceConfig = {
   thresholds: {
-    pageLoad: 3000,    // 3 seconds
-    tabSwitch: 1000,   // 1 second
+    pageLoad: 3000, // 3 seconds
+    tabSwitch: 1000, // 1 second
     apiResponse: 2000, // 2 seconds
-    chartRender: 1500  // 1.5 seconds
+    chartRender: 1500, // 1.5 seconds
   },
   metrics: {
     track: ['FCP', 'LCP', 'FID', 'CLS', 'TTFB'],
     budgets: {
-      FCP: 2000,  // First Contentful Paint
-      LCP: 3000,  // Largest Contentful Paint
-      FID: 100,   // First Input Delay
-      CLS: 0.1,   // Cumulative Layout Shift
-      TTFB: 800   // Time to First Byte
-    }
-  }
+      FCP: 2000, // First Contentful Paint
+      LCP: 3000, // Largest Contentful Paint
+      FID: 100, // First Input Delay
+      CLS: 0.1, // Cumulative Layout Shift
+      TTFB: 800, // Time to First Byte
+    },
+  },
 };
 
 // Security Testing Configuration
@@ -291,26 +293,26 @@ export const securityConfig = {
       '<script>alert("XSS")</script>',
       'javascript:alert("XSS")',
       '<img src=x onerror=alert("XSS")>',
-      '<svg onload=alert("XSS")>'
+      '<svg onload=alert("XSS")>',
     ],
     sqlInjection: [
       "'; DROP TABLE users; --",
       "' OR '1'='1",
       "'; INSERT INTO users VALUES('hacker'); --",
-      "' UNION SELECT * FROM users --"
+      "' UNION SELECT * FROM users --",
     ],
     paths: [
       '../../../etc/passwd',
       '..\\..\\..\\windows\\system32\\config\\sam',
       '/proc/self/environ',
-      '\\\\localhost\\c$\\windows\\system32'
-    ]
+      '\\\\localhost\\c$\\windows\\system32',
+    ],
   },
   rateLimit: {
     maxRequests: 10,
     timeWindow: 60000, // 1 minute
-    blockDuration: 300000 // 5 minutes
-  }
+    blockDuration: 300000, // 5 minutes
+  },
 };
 
 // Test Environment Configuration
@@ -318,23 +320,23 @@ export const environmentConfig = {
   development: {
     apiBaseUrl: 'http://localhost:3000/api',
     authTimeout: 30000,
-    retries: 3
+    retries: 3,
   },
   testing: {
     apiBaseUrl: 'http://localhost:3001/api',
     authTimeout: 10000,
-    retries: 1
+    retries: 1,
   },
   staging: {
     apiBaseUrl: 'https://staging.example.com/api',
     authTimeout: 15000,
-    retries: 2
+    retries: 2,
   },
   production: {
     apiBaseUrl: 'https://api.example.com',
     authTimeout: 20000,
-    retries: 3
-  }
+    retries: 3,
+  },
 };
 
 export default {
@@ -344,5 +346,5 @@ export default {
   testUtils,
   performance: performanceConfig,
   security: securityConfig,
-  environment: environmentConfig
+  environment: environmentConfig,
 };

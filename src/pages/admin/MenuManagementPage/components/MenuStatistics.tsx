@@ -16,15 +16,11 @@ export const MenuStatistics: React.FC<MenuStatisticsProps> = ({ items }) => {
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {items.length}
-            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{items.length}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Total Items</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {items.filter(item => item.is_enabled).length}
-            </div>
+            <div className="text-2xl font-bold text-green-600">{items.filter(item => item.is_enabled).length}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Enabled</div>
           </div>
           <div className="text-center">
@@ -49,9 +45,7 @@ export const MenuStatistics: React.FC<MenuStatisticsProps> = ({ items }) => {
               const count = items.filter(item => item.visibility === visibility).length;
               return (
                 <div key={visibility} className="flex justify-between text-sm">
-                  <span className="capitalize text-gray-600 dark:text-gray-400">
-                    {visibility.replace('_', ' ')}
-                  </span>
+                  <span className="capitalize text-gray-600 dark:text-gray-400">{visibility.replace('_', ' ')}</span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">{count}</span>
                 </div>
               );

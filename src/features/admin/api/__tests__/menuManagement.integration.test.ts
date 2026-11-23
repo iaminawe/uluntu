@@ -34,43 +34,43 @@ describe('MenuManagementAPI Integration Tests', () => {
     // Mock select behavior
     mockSupabase.select.mockImplementation((columns: string) => {
       const chain = { ...mockSupabase };
-      
+
       chain.order = jest.fn((column: string, options: any) => {
         const result = [...mockDatabase];
         if (column === 'order_index') {
-          result.sort((a, b) => options.ascending ? a.order_index - b.order_index : b.order_index - a.order_index);
+          result.sort((a, b) => (options.ascending ? a.order_index - b.order_index : b.order_index - a.order_index));
         }
         return {
           ...chain,
-          then: (resolve: any) => resolve({ data: result, error: null })
+          then: (resolve: any) => resolve({ data: result, error: null }),
         };
       });
 
       chain.single = jest.fn(() => ({
         then: (resolve: any) => {
           // For single queries, we need to apply the eq filter
-          const item = mockDatabase.find(item => 
+          const item = mockDatabase.find(item =>
             chain._eqFilters ? chain._eqFilters.every((filter: any) => item[filter.column] === filter.value) : true
           );
           resolve({ data: item || null, error: item ? null : { code: 'PGRST116' } });
-        }
+        },
       }));
 
       chain.limit = jest.fn((count: number) => ({
         then: (resolve: any) => {
           const filtered = mockDatabase.filter(item => {
-            return chain._isFilters ? chain._isFilters.every((filter: any) => 
-              item[filter.column] === filter.value
-            ) : true;
+            return chain._isFilters
+              ? chain._isFilters.every((filter: any) => item[filter.column] === filter.value)
+              : true;
           });
           const limited = filtered.slice(0, count);
           resolve({ data: limited, error: null });
-        }
+        },
       }));
 
       return {
         ...chain,
-        then: (resolve: any) => resolve({ data: mockDatabase, error: null })
+        then: (resolve: any) => resolve({ data: mockDatabase, error: null }),
       };
     });
 
@@ -98,14 +98,14 @@ describe('MenuManagementAPI Integration Tests', () => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }));
-      
+
       mockDatabase.push(...newItems);
-      
+
       return {
         ...mockSupabase,
         single: jest.fn(() => ({
-          then: (resolve: any) => resolve({ data: newItems[0], error: null })
-        }))
+          then: (resolve: any) => resolve({ data: newItems[0], error: null }),
+        })),
       };
     });
 
@@ -115,18 +115,18 @@ describe('MenuManagementAPI Integration Tests', () => {
         ...mockSupabase,
         single: jest.fn(() => ({
           then: (resolve: any) => {
-            const itemIndex = mockDatabase.findIndex(item => 
+            const itemIndex = mockDatabase.findIndex(item =>
               mockSupabase._eqFilters?.every((filter: any) => item[filter.column] === filter.value)
             );
-            
+
             if (itemIndex >= 0) {
               mockDatabase[itemIndex] = { ...mockDatabase[itemIndex], ...updates };
               resolve({ data: mockDatabase[itemIndex], error: null });
             } else {
               resolve({ data: null, error: { message: 'Item not found' } });
             }
-          }
-        }))
+          },
+        })),
       };
     });
 
@@ -137,12 +137,12 @@ describe('MenuManagementAPI Integration Tests', () => {
         mockDatabase = mockDatabase.filter(item => {
           return !mockSupabase._eqFilters?.every((filter: any) => item[filter.column] === filter.value);
         });
-        
-        resolve({ 
-          data: null, 
-          error: mockDatabase.length < initialLength ? null : { message: 'No items to delete' }
+
+        resolve({
+          data: null,
+          error: mockDatabase.length < initialLength ? null : { message: 'No items to delete' },
         });
-      }
+      },
     }));
 
     // Mock RPC for reordering
@@ -165,7 +165,7 @@ describe('MenuManagementAPI Integration Tests', () => {
   beforeAll(() => {
     // Replace the Supabase mock with our realistic version
     jest.doMock('@/lib/supabase', () => ({
-      supabase: createRealisticMock()
+      supabase: createRealisticMock(),
     }));
   });
 
@@ -275,7 +275,7 @@ describe('MenuManagementAPI Integration Tests', () => {
 
       // Get enabled-only structure
       const enabledStructure = await menuManagementApi.getEnabledMenuStructure();
-      
+
       // Should have fewer or equal items
       expect(enabledStructure.length).toBeLessThanOrEqual(fullStructure.length);
 
@@ -384,7 +384,7 @@ describe('MenuManagementAPI Integration Tests', () => {
 
       // Get the structure
       const structure = await menuManagementApi.getMenuStructure();
-      
+
       const endTime = performance.now();
       const duration = endTime - startTime;
 
@@ -392,10 +392,8 @@ describe('MenuManagementAPI Integration Tests', () => {
       expect(duration).toBeLessThan(1000); // 1 second
 
       // Verify structure correctness
-      const newParents = structure.filter(item => 
-        parentItems.some(parent => parent.id === item.id)
-      );
-      
+      const newParents = structure.filter(item => parentItems.some(parent => parent.id === item.id));
+
       expect(newParents).toHaveLength(5);
       newParents.forEach(parent => {
         expect(parent.children).toHaveLength(3);
@@ -420,7 +418,7 @@ describe('MenuManagementAPI Integration Tests', () => {
       }
 
       const createdItems = await Promise.all(creationPromises);
-      
+
       // All should be created successfully
       expect(createdItems).toHaveLength(3);
       createdItems.forEach((item, index) => {
@@ -429,7 +427,7 @@ describe('MenuManagementAPI Integration Tests', () => {
       });
 
       // Simulate concurrent updates
-      const updatePromises = createdItems.map((item, index) => 
+      const updatePromises = createdItems.map((item, index) =>
         menuManagementApi.updateMenuItem({
           id: item.id,
           description: `Updated concurrently ${index}`,
@@ -437,7 +435,7 @@ describe('MenuManagementAPI Integration Tests', () => {
       );
 
       const updatedItems = await Promise.all(updatePromises);
-      
+
       // All should be updated successfully
       expect(updatedItems).toHaveLength(3);
       updatedItems.forEach((item, index) => {

@@ -28,26 +28,26 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onConfirm,
   onCancel,
   isLoading = false,
-  showIcon = true
+  showIcon = true,
 }) => {
   if (!isOpen) return null;
 
   const getIcon = () => {
     if (!showIcon) return null;
-    
-    const iconClass = "h-6 w-6";
-    
+
+    const iconClass = 'h-6 w-6';
+
     switch (type) {
       case 'warning':
-        return <AlertTriangle className={cn(iconClass, "text-yellow-500")} />;
+        return <AlertTriangle className={cn(iconClass, 'text-yellow-500')} />;
       case 'info':
-        return <Info className={cn(iconClass, "text-blue-500")} />;
+        return <Info className={cn(iconClass, 'text-blue-500')} />;
       case 'success':
-        return <CheckCircle className={cn(iconClass, "text-green-500")} />;
+        return <CheckCircle className={cn(iconClass, 'text-green-500')} />;
       case 'error':
-        return <XCircle className={cn(iconClass, "text-red-500")} />;
+        return <XCircle className={cn(iconClass, 'text-red-500')} />;
       default:
-        return <AlertTriangle className={cn(iconClass, "text-yellow-500")} />;
+        return <AlertTriangle className={cn(iconClass, 'text-yellow-500')} />;
     }
   };
 
@@ -93,13 +93,13 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
     >
-      <div 
+      <div
         className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full shadow-xl"
         role="dialog"
         aria-modal="true"
@@ -110,24 +110,20 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         <div className="p-6">
           <div className="flex items-start gap-4">
             {showIcon && (
-              <div className={cn(
-                "flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
-                getIconBgColor()
-              )}>
+              <div
+                className={cn(
+                  'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
+                  getIconBgColor()
+                )}
+              >
                 {getIcon()}
               </div>
             )}
             <div className="flex-1">
-              <h3 
-                id="confirmation-title"
-                className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2"
-              >
+              <h3 id="confirmation-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {title}
               </h3>
-              <p 
-                id="confirmation-message"
-                className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap"
-              >
+              <p id="confirmation-message" className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
                 {message}
               </p>
             </div>
@@ -136,20 +132,10 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg flex justify-end gap-3">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading}
-            className="min-w-[80px]"
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="min-w-[80px]">
             {cancelLabel}
           </Button>
-          <Button
-            variant={confirmVariant}
-            onClick={handleConfirm}
-            disabled={isLoading}
-            className="min-w-[80px]"
-          >
+          <Button variant={confirmVariant} onClick={handleConfirm} disabled={isLoading} className="min-w-[80px]">
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -166,10 +152,12 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 };
 
 // Convenience components for common dialog types
-export const DeleteConfirmationDialog: React.FC<Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel'> & {
-  itemName?: string;
-  itemCount?: number;
-}> = ({ itemName, itemCount, title, message, ...props }) => {
+export const DeleteConfirmationDialog: React.FC<
+  Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel'> & {
+    itemName?: string;
+    itemCount?: number;
+  }
+> = ({ itemName, itemCount, title, message, ...props }) => {
   const getTitle = () => {
     if (title) return title;
     if (itemCount && itemCount > 1) return `Delete ${itemCount} Items`;
@@ -200,16 +188,13 @@ export const DeleteConfirmationDialog: React.FC<Omit<ConfirmationDialogProps, 't
   );
 };
 
-export const SaveConfirmationDialog: React.FC<Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel'>> = (props) => (
-  <ConfirmationDialog
-    {...props}
-    type="info"
-    confirmVariant="default"
-    confirmLabel="Save"
-  />
-);
+export const SaveConfirmationDialog: React.FC<
+  Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel'>
+> = props => <ConfirmationDialog {...props} type="info" confirmVariant="default" confirmLabel="Save" />;
 
-export const DiscardConfirmationDialog: React.FC<Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel' | 'title' | 'message'>> = (props) => (
+export const DiscardConfirmationDialog: React.FC<
+  Omit<ConfirmationDialogProps, 'type' | 'confirmVariant' | 'confirmLabel' | 'title' | 'message'>
+> = props => (
   <ConfirmationDialog
     {...props}
     title="Discard Changes"

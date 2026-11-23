@@ -10,7 +10,7 @@ import {
   Archive,
   Trash2,
   MoreHorizontal,
-  Users
+  Users,
 } from 'lucide-react';
 import { AdminUser } from '../types';
 
@@ -53,7 +53,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onUserAction,
   onActionDropdownToggle,
   onPageChange,
-  formatDate
+  formatDate,
 }) => {
   return (
     <div className="w-full bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
@@ -65,7 +65,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                 <input
                   type="checkbox"
                   checked={(users?.length ?? 0) > 0 && selectedUsers.size === (users?.length ?? 0)}
-                  onChange={(e) => onSelectAll(e.target.checked)}
+                  onChange={e => onSelectAll(e.target.checked)}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />
               </th>
@@ -114,43 +114,48 @@ export const UserTable: React.FC<UserTableProps> = ({
               users?.map(user => {
                 const profile = user.member_profile;
                 return (
-                  <tr key={user.user_id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <tr
+                    key={user.user_id}
+                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={selectedUsers.has(user.user_id)}
-                        onChange={(e) => onSelectUser(user.user_id, e.target.checked)}
+                        onChange={e => onSelectUser(user.user_id, e.target.checked)}
                         className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            user.email === 'No account'
-                              ? 'bg-orange-100 dark:bg-orange-900/30'
-                              : 'bg-gray-200 dark:bg-gray-600'
-                          }`}>
-                            <User className={`h-5 w-5 ${
+                          <div
+                            className={`h-10 w-10 rounded-full flex items-center justify-center ${
                               user.email === 'No account'
-                                ? 'text-orange-600 dark:text-orange-400'
-                                : 'text-gray-500 dark:text-gray-400'
-                            }`} />
+                                ? 'bg-orange-100 dark:bg-orange-900/30'
+                                : 'bg-gray-200 dark:bg-gray-600'
+                            }`}
+                          >
+                            <User
+                              className={`h-5 w-5 ${
+                                user.email === 'No account'
+                                  ? 'text-orange-600 dark:text-orange-400'
+                                  : 'text-gray-500 dark:text-gray-400'
+                              }`}
+                            />
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className={`text-sm font-medium ${
-                            user.email === 'No account'
-                              ? 'text-orange-600 dark:text-orange-400'
-                              : 'text-gray-900 dark:text-gray-100'
-                          }`}>
+                          <div
+                            className={`text-sm font-medium ${
+                              user.email === 'No account'
+                                ? 'text-orange-600 dark:text-orange-400'
+                                : 'text-gray-900 dark:text-gray-100'
+                            }`}
+                          >
                             {user.email}
                           </div>
-                          {user.name && (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {user.name}
-                            </div>
-                          )}
+                          {user.name && <div className="text-sm text-gray-500 dark:text-gray-400">{user.name}</div>}
                         </div>
                       </div>
                     </td>
@@ -181,8 +186,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     roleId === 'superadmin'
                                       ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                                       : roleId === 'admin'
-                                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-                                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
+                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                                   }`}
                                 >
                                   {role?.name || roleId}
@@ -190,21 +195,21 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 </span>
                               );
                             })}
-                            {user.roles.length === 0 && (
-                              <span className="text-xs text-gray-400 italic">No roles</span>
-                            )}
+                            {user.roles.length === 0 && <span className="text-xs text-gray-400 italic">No roles</span>}
                           </>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        profile?.status === 'published'
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                          : profile?.status === 'archived'
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                          : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          profile?.status === 'published'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            : profile?.status === 'archived'
+                              ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                        }`}
+                      >
                         {profile?.status === 'published' && <CheckCircle className="h-3 w-3 mr-1" />}
                         {profile?.status === 'archived' && <Ban className="h-3 w-3 mr-1" />}
                         {profile?.status || 'Draft'}
@@ -224,7 +229,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="relative">
                         <button
-                          onClick={() => onActionDropdownToggle(showActionDropdown === user.user_id ? null : user.user_id)}
+                          onClick={() =>
+                            onActionDropdownToggle(showActionDropdown === user.user_id ? null : user.user_id)
+                          }
                           className="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                         >
                           <MoreHorizontal className="h-4 w-4" />

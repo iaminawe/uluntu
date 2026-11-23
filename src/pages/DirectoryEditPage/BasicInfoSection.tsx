@@ -3,13 +3,7 @@ import { FormImageUpload } from '@/shared/components/ui/Form/FormImageUpload';
 import { SlugField } from '@/shared/components/ui/Form/StandardFormComponents';
 import { BasicInfoSectionProps } from './types';
 
-const BasicInfoSection = ({
-  formData,
-  errors,
-  onChange,
-  onImageChange,
-  isSubmitting
-}: BasicInfoSectionProps) => {
+const BasicInfoSection = ({ formData, errors, onChange, onImageChange, isSubmitting }: BasicInfoSectionProps) => {
   return (
     <div className="space-y-6">
       <div>
@@ -38,7 +32,7 @@ const BasicInfoSection = ({
 
       <SlugField
         value={formData.slug}
-        onChange={(value) => onChange({ target: { name: 'slug', value } } as any)}
+        onChange={value => onChange({ target: { name: 'slug', value } } as any)}
         sourceValue={formData.name}
         error={errors.slug}
         required
@@ -165,7 +159,6 @@ const BasicInfoSection = ({
         />
         {errors.bio && <p className="mt-1 text-sm text-red-500">{errors.bio}</p>}
       </div>
-
     </div>
   );
 };

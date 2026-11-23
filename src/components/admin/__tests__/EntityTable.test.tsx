@@ -1,7 +1,7 @@
 // Mock environment dependencies first
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import React from 'react';
@@ -18,15 +18,15 @@ jest.mock('@/lib/supabase', () => {
       name: 'Test Entity 1',
       email: 'test1@example.com',
       created_at: '2024-01-01T00:00:00Z',
-      status: 'active'
+      status: 'active',
     },
     {
       id: '2',
       name: 'Test Entity 2',
       email: 'test2@example.com',
       created_at: '2024-01-02T00:00:00Z',
-      status: 'inactive'
-    }
+      status: 'inactive',
+    },
   ];
 
   const chainableMock = {
@@ -36,19 +36,19 @@ jest.mock('@/lib/supabase', () => {
     range: jest.fn().mockResolvedValue({
       data: mockSupabaseData,
       error: null,
-      count: 2
+      count: 2,
     }),
     delete: jest.fn().mockReturnThis(),
-    in: jest.fn().mockResolvedValue({ error: null })
+    in: jest.fn().mockResolvedValue({ error: null }),
   };
 
   // Override select('*') for export functionality
-  chainableMock.select.mockImplementation((query) => {
+  chainableMock.select.mockImplementation(query => {
     if (query === '*') {
       // Return a promise directly for export
       return Promise.resolve({
         data: mockSupabaseData,
-        error: null
+        error: null,
       });
     }
     return chainableMock;
@@ -56,8 +56,8 @@ jest.mock('@/lib/supabase', () => {
 
   return {
     supabase: {
-      from: jest.fn(() => chainableMock)
-    }
+      from: jest.fn(() => chainableMock),
+    },
   };
 });
 
@@ -65,15 +65,13 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
-      mutations: { retry: false }
-    }
+      mutations: { retry: false },
+    },
   });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -89,13 +87,13 @@ describe('EntityTable', () => {
         key: 'created_at',
         label: 'Created',
         render: (value: string) => new Date(value).toLocaleDateString(),
-        sortable: true
-      }
+        sortable: true,
+      },
     ],
     searchFields: ['name', 'email'],
     editPath: '/test/:id/edit',
     detailPath: '/test/:id',
-    createPath: '/test/create'
+    createPath: '/test/create',
   };
 
   beforeEach(() => {
@@ -162,7 +160,7 @@ describe('EntityTable', () => {
     await waitFor(() => {
       const checkboxes = screen.getAllByRole('checkbox');
       expect(checkboxes.length).toBeGreaterThan(1); // Header checkbox + item checkboxes
-      
+
       // Select first item
       fireEvent.click(checkboxes[1]);
     });
@@ -183,7 +181,7 @@ describe('EntityTable', () => {
     // Find and click delete button
     const deleteButtons = screen.getAllByRole('button');
     const deleteButton = deleteButtons.find(btn => btn.querySelector('[data-lucide="trash-2"]'));
-    
+
     if (deleteButton) {
       fireEvent.click(deleteButton);
       // Confirm delete action would be triggered
@@ -197,11 +195,9 @@ describe('EntityTable', () => {
         key: 'status',
         label: 'Status',
         render: (value: string) => (
-          <span className={value === 'active' ? 'text-green-600' : 'text-red-600'}>
-            {value}
-          </span>
-        )
-      }
+          <span className={value === 'active' ? 'text-green-600' : 'text-red-600'}>{value}</span>
+        ),
+      },
     ];
 
     render(
@@ -228,14 +224,14 @@ describe('EntityTable', () => {
       const links = screen.getAllByRole('link');
       const viewLinks = links.filter(link => link.getAttribute('href')?.includes('/test/'));
       expect(viewLinks.length).toBeGreaterThan(0);
-      
+
       // Check if links have correct hrefs
       expect(viewLinks[0]).toHaveAttribute('href', expect.stringContaining('/test/'));
     });
   });
 
   it('handles custom actions', async () => {
-    const customAction = jest.fn((item) => (
+    const customAction = jest.fn(item => (
       <button key={`custom-${item.id}`} onClick={() => console.log(item)}>
         Custom {item.id}
       </button>
@@ -260,15 +256,15 @@ describe('EntityTable', () => {
     const mockRevokeObjectURL = jest.fn();
     global.URL.createObjectURL = mockCreateObjectURL;
     global.URL.revokeObjectURL = mockRevokeObjectURL;
-    
+
     // Mock the click method
     const mockClick = jest.fn();
     const mockAnchor = document.createElement('a');
     mockAnchor.click = mockClick;
-    
+
     const originalCreateElement = document.createElement.bind(document);
     const createElementSpy = jest.spyOn(document, 'createElement');
-    createElementSpy.mockImplementation((tagName) => {
+    createElementSpy.mockImplementation(tagName => {
       if (tagName === 'a') {
         return mockAnchor;
       }
@@ -284,16 +280,19 @@ describe('EntityTable', () => {
     const exportButton = screen.getByText('Export');
     fireEvent.click(exportButton);
 
-    await waitFor(() => {
-      expect(mockCreateObjectURL).toHaveBeenCalled();
-      expect(mockClick).toHaveBeenCalled();
-    }, { timeout: 500 });
+    await waitFor(
+      () => {
+        expect(mockCreateObjectURL).toHaveBeenCalled();
+        expect(mockClick).toHaveBeenCalled();
+      },
+      { timeout: 500 }
+    );
 
     createElementSpy.mockRestore();
   });
 
   it('handles refresh functionality', async () => {
-    const { } = render(
+    const {} = render(
       <TestWrapper>
         <EntityTable {...defaultProps} />
       </TestWrapper>
@@ -319,16 +318,19 @@ describe('EntityTable', () => {
       </TestWrapper>
     );
 
-    await waitFor(() => {
-      // Check pagination info
-      expect(screen.getByText(/1-2 of 2/)).toBeInTheDocument();
-      
-      // Pagination buttons should be disabled when there's only one page
-      const prevButton = screen.getByRole('button', { name: /previous/i });
-      const nextButton = screen.getByRole('button', { name: /next/i });
-      
-      expect(prevButton).toBeDisabled();
-      expect(nextButton).toBeDisabled();
-    }, { timeout: 500 });
+    await waitFor(
+      () => {
+        // Check pagination info
+        expect(screen.getByText(/1-2 of 2/)).toBeInTheDocument();
+
+        // Pagination buttons should be disabled when there's only one page
+        const prevButton = screen.getByRole('button', { name: /previous/i });
+        const nextButton = screen.getByRole('button', { name: /next/i });
+
+        expect(prevButton).toBeDisabled();
+        expect(nextButton).toBeDisabled();
+      },
+      { timeout: 500 }
+    );
   });
 });

@@ -4,22 +4,22 @@
 export async function uploadImage(file: File): Promise<string> {
   // For development, we'll just return a data URL
   // In production, you'd upload to a real storage service
-  
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
-    reader.onload = (e) => {
+
+    reader.onload = e => {
       if (e.target?.result) {
         resolve(e.target.result as string);
       } else {
         reject(new Error('Failed to read file'));
       }
     };
-    
+
     reader.onerror = () => {
       reject(new Error('Failed to read file'));
     };
-    
+
     reader.readAsDataURL(file);
   });
 }

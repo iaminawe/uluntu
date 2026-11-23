@@ -19,6 +19,6 @@ export const initialFormData: FormData = {
     linkedin: '',
     twitter: '',
     github: '',
-    website: ''
-  }
+    website: '',
+  },
 };

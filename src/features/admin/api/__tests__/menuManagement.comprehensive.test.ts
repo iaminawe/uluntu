@@ -1,6 +1,6 @@
 /**
  * Comprehensive Unit Tests for Menu Management API
- * 
+ *
  * Tests all CRUD operations, error handling, and edge cases
  * for the menu management system API.
  */
@@ -75,7 +75,9 @@ describe('MenuManagementAPI', () => {
       const mockError = { message: 'Database connection failed' };
       mockSupabaseQuery.order.mockResolvedValueOnce({ data: null, error: mockError });
 
-      await expect(menuManagementApi.getMenuItems()).rejects.toThrow('Failed to fetch menu items: Database connection failed');
+      await expect(menuManagementApi.getMenuItems()).rejects.toThrow(
+        'Failed to fetch menu items: Database connection failed'
+      );
     });
 
     it('should handle network timeout', async () => {
@@ -109,13 +111,20 @@ describe('MenuManagementAPI', () => {
       const mockError = { code: 'PGRST001', message: 'Database error' };
       mockSupabaseQuery.single.mockResolvedValueOnce({ data: null, error: mockError });
 
-      await expect(menuManagementApi.getMenuItem('test-123')).rejects.toThrow('Failed to fetch menu item: Database error');
+      await expect(menuManagementApi.getMenuItem('test-123')).rejects.toThrow(
+        'Failed to fetch menu item: Database error'
+      );
     });
 
     it('should validate UUID format', async () => {
-      mockSupabaseQuery.single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST001', message: 'Invalid UUID' } });
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { code: 'PGRST001', message: 'Invalid UUID' },
+      });
 
-      await expect(menuManagementApi.getMenuItem('invalid-uuid')).rejects.toThrow('Failed to fetch menu item: Invalid UUID');
+      await expect(menuManagementApi.getMenuItem('invalid-uuid')).rejects.toThrow(
+        'Failed to fetch menu item: Invalid UUID'
+      );
     });
   });
 
@@ -137,11 +146,13 @@ describe('MenuManagementAPI', () => {
       const result = await menuManagementApi.createMenuItem(mockInput);
 
       expect(supabase.from).toHaveBeenCalledWith('menu_items');
-      expect(mockSupabaseQuery.insert).toHaveBeenCalledWith([{
-        ...mockInput,
-        order_index: 0,
-        is_enabled: true,
-      }]);
+      expect(mockSupabaseQuery.insert).toHaveBeenCalledWith([
+        {
+          ...mockInput,
+          order_index: 0,
+          is_enabled: true,
+        },
+      ]);
       expect(result).toEqual(createdItem);
     });
 
@@ -152,38 +163,43 @@ describe('MenuManagementAPI', () => {
 
       await menuManagementApi.createMenuItem({ ...mockInput, order_index: undefined });
 
-      expect(mockSupabaseQuery.insert).toHaveBeenCalledWith([{
-        ...mockInput,
-        order_index: 6,
-        is_enabled: true,
-      }]);
+      expect(mockSupabaseQuery.insert).toHaveBeenCalledWith([
+        {
+          ...mockInput,
+          order_index: 6,
+          is_enabled: true,
+        },
+      ]);
     });
 
     it('should handle parent_id validation', async () => {
       mockSupabaseQuery.limit.mockResolvedValueOnce({ data: [], error: null });
       mockSupabaseQuery.single.mockResolvedValueOnce({ data: null, error: { message: 'Foreign key violation' } });
 
-      await expect(menuManagementApi.createMenuItem({ ...mockInput, parent_id: 'invalid-parent' }))
-        .rejects.toThrow('Failed to create menu item: Foreign key violation');
+      await expect(menuManagementApi.createMenuItem({ ...mockInput, parent_id: 'invalid-parent' })).rejects.toThrow(
+        'Failed to create menu item: Foreign key violation'
+      );
     });
 
     it('should validate required fields', async () => {
       const invalidInput = { ...mockInput, label: '' };
       mockSupabaseQuery.single.mockResolvedValueOnce({ data: null, error: { message: 'Label cannot be empty' } });
 
-      await expect(menuManagementApi.createMenuItem(invalidInput))
-        .rejects.toThrow('Failed to create menu item: Label cannot be empty');
+      await expect(menuManagementApi.createMenuItem(invalidInput)).rejects.toThrow(
+        'Failed to create menu item: Label cannot be empty'
+      );
     });
 
     it('should handle duplicate href constraints', async () => {
       mockSupabaseQuery.limit.mockResolvedValueOnce({ data: [], error: null });
-      mockSupabaseQuery.single.mockResolvedValueOnce({ 
-        data: null, 
-        error: { message: 'Duplicate key value violates unique constraint' } 
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { message: 'Duplicate key value violates unique constraint' },
       });
 
-      await expect(menuManagementApi.createMenuItem(mockInput))
-        .rejects.toThrow('Failed to create menu item: Duplicate key value violates unique constraint');
+      await expect(menuManagementApi.createMenuItem(mockInput)).rejects.toThrow(
+        'Failed to create menu item: Duplicate key value violates unique constraint'
+      );
     });
   });
 
@@ -211,33 +227,36 @@ describe('MenuManagementAPI', () => {
     });
 
     it('should handle non-existent item', async () => {
-      mockSupabaseQuery.single.mockResolvedValueOnce({ 
-        data: null, 
-        error: { message: 'No rows updated' } 
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { message: 'No rows updated' },
       });
 
-      await expect(menuManagementApi.updateMenuItem(mockUpdate))
-        .rejects.toThrow('Failed to update menu item: No rows updated');
+      await expect(menuManagementApi.updateMenuItem(mockUpdate)).rejects.toThrow(
+        'Failed to update menu item: No rows updated'
+      );
     });
 
     it('should validate href uniqueness', async () => {
-      mockSupabaseQuery.single.mockResolvedValueOnce({ 
-        data: null, 
-        error: { message: 'Duplicate key value violates unique constraint' } 
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { message: 'Duplicate key value violates unique constraint' },
       });
 
-      await expect(menuManagementApi.updateMenuItem({ ...mockUpdate, href: '/existing' }))
-        .rejects.toThrow('Failed to update menu item: Duplicate key value violates unique constraint');
+      await expect(menuManagementApi.updateMenuItem({ ...mockUpdate, href: '/existing' })).rejects.toThrow(
+        'Failed to update menu item: Duplicate key value violates unique constraint'
+      );
     });
 
     it('should handle circular reference prevention', async () => {
-      mockSupabaseQuery.single.mockResolvedValueOnce({ 
-        data: null, 
-        error: { message: 'Circular reference detected' } 
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { message: 'Circular reference detected' },
       });
 
-      await expect(menuManagementApi.updateMenuItem({ ...mockUpdate, parent_id: 'test-123' }))
-        .rejects.toThrow('Failed to update menu item: Circular reference detected');
+      await expect(menuManagementApi.updateMenuItem({ ...mockUpdate, parent_id: 'test-123' })).rejects.toThrow(
+        'Failed to update menu item: Circular reference detected'
+      );
     });
   });
 
@@ -257,21 +276,23 @@ describe('MenuManagementAPI', () => {
 
     it('should handle deletion of non-existent item', async () => {
       mockSupabaseQuery.delete.mockResolvedValueOnce({ error: null });
-      mockSupabaseQuery.delete.mockResolvedValueOnce({ 
-        error: { message: 'No rows deleted' } 
+      mockSupabaseQuery.delete.mockResolvedValueOnce({
+        error: { message: 'No rows deleted' },
       });
 
-      await expect(menuManagementApi.deleteMenuItem('non-existent'))
-        .rejects.toThrow('Failed to delete menu item: No rows deleted');
+      await expect(menuManagementApi.deleteMenuItem('non-existent')).rejects.toThrow(
+        'Failed to delete menu item: No rows deleted'
+      );
     });
 
     it('should handle cascading delete errors', async () => {
-      mockSupabaseQuery.delete.mockResolvedValueOnce({ 
-        error: { message: 'Failed to delete children' } 
+      mockSupabaseQuery.delete.mockResolvedValueOnce({
+        error: { message: 'Failed to delete children' },
       });
 
-      await expect(menuManagementApi.deleteMenuItem('test-123'))
-        .rejects.toThrow('Failed to delete child menu items: Failed to delete children');
+      await expect(menuManagementApi.deleteMenuItem('test-123')).rejects.toThrow(
+        'Failed to delete child menu items: Failed to delete children'
+      );
     });
   });
 
@@ -290,13 +311,14 @@ describe('MenuManagementAPI', () => {
     });
 
     it('should handle toggle of non-existent item', async () => {
-      mockSupabaseQuery.single.mockResolvedValueOnce({ 
-        data: null, 
-        error: { message: 'No rows updated' } 
+      mockSupabaseQuery.single.mockResolvedValueOnce({
+        data: null,
+        error: { message: 'No rows updated' },
       });
 
-      await expect(menuManagementApi.toggleMenuItemStatus('non-existent', false))
-        .rejects.toThrow('Failed to toggle menu item status: No rows updated');
+      await expect(menuManagementApi.toggleMenuItemStatus('non-existent', false)).rejects.toThrow(
+        'Failed to toggle menu item status: No rows updated'
+      );
     });
   });
 
@@ -312,28 +334,30 @@ describe('MenuManagementAPI', () => {
       const result = await menuManagementApi.reorderMenuItems(mockUpdates);
 
       expect(supabase.rpc).toHaveBeenCalledWith('update_menu_items_order', {
-        updates: mockUpdates
+        updates: mockUpdates,
       });
       expect(result).toBe(true);
     });
 
     it('should handle reorder database error', async () => {
-      (supabase.rpc as Mock).mockResolvedValueOnce({ 
-        error: { message: 'Reorder operation failed' } 
+      (supabase.rpc as Mock).mockResolvedValueOnce({
+        error: { message: 'Reorder operation failed' },
       });
 
-      await expect(menuManagementApi.reorderMenuItems(mockUpdates))
-        .rejects.toThrow('Failed to reorder menu items: Reorder operation failed');
+      await expect(menuManagementApi.reorderMenuItems(mockUpdates)).rejects.toThrow(
+        'Failed to reorder menu items: Reorder operation failed'
+      );
     });
 
     it('should validate order_index constraints', async () => {
       const invalidUpdates = [{ id: 'test-1', order_index: -1, parent_id: null }];
-      (supabase.rpc as Mock).mockResolvedValueOnce({ 
-        error: { message: 'Invalid order index' } 
+      (supabase.rpc as Mock).mockResolvedValueOnce({
+        error: { message: 'Invalid order index' },
       });
 
-      await expect(menuManagementApi.reorderMenuItems(invalidUpdates))
-        .rejects.toThrow('Failed to reorder menu items: Invalid order index');
+      await expect(menuManagementApi.reorderMenuItems(invalidUpdates)).rejects.toThrow(
+        'Failed to reorder menu items: Invalid order index'
+      );
     });
   });
 
@@ -359,9 +383,7 @@ describe('MenuManagementAPI', () => {
     });
 
     it('should handle orphaned items gracefully', async () => {
-      const mockItems = [
-        { ...mockMenuItem, id: '1', parent_id: 'non-existent', order_index: 0 },
-      ];
+      const mockItems = [{ ...mockMenuItem, id: '1', parent_id: 'non-existent', order_index: 0 }];
       mockSupabaseQuery.order.mockResolvedValueOnce({ data: mockItems, error: null });
 
       const result = await menuManagementApi.getMenuStructure();
@@ -425,7 +447,7 @@ describe('MenuManagementAPI', () => {
         parent_id: i > 0 && i % 10 === 0 ? `item-${i - 1}` : null,
         order_index: i,
       }));
-      
+
       mockSupabaseQuery.order.mockResolvedValueOnce({ data: largeMenuItems, error: null });
 
       const startTime = Date.now();
@@ -444,7 +466,7 @@ describe('MenuManagementAPI', () => {
         parent_id: i > 0 ? `item-${i - 1}` : null,
         order_index: 0,
       }));
-      
+
       mockSupabaseQuery.order.mockResolvedValueOnce({ data: deepMenuItems, error: null });
 
       const result = await menuManagementApi.getMenuStructure();
@@ -452,12 +474,12 @@ describe('MenuManagementAPI', () => {
       expect(result).toHaveLength(1); // One root item
       let currentLevel = result[0];
       let depth = 1;
-      
+
       while (currentLevel.children && currentLevel.children.length > 0) {
         currentLevel = currentLevel.children[0];
         depth++;
       }
-      
+
       expect(depth).toBe(20); // Full depth preserved
     });
 

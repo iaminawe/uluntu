@@ -2,7 +2,7 @@
 export * from './components';
 export * from './hooks';
 export { opportunitiesApi, type OpportunityInput } from './api';
-export { 
+export {
   opportunitiesUISlice,
   type OpportunityFilters as OpportunitiesFilters,
   updateFilters as updateOpportunityFilters,
@@ -19,6 +19,6 @@ export {
   selectOpportunitiesSortBy,
   selectOpportunitiesSortOrder,
   selectShowRemoteOnly,
-  selectExpandedOpportunities
+  selectExpandedOpportunities,
 } from './store';
 export * from './types';

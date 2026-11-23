@@ -26,13 +26,13 @@ const mockUser = {
   id: 'user-123',
   email: 'test@example.com',
   full_name: 'Test User',
-  role: 'member'
+  role: 'member',
 };
 
 const createMockStore = (initialState = {}) => {
   return configureStore({
     reducer: {
-      auth: authReducer
+      auth: authReducer,
     },
     preloadedState: {
       auth: {
@@ -40,9 +40,9 @@ const createMockStore = (initialState = {}) => {
         isAuthenticated: true,
         loading: false,
         error: null,
-        ...initialState.auth
-      }
-    }
+        ...initialState.auth,
+      },
+    },
   });
 };
 
@@ -167,7 +167,7 @@ describe('Dashboard Navigation Integration Tests', () => {
         configurable: true,
         value: 375,
       });
-      
+
       render(<DashboardApp />);
 
       await waitFor(() => {
@@ -264,9 +264,9 @@ describe('Dashboard Navigation Integration Tests', () => {
             user: null,
             isAuthenticated: false,
             loading: false,
-            error: null
-          }
-        }
+            error: null,
+          },
+        },
       });
 
       render(
@@ -305,9 +305,9 @@ describe('Dashboard Navigation Integration Tests', () => {
             user: { ...mockUser, role: 'admin' },
             isAuthenticated: true,
             loading: false,
-            error: null
-          }
-        }
+            error: null,
+          },
+        },
       });
 
       render(
@@ -333,7 +333,7 @@ describe('Dashboard Navigation Integration Tests', () => {
       const mockLazyLoad = jest.fn();
       jest.mock('react', () => ({
         ...jest.requireActual('react'),
-        lazy: mockLazyLoad
+        lazy: mockLazyLoad,
       }));
 
       render(<DashboardApp />);
@@ -351,13 +351,16 @@ describe('Dashboard Navigation Integration Tests', () => {
 
     test('preloads critical dashboard data', async () => {
       const mockPreload = jest.fn();
-      
+
       render(<DashboardApp />);
 
-      await waitFor(() => {
-        // Critical data should be preloaded
-        expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          // Critical data should be preloaded
+          expect(screen.getByText('Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
@@ -374,16 +377,16 @@ describe('Dashboard Navigation Integration Tests', () => {
       // Tab to navigation
       const overviewTab = screen.getByRole('tab', { name: /overview/i });
       overviewTab.focus();
-      
+
       // Use arrow keys to navigate
       await user.keyboard('{ArrowRight}');
-      
+
       const contentTab = screen.getByRole('tab', { name: /content/i });
       expect(contentTab).toHaveFocus();
 
       // Press Enter to activate
       await user.keyboard('{Enter}');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Content Management')).toBeInTheDocument();
       });
@@ -407,7 +410,7 @@ describe('Dashboard Navigation Integration Tests', () => {
       await waitFor(() => {
         const navigation = screen.getByRole('navigation', { name: /dashboard navigation/i });
         expect(navigation).toBeInTheDocument();
-        
+
         const main = screen.getByRole('main');
         expect(main).toBeInTheDocument();
       });

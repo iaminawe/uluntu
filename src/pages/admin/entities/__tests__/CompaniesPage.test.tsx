@@ -264,7 +264,7 @@ describe('AdminCompaniesPage', () => {
       await waitFor(() => {
         const verifiedBadges = screen.getAllByText('Verified');
         expect(verifiedBadges[0]).toHaveClass('bg-green-100', 'text-green-800');
-        
+
         // Check for checkmark icon
         const checkIcons = document.querySelectorAll('[data-lucide="check-circle"]');
         expect(checkIcons.length).toBeGreaterThan(0);
@@ -279,7 +279,7 @@ describe('AdminCompaniesPage', () => {
       await waitFor(() => {
         const pendingBadges = screen.getAllByText('Pending');
         expect(pendingBadges[0]).toHaveClass('bg-yellow-100', 'text-yellow-800');
-        
+
         // Check for X icon
         const xIcons = document.querySelectorAll('[data-lucide="x-circle"]');
         expect(xIcons.length).toBeGreaterThan(0);

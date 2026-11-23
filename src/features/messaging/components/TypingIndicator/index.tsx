@@ -9,9 +9,7 @@ interface TypingIndicatorProps {
  * Simple typing indicator with animated dots
  * Used in RealtimeMessageThread when users are typing
  */
-export default function TypingIndicator({ 
-  className = '' 
-}: TypingIndicatorProps) {
+export default function TypingIndicator({ className = '' }: TypingIndicatorProps) {
   return (
     <div className={`inline-flex items-center ${className}`}>
       <AnimatedDots />

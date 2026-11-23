@@ -9,7 +9,9 @@ export const onboardingApi = {
     try {
       const { data, error } = await supabase
         .from('members')
-        .select('onboarding_completed_at, onboarding_current_step, onboarding_skipped_steps, profile_completion_percentage')
+        .select(
+          'onboarding_completed_at, onboarding_current_step, onboarding_skipped_steps, profile_completion_percentage'
+        )
         .eq('user_id', userId)
         .single();
 
@@ -52,10 +54,7 @@ export const onboardingApi = {
         updateData.onboarding_completed_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
-        .from('members')
-        .update(updateData)
-        .eq('user_id', userId);
+      const { error } = await supabase.from('members').update(updateData).eq('user_id', userId);
 
       if (error) throw error;
 
@@ -73,9 +72,9 @@ export const onboardingApi = {
     try {
       const { error } = await supabase
         .from('members')
-        .update({ 
+        .update({
           status: 'published',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId);
 
@@ -95,9 +94,9 @@ export const onboardingApi = {
     try {
       const { error } = await supabase
         .from('members')
-        .update({ 
+        .update({
           status: 'draft',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('user_id', userId);
 
@@ -115,17 +114,13 @@ export const onboardingApi = {
    */
   async getProfileStatus(userId: string): Promise<{ status: string; isPublished: boolean } | null> {
     try {
-      const { data, error } = await supabase
-        .from('members')
-        .select('status')
-        .eq('user_id', userId)
-        .single();
+      const { data, error } = await supabase.from('members').select('status').eq('user_id', userId).single();
 
       if (error) throw error;
 
       return {
         status: data.status,
-        isPublished: data.status === 'published'
+        isPublished: data.status === 'published',
       };
     } catch (error) {
       console.error('Failed to get profile status:', error);
@@ -199,7 +194,7 @@ export const onboardingApi = {
       if (completedError) throw completedError;
 
       // Calculate completion rate
-      const completionRate = totalUsers ? (completedOnboarding || 0) / totalUsers * 100 : 0;
+      const completionRate = totalUsers ? ((completedOnboarding || 0) / totalUsers) * 100 : 0;
 
       return {
         totalUsers: totalUsers || 0,
@@ -211,5 +206,5 @@ export const onboardingApi = {
       console.error('Failed to get onboarding stats:', error);
       return null;
     }
-  }
+  },
 };

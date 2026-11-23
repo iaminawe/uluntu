@@ -1,17 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/providers/EnhancedThemeProvider';
-import { 
-  Edit3, 
-  Type, 
-  List, 
-  Quote, 
-  Image as ImageIcon, 
-  Plus,
-  Trash2,
-  Move,
-  Eye,
-  Edit
-} from 'lucide-react';
+import { Edit3, Type, List, Quote, Image as ImageIcon, Plus, Trash2, Move, Eye, Edit } from 'lucide-react';
 
 interface Block {
   id: string;
@@ -34,7 +23,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
   onChange,
   onSave,
   className = '',
-  editable = true
+  editable = true,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -54,15 +43,17 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
         type: block.type || 'paragraph',
         content: typeof block.content === 'string' ? block.content : '',
         level: block.level || (block.type === 'heading' ? 1 : undefined),
-        imageUrl: block.imageUrl
+        imageUrl: block.imageUrl,
       }));
       setBlocks(normalizedBlocks);
     } else {
-      setBlocks([{
-        id: `block-${Date.now()}`,
-        type: 'paragraph',
-        content: 'Click to start editing...'
-      }]);
+      setBlocks([
+        {
+          id: `block-${Date.now()}`,
+          type: 'paragraph',
+          content: 'Click to start editing...',
+        },
+      ]);
     }
   }, [content]);
 
@@ -78,11 +69,9 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
 
   // Handle block content change
   const updateBlock = (id: string, updates: Partial<Block>) => {
-    const updatedBlocks = blocks.map(block => 
-      block.id === id ? { ...block, ...updates } : block
-    );
+    const updatedBlocks = blocks.map(block => (block.id === id ? { ...block, ...updates } : block));
     setBlocks(updatedBlocks);
-    
+
     // Call onChange immediately for live updates
     onChange?.(updatedBlocks);
   };
@@ -93,16 +82,12 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
       id: `block-${Date.now()}`,
       type,
       content: '',
-      level: type === 'heading' ? 1 : undefined
+      level: type === 'heading' ? 1 : undefined,
     };
-    
+
     const afterIndex = blocks.findIndex(b => b.id === afterId);
-    const updatedBlocks = [
-      ...blocks.slice(0, afterIndex + 1),
-      newBlock,
-      ...blocks.slice(afterIndex + 1)
-    ];
-    
+    const updatedBlocks = [...blocks.slice(0, afterIndex + 1), newBlock, ...blocks.slice(afterIndex + 1)];
+
     setBlocks(updatedBlocks);
     setEditingBlock(newBlock.id);
     onChange?.(updatedBlocks);
@@ -161,7 +146,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
     if (draggedBlock && draggedBlock !== dropBlockId) {
       const dragIndex = blocks.findIndex(b => b.id === draggedBlock);
       const dropIndex = blocks.findIndex(b => b.id === dropBlockId);
-      
+
       if (dragIndex !== -1 && dropIndex !== -1) {
         const newBlocks = [...blocks];
         const [moved] = newBlocks.splice(dragIndex, 1);
@@ -195,60 +180,69 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
         case 'heading':
           const HeadingTag = `h${Math.min(block.level || 1, 6)}` as keyof JSX.IntrinsicElements;
           return (
-            <HeadingTag className={`font-bold leading-tight ${
-              block.level === 1 ? 'text-4xl mb-4' :
-              block.level === 2 ? 'text-3xl mb-3' :
-              block.level === 3 ? 'text-2xl mb-2' :
-              'text-xl mb-2'
-            } ${isDark ? 'text-gray-100' : 'text-gray-900'} ${
-              !block.content ? 'text-gray-400 dark:text-gray-600' : ''
-            }`}>
+            <HeadingTag
+              className={`font-bold leading-tight ${
+                block.level === 1
+                  ? 'text-4xl mb-4'
+                  : block.level === 2
+                    ? 'text-3xl mb-3'
+                    : block.level === 3
+                      ? 'text-2xl mb-2'
+                      : 'text-xl mb-2'
+              } ${isDark ? 'text-gray-100' : 'text-gray-900'} ${
+                !block.content ? 'text-gray-400 dark:text-gray-600' : ''
+              }`}
+            >
               {block.content || 'Click to add heading...'}
             </HeadingTag>
           );
-        
+
         case 'bulletList':
           return (
             <div className="flex items-start mb-2">
               <span className={`mr-3 mt-1 text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>•</span>
-              <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'} ${
-                !block.content ? 'text-gray-400 dark:text-gray-600' : ''
-              }`}>
+              <p
+                className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'} ${
+                  !block.content ? 'text-gray-400 dark:text-gray-600' : ''
+                }`}
+              >
                 {block.content || 'Click to add list item...'}
               </p>
             </div>
           );
-        
+
         case 'quote':
           return (
-            <blockquote className={`border-l-4 pl-6 py-2 italic text-lg leading-relaxed mb-4 ${
-              isDark ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
-            } ${!block.content ? 'text-gray-400 dark:text-gray-600' : ''}`}>
+            <blockquote
+              className={`border-l-4 pl-6 py-2 italic text-lg leading-relaxed mb-4 ${
+                isDark ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+              } ${!block.content ? 'text-gray-400 dark:text-gray-600' : ''}`}
+            >
               {block.content || 'Click to add quote...'}
             </blockquote>
           );
-        
+
         case 'image':
           return block.imageUrl ? (
-            <img 
-              src={block.imageUrl} 
-              alt={block.content || 'Image'} 
-              className="max-w-full h-auto rounded-lg"
-            />
+            <img src={block.imageUrl} alt={block.content || 'Image'} className="max-w-full h-auto rounded-lg" />
           ) : (
-            <div className={`border-2 border-dashed rounded-lg p-8 text-center ${
-              isDark ? 'border-gray-600 text-gray-400' : 'border-gray-300 text-gray-500'
-            }`}>
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center ${
+                isDark ? 'border-gray-600 text-gray-400' : 'border-gray-300 text-gray-500'
+              }`}
+            >
               <ImageIcon className="mx-auto mb-2 h-8 w-8" />
               <p>Click to add image...</p>
             </div>
           );
-        
+
         default: // paragraph
           return (
-            <p className={`leading-relaxed text-base mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'} ${
-              !block.content ? 'text-gray-400 dark:text-gray-600' : ''
-            }`}>
+            <p
+              className={`leading-relaxed text-base mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'} ${
+                !block.content ? 'text-gray-400 dark:text-gray-600' : ''
+              }`}
+            >
               {block.content || 'Click to add text...'}
             </p>
           );
@@ -262,19 +256,19 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
         onMouseEnter={() => setHoveredBlock(block.id)}
         onMouseLeave={() => setHoveredBlock(null)}
         onClick={() => startEditing(block.id)}
-        onDragStart={(e) => handleDragStart(e, block.id)}
-        onDragOver={(e) => handleDragOver(e, block.id)}
+        onDragStart={e => handleDragStart(e, block.id)}
+        onDragOver={e => handleDragOver(e, block.id)}
         onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, block.id)}
+        onDrop={e => handleDrop(e, block.id)}
         onDragEnd={handleDragEnd}
       >
         {content}
-        
+
         {/* Block Controls */}
         {editable && hoveredBlock === block.id && (
           <div className="absolute -right-2 -top-2 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 startEditing(block.id);
               }}
@@ -284,7 +278,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
               <Edit3 className="h-3 w-3" />
             </button>
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 deleteBlock(block.id);
               }}
@@ -295,13 +289,13 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
             </button>
           </div>
         )}
-        
+
         {/* Add Block Button */}
         {editable && hoveredBlock === block.id && (
           <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="flex items-center space-x-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-1">
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   addBlock(block.id, 'paragraph');
                 }}
@@ -311,7 +305,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
                 <Type className="h-3 w-3" />
               </button>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   addBlock(block.id, 'heading');
                 }}
@@ -321,7 +315,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
                 <span className="text-xs font-bold">H</span>
               </button>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   addBlock(block.id, 'bulletList');
                 }}
@@ -331,7 +325,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
                 <List className="h-3 w-3" />
               </button>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   addBlock(block.id, 'quote');
                 }}
@@ -350,16 +344,23 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
   // Render block in edit mode
   const renderEditBlock = (block: Block) => {
     const isMultiline = block.type === 'paragraph' || block.type === 'quote';
-    
+
     const inputClasses = `
       w-full bg-transparent border-2 border-blue-400 rounded-lg p-3 outline-none
       ${isDark ? 'text-gray-100' : 'text-gray-900'}
-      ${block.type === 'heading' ? `font-bold ${
-        block.level === 1 ? 'text-3xl' :
-        block.level === 2 ? 'text-2xl' :
-        block.level === 3 ? 'text-xl' :
-        'text-lg'
-      }` : ''}
+      ${
+        block.type === 'heading'
+          ? `font-bold ${
+              block.level === 1
+                ? 'text-3xl'
+                : block.level === 2
+                  ? 'text-2xl'
+                  : block.level === 3
+                    ? 'text-xl'
+                    : 'text-lg'
+            }`
+          : ''
+      }
       ${block.type === 'quote' ? 'italic' : ''}
     `;
 
@@ -379,7 +380,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
             value={block.content}
             onChange={handleChange}
             onBlur={handleBlur}
-            onKeyDown={(e) => handleKeyDown(e, block.id)}
+            onKeyDown={e => handleKeyDown(e, block.id)}
             className={`${inputClasses} resize-none`}
             rows={3}
             placeholder={`Enter ${block.type}...`}
@@ -391,16 +392,16 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
             value={block.content}
             onChange={handleChange}
             onBlur={handleBlur}
-            onKeyDown={(e) => handleKeyDown(e, block.id)}
+            onKeyDown={e => handleKeyDown(e, block.id)}
             className={inputClasses}
             placeholder={`Enter ${block.type}...`}
           />
         )}
-        
+
         {/* Edit Mode Controls */}
         <div className="absolute -right-2 -top-2 flex items-center space-x-1">
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               stopEditing();
             }}
@@ -418,17 +419,19 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
     <div className={`visual-page-editor ${className}`}>
       {/* Editor Header */}
       {editable && (
-        <div className={`flex items-center justify-between p-4 border-b ${
-          isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
-        }`}>
+        <div
+          className={`flex items-center justify-between p-4 border-b ${
+            isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
+          }`}
+        >
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsPreviewMode(!isPreviewMode)}
               className={`flex items-center space-x-2 px-3 py-1 rounded-lg transition-colors ${
-                isPreviewMode 
-                  ? 'bg-blue-500 text-white' 
-                  : isDark 
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                isPreviewMode
+                  ? 'bg-blue-500 text-white'
+                  : isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
@@ -436,7 +439,7 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
               <span>{isPreviewMode ? 'Preview' : 'Edit'} Mode</span>
             </button>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {blocks.length} block{blocks.length !== 1 ? 's' : ''}
@@ -446,27 +449,24 @@ export const VisualPageEditor: React.FC<VisualPageEditorProps> = ({
       )}
 
       {/* Editor Content */}
-      <div className={`p-6 min-h-[400px] ${
-        isDark ? 'bg-gray-900' : 'bg-white'
-      }`}>
+      <div className={`p-6 min-h-[400px] ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-4xl mx-auto space-y-6">
-          {blocks.map((block) => (
+          {blocks.map(block => (
             <div key={block.id}>
               {editingBlock === block.id && isPreviewMode === false
                 ? renderEditBlock(block)
-                : renderPreviewBlock(block)
-              }
+                : renderPreviewBlock(block)}
             </div>
           ))}
-          
+
           {/* Add First Block */}
           {blocks.length === 0 && editable && (
             <div className="text-center py-12">
               <button
                 onClick={() => addBlock('', 'paragraph')}
                 className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg border-2 border-dashed transition-colors ${
-                  isDark 
-                    ? 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300' 
+                  isDark
+                    ? 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300'
                     : 'border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-700'
                 }`}
               >

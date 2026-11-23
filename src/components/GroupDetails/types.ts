@@ -82,34 +82,37 @@ export const adaptMainGroupToLocalGroup = (mainGroup: MainGroup): Group => {
       image: member.image,
       role: member.role,
       joinedDate: member.joinedDate,
-      title: member.title
+      title: member.title,
     })),
-    events: mainGroup.events?.map(event => ({
-      id: parseInt(event.id),
-      title: event.title,
-      date: event.date,
-      description: event.description,
-      image: event.image
-    })) || [],
-    resources: mainGroup.resources?.map(resource => ({
-      id: parseInt(resource.id),
-      title: resource.title,
-      type: resource.type,
-      url: resource.url,
-      addedDate: resource.dateAdded,
-      description: resource.description
-    })) || [],
-    posts: mainGroup.posts?.map(post => ({
-      id: parseInt(post.id),
-      title: post.title,
-      excerpt: post.excerpt,
-      author: {
-        name: post.author.name,
-        image: post.author.image
-      },
-      date: post.date,
-      image: post.image
-    })) || []
+    events:
+      mainGroup.events?.map(event => ({
+        id: parseInt(event.id),
+        title: event.title,
+        date: event.date,
+        description: event.description,
+        image: event.image,
+      })) || [],
+    resources:
+      mainGroup.resources?.map(resource => ({
+        id: parseInt(resource.id),
+        title: resource.title,
+        type: resource.type,
+        url: resource.url,
+        addedDate: resource.dateAdded,
+        description: resource.description,
+      })) || [],
+    posts:
+      mainGroup.posts?.map(post => ({
+        id: parseInt(post.id),
+        title: post.title,
+        excerpt: post.excerpt,
+        author: {
+          name: post.author.name,
+          image: post.author.image,
+        },
+        date: post.date,
+        image: post.image,
+      })) || [],
   };
 };
 
@@ -138,7 +141,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'AI Research Lead',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       role: 'admin',
-      joinedDate: '2024-01-15'
+      joinedDate: '2024-01-15',
     },
     {
       id: 2,
@@ -146,7 +149,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'ML Engineer',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       role: 'member',
-      joinedDate: '2024-02-01'
+      joinedDate: '2024-02-01',
     },
     {
       id: 3,
@@ -154,8 +157,8 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'Data Scientist',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
       role: 'member',
-      joinedDate: '2024-02-15'
-    }
+      joinedDate: '2024-02-15',
+    },
   ],
   events: [
     {
@@ -163,15 +166,15 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'AI Ethics Workshop',
       date: '2025-06-15T18:00:00',
       description: 'Join us for an interactive workshop on AI ethics.',
-      image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg'
+      image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg',
     },
     {
       id: 2,
       title: 'Machine Learning Study Group',
       date: '2025-06-20T19:00:00',
       description: 'Monthly meetup to discuss and practice ML concepts.',
-      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
-    }
+      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
+    },
   ],
   resources: [
     {
@@ -180,7 +183,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       type: 'Guide',
       url: '#',
       addedDate: '2024-03-01',
-      description: 'A comprehensive guide for beginners in AI.'
+      description: 'A comprehensive guide for beginners in AI.',
     },
     {
       id: 2,
@@ -188,8 +191,8 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       type: 'Presentation',
       url: '#',
       addedDate: '2024-03-15',
-      description: 'Slides from our recent machine learning workshop.'
-    }
+      description: 'Slides from our recent machine learning workshop.',
+    },
   ],
   posts: [
     {
@@ -198,10 +201,10 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       excerpt: 'Highlights from our latest workshop on ethical considerations in AI development.',
       author: {
         name: 'Sarah Johnson',
-        image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+        image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       },
       date: '2024-02-16',
-      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
+      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
     },
     {
       id: 2,
@@ -209,9 +212,9 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       excerpt: 'Join our monthly machine learning study sessions starting next month.',
       author: {
         name: 'Michael Chen',
-        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       },
-      date: '2024-02-10'
-    }
-  ]
+      date: '2024-02-10',
+    },
+  ],
 };

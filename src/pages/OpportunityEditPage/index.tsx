@@ -25,7 +25,7 @@ export default function OpportunityEditPage() {
   const isEditMode = !!id;
   const { user } = useAuth();
   const { data: member } = useMemberByUserId(user?.id);
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newRequirement, setNewRequirement] = useState('');
   const [newResponsibility, setNewResponsibility] = useState('');
@@ -38,25 +38,24 @@ export default function OpportunityEditPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('opportunity', id || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
+
   useEffect(() => {
     if (isEditMode && id) {
       loadOpportunity();
     }
   }, [isEditMode, id]);
-  
+
   // Effect to populate topics - only update if actually different
   useEffect(() => {
     if (entityTopics && entityTopics.length > 0) {
       const newTopicIds = entityTopics.map(topic => topic.id);
       // Only update if the topic IDs have actually changed
       setSelectedTopicIds(prevIds => {
-        const hasChanged = prevIds.length !== newTopicIds.length || 
-                          !prevIds.every(id => newTopicIds.includes(id));
+        const hasChanged = prevIds.length !== newTopicIds.length || !prevIds.every(id => newTopicIds.includes(id));
         return hasChanged ? newTopicIds : prevIds;
       });
     }
@@ -64,7 +63,7 @@ export default function OpportunityEditPage() {
 
   const loadOpportunity = async () => {
     if (!id) return;
-    
+
     setIsLoading(true);
     try {
       const opportunity = await opportunitiesApi.getExtendedById(id);
@@ -85,7 +84,7 @@ export default function OpportunityEditPage() {
           responsibilities: opportunity.responsibilities,
           benefits: opportunity.benefits,
           status: opportunity.status as FormData['status'],
-          featured: opportunity.featured
+          featured: opportunity.featured,
         });
       }
     } catch (error) {
@@ -99,14 +98,14 @@ export default function OpportunityEditPage() {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleDescriptionChange = (data: string) => {
     setFormData(prev => ({
       ...prev,
-      description: data
+      description: data,
     }));
   };
 
@@ -116,12 +115,12 @@ export default function OpportunityEditPage() {
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
-        image: objectUrl
+        image: objectUrl,
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        image: ''
+        image: '',
       }));
     }
   };
@@ -130,7 +129,7 @@ export default function OpportunityEditPage() {
     if (newRequirement.trim()) {
       setFormData(prev => ({
         ...prev,
-        requirements: [...prev.requirements, newRequirement.trim()]
+        requirements: [...prev.requirements, newRequirement.trim()],
       }));
       setNewRequirement('');
     }
@@ -139,7 +138,7 @@ export default function OpportunityEditPage() {
   const handleRemoveRequirement = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      requirements: prev.requirements.filter((_, i) => i !== index)
+      requirements: prev.requirements.filter((_, i) => i !== index),
     }));
   };
 
@@ -147,7 +146,7 @@ export default function OpportunityEditPage() {
     if (newResponsibility.trim()) {
       setFormData(prev => ({
         ...prev,
-        responsibilities: [...prev.responsibilities, newResponsibility.trim()]
+        responsibilities: [...prev.responsibilities, newResponsibility.trim()],
       }));
       setNewResponsibility('');
     }
@@ -156,7 +155,7 @@ export default function OpportunityEditPage() {
   const handleRemoveResponsibility = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      responsibilities: prev.responsibilities.filter((_, i) => i !== index)
+      responsibilities: prev.responsibilities.filter((_, i) => i !== index),
     }));
   };
 
@@ -164,7 +163,7 @@ export default function OpportunityEditPage() {
     if (newBenefit.trim()) {
       setFormData(prev => ({
         ...prev,
-        benefits: [...prev.benefits, newBenefit.trim()]
+        benefits: [...prev.benefits, newBenefit.trim()],
       }));
       setNewBenefit('');
     }
@@ -173,30 +172,30 @@ export default function OpportunityEditPage() {
   const handleRemoveBenefit = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      benefits: prev.benefits.filter((_, i) => i !== index)
+      benefits: prev.benefits.filter((_, i) => i !== index),
     }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
-    
+
     // Required field validation
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
-    
+
     if (!formData.organization.trim()) {
       newErrors.organization = 'Organization is required';
     }
-    
+
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
     }
-    
+
     if (!formData.deadline) {
       newErrors.deadline = 'Deadline is required';
     }
@@ -206,43 +205,43 @@ export default function OpportunityEditPage() {
     } else if (!/\S+@\S+\.\S+/.test(formData.contactEmail)) {
       newErrors.contactEmail = 'Please enter a valid email address';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     let finalImageUrl = formData.image;
-    
+
     try {
       // Upload image if a new file was selected
       if (imageFile) {
         setIsUploadingImage(true);
         const opportunityId = id || `temp-${Date.now()}`;
         const { url, error } = await uploadOpportunityImage(imageFile, opportunityId);
-        
+
         if (error) {
           console.error('Error uploading image:', error);
           setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
           return;
         }
-        
+
         finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
-      
+
       if (!member) {
         console.error('Member not found for opportunity creation');
         return;
       }
-      
+
       const opportunityData: OpportunityInput = {
         title: formData.title,
         description: formData.description,
@@ -257,9 +256,9 @@ export default function OpportunityEditPage() {
         requirements: formData.requirements,
         responsibilities: formData.responsibilities,
         benefits: formData.benefits,
-        status: formData.status as "draft" | "published" | "archived" | null | undefined,
+        status: formData.status as 'draft' | 'published' | 'archived' | null | undefined,
         featured: formData.featured,
-        postedBy: member.id
+        postedBy: member.id,
       };
 
       let result;
@@ -276,15 +275,15 @@ export default function OpportunityEditPage() {
             await setEntityTopicsMutation.mutateAsync({
               entityType: 'opportunity',
               entityId: result.id,
-              topicIds: selectedTopicIds
+              topicIds: selectedTopicIds,
             });
           } catch (topicError) {
             console.error('Error saving topics:', topicError);
           }
         }
-        
+
         setSubmitSuccess(true);
-        
+
         // Navigate back after success
         setTimeout(() => {
           navigate(isEditMode ? `/opportunities/${id}` : '/opportunities');
@@ -300,12 +299,12 @@ export default function OpportunityEditPage() {
       setIsUploadingImage(false);
     }
   };
-  
+
   const handleDelete = async () => {
     if (!id) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const success = await opportunitiesApi.delete(id);
       if (success) {
@@ -325,118 +324,114 @@ export default function OpportunityEditPage() {
     <>
       <Helmet>
         <title>{isEditMode ? 'Edit Opportunity' : 'Create New Opportunity'} - Uluntu</title>
-        <meta name="description" content={isEditMode ? 'Edit an existing opportunity' : 'Create a new opportunity listing'} />
+        <meta
+          name="description"
+          content={isEditMode ? 'Edit an existing opportunity' : 'Create a new opportunity listing'}
+        />
       </Helmet>
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto">
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <>
-            <FormHeader 
-              isEditMode={isEditMode} 
-              opportunityTitle={formData.title} 
-            />
-            
-            {submitSuccess ? (
-              <Card className="mb-6">
-                <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
-                  <div className="flex">
-                    <div>
-                      <p className="text-sm text-green-700 dark:text-green-400">
-                        {isEditMode 
-                          ? 'Opportunity updated successfully!' 
-                          : 'Opportunity created successfully!'} 
-                        Redirecting...
-                      </p>
+          {isLoading ? (
+            <LoadingState />
+          ) : (
+            <>
+              <FormHeader isEditMode={isEditMode} opportunityTitle={formData.title} />
+
+              {submitSuccess ? (
+                <Card className="mb-6">
+                  <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
+                    <div className="flex">
+                      <div>
+                        <p className="text-sm text-green-700 dark:text-green-400">
+                          {isEditMode ? 'Opportunity updated successfully!' : 'Opportunity created successfully!'}
+                          Redirecting...
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ) : (
-              <Card>
-                <form onSubmit={handleSubmit} className="p-6 space-y-8">
-                  <BasicInfoSection 
-                    formData={formData}
-                    errors={errors}
-                    onChange={handleChange}
-                    onDescriptionChange={handleDescriptionChange}
-                    onImageChange={handleImageChange}
-                    isSubmitting={isSubmitting || isUploadingImage}
-                  />
-                  
-                  {/* Topics Section */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Topics
-                    </label>
-                    <TopicSelector
-                      selectedTopics={selectedTopicIds}
-                      onTopicsChange={setSelectedTopicIds}
-                      placeholder="Search and select topics for this opportunity..."
-                      maxTopics={5}
-                      className="w-full"
+                </Card>
+              ) : (
+                <Card>
+                  <form onSubmit={handleSubmit} className="p-6 space-y-8">
+                    <BasicInfoSection
+                      formData={formData}
+                      errors={errors}
+                      onChange={handleChange}
+                      onDescriptionChange={handleDescriptionChange}
+                      onImageChange={handleImageChange}
+                      isSubmitting={isSubmitting || isUploadingImage}
                     />
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      Add topics to help categorize this opportunity and make it discoverable on topic pages.
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <ListSection
-                      items={formData.requirements}
-                      newItem={newRequirement}
-                      setNewItem={setNewRequirement}
-                      onAdd={handleAddRequirement}
-                      onRemove={handleRemoveRequirement}
-                      label="Requirements"
-                      placeholder="Add a requirement"
+
+                    {/* Topics Section */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
+                      <TopicSelector
+                        selectedTopics={selectedTopicIds}
+                        onTopicsChange={setSelectedTopicIds}
+                        placeholder="Search and select topics for this opportunity..."
+                        maxTopics={5}
+                        className="w-full"
+                      />
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Add topics to help categorize this opportunity and make it discoverable on topic pages.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <ListSection
+                        items={formData.requirements}
+                        newItem={newRequirement}
+                        setNewItem={setNewRequirement}
+                        onAdd={handleAddRequirement}
+                        onRemove={handleRemoveRequirement}
+                        label="Requirements"
+                        placeholder="Add a requirement"
+                        isSubmitting={isSubmitting}
+                      />
+
+                      <ListSection
+                        items={formData.responsibilities}
+                        newItem={newResponsibility}
+                        setNewItem={setNewResponsibility}
+                        onAdd={handleAddResponsibility}
+                        onRemove={handleRemoveResponsibility}
+                        label="Responsibilities"
+                        placeholder="Add a responsibility"
+                        isSubmitting={isSubmitting}
+                      />
+
+                      <ListSection
+                        items={formData.benefits}
+                        newItem={newBenefit}
+                        setNewItem={setNewBenefit}
+                        onAdd={handleAddBenefit}
+                        onRemove={handleRemoveBenefit}
+                        label="Benefits"
+                        placeholder="Add a benefit"
+                        isSubmitting={isSubmitting}
+                      />
+                    </div>
+
+                    <FormActions
+                      isEditMode={isEditMode}
                       isSubmitting={isSubmitting}
+                      formData={formData}
+                      id={id}
+                      setShowDeleteConfirm={setShowDeleteConfirm}
+                      setFormData={setFormData}
                     />
-                    
-                    <ListSection
-                      items={formData.responsibilities}
-                      newItem={newResponsibility}
-                      setNewItem={setNewResponsibility}
-                      onAdd={handleAddResponsibility}
-                      onRemove={handleRemoveResponsibility}
-                      label="Responsibilities"
-                      placeholder="Add a responsibility"
-                      isSubmitting={isSubmitting}
-                    />
-                    
-                    <ListSection
-                      items={formData.benefits}
-                      newItem={newBenefit}
-                      setNewItem={setNewBenefit}
-                      onAdd={handleAddBenefit}
-                      onRemove={handleRemoveBenefit}
-                      label="Benefits"
-                      placeholder="Add a benefit"
-                      isSubmitting={isSubmitting}
-                    />
-                  </div>
-                  
-                  <FormActions
-                    isEditMode={isEditMode}
-                    isSubmitting={isSubmitting}
-                    formData={formData}
-                    id={id}
-                    setShowDeleteConfirm={setShowDeleteConfirm}
-                    setFormData={setFormData}
-                  />
-                </form>
-              </Card>
-            )}
-          </>
-        )}
-        
-        <DeleteConfirmModal 
-          isOpen={showDeleteConfirm}
-          onClose={() => setShowDeleteConfirm(false)}
-          onConfirm={handleDelete}
-        />
+                  </form>
+                </Card>
+              )}
+            </>
+          )}
+
+          <DeleteConfirmModal
+            isOpen={showDeleteConfirm}
+            onClose={() => setShowDeleteConfirm(false)}
+            onConfirm={handleDelete}
+          />
         </div>
       </div>
     </>

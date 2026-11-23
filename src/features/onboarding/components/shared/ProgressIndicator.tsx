@@ -14,12 +14,7 @@ interface ProgressIndicatorProps {
   skippedSteps: number[];
 }
 
-const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
-  steps,
-  currentStep,
-  completedSteps,
-  skippedSteps,
-}) => {
+const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ steps, currentStep, completedSteps, skippedSteps }) => {
   const getStepStatus = (stepId: number) => {
     if (completedSteps.includes(stepId)) return 'completed';
     if (skippedSteps.includes(stepId)) return 'skipped';
@@ -44,8 +39,11 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   const getLineClasses = (stepId: number) => {
     const status = getStepStatus(stepId);
     const nextStatus = stepId < steps.length ? getStepStatus(stepId + 1) : null;
-    
-    if (status === 'completed' && (nextStatus === 'completed' || nextStatus === 'current' || nextStatus === 'skipped')) {
+
+    if (
+      status === 'completed' &&
+      (nextStatus === 'completed' || nextStatus === 'current' || nextStatus === 'skipped')
+    ) {
       return 'bg-green-500';
     }
     if (status === 'skipped' && (nextStatus === 'completed' || nextStatus === 'current' || nextStatus === 'skipped')) {
@@ -84,20 +82,24 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 
                   {/* Step Label */}
                   <div className="mt-2 text-center">
-                    <p className={`text-xs font-medium ${
-                      status === 'current' 
-                        ? 'text-orange-600 dark:text-orange-400' 
-                        : status === 'completed' || status === 'skipped'
-                        ? 'text-slate-700 dark:text-slate-300'
-                        : 'text-slate-400 dark:text-slate-500'
-                    }`}>
+                    <p
+                      className={`text-xs font-medium ${
+                        status === 'current'
+                          ? 'text-orange-600 dark:text-orange-400'
+                          : status === 'completed' || status === 'skipped'
+                            ? 'text-slate-700 dark:text-slate-300'
+                            : 'text-slate-400 dark:text-slate-500'
+                      }`}
+                    >
                       {step.name}
                     </p>
-                    <p className={`text-xs mt-0.5 ${
-                      status === 'current'
-                        ? 'text-slate-600 dark:text-slate-400'
-                        : 'text-slate-400 dark:text-slate-500'
-                    }`}>
+                    <p
+                      className={`text-xs mt-0.5 ${
+                        status === 'current'
+                          ? 'text-slate-600 dark:text-slate-400'
+                          : 'text-slate-400 dark:text-slate-500'
+                      }`}
+                    >
                       {step.title}
                     </p>
                   </div>

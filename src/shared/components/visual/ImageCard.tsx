@@ -14,7 +14,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
   onClick,
   variant = 'default',
   hoverable = true,
-  animated = true
+  animated = true,
 }) => {
   const cardContent = (
     <>
@@ -28,13 +28,15 @@ const ImageCard: React.FC<ImageCardProps> = ({
           transition={{ duration: 0.6, ease: 'easeOut' }}
           loading="lazy"
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* Badge */}
         {badge && (
-          <div className={`absolute top-4 left-4 ${badgeColor} text-white px-3 py-1 rounded-full text-sm font-semibold`}>
+          <div
+            className={`absolute top-4 left-4 ${badgeColor} text-white px-3 py-1 rounded-full text-sm font-semibold`}
+          >
             {badge}
           </div>
         )}
@@ -42,21 +44,15 @@ const ImageCard: React.FC<ImageCardProps> = ({
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 line-clamp-2">
-          {title}
-        </h3>
-        
-        {description && (
-          <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
-            {description}
-          </p>
-        )}
-        
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 line-clamp-2">{title}</h3>
+
+        {description && <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">{description}</p>}
+
         {meta.length > 0 && (
           <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-500">
             {meta.map((item, index) => (
               <div key={index} className="flex items-center gap-1">
-                {item.icon && <item.icon className="w-4 h-4" {...{} as any} />}
+                {item.icon && <item.icon className="w-4 h-4" {...({} as any)} />}
                 <span>{item.text}</span>
               </div>
             ))}
@@ -74,11 +70,13 @@ const ImageCard: React.FC<ImageCardProps> = ({
   `;
 
   const MotionComponent = animated ? motion.div : 'div';
-  const animationProps = animated ? {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
-  } : {};
+  const animationProps = animated
+    ? {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.5 },
+      }
+    : {};
 
   if (link) {
     return (
@@ -92,11 +90,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
 
   if (onClick) {
     return (
-      <MotionComponent 
-        className={`${cardClasses} cursor-pointer`} 
-        onClick={onClick}
-        {...animationProps}
-      >
+      <MotionComponent className={`${cardClasses} cursor-pointer`} onClick={onClick} {...animationProps}>
         {cardContent}
       </MotionComponent>
     );

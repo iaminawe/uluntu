@@ -20,10 +20,10 @@ const FormActions: React.FC<FormActionsProps> = ({
 }) => {
   // Determine alignment class
   const alignmentClass = {
-    'left': 'justify-start',
-    'center': 'justify-center',
-    'right': 'justify-end',
-    'between': 'justify-between',
+    left: 'justify-start',
+    center: 'justify-center',
+    right: 'justify-end',
+    between: 'justify-between',
   }[align];
 
   return (
@@ -43,7 +43,7 @@ const FormActions: React.FC<FormActionsProps> = ({
           {deleteText}
         </button>
       )}
-      
+
       <div className="flex items-center gap-4 ml-auto">
         {/* Cancel button */}
         {onCancel && (
@@ -59,7 +59,7 @@ const FormActions: React.FC<FormActionsProps> = ({
             {cancelText}
           </button>
         )}
-        
+
         {/* Submit button */}
         {onSubmit && (
           <button

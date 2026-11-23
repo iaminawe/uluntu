@@ -11,16 +11,10 @@ import {
   useQueryClient,
   useInfiniteQuery,
   UseInfiniteQueryResult,
-  InfiniteData
+  InfiniteData,
 } from '@tanstack/react-query';
 import { messagingApi } from '@/features/messaging/api/messagingApi';
-import {
-  Message,
-  MessageReaction,
-  SendMessageInput,
-  UpdateMessageInput,
-  MessageFilters,
-} from './types';
+import { Message, MessageReaction, SendMessageInput, UpdateMessageInput, MessageFilters } from './types';
 import { messagingQueryKeys } from './types';
 import { logger } from '@/utils/logger';
 import { supabase } from '@/lib/supabase';
@@ -29,17 +23,14 @@ import { supabase } from '@/lib/supabase';
  * Hook to fetch messages for a conversation with infinite scrolling support
  * Ensures proper conversation isolation by using conversation-specific query keys
  */
-export function useMessages(
-  conversationId: string,
-  limit: number = 50
-): UseInfiniteQueryResult<Message[], Error> {
+export function useMessages(conversationId: string, limit: number = 50): UseInfiniteQueryResult<Message[], Error> {
   return useInfiniteQuery({
     queryKey: [...messagingQueryKeys.messages(conversationId), limit, 'infinite'],
     queryFn: ({ pageParam }) => {
       const filters: MessageFilters = {
         conversation_id: conversationId,
         limit,
-        offset: pageParam as number || 0
+        offset: (pageParam as number) || 0,
       };
       return messagingApi.getMessages(conversationId, filters);
     },
@@ -58,14 +49,14 @@ export function useMessages(
     // Ensure each conversation has isolated cache
     structuralSharing: false,
     // Don't share data between different conversation queries
-    select: (data) => {
+    select: data => {
       if (!data?.pages) return { pages: [], pageParams: [] };
       // Filter messages to ensure they belong to this conversation only
       const filteredPages = data.pages.map(page =>
         Array.isArray(page) ? page.filter(msg => msg.conversation_id === conversationId) : []
       );
       return { ...data, pages: filteredPages };
-    }
+    },
   });
 }
 
@@ -89,7 +80,9 @@ export function useUnreadMessageCount(): UseQueryResult<number, Error> {
   return useQuery({
     queryKey: messagingQueryKeys.unreadCount,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return 0;
       return messagingApi.getUnreadCount(user.id);
     },
@@ -120,50 +113,47 @@ export function useSendMessage(): UseMutationResult<Message, Error, SendMessageI
 
       // Update messages cache with conversation-specific keys
       const messagesQueryKey = [...messagingQueryKeys.messages(variables.conversation_id), 50, 'infinite'];
-      queryClient.setQueryData<InfiniteData<Message[]>>(
-        messagesQueryKey,
-        (oldData) => {
-          if (!oldData) return { pages: [[newMessage]], pageParams: [0] };
+      queryClient.setQueryData<InfiniteData<Message[]>>(messagesQueryKey, oldData => {
+        if (!oldData) return { pages: [[newMessage]], pageParams: [0] };
 
-          // Ensure the message belongs to the correct conversation
-          if (newMessage.conversation_id !== variables.conversation_id) {
-            logger.warn('Message conversation_id mismatch', 'MESSAGING');
-            return oldData;
-          }
-
-          const updatedPages = [...oldData.pages];
-          if (updatedPages.length > 0) {
-            // Add to the first page (most recent messages)
-            updatedPages[0] = [newMessage, ...updatedPages[0]];
-          } else {
-            updatedPages.push([newMessage]);
-          }
-
-          return { ...oldData, pages: updatedPages };
+        // Ensure the message belongs to the correct conversation
+        if (newMessage.conversation_id !== variables.conversation_id) {
+          logger.warn('Message conversation_id mismatch', 'MESSAGING');
+          return oldData;
         }
-      );
+
+        const updatedPages = [...oldData.pages];
+        if (updatedPages.length > 0) {
+          // Add to the first page (most recent messages)
+          updatedPages[0] = [newMessage, ...updatedPages[0]];
+        } else {
+          updatedPages.push([newMessage]);
+        }
+
+        return { ...oldData, pages: updatedPages };
+      });
 
       // Only invalidate conversation-specific queries
       queryClient.invalidateQueries({
         queryKey: messagingQueryKeys.conversation(variables.conversation_id),
-        exact: true
+        exact: true,
       });
 
       // Update conversations list (but not other conversation caches)
       queryClient.invalidateQueries({
         queryKey: messagingQueryKeys.conversations,
-        exact: true
+        exact: true,
       });
 
       // Update unread count
       queryClient.invalidateQueries({
         queryKey: messagingQueryKeys.unreadCount,
-        exact: true
+        exact: true,
       });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to send message:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -180,26 +170,23 @@ export function useUpdateMessage(): UseMutationResult<Message, Error, UpdateMess
 
       // Update messages cache with conversation-specific key
       const messagesQueryKey = [...messagingQueryKeys.messages(updatedMessage.conversation_id), 50, 'infinite'];
-      queryClient.setQueryData<InfiniteData<Message[]>>(
-        messagesQueryKey,
-        (oldData) => {
-          if (!oldData) return oldData;
+      queryClient.setQueryData<InfiniteData<Message[]>>(messagesQueryKey, oldData => {
+        if (!oldData) return oldData;
 
-          const updatedPages = oldData.pages.map((page) =>
-            page.map((message) =>
-              message.id === variables.id && message.conversation_id === updatedMessage.conversation_id
-                ? updatedMessage
-                : message
-            )
-          );
+        const updatedPages = oldData.pages.map(page =>
+          page.map(message =>
+            message.id === variables.id && message.conversation_id === updatedMessage.conversation_id
+              ? updatedMessage
+              : message
+          )
+        );
 
-          return { ...oldData, pages: updatedPages };
-        }
-      );
+        return { ...oldData, pages: updatedPages };
+      });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to update message:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -217,9 +204,9 @@ export function useDeleteMessage(): UseMutationResult<void, Error, string> {
       // Invalidate messages cache to refetch updated data
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.all });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to delete message:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -237,9 +224,9 @@ export function useAddReaction(): UseMutationResult<MessageReaction, Error, { me
       // Update all message caches that might contain this message
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.all });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to add reaction:', error.message, 'MESSAGING');
-    }
+    },
   });
 }
 
@@ -257,8 +244,8 @@ export function useRemoveReaction(): UseMutationResult<void, Error, { messageId:
       // Update all message caches that might contain this message
       queryClient.invalidateQueries({ queryKey: messagingQueryKeys.all });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Failed to remove reaction:', error.message, 'MESSAGING');
-    }
+    },
   });
 }

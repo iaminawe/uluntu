@@ -6,7 +6,6 @@ import { logger } from '@/utils/logger';
  * Provides comprehensive validation for admin gallery operations
  */
 export class AdminGalleryValidationService {
-  
   // Default system settings (should be loaded from database)
   private defaultSettings: GallerySystemSettings = {
     max_photos_per_gallery: 1000,
@@ -20,7 +19,7 @@ export class AdminGalleryValidationService {
     enable_photo_downloads: true,
     watermark_enabled: false,
     compression_enabled: true,
-    compression_quality: 85
+    compression_quality: 85,
   };
 
   /**
@@ -33,7 +32,7 @@ export class AdminGalleryValidationService {
       dimensions_valid: true,
       content_safe: true,
       errors: [],
-      warnings: []
+      warnings: [],
     };
 
     try {
@@ -60,24 +59,23 @@ export class AdminGalleryValidationService {
       if (file.type.startsWith('image/')) {
         try {
           const dimensions = await this.getImageDimensions(file);
-          
+
           // Check minimum dimensions
           if (dimensions.width < 100 || dimensions.height < 100) {
             validation.dimensions_valid = false;
             validation.errors.push('Image dimensions too small. Minimum 100x100 pixels required.');
           }
-          
+
           // Check maximum dimensions (optional warning)
           if (dimensions.width > 8000 || dimensions.height > 8000) {
             validation.warnings.push('Very large image dimensions detected. Consider resizing for better performance.');
           }
-          
+
           // Check aspect ratio (optional warning for extreme ratios)
           const aspectRatio = dimensions.width / dimensions.height;
           if (aspectRatio > 10 || aspectRatio < 0.1) {
             validation.warnings.push('Extreme aspect ratio detected. Image may not display well in gallery.');
           }
-          
         } catch (error) {
           validation.warnings.push('Could not validate image dimensions.');
           logger.warn('Image dimension validation failed', 'ADMIN_GALLERY_VALIDATION', error);
@@ -100,7 +98,8 @@ export class AdminGalleryValidationService {
       }
 
       // Add warnings for large files
-      if (file.size > 10 * 1024 * 1024) { // 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB
         validation.warnings.push('Large file size detected. Upload may take longer and affect performance.');
       }
 
@@ -109,7 +108,6 @@ export class AdminGalleryValidationService {
       if (!filenameValidation.valid) {
         validation.errors.push(filenameValidation.error || 'Invalid filename');
       }
-
     } catch (error) {
       logger.error('Photo upload validation failed', 'ADMIN_GALLERY_VALIDATION', error);
       validation.errors.push('Validation service error');
@@ -121,16 +119,19 @@ export class AdminGalleryValidationService {
   /**
    * Validate bulk operation constraints
    */
-  validateBulkOperation(itemCount: number, operationType: string): { valid: boolean; errors: string[]; warnings: string[] } {
+  validateBulkOperation(
+    itemCount: number,
+    operationType: string
+  ): { valid: boolean; errors: string[]; warnings: string[] } {
     const result = {
       valid: true,
       errors: [] as string[],
-      warnings: [] as string[]
+      warnings: [] as string[],
     };
 
     // Check bulk operation limits
     const maxBulkSize = this.getBulkOperationLimit(operationType);
-    
+
     if (itemCount > maxBulkSize) {
       result.valid = false;
       result.errors.push(`Bulk operation limited to ${maxBulkSize} items. Requested: ${itemCount}`);
@@ -166,7 +167,7 @@ export class AdminGalleryValidationService {
     const result = {
       valid: true,
       errors: [] as string[],
-      sanitized: { ...updates }
+      sanitized: { ...updates },
     };
 
     // Validate title
@@ -244,7 +245,7 @@ export class AdminGalleryValidationService {
     const result = {
       valid: true,
       errors: [] as string[],
-      sanitized: { ...updates }
+      sanitized: { ...updates },
     };
 
     // Validate title
@@ -308,57 +309,60 @@ export class AdminGalleryValidationService {
   /**
    * Validate admin permissions for operation
    */
-  async validateAdminPermission(userId: string, operation: string, resourceId?: string): Promise<{
+  async validateAdminPermission(
+    userId: string,
+    operation: string,
+    resourceId?: string
+  ): Promise<{
     allowed: boolean;
     reason?: string;
     requiredRole?: string;
   }> {
     // This would integrate with your actual permission system
     // For now, a simplified version
-    
+
     try {
       // Check if user has admin role (would use actual permission check)
       const hasAdminRole = await this.checkAdminRole(userId);
-      
+
       if (!hasAdminRole) {
         return {
           allowed: false,
           reason: 'Admin role required',
-          requiredRole: 'admin'
+          requiredRole: 'admin',
         };
       }
 
       // Check specific operation permissions
       const operationPermissions = {
-        'delete_any_photo': ['super_admin', 'admin'],
-        'delete_any_gallery': ['super_admin'],
-        'moderate_content': ['super_admin', 'admin', 'moderator'],
-        'view_analytics': ['super_admin', 'admin'],
-        'bulk_operations': ['super_admin', 'admin'],
-        'manage_settings': ['super_admin']
+        delete_any_photo: ['super_admin', 'admin'],
+        delete_any_gallery: ['super_admin'],
+        moderate_content: ['super_admin', 'admin', 'moderator'],
+        view_analytics: ['super_admin', 'admin'],
+        bulk_operations: ['super_admin', 'admin'],
+        manage_settings: ['super_admin'],
       };
 
       const requiredRoles = operationPermissions[operation as keyof typeof operationPermissions];
       if (requiredRoles) {
         const userRoles = await this.getUserRoles(userId);
         const hasPermission = requiredRoles.some(role => userRoles.includes(role));
-        
+
         if (!hasPermission) {
           return {
             allowed: false,
             reason: `Insufficient permissions for ${operation}`,
-            requiredRole: requiredRoles[0]
+            requiredRole: requiredRoles[0],
           };
         }
       }
 
       return { allowed: true };
-
     } catch (error) {
       logger.error('Permission validation failed', 'ADMIN_GALLERY_VALIDATION', error);
       return {
         allowed: false,
-        reason: 'Permission validation error'
+        reason: 'Permission validation error',
       };
     }
   }
@@ -376,17 +380,17 @@ export class AdminGalleryValidationService {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
-      
+
       img.onload = () => {
         URL.revokeObjectURL(url);
         resolve({ width: img.naturalWidth, height: img.naturalHeight });
       };
-      
+
       img.onerror = () => {
         URL.revokeObjectURL(url);
         reject(new Error('Could not load image'));
       };
-      
+
       img.src = url;
     });
   }
@@ -402,7 +406,7 @@ export class AdminGalleryValidationService {
     return {
       can_add_photos: true,
       current_count: 0,
-      max_allowed: this.defaultSettings.max_photos_per_gallery
+      max_allowed: this.defaultSettings.max_photos_per_gallery,
     };
   }
 
@@ -418,7 +422,7 @@ export class AdminGalleryValidationService {
     if (dangerousChars.test(filename)) {
       return {
         valid: false,
-        error: 'Filename contains invalid characters'
+        error: 'Filename contains invalid characters',
       };
     }
 
@@ -426,7 +430,7 @@ export class AdminGalleryValidationService {
     if (filename.length > 255) {
       return {
         valid: false,
-        error: 'Filename too long (max 255 characters)'
+        error: 'Filename too long (max 255 characters)',
       };
     }
 
@@ -435,7 +439,7 @@ export class AdminGalleryValidationService {
     if (reservedNames.test(filename)) {
       return {
         valid: false,
-        error: 'Filename uses reserved system name'
+        error: 'Filename uses reserved system name',
       };
     }
 
@@ -444,11 +448,11 @@ export class AdminGalleryValidationService {
 
   private getBulkOperationLimit(operation: string): number {
     const limits = {
-      'delete': 100,
-      'upload': 50,
-      'moderate': 200,
-      'move': 100,
-      'tag': 500
+      delete: 100,
+      upload: 50,
+      moderate: 200,
+      move: 100,
+      tag: 500,
     };
 
     return limits[operation as keyof typeof limits] || 50;
@@ -468,11 +472,11 @@ export class AdminGalleryValidationService {
 
   private formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 }

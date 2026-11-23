@@ -28,7 +28,7 @@ export const adaptMainEventToFormData = (event: MainEvent): FormData => {
     type: event.type,
     url: event.url,
     organizerId: String(event.organizer.id), // Always convert to string for consistency
-    sessions: event.sessions
+    sessions: event.sessions,
   };
 };
 
@@ -48,9 +48,9 @@ export const adaptFormDataToMainEvent = (formData: FormData, id?: string): Parti
     organizer: {
       id: formData.organizerId.toString(),
       name: '', // This would need to be populated from user data
-      image: '' // This would need to be populated from user data
+      image: '', // This would need to be populated from user data
     },
-    sessions: formData.sessions
+    sessions: formData.sessions,
   };
 };
 

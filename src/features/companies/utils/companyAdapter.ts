@@ -27,7 +27,7 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
   if (!dbCompany.id) {
     throw new Error('Invalid company data: id is required');
   }
-  
+
   if (!dbCompany.name) {
     throw new Error('Invalid company data: name is required');
   }
@@ -52,7 +52,7 @@ export function adaptCompanyFromDatabase(dbCompany: SupabaseCompany): Company {
     status: dbCompany.status as ContentStatus, // We've validated this above
     featured: dbCompany.featured ?? false, // Use nullish coalescing for clearer intent
     created_at: dbCompany.created_at,
-    social: (dbCompany.social as any) ?? undefined // Include social media links if present
+    social: (dbCompany.social as any) ?? undefined, // Include social media links if present
   };
 }
 
@@ -77,7 +77,7 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
   if (company.founded !== undefined) supabaseCompany.founded = company.founded;
   if (company.location !== undefined) supabaseCompany.location = company.location;
   if (company.website !== undefined) supabaseCompany.website = company.website ?? null;
-  
+
   // Validate and set status if provided
   if (company.status !== undefined) {
     if (!isValidContentStatus(company.status)) {
@@ -85,7 +85,7 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
     }
     supabaseCompany.status = company.status;
   }
-  
+
   if (company.featured !== undefined) supabaseCompany.featured = company.featured ?? null;
   if (company.social !== undefined) supabaseCompany.social = company.social ?? null;
 
@@ -97,7 +97,9 @@ export function adaptCompanyToSupabaseUpdate(company: Partial<Company>): Partial
  * @param company - The partial Company object with fields for the new company
  * @returns A SupabaseCompany Insert object for the insert operation
  */
-export function adaptCompanyToSupabaseInsert(company: Partial<Omit<Company, 'id' | 'created_at'>>): Database['public']['Tables']['companies']['Insert'] {
+export function adaptCompanyToSupabaseInsert(
+  company: Partial<Omit<Company, 'id' | 'created_at'>>
+): Database['public']['Tables']['companies']['Insert'] {
   // Validate status if provided
   if (company.status && !isValidContentStatus(company.status)) {
     throw new Error(`Invalid company status: "${company.status}" is not a valid ContentStatus`);
@@ -116,6 +118,6 @@ export function adaptCompanyToSupabaseInsert(company: Partial<Omit<Company, 'id'
     website: company.website ?? null, // Optional in DB, explicitly set to null if undefined
     status: company.status ?? 'draft', // Default if not provided
     featured: company.featured ?? false,
-    social: company.social ?? null // Include social media links if provided
+    social: company.social ?? null, // Include social media links if provided
   };
 }

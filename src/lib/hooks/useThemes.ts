@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { themesApi } from '@/lib/api/themes';
-import type { 
-  ThemeFormData, 
-  ThemeConfigFormData, 
+import type {
+  ThemeFormData,
+  ThemeConfigFormData,
   ThemeMetadataFormData,
   AssetUploadData,
-  ConfigType 
+  ConfigType,
 } from '@/types/theme';
 
 export function useThemes() {
@@ -15,7 +15,7 @@ export function useThemes() {
       const { data, error } = await themesApi.getThemes();
       if (error) throw error;
       return data;
-    }
+    },
   });
 }
 
@@ -26,7 +26,7 @@ export function useActiveTheme() {
       const { data, error } = await themesApi.getActiveTheme();
       if (error) throw error;
       return data;
-    }
+    },
   });
 }
 
@@ -38,7 +38,7 @@ export function useTheme(id: string) {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!id,
   });
 }
 
@@ -50,7 +50,7 @@ export function useThemeBySlug(slug: string) {
       if (error) throw error;
       return data;
     },
-    enabled: !!slug
+    enabled: !!slug,
   });
 }
 
@@ -61,7 +61,7 @@ export function useCreateTheme() {
     mutationFn: (data: ThemeFormData) => themesApi.createTheme(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-    }
+    },
   });
 }
 
@@ -69,12 +69,11 @@ export function useUpdateTheme() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<ThemeFormData> }) =>
-      themesApi.updateTheme(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<ThemeFormData> }) => themesApi.updateTheme(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes', variables.id] });
-    }
+    },
   });
 }
 
@@ -85,7 +84,7 @@ export function useDeleteTheme() {
     mutationFn: (id: string) => themesApi.deleteTheme(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-    }
+    },
   });
 }
 
@@ -97,7 +96,7 @@ export function useActivateTheme() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes', 'active'] });
-    }
+    },
   });
 }
 
@@ -105,18 +104,18 @@ export function useUpdateThemeConfiguration() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      themeId, 
-      configType, 
-      configData 
-    }: { 
-      themeId: string; 
-      configType: ConfigType; 
-      configData: Record<string, any> 
+    mutationFn: ({
+      themeId,
+      configType,
+      configData,
+    }: {
+      themeId: string;
+      configType: ConfigType;
+      configData: Record<string, any>;
     }) => themesApi.updateThemeConfiguration(themeId, configType, configData),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['themes', variables.themeId] });
-    }
+    },
   });
 }
 
@@ -124,16 +123,11 @@ export function useUpdateAllThemeConfigurations() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      themeId, 
-      configurations 
-    }: { 
-      themeId: string; 
-      configurations: ThemeConfigFormData 
-    }) => themesApi.updateAllThemeConfigurations(themeId, configurations),
+    mutationFn: ({ themeId, configurations }: { themeId: string; configurations: ThemeConfigFormData }) =>
+      themesApi.updateAllThemeConfigurations(themeId, configurations),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['themes', variables.themeId] });
-    }
+    },
   });
 }
 
@@ -141,16 +135,11 @@ export function useUploadThemeAsset() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      themeId, 
-      uploadData 
-    }: { 
-      themeId: string; 
-      uploadData: AssetUploadData 
-    }) => themesApi.uploadThemeAsset(themeId, uploadData),
+    mutationFn: ({ themeId, uploadData }: { themeId: string; uploadData: AssetUploadData }) =>
+      themesApi.uploadThemeAsset(themeId, uploadData),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['themes', variables.themeId] });
-    }
+    },
   });
 }
 
@@ -161,7 +150,7 @@ export function useDeleteThemeAsset() {
     mutationFn: (assetId: string) => themesApi.deleteThemeAsset(assetId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-    }
+    },
   });
 }
 
@@ -169,16 +158,11 @@ export function useUpdateThemeMetadata() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      themeId, 
-      metadata 
-    }: { 
-      themeId: string; 
-      metadata: ThemeMetadataFormData 
-    }) => themesApi.updateThemeMetadata(themeId, metadata),
+    mutationFn: ({ themeId, metadata }: { themeId: string; metadata: ThemeMetadataFormData }) =>
+      themesApi.updateThemeMetadata(themeId, metadata),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['themes', variables.themeId] });
-    }
+    },
   });
 }
 
@@ -186,24 +170,17 @@ export function useDuplicateTheme() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      sourceThemeId, 
-      newName, 
-      newSlug 
-    }: { 
-      sourceThemeId: string; 
-      newName: string; 
-      newSlug: string 
-    }) => themesApi.duplicateTheme(sourceThemeId, newName, newSlug),
+    mutationFn: ({ sourceThemeId, newName, newSlug }: { sourceThemeId: string; newName: string; newSlug: string }) =>
+      themesApi.duplicateTheme(sourceThemeId, newName, newSlug),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-    }
+    },
   });
 }
 
 export function useExportTheme() {
   return useMutation({
-    mutationFn: (themeId: string) => themesApi.exportTheme(themeId)
+    mutationFn: (themeId: string) => themesApi.exportTheme(themeId),
   });
 }
 
@@ -211,15 +188,10 @@ export function useImportTheme() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      themeData, 
-      activate 
-    }: { 
-      themeData: any; 
-      activate?: boolean 
-    }) => themesApi.importTheme(themeData, activate),
+    mutationFn: ({ themeData, activate }: { themeData: any; activate?: boolean }) =>
+      themesApi.importTheme(themeData, activate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
-    }
+    },
   });
 }

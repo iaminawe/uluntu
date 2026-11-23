@@ -45,7 +45,7 @@ export class UnsplashService {
    * Search for photos based on a query
    */
   async searchPhotos(
-    query: string, 
+    query: string,
     options: {
       perPage?: number;
       orientation?: 'landscape' | 'portrait' | 'squarish';
@@ -105,14 +105,11 @@ export class UnsplashService {
         params.append('query', query);
       }
 
-      const response = await fetch(
-        `${this.baseUrl}/photos/random?${params}`,
-        {
-          headers: {
-            Authorization: `Client-ID ${this.accessKey}`,
-          },
-        }
-      );
+      const response = await fetch(`${this.baseUrl}/photos/random?${params}`, {
+        headers: {
+          Authorization: `Client-ID ${this.accessKey}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Unsplash API error: ${response.statusText}`);
@@ -132,37 +129,104 @@ export class UnsplashService {
   extractKeywords(text: string, topic?: string): string[] {
     // Start with the topic if provided
     const keywords: string[] = topic ? [topic] : [];
-    
+
     // Common words to exclude
     const stopWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-      'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be',
-      'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-      'would', 'could', 'should', 'may', 'might', 'must', 'can', 'shall',
-      'let', 'make', 'made', 'get', 'got', 'go', 'going', 'went', 'come',
-      'came', 'coming', 'this', 'that', 'these', 'those', 'what', 'which',
-      'who', 'whom', 'whose', 'where', 'when', 'why', 'how', 'all', 'each',
-      'every', 'both', 'few', 'many', 'much', 'other', 'another', 'such',
-      'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'now'
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
+      'from',
+      'as',
+      'is',
+      'was',
+      'are',
+      'were',
+      'be',
+      'been',
+      'being',
+      'have',
+      'has',
+      'had',
+      'do',
+      'does',
+      'did',
+      'will',
+      'would',
+      'could',
+      'should',
+      'may',
+      'might',
+      'must',
+      'can',
+      'shall',
+      'let',
+      'make',
+      'made',
+      'get',
+      'got',
+      'go',
+      'going',
+      'went',
+      'come',
+      'came',
+      'coming',
+      'this',
+      'that',
+      'these',
+      'those',
+      'what',
+      'which',
+      'who',
+      'whom',
+      'whose',
+      'where',
+      'when',
+      'why',
+      'how',
+      'all',
+      'each',
+      'every',
+      'both',
+      'few',
+      'many',
+      'much',
+      'other',
+      'another',
+      'such',
+      'only',
+      'own',
+      'same',
+      'so',
+      'than',
+      'too',
+      'very',
+      'just',
+      'now',
     ]);
-    
+
     // Extract potential keywords from the text
-    const words = text.toLowerCase()
+    const words = text
+      .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(word => 
-        word.length > 3 && 
-        !stopWords.has(word) &&
-        !keywords.includes(word)
-      );
-    
+      .filter(word => word.length > 3 && !stopWords.has(word) && !keywords.includes(word));
+
     // Get unique words, prioritizing longer/more specific terms
-    const uniqueWords = [...new Set(words)]
-      .sort((a, b) => b.length - a.length)
-      .slice(0, 5);
-    
+    const uniqueWords = [...new Set(words)].sort((a, b) => b.length - a.length).slice(0, 5);
+
     keywords.push(...uniqueWords);
-    
+
     return keywords.slice(0, 3); // Return top 3 keywords
   }
 
@@ -197,12 +261,12 @@ export class UnsplashService {
     }
 
     const photos: Array<{ photo: UnsplashPhoto; placement: 'hero' | 'section' | 'conclusion' }> = [];
-    
+
     try {
       // Get hero image for the main topic
       const heroPhotos = await this.searchPhotos(topic, {
         perPage: 1,
-        orientation: 'landscape'
+        orientation: 'landscape',
       });
       if (heroPhotos.length > 0) {
         photos.push({ photo: heroPhotos[0], placement: 'hero' });
@@ -214,16 +278,18 @@ export class UnsplashService {
       // Get section images based on keywords; the searches are independent.
       const sectionKeywords = keywords.slice(0, Math.max(0, count - 1));
       const sectionResults = await Promise.all(
-        sectionKeywords.map(keyword => this.searchPhotos(keyword, {
-          perPage: 1,
-          orientation: 'landscape'
-        }))
+        sectionKeywords.map(keyword =>
+          this.searchPhotos(keyword, {
+            perPage: 1,
+            orientation: 'landscape',
+          })
+        )
       );
       sectionResults.forEach((sectionPhotos, i) => {
         if (sectionPhotos.length > 0) {
           photos.push({
             photo: sectionPhotos[0],
-            placement: i === keywords.length - 1 ? 'conclusion' : 'section'
+            placement: i === keywords.length - 1 ? 'conclusion' : 'section',
           });
         }
       });
@@ -232,7 +298,7 @@ export class UnsplashService {
       if (photos.length < count) {
         const additionalPhotos = await this.searchPhotos(topic, {
           perPage: count - photos.length,
-          page: 2 // Get different results
+          page: 2, // Get different results
         });
         additionalPhotos.forEach(photo => {
           photos.push({ photo, placement: 'section' });

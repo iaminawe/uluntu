@@ -18,7 +18,7 @@ export default function ResetPasswordForm() {
     // This is just a validation to ensure we're on this page with the right context
     const url = new URL(window.location.href);
     const hasTypeParam = url.hash.includes('type=recovery');
-    
+
     if (!hasTypeParam) {
       setError('Invalid or missing reset token. Please request a new password reset link.');
     }
@@ -29,43 +29,43 @@ export default function ResetPasswordForm() {
     const hasMinLength = password.length >= 8;
     const hasNumber = /\d/.test(password);
     const hasLetter = /[a-zA-Z]/.test(password);
-    
+
     if (!hasMinLength) {
       setError('Password must be at least 8 characters long');
       return false;
     }
-    
+
     if (!hasNumber || !hasLetter) {
       setError('Password must contain at least one letter and one number');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!password || !confirmPassword) {
       setError('Please enter both password fields');
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     if (!validatePassword(password)) {
       return;
     }
-    
+
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const { success, error: resetError } = await resetPassword(password);
-      
+
       if (resetError) {
         // Handle specific errors with user-friendly messages
         if (resetError.message.includes('Invalid')) {
@@ -77,7 +77,7 @@ export default function ResetPasswordForm() {
           throw new Error(resetError.message);
         }
       }
-      
+
       if (success) {
         setIsSuccess(true);
         // Redirect to sign in page after 3 seconds
@@ -100,10 +100,8 @@ export default function ResetPasswordForm() {
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 w-full max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">
-        Reset Password
-      </h2>
-      
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">Reset Password</h2>
+
       {error && (
         <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
           <div className="flex">
@@ -116,7 +114,7 @@ export default function ResetPasswordForm() {
           </div>
         </div>
       )}
-      
+
       {isSuccess && (
         <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
           <div className="flex">
@@ -131,7 +129,7 @@ export default function ResetPasswordForm() {
           </div>
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="password">
@@ -144,13 +142,13 @@ export default function ResetPasswordForm() {
             <input
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               required
               className="block w-full pl-10 pr-10 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               disabled={isLoading || isSuccess}
             />
             <button
@@ -169,9 +167,12 @@ export default function ResetPasswordForm() {
             Password must be at least 8 characters and include at least one letter and one number.
           </p>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" htmlFor="confirm-password">
+          <label
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+            htmlFor="confirm-password"
+          >
             Confirm New Password
           </label>
           <div className="relative">
@@ -181,18 +182,18 @@ export default function ResetPasswordForm() {
             <input
               id="confirm-password"
               name="confirm-password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               required
               className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               placeholder="••••••••"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               disabled={isLoading || isSuccess}
             />
           </div>
         </div>
-        
+
         <div>
           <button
             type="submit"

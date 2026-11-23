@@ -18,11 +18,15 @@ export default function OpportunityDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [isApplying, setIsApplying] = useState(false);
   const [applicationSuccess, setApplicationSuccess] = useState(false);
-  
+
   console.log('[OpportunityDetailPage] Component mounted with id:', id);
-  
+
   // Use React Query directly to fetch the opportunity
-  const { data: rawOpportunity, isLoading, error } = useQuery({
+  const {
+    data: rawOpportunity,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['opportunities', id],
     queryFn: async () => {
       console.log('[OpportunityDetailPage] queryFn called with id:', id);
@@ -30,14 +34,14 @@ export default function OpportunityDetailPage() {
         console.log('[OpportunityDetailPage] No id provided, returning null');
         return null;
       }
-      
+
       try {
         console.log('[OpportunityDetailPage] Importing opportunitiesApi...');
         const { opportunitiesApi } = await import('@/features/opportunities/api/opportunitiesApi');
         console.log('[OpportunityDetailPage] Calling opportunitiesApi.getById with id:', id);
         const result = await opportunitiesApi.getById(id);
         console.log('[OpportunityDetailPage] API result:', result);
-        
+
         // If no result from API, try mock data
         if (!result) {
           console.log('[OpportunityDetailPage] No data from API, using mock data');
@@ -45,11 +49,12 @@ export default function OpportunityDetailPage() {
           const mockOpportunity = {
             id: id,
             title: 'Senior Full Stack Developer',
-            description: 'We are looking for an experienced Full Stack Developer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.',
+            description:
+              'We are looking for an experienced Full Stack Developer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.',
             company: {
               id: '1',
               name: 'Tech Innovators Inc.',
-              logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop&q=80'
+              logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop&q=80',
             },
             organization: 'Tech Innovators Inc.',
             type: 'full-time' as const,
@@ -65,28 +70,28 @@ export default function OpportunityDetailPage() {
               '5+ years of experience in full-stack development',
               'Strong proficiency in React, TypeScript, and Node.js',
               'Experience with cloud platforms (AWS, Azure, or GCP)',
-              'Excellent problem-solving and communication skills'
+              'Excellent problem-solving and communication skills',
             ],
             responsibilities: [
               'Design and develop scalable web applications',
               'Collaborate with cross-functional teams',
               'Mentor junior developers',
-              'Participate in code reviews and architectural decisions'
+              'Participate in code reviews and architectural decisions',
             ],
             benefits: [
               'Competitive salary and equity',
               'Flexible work arrangements',
               'Health and dental benefits',
-              'Professional development budget'
+              'Professional development budget',
             ],
             featured: true,
             status: 'published' as const,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           };
           console.log('[OpportunityDetailPage] Returning mock opportunity:', mockOpportunity);
           return mockOpportunity;
         }
-        
+
         console.log('[OpportunityDetailPage] Returning API result:', result);
         return result;
       } catch (error) {
@@ -97,45 +102,55 @@ export default function OpportunityDetailPage() {
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
-  console.log('[OpportunityDetailPage] Query state:', { 
-    isLoading, 
-    error, 
+
+  console.log('[OpportunityDetailPage] Query state:', {
+    isLoading,
+    error,
     hasData: !!rawOpportunity,
-    rawOpportunity 
+    rawOpportunity,
   });
-  
+
   // Adapt the opportunity data to match the page's expected interface
-  const opportunity: PageOpportunity | undefined = rawOpportunity ? {
-    id: String(rawOpportunity.id),
-    title: rawOpportunity.title,
-    description: rawOpportunity.description || '',
-    type: rawOpportunity.type === 'full-time' || rawOpportunity.type === 'part-time' || rawOpportunity.type === 'contract' ? 'job' : 
-          rawOpportunity.type === 'volunteer' ? 'volunteer' :
-          rawOpportunity.type === 'funding' ? 'funding' :
-          rawOpportunity.type === 'community' ? 'community' : 'job',
-    organization: rawOpportunity.organization || rawOpportunity.company?.name || 'Unknown Organization',
-    location: rawOpportunity.location || 'Remote',
-    compensation: rawOpportunity.salary || 'Competitive',
-    deadline: rawOpportunity.deadline,
-    contactEmail: rawOpportunity.contactEmail || 'contact@example.com',
-    website: rawOpportunity.website || '',
-    image: rawOpportunity.image || rawOpportunity.company?.logo || '',
-    postedAt: rawOpportunity.postedDate || rawOpportunity.created_at || new Date().toISOString(),
-    postedBy: {
-      name: rawOpportunity.organization || rawOpportunity.company?.name || 'Unknown Organization',
-      image: rawOpportunity.company?.logo || '',
-      title: 'Hiring Team',
-      bio: 'We are looking for talented individuals to join our team.'
-    },
-    requirements: rawOpportunity.requirements || [],
-    responsibilities: rawOpportunity.responsibilities || [],
-    benefits: rawOpportunity.benefits || [],
-    status: rawOpportunity.status
-  } : undefined;
-  
+  const opportunity: PageOpportunity | undefined = rawOpportunity
+    ? {
+        id: String(rawOpportunity.id),
+        title: rawOpportunity.title,
+        description: rawOpportunity.description || '',
+        type:
+          rawOpportunity.type === 'full-time' ||
+          rawOpportunity.type === 'part-time' ||
+          rawOpportunity.type === 'contract'
+            ? 'job'
+            : rawOpportunity.type === 'volunteer'
+              ? 'volunteer'
+              : rawOpportunity.type === 'funding'
+                ? 'funding'
+                : rawOpportunity.type === 'community'
+                  ? 'community'
+                  : 'job',
+        organization: rawOpportunity.organization || rawOpportunity.company?.name || 'Unknown Organization',
+        location: rawOpportunity.location || 'Remote',
+        compensation: rawOpportunity.salary || 'Competitive',
+        deadline: rawOpportunity.deadline,
+        contactEmail: rawOpportunity.contactEmail || 'contact@example.com',
+        website: rawOpportunity.website || '',
+        image: rawOpportunity.image || rawOpportunity.company?.logo || '',
+        postedAt: rawOpportunity.postedDate || rawOpportunity.created_at || new Date().toISOString(),
+        postedBy: {
+          name: rawOpportunity.organization || rawOpportunity.company?.name || 'Unknown Organization',
+          image: rawOpportunity.company?.logo || '',
+          title: 'Hiring Team',
+          bio: 'We are looking for talented individuals to join our team.',
+        },
+        requirements: rawOpportunity.requirements || [],
+        responsibilities: rawOpportunity.responsibilities || [],
+        benefits: rawOpportunity.benefits || [],
+        status: rawOpportunity.status,
+      }
+    : undefined;
+
   console.log('[OpportunityDetailPage] Adapted opportunity:', opportunity);
-  
+
   const handleApply = () => {
     setIsApplying(true);
     // Simulate API call
@@ -162,26 +177,26 @@ export default function OpportunityDetailPage() {
         <title>{opportunity.title} - Uluntu</title>
         <meta name="description" content={opportunity.description.substring(0, 160)} />
       </Helmet>
-      
+
       <ContentContainer>
-          <PageHeader id={id || ''} />
-          
-          <Card className="overflow-hidden">
-            <OpportunityHero opportunity={opportunity} />
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-2">
-                <OpportunityInfo opportunity={opportunity} />
-              </div>
-              
-              <ApplySidebar 
-                opportunity={opportunity}
-                isApplying={isApplying}
-                applicationSuccess={applicationSuccess}
-                handleApply={handleApply}
-              />
+        <PageHeader id={id || ''} />
+
+        <Card className="overflow-hidden">
+          <OpportunityHero opportunity={opportunity} />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <OpportunityInfo opportunity={opportunity} />
             </div>
-          </Card>
+
+            <ApplySidebar
+              opportunity={opportunity}
+              isApplying={isApplying}
+              applicationSuccess={applicationSuccess}
+              handleApply={handleApply}
+            />
+          </div>
+        </Card>
       </ContentContainer>
     </>
   );

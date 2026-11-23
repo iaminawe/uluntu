@@ -15,11 +15,11 @@ export function useUserContent(filters: ContentFilter = {}): UseQueryResult<User
       }
       return response.data;
     },
-    staleTime: 2 * 60 * 1000,  // 2 minutes
-    gcTime: 5 * 60 * 1000,     // 5 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
     retry: 2,
     // Keep previous data while loading new data (good for pagination)
-    placeholderData: (previousData) => previousData
+    placeholderData: previousData => previousData,
   });
 }

@@ -43,9 +43,7 @@ export default function DataSections() {
 
   // Get featured groups
   const featuredGroups = useMemo(() => {
-    return groups
-      .filter(group => group.visibility === 'public')
-      .slice(0, 3);
+    return groups.filter(group => group.visibility === 'public').slice(0, 3);
   }, [groups]);
 
   // Get latest news
@@ -60,16 +58,12 @@ export default function DataSections() {
         <section className="py-20 bg-slate-50 dark:bg-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                Upcoming Events
-              </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-400">
-                Don't miss these upcoming tech events
-              </p>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Upcoming Events</h2>
+              <p className="text-xl text-slate-600 dark:text-slate-400">Don't miss these upcoming tech events</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event) => (
+              {upcomingEvents.map(event => (
                 <DetailedCard
                   key={event.id}
                   id={event.id}
@@ -83,9 +77,9 @@ export default function DataSections() {
                 />
               ))}
             </div>
-            
+
             <div className="text-center mt-8">
-              <a 
+              <a
                 href="/events"
                 className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold"
               >
@@ -101,16 +95,12 @@ export default function DataSections() {
         <section className="py-20 bg-white dark:bg-slate-800">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                Active Groups
-              </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-400">
-                Join community groups and connect with peers
-              </p>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Active Groups</h2>
+              <p className="text-xl text-slate-600 dark:text-slate-400">Join community groups and connect with peers</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredGroups.map((group) => (
+              {featuredGroups.map(group => (
                 <DetailedCard
                   key={group.id}
                   id={group.id}
@@ -124,9 +114,9 @@ export default function DataSections() {
                 />
               ))}
             </div>
-            
+
             <div className="text-center mt-8">
-              <a 
+              <a
                 href="/groups"
                 className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold"
               >
@@ -142,16 +132,14 @@ export default function DataSections() {
         <section className="py-20 bg-slate-50 dark:bg-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                Latest News
-              </h2>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Latest News</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400">
                 Stay updated with community news and insights
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {latestNews.map((article) => (
+              {latestNews.map(article => (
                 <DetailedCard
                   key={article.id}
                   id={article.id}
@@ -167,12 +155,9 @@ export default function DataSections() {
                 />
               ))}
             </div>
-            
+
             <div className="text-center mt-8">
-              <a 
-                href="/news"
-                className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold"
-              >
+              <a href="/news" className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold">
                 Read all news →
               </a>
             </div>

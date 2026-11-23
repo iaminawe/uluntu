@@ -29,7 +29,8 @@ const AdminResourcesPage: React.FC = () => {
                 Resources Library Feature Disabled
               </h3>
               <p className="text-yellow-700 dark:text-yellow-300 mb-4">
-                The resources library feature is currently disabled. Enable it in System Management → Features to access resources management.
+                The resources library feature is currently disabled. Enable it in System Management → Features to access
+                resources management.
               </p>
               <a
                 href="/admin/system/features"
@@ -53,14 +54,10 @@ const AdminResourcesPage: React.FC = () => {
             <BookOpen className="w-4 h-4 mr-2 text-gray-500" />
             {value}
           </div>
-          {item.description && (
-            <div className="text-sm text-gray-500 truncate max-w-xs">
-              {item.description}
-            </div>
-          )}
+          {item.description && <div className="text-sm text-gray-500 truncate max-w-xs">{item.description}</div>}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'category',
@@ -71,7 +68,7 @@ const AdminResourcesPage: React.FC = () => {
           {value}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'resource_type',
@@ -82,32 +79,38 @@ const AdminResourcesPage: React.FC = () => {
           video: { text: 'Video', color: 'bg-red-100 text-red-800' },
           document: { text: 'Document', color: 'bg-purple-100 text-purple-800' },
           link: { text: 'External Link', color: 'bg-blue-100 text-blue-800' },
-          course: { text: 'Course', color: 'bg-orange-100 text-orange-800' }
+          course: { text: 'Course', color: 'bg-orange-100 text-orange-800' },
         };
-        const config = typeConfig[value as keyof typeof typeConfig] || { text: value, color: 'bg-gray-100 text-gray-800' };
-        
+        const config = typeConfig[value as keyof typeof typeConfig] || {
+          text: value,
+          color: 'bg-gray-100 text-gray-800',
+        };
+
         return (
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
             {config.text}
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'url',
       label: 'Link',
-      render: (value: string) => value ? (
-        <a 
-          href={value} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 flex items-center"
-        >
-          <ExternalLink className="w-4 h-4 mr-1" />
-          View
-        </a>
-      ) : 'N/A'
+      render: (value: string) =>
+        value ? (
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 flex items-center"
+          >
+            <ExternalLink className="w-4 h-4 mr-1" />
+            View
+          </a>
+        ) : (
+          'N/A'
+        ),
     },
     {
       key: 'view_count',
@@ -118,7 +121,7 @@ const AdminResourcesPage: React.FC = () => {
           {value || 0}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'download_count',
@@ -129,7 +132,7 @@ const AdminResourcesPage: React.FC = () => {
           {value || 0}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'is_published',
@@ -143,11 +146,13 @@ const AdminResourcesPage: React.FC = () => {
             </span>
           );
         }
-        
+
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              value ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
             {value ? (
               <>
                 <CheckCircle className="w-3 h-3 mr-1" />
@@ -162,14 +167,14 @@ const AdminResourcesPage: React.FC = () => {
           </span>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       key: 'created_at',
       label: 'Created',
       render: (value: string) => new Date(value).toLocaleDateString(),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   return (

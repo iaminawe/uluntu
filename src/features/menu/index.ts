@@ -15,12 +15,12 @@ export { useMenuCache } from './hooks/useMenuCache';
 export * from './utils/menuAdapters';
 
 // Types (re-exported for convenience)
-export type { 
-  MenuItem, 
-  MenuPosition, 
-  DynamicMenuProps, 
+export type {
+  MenuItem,
+  MenuPosition,
+  DynamicMenuProps,
   MenuContextType,
   NavLinkItem,
   FooterColumn,
-  FooterLink
+  FooterLink,
 } from '@/types/menu';

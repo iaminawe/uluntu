@@ -2,7 +2,7 @@ import { supabase, handleSupabaseError } from '@/shared/api';
 import {
   adaptCompanyFromDatabase,
   adaptCompanyToSupabaseInsert,
-  adaptCompanyToSupabaseUpdate
+  adaptCompanyToSupabaseUpdate,
 } from '../utils/companyAdapter';
 import { Company, CompanyMember, CompanyEmployee } from '../types';
 import { ContentStatus } from '../types/common';
@@ -32,28 +32,28 @@ export interface CompanyInput {
   featured?: boolean; // Simplified to match Company type
 }
 
-
 export const companiesApi = {
   async getAll(filters?: { search?: string; industries?: string[]; userOnly?: boolean }): Promise<Company[]> {
     try {
       logger.debug('Fetching companies from Supabase', 'COMPANIES');
-      
-      let query = supabase
-        .from('companies')
-        .select(`*`)
-        .order('created_at', { ascending: false });
+
+      let query = supabase.from('companies').select(`*`).order('created_at', { ascending: false });
 
       // If userOnly is true, filter by user associations
       if (filters?.userOnly) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           // Join with company_members table to get only companies the user is associated with
           query = supabase
             .from('companies')
-            .select(`
+            .select(
+              `
               *,
               company_members!inner(user_id)
-            `)
+            `
+            )
             .eq('company_members.user_id', user.id)
             .order('created_at', { ascending: false });
         } else {
@@ -67,7 +67,7 @@ export const companiesApi = {
 
       const { data, error } = await query;
       logger.debug('Query result', 'COMPANIES', { dataLength: data?.length });
-      
+
       if (error) {
         logger.apiError('getAll - companies', error);
         // Return mock data instead of throwing error
@@ -78,30 +78,28 @@ export const companiesApi = {
         logger.debug('No data returned from Supabase', 'COMPANIES');
         return filters?.userOnly ? this.getMockUserCompanies() : [];
       }
-      
+
       if (data.length === 0) {
         logger.debug('Empty array returned from Supabase', 'COMPANIES');
         return filters?.userOnly ? this.getMockUserCompanies() : [];
       }
 
       logger.debug('Companies fetched successfully', 'COMPANIES', { count: data.length });
-      
+
       // Filter by industries if provided
       let filteredData = data;
       if (filters?.industries && filters.industries.length > 0) {
-        filteredData = filteredData.filter(company => 
-          filters.industries!.some(industry => 
-            company.industry?.includes(industry)
-          )
+        filteredData = filteredData.filter(company =>
+          filters.industries!.some(industry => company.industry?.includes(industry))
         );
       }
 
       // Log the raw data structure to understand what we're working with
       logger.debug('Raw data structure', 'COMPANIES', {
         firstItem: filteredData && filteredData.length > 0 ? Object.keys(filteredData[0]) : 'No data',
-        sampleData: filteredData?.slice(0, 1)
+        sampleData: filteredData?.slice(0, 1),
       });
-      
+
       // Directly adapt the data without using helper functions that might be causing issues
       const adapted = filteredData.map(item => {
         // Create a basic company object with required fields
@@ -120,17 +118,17 @@ export const companiesApi = {
           status: (item.status as ContentStatus) || 'draft',
           featured: item.featured || false,
           created_at: item.created_at || null,
-          social: (item.social as any) || null
+          social: (item.social as any) || null,
         };
-        
+
         return company;
       });
-      
+
       logger.debug('Adapted companies', 'COMPANIES', {
         count: adapted.length,
-        sample: adapted.slice(0, 2)
+        sample: adapted.slice(0, 2),
       });
-      
+
       return adapted;
     } catch (error) {
       logger.apiError('getAll', error);
@@ -138,7 +136,7 @@ export const companiesApi = {
       return this.getMockCompanies();
     }
   },
-  
+
   // Mock data for user's associated companies
   getMockUserCompanies(): Company[] {
     logger.debug('Returning mock user companies data', 'COMPANIES');
@@ -157,7 +155,7 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: true,
-        created_at: '2023-01-01T00:00:00.000Z'
+        created_at: '2023-01-01T00:00:00.000Z',
       },
       {
         id: '2',
@@ -173,10 +171,10 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: false,
-        created_at: '2023-02-01T00:00:00.000Z'
-      }
+        created_at: '2023-02-01T00:00:00.000Z',
+      },
     ];
-    
+
     return mockCompanies;
   },
 
@@ -198,7 +196,7 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: true,
-        created_at: '2023-01-01T00:00:00.000Z'
+        created_at: '2023-01-01T00:00:00.000Z',
       },
       {
         id: '2',
@@ -214,7 +212,7 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: false,
-        created_at: '2023-02-01T00:00:00.000Z'
+        created_at: '2023-02-01T00:00:00.000Z',
       },
       {
         id: '3',
@@ -230,10 +228,10 @@ export const companiesApi = {
         website: 'https://example.com',
         status: 'published' as ContentStatus,
         featured: true,
-        created_at: '2023-03-01T00:00:00.000Z'
-      }
+        created_at: '2023-03-01T00:00:00.000Z',
+      },
     ];
-    
+
     return mockCompanies;
   },
 
@@ -241,7 +239,7 @@ export const companiesApi = {
     try {
       console.log('[companiesApi.getById] Fetching company with ID:', id);
       logger.debug('Fetching company by ID', 'COMPANIES', { id });
-      
+
       const { data, error } = await supabase
         .from('companies')
         .select(`*`)
@@ -257,7 +255,7 @@ export const companiesApi = {
         // Return null instead of throwing an error to prevent app crashes
         return null;
       }
-      
+
       logger.debug('Company fetched', 'COMPANIES', { id, found: !!data });
       const result = data ? adaptCompanyFromDatabase(data) : null;
       console.log('[companiesApi.getById] Adapted result:', result);
@@ -273,18 +271,14 @@ export const companiesApi = {
   async getBySlug(slug: string): Promise<Company | null> {
     try {
       logger.debug('Fetching company by slug', 'COMPANIES', { slug });
-      
-      const { data, error } = await supabase
-        .from('companies')
-        .select(`*`)
-        .eq('slug', slug)
-        .single();
+
+      const { data, error } = await supabase.from('companies').select(`*`).eq('slug', slug).single();
 
       if (error) {
         logger.apiError('getBySlug - company', error);
         return null;
       }
-      
+
       logger.debug('Company fetched by slug', 'COMPANIES', { slug, found: !!data });
       return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
@@ -298,7 +292,7 @@ export const companiesApi = {
       console.log('[companiesApi.getByIdOrSlug] Called with:', idOrSlug);
       const { type, value } = parseCompanyParam(idOrSlug);
       console.log('[companiesApi.getByIdOrSlug] Parsed as:', { type, value });
-      
+
       if (type === 'id') {
         const result = await this.getById(value);
         console.log('[companiesApi.getByIdOrSlug] getById result:', result);
@@ -328,7 +322,7 @@ export const companiesApi = {
         handleSupabaseError(error, 'creating company');
         return null;
       }
-      
+
       return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'creating company');
@@ -350,7 +344,7 @@ export const companiesApi = {
         handleSupabaseError(error, 'updating company');
         return null;
       }
-      
+
       return data ? adaptCompanyFromDatabase(data) : null;
     } catch (error) {
       handleSupabaseError(error, 'updating company');
@@ -360,10 +354,7 @@ export const companiesApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('companies')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('companies').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, 'deleting company');
@@ -376,7 +367,11 @@ export const companiesApi = {
     }
   },
 
-  async addCompanyEmployee(companyId: string, memberId: string, employeeData?: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
+  async addCompanyEmployee(
+    companyId: string,
+    memberId: string,
+    employeeData?: Partial<CompanyEmployee>
+  ): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
         .from('company_members')
@@ -384,7 +379,7 @@ export const companiesApi = {
           company_id: companyId,
           member_id: memberId,
           role: employeeData?.role || null,
-          joined_date: new Date().toISOString()
+          joined_date: new Date().toISOString(),
         })
         .select('*')
         .single();
@@ -401,7 +396,7 @@ export const companiesApi = {
         member_id: data.member_id,
         role: data.role,
         joined_date: data.joined_date,
-        member: undefined
+        member: undefined,
       };
     } catch (error) {
       logger.apiError('addCompanyEmployee', error);
@@ -409,12 +404,16 @@ export const companiesApi = {
     }
   },
 
-  async updateCompanyEmployee(companyId: string, memberId: string, updates: Partial<CompanyEmployee>): Promise<CompanyEmployee | null> {
+  async updateCompanyEmployee(
+    companyId: string,
+    memberId: string,
+    updates: Partial<CompanyEmployee>
+  ): Promise<CompanyEmployee | null> {
     try {
       const { data, error } = await supabase
         .from('company_members')
         .update({
-          role: updates.role
+          role: updates.role,
         })
         .eq('company_id', companyId)
         .eq('member_id', memberId)
@@ -433,7 +432,7 @@ export const companiesApi = {
         member_id: data.member_id,
         role: data.role,
         joined_date: data.joined_date,
-        member: undefined
+        member: undefined,
       };
     } catch (error) {
       logger.apiError('updateCompanyEmployee', error);
@@ -464,11 +463,8 @@ export const companiesApi = {
   async getCompanyEmployees(companyId: string, filters?: CompanyEmployeeFilters): Promise<CompanyEmployee[]> {
     try {
       logger.debug('Fetching company employees', 'COMPANIES', { companyId });
-      
-      let query = supabase
-        .from('company_members')
-        .select('*')
-        .eq('company_id', companyId);
+
+      let query = supabase.from('company_members').select('*').eq('company_id', companyId);
 
       // Apply filters
       if (filters?.currentOnly) {
@@ -487,30 +483,32 @@ export const companiesApi = {
         // Return empty array instead of throwing to prevent app crashes
         return [];
       }
-      
+
       logger.debug('Company employees fetched', 'COMPANIES', { companyId, count: data?.length || 0 });
-      
+
       // Type assertion with validation
       if (!data) return [];
-      
+
       return data.map(employee => ({
         company_id: employee.company_id,
         member_id: employee.member_id,
         role: employee.role,
         joined_date: employee.joined_date,
-        member: (employee as any).member ? {
-          id: (employee as any).member.id,
-          name: (employee as any).member.name,
-          full_name: (employee as any).member.name,
-          bio: (employee as any).member.bio,
-          location: (employee as any).member.location,
-          image: (employee as any).member.image,
-          avatar_url: (employee as any).member.image
-        } : undefined
+        member: (employee as any).member
+          ? {
+              id: (employee as any).member.id,
+              name: (employee as any).member.name,
+              full_name: (employee as any).member.name,
+              bio: (employee as any).member.bio,
+              location: (employee as any).member.location,
+              image: (employee as any).member.image,
+              avatar_url: (employee as any).member.image,
+            }
+          : undefined,
       }));
     } catch (error) {
       logger.apiError('getCompanyEmployees', error);
       return [];
     }
-  }
+  },
 };

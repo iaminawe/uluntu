@@ -20,7 +20,7 @@ export const refreshSession = jest.fn();
 export const checkConnection = jest.fn().mockResolvedValue(true);
 
 // Error handling utility
-export const handleSupabaseError = jest.fn((error) => {
+export const handleSupabaseError = jest.fn(error => {
   if (error) {
     throw new Error(error.message || 'Supabase error');
   }

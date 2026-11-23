@@ -22,19 +22,14 @@ interface QueuedFile {
   error?: string;
 }
 
-const PhotoUpload: React.FC<PhotoUploadProps> = ({
-  galleryId,
-  onUpload,
-  maxFiles = 10,
-  isUploading = false
-}) => {
+const PhotoUpload: React.FC<PhotoUploadProps> = ({ galleryId, onUpload, maxFiles = 10, isUploading = false }) => {
   const [queuedFiles, setQueuedFiles] = useState<QueuedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFiles = async (files: File[]) => {
     const validFiles: QueuedFile[] = [];
-    
+
     for (const file of files.slice(0, maxFiles - queuedFiles.length)) {
       const validation = validateImageFile(file);
       if (validation.valid) {
@@ -59,11 +54,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
           title: file.name,
           description: '',
           tags: [],
-          error: validation.error
+          error: validation.error,
         });
       }
     }
-    
+
     setQueuedFiles(prev => [...prev, ...validFiles]);
   };
 
@@ -86,9 +81,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
   };
 
   const updateFile = (id: string, updates: Partial<QueuedFile>) => {
-    setQueuedFiles(prev => prev.map(f => 
-      f.id === id ? { ...f, ...updates } : f
-    ));
+    setQueuedFiles(prev => prev.map(f => (f.id === id ? { ...f, ...updates } : f)));
   };
 
   const handleUpload = () => {
@@ -98,11 +91,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       title: f.title,
       description: f.description,
       tags: f.tags,
-      galleryId
+      galleryId,
     }));
-    
+
     onUpload(inputs);
-    
+
     // Clear queue after upload starts
     setTimeout(() => {
       queuedFiles.forEach(f => {
@@ -121,12 +114,12 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
             ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
             : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
         }`}
-        onDragOver={(e) => {
+        onDragOver={e => {
           handleDragOver(e);
           setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
+        onDrop={e => {
           handleDrop(e);
           setIsDragging(false);
         }}
@@ -140,18 +133,13 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
           className="hidden"
           disabled={isUploading}
         />
-        
+
         <Upload className="h-12 w-12 mx-auto mb-4 text-slate-400 dark:text-slate-500" />
         <p className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">
           {isDragging ? 'Drop photos here' : 'Drag and drop photos here'}
         </p>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-          or click to select up to {maxFiles} photos
-        </p>
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading || queuedFiles.length >= maxFiles}
-        >
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">or click to select up to {maxFiles} photos</p>
+        <Button onClick={() => fileInputRef.current?.click()} disabled={isUploading || queuedFiles.length >= maxFiles}>
           Select Photos
         </Button>
       </div>
@@ -190,11 +178,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                 {/* Preview */}
                 <div className="flex-shrink-0">
                   {file.preview ? (
-                    <img
-                      src={file.preview}
-                      alt={file.title}
-                      className="w-20 h-20 object-cover rounded"
-                    />
+                    <img src={file.preview} alt={file.title} className="w-20 h-20 object-cover rounded" />
                   ) : (
                     <div className="w-20 h-20 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center">
                       <AlertCircle className="h-8 w-8 text-red-500" />
@@ -214,7 +198,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                       <input
                         type="text"
                         value={file.title}
-                        onChange={(e) => updateFile(file.id, { title: e.target.value })}
+                        onChange={e => updateFile(file.id, { title: e.target.value })}
                         placeholder="Photo title"
                         className="w-full px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded
                                  bg-white dark:bg-slate-700 text-slate-900 dark:text-white
@@ -243,11 +227,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
           {/* Upload button */}
           {queuedFiles.some(f => !f.error) && (
             <div className="flex justify-end">
-              <Button
-                onClick={handleUpload}
-                disabled={isUploading}
-                className="min-w-[120px]"
-              >
+              <Button onClick={handleUpload} disabled={isUploading} className="min-w-[120px]">
                 {isUploading ? 'Uploading...' : 'Upload Photos'}
               </Button>
             </div>

@@ -169,18 +169,18 @@
   .force-stack {
     flex-direction: column !important;
   }
-  
+
   /* Increase touch targets on mobile */
   .mobile-touch {
     min-height: 48px !important;
     min-width: 48px !important;
   }
-  
+
   /* Simplify navigation on mobile */
   .nav-simplified .nav-label {
     display: none;
   }
-  
+
   .nav-simplified .nav-icon {
     margin: 0 auto;
   }
@@ -198,15 +198,15 @@
   .no-print {
     display: none !important;
   }
-  
+
   .print-full-width {
     width: 100% !important;
   }
-  
+
   .sidebar {
     display: none !important;
   }
-  
+
   .content-with-sidebar {
     padding-left: 0 !important;
   }
@@ -235,7 +235,7 @@
   .transition-colors {
     transition: none !important;
   }
-  
+
   .animate-spin {
     animation: none !important;
   }

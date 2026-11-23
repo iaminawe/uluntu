@@ -4,7 +4,7 @@ import { TextEncoder, TextDecoder } from 'util';
 // Mock localStorage
 class LocalStorageMock {
   store: Record<string, string>;
-  
+
   constructor() {
     this.store = {};
   }
@@ -69,9 +69,15 @@ global.IntersectionObserver = class IntersectionObserver {
     this.callback = callback;
   }
   callback: IntersectionObserverCallback;
-  observe() { return null; }
-  unobserve() { return null; }
-  disconnect() { return null; }
+  observe() {
+    return null;
+  }
+  unobserve() {
+    return null;
+  }
+  disconnect() {
+    return null;
+  }
 };
 
 // Suppress console errors during tests
@@ -80,11 +86,10 @@ console.error = (...args) => {
   // Ignore specific errors that are expected in tests
   const firstArg = args[0];
   if (
-    typeof firstArg === 'string' && (
-      firstArg.includes('Warning: ReactDOM.render is no longer supported') ||
+    typeof firstArg === 'string' &&
+    (firstArg.includes('Warning: ReactDOM.render is no longer supported') ||
       firstArg.includes('supabaseUrl is required') ||
-      firstArg.includes('Invalid hook call')
-    )
+      firstArg.includes('Invalid hook call'))
   ) {
     return;
   }

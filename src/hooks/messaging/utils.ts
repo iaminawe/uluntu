@@ -22,19 +22,19 @@ export function clearConversationCache(queryClient: QueryClient, conversationId:
   // Remove all message queries for this conversation
   queryClient.removeQueries({
     queryKey: messagingQueryKeys.messages(conversationId),
-    exact: false
+    exact: false,
   });
 
   // Remove infinite query cache specifically
   queryClient.removeQueries({
     queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
-    exact: true
+    exact: true,
   });
 
   // Remove conversation-specific cache
   queryClient.removeQueries({
     queryKey: messagingQueryKeys.conversation(conversationId),
-    exact: true
+    exact: true,
   });
 }
 
@@ -48,13 +48,13 @@ export function resetConversationState(queryClient: QueryClient, conversationId:
   // Force refetch of conversation data
   queryClient.invalidateQueries({
     queryKey: messagingQueryKeys.conversation(conversationId),
-    exact: true
+    exact: true,
   });
 
   // Force refetch of messages
   queryClient.invalidateQueries({
     queryKey: [...messagingQueryKeys.messages(conversationId), 50, 'infinite'],
-    exact: true
+    exact: true,
   });
 }
 
@@ -69,20 +69,15 @@ export function optimisticallyUpdateMessage(
 ): void {
   const queryKey = [...messagingQueryKeys.messages(conversationId), 50, 'infinite'];
 
-  queryClient.setQueryData<InfiniteData<Message[]>>(
-    queryKey,
-    (oldData) => {
-      if (!oldData) return oldData;
+  queryClient.setQueryData<InfiniteData<Message[]>>(queryKey, oldData => {
+    if (!oldData) return oldData;
 
-      const updatedPages = oldData.pages.map((page) =>
-        page.map((message) =>
-          message.id === messageId && message.conversation_id === conversationId
-            ? updater(message)
-            : message
-        )
-      );
+    const updatedPages = oldData.pages.map(page =>
+      page.map(message =>
+        message.id === messageId && message.conversation_id === conversationId ? updater(message) : message
+      )
+    );
 
-      return { ...oldData, pages: updatedPages };
-    }
-  );
+    return { ...oldData, pages: updatedPages };
+  });
 }

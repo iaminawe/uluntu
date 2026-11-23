@@ -5,18 +5,18 @@ import { unsplashService } from '@/lib/ai/unsplash-service';
 import { supabase } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  List, 
-  ListOrdered, 
-  Quote, 
-  Code, 
-  Link2, 
-  Image, 
-  Heading1, 
-  Heading2, 
+import {
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+  Link2,
+  Image,
+  Heading1,
+  Heading2,
   Heading3,
   AlignLeft,
   AlignCenter,
@@ -32,7 +32,7 @@ import {
   Upload,
   Eye,
   Edit3,
-  ImagePlus
+  ImagePlus,
 } from 'lucide-react';
 
 interface EnhancedContentAIEditorProps {
@@ -58,14 +58,14 @@ const formatCommands = {
   ol: { icon: ListOrdered, label: 'Numbered List', markdown: '1. ', html: 'ol' },
   quote: { icon: Quote, label: 'Quote', markdown: '> ', html: 'blockquote' },
   code: { icon: Code, label: 'Code', markdown: '`', html: 'code' },
-  link: { icon: Link2, label: 'Link', markdown: '[', html: 'a' }
+  link: { icon: Link2, label: 'Link', markdown: '[', html: 'a' },
 };
 
 // Text alignment options
 const alignmentOptions = [
   { icon: AlignLeft, value: 'left', label: 'Align Left' },
   { icon: AlignCenter, value: 'center', label: 'Align Center' },
-  { icon: AlignRight, value: 'right', label: 'Align Right' }
+  { icon: AlignRight, value: 'right', label: 'Align Right' },
 ];
 
 // Font size options
@@ -73,7 +73,7 @@ const fontSizeOptions = [
   { label: 'Small', value: 'small' },
   { label: 'Normal', value: 'normal' },
   { label: 'Large', value: 'large' },
-  { label: 'Extra Large', value: 'x-large' }
+  { label: 'Extra Large', value: 'x-large' },
 ];
 
 // Text color presets
@@ -84,7 +84,7 @@ const colorPresets = [
   { label: 'Green', value: '#16a34a' },
   { label: 'Purple', value: '#9333ea' },
   { label: 'Orange', value: '#ea580c' },
-  { label: 'Gray', value: '#6b7280' }
+  { label: 'Gray', value: '#6b7280' },
 ];
 
 export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = ({
@@ -95,7 +95,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
   includeImages = true,
   className = '',
   height = '500px',
-  disabled = false
+  disabled = false,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAIMenu, setShowAIMenu] = useState(false);
@@ -107,7 +107,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'rendered' | 'source'>('rendered');
   const [uploadingImage, setUploadingImage] = useState(false);
-  
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const aiConfig = checkAIConfiguration();
@@ -120,78 +120,85 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
   }, [value]);
 
   // Apply formatting
-  const applyFormat = useCallback((format: keyof typeof formatCommands) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const applyFormat = useCallback(
+    (format: keyof typeof formatCommands) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = value.substring(start, end);
-    
-    if (!selectedText) {
-      // If no text selected, just insert the markdown
-      const cmd = formatCommands[format];
-      let insertion = '';
-      
-      if (format === 'h1' || format === 'h2' || format === 'h3') {
-        // For headings, add at the beginning of the line
-        const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-        const newValue = value.substring(0, lineStart) + cmd.markdown + value.substring(lineStart);
-        onChange(newValue);
-        textarea.setSelectionRange(lineStart + cmd.markdown.length, lineStart + cmd.markdown.length);
-      } else if (format === 'ul' || format === 'ol' || format === 'quote') {
-        // For lists and quotes, add at the beginning of the line
-        const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-        const newValue = value.substring(0, lineStart) + cmd.markdown + value.substring(lineStart);
-        onChange(newValue);
-        textarea.setSelectionRange(lineStart + cmd.markdown.length, lineStart + cmd.markdown.length);
-      } else {
-        // For inline formatting, add placeholder text
-        insertion = cmd.markdown + 'text' + (cmd.markdown || '');
-        const newValue = value.substring(0, start) + insertion + value.substring(end);
-        onChange(newValue);
-        textarea.setSelectionRange(start + cmd.markdown.length, start + cmd.markdown.length + 4);
-      }
-    } else {
-      // Apply formatting to selected text
-      saveToUndoStack();
-      const cmd = formatCommands[format];
-      let formattedText = '';
-      
-      if (format === 'bold') {
-        formattedText = `**${selectedText}**`;
-      } else if (format === 'italic') {
-        formattedText = `_${selectedText}_`;
-      } else if (format === 'code') {
-        formattedText = selectedText.includes('\n') ? 
-          `\`\`\`\n${selectedText}\n\`\`\`` : 
-          `\`${selectedText}\``;
-      } else if (format === 'link') {
-        const url = prompt('Enter URL:');
-        if (url) {
-          formattedText = `[${selectedText}](${url})`;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = value.substring(start, end);
+
+      if (!selectedText) {
+        // If no text selected, just insert the markdown
+        const cmd = formatCommands[format];
+        let insertion = '';
+
+        if (format === 'h1' || format === 'h2' || format === 'h3') {
+          // For headings, add at the beginning of the line
+          const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+          const newValue = value.substring(0, lineStart) + cmd.markdown + value.substring(lineStart);
+          onChange(newValue);
+          textarea.setSelectionRange(lineStart + cmd.markdown.length, lineStart + cmd.markdown.length);
+        } else if (format === 'ul' || format === 'ol' || format === 'quote') {
+          // For lists and quotes, add at the beginning of the line
+          const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+          const newValue = value.substring(0, lineStart) + cmd.markdown + value.substring(lineStart);
+          onChange(newValue);
+          textarea.setSelectionRange(lineStart + cmd.markdown.length, lineStart + cmd.markdown.length);
         } else {
-          return;
+          // For inline formatting, add placeholder text
+          insertion = cmd.markdown + 'text' + (cmd.markdown || '');
+          const newValue = value.substring(0, start) + insertion + value.substring(end);
+          onChange(newValue);
+          textarea.setSelectionRange(start + cmd.markdown.length, start + cmd.markdown.length + 4);
         }
-      } else if (format === 'h1' || format === 'h2' || format === 'h3') {
-        formattedText = cmd.markdown + selectedText;
-      } else if (format === 'ul' || format === 'ol') {
-        formattedText = selectedText.split('\n').map(line => cmd.markdown + line).join('\n');
-      } else if (format === 'quote') {
-        formattedText = selectedText.split('\n').map(line => '> ' + line).join('\n');
       } else {
-        formattedText = selectedText;
+        // Apply formatting to selected text
+        saveToUndoStack();
+        const cmd = formatCommands[format];
+        let formattedText = '';
+
+        if (format === 'bold') {
+          formattedText = `**${selectedText}**`;
+        } else if (format === 'italic') {
+          formattedText = `_${selectedText}_`;
+        } else if (format === 'code') {
+          formattedText = selectedText.includes('\n') ? `\`\`\`\n${selectedText}\n\`\`\`` : `\`${selectedText}\``;
+        } else if (format === 'link') {
+          const url = prompt('Enter URL:');
+          if (url) {
+            formattedText = `[${selectedText}](${url})`;
+          } else {
+            return;
+          }
+        } else if (format === 'h1' || format === 'h2' || format === 'h3') {
+          formattedText = cmd.markdown + selectedText;
+        } else if (format === 'ul' || format === 'ol') {
+          formattedText = selectedText
+            .split('\n')
+            .map(line => cmd.markdown + line)
+            .join('\n');
+        } else if (format === 'quote') {
+          formattedText = selectedText
+            .split('\n')
+            .map(line => '> ' + line)
+            .join('\n');
+        } else {
+          formattedText = selectedText;
+        }
+
+        const newValue = value.substring(0, start) + formattedText + value.substring(end);
+        onChange(newValue);
+
+        // Restore selection
+        textarea.setSelectionRange(start, start + formattedText.length);
       }
-      
-      const newValue = value.substring(0, start) + formattedText + value.substring(end);
-      onChange(newValue);
-      
-      // Restore selection
-      textarea.setSelectionRange(start, start + formattedText.length);
-    }
-    
-    textarea.focus();
-  }, [value, onChange, saveToUndoStack]);
+
+      textarea.focus();
+    },
+    [value, onChange, saveToUndoStack]
+  );
 
   // Insert link
   const insertLink = useCallback(() => {
@@ -241,18 +248,19 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
 
     setIsProcessing(true);
     try {
-      const promptText = contentType === 'news' ? 
-        `Write a comprehensive news article about: ${topic}` :
-        contentType === 'events' ? 
-        `Write a detailed event description for: ${topic}` :
-        contentType === 'marketplace' ? 
-        `Write a compelling product/service description for: ${topic}` :
-        `Write comprehensive content about: ${topic}`;
-      
+      const promptText =
+        contentType === 'news'
+          ? `Write a comprehensive news article about: ${topic}`
+          : contentType === 'events'
+            ? `Write a detailed event description for: ${topic}`
+            : contentType === 'marketplace'
+              ? `Write a compelling product/service description for: ${topic}`
+              : `Write comprehensive content about: ${topic}`;
+
       const result = await callAI(promptText, '');
-      
+
       let finalContent = result;
-      
+
       // Add images if enabled
       if (includeImages && unsplashConfigured) {
         try {
@@ -261,19 +269,21 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             const lines = result.split('\n');
             const processedLines = [];
             let addedHero = false;
-            
+
             for (let i = 0; i < lines.length; i++) {
               processedLines.push(lines[i]);
-              
+
               if (!addedHero && lines[i].trim().startsWith('#') && photos[0]) {
                 processedLines.push('');
-                processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
+                processedLines.push(
+                  `![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`
+                );
                 processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
                 processedLines.push('');
                 addedHero = true;
               }
             }
-            
+
             finalContent = processedLines.join('\n');
           }
         } catch (imageError) {
@@ -281,7 +291,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
           // Continue with text-only content
         }
       }
-      
+
       onChange(finalContent);
     } catch (error) {
       console.error('Content generation failed:', error);
@@ -307,7 +317,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
       if (photos.length > 0) {
         const photo = photos[0];
         const markdown = `\n![${photo.alt_description || query}](${unsplashService.getOptimalImageUrl(photo)})\n*${unsplashService.formatAttribution(photo)}*\n`;
-        
+
         const textarea = textareaRef.current;
         if (textarea) {
           const start = textarea.selectionStart;
@@ -326,73 +336,74 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
   }, [value, onChange, unsplashConfigured]);
 
   // Handle image upload
-  const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleImageUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
-      return;
-    }
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
-      return;
-    }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
 
-    setUploadingImage(true);
-    try {
-      // Generate unique filename
-      const timestamp = Date.now();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${contentType}-${timestamp}.${fileExt}`;
-      const filePath = `content-images/${fileName}`;
+      setUploadingImage(true);
+      try {
+        // Generate unique filename
+        const timestamp = Date.now();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${contentType}-${timestamp}.${fileExt}`;
+        const filePath = `content-images/${fileName}`;
 
-      // Upload to Supabase storage
-      const { data, error } = await supabase.storage
-        .from('content-images')
-        .upload(filePath, file, {
+        // Upload to Supabase storage
+        const { data, error } = await supabase.storage.from('content-images').upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
         });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('content-images')
-        .getPublicUrl(filePath);
+        // Get public URL
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('content-images').getPublicUrl(filePath);
 
-      // Insert markdown for uploaded image
-      const altText = prompt('Enter alt text for the image:') || file.name;
-      const markdown = `\n![${altText}](${publicUrl})\n`;
-      
-      const textarea = textareaRef.current;
-      if (textarea) {
-        const start = textarea.selectionStart;
-        const newValue = value.substring(0, start) + markdown + value.substring(start);
-        onChange(newValue);
+        // Insert markdown for uploaded image
+        const altText = prompt('Enter alt text for the image:') || file.name;
+        const markdown = `\n![${altText}](${publicUrl})\n`;
+
+        const textarea = textareaRef.current;
+        if (textarea) {
+          const start = textarea.selectionStart;
+          const newValue = value.substring(0, start) + markdown + value.substring(start);
+          onChange(newValue);
+        }
+
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+        alert('Failed to upload image. Please try again.');
+      } finally {
+        setUploadingImage(false);
       }
-
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    } catch (error) {
-      console.error('Failed to upload image:', error);
-      alert('Failed to upload image. Please try again.');
-    } finally {
-      setUploadingImage(false);
-    }
-  }, [contentType, value, onChange]);
+    },
+    [contentType, value, onChange]
+  );
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (disabled || !textareaRef.current) return;
-      
+
       // Ctrl/Cmd + B = Bold
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
         e.preventDefault();
@@ -414,8 +425,10 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
         handleUndo();
       }
       // Ctrl/Cmd + Shift + Z or Ctrl/Cmd + Y = Redo
-      else if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') || 
-               ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
+      else if (
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') ||
+        ((e.ctrlKey || e.metaKey) && e.key === 'y')
+      ) {
         e.preventDefault();
         handleRedo();
       }
@@ -500,21 +513,30 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             {showFormatMenu && (
               <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-lg z-10">
                 <button
-                  onClick={() => { applyFormat('h1'); setShowFormatMenu(false); }}
+                  onClick={() => {
+                    applyFormat('h1');
+                    setShowFormatMenu(false);
+                  }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
                   <Heading1 className="w-4 h-4" />
                   <span className="text-sm">Heading 1</span>
                 </button>
                 <button
-                  onClick={() => { applyFormat('h2'); setShowFormatMenu(false); }}
+                  onClick={() => {
+                    applyFormat('h2');
+                    setShowFormatMenu(false);
+                  }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
                   <Heading2 className="w-4 h-4" />
                   <span className="text-sm">Heading 2</span>
                 </button>
                 <button
-                  onClick={() => { applyFormat('h3'); setShowFormatMenu(false); }}
+                  onClick={() => {
+                    applyFormat('h3');
+                    setShowFormatMenu(false);
+                  }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
                   <Heading3 className="w-4 h-4" />
@@ -562,7 +584,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             >
               <Link2 className="w-4 h-4" />
             </button>
-            
+
             {/* Image dropdown menu */}
             {includeImages && (
               <div className="relative">
@@ -633,8 +655,8 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
             <button
               onClick={() => setViewMode(viewMode === 'rendered' ? 'source' : 'rendered')}
               className={`flex items-center gap-1 px-3 py-1.5 rounded transition-colors ${
-                viewMode === 'source' 
-                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                viewMode === 'source'
+                  ? 'bg-green-600 text-white hover:bg-green-700'
                   : 'bg-slate-600 text-white hover:bg-slate-700'
               }`}
               title={viewMode === 'source' ? 'Switch to Rendered View' : 'Switch to Source View'}
@@ -767,28 +789,32 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
 
       {/* Editor/Preview Area */}
       {viewMode === 'rendered' ? (
-        <div 
+        <div
           className="w-full p-4 border-x border-b border-slate-200 dark:border-slate-700 rounded-b-lg bg-white dark:bg-slate-900 overflow-auto"
           style={{ height, minHeight: '200px' }}
         >
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <ReactMarkdown 
+            <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                img: ({ node, ...props }) => (
-                  <img {...props} className="max-w-full h-auto rounded-lg shadow-md" />
-                ),
+                img: ({ node, ...props }) => <img {...props} className="max-w-full h-auto rounded-lg shadow-md" />,
                 a: ({ node, ...props }) => (
-                  <a {...props} className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" />
+                  <a
+                    {...props}
+                    className="text-blue-600 hover:text-blue-800 underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
                 ),
                 pre: ({ node, ...props }) => (
                   <pre {...props} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg overflow-x-auto" />
                 ),
-                code: ({ node, inline, ...props }) => (
-                  inline 
-                    ? <code {...props} className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-sm" />
-                    : <code {...props} />
-                ),
+                code: ({ node, inline, ...props }) =>
+                  inline ? (
+                    <code {...props} className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-sm" />
+                  ) : (
+                    <code {...props} />
+                  ),
                 blockquote: ({ node, ...props }) => (
                   <blockquote {...props} className="border-l-4 border-slate-300 dark:border-slate-600 pl-4 italic" />
                 ),
@@ -796,11 +822,14 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
                   <table {...props} className="border-collapse border border-slate-300 dark:border-slate-600" />
                 ),
                 th: ({ node, ...props }) => (
-                  <th {...props} className="border border-slate-300 dark:border-slate-600 px-4 py-2 bg-slate-100 dark:bg-slate-800" />
+                  <th
+                    {...props}
+                    className="border border-slate-300 dark:border-slate-600 px-4 py-2 bg-slate-100 dark:bg-slate-800"
+                  />
                 ),
                 td: ({ node, ...props }) => (
                   <td {...props} className="border border-slate-300 dark:border-slate-600 px-4 py-2" />
-                )
+                ),
               }}
             >
               {value || '*No content to preview*'}
@@ -811,7 +840,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled || isProcessing}
           className="w-full p-4 border-x border-b border-slate-200 dark:border-slate-700 rounded-b-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
@@ -826,13 +855,7 @@ export const EnhancedContentAIEditor: React.FC<EnhancedContentAIEditorProps> = (
       )}
 
       {/* Hidden file input for image upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="hidden"
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
 
       {/* Status Bar */}
       <div className="mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">

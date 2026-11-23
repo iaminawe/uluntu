@@ -2,7 +2,7 @@
 export * from './components';
 export * from './hooks';
 export { resourcesApi, type ResourceInput } from './api';
-export { 
+export {
   resourcesUISlice,
   type ResourceFilters,
   updateFilters as updateResourceFilters,
@@ -15,6 +15,6 @@ export {
   selectSelectedResourceId,
   selectResourcesViewMode,
   selectResourcesSortBy,
-  selectResourcesSortOrder
+  selectResourcesSortOrder,
 } from './store';
 export * from './types';

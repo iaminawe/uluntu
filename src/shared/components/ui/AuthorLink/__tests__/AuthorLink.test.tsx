@@ -9,7 +9,9 @@ import * as useAuthorHook from '../../../../hooks/useAuthor';
 jest.mock('../../../../hooks/useAuthor');
 
 const mockUseAuthorById = useAuthorHook.useAuthorById as jest.MockedFunction<typeof useAuthorHook.useAuthorById>;
-const mockUseAuthorFromContent = useAuthorHook.useAuthorFromContent as jest.MockedFunction<typeof useAuthorHook.useAuthorFromContent>;
+const mockUseAuthorFromContent = useAuthorHook.useAuthorFromContent as jest.MockedFunction<
+  typeof useAuthorHook.useAuthorFromContent
+>;
 
 // Test wrapper with providers
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -23,9 +25,7 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -35,7 +35,7 @@ const mockAuthorData = {
   name: 'John Doe',
   title: 'Software Engineer',
   image: 'https://example.com/avatar.jpg',
-  profileUrl: '/directory/123'
+  profileUrl: '/directory/123',
 };
 
 describe('AuthorLink Component', () => {
@@ -136,7 +136,7 @@ describe('AuthorLink Component', () => {
     const mockContent = {
       id: '1',
       title: 'Test Article',
-      authorId: '123'
+      authorId: '123',
     };
 
     mockUseAuthorFromContent.mockReturnValue({

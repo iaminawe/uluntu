@@ -66,9 +66,7 @@ describe('usePermissions - Admin Functionality', () => {
     });
   };
 
-  const wrapper = ({ children }: { children: ReactNode }) => (
-    <Provider store={store}>{children}</Provider>
-  );
+  const wrapper = ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>;
 
   beforeEach(() => {
     store = createTestStore(['admin']);

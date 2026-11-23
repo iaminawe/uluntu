@@ -34,7 +34,7 @@ const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) =
       await updateStatusMutation.mutateAsync({
         eventId,
         memberId,
-        status: newStatus
+        status: newStatus,
       });
     } catch (error) {
       console.error('Failed to update attendee status:', error);
@@ -79,9 +79,7 @@ const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) =
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Users className="h-5 w-5 text-orange-500" />
-          <h3 className="font-semibold text-slate-900 dark:text-white">
-            Attendees ({attendeeCount})
-          </h3>
+          <h3 className="font-semibold text-slate-900 dark:text-white">Attendees ({attendeeCount})</h3>
         </div>
         {attendeeCount > displayLimit && (
           <button
@@ -114,7 +112,7 @@ const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) =
           {visibleAttendees.map((attendee: Attendee) => {
             const member = attendee.members;
             const isCurrentUser = user?.id === member.id;
-            
+
             return (
               <div
                 key={attendee.member_id}
@@ -123,14 +121,14 @@ const AttendeesList: React.FC<AttendeesListProps> = ({ eventId, isOrganizer }) =
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
                     {member.image ? (
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
+                      <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
                     ) : (
                       <span className="text-orange-600 dark:text-orange-400 font-medium text-sm">
-                        {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        {member.name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')
+                          .toUpperCase()}
                       </span>
                     )}
                   </div>

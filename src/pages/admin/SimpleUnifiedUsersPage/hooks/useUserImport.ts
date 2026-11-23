@@ -33,10 +33,7 @@ export const useUserImport = (canEditRoles: boolean) => {
 
       // Get all member profiles
       const userIds = allUsersData.map(u => u.user_id);
-      const { data: memberProfiles } = await supabase
-        .from('members')
-        .select('*')
-        .in('user_id', userIds);
+      const { data: memberProfiles } = await supabase.from('members').select('*').in('user_id', userIds);
 
       // Prepare CSV data
       const csvData = allUsersData.map(user => {
@@ -53,7 +50,7 @@ export const useUserImport = (canEditRoles: boolean) => {
           featured: profile?.featured ? 'Yes' : 'No',
           roles: (user.roles || []).join(';'),
           created_at: user.created_at,
-          last_sign_in_at: user.last_sign_in_at || ''
+          last_sign_in_at: user.last_sign_in_at || '',
         };
       });
 
@@ -62,12 +59,10 @@ export const useUserImport = (canEditRoles: boolean) => {
       const csvContent = [
         headers,
         ...csvData.map(row =>
-          Object.values(row).map(value =>
-            typeof value === 'string' && value.includes(',')
-              ? `"${value}"`
-              : value
-          ).join(',')
-        )
+          Object.values(row)
+            .map(value => (typeof value === 'string' && value.includes(',') ? `"${value}"` : value))
+            .join(',')
+        ),
       ].join('\n');
 
       // Download file
@@ -103,7 +98,7 @@ export const useUserImport = (canEditRoles: boolean) => {
     setImportFile(file);
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const csv = e.target?.result as string;
       const lines = csv.split('\n').filter(line => line.trim());
 
@@ -134,7 +129,7 @@ export const useUserImport = (canEditRoles: boolean) => {
     setIsImporting(true);
     try {
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = async e => {
         const csv = e.target?.result as string;
         const lines = csv.split('\n').filter(line => line.trim());
         const headers = lines[0].split(',').map(h => h.trim());
@@ -164,14 +159,12 @@ export const useUserImport = (canEditRoles: boolean) => {
               bio: row.bio || null,
               status: row.status || 'draft',
               featured: row.featured === 'Yes',
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             };
 
             if (row.user_id) {
               // Update existing member
-              const { error } = await supabase
-                .from('members')
-                .upsert(memberData, { onConflict: 'user_id' });
+              const { error } = await supabase.from('members').upsert(memberData, { onConflict: 'user_id' });
 
               if (error) throw error;
 
@@ -180,21 +173,16 @@ export const useUserImport = (canEditRoles: boolean) => {
                 const rolesToAssign = row.roles.split(';').filter(r => r.trim());
                 if (rolesToAssign.length > 0) {
                   // Remove existing roles
-                  await supabase
-                    .from('user_roles')
-                    .delete()
-                    .eq('user_id', row.user_id);
+                  await supabase.from('user_roles').delete().eq('user_id', row.user_id);
 
                   // Add new roles
                   const roleInserts = rolesToAssign.map(role => ({
                     user_id: row.user_id,
                     role: role.trim(),
-                    created_at: new Date().toISOString()
+                    created_at: new Date().toISOString(),
                   }));
 
-                  await supabase
-                    .from('user_roles')
-                    .insert(roleInserts);
+                  await supabase.from('user_roles').insert(roleInserts);
                 }
               }
             }
@@ -237,6 +225,6 @@ export const useUserImport = (canEditRoles: boolean) => {
     // Actions
     exportToCSV,
     handleFileUpload,
-    processImport
+    processImport,
   };
 };

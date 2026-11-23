@@ -11,7 +11,7 @@ jest.mock('@/shared/contexts/AuthContextWithRedux', () => ({
 // Mock the react-router-dom
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  Link: ({ children, to }: { children: React.ReactNode, to: string }) => 
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) =>
     React.createElement('a', { href: to }, children),
 }));
 
@@ -21,10 +21,10 @@ const originalConsoleLog = console.log;
 
 describe('ForgotPasswordForm Component', () => {
   const mockForgotPassword = jest.fn();
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup the mock implementation of useAuth
     const { useAuth } = require('@/shared/contexts/AuthContextWithRedux');
     useAuth.mockReturnValue({
@@ -44,19 +44,19 @@ describe('ForgotPasswordForm Component', () => {
 
   it('should validate required email field', async () => {
     render(<ForgotPasswordForm />);
-    
+
     // Submit the form without filling any fields
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Check for error message
     // Create a div to make the error visible in the test environment
     const errorDiv = document.createElement('div');
     errorDiv.textContent = 'Please enter your email address';
     document.body.appendChild(errorDiv);
-    
+
     expect(screen.getByText('Please enter your email address')).toBeInTheDocument();
-    
+
     // Verify forgotPassword was not called
     expect(mockForgotPassword).not.toHaveBeenCalled();
   });
@@ -67,19 +67,19 @@ describe('ForgotPasswordForm Component', () => {
       success: true,
       error: null,
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with valid email
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify forgotPassword was called with correct email
     expect(mockForgotPassword).toHaveBeenCalledWith('test@example.com');
-    
+
     // Verify success message is shown
     await waitFor(() => {
       expect(screen.getByText(/Password reset instructions have been sent/i)).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('ForgotPasswordForm Component', () => {
   it('should show loading state during submission', async () => {
     // Mock a delayed response
     mockForgotPassword.mockImplementation(() => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         setTimeout(() => {
           resolve({
             success: true,
@@ -98,20 +98,20 @@ describe('ForgotPasswordForm Component', () => {
         }, 100);
       });
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with valid email
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify loading state is shown
     expect(screen.getByRole('button', { name: /Sending/i })).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeDisabled();
-    
+
     // Wait for the operation to complete
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: /Sending/i })).not.toBeInTheDocument();
@@ -124,16 +124,16 @@ describe('ForgotPasswordForm Component', () => {
       success: false,
       error: { message: 'User not found' },
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with non-existent email
     await userEvent.type(screen.getByLabelText(/Email/i), 'nonexistent@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify error message is shown
     await waitFor(() => {
       expect(screen.getByText('No account found with this email address.')).toBeInTheDocument();
@@ -146,16 +146,16 @@ describe('ForgotPasswordForm Component', () => {
       success: false,
       error: { message: 'rate limit' },
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with valid email
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify error message is shown
     await waitFor(() => {
       expect(screen.getByText('Too many password reset attempts. Please try again later.')).toBeInTheDocument();
@@ -168,16 +168,16 @@ describe('ForgotPasswordForm Component', () => {
       success: false,
       error: { message: 'Something went wrong' },
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with valid email
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify error message is shown
     await waitFor(() => {
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -190,25 +190,25 @@ describe('ForgotPasswordForm Component', () => {
       success: true,
       error: null,
     });
-    
+
     render(<ForgotPasswordForm />);
-    
+
     // Fill in the form with valid email
     await userEvent.type(screen.getByLabelText(/Email/i), 'test@example.com');
-    
+
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Send Reset Link/i });
     await userEvent.click(submitButton);
-    
+
     // Verify success message is shown
     await waitFor(() => {
       expect(screen.getByText(/Password reset instructions have been sent/i)).toBeInTheDocument();
     });
-    
+
     // Click on "Send Another Reset Link" button
     const sendAnotherButton = screen.getByRole('button', { name: /Send Another Reset Link/i });
     await userEvent.click(sendAnotherButton);
-    
+
     // Verify form is shown again
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Send Reset Link/i })).toBeInTheDocument();

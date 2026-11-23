@@ -36,7 +36,7 @@ class Logger {
       message,
       context,
       data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Add to buffer for potential remote logging
@@ -46,7 +46,7 @@ class Logger {
     if (this.isDevelopment) {
       const contextStr = context ? `[${context}]` : '';
       const logMessage = `${contextStr} ${message}`;
-      
+
       switch (level) {
         case 'debug':
           console.debug(logMessage, data || '');
@@ -67,7 +67,7 @@ class Logger {
     if (!this.isDevelopment && (level === 'warn' || level === 'error')) {
       const contextStr = context ? `[${context}]` : '';
       const logMessage = `${contextStr} ${message}`;
-      
+
       if (level === 'warn') {
         console.warn(logMessage, data || '');
       } else {
@@ -78,7 +78,7 @@ class Logger {
 
   private addToBuffer(entry: LogEntry): void {
     this.logBuffer.push(entry);
-    
+
     // Keep buffer size manageable
     if (this.logBuffer.length > this.maxBufferSize) {
       this.logBuffer = this.logBuffer.slice(-this.maxBufferSize);
@@ -142,14 +142,10 @@ class Logger {
 export const logger = Logger.getInstance();
 
 // Export convenience functions for easier migration
-export const logDebug = (message: string, context?: string, data?: any) => 
-  logger.debug(message, context, data);
+export const logDebug = (message: string, context?: string, data?: any) => logger.debug(message, context, data);
 
-export const logInfo = (message: string, context?: string, data?: any) => 
-  logger.info(message, context, data);
+export const logInfo = (message: string, context?: string, data?: any) => logger.info(message, context, data);
 
-export const logWarn = (message: string, context?: string, data?: any) => 
-  logger.warn(message, context, data);
+export const logWarn = (message: string, context?: string, data?: any) => logger.warn(message, context, data);
 
-export const logError = (message: string, context?: string, data?: any) => 
-  logger.error(message, context, data);
+export const logError = (message: string, context?: string, data?: any) => logger.error(message, context, data);

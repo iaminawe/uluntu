@@ -1,6 +1,6 @@
 /**
  * Cross-Browser Compatibility Tests for Menu Management
- * 
+ *
  * Tests compatibility across different browsers, devices,
  * and browser versions including edge cases and feature support.
  */
@@ -41,19 +41,15 @@ class MenuTestHelper {
     await this.page.waitForLoadState('networkidle');
   }
 
-  async createTestMenuItem(data: {
-    title: string;
-    url: string;
-    description?: string;
-  }) {
+  async createTestMenuItem(data: { title: string; url: string; description?: string }) {
     await this.page.getByText('Add Item').click();
     await this.page.getByPlaceholder('Menu item title').fill(data.title);
     await this.page.getByPlaceholder('/page or https://external-site.com').fill(data.url);
-    
+
     if (data.description) {
       await this.page.getByPlaceholder('Optional description for admin reference').fill(data.description);
     }
-    
+
     await this.page.getByRole('button', { name: 'Create Menu Item' }).click();
     await expect(this.page.getByText('Menu item created successfully')).toBeVisible();
   }
@@ -61,10 +57,10 @@ class MenuTestHelper {
   async expectBasicFunctionality() {
     await expect(this.page.getByText('Menu Management')).toBeVisible();
     await expect(this.page.getByText('Add Item')).toBeVisible();
-    
+
     // Check for search functionality
     await expect(this.page.getByPlaceholder('Search menu items...')).toBeVisible();
-    
+
     // Check for tab navigation
     await expect(this.page.getByText('Main Menu')).toBeVisible();
     await expect(this.page.getByText('Footer Menu')).toBeVisible();
@@ -88,13 +84,13 @@ class MenuTestHelper {
 
   async testTouchInteractions() {
     const isTouchDevice = await this.page.evaluate(() => 'ontouchstart' in window);
-    
+
     if (isTouchDevice) {
       // Test drag and drop with touch
       const firstItem = this.page.locator('[data-testid="menu-item"]').first();
       const secondItem = this.page.locator('[data-testid="menu-item"]').nth(1);
-      
-      if (await firstItem.isVisible() && await secondItem.isVisible()) {
+
+      if ((await firstItem.isVisible()) && (await secondItem.isVisible())) {
         await firstItem.hover();
         await this.page.mouse.down();
         await secondItem.hover();
@@ -108,10 +104,10 @@ class MenuTestHelper {
     await this.page.keyboard.press('Tab');
     const focusedElement = await this.page.evaluate(() => document.activeElement?.tagName);
     expect(['BUTTON', 'INPUT', 'A', 'SELECT']).toContain(focusedElement);
-    
+
     // Test ARIA attributes
     const navigation = this.page.getByRole('navigation');
-    if (await navigation.count() > 0) {
+    if ((await navigation.count()) > 0) {
       await expect(navigation.first()).toHaveAttribute('aria-label');
     }
   }
@@ -135,7 +131,7 @@ for (const browserConfig of browserConfigs) {
       });
       page = await context.newPage();
       menuHelper = new MenuTestHelper(page);
-      
+
       await menuHelper.loginAsAdmin();
     });
 
@@ -154,39 +150,39 @@ for (const browserConfig of browserConfigs) {
 
     test('should support CRUD operations', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       const testData = {
         title: `Test Item ${browserConfig.name}`,
         url: `/test-${browserConfig.name.toLowerCase()}`,
         description: `Test item for ${browserConfig.name} compatibility`,
       };
-      
+
       await menuHelper.createTestMenuItem(testData);
       await expect(page.getByText(testData.title)).toBeVisible();
     });
 
     test('should handle form validation correctly', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       await page.getByText('Add Item').click();
       await page.getByRole('button', { name: 'Create Menu Item' }).click();
-      
+
       await expect(page.getByText('Title and URL are required')).toBeVisible();
     });
 
     test('should support search functionality', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       // Create a test item first
       await menuHelper.createTestMenuItem({
         title: 'Searchable Item',
         url: '/searchable',
       });
-      
+
       // Test search
       await page.getByPlaceholder('Search menu items...').fill('Searchable');
       await expect(page.getByText('Searchable Item')).toBeVisible();
-      
+
       // Clear search
       await page.getByPlaceholder('Search menu items...').fill('');
     });
@@ -198,18 +194,17 @@ for (const browserConfig of browserConfigs) {
         userAgent: browserConfig.userAgent,
       });
       const noJsPage = await noJsContext.newPage();
-      
+
       try {
         await noJsPage.goto('/admin/menu-management');
-        
+
         // Basic HTML should still be accessible
         const pageContent = await noJsPage.content();
         expect(pageContent).toContain('Menu Management');
-        
+
         // Forms should still be present for progressive enhancement
         const forms = await noJsPage.locator('form').count();
         expect(forms).toBeGreaterThan(0);
-        
       } finally {
         await noJsContext.close();
       }
@@ -217,12 +212,12 @@ for (const browserConfig of browserConfigs) {
 
     test('should handle network interruptions gracefully', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       // Simulate network failure
       await page.route('**/api/menu-items**', route => route.abort());
-      
+
       await page.reload();
-      
+
       // Should show appropriate error message
       await expect(page.getByText(/error.*loading/i)).toBeVisible();
       await expect(page.getByText('Try Again')).toBeVisible();
@@ -230,27 +225,27 @@ for (const browserConfig of browserConfigs) {
 
     test('should support different character encodings', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       const unicodeTestData = {
         title: 'Unicode Test 测试 🎉 العربية',
         url: '/unicode-test',
         description: 'Testing unicode characters: ñáéíóú çğışü αβγδε',
       };
-      
+
       await menuHelper.createTestMenuItem(unicodeTestData);
       await expect(page.getByText(unicodeTestData.title)).toBeVisible();
     });
 
     test('should maintain state across page reloads', async () => {
       await menuHelper.navigateToMenuManagement();
-      
+
       // Apply a filter
       await page.getByDisplayValue('All Visibility').selectOption('public');
-      
+
       // Reload page
       await page.reload();
       await page.waitForLoadState('networkidle');
-      
+
       // State should be preserved (if implemented)
       // This test documents expected behavior
     });
@@ -277,26 +272,26 @@ for (const deviceConfig of deviceConfigs) {
 
     test('should support touch interactions on mobile devices', async ({ page }) => {
       await menuHelper.navigateToMenuManagement();
-      
+
       // Create test items for touch interaction
       await menuHelper.createTestMenuItem({
         title: 'Touch Test 1',
         url: '/touch-1',
       });
-      
+
       await menuHelper.createTestMenuItem({
         title: 'Touch Test 2',
         url: '/touch-2',
       });
-      
+
       await menuHelper.testTouchInteractions();
     });
 
     test('should have adequate touch targets', async ({ page }) => {
       await menuHelper.navigateToMenuManagement();
-      
+
       const buttons = await page.locator('button').all();
-      
+
       for (const button of buttons) {
         if (await button.isVisible()) {
           const boundingBox = await button.boundingBox();
@@ -317,19 +312,19 @@ for (const deviceConfig of deviceConfigs) {
       }
 
       await menuHelper.navigateToMenuManagement();
-      
+
       // Test portrait orientation
       await menuHelper.expectBasicFunctionality();
-      
+
       // Simulate landscape orientation (if supported)
       try {
         await context.addInitScript(() => {
           Object.defineProperty(screen, 'orientation', {
             value: { angle: 90, type: 'landscape-primary' },
-            writable: true
+            writable: true,
           });
         });
-        
+
         await page.reload();
         await menuHelper.expectBasicFunctionality();
       } catch (error) {
@@ -340,15 +335,15 @@ for (const deviceConfig of deviceConfigs) {
 
     test('should work with various input methods', async ({ page }) => {
       await menuHelper.navigateToMenuManagement();
-      
+
       // Test keyboard navigation
       await menuHelper.checkAccessibility();
-      
+
       // Test mouse/touch interactions
       const addButton = page.getByText('Add Item');
       await addButton.click();
       await expect(page.getByPlaceholder('Menu item title')).toBeVisible();
-      
+
       // Close modal with escape key
       await page.keyboard.press('Escape');
       await expect(page.getByPlaceholder('Menu item title')).not.toBeVisible();
@@ -362,33 +357,38 @@ test.describe('Browser Feature Detection and Fallbacks', () => {
     const testCases = [
       {
         name: 'No localStorage',
-        setup: () => page.addInitScript(() => {
-          delete (window as any).localStorage;
-        }),
+        setup: () =>
+          page.addInitScript(() => {
+            delete (window as any).localStorage;
+          }),
       },
       {
         name: 'No sessionStorage',
-        setup: () => page.addInitScript(() => {
-          delete (window as any).sessionStorage;
-        }),
+        setup: () =>
+          page.addInitScript(() => {
+            delete (window as any).sessionStorage;
+          }),
       },
       {
         name: 'No IndexedDB',
-        setup: () => page.addInitScript(() => {
-          delete (window as any).indexedDB;
-        }),
+        setup: () =>
+          page.addInitScript(() => {
+            delete (window as any).indexedDB;
+          }),
       },
       {
         name: 'No requestAnimationFrame',
-        setup: () => page.addInitScript(() => {
-          delete (window as any).requestAnimationFrame;
-        }),
+        setup: () =>
+          page.addInitScript(() => {
+            delete (window as any).requestAnimationFrame;
+          }),
       },
       {
         name: 'No Intersection Observer',
-        setup: () => page.addInitScript(() => {
-          delete (window as any).IntersectionObserver;
-        }),
+        setup: () =>
+          page.addInitScript(() => {
+            delete (window as any).IntersectionObserver;
+          }),
       },
     ];
 
@@ -396,16 +396,16 @@ test.describe('Browser Feature Detection and Fallbacks', () => {
       await test.step(`Testing ${testCase.name}`, async () => {
         const context = await browser.newContext();
         const testPage = await context.newPage();
-        
+
         await testCase.setup();
-        
+
         const menuHelper = new MenuTestHelper(testPage);
         await menuHelper.loginAsAdmin();
         await menuHelper.navigateToMenuManagement();
-        
+
         // Should still function without the missing feature
         await menuHelper.expectBasicFunctionality();
-        
+
         await context.close();
       });
     }
@@ -414,20 +414,20 @@ test.describe('Browser Feature Detection and Fallbacks', () => {
   test('should work with strict Content Security Policy', async ({ page, browser }) => {
     const strictCSPContext = await browser.newContext({
       extraHTTPHeaders: {
-        'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';",
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';",
       },
     });
-    
+
     const cspPage = await strictCSPContext.newPage();
     const menuHelper = new MenuTestHelper(cspPage);
-    
+
     try {
       await menuHelper.loginAsAdmin();
       await menuHelper.navigateToMenuManagement();
-      
+
       // Should work with strict CSP
       await menuHelper.expectBasicFunctionality();
-      
     } finally {
       await strictCSPContext.close();
     }
@@ -435,26 +435,25 @@ test.describe('Browser Feature Detection and Fallbacks', () => {
 
   test('should handle slow network conditions', async ({ page, browser }) => {
     const slowNetworkContext = await browser.newContext();
-    
+
     // Simulate slow network
-    await slowNetworkContext.route('**/*', async (route) => {
+    await slowNetworkContext.route('**/*', async route => {
       await new Promise(resolve => setTimeout(resolve, 1000)); // 1s delay
       await route.continue();
     });
-    
+
     const slowPage = await slowNetworkContext.newPage();
     const menuHelper = new MenuTestHelper(slowPage);
-    
+
     try {
       await menuHelper.loginAsAdmin();
       await menuHelper.navigateToMenuManagement();
-      
+
       // Should show loading states appropriately
       await expect(slowPage.getByText(/loading/i).first()).toBeVisible({ timeout: 2000 });
-      
+
       // Should eventually load
       await menuHelper.expectBasicFunctionality();
-      
     } finally {
       await slowNetworkContext.close();
     }
@@ -470,9 +469,9 @@ test.describe('Legacy Browser Support', () => {
       delete (window as any).Promise;
       delete (window as any).Map;
       delete (window as any).Set;
-      
+
       // Mock older APIs
-      (window as any).XMLHttpRequest = function() {
+      (window as any).XMLHttpRequest = function () {
         return {
           open: () => {},
           send: () => {},
@@ -480,17 +479,16 @@ test.describe('Legacy Browser Support', () => {
         };
       };
     });
-    
+
     const menuHelper = new MenuTestHelper(page);
-    
+
     try {
       await menuHelper.loginAsAdmin();
       await menuHelper.navigateToMenuManagement();
-      
+
       // Basic functionality should still work
       const pageTitle = await page.textContent('h1');
       expect(pageTitle).toContain('Menu Management');
-      
     } catch (error) {
       // Document expected behavior with legacy browsers
       console.log('Legacy browser simulation may not fully support all features');
@@ -505,13 +503,13 @@ test.describe('Legacy Browser Support', () => {
         value: 'Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko',
         configurable: true,
       });
-      
+
       // Remove modern features not available in IE11
       delete (window as any).fetch;
       delete (window as any).Promise;
       delete (window as any).includes;
     });
-    
+
     // This test documents IE11 compatibility expectations
     // In practice, modern applications may not support IE11
     test.skip('Skipping IE11 test - not supported in modern applications');
@@ -522,20 +520,20 @@ test.describe('Performance Across Browsers', () => {
   test('should maintain performance across different browsers', async ({ page }) => {
     const menuHelper = new MenuTestHelper(page);
     await menuHelper.loginAsAdmin();
-    
+
     const startTime = Date.now();
     await menuHelper.navigateToMenuManagement();
     const loadTime = Date.now() - startTime;
-    
+
     // Page should load within reasonable time across all browsers
     expect(loadTime).toBeLessThan(5000); // 5 seconds max
-    
+
     // Test interaction performance
     const interactionStart = Date.now();
     await page.getByText('Add Item').click();
     await expect(page.getByPlaceholder('Menu item title')).toBeVisible();
     const interactionTime = Date.now() - interactionStart;
-    
+
     expect(interactionTime).toBeLessThan(1000); // 1 second max for modal open
   });
 
@@ -543,7 +541,7 @@ test.describe('Performance Across Browsers', () => {
     const menuHelper = new MenuTestHelper(page);
     await menuHelper.loginAsAdmin();
     await menuHelper.navigateToMenuManagement();
-    
+
     // Create multiple menu items to test memory usage
     for (let i = 0; i < 20; i++) {
       await menuHelper.createTestMenuItem({
@@ -551,10 +549,10 @@ test.describe('Performance Across Browsers', () => {
         url: `/perf-test-${i}`,
       });
     }
-    
+
     // Check if page is still responsive
     await expect(page.getByText('Add Item')).toBeVisible();
-    
+
     // Test that we can still interact with the page
     await page.getByPlaceholder('Search menu items...').fill('Performance Test');
     await expect(page.getByText('Performance Test Item 0')).toBeVisible();
@@ -566,30 +564,27 @@ test.describe('Internationalization and Localization', () => {
     const rtlContext = await browser.newContext({
       locale: 'ar-SA', // Arabic
     });
-    
+
     const rtlPage = await rtlContext.newPage();
-    
+
     // Set RTL direction
     await rtlPage.addInitScript(() => {
       document.documentElement.dir = 'rtl';
       document.documentElement.lang = 'ar';
     });
-    
+
     const menuHelper = new MenuTestHelper(rtlPage);
-    
+
     try {
       await menuHelper.loginAsAdmin();
       await menuHelper.navigateToMenuManagement();
-      
+
       // Check that layout adapts to RTL
-      const bodyDirection = await rtlPage.evaluate(() => 
-        window.getComputedStyle(document.body).direction
-      );
+      const bodyDirection = await rtlPage.evaluate(() => window.getComputedStyle(document.body).direction);
       expect(bodyDirection).toBe('rtl');
-      
+
       // Basic functionality should still work
       await menuHelper.expectBasicFunctionality();
-      
     } finally {
       await rtlContext.close();
     }
@@ -597,19 +592,19 @@ test.describe('Internationalization and Localization', () => {
 
   test('should handle different date/time formats', async ({ page, browser }) => {
     const locales = ['en-US', 'en-GB', 'de-DE', 'ja-JP', 'ar-SA'];
-    
+
     for (const locale of locales) {
       const localizedContext = await browser.newContext({ locale });
       const localizedPage = await localizedContext.newPage();
-      
+
       try {
         const menuHelper = new MenuTestHelper(localizedPage);
         await menuHelper.loginAsAdmin();
         await menuHelper.navigateToMenuManagement();
-        
+
         // Check that timestamps are formatted according to locale
         const timestamps = await localizedPage.locator('[data-timestamp]').all();
-        
+
         for (const timestamp of timestamps) {
           const text = await timestamp.textContent();
           if (text) {
@@ -617,7 +612,6 @@ test.describe('Internationalization and Localization', () => {
             expect(text).toMatch(/\d/);
           }
         }
-        
       } finally {
         await localizedContext.close();
       }

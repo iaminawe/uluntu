@@ -53,9 +53,9 @@ class PerformanceMonitor {
   private initializeNetworkObserver() {
     if ('PerformanceObserver' in window) {
       try {
-        this.networkObserver = new PerformanceObserver((list) => {
+        this.networkObserver = new PerformanceObserver(list => {
           const entries = list.getEntries();
-          entries.forEach((entry) => {
+          entries.forEach(entry => {
             if (entry.entryType === 'resource') {
               const resourceEntry = entry as PerformanceResourceTiming;
               this.trackNetworkRequest(resourceEntry);
@@ -88,7 +88,7 @@ class PerformanceMonitor {
       duration: entry.duration,
       size: entry.transferSize,
       cached: entry.transferSize === 0 && entry.decodedBodySize > 0,
-      timestamp: entry.startTime
+      timestamp: entry.startTime,
     };
 
     this.metrics.networkRequests.push(request);
@@ -101,7 +101,7 @@ class PerformanceMonitor {
         usedJSHeapSize: memoryInfo.usedJSHeapSize,
         totalJSHeapSize: memoryInfo.totalJSHeapSize,
         jsHeapSizeLimit: memoryInfo.jsHeapSizeLimit,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -112,7 +112,7 @@ class PerformanceMonitor {
       componentName,
       renderCount: 0,
       renderTime: 0,
-      propsChangeCount: 0
+      propsChangeCount: 0,
     };
 
     existing.renderCount++;
@@ -125,7 +125,7 @@ class PerformanceMonitor {
   trackCacheMetrics(queryClient: any) {
     const cache = queryClient.getQueryCache();
     const queries = cache.getAll();
-    
+
     const hits = queries.filter((q: any) => q.state.data !== undefined).length;
     const total = queries.length;
     const misses = total - hits;
@@ -134,9 +134,7 @@ class PerformanceMonitor {
       hits,
       misses,
       hitRate: total > 0 ? (hits / total) * 100 : 0,
-      queriesWithData: queries
-        .filter((q: any) => q.state.data !== undefined)
-        .map((q: any) => q.queryHash)
+      queriesWithData: queries.filter((q: any) => q.state.data !== undefined).map((q: any) => q.queryHash),
     };
   }
 
@@ -150,17 +148,14 @@ class PerformanceMonitor {
     const renderMetricsArray = Array.from(this.renderTracker.values());
     return {
       ...this.metrics,
-      renderMetrics: renderMetricsArray.length > 0 ? renderMetricsArray[0] : undefined
+      renderMetrics: renderMetricsArray.length > 0 ? renderMetricsArray[0] : undefined,
     };
   }
 
   // Generate performance report
   generateReport(): string {
     const metrics = this.getMetrics();
-    const report: string[] = [
-      '=== Performance Report ===',
-      ''
-    ];
+    const report: string[] = ['=== Performance Report ===', ''];
 
     // Bundle Size
     if (metrics.bundleSize) {
@@ -194,11 +189,9 @@ class PerformanceMonitor {
     if (metrics.renderMetrics) {
       report.push('Component Render Performance:');
       const renderMetricsArray = Array.from(this.renderTracker.values());
-      const topRenders = renderMetricsArray
-        .sort((a, b) => b.renderCount - a.renderCount)
-        .slice(0, 5);
+      const topRenders = renderMetricsArray.sort((a, b) => b.renderCount - a.renderCount).slice(0, 5);
 
-      topRenders.forEach((component) => {
+      topRenders.forEach(component => {
         const avgRenderTime = component.renderTime / component.renderCount;
         report.push(`  ${component.componentName}:`);
         report.push(`    Renders: ${component.renderCount}`);
@@ -237,7 +230,7 @@ export function usePerformanceTracking(componentName: string) {
     trackRender: () => {
       const endTime = performance.now();
       performanceMonitor.trackComponentRender(componentName, endTime - startTime);
-    }
+    },
   };
 }
 
@@ -256,7 +249,7 @@ export function measurePerformance(measureName: string, startMark: string, endMa
       } else {
         performance.measure(measureName, startMark);
       }
-      
+
       const measures = performance.getEntriesByName(measureName, 'measure');
       if (measures.length > 0) {
         return measures[measures.length - 1].duration;

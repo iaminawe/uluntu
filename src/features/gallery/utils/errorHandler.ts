@@ -9,7 +9,7 @@ export interface GalleryError {
   recoverable?: boolean;
 }
 
-export type ErrorContext = 
+export type ErrorContext =
   | 'UPLOAD'
   | 'BATCH_UPLOAD'
   | 'GALLERY_LOAD'
@@ -24,101 +24,101 @@ export type ErrorContext =
 // Error code mappings with user-friendly messages
 const ERROR_MESSAGES: Record<string, Partial<GalleryError>> = {
   // Network errors
-  'NETWORK_ERROR': {
+  NETWORK_ERROR: {
     userMessage: 'Unable to connect to the server. Please check your internet connection.',
     retry: true,
-    recoverable: true
+    recoverable: true,
   },
-  'TIMEOUT_ERROR': {
+  TIMEOUT_ERROR: {
     userMessage: 'The request took too long. Please try again.',
     retry: true,
-    recoverable: true
+    recoverable: true,
   },
-  'SERVER_ERROR': {
+  SERVER_ERROR: {
     userMessage: 'Server error occurred. Please try again later.',
     retry: true,
-    recoverable: true
+    recoverable: true,
   },
 
   // Authentication/Permission errors
-  'UNAUTHORIZED': {
+  UNAUTHORIZED: {
     userMessage: 'You need to sign in to perform this action.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
-  'FORBIDDEN': {
-    userMessage: 'You don\'t have permission to perform this action.',
+  FORBIDDEN: {
+    userMessage: "You don't have permission to perform this action.",
     retry: false,
-    recoverable: false
+    recoverable: false,
   },
-  'SESSION_EXPIRED': {
+  SESSION_EXPIRED: {
     userMessage: 'Your session has expired. Please sign in again.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
 
   // Validation errors
-  'FILE_TOO_LARGE': {
+  FILE_TOO_LARGE: {
     userMessage: 'File is too large. Please choose a smaller file.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
-  'INVALID_FILE_TYPE': {
+  INVALID_FILE_TYPE: {
     userMessage: 'Invalid file type. Please select a valid image file.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
-  'TOO_MANY_FILES': {
+  TOO_MANY_FILES: {
     userMessage: 'Too many files selected. Please reduce the number of files.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
-  'DUPLICATE_FILES': {
+  DUPLICATE_FILES: {
     userMessage: 'Some files have the same name. Please rename them.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
 
   // Upload errors
-  'UPLOAD_FAILED': {
+  UPLOAD_FAILED: {
     userMessage: 'Upload failed. Please try again.',
     retry: true,
-    recoverable: true
+    recoverable: true,
   },
-  'PROCESSING_FAILED': {
+  PROCESSING_FAILED: {
     userMessage: 'Image processing failed. The original image will be used.',
     retry: false,
-    recoverable: true
+    recoverable: true,
   },
-  'STORAGE_QUOTA_EXCEEDED': {
+  STORAGE_QUOTA_EXCEEDED: {
     userMessage: 'Storage quota exceeded. Please delete some files or upgrade your plan.',
     retry: false,
-    recoverable: false
+    recoverable: false,
   },
 
   // Gallery/Photo errors
-  'GALLERY_NOT_FOUND': {
+  GALLERY_NOT_FOUND: {
     userMessage: 'Gallery not found or no longer available.',
     retry: false,
-    recoverable: false
+    recoverable: false,
   },
-  'PHOTO_NOT_FOUND': {
+  PHOTO_NOT_FOUND: {
     userMessage: 'Photo not found or no longer available.',
     retry: false,
-    recoverable: false
+    recoverable: false,
   },
-  'DELETE_FAILED': {
+  DELETE_FAILED: {
     userMessage: 'Failed to delete. Please try again.',
     retry: true,
-    recoverable: true
+    recoverable: true,
   },
 
   // Generic errors
-  'UNKNOWN_ERROR': {
+  UNKNOWN_ERROR: {
     userMessage: 'An unexpected error occurred. Please try again.',
     retry: true,
-    recoverable: true
-  }
+    recoverable: true,
+  },
 };
 
 /**
@@ -214,7 +214,7 @@ export class GalleryErrorHandler {
       details: error?.stack || error?.details || '',
       userMessage: errorConfig.userMessage || message,
       retry: errorConfig.retry || false,
-      recoverable: errorConfig.recoverable || false
+      recoverable: errorConfig.recoverable || false,
     };
   }
 
@@ -282,11 +282,7 @@ export class GalleryErrorHandler {
   /**
    * Create retry function for recoverable errors
    */
-  static createRetryHandler(
-    originalFunction: () => Promise<any>,
-    maxRetries: number = 3,
-    delay: number = 1000
-  ) {
+  static createRetryHandler(originalFunction: () => Promise<any>, maxRetries: number = 3, delay: number = 1000) {
     let retryCount = 0;
 
     const retry = async (): Promise<any> => {
@@ -294,14 +290,14 @@ export class GalleryErrorHandler {
         return await originalFunction();
       } catch (error) {
         const parsedError = this.parseError(error);
-        
+
         if (parsedError.retry && retryCount < maxRetries) {
           retryCount++;
           this.showWarning(`Retrying... (${retryCount}/${maxRetries})`, {
             duration: 2000,
-            icon: '🔄'
+            icon: '🔄',
           });
-          
+
           // Exponential backoff
           await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, retryCount - 1)));
           return retry();
@@ -322,16 +318,14 @@ export class GalleryErrorHandler {
     context: ErrorContext = 'BATCH_UPLOAD'
   ) {
     const { success, failed } = results;
-    
+
     if (success.length > 0) {
-      this.showSuccess(
-        `${success.length} item${success.length !== 1 ? 's' : ''} processed successfully`
-      );
+      this.showSuccess(`${success.length} item${success.length !== 1 ? 's' : ''} processed successfully`);
     }
 
     if (failed.length > 0) {
       const errorCounts: Record<string, number> = {};
-      
+
       failed.forEach(item => {
         const error = this.parseError(item.error, context);
         errorCounts[error.code] = (errorCounts[error.code] || 0) + 1;
@@ -348,7 +342,7 @@ export class GalleryErrorHandler {
         message: `${failed.length} items failed`,
         userMessage: `Failed to process ${failed.length} item${failed.length !== 1 ? 's' : ''}:\n${errorMessages.join('\n')}`,
         retry: true,
-        recoverable: true
+        recoverable: true,
       });
     }
   }
@@ -389,5 +383,5 @@ export const {
   handleBatchErrors,
   isNetworkError,
   isRecoverable,
-  canRetry
+  canRetry,
 } = GalleryErrorHandler;

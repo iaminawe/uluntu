@@ -7,7 +7,7 @@ import { ProfessionalInfoStep } from '../../../../components/steps/ProfessionalI
 describe('ProfessionalInfoStep', () => {
   const mockOnNext = jest.fn();
   const mockOnSkip = jest.fn();
-  
+
   const defaultProps = {
     userData: {},
     onNext: mockOnNext,
@@ -38,19 +38,19 @@ describe('ProfessionalInfoStep', () => {
       // When: User enters HTML with script tag
       const bioEditor = screen.getByLabelText('Bio');
       fireEvent.change(bioEditor, {
-        target: { value: 'Hello <script>alert("xss")</script> World' }
+        target: { value: 'Hello <script>alert("xss")</script> World' },
       });
 
       // Fill other required fields
       await userEvent.selectOptions(screen.getByLabelText('Employment Status'), 'employed');
-      
+
       fireEvent.click(screen.getByTestId('next-button'));
 
       // Then: Should sanitize the input
       await waitFor(() => {
         expect(mockOnNext).toHaveBeenCalledWith(
           expect.objectContaining({
-            bio: 'Hello  World' // Script tag removed
+            bio: 'Hello  World', // Script tag removed
           })
         );
       });
@@ -66,9 +66,7 @@ describe('ProfessionalInfoStep', () => {
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('bio-error')).toHaveTextContent(
-          'Bio must be less than 1000 characters'
-        );
+        expect(screen.getByTestId('bio-error')).toHaveTextContent('Bio must be less than 1000 characters');
       });
     });
 
@@ -87,7 +85,7 @@ describe('ProfessionalInfoStep', () => {
       renderComponent();
 
       const skillsInput = screen.getByLabelText('Skills');
-      
+
       // Add first skill
       await userEvent.type(skillsInput, 'React');
       fireEvent.click(screen.getByTestId('add-skill-button'));
@@ -108,11 +106,11 @@ describe('ProfessionalInfoStep', () => {
       // Given: User has added 20 skills
       const existingSkills = Array.from({ length: 20 }, (_, i) => ({
         name: `Skill ${i}`,
-        level: 'intermediate'
+        level: 'intermediate',
       }));
-      
+
       renderComponent({
-        userData: { skills: existingSkills }
+        userData: { skills: existingSkills },
       });
 
       // When: User tries to add 21st skill
@@ -122,9 +120,7 @@ describe('ProfessionalInfoStep', () => {
 
       // Then: Should show error
       await waitFor(() => {
-        expect(screen.getByTestId('skills-error')).toHaveTextContent(
-          'Maximum 20 skills allowed'
-        );
+        expect(screen.getByTestId('skills-error')).toHaveTextContent('Maximum 20 skills allowed');
       });
     });
 
@@ -133,9 +129,9 @@ describe('ProfessionalInfoStep', () => {
         userData: {
           skills: [
             { name: 'React', level: 'expert' },
-            { name: 'Node.js', level: 'intermediate' }
-          ]
-        }
+            { name: 'Node.js', level: 'intermediate' },
+          ],
+        },
       });
 
       // Remove first skill
@@ -151,8 +147,8 @@ describe('ProfessionalInfoStep', () => {
     it('should prevent duplicate skills', async () => {
       renderComponent({
         userData: {
-          skills: [{ name: 'React', level: 'expert' }]
-        }
+          skills: [{ name: 'React', level: 'expert' }],
+        },
       });
 
       // Try to add duplicate skill
@@ -161,9 +157,7 @@ describe('ProfessionalInfoStep', () => {
       fireEvent.click(screen.getByTestId('add-skill-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('skills-error')).toHaveTextContent(
-          'This skill has already been added'
-        );
+        expect(screen.getByTestId('skills-error')).toHaveTextContent('This skill has already been added');
       });
     });
 
@@ -187,7 +181,7 @@ describe('ProfessionalInfoStep', () => {
       await waitFor(() => {
         expect(mockOnNext).toHaveBeenCalledWith(
           expect.objectContaining({
-            skills: [{ name: 'JavaScript', level: 'expert' }]
+            skills: [{ name: 'JavaScript', level: 'expert' }],
           })
         );
       });
@@ -201,9 +195,7 @@ describe('ProfessionalInfoStep', () => {
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('employment-status-error')).toHaveTextContent(
-          'Please select your employment status'
-        );
+        expect(screen.getByTestId('employment-status-error')).toHaveTextContent('Please select your employment status');
       });
     });
 
@@ -262,7 +254,7 @@ describe('ProfessionalInfoStep', () => {
       await waitFor(() => {
         expect(mockOnNext).toHaveBeenCalledWith(
           expect.objectContaining({
-            areasOfExpertise: ['frontend', 'backend', 'devops']
+            areasOfExpertise: ['frontend', 'backend', 'devops'],
           })
         );
       });
@@ -278,9 +270,7 @@ describe('ProfessionalInfoStep', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByTestId('expertise-error')).toHaveTextContent(
-          'Please select up to 5 areas of expertise'
-        );
+        expect(screen.getByTestId('expertise-error')).toHaveTextContent('Please select up to 5 areas of expertise');
       });
     });
   });
@@ -303,7 +293,7 @@ describe('ProfessionalInfoStep', () => {
 
       // Enable volunteering
       fireEvent.click(screen.getByLabelText('Open to Volunteering'));
-      
+
       // Add interests
       const interestsField = screen.getByLabelText('Volunteering Interests');
       await userEvent.type(interestsField, 'Mentoring, Event organizing, Community outreach');
@@ -316,7 +306,7 @@ describe('ProfessionalInfoStep', () => {
         expect(mockOnNext).toHaveBeenCalledWith(
           expect.objectContaining({
             openToVolunteering: true,
-            volunteeringInterests: 'Mentoring, Event organizing, Community outreach'
+            volunteeringInterests: 'Mentoring, Event organizing, Community outreach',
           })
         );
       });
@@ -369,7 +359,7 @@ describe('ProfessionalInfoStep', () => {
 
       // Trigger error
       fireEvent.click(screen.getByTestId('next-button'));
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('employment-status-error')).toBeInTheDocument();
       });
@@ -388,13 +378,13 @@ describe('ProfessionalInfoStep', () => {
         bio: 'Experienced developer',
         skills: [
           { name: 'React', level: 'expert' },
-          { name: 'Node.js', level: 'intermediate' }
+          { name: 'Node.js', level: 'intermediate' },
         ],
         employmentStatus: 'employed',
         yearsExperience: 5,
         openToVolunteering: true,
         volunteeringInterests: 'Mentoring',
-        areasOfExpertise: ['frontend', 'backend']
+        areasOfExpertise: ['frontend', 'backend'],
       };
 
       renderComponent({ userData: existingData });

@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import type { SettingCategory, SettingDataType } from '@/types/settings';
-import { 
-  Shield, 
-  Lock, 
+import {
+  Shield,
+  Lock,
   Key,
   AlertTriangle,
   Eye,
@@ -11,7 +11,7 @@ import {
   RefreshCw,
   CheckCircle,
   XCircle,
-  Info
+  Info,
 } from 'lucide-react';
 import { useAdminSettings } from '@/hooks/useSettings';
 import { toast } from 'react-hot-toast';
@@ -45,10 +45,7 @@ interface SecuritySettings {
   suspicious_activity_monitoring: boolean;
 }
 
-export const SecurityPanel: React.FC<SecurityPanelProps> = ({ 
-  settings, 
-  onRefresh 
-}) => {
+export const SecurityPanel: React.FC<SecurityPanelProps> = ({ settings, onRefresh }) => {
   const { settings: allSettings, updateSetting, loading: settingsLoading } = useAdminSettings();
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -98,12 +95,12 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
       const newSettings = { ...prev };
       const keys = path.split('.');
       let current: any = newSettings;
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = value;
-      
+
       return newSettings;
     });
     setHasChanges(true);
@@ -114,23 +111,108 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
     try {
       // Save each security setting to the database
       const updates = [
-        { category: 'security' as const, setting_key: 'two_factor_enabled', setting_value: localSettings.two_factor_enabled, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'password_min_length', setting_value: localSettings.password_requirements.min_length, data_type: 'number' as const },
-        { category: 'security' as const, setting_key: 'require_uppercase', setting_value: localSettings.password_requirements.require_uppercase, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'require_lowercase', setting_value: localSettings.password_requirements.require_lowercase, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'require_numbers', setting_value: localSettings.password_requirements.require_numbers, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'require_symbols', setting_value: localSettings.password_requirements.require_symbols, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'session_timeout', setting_value: localSettings.session_timeout, data_type: 'number' as const },
-        { category: 'security' as const, setting_key: 'max_login_attempts', setting_value: localSettings.max_login_attempts, data_type: 'number' as const },
-        { category: 'security' as const, setting_key: 'lockout_duration', setting_value: localSettings.lockout_duration, data_type: 'number' as const },
-        { category: 'security' as const, setting_key: 'require_email_verification', setting_value: localSettings.require_email_verification, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'api_rate_limiting_enabled', setting_value: localSettings.api_rate_limiting.enabled, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'api_rate_limit', setting_value: localSettings.api_rate_limiting.requests_per_minute, data_type: 'number' as const },
-        { category: 'security' as const, setting_key: 'content_security_policy', setting_value: localSettings.content_security_policy, data_type: 'boolean' as const },
-        { category: 'security' as const, setting_key: 'https_only', setting_value: localSettings.https_only, data_type: 'boolean' as const },
-        { category: 'security' as SettingCategory, setting_key: 'secure_cookies', setting_value: localSettings.secure_cookies, data_type: 'boolean' as SettingDataType },
-        { category: 'security' as SettingCategory, setting_key: 'ip_whitelist', setting_value: localSettings.ip_whitelist, data_type: 'array' as SettingDataType },
-        { category: 'security' as SettingCategory, setting_key: 'suspicious_activity_monitoring', setting_value: localSettings.suspicious_activity_monitoring, data_type: 'boolean' as SettingDataType },
+        {
+          category: 'security' as const,
+          setting_key: 'two_factor_enabled',
+          setting_value: localSettings.two_factor_enabled,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'password_min_length',
+          setting_value: localSettings.password_requirements.min_length,
+          data_type: 'number' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'require_uppercase',
+          setting_value: localSettings.password_requirements.require_uppercase,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'require_lowercase',
+          setting_value: localSettings.password_requirements.require_lowercase,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'require_numbers',
+          setting_value: localSettings.password_requirements.require_numbers,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'require_symbols',
+          setting_value: localSettings.password_requirements.require_symbols,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'session_timeout',
+          setting_value: localSettings.session_timeout,
+          data_type: 'number' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'max_login_attempts',
+          setting_value: localSettings.max_login_attempts,
+          data_type: 'number' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'lockout_duration',
+          setting_value: localSettings.lockout_duration,
+          data_type: 'number' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'require_email_verification',
+          setting_value: localSettings.require_email_verification,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'api_rate_limiting_enabled',
+          setting_value: localSettings.api_rate_limiting.enabled,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'api_rate_limit',
+          setting_value: localSettings.api_rate_limiting.requests_per_minute,
+          data_type: 'number' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'content_security_policy',
+          setting_value: localSettings.content_security_policy,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as const,
+          setting_key: 'https_only',
+          setting_value: localSettings.https_only,
+          data_type: 'boolean' as const,
+        },
+        {
+          category: 'security' as SettingCategory,
+          setting_key: 'secure_cookies',
+          setting_value: localSettings.secure_cookies,
+          data_type: 'boolean' as SettingDataType,
+        },
+        {
+          category: 'security' as SettingCategory,
+          setting_key: 'ip_whitelist',
+          setting_value: localSettings.ip_whitelist,
+          data_type: 'array' as SettingDataType,
+        },
+        {
+          category: 'security' as SettingCategory,
+          setting_key: 'suspicious_activity_monitoring',
+          setting_value: localSettings.suspicious_activity_monitoring,
+          data_type: 'boolean' as SettingDataType,
+        },
       ];
 
       for (const update of updates) {
@@ -173,14 +255,14 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
   const getPasswordStrength = () => {
     const { password_requirements } = localSettings;
     let score = 0;
-    
+
     if (password_requirements.min_length >= 8) score += 1;
     if (password_requirements.min_length >= 12) score += 1;
     if (password_requirements.require_uppercase) score += 1;
     if (password_requirements.require_lowercase) score += 1;
     if (password_requirements.require_numbers) score += 1;
     if (password_requirements.require_symbols) score += 1;
-    
+
     if (score <= 2) return { level: 'Weak', color: 'red' };
     if (score <= 4) return { level: 'Medium', color: 'yellow' };
     return { level: 'Strong', color: 'green' };
@@ -189,7 +271,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
   const securityScore = () => {
     let score = 0;
     const maxScore = 10;
-    
+
     if (localSettings.two_factor_enabled) score += 2;
     if (localSettings.require_email_verification) score += 1;
     if (localSettings.password_requirements.min_length >= 8) score += 1;
@@ -199,7 +281,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
     if (localSettings.https_only) score += 1;
     if (localSettings.secure_cookies) score += 1;
     if (localSettings.suspicious_activity_monitoring) score += 1;
-    
+
     return { score, maxScore, percentage: (score / maxScore) * 100 };
   };
 
@@ -212,11 +294,9 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Security Settings</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Configure security policies and access controls
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Configure security policies and access controls</p>
         </div>
-        
+
         {hasChanges && (
           <div className="flex items-center space-x-3">
             <button
@@ -226,7 +306,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               <RefreshCw className="h-4 w-4 mr-1" />
               Reset
             </button>
-            
+
             <button
               disabled={saving || settingsLoading}
               className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
@@ -246,7 +326,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
             <h4 className="font-medium text-gray-900">Security Score</h4>
           </div>
         </div>
-        
+
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -256,30 +336,36 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               <div className="text-sm text-gray-500">Security Score</div>
             </div>
             <div className="text-right">
-              <div className={`text-2xl font-bold ${
-                security.percentage >= 80 ? 'text-green-600' :
-                security.percentage >= 60 ? 'text-yellow-600' : 'text-red-600'
-              }`}>
+              <div
+                className={`text-2xl font-bold ${
+                  security.percentage >= 80
+                    ? 'text-green-600'
+                    : security.percentage >= 60
+                      ? 'text-yellow-600'
+                      : 'text-red-600'
+                }`}
+              >
                 {Math.round(security.percentage)}%
               </div>
               <div className="text-sm text-gray-500">Security Level</div>
             </div>
           </div>
-          
+
           <div className="w-full bg-gray-200 rounded-full h-3">
-            <div 
+            <div
               className={`h-3 rounded-full transition-all duration-300 ${
-                security.percentage >= 80 ? 'bg-green-500' :
-                security.percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                security.percentage >= 80 ? 'bg-green-500' : security.percentage >= 60 ? 'bg-yellow-500' : 'bg-red-500'
               }`}
               style={{ width: `${security.percentage}%` }}
             />
           </div>
-          
+
           <p className="text-sm text-gray-600 mt-3">
-            {security.percentage >= 80 ? 'Excellent security configuration!' :
-             security.percentage >= 60 ? 'Good security, consider enabling more features.' :
-             'Security needs improvement. Enable more protection features.'}
+            {security.percentage >= 80
+              ? 'Excellent security configuration!'
+              : security.percentage >= 60
+                ? 'Good security, consider enabling more features.'
+                : 'Security needs improvement. Enable more protection features.'}
           </p>
         </div>
       </div>
@@ -292,7 +378,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
             <h4 className="font-medium text-gray-900">Authentication</h4>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -319,7 +405,9 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               <p className="text-sm text-gray-500">Require email verification for new accounts</p>
             </div>
             <button
-              onClick={() => handleSettingChange('require_email_verification', !localSettings.require_email_verification)}
+              onClick={() =>
+                handleSettingChange('require_email_verification', !localSettings.require_email_verification)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 localSettings.require_email_verification ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -342,28 +430,30 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               <Lock className="h-5 w-5 text-purple-600 mr-2" />
               <h4 className="font-medium text-gray-900">Password Requirements</h4>
             </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-              passwordStrength.color === 'green' ? 'bg-green-100 text-green-800' :
-              passwordStrength.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-red-100 text-red-800'
-            }`}>
+            <div
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                passwordStrength.color === 'green'
+                  ? 'bg-green-100 text-green-800'
+                  : passwordStrength.color === 'yellow'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+              }`}
+            >
               {passwordStrength.level}
             </div>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Minimum Password Length
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Minimum Password Length</label>
             <input
               type="range"
               min="6"
               max="20"
               step="1"
               value={localSettings.password_requirements.min_length}
-              onChange={(e) => handleSettingChange('password_requirements.min_length', parseInt(e.target.value))}
+              onChange={e => handleSettingChange('password_requirements.min_length', parseInt(e.target.value))}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-gray-500">
@@ -372,12 +462,17 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               <span>20 characters</span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-700">Require Uppercase</label>
               <button
-                onClick={() => handleSettingChange('password_requirements.require_uppercase', !localSettings.password_requirements.require_uppercase)}
+                onClick={() =>
+                  handleSettingChange(
+                    'password_requirements.require_uppercase',
+                    !localSettings.password_requirements.require_uppercase
+                  )
+                }
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                   localSettings.password_requirements.require_uppercase ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
@@ -389,11 +484,16 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
                 />
               </button>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-700">Require Lowercase</label>
               <button
-                onClick={() => handleSettingChange('password_requirements.require_lowercase', !localSettings.password_requirements.require_lowercase)}
+                onClick={() =>
+                  handleSettingChange(
+                    'password_requirements.require_lowercase',
+                    !localSettings.password_requirements.require_lowercase
+                  )
+                }
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                   localSettings.password_requirements.require_lowercase ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
@@ -405,11 +505,16 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
                 />
               </button>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-700">Require Numbers</label>
               <button
-                onClick={() => handleSettingChange('password_requirements.require_numbers', !localSettings.password_requirements.require_numbers)}
+                onClick={() =>
+                  handleSettingChange(
+                    'password_requirements.require_numbers',
+                    !localSettings.password_requirements.require_numbers
+                  )
+                }
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                   localSettings.password_requirements.require_numbers ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
@@ -421,11 +526,16 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
                 />
               </button>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-700">Require Symbols</label>
               <button
-                onClick={() => handleSettingChange('password_requirements.require_symbols', !localSettings.password_requirements.require_symbols)}
+                onClick={() =>
+                  handleSettingChange(
+                    'password_requirements.require_symbols',
+                    !localSettings.password_requirements.require_symbols
+                  )
+                }
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                   localSettings.password_requirements.require_symbols ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
@@ -449,63 +559,55 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
             <h4 className="font-medium text-gray-900">Session & Access Control</h4>
           </div>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Session Timeout (minutes)
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Session Timeout (minutes)</label>
             <input
               type="number"
               min="15"
               max="10080"
               value={localSettings.session_timeout}
-              onChange={(e) => handleSettingChange('session_timeout', parseInt(e.target.value))}
+              onChange={e => handleSettingChange('session_timeout', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500">Time before users are automatically logged out</p>
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Max Login Attempts
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Max Login Attempts</label>
             <input
               type="number"
               min="3"
               max="10"
               value={localSettings.max_login_attempts}
-              onChange={(e) => handleSettingChange('max_login_attempts', parseInt(e.target.value))}
+              onChange={e => handleSettingChange('max_login_attempts', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500">Failed attempts before account lockout</p>
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Lockout Duration (minutes)
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Lockout Duration (minutes)</label>
             <input
               type="number"
               min="5"
               max="1440"
               value={localSettings.lockout_duration}
-              onChange={(e) => handleSettingChange('lockout_duration', parseInt(e.target.value))}
+              onChange={e => handleSettingChange('lockout_duration', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500">How long accounts remain locked</p>
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              API Rate Limit (per minute)
-            </label>
+            <label className="block text-sm font-medium text-gray-700">API Rate Limit (per minute)</label>
             <input
               type="number"
               min="10"
               max="1000"
               value={localSettings.api_rate_limiting.requests_per_minute}
-              onChange={(e) => handleSettingChange('api_rate_limiting.requests_per_minute', parseInt(e.target.value))}
+              onChange={e => handleSettingChange('api_rate_limiting.requests_per_minute', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               disabled={!localSettings.api_rate_limiting.enabled}
             />
@@ -519,40 +621,40 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
         <div className="px-6 py-4 border-b border-gray-200">
           <h4 className="font-medium text-gray-900">Advanced Security Features</h4>
         </div>
-        
+
         <div className="p-6 space-y-6">
           {[
             {
               key: 'api_rate_limiting.enabled',
               label: 'API Rate Limiting',
               description: 'Limit API requests to prevent abuse',
-              value: localSettings.api_rate_limiting.enabled
+              value: localSettings.api_rate_limiting.enabled,
             },
             {
               key: 'content_security_policy',
               label: 'Content Security Policy',
               description: 'Prevent XSS and code injection attacks',
-              value: localSettings.content_security_policy
+              value: localSettings.content_security_policy,
             },
             {
               key: 'https_only',
               label: 'HTTPS Only',
               description: 'Force all connections to use HTTPS',
-              value: localSettings.https_only
+              value: localSettings.https_only,
             },
             {
               key: 'secure_cookies',
               label: 'Secure Cookies',
               description: 'Use secure cookie attributes',
-              value: localSettings.secure_cookies
+              value: localSettings.secure_cookies,
             },
             {
               key: 'suspicious_activity_monitoring',
               label: 'Activity Monitoring',
               description: 'Monitor and alert on suspicious activities',
-              value: localSettings.suspicious_activity_monitoring
-            }
-          ].map((setting) => (
+              value: localSettings.suspicious_activity_monitoring,
+            },
+          ].map(setting => (
             <div key={setting.key} className="flex items-center justify-between">
               <div>
                 <label className="font-medium text-gray-900">{setting.label}</label>
@@ -588,14 +690,14 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
             </button>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-4">
           {showIpInput && (
             <div className="flex space-x-3">
               <input
                 type="text"
                 value={newIpAddress}
-                onChange={(e) => setNewIpAddress(e.target.value)}
+                onChange={e => setNewIpAddress(e.target.value)}
                 placeholder="192.168.1.100 or 192.168.1.0/24"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
@@ -613,30 +715,27 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
               </button>
             </div>
           )}
-          
+
           <div className="space-y-2">
             {localSettings.ip_whitelist.map((ip, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="font-mono text-sm">{ip}</span>
-                <button
-                  onClick={() => handleRemoveIpAddress(index)}
-                  className="text-red-600 hover:text-red-700 p-1"
-                >
+                <button onClick={() => handleRemoveIpAddress(index)} className="text-red-600 hover:text-red-700 p-1">
                   <XCircle className="h-4 w-4" />
                 </button>
               </div>
             ))}
-            
+
             {localSettings.ip_whitelist.length === 0 && (
               <p className="text-gray-500 text-center py-4">
                 No IP addresses whitelisted. All IPs are allowed by default.
               </p>
             )}
           </div>
-          
+
           <p className="text-xs text-gray-500">
-            Add IP addresses or ranges that should have special access privileges. 
-            Use CIDR notation for ranges (e.g., 192.168.1.0/24).
+            Add IP addresses or ranges that should have special access privileges. Use CIDR notation for ranges (e.g.,
+            192.168.1.0/24).
           </p>
         </div>
       </div>

@@ -20,7 +20,7 @@ import {
   Activity,
   UserPlus,
   Eye,
-  MousePointer
+  MousePointer,
 } from 'lucide-react';
 
 interface StatCard {
@@ -41,8 +41,11 @@ const StatCard: React.FC<StatCard> = ({ title, value, icon: Icon, change, loadin
         </p>
         {change !== undefined && (
           <p className="mt-2 text-sm">
-            <span className={`${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-medium`}>
-              {change >= 0 ? '+' : ''}{change}%
+            <span
+              className={`${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} font-medium`}
+            >
+              {change >= 0 ? '+' : ''}
+              {change}%
             </span>
             <span className="text-gray-600 dark:text-gray-400"> from last month</span>
           </p>
@@ -60,35 +63,37 @@ const AdminDashboard: React.FC = () => {
   const [engagementTimeRange, setEngagementTimeRange] = useState<TimeRangeValue>({ type: 'month' });
 
   // Fetch stats
-  const { data: stats, isLoading, error } = useQuery({
+  const {
+    data: stats,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: () => adminStatsApi.getDashboardStats(),
     refetchInterval: 30000, // Refetch every 30 seconds for real-time feel
-    staleTime: 10000 // Consider data stale after 10 seconds
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
 
   // Fetch user signup analytics
   const { data: signupData, isLoading: signupLoading } = useQuery({
     queryKey: ['user-signup-analytics', signupTimeRange],
-    queryFn: () => adminStatsApi.getUserSignupAnalytics(
-      signupTimeRange.type,
-      signupTimeRange.startDate,
-      signupTimeRange.endDate
-    ),
+    queryFn: () =>
+      adminStatsApi.getUserSignupAnalytics(signupTimeRange.type, signupTimeRange.startDate, signupTimeRange.endDate),
     refetchInterval: 60000, // Refetch every minute
-    staleTime: 30000
+    staleTime: 30000,
   });
 
   // Fetch page views and engagement
   const { data: engagementData, isLoading: engagementLoading } = useQuery({
     queryKey: ['page-views-engagement', engagementTimeRange],
-    queryFn: () => adminStatsApi.getPageViewsAndEngagement(
-      engagementTimeRange.type,
-      engagementTimeRange.startDate,
-      engagementTimeRange.endDate
-    ),
+    queryFn: () =>
+      adminStatsApi.getPageViewsAndEngagement(
+        engagementTimeRange.type,
+        engagementTimeRange.startDate,
+        engagementTimeRange.endDate
+      ),
     refetchInterval: 60000,
-    staleTime: 30000
+    staleTime: 30000,
   });
 
   // Debug logging for development
@@ -108,7 +113,7 @@ const AdminDashboard: React.FC = () => {
     { title: 'News Articles', value: stats?.totalNews || 0, icon: Newspaper },
     { title: 'Resources', value: stats?.totalResources || 0, icon: BookOpen },
     { title: 'Marketplace', value: stats?.totalMarketplaceListings || 0, icon: ShoppingBag },
-    { title: 'Opportunities', value: stats?.totalOpportunities || 0, icon: Briefcase }
+    { title: 'Opportunities', value: stats?.totalOpportunities || 0, icon: Briefcase },
   ];
 
   return (
@@ -129,7 +134,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {statCards.map((stat) => (
+        {statCards.map(stat => (
           <StatCard key={stat.title} {...stat} loading={isLoading} />
         ))}
       </div>
@@ -137,37 +142,23 @@ const AdminDashboard: React.FC = () => {
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
         {/* User Signups Chart */}
-        <MetricsCard 
-          title="User Signups" 
-          icon={UserPlus}
-          subtitle={signupData?.dateRangeLabel || 'Loading...'}
-        >
+        <MetricsCard title="User Signups" icon={UserPlus} subtitle={signupData?.dateRangeLabel || 'Loading...'}>
           <div className="mb-4 flex justify-between items-center">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {signupData?.totalSignups || 0} new users
-            </div>
-            <TimeRangeSelector
-              value={signupTimeRange}
-              onChange={setSignupTimeRange}
-            />
+            <div className="text-sm text-gray-600 dark:text-gray-400">{signupData?.totalSignups || 0} new users</div>
+            <TimeRangeSelector value={signupTimeRange} onChange={setSignupTimeRange} />
           </div>
           {signupLoading ? (
             <div className="flex items-center justify-center h-48">
               <div className="text-gray-400">Loading signup data...</div>
             </div>
           ) : (
-            <LineChart
-              data={signupData?.data || []}
-              labels={signupData?.labels || []}
-              color="#10b981"
-              height={180}
-            />
+            <LineChart data={signupData?.data || []} labels={signupData?.labels || []} color="#10b981" height={180} />
           )}
         </MetricsCard>
 
         {/* Page Views and Engagement */}
-        <MetricsCard 
-          title="Page Views & Engagement" 
+        <MetricsCard
+          title="Page Views & Engagement"
           icon={Eye}
           subtitle={engagementData?.dateRangeLabel || 'Loading...'}
         >
@@ -176,10 +167,7 @@ const AdminDashboard: React.FC = () => {
               {engagementData?.totalPageViews?.toLocaleString() || '0'} page views,{' '}
               {engagementData?.totalInteractions || 0} interactions
             </div>
-            <TimeRangeSelector
-              value={engagementTimeRange}
-              onChange={setEngagementTimeRange}
-            />
+            <TimeRangeSelector value={engagementTimeRange} onChange={setEngagementTimeRange} />
           </div>
           {engagementLoading ? (
             <div className="flex items-center justify-center h-48">
@@ -188,9 +176,7 @@ const AdminDashboard: React.FC = () => {
           ) : (
             <div className="space-y-4">
               <div>
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Page Views
-                </div>
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Page Views</div>
                 <LineChart
                   data={engagementData?.pageViews || []}
                   labels={engagementData?.labels || []}
@@ -200,9 +186,7 @@ const AdminDashboard: React.FC = () => {
                 />
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  User Interactions
-                </div>
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">User Interactions</div>
                 <BarChart
                   data={engagementData?.interactions || []}
                   labels={engagementData?.labels || []}
@@ -254,8 +238,7 @@ const AdminDashboard: React.FC = () => {
               <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {engagementData?.totalPageViews && engagementData?.totalInteractions
                   ? `${Math.round((engagementData.totalInteractions / engagementData.totalPageViews) * 100 * 100) / 100}%`
-                  : '0%'
-                }
+                  : '0%'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">Interactions/Views</p>
             </div>
@@ -274,9 +257,7 @@ const AdminDashboard: React.FC = () => {
             <div className="flex items-start">
               <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400 mt-1" />
               <div className="ml-4">
-                <h3 className="text-lg font-medium text-yellow-900 dark:text-yellow-100">
-                  Pending Moderation Items
-                </h3>
+                <h3 className="text-lg font-medium text-yellow-900 dark:text-yellow-100">Pending Moderation Items</h3>
                 <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                   You have {stats.pendingModeration} items waiting for review.
                 </p>
@@ -305,13 +286,12 @@ const AdminDashboard: React.FC = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
             ) : (
               <div className="space-y-3">
-                {stats.recentActivity.map((activity) => (
+                {stats.recentActivity.map(activity => (
                   <div key={(activity as any).id} className="flex items-start text-sm">
                     <Activity className="h-4 w-4 text-gray-400 mt-0.5 mr-2" />
                     <div>
                       <p className="text-gray-900 dark:text-gray-100">
-                        <span className="font-medium">{(activity as any).admin?.email || 'Unknown'}</span>
-                        {' '}
+                        <span className="font-medium">{(activity as any).admin?.email || 'Unknown'}</span>{' '}
                         {(activity as any).action} {(activity as any).entity_type}
                       </p>
                       <p className="text-gray-500 dark:text-gray-400">

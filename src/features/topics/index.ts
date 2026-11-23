@@ -11,7 +11,7 @@ export {
   marketplaceTopicsApi,
   opportunityTopicsApi,
   companyTopicsApi,
-  memberTopicsApi
+  memberTopicsApi,
 } from './api/topicsApi';
 
 // Hook exports
@@ -26,7 +26,7 @@ export {
   useUpdateTopic,
   useDeleteTopic,
   useSetEntityTopics,
-  topicsQueryKeys
+  topicsQueryKeys,
 } from './hooks/useTopicsHybrid';
 
 // Adapter exports
@@ -40,7 +40,7 @@ export {
   sortTopics,
   filterTopics,
   getUniqueTopicColors,
-  getTopicStats
+  getTopicStats,
 } from './utils/topicAdapter';
 
 // Type exports
@@ -58,7 +58,7 @@ export type {
   MarketplaceTopic,
   OpportunityTopic,
   CompanyTopic,
-  MemberTopic
+  MemberTopic,
 } from './types';
 
 // Constants
@@ -85,7 +85,7 @@ export const DEFAULT_TOPIC_ICONS = [
   'bookmark',
   'hash',
   'flag',
-  'star'
+  'star',
 ];
 
 export const MAX_TOPICS_PER_ENTITY = 10;

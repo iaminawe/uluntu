@@ -11,24 +11,16 @@ const CompanyHeader = ({ company, onContactClick }: CompanyHeaderProps) => {
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 md:p-8">
       <div className="flex flex-col md:flex-row">
         <div className="mb-6 md:mb-0 md:mr-8">
-          <img
-            src={company.image}
-            alt={company.name}
-            className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-cover"
-          />
+          <img src={company.image} alt={company.name} className="w-32 h-32 md:w-48 md:h-48 rounded-lg object-cover" />
         </div>
-        
+
         <div className="flex-1">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                {company.name}
-              </h1>
-              <p className="text-lg text-orange-500 dark:text-orange-400">
-                {company.industry}
-              </p>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{company.name}</h1>
+              <p className="text-lg text-orange-500 dark:text-orange-400">{company.industry}</p>
             </div>
-            
+
             <div className="flex mt-4 md:mt-0 space-x-3">
               <button
                 onClick={onContactClick}
@@ -38,13 +30,13 @@ const CompanyHeader = ({ company, onContactClick }: CompanyHeaderProps) => {
               </button>
             </div>
           </div>
-          
+
           <div className="mb-4 space-y-2">
             <div className="flex items-center text-slate-600 dark:text-slate-300">
               <MapPin className="h-5 w-5 mr-2 text-orange-500" />
               <span>{company.location}</span>
             </div>
-            
+
             <div className="flex items-center text-slate-600 dark:text-slate-300">
               <Globe className="h-5 w-5 mr-2 text-orange-500" />
               <a
@@ -57,16 +49,12 @@ const CompanyHeader = ({ company, onContactClick }: CompanyHeaderProps) => {
               </a>
             </div>
           </div>
-          
+
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              About
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">
-              {company.description}
-            </p>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">About</h2>
+            <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">{company.description}</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-6 text-sm text-slate-600 dark:text-slate-300">
             <div>
               <span className="font-semibold text-slate-900 dark:text-white">Founded:</span> {company.founded}
@@ -75,11 +63,9 @@ const CompanyHeader = ({ company, onContactClick }: CompanyHeaderProps) => {
               <span className="font-semibold text-slate-900 dark:text-white">Size:</span> {company.size}
             </div>
           </div>
-          
+
           <div className="mt-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-              Technologies
-            </h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Technologies</h2>
             <div className="flex flex-wrap gap-2">
               {company.technologies.map(tech => (
                 <span
@@ -91,7 +77,7 @@ const CompanyHeader = ({ company, onContactClick }: CompanyHeaderProps) => {
               ))}
             </div>
           </div>
-          
+
           {company.socialLinks && company.socialLinks.length > 0 && (
             <div className="mt-4 flex space-x-3">
               {company.socialLinks.map(link => (

@@ -21,18 +21,18 @@ export function useAuthorByUserId(userId?: string | null) {
     queryKey: ['author', 'user', userId],
     queryFn: async () => {
       if (!userId) return null;
-      
+
       const { data, error } = await supabase
         .from('members')
         .select('id, name, slug, image, title, user_id')
         .eq('user_id', userId)
         .single();
-      
+
       if (error) {
         console.error('Error fetching author:', error);
         return null;
       }
-      
+
       return data as Author;
     },
     enabled: !!userId,
@@ -49,18 +49,18 @@ export function useAuthorByMemberId(memberId?: string | null) {
     queryKey: ['author', 'member', memberId],
     queryFn: async () => {
       if (!memberId) return null;
-      
+
       const { data, error } = await supabase
         .from('members')
         .select('id, name, slug, image, title, user_id')
         .eq('id', memberId)
         .single();
-      
+
       if (error) {
         console.error('Error fetching author:', error);
         return null;
       }
-      
+
       return data as Author;
     },
     enabled: !!memberId,
@@ -74,19 +74,24 @@ export function useAuthorByMemberId(memberId?: string | null) {
  * Supports multiple field names: author_id, user_id, created_by, posted_by
  */
 export function useAuthorFromContent(content?: Record<string, unknown>) {
-  const authorId = (content?.author_id || content?.user_id || content?.created_by || content?.posted_by) as string | undefined;
-  
+  const authorId = (content?.author_id || content?.user_id || content?.created_by || content?.posted_by) as
+    string | undefined;
+
   // Determine if it's a user ID (from auth.users) or member ID
   const isUserId = authorId && authorId.length === 36; // UUID format
   const isMemberId = authorId && authorId.length !== 36;
-  
+
   // Always call both hooks but conditionally enable them
   const userResult = useAuthorByUserId(isUserId ? authorId : undefined);
   const memberResult = useAuthorByMemberId(isMemberId ? authorId : undefined);
-  
-  if (isUserId && content?.members && typeof content.members === 'object' && 
-      (content.members as Record<string, unknown>).id && 
-      (content.members as Record<string, unknown>).name) {
+
+  if (
+    isUserId &&
+    content?.members &&
+    typeof content.members === 'object' &&
+    (content.members as Record<string, unknown>).id &&
+    (content.members as Record<string, unknown>).name
+  ) {
     // If we already have member data embedded, use it
     return {
       data: content.members as Author,
@@ -94,7 +99,7 @@ export function useAuthorFromContent(content?: Record<string, unknown>) {
       error: null,
     };
   }
-  
+
   // Return the appropriate result
   return isUserId ? userResult : memberResult;
 }
@@ -138,19 +143,19 @@ export function useAuthorsByIds(authorIds: string[]) {
     queryKey: ['authors', 'multiple', authorIds],
     queryFn: async () => {
       if (!authorIds.length) return [];
-      
+
       const { data, error } = await supabase
         .from('members')
         .select('id, name, slug, image, title, user_id')
         .in('id', authorIds);
-      
+
       if (error) {
         console.error('Error fetching authors:', error);
         return [];
       }
-      
+
       return data as Author[];
     },
-    enabled: authorIds.length > 0
+    enabled: authorIds.length > 0,
   });
 }

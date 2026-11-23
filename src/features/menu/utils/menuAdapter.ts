@@ -26,7 +26,7 @@ export function adaptMenuItemFromDatabase(row: MenuItemDatabaseRow): MenuItem {
     featured: row.featured || false,
     created_at: row.created_at || new Date().toISOString(),
     updated_at: row.updated_at || new Date().toISOString(),
-    children: [] // Will be populated separately if needed
+    children: [], // Will be populated separately if needed
   };
 }
 
@@ -49,16 +49,14 @@ export function adaptMenuItemToSupabaseInsert(input: MenuItemInput): Partial<Men
     required_roles: input.required_roles || null,
     is_external: input.is_external ?? false,
     status: 'published',
-    featured: false
+    featured: false,
   };
 }
 
 /**
  * Adapt menu item data for database update
  */
-export function adaptMenuItemToSupabaseUpdate(
-  input: Partial<MenuItemInput>
-): Partial<MenuItemDatabaseRow> {
+export function adaptMenuItemToSupabaseUpdate(input: Partial<MenuItemInput>): Partial<MenuItemDatabaseRow> {
   const update: Partial<MenuItemDatabaseRow> = {};
 
   if (input.title !== undefined) update.title = input.title;
@@ -115,7 +113,7 @@ export function buildMenuHierarchy(menuItems: MenuItem[]): MenuItem[] {
       .sort((a, b) => a.sort_order - b.sort_order)
       .map(item => ({
         ...item,
-        children: item.children ? sortMenuItems(item.children) : []
+        children: item.children ? sortMenuItems(item.children) : [],
       }));
   };
 
@@ -137,7 +135,7 @@ export function flattenMenuHierarchy(
     flattened.push({
       ...item,
       parent_id: parentId || undefined,
-      children: [] // Remove children for flattened structure
+      children: [], // Remove children for flattened structure
     });
 
     // Recursively add children
@@ -175,7 +173,7 @@ export function filterMenuItemsByVisibility(
     })
     .map(item => ({
       ...item,
-      children: item.children ? filterMenuItemsByVisibility(item.children, userRoles, isAuthenticated) : []
+      children: item.children ? filterMenuItemsByVisibility(item.children, userRoles, isAuthenticated) : [],
     }));
 }
 
@@ -183,12 +181,10 @@ export function filterMenuItemsByVisibility(
  * Get next available sort order for a menu type
  */
 export function getNextSortOrder(menuItems: MenuItem[], menuType: MenuItem['menu_type'], parentId?: string): number {
-  const relevantItems = menuItems.filter(item => 
-    item.menu_type === menuType && item.parent_id === (parentId || null)
-  );
-  
+  const relevantItems = menuItems.filter(item => item.menu_type === menuType && item.parent_id === (parentId || null));
+
   if (relevantItems.length === 0) return 0;
-  
+
   const maxSortOrder = Math.max(...relevantItems.map(item => item.sort_order));
   return maxSortOrder + 100; // Leave space for manual reordering
 }
@@ -202,14 +198,14 @@ export function validateMenuItemUrl(url: string): { isValid: boolean; error?: st
     if (url.startsWith('/')) {
       return { isValid: true };
     }
-    
+
     // Check for absolute URLs
     new URL(url);
     return { isValid: true };
   } catch {
-    return { 
-      isValid: false, 
-      error: 'Invalid URL format. Use relative paths (e.g., /about) or absolute URLs (e.g., https://example.com)' 
+    return {
+      isValid: false,
+      error: 'Invalid URL format. Use relative paths (e.g., /about) or absolute URLs (e.g., https://example.com)',
     };
   }
 }
@@ -217,18 +213,15 @@ export function validateMenuItemUrl(url: string): { isValid: boolean; error?: st
 /**
  * Generate breadcrumbs from menu hierarchy
  */
-export function generateMenuBreadcrumbs(
-  menuItems: MenuItem[],
-  currentPath: string
-): MenuItem[] {
+export function generateMenuBreadcrumbs(menuItems: MenuItem[], currentPath: string): MenuItem[] {
   const findPath = (items: MenuItem[], targetPath: string, breadcrumbs: MenuItem[] = []): MenuItem[] | null => {
     for (const item of items) {
       const currentBreadcrumbs = [...breadcrumbs, item];
-      
+
       if (item.url === targetPath) {
         return currentBreadcrumbs;
       }
-      
+
       if (item.children && item.children.length > 0) {
         const result = findPath(item.children, targetPath, currentBreadcrumbs);
         if (result) return result;

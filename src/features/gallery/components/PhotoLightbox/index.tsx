@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-  X, 
-  ChevronLeft, 
-  ChevronRight, 
-  Heart, 
-  MessageCircle, 
-  Share2, 
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  MessageCircle,
+  Share2,
   Download,
   Info,
   Calendar,
   Camera,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/lib/supabase';
@@ -27,23 +27,17 @@ interface PhotoLightboxProps {
   onComment?: (photoId: string, comment: string) => void;
 }
 
-export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
-  photos,
-  initialIndex,
-  onClose,
-  onLike,
-  onComment
-}) => {
+export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({ photos, initialIndex, onClose, onLike, onComment }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [showInfo, setShowInfo] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [commentText, setCommentText] = useState('');
-  
+
   const currentPhoto = photos[currentIndex];
   const user = useAppSelector(selectCurrentUser);
   const { features } = useGalleryFeatures();
-  
+
   // Helper function to get public URL from storage path
   const getPublicUrl = useCallback((path: string | undefined) => {
     if (!path) return null;
@@ -54,33 +48,33 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
     // Otherwise, construct the public URL using Supabase storage
     return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
   }, []);
-  
+
   // Get the best available image URL for the current photo
   const currentPhotoUrl = useMemo(() => {
     if (!currentPhoto) return '';
-    
+
     // Try URL fields first (they might already be full URLs)
     if (currentPhoto.large_url) return currentPhoto.large_url;
     if (currentPhoto.medium_url) return currentPhoto.medium_url;
     if (currentPhoto.url) return currentPhoto.url;
     if (currentPhoto.original_url) return currentPhoto.original_url;
-    
+
     // Then try paths and convert to URLs
     const largePath = getPublicUrl(currentPhoto.large_path);
     if (largePath) return largePath;
-    
+
     const mediumPath = getPublicUrl(currentPhoto.medium_path);
     if (mediumPath) return mediumPath;
-    
+
     const storagePath = getPublicUrl(currentPhoto.storage_path);
     if (storagePath) return storagePath;
-    
+
     const originalPath = getPublicUrl(currentPhoto.original_path);
     if (originalPath) return originalPath;
-    
+
     return '';
   }, [currentPhoto, getPublicUrl]);
-  
+
   // Debug: Log photo data to understand structure
   useEffect(() => {
     if (currentPhoto) {
@@ -93,7 +87,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
         large_url: currentPhoto.large_url,
         medium_url: currentPhoto.medium_url,
         title: currentPhoto.title,
-        computedUrl: currentPhotoUrl
+        computedUrl: currentPhotoUrl,
       });
     }
   }, [currentPhoto, currentPhotoUrl]);
@@ -127,11 +121,11 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   }, []);
 
   const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1));
+    setCurrentIndex(prev => (prev > 0 ? prev - 1 : photos.length - 1));
   }, [photos.length]);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
+    setCurrentIndex(prev => (prev < photos.length - 1 ? prev + 1 : 0));
   }, [photos.length]);
 
   const handleLike = () => {
@@ -140,23 +134,23 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
       window.location.href = `/login?redirect=${window.location.pathname}`;
       return;
     }
-    
+
     if (onLike && currentPhoto) {
       onLike(currentPhoto.id);
       setIsLiked(!isLiked);
     }
   };
-  
+
   const handleComment = () => {
     if (!user) {
       // Redirect to login
       window.location.href = `/login?redirect=${window.location.pathname}`;
       return;
     }
-    
+
     setShowCommentModal(true);
   };
-  
+
   const submitComment = () => {
     if (onComment && currentPhoto && commentText.trim()) {
       onComment(currentPhoto.id, commentText);
@@ -176,7 +170,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
 
   const formatExifData = (exif: any) => {
     if (!exif) return null;
-    
+
     const items = [];
     if (exif.Camera) items.push(exif.Camera);
     if (exif.LensMake && exif.LensModel) {
@@ -186,7 +180,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
     if (exif.FNumber) items.push(`f/${exif.FNumber}`);
     if (exif.ExposureTime) items.push(`${exif.ExposureTime}s`);
     if (exif.ISO) items.push(`ISO ${exif.ISO}`);
-    
+
     return items.join(' • ');
   };
 
@@ -199,15 +193,10 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
             <span className="text-sm">
               {currentIndex + 1} / {photos.length}
             </span>
-            {currentPhoto?.title && (
-              <h2 className="text-lg font-medium">{currentPhoto.title}</h2>
-            )}
+            {currentPhoto?.title && <h2 className="text-lg font-medium">{currentPhoto.title}</h2>}
           </div>
-          
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-colors"
-          >
+
+          <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full transition-colors">
             <X className="w-6 h-6 text-white" />
           </button>
         </div>
@@ -220,7 +209,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
           alt={currentPhoto?.title || 'Photo'}
           className="max-w-full max-h-full object-contain"
         />
-        
+
         {/* Navigation Buttons */}
         {photos.length > 1 && (
           <>
@@ -256,21 +245,16 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
                 <span className="text-sm">{(currentPhoto as any)?.like_count || 0}</span>
               </button>
             )}
-            
+
             {features.comments && (
-              <button 
-                onClick={handleComment}
-                className="flex items-center gap-2 hover:text-blue-400 transition-colors"
-              >
+              <button onClick={handleComment} className="flex items-center gap-2 hover:text-blue-400 transition-colors">
                 <MessageCircle className="w-5 h-5" />
                 <span className="text-sm">{(currentPhoto as any)?.comment_count || 0}</span>
               </button>
             )}
-            
+
             <span className="text-sm text-gray-300">
-              {currentPhoto?.created_at && 
-                formatDistanceToNow(new Date(currentPhoto.created_at), { addSuffix: true })
-              }
+              {currentPhoto?.created_at && formatDistanceToNow(new Date(currentPhoto.created_at), { addSuffix: true })}
             </span>
           </div>
 
@@ -278,21 +262,16 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowInfo(!showInfo)}
-              className={`p-2 hover:bg-white/20 rounded transition-colors ${
-                showInfo ? 'bg-white/20' : ''
-              }`}
+              className={`p-2 hover:bg-white/20 rounded transition-colors ${showInfo ? 'bg-white/20' : ''}`}
             >
               <Info className="w-5 h-5 text-white" />
             </button>
-            
+
             <button className="p-2 hover:bg-white/20 rounded transition-colors">
               <Share2 className="w-5 h-5 text-white" />
             </button>
-            
-            <button
-              onClick={handleDownload}
-              className="p-2 hover:bg-white/20 rounded transition-colors"
-            >
+
+            <button onClick={handleDownload} className="p-2 hover:bg-white/20 rounded transition-colors">
               <Download className="w-5 h-5 text-white" />
             </button>
           </div>
@@ -308,23 +287,23 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
           >
             <X className="w-5 h-5 text-white" />
           </button>
-          
+
           <h3 className="text-white font-semibold text-lg mb-4">Photo Details</h3>
-          
+
           {currentPhoto.title && (
             <div className="mb-4">
               <h4 className="text-gray-400 text-sm mb-1">Title</h4>
               <p className="text-white">{currentPhoto.title}</p>
             </div>
           )}
-          
+
           {currentPhoto.description && (
             <div className="mb-4">
               <h4 className="text-gray-400 text-sm mb-1">Description</h4>
               <p className="text-white text-sm">{currentPhoto.description}</p>
             </div>
           )}
-          
+
           <div className="mb-4">
             <h4 className="text-gray-400 text-sm mb-1">Uploaded</h4>
             <p className="text-white text-sm flex items-center gap-2">
@@ -332,7 +311,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               {new Date(currentPhoto.created_at).toLocaleDateString()}
             </p>
           </div>
-          
+
           {(currentPhoto.metadata as any)?.exif && (
             <div className="mb-4">
               <h4 className="text-gray-400 text-sm mb-1">Camera Settings</h4>
@@ -342,18 +321,18 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               </p>
             </div>
           )}
-          
+
           {currentPhoto.metadata?.location && (
             <div className="mb-4">
               <h4 className="text-gray-400 text-sm mb-1">Location</h4>
               <p className="text-white text-sm flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                {currentPhoto.metadata.location.name || 
+                {currentPhoto.metadata.location.name ||
                   `${currentPhoto.metadata.location.latitude}, ${currentPhoto.metadata.location.longitude}`}
               </p>
             </div>
           )}
-          
+
           <div className="mb-4">
             <h4 className="text-gray-400 text-sm mb-1">File Info</h4>
             <p className="text-white text-sm">
@@ -363,16 +342,13 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               {currentPhoto.width} × {currentPhoto.height} pixels
             </p>
           </div>
-          
+
           {currentPhoto.tags && currentPhoto.tags.length > 0 && (
             <div>
               <h4 className="text-gray-400 text-sm mb-2">Tags</h4>
               <div className="flex flex-wrap gap-2">
-                {currentPhoto.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 bg-white/10 text-white text-xs rounded"
-                  >
+                {currentPhoto.tags.map(tag => (
+                  <span key={tag} className="px-2 py-1 bg-white/10 text-white text-xs rounded">
                     {tag}
                   </span>
                 ))}
@@ -381,7 +357,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
           )}
         </div>
       )}
-      
+
       {/* Comment Modal */}
       {showCommentModal && features.comments && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50">
@@ -389,7 +365,7 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
             <h3 className="text-lg font-semibold mb-4">Add a Comment</h3>
             <textarea
               value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
+              onChange={e => setCommentText(e.target.value)}
               placeholder="Write your comment..."
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white

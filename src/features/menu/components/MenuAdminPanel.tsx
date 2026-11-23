@@ -7,13 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Trash2, Edit, Plus, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { useMenuItems } from '../contexts/MenuContext';
 import { useMenuCache } from '../hooks/useMenuCache';
-import { 
-  fetchMenuPositions, 
-  createMenuItem, 
-  updateMenuItem, 
-  deleteMenuItem,
-  reorderMenuItems 
-} from '../api/menuApi';
+import { fetchMenuPositions, createMenuItem, updateMenuItem, deleteMenuItem, reorderMenuItems } from '../api/menuApi';
 import type { MenuItem, MenuPosition } from '@/types/menu';
 
 /**
@@ -67,16 +61,16 @@ export const MenuAdminPanel: React.FC = () => {
       } else {
         // Create new item
         await createMenuItem({
-          ...editingItem as Omit<MenuItem, 'id' | 'children'>,
+          ...(editingItem as Omit<MenuItem, 'id' | 'children'>),
           position_id: positionData.id,
-          sort_order: editingItem.sort_order || items.length
+          sort_order: editingItem.sort_order || items.length,
         });
       }
 
       // Refresh menu data and clear cache
       await refresh();
       clearPositionCache(selectedPosition);
-      
+
       // Reset form
       setIsEditing(null);
       setEditingItem({});
@@ -149,27 +143,15 @@ export const MenuAdminPanel: React.FC = () => {
           </div>
           {item.url && (
             <div className="text-sm text-gray-600">
-              <a 
-                href={item.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
+              <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                 {item.url}
               </a>
             </div>
           )}
-          {item.description && (
-            <div className="text-sm text-gray-500 mt-1">{item.description}</div>
-          )}
+          {item.description && <div className="text-sm text-gray-500 mt-1">{item.description}</div>}
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => startEditing(item)}
-            disabled={loading}
-          >
+          <Button variant="ghost" size="sm" onClick={() => startEditing(item)} disabled={loading}>
             <Edit className="w-4 h-4" />
           </Button>
           <Button
@@ -183,12 +165,10 @@ export const MenuAdminPanel: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* Render children */}
       {item.children && item.children.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {item.children.map(child => renderMenuItem(child, level + 1))}
-        </div>
+        <div className="mt-3 space-y-2">{item.children.map(child => renderMenuItem(child, level + 1))}</div>
       )}
     </div>
   );
@@ -197,11 +177,7 @@ export const MenuAdminPanel: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Menu Management</h2>
-        <Button 
-          onClick={handleRefreshAll}
-          disabled={loading}
-          className="flex items-center gap-2"
-        >
+        <Button onClick={handleRefreshAll} disabled={loading} className="flex items-center gap-2">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh All
         </Button>
@@ -210,12 +186,7 @@ export const MenuAdminPanel: React.FC = () => {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800 text-sm">{error}</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setError(null)}
-            className="mt-2"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setError(null)} className="mt-2">
             Dismiss
           </Button>
         </div>
@@ -240,13 +211,13 @@ export const MenuAdminPanel: React.FC = () => {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <div className="mt-4 text-sm text-gray-600">
-              <p>Selected: <strong>{selectedPosition}</strong></p>
+              <p>
+                Selected: <strong>{selectedPosition}</strong>
+              </p>
               {menuPositions.find(p => p.name === selectedPosition)?.description && (
-                <p className="mt-1">
-                  {menuPositions.find(p => p.name === selectedPosition)?.description}
-                </p>
+                <p className="mt-1">{menuPositions.find(p => p.name === selectedPosition)?.description}</p>
               )}
             </div>
           </CardContent>
@@ -282,9 +253,7 @@ export const MenuAdminPanel: React.FC = () => {
                 No menu items found. Add your first item to get started.
               </div>
             ) : (
-              <div className="space-y-3">
-                {items.map(item => renderMenuItem(item))}
-              </div>
+              <div className="space-y-3">{items.map(item => renderMenuItem(item))}</div>
             )}
           </CardContent>
         </Card>
@@ -294,9 +263,7 @@ export const MenuAdminPanel: React.FC = () => {
       {isEditing && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              {isEditing === 'new' ? 'Add Menu Item' : 'Edit Menu Item'}
-            </CardTitle>
+            <CardTitle>{isEditing === 'new' ? 'Add Menu Item' : 'Edit Menu Item'}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,25 +271,25 @@ export const MenuAdminPanel: React.FC = () => {
                 <label className="block text-sm font-medium mb-1">Title *</label>
                 <Input
                   value={editingItem.title || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
+                  onChange={e => setEditingItem({ ...editingItem, title: e.target.value })}
                   placeholder="Menu item title"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">URL</label>
                 <Input
                   value={editingItem.url || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, url: e.target.value })}
+                  onChange={e => setEditingItem({ ...editingItem, url: e.target.value })}
                   placeholder="/path or https://example.com"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">Target</label>
-                <Select 
-                  value={editingItem.target || '_self'} 
-                  onValueChange={(value) => setEditingItem({ ...editingItem, target: value as MenuItem['target'] })}
+                <Select
+                  value={editingItem.target || '_self'}
+                  onValueChange={value => setEditingItem({ ...editingItem, target: value as MenuItem['target'] })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -335,50 +302,50 @@ export const MenuAdminPanel: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">Sort Order</label>
                 <Input
                   type="number"
                   value={editingItem.sort_order || 0}
-                  onChange={(e) => setEditingItem({ ...editingItem, sort_order: parseInt(e.target.value) || 0 })}
+                  onChange={e => setEditingItem({ ...editingItem, sort_order: parseInt(e.target.value) || 0 })}
                 />
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <Input
                   value={editingItem.description || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                  onChange={e => setEditingItem({ ...editingItem, description: e.target.value })}
                   placeholder="Optional description"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">Feature Flag</label>
                 <Input
                   value={editingItem.feature_flag || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, feature_flag: e.target.value })}
+                  onChange={e => setEditingItem({ ...editingItem, feature_flag: e.target.value })}
                   placeholder="e.g., events_system"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">CSS Classes</label>
                 <Input
                   value={editingItem.css_classes || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, css_classes: e.target.value })}
+                  onChange={e => setEditingItem({ ...editingItem, css_classes: e.target.value })}
                   placeholder="Additional CSS classes"
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="outline" onClick={cancelEditing} disabled={loading}>
                 Cancel
               </Button>
               <Button onClick={handleSaveItem} disabled={loading}>
-                {loading ? 'Saving...' : (isEditing === 'new' ? 'Create' : 'Update')}
+                {loading ? 'Saving...' : isEditing === 'new' ? 'Create' : 'Update'}
               </Button>
             </div>
           </CardContent>

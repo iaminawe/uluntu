@@ -21,7 +21,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   accept = 'image/*',
   maxSize = 5,
   className = '',
-  placeholder = 'Upload an image'
+  placeholder = 'Upload an image',
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value || null);
@@ -42,55 +42,63 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     return null;
   };
 
-  const handleFileUpload = useCallback(async (file: File) => {
-    const validationError = validateFile(file);
-    if (validationError) {
-      onError?.(validationError);
-      return;
-    }
+  const handleFileUpload = useCallback(
+    async (file: File) => {
+      const validationError = validateFile(file);
+      if (validationError) {
+        onError?.(validationError);
+        return;
+      }
 
-    setIsUploading(true);
+      setIsUploading(true);
 
-    try {
-      // Create a preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setPreview(previewUrl);
+      try {
+        // Create a preview URL
+        const previewUrl = URL.createObjectURL(file);
+        setPreview(previewUrl);
 
-      // In a real app, you'd upload to your storage service here
-      // For now, we'll simulate an upload and use the preview URL
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        // In a real app, you'd upload to your storage service here
+        // For now, we'll simulate an upload and use the preview URL
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // For demo purposes, we'll use the preview URL as the final URL
-      // In production, replace this with actual upload logic
-      onChange(previewUrl);
-      
-    } catch (error) {
-      console.error('Upload error:', error);
-      onError?.('Failed to upload image. Please try again.');
-      setPreview(null);
-    } finally {
-      setIsUploading(false);
-    }
-  }, [onChange, onError, maxSize]);
+        // For demo purposes, we'll use the preview URL as the final URL
+        // In production, replace this with actual upload logic
+        onChange(previewUrl);
+      } catch (error) {
+        console.error('Upload error:', error);
+        onError?.('Failed to upload image. Please try again.');
+        setPreview(null);
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [onChange, onError, maxSize]
+  );
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
     handleFileUpload(files[0]);
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (disabled || isUploading) return;
-    handleFileSelect(e.dataTransfer.files);
-  }, [disabled, isUploading]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragActive(false);
+      if (disabled || isUploading) return;
+      handleFileSelect(e.dataTransfer.files);
+    },
+    [disabled, isUploading]
+  );
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled && !isUploading) {
-      setDragActive(true);
-    }
-  }, [disabled, isUploading]);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      if (!disabled && !isUploading) {
+        setDragActive(true);
+      }
+    },
+    [disabled, isUploading]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -117,7 +125,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         ref={fileInputRef}
         type="file"
         accept={accept}
-        onChange={(e) => handleFileSelect(e.target.files)}
+        onChange={e => handleFileSelect(e.target.files)}
         className="hidden"
         disabled={disabled || isUploading}
       />
@@ -126,12 +134,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         // Image Preview
         <div className="relative group">
           <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
-            
+            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+
             {/* Overlay */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity flex items-center justify-center">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
@@ -180,14 +184,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           onClick={handleClick}
           className={`
             relative w-full h-32 border-2 border-dashed rounded-lg transition-colors cursor-pointer
-            ${dragActive 
-              ? 'border-blue-500 bg-blue-50' 
-              : 'border-gray-300 hover:border-gray-400'
-            }
-            ${disabled || isUploading 
-              ? 'cursor-not-allowed opacity-50' 
-              : 'hover:bg-gray-50'
-            }
+            ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+            ${disabled || isUploading ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'}
           `}
         >
           <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
@@ -200,9 +198,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               <>
                 <ImageIcon className="h-8 w-8 mb-2" />
                 <span className="text-sm font-medium">{placeholder}</span>
-                <span className="text-xs text-gray-400 mt-1">
-                  Drag & drop or click to select (max {maxSize}MB)
-                </span>
+                <span className="text-xs text-gray-400 mt-1">Drag & drop or click to select (max {maxSize}MB)</span>
               </>
             )}
           </div>

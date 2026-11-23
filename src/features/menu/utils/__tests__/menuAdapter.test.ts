@@ -8,7 +8,7 @@ import {
   filterMenuItemsByVisibility,
   getNextSortOrder,
   validateMenuItemUrl,
-  generateMenuBreadcrumbs
+  generateMenuBreadcrumbs,
 } from '../menuAdapter';
 import { MenuItem, MenuItemInput, MenuItemDatabaseRow } from '@/types/menu';
 
@@ -31,7 +31,7 @@ describe('Menu Adapter', () => {
     status: 'published',
     featured: false,
     created_at: '2025-01-01T00:00:00Z',
-    updated_at: '2025-01-01T00:00:00Z'
+    updated_at: '2025-01-01T00:00:00Z',
   };
 
   const mockMenuItem: MenuItem = {
@@ -53,7 +53,7 @@ describe('Menu Adapter', () => {
     featured: false,
     createdAt: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-    children: []
+    children: [],
   };
 
   describe('adaptMenuItemFromDatabase', () => {
@@ -71,7 +71,7 @@ describe('Menu Adapter', () => {
         target: mockDatabaseRow.target,
         visibility: mockDatabaseRow.visibility,
         is_external: mockDatabaseRow.is_external,
-        children: []
+        children: [],
       });
     });
 
@@ -83,7 +83,7 @@ describe('Menu Adapter', () => {
         css_classes: null,
         required_roles: null,
         created_at: null,
-        updated_at: null
+        updated_at: null,
       };
 
       const result = adaptMenuItemFromDatabase(rowWithNulls);
@@ -104,7 +104,7 @@ describe('Menu Adapter', () => {
       sort_order: 200,
       is_enabled: true,
       target: '_blank',
-      visibility: 'authenticated'
+      visibility: 'authenticated',
     };
 
     it('should adapt MenuItemInput for database insert', () => {
@@ -120,7 +120,7 @@ describe('Menu Adapter', () => {
         target: mockInput.target,
         visibility: mockInput.visibility,
         status: 'published',
-        featured: false
+        featured: false,
       });
     });
 
@@ -128,7 +128,7 @@ describe('Menu Adapter', () => {
       const minimalInput: MenuItemInput = {
         title: 'Minimal Item',
         url: '/minimal',
-        menu_type: 'main'
+        menu_type: 'main',
       };
 
       const result = adaptMenuItemToSupabaseInsert(minimalInput);
@@ -145,14 +145,14 @@ describe('Menu Adapter', () => {
     it('should adapt partial updates correctly', () => {
       const updates = {
         title: 'Updated Title',
-        is_enabled: false
+        is_enabled: false,
       };
 
       const result = adaptMenuItemToSupabaseUpdate(updates);
 
       expect(result).toEqual({
         title: 'Updated Title',
-        is_enabled: false
+        is_enabled: false,
       });
     });
 
@@ -160,14 +160,14 @@ describe('Menu Adapter', () => {
       const updates = {
         title: 'Updated Title',
         description: undefined,
-        sort_order: 300
+        sort_order: 300,
       };
 
       const result = adaptMenuItemToSupabaseUpdate(updates);
 
       expect(result).toEqual({
         title: 'Updated Title',
-        sort_order: 300
+        sort_order: 300,
       });
       expect('description' in result).toBe(false);
     });
@@ -180,28 +180,28 @@ describe('Menu Adapter', () => {
           ...mockMenuItem,
           id: 'parent-1',
           title: 'Parent 1',
-          sort_order: 100
+          sort_order: 100,
         },
         {
           ...mockMenuItem,
           id: 'child-1-1',
           title: 'Child 1.1',
           parent_id: 'parent-1',
-          sort_order: 110
+          sort_order: 110,
         },
         {
           ...mockMenuItem,
           id: 'child-1-2',
           title: 'Child 1.2',
           parent_id: 'parent-1',
-          sort_order: 120
+          sort_order: 120,
         },
         {
           ...mockMenuItem,
           id: 'parent-2',
           title: 'Parent 2',
-          sort_order: 200
-        }
+          sort_order: 200,
+        },
       ];
 
       const result = buildMenuHierarchy(flatItems);
@@ -221,20 +221,20 @@ describe('Menu Adapter', () => {
           ...mockMenuItem,
           id: 'item-3',
           title: 'Third',
-          sort_order: 300
+          sort_order: 300,
         },
         {
           ...mockMenuItem,
           id: 'item-1',
           title: 'First',
-          sort_order: 100
+          sort_order: 100,
         },
         {
           ...mockMenuItem,
           id: 'item-2',
           title: 'Second',
-          sort_order: 200
-        }
+          sort_order: 200,
+        },
       ];
 
       const result = buildMenuHierarchy(flatItems);
@@ -257,10 +257,10 @@ describe('Menu Adapter', () => {
               ...mockMenuItem,
               id: 'child-1-1',
               title: 'Child 1.1',
-              children: []
-            }
-          ]
-        }
+              children: [],
+            },
+          ],
+        },
       ];
 
       const result = flattenMenuHierarchy(hierarchicalItems);
@@ -278,33 +278,33 @@ describe('Menu Adapter', () => {
       { ...mockMenuItem, id: '1', title: 'Public', visibility: 'public' },
       { ...mockMenuItem, id: '2', title: 'Authenticated', visibility: 'authenticated' },
       { ...mockMenuItem, id: '3', title: 'Admin', visibility: 'admin' },
-      { ...mockMenuItem, id: '4', title: 'Role Based', visibility: 'role_based', required_roles: ['editor'] }
+      { ...mockMenuItem, id: '4', title: 'Role Based', visibility: 'role_based', required_roles: ['editor'] },
     ];
 
     it('should show public items to anonymous users', () => {
       const result = filterMenuItemsByVisibility(testItems, [], false);
-      
+
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('Public');
     });
 
     it('should show public and authenticated items to authenticated users', () => {
       const result = filterMenuItemsByVisibility(testItems, [], true);
-      
+
       expect(result).toHaveLength(2);
       expect(result.map(item => item.title)).toEqual(['Public', 'Authenticated']);
     });
 
     it('should show admin items to admin users', () => {
       const result = filterMenuItemsByVisibility(testItems, ['admin'], true);
-      
+
       expect(result).toHaveLength(3);
       expect(result.map(item => item.title)).toEqual(['Public', 'Authenticated', 'Admin']);
     });
 
     it('should show role-based items to users with required roles', () => {
       const result = filterMenuItemsByVisibility(testItems, ['editor'], true);
-      
+
       expect(result).toHaveLength(3);
       expect(result.map(item => item.title)).toEqual(['Public', 'Authenticated', 'Role Based']);
     });
@@ -314,18 +314,18 @@ describe('Menu Adapter', () => {
     const testItems: MenuItem[] = [
       { ...mockMenuItem, id: '1', menu_type: 'main', sort_order: 100 },
       { ...mockMenuItem, id: '2', menu_type: 'main', sort_order: 200 },
-      { ...mockMenuItem, id: '3', menu_type: 'footer', sort_order: 50 }
+      { ...mockMenuItem, id: '3', menu_type: 'footer', sort_order: 50 },
     ];
 
     it('should return next sort order for menu type', () => {
       const result = getNextSortOrder(testItems, 'main');
-      
+
       expect(result).toBe(300); // Max main sort_order (200) + 100
     });
 
     it('should return 0 for empty menu type', () => {
       const result = getNextSortOrder(testItems, 'mobile');
-      
+
       expect(result).toBe(0);
     });
 
@@ -333,11 +333,11 @@ describe('Menu Adapter', () => {
       const itemsWithParents: MenuItem[] = [
         { ...mockMenuItem, id: '1', menu_type: 'main', parent_id: 'parent-1', sort_order: 100 },
         { ...mockMenuItem, id: '2', menu_type: 'main', parent_id: 'parent-1', sort_order: 200 },
-        { ...mockMenuItem, id: '3', menu_type: 'main', parent_id: null, sort_order: 50 }
+        { ...mockMenuItem, id: '3', menu_type: 'main', parent_id: null, sort_order: 50 },
       ];
 
       const result = getNextSortOrder(itemsWithParents, 'main', 'parent-1');
-      
+
       expect(result).toBe(300); // Max for parent-1 children (200) + 100
     });
   });
@@ -345,32 +345,27 @@ describe('Menu Adapter', () => {
   describe('validateMenuItemUrl', () => {
     it('should accept valid relative URLs', () => {
       const result = validateMenuItemUrl('/about');
-      
+
       expect(result.isValid).toBe(true);
       expect(result.error).toBeUndefined();
     });
 
     it('should accept valid absolute URLs', () => {
       const result = validateMenuItemUrl('https://example.com/page');
-      
+
       expect(result.isValid).toBe(true);
       expect(result.error).toBeUndefined();
     });
 
     it('should reject invalid URL formats', () => {
       const result = validateMenuItemUrl('not-a-valid-url');
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toBeTruthy();
     });
 
     it('should accept URLs with protocols', () => {
-      const validUrls = [
-        'https://example.com',
-        'http://example.com',
-        'mailto:test@example.com',
-        'tel:+1234567890'
-      ];
+      const validUrls = ['https://example.com', 'http://example.com', 'mailto:test@example.com', 'tel:+1234567890'];
 
       validUrls.forEach(url => {
         const result = validateMenuItemUrl(url);
@@ -398,31 +393,31 @@ describe('Menu Adapter', () => {
                 id: 'web-apps',
                 title: 'Web Apps',
                 url: '/products/software/web-apps',
-                children: []
-              }
-            ]
+                children: [],
+              },
+            ],
           },
           {
             ...mockMenuItem,
             id: 'hardware',
             title: 'Hardware',
             url: '/products/hardware',
-            children: []
-          }
-        ]
+            children: [],
+          },
+        ],
       },
       {
         ...mockMenuItem,
         id: 'about',
         title: 'About',
         url: '/about',
-        children: []
-      }
+        children: [],
+      },
     ];
 
     it('should generate breadcrumbs for nested path', () => {
       const breadcrumbs = generateMenuBreadcrumbs(hierarchicalMenu, '/products/software/web-apps');
-      
+
       expect(breadcrumbs).toHaveLength(3);
       expect(breadcrumbs[0].title).toBe('Products');
       expect(breadcrumbs[1].title).toBe('Software');
@@ -431,20 +426,20 @@ describe('Menu Adapter', () => {
 
     it('should generate breadcrumbs for top-level path', () => {
       const breadcrumbs = generateMenuBreadcrumbs(hierarchicalMenu, '/about');
-      
+
       expect(breadcrumbs).toHaveLength(1);
       expect(breadcrumbs[0].title).toBe('About');
     });
 
     it('should return empty array for non-existent path', () => {
       const breadcrumbs = generateMenuBreadcrumbs(hierarchicalMenu, '/non-existent');
-      
+
       expect(breadcrumbs).toHaveLength(0);
     });
 
     it('should generate breadcrumbs for middle-level path', () => {
       const breadcrumbs = generateMenuBreadcrumbs(hierarchicalMenu, '/products/software');
-      
+
       expect(breadcrumbs).toHaveLength(2);
       expect(breadcrumbs[0].title).toBe('Products');
       expect(breadcrumbs[1].title).toBe('Software');

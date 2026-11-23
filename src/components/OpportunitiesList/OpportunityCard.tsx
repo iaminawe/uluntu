@@ -1,18 +1,13 @@
 import { Link } from 'react-router-dom';
-import { 
-  MapPin, 
-  Clock, 
-  Building,
-  MessageCircle
-} from 'lucide-react';
+import { MapPin, Clock, Building, MessageCircle } from 'lucide-react';
 import { Opportunity } from '@/features/opportunities/components/OpportunitiesList/types';
 import { getOpportunityUrl, getCompanyUrl } from '@/utils/contentUrlUtils';
-import { 
-  formatDate, 
-  calculateDaysLeft, 
-  getTypeColor, 
+import {
+  formatDate,
+  calculateDaysLeft,
+  getTypeColor,
   getOpportunityTypeLabel,
-  getExperienceLevelLabel
+  getExperienceLevelLabel,
 } from '@/features/opportunities/components/OpportunitiesList/utils';
 import { LikeButton } from '@/components/interactions';
 
@@ -26,29 +21,23 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
   const isExpired = daysLeft !== null && daysLeft <= 0;
   const postedDate = formatDate(opportunity.postedDate);
   const deadlineDate = opportunity.deadline ? formatDate(opportunity.deadline) : null;
-  
+
   if (featured) {
     // Featured card with full-width image at the top
     return (
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border-2 border-orange-400 dark:border-orange-500">
-        <div className="bg-orange-500 text-white px-4 py-1 text-sm font-medium">
-          Featured Opportunity
-        </div>
-        
+        <div className="bg-orange-500 text-white px-4 py-1 text-sm font-medium">Featured Opportunity</div>
+
         {/* Full-width image at top */}
         <div className="w-full h-48 overflow-hidden">
-          <img 
-            src={opportunity.company.logo} 
-            alt={opportunity.company.name} 
-            className="w-full h-full object-cover"
-          />
+          <img src={opportunity.company.logo} alt={opportunity.company.name} className="w-full h-full object-cover" />
         </div>
-        
+
         <div className="p-5">
           {/* Company info */}
           <div className="flex flex-wrap items-start justify-between mb-3">
             <div className="mb-3 sm:mb-0">
-              <Link 
+              <Link
                 to={getCompanyUrl(opportunity.company)}
                 className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-orange-500 
                          dark:hover:text-orange-400 flex items-center"
@@ -57,40 +46,44 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
                 {opportunity.company.name}
               </Link>
               {opportunity.company.location && (
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {opportunity.company.location}
-                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{opportunity.company.location}</span>
               )}
             </div>
-            
+
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(opportunity.type)}`}>
                 {getOpportunityTypeLabel(opportunity.type)}
               </span>
               {opportunity.experienceLevel && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 
-                             dark:bg-slate-700 dark:text-slate-300">
+                <span
+                  className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 
+                             dark:bg-slate-700 dark:text-slate-300"
+                >
                   {getExperienceLevelLabel(opportunity.experienceLevel)}
                 </span>
               )}
               {opportunity.remote && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 
-                              dark:bg-emerald-900 dark:text-emerald-300">
+                <span
+                  className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 
+                              dark:bg-emerald-900 dark:text-emerald-300"
+                >
                   Remote
                 </span>
               )}
             </div>
           </div>
-          
+
           {/* Title */}
           <Link to={getOpportunityUrl(opportunity)}>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
-                          dark:hover:text-orange-400 mb-2">
+            <h3
+              className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
+                          dark:hover:text-orange-400 mb-2"
+            >
               {opportunity.title}
             </h3>
           </Link>
-          
+
           {/* Location and details */}
           <div className="flex flex-wrap mb-3 text-sm text-slate-500 dark:text-slate-400">
             <div className="flex items-center mr-4 mb-2">
@@ -99,18 +92,14 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
             </div>
             {opportunity.salary && (
               <div className="flex items-center mb-2 mr-4">
-                <span className="font-medium text-slate-700 dark:text-slate-300">
-                  {opportunity.salary}
-                </span>
+                <span className="font-medium text-slate-700 dark:text-slate-300">{opportunity.salary}</span>
               </div>
             )}
           </div>
-          
+
           {/* Description */}
-          <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
-            {opportunity.description}
-          </p>
-          
+          <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">{opportunity.description}</p>
+
           {/* Footer */}
           <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between mb-2">
@@ -120,14 +109,16 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
                   Posted {postedDate}
                 </span>
               </div>
-              
+
               {deadlineDate && (
-                <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                <div
+                  className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}
+                >
                   {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+            <div className="flex items-center gap-4" onClick={e => e.preventDefault()}>
               <LikeButton
                 entityType="opportunity"
                 entityId={opportunity.id.toString()}
@@ -149,20 +140,16 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden flex h-full">
         {/* Left side image (20% width) */}
         <div className="w-1/5 overflow-hidden">
-          <img 
-            src={opportunity.company.logo} 
-            alt={opportunity.company.name} 
-            className="w-full h-full object-cover"
-          />
+          <img src={opportunity.company.logo} alt={opportunity.company.name} className="w-full h-full object-cover" />
         </div>
-        
+
         {/* Content (80% width) */}
         <div className="p-5 w-4/5">
           {/* Company and tags */}
           <div className="flex flex-wrap items-start justify-between mb-3">
             <div className="flex items-center mb-3 sm:mb-0">
               <div>
-                <Link 
+                <Link
                   to={getCompanyUrl(opportunity.company)}
                   className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-orange-500 
                            dark:hover:text-orange-400 flex items-center"
@@ -171,40 +158,44 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
                   {opportunity.company.name}
                 </Link>
                 {opportunity.company.location && (
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {opportunity.company.location}
-                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{opportunity.company.location}</span>
                 )}
               </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(opportunity.type)}`}>
                 {getOpportunityTypeLabel(opportunity.type)}
               </span>
               {opportunity.experienceLevel && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 
-                             dark:bg-slate-700 dark:text-slate-300">
+                <span
+                  className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 
+                             dark:bg-slate-700 dark:text-slate-300"
+                >
                   {getExperienceLevelLabel(opportunity.experienceLevel)}
                 </span>
               )}
               {opportunity.remote && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 
-                              dark:bg-emerald-900 dark:text-emerald-300">
+                <span
+                  className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 
+                              dark:bg-emerald-900 dark:text-emerald-300"
+                >
                   Remote
                 </span>
               )}
             </div>
           </div>
-          
+
           {/* Title */}
           <Link to={getOpportunityUrl(opportunity)}>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
-                          dark:hover:text-orange-400 mb-2">
+            <h3
+              className="text-lg font-semibold text-slate-900 dark:text-white hover:text-orange-500 
+                          dark:hover:text-orange-400 mb-2"
+            >
               {opportunity.title}
             </h3>
           </Link>
-          
+
           {/* Location and details */}
           <div className="flex flex-wrap mb-3 text-sm text-slate-500 dark:text-slate-400">
             <div className="flex items-center mr-4 mb-2">
@@ -213,18 +204,14 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
             </div>
             {opportunity.salary && (
               <div className="flex items-center mb-2 mr-4">
-                <span className="font-medium text-slate-700 dark:text-slate-300">
-                  {opportunity.salary}
-                </span>
+                <span className="font-medium text-slate-700 dark:text-slate-300">{opportunity.salary}</span>
               </div>
             )}
           </div>
-          
+
           {/* Description */}
-          <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
-            {opportunity.description}
-          </p>
-          
+          <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">{opportunity.description}</p>
+
           {/* Footer */}
           <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between mb-2">
@@ -234,14 +221,16 @@ const OpportunityCard = ({ opportunity, featured = false }: OpportunityCardProps
                   Posted {postedDate}
                 </span>
               </div>
-              
+
               {deadlineDate && (
-                <div className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                <div
+                  className={`text-xs ${isExpired ? 'text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}
+                >
                   {isExpired ? 'Deadline passed' : `${daysLeft} days left`}
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-4" onClick={(e) => e.preventDefault()}>
+            <div className="flex items-center gap-4" onClick={e => e.preventDefault()}>
               <LikeButton
                 entityType="opportunity"
                 entityId={opportunity.id.toString()}

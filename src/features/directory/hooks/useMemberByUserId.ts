@@ -11,7 +11,8 @@ export function useMemberByUserId(userId?: string) {
 
       const { data, error } = await supabase
         .from('members')
-        .select(`
+        .select(
+          `
           *,
           member_skills (
             skill,
@@ -47,7 +48,8 @@ export function useMemberByUserId(userId?: string) {
               hero_image
             )
           )
-        `)
+        `
+        )
         .eq('user_id', userId)
         .single();
 

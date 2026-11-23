@@ -14,7 +14,7 @@ import {
   ArrowUpDown,
   Tag,
   MessageSquare,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { useContactSubmissions, useContactSubmissionStats } from '@/hooks/useContactSubmissions';
 import { ContactSubmission } from '@/services/emailNotificationService';
@@ -23,14 +23,14 @@ const STATUS_COLORS = {
   open: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   in_progress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
   closed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  spam: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+  spam: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
 };
 
 const PRIORITY_COLORS = {
   low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
   medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   high: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
-  urgent: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+  urgent: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
 };
 
 const TYPE_LABELS = {
@@ -38,7 +38,7 @@ const TYPE_LABELS = {
   support: 'Support',
   partnership: 'Partnership',
   volunteer: 'Volunteer',
-  speaker_request: 'Speaker'
+  speaker_request: 'Speaker',
 };
 
 interface SubmissionFilters {
@@ -58,34 +58,28 @@ export default function ContactSubmissionsPage() {
     status: [],
     type: [],
     priority: [],
-    dateRange: null
+    dateRange: null,
   });
 
   // Convert local filters to API format
-  const apiFilters = useMemo(() => ({
-    search: filters.search || undefined,
-    status: filters.status.length > 0 ? filters.status : undefined,
-    type: filters.type.length > 0 ? filters.type : undefined,
-    priority: filters.priority.length > 0 ? filters.priority : undefined,
-    created_after: filters.dateRange?.start,
-    created_before: filters.dateRange?.end
-  }), [filters]);
+  const apiFilters = useMemo(
+    () => ({
+      search: filters.search || undefined,
+      status: filters.status.length > 0 ? filters.status : undefined,
+      type: filters.type.length > 0 ? filters.type : undefined,
+      priority: filters.priority.length > 0 ? filters.priority : undefined,
+      created_after: filters.dateRange?.start,
+      created_before: filters.dateRange?.end,
+    }),
+    [filters]
+  );
 
-  const { 
-    submissions, 
-    loading, 
-    error, 
-    total, 
-    totalPages, 
-    currentPage,
-    refetch,
-    updateSubmission,
-    deleteSubmission 
-  } = useContactSubmissions({ 
-    filters: apiFilters as any, 
-    page, 
-    limit: 25 
-  });
+  const { submissions, loading, error, total, totalPages, currentPage, refetch, updateSubmission, deleteSubmission } =
+    useContactSubmissions({
+      filters: apiFilters as any,
+      page,
+      limit: 25,
+    });
 
   const { stats } = useContactSubmissionStats();
 
@@ -116,7 +110,7 @@ export default function ContactSubmissionsPage() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(new Date(dateString));
   };
 
@@ -124,7 +118,7 @@ export default function ContactSubmissionsPage() {
     const now = new Date();
     const date = new Date(dateString);
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${Math.floor(diffInHours)}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
@@ -160,14 +154,10 @@ export default function ContactSubmissionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Contact Submissions
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage and respond to contact form submissions
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Contact Submissions</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and respond to contact form submissions</p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -176,7 +166,7 @@ export default function ContactSubmissionsPage() {
             <Filter className="h-4 w-4 mr-2" />
             Filters
           </button>
-          
+
           <button
             onClick={exportSubmissions}
             className="px-4 py-2 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center"
@@ -184,7 +174,7 @@ export default function ContactSubmissionsPage() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </button>
-          
+
           <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
             <Settings className="h-4 w-4 mr-2" />
             Settings
@@ -204,7 +194,7 @@ export default function ContactSubmissionsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-yellow-500" />
@@ -216,23 +206,27 @@ export default function ContactSubmissionsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
             <div className="flex items-center">
               <User className="h-8 w-8 text-orange-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Unassigned</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(stats as any).unassigned_count || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {(stats as any).unassigned_count || 0}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
             <div className="flex items-center">
               <AlertTriangle className="h-8 w-8 text-red-500" />
               <div className="ml-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Overdue</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(stats as any).overdue_count || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {(stats as any).overdue_count || 0}
+                </p>
               </div>
             </div>
           </div>
@@ -248,7 +242,7 @@ export default function ContactSubmissionsPage() {
               type="text"
               placeholder="Search submissions..."
               value={filters.search}
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              onChange={e => setFilters(prev => ({ ...prev, search: e.target.value }))}
               className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
             />
           </div>
@@ -258,16 +252,16 @@ export default function ContactSubmissionsPage() {
           <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Status
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
               <select
                 multiple
                 value={filters.status}
-                onChange={(e) => setFilters(prev => ({ 
-                  ...prev, 
-                  status: Array.from(e.target.selectedOptions, option => option.value) 
-                }))}
+                onChange={e =>
+                  setFilters(prev => ({
+                    ...prev,
+                    status: Array.from(e.target.selectedOptions, option => option.value),
+                  }))
+                }
                 className="w-full border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
               >
                 <option value="new">New</option>
@@ -279,16 +273,16 @@ export default function ContactSubmissionsPage() {
 
             {/* Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
               <select
                 multiple
                 value={filters.type}
-                onChange={(e) => setFilters(prev => ({ 
-                  ...prev, 
-                  type: Array.from(e.target.selectedOptions, option => option.value) 
-                }))}
+                onChange={e =>
+                  setFilters(prev => ({
+                    ...prev,
+                    type: Array.from(e.target.selectedOptions, option => option.value),
+                  }))
+                }
                 className="w-full border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
               >
                 <option value="general">General</option>
@@ -301,16 +295,16 @@ export default function ContactSubmissionsPage() {
 
             {/* Priority Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Priority
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
               <select
                 multiple
                 value={filters.priority}
-                onChange={(e) => setFilters(prev => ({ 
-                  ...prev, 
-                  priority: Array.from(e.target.selectedOptions, option => option.value) 
-                }))}
+                onChange={e =>
+                  setFilters(prev => ({
+                    ...prev,
+                    priority: Array.from(e.target.selectedOptions, option => option.value),
+                  }))
+                }
                 className="w-full border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
               >
                 <option value="low">Low</option>
@@ -323,13 +317,15 @@ export default function ContactSubmissionsPage() {
             {/* Clear Filters */}
             <div className="flex items-end">
               <button
-                onClick={() => setFilters({
-                  search: '',
-                  status: [],
-                  type: [],
-                  priority: [],
-                  dateRange: null
-                })}
+                onClick={() =>
+                  setFilters({
+                    search: '',
+                    status: [],
+                    type: [],
+                    priority: [],
+                    dateRange: null,
+                  })
+                }
                 className="w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 Clear Filters
@@ -390,7 +386,7 @@ export default function ContactSubmissionsPage() {
                   </td>
                 </tr>
               ) : (
-                submissions.map((submission) => (
+                submissions.map(submission => (
                   <tr key={submission.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
                     <td className="px-6 py-4">
                       <div className="max-w-xs">
@@ -402,28 +398,24 @@ export default function ContactSubmissionsPage() {
                         </p>
                       </div>
                     </td>
-                    
+
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {submission.name}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {submission.email}
-                        </p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{submission.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{submission.email}</p>
                       </div>
                     </td>
-                    
+
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
                         {TYPE_LABELS[submission.type as keyof typeof TYPE_LABELS] || submission.type}
                       </span>
                     </td>
-                    
+
                     <td className="px-6 py-4">
                       <select
                         value={submission.priority}
-                        onChange={(e) => handlePriorityChange(submission.id, e.target.value)}
+                        onChange={e => handlePriorityChange(submission.id, e.target.value)}
                         className={`text-xs font-medium px-2.5 py-0.5 rounded-full border-0 ${PRIORITY_COLORS[submission.priority]}`}
                       >
                         <option value="low">Low</option>
@@ -432,11 +424,11 @@ export default function ContactSubmissionsPage() {
                         <option value="urgent">Urgent</option>
                       </select>
                     </td>
-                    
+
                     <td className="px-6 py-4">
                       <select
                         value={submission.status}
-                        onChange={(e) => handleStatusChange(submission.id, e.target.value)}
+                        onChange={e => handleStatusChange(submission.id, e.target.value)}
                         className={`text-xs font-medium px-2.5 py-0.5 rounded-full border-0 ${STATUS_COLORS[submission.status]}`}
                       >
                         <option value="open">Open</option>
@@ -446,14 +438,14 @@ export default function ContactSubmissionsPage() {
                         <option value="closed">Closed</option>
                       </select>
                     </td>
-                    
+
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                       <div>
                         <p>{getTimeAgo(submission.created_at)}</p>
                         <p className="text-xs">{formatDate(submission.created_at)}</p>
                       </div>
                     </td>
-                    
+
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <button
@@ -479,9 +471,9 @@ export default function ContactSubmissionsPage() {
           <div className="bg-white dark:bg-slate-800 px-6 py-3 border-t border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700 dark:text-gray-300">
-                Showing {((currentPage - 1) * 25) + 1} to {Math.min(currentPage * 25, total)} of {total} results
+                Showing {(currentPage - 1) * 25 + 1} to {Math.min(currentPage * 25, total)} of {total} results
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setPage(Math.max(1, currentPage - 1))}
@@ -490,11 +482,11 @@ export default function ContactSubmissionsPage() {
                 >
                   Previous
                 </button>
-                
+
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   Page {currentPage} of {totalPages}
                 </span>
-                
+
                 <button
                   onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
@@ -514,9 +506,7 @@ export default function ContactSubmissionsPage() {
           <div className="bg-white dark:bg-slate-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Submission Details
-                </h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Submission Details</h2>
                 <button
                   onClick={() => setSelectedSubmission(null)}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -524,44 +514,48 @@ export default function ContactSubmissionsPage() {
                   ×
                 </button>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                     {selectedSubmission.subject}
                   </h3>
                   <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span>From: {selectedSubmission.name} ({selectedSubmission.email})</span>
+                    <span>
+                      From: {selectedSubmission.name} ({selectedSubmission.email})
+                    </span>
                     <span>•</span>
                     <span>{formatDate(selectedSubmission.created_at)}</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2">Message</h4>
                   <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                      {selectedSubmission.message}
-                    </p>
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{selectedSubmission.message}</p>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2">Status</h4>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[selectedSubmission.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.open}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[selectedSubmission.status as keyof typeof STATUS_COLORS] || STATUS_COLORS.open}`}
+                    >
                       {selectedSubmission.status.replace('_', ' ')}
                     </span>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2">Priority</h4>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${PRIORITY_COLORS[selectedSubmission.priority]}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${PRIORITY_COLORS[selectedSubmission.priority]}`}
+                    >
                       {selectedSubmission.priority}
                     </span>
                   </div>
                 </div>
-                
+
                 {selectedSubmission.tags && selectedSubmission.tags.length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2">Tags</h4>

@@ -4,13 +4,7 @@ import { FormInputsProps } from './types';
 import { useState } from 'react';
 import { ContentStatus } from '../../types/common';
 
-const FormInputs: React.FC<FormInputsProps> = ({ 
-  formData, 
-  handleChange, 
-  setFormData, 
-  onImageChange,
-  errors 
-}) => {
+const FormInputs: React.FC<FormInputsProps> = ({ formData, handleChange, setFormData, onImageChange, errors }) => {
   const [enableImageInsertion, setEnableImageInsertion] = useState(true);
   return (
     <div className="space-y-6">
@@ -24,7 +18,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
         error={errors.title}
         required
       />
-      
+
       {/* Slug */}
       <FormInput
         id="slug"
@@ -36,7 +30,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
         required
         helperText={`This will be used in the URL: /news/${formData.slug || 'your-slug'}`}
       />
-      
+
       {/* Excerpt */}
       <FormTextarea
         id="excerpt"
@@ -48,7 +42,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
         rows={3}
         required
       />
-      
+
       {/* Content */}
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -60,32 +54,31 @@ const FormInputs: React.FC<FormInputsProps> = ({
               <input
                 type="checkbox"
                 checked={enableImageInsertion}
-                onChange={(e) => setEnableImageInsertion(e.target.checked)}
+                onChange={e => setEnableImageInsertion(e.target.checked)}
                 className="mr-1"
               />
               Enable AI image insertion
             </label>
           </div>
         </div>
-        
+
         <EnhancedContentAIEditor
           value={formData.content}
-          onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+          onChange={value => setFormData(prev => ({ ...prev, content: value }))}
           placeholder="Write your news article here. Use the AI tools to generate content, improve writing, or insert relevant images..."
           contentType="news"
           includeImages={enableImageInsertion}
           height="500px"
           className="min-h-[500px]"
         />
-        {errors.content && (
-          <p className="mt-1 text-sm text-red-600">{errors.content}</p>
-        )}
-        
+        {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content}</p>}
+
         <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-          💡 Tip: Select text to access AI editing options, or use the toolbar buttons to generate content and enhance your writing.
+          💡 Tip: Select text to access AI editing options, or use the toolbar buttons to generate content and enhance
+          your writing.
         </div>
       </div>
-      
+
       {/* Featured Image */}
       <FormImageUpload
         id="news-image"
@@ -98,28 +91,28 @@ const FormInputs: React.FC<FormInputsProps> = ({
         maxSize={5 * 1024 * 1024} // 5MB limit
         acceptedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
       />
-      
+
       {/* Status */}
       <FormSelect
         id="status"
         name="status"
         label="Status"
         value={formData.status}
-        onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as ContentStatus }))}
+        onChange={e => setFormData(prev => ({ ...prev, status: e.target.value as ContentStatus }))}
         options={[
           { value: 'draft', label: 'Draft' },
           { value: 'published', label: 'Published' },
-          { value: 'archived', label: 'Archived' }
+          { value: 'archived', label: 'Archived' },
         ]}
       />
-      
+
       {/* Featured Checkbox */}
       <FormCheckbox
         id="featured"
         name="featured"
         label="Feature this article (promotes to home page and top of listings)"
         checked={formData.featured}
-        onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+        onChange={e => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
       />
     </div>
   );

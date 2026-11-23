@@ -14,10 +14,10 @@ test.describe('AI Editor Comprehensive Test', () => {
     await expect(page.locator('h1').getByText('AI BlockNote Editor')).toBeVisible();
     await expect(page.locator('.bn-editor')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('AI-Powered BlockNote Editor Demo')).toBeVisible();
-    
-    await page.screenshot({ 
+
+    await page.screenshot({
       path: 'test-results/screenshots/01-page-loaded.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // 2. Click in editor area to focus
@@ -34,10 +34,10 @@ test.describe('AI Editor Comprehensive Test', () => {
 
     // Wait for slash menu
     await page.waitForTimeout(1000);
-    
-    await page.screenshot({ 
+
+    await page.screenshot({
       path: 'test-results/screenshots/02-slash-menu-full.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // 4. Verify AI Content Creation commands
@@ -71,21 +71,21 @@ test.describe('AI Editor Comprehensive Test', () => {
     console.log('✅ Step 6: Testing AI command filtering');
     await page.keyboard.type('ai');
     await page.waitForTimeout(500);
-    
-    await page.screenshot({ 
+
+    await page.screenshot({
       path: 'test-results/screenshots/03-filtered-ai-commands.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // 7. Clear and test Blog Post command
     console.log('✅ Step 7: Testing Blog Post command interaction');
     await page.keyboard.press('Escape'); // Close menu
     await page.waitForTimeout(500);
-    
+
     // Re-trigger slash menu
     await page.keyboard.type('/');
     await page.waitForTimeout(1000);
-    
+
     // Try clicking Blog Post (handle potential dialog)
     page.on('dialog', async dialog => {
       console.log('📝 Dialog detected:', dialog.message());
@@ -103,10 +103,10 @@ test.describe('AI Editor Comprehensive Test', () => {
     if (await blogPostItem.isVisible()) {
       await blogPostItem.click();
       await page.waitForTimeout(2000);
-      
-      await page.screenshot({ 
+
+      await page.screenshot({
         path: 'test-results/screenshots/04-after-blog-post-click.png',
-        fullPage: true
+        fullPage: true,
       });
     }
 
@@ -114,17 +114,17 @@ test.describe('AI Editor Comprehensive Test', () => {
     console.log('✅ Step 8: Verifying AI Assistant button');
     const aiButton = page.getByRole('button', { name: /AI Assistant/i });
     await expect(aiButton).toBeVisible();
-    
+
     await aiButton.click();
     await page.waitForTimeout(1000);
-    
+
     // Check if AI dropdown menu appears
     const aiMenu = page.locator('.ai-menu-dropdown');
     if (await aiMenu.isVisible()) {
       console.log('✅ AI toolbar menu opened successfully');
-      await page.screenshot({ 
+      await page.screenshot({
         path: 'test-results/screenshots/05-ai-toolbar-menu.png',
-        fullPage: true
+        fullPage: true,
       });
     } else {
       console.log('ℹ️ AI toolbar menu not visible (may require configuration)');
@@ -134,11 +134,11 @@ test.describe('AI Editor Comprehensive Test', () => {
     console.log('✅ Step 9: Verifying AI status indicator');
     const statusIndicator = page.locator('.ai-status-indicator');
     await expect(statusIndicator).toBeVisible();
-    
+
     const hasAIReady = await page.getByText(/AI Ready/i).isVisible();
     const hasConfigMessage = await page.getByText(/Configure API keys/i).isVisible();
     expect(hasAIReady || hasConfigMessage).toBe(true);
-    
+
     if (hasAIReady) {
       console.log('✅ AI is configured and ready');
     } else {
@@ -149,24 +149,24 @@ test.describe('AI Editor Comprehensive Test', () => {
     console.log('✅ Step 10: Verifying reference sections');
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(1000);
-    
+
     await expect(page.getByText('Available AI Commands')).toBeVisible();
     await expect(page.getByText('Key Features')).toBeVisible();
     await expect(page.getByText('Pro Tips')).toBeVisible();
-    
-    await page.screenshot({ 
+
+    await page.screenshot({
       path: 'test-results/screenshots/06-reference-sections.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // 11. Final comprehensive screenshot
     console.log('✅ Step 11: Taking final comprehensive screenshot');
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(500);
-    
-    await page.screenshot({ 
+
+    await page.screenshot({
       path: 'test-results/screenshots/07-final-comprehensive-view.png',
-      fullPage: true
+      fullPage: true,
     });
 
     console.log('🎉 Comprehensive AI editor test completed successfully!');

@@ -5,16 +5,7 @@
 
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import {
-  GripVertical,
-  Edit,
-  Trash2,
-  Copy,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  Link
-} from 'lucide-react';
+import { GripVertical, Edit, Trash2, Copy, ChevronDown, ChevronRight, ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Switch } from '@/components/ui/Switch';
 import { MenuItemCardProps } from '../types';
@@ -32,7 +23,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
   children = [],
   isExpanded = false,
   onToggleExpand,
-  depth = 0
+  depth = 0,
 }) => {
   const IconComponent = (item.icon && ICON_COMPONENTS[item.icon as keyof typeof ICON_COMPONENTS]) || Link;
   const hasChildren = children.length > 0;
@@ -80,12 +71,10 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
             {...provided.draggableProps}
             className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:shadow-md ${
               snapshot.isDragging ? 'shadow-lg rotate-1' : ''
-            } ${!item.is_enabled ? 'opacity-60' : ''} ${
-              isSelected ? 'ring-2 ring-blue-500' : ''
-            }`}
+            } ${!item.is_enabled ? 'opacity-60' : ''} ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
             style={{
               marginLeft: `${depth * 20}px`,
-              ...provided.draggableProps.style
+              ...provided.draggableProps.style,
             }}
           >
             <div className="flex items-center justify-between p-4">
@@ -94,7 +83,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  onChange={(e) => onSelect(item, e.target.checked)}
+                  onChange={e => onSelect(item, e.target.checked)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
 
@@ -112,11 +101,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
                     onClick={() => onToggleExpand(item)}
                     className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                   >
-                    {isExpanded ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
+                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </button>
                 )}
 
@@ -126,16 +111,12 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center space-x-2">
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {item.title}
-                      </h3>
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{item.title}</h3>
                       {getVisibilityBadge()}
                       {item.is_external && <ExternalLink className="h-3 w-3 text-blue-500" />}
                     </div>
                     {item.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {item.description}
-                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.description}</p>
                     )}
                     <div className="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-500">
                       <span>{item.url}</span>
@@ -155,16 +136,14 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
               <div className="flex items-center space-x-2">
                 {/* Status indicator */}
                 <div
-                  className={`w-2 h-2 rounded-full ${
-                    item.is_enabled ? 'bg-green-400' : 'bg-gray-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full ${item.is_enabled ? 'bg-green-400' : 'bg-gray-300'}`}
                   title={item.is_enabled ? 'Enabled' : 'Disabled'}
                 />
 
                 {/* Enable/Disable Toggle */}
                 <Switch
                   checked={item.is_enabled}
-                  onCheckedChange={(enabled) => onToggleEnabled(item, enabled)}
+                  onCheckedChange={enabled => onToggleEnabled(item, enabled)}
                   className="mr-2"
                 />
 
@@ -179,23 +158,11 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({
                   <Copy className="h-4 w-4" />
                 </Button>
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onEdit(item)}
-                  className="p-2"
-                  title="Edit item"
-                >
+                <Button size="sm" variant="outline" onClick={() => onEdit(item)} className="p-2" title="Edit item">
                   <Edit className="h-4 w-4" />
                 </Button>
 
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => onDelete(item)}
-                  className="p-2"
-                  title="Delete item"
-                >
+                <Button size="sm" variant="danger" onClick={() => onDelete(item)} className="p-2" title="Delete item">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

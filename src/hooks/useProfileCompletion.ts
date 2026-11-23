@@ -33,10 +33,12 @@ export function useProfileCompletion(member: Member | null | undefined): Profile
     // Check required fields
     REQUIRED_FIELDS.forEach(field => {
       const value = member[field];
-      if (!value || 
-          (typeof value === 'string' && value.trim() === '') ||
-          (field === 'image' && (value === '/placeholder-avatar.png' || value.includes('placeholder'))) ||
-          (field === 'bio' && value.trim() === '')) {
+      if (
+        !value ||
+        (typeof value === 'string' && value.trim() === '') ||
+        (field === 'image' && (value === '/placeholder-avatar.png' || value.includes('placeholder'))) ||
+        (field === 'bio' && value.trim() === '')
+      ) {
         missingRequired.push(field);
       }
     });
@@ -44,9 +46,11 @@ export function useProfileCompletion(member: Member | null | undefined): Profile
     // Check suggested fields
     SUGGESTED_FIELDS.forEach(field => {
       const value = member[field];
-      if (!value || 
-          (typeof value === 'string' && value.trim() === '') ||
-          (Array.isArray(value) && value.length === 0)) {
+      if (
+        !value ||
+        (typeof value === 'string' && value.trim() === '') ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
         missingSuggested.push(field);
       }
     });
@@ -94,13 +98,15 @@ export function shouldShowOnboarding(member: Member | null | undefined): boolean
 
   // Check required fields manually (same logic as in useProfileCompletion)
   const missingRequired: string[] = [];
-  
+
   REQUIRED_FIELDS.forEach(field => {
     const value = member[field];
-    if (!value || 
-        (typeof value === 'string' && value.trim() === '') ||
-        (field === 'image' && (value === '/placeholder-avatar.png' || value.includes('placeholder'))) ||
-        (field === 'bio' && value.trim() === '')) {
+    if (
+      !value ||
+      (typeof value === 'string' && value.trim() === '') ||
+      (field === 'image' && (value === '/placeholder-avatar.png' || value.includes('placeholder'))) ||
+      (field === 'bio' && value.trim() === '')
+    ) {
       missingRequired.push(field);
     }
   });
@@ -109,9 +115,7 @@ export function shouldShowOnboarding(member: Member | null | undefined): boolean
   const missingSuggested: string[] = [];
   SUGGESTED_FIELDS.forEach(field => {
     const value = member[field];
-    if (!value || 
-        (typeof value === 'string' && value.trim() === '') ||
-        (Array.isArray(value) && value.length === 0)) {
+    if (!value || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0)) {
       missingSuggested.push(field);
     }
   });
@@ -120,7 +124,7 @@ export function shouldShowOnboarding(member: Member | null | undefined): boolean
   const completedFields = totalFields - missingRequired.length - missingSuggested.length;
   const completionPercentage = Math.round((completedFields / totalFields) * 100);
   const isComplete = missingRequired.length === 0;
-  
+
   // Show onboarding if profile is less than 60% complete or missing required fields
   return !isComplete || completionPercentage < 60;
 }

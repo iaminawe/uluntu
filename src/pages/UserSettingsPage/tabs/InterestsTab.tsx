@@ -23,7 +23,7 @@ export const InterestsTab: React.FC<InterestsTabProps> = ({
   newInterest,
   setNewInterest,
   handleAddInterest,
-  handleRemoveInterest
+  handleRemoveInterest,
 }) => {
   return (
     <div className="space-y-6">
@@ -50,8 +50,8 @@ export const InterestsTab: React.FC<InterestsTabProps> = ({
           <input
             type="text"
             value={newInterest}
-            onChange={(e) => setNewInterest(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddInterest())}
+            onChange={e => setNewInterest(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddInterest())}
             className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                      focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -69,7 +69,7 @@ export const InterestsTab: React.FC<InterestsTabProps> = ({
         </div>
         {interests.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {interests.map((interest) => (
+            {interests.map(interest => (
               <span
                 key={interest}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30
@@ -95,9 +95,7 @@ export const InterestsTab: React.FC<InterestsTabProps> = ({
 
       {/* Community Engagement Info */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2">
-          Why add topics and interests?
-        </h4>
+        <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-2">Why add topics and interests?</h4>
         <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-1">
           <li>• Help others discover you based on shared interests</li>
           <li>• Get notified about relevant events and opportunities</li>

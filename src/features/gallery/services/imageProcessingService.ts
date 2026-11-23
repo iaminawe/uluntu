@@ -34,7 +34,7 @@ export const DEFAULT_VARIANTS: Record<string, ImageVariant> = {
   thumbnail: { width: 300, height: 300, quality: 0.8, format: 'jpeg' },
   small: { width: 600, height: 400, quality: 0.85, format: 'jpeg' },
   medium: { width: 1200, height: 800, quality: 0.9, format: 'jpeg' },
-  large: { width: 2000, height: 1333, quality: 0.95, format: 'jpeg' }
+  large: { width: 2000, height: 1333, quality: 0.95, format: 'jpeg' },
 };
 
 export class ImageProcessingService {
@@ -59,7 +59,7 @@ export class ImageProcessingService {
         resolve({
           width: img.naturalWidth,
           height: img.naturalHeight,
-          aspectRatio: img.naturalWidth / img.naturalHeight
+          aspectRatio: img.naturalWidth / img.naturalHeight,
         });
       };
 
@@ -77,12 +77,12 @@ export class ImageProcessingService {
    */
   async generatePlaceholder(file: File, maxSize: number = 20): Promise<string> {
     const img = await this.loadImage(file);
-    
+
     this.canvas.width = maxSize;
     this.canvas.height = maxSize;
-    
+
     this.ctx.drawImage(img, 0, 0, maxSize, maxSize);
-    
+
     return this.canvas.toDataURL('image/jpeg', 0.1);
   }
 
@@ -91,19 +91,22 @@ export class ImageProcessingService {
    */
   async getDominantColor(file: File): Promise<string> {
     const img = await this.loadImage(file);
-    
+
     // Sample the image at a small resolution
     const sampleSize = 50;
     this.canvas.width = sampleSize;
     this.canvas.height = sampleSize;
-    
+
     this.ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
-    
+
     const imageData = this.ctx.getImageData(0, 0, sampleSize, sampleSize);
     const data = imageData.data;
-    
-    let r = 0, g = 0, b = 0, count = 0;
-    
+
+    let r = 0,
+      g = 0,
+      b = 0,
+      count = 0;
+
     // Sample every 4th pixel to improve performance
     for (let i = 0; i < data.length; i += 16) {
       r += data[i];
@@ -111,43 +114,37 @@ export class ImageProcessingService {
       b += data[i + 2];
       count++;
     }
-    
+
     r = Math.round(r / count);
     g = Math.round(g / count);
     b = Math.round(b / count);
-    
+
     return `rgb(${r}, ${g}, ${b})`;
   }
 
   /**
    * Process a single image into multiple variants
    */
-  async processImage(
-    file: File, 
-    options: ProcessingOptions = {}
-  ): Promise<ProcessedImages> {
+  async processImage(file: File, options: ProcessingOptions = {}): Promise<ProcessedImages> {
     const variants = { ...DEFAULT_VARIANTS, ...options.variants };
-    const [img, originalDimensions] = await Promise.all([
-      this.loadImage(file),
-      this.getImageDimensions(file),
-    ]);
-    
+    const [img, originalDimensions] = await Promise.all([this.loadImage(file), this.getImageDimensions(file)]);
+
     const processed: ProcessedImages = {
-      original: file
+      original: file,
     };
 
     // Process each variant
     for (const [name, variant] of Object.entries(variants)) {
       try {
         const resizedFile = await this.resizeImage(
-          img, 
-          file.name, 
+          img,
+          file.name,
           file.type,
           variant,
           originalDimensions,
           options.smartCrop
         );
-        
+
         (processed as any)[name] = resizedFile;
       } catch (error) {
         console.warn(`Failed to generate ${name} variant:`, error);
@@ -169,15 +166,16 @@ export class ImageProcessingService {
     smartCrop: boolean = false
   ): Promise<File> {
     const { width: targetWidth, height: targetHeight, quality, format } = variant;
-    
+
     let { width: sourceWidth, height: sourceHeight } = originalDimensions;
-    let sx = 0, sy = 0; // source crop position
-    
+    let sx = 0,
+      sy = 0; // source crop position
+
     // Calculate dimensions and crop if needed
     if (smartCrop) {
       const targetRatio = targetWidth / targetHeight;
       const sourceRatio = sourceWidth / sourceHeight;
-      
+
       if (sourceRatio > targetRatio) {
         // Source is wider, crop horizontally
         const newWidth = sourceHeight * targetRatio;
@@ -194,42 +192,47 @@ export class ImageProcessingService {
       const scaleX = targetWidth / sourceWidth;
       const scaleY = targetHeight / sourceHeight;
       const scale = Math.min(scaleX, scaleY);
-      
+
       if (scale < 1) {
         sourceWidth *= scale;
         sourceHeight *= scale;
       }
     }
-    
+
     // Set canvas size
     this.canvas.width = smartCrop ? targetWidth : sourceWidth;
     this.canvas.height = smartCrop ? targetHeight : sourceHeight;
-    
+
     // Clear canvas and draw resized image
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(
       img,
-      sx, sy, originalDimensions.width - sx * 2, originalDimensions.height - sy * 2,
-      0, 0, this.canvas.width, this.canvas.height
+      sx,
+      sy,
+      originalDimensions.width - sx * 2,
+      originalDimensions.height - sy * 2,
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height
     );
-    
+
     // Convert to blob
-    const outputFormat = format === 'webp' ? 'image/webp' : 
-                        format === 'png' ? 'image/png' : 'image/jpeg';
-    
+    const outputFormat = format === 'webp' ? 'image/webp' : format === 'png' ? 'image/png' : 'image/jpeg';
+
     return new Promise((resolve, reject) => {
       this.canvas.toBlob(
-        (blob) => {
+        blob => {
           if (blob) {
             const extension = format || 'jpg';
             const baseName = fileName.replace(/\.[^/.]+$/, '');
             const newFileName = `${baseName}_${this.canvas.width}x${this.canvas.height}.${extension}`;
-            
+
             const file = new File([blob], newFileName, {
               type: outputFormat,
-              lastModified: Date.now()
+              lastModified: Date.now(),
             });
-            
+
             resolve(file);
           } else {
             reject(new Error('Failed to generate image blob'));
@@ -266,11 +269,7 @@ export class ImageProcessingService {
   /**
    * Enhance photo upload input with processing metadata
    */
-  async enhanceUploadInput(
-    file: File,
-    galleryId: string,
-    options: ProcessingOptions = {}
-  ): Promise<PhotoUploadInput> {
+  async enhanceUploadInput(file: File, galleryId: string, options: ProcessingOptions = {}): Promise<PhotoUploadInput> {
     try {
       // Metadata and variants are independent reads of the same file.
       const [dimensions, placeholder, dominantColor, processedImages] = await Promise.all([
@@ -279,7 +278,7 @@ export class ImageProcessingService {
         this.getDominantColor(file),
         this.processImage(file, options),
       ]);
-      
+
       return {
         file,
         galleryId,
@@ -287,16 +286,16 @@ export class ImageProcessingService {
         dimensions,
         placeholder,
         dominantColor,
-        processedImages
+        processedImages,
       };
     } catch (error) {
       console.error('Error enhancing upload input:', error);
-      
+
       // Return basic input if processing fails
       return {
         file,
         galleryId,
-        title: file.name.replace(/\.[^/.]+$/, '')
+        title: file.name.replace(/\.[^/.]+$/, ''),
       };
     }
   }
@@ -316,15 +315,12 @@ export class ImageProcessingService {
    * Get WebP support
    */
   static supportsWebP(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const canvas = document.createElement('canvas');
       canvas.width = 1;
       canvas.height = 1;
-      
-      canvas.toBlob(
-        (blob) => resolve(blob?.type === 'image/webp'),
-        'image/webp'
-      );
+
+      canvas.toBlob(blob => resolve(blob?.type === 'image/webp'), 'image/webp');
     });
   }
 }

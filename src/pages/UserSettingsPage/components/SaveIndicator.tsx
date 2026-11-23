@@ -5,11 +5,7 @@ import { SaveIndicatorProps } from '../types';
 /**
  * Save status indicator component
  */
-export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
-  isSaving,
-  saveSuccess,
-  error
-}) => {
+export const SaveIndicator: React.FC<SaveIndicatorProps> = ({ isSaving, saveSuccess, error }) => {
   if (!error && !saveSuccess) return null;
 
   return (

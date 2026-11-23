@@ -21,16 +21,12 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
   onMarkAsRead,
   className = '',
 }) => {
-  const [activeSection, setActiveSection] = useState<'conversations' | 'announcements' | 'notifications'>('conversations');
+  const [activeSection, setActiveSection] = useState<'conversations' | 'announcements' | 'notifications'>(
+    'conversations'
+  );
 
   if (error) {
-    return (
-      <ErrorDisplay
-        title="Failed to load messages"
-        message={error}
-        retry={onRefresh}
-      />
-    );
+    return <ErrorDisplay title="Failed to load messages" message={error} retry={onRefresh} />;
   }
 
   const statistics = data.statistics || {
@@ -88,8 +84,18 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                <svg
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
                 </svg>
               </div>
             </div>
@@ -104,8 +110,18 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                <svg
+                  className="w-5 h-5 text-red-600 dark:text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"
+                  />
                 </svg>
               </div>
             </div>
@@ -120,7 +136,12 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -138,21 +159,12 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
         <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                {getSectionTitle()}
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {getSectionDescription()}
-              </p>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{getSectionTitle()}</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{getSectionDescription()}</p>
             </div>
             <div className="flex space-x-2">
               {onCreateMessage && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onCreateMessage}
-                  className="inline-flex items-center"
-                >
+                <Button variant="outline" size="sm" onClick={onCreateMessage} className="inline-flex items-center">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
@@ -160,14 +172,14 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
                 </Button>
               )}
               {onCreateAnnouncement && activeSection === 'announcements' && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={onCreateAnnouncement}
-                  className="inline-flex items-center"
-                >
+                <Button variant="default" size="sm" onClick={onCreateAnnouncement} className="inline-flex items-center">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                    />
                   </svg>
                   New Announcement
                 </Button>
@@ -183,7 +195,7 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
               { id: 'conversations', label: 'Conversations', count: data.conversations?.length || 0 },
               { id: 'announcements', label: 'Announcements', count: data.announcements?.length || 0 },
               { id: 'notifications', label: 'Notifications', count: statistics.unreadMessages },
-            ].map((section) => (
+            ].map(section => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id as any)}
@@ -195,13 +207,15 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
               >
                 <span>{section.label}</span>
                 {section.count > 0 && (
-                  <span className={`inline-flex items-center px-2 py-1 text-xs font-bold rounded-full ${
-                    activeSection === section.id
-                      ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                      : section.id === 'notifications' && section.count > 0
-                      ? 'bg-red-500 text-white'
-                      : 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 text-xs font-bold rounded-full ${
+                      activeSection === section.id
+                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                        : section.id === 'notifications' && section.count > 0
+                          ? 'bg-red-500 text-white'
+                          : 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
                     {section.count}
                   </span>
                 )}
@@ -223,7 +237,7 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
       {/* Messages List */}
       {!loading && sectionData.length > 0 && (
         <div className="space-y-4">
-          {sectionData.map((message) => (
+          {sectionData.map(message => (
             <ContentCard
               key={message.id}
               item={message}
@@ -232,13 +246,17 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
               layout="list"
               showActions={true}
               actions={[
-                ...(message.unread && onMarkAsRead ? [{
-                  id: 'mark-read',
-                  label: 'Mark Read',
-                  icon: 'check',
-                  variant: 'outline' as const,
-                  onClick: () => onMarkAsRead(message.id),
-                }] : []),
+                ...(message.unread && onMarkAsRead
+                  ? [
+                      {
+                        id: 'mark-read',
+                        label: 'Mark Read',
+                        icon: 'check',
+                        variant: 'outline' as const,
+                        onClick: () => onMarkAsRead(message.id),
+                      },
+                    ]
+                  : []),
                 {
                   id: 'reply',
                   label: 'Reply',
@@ -259,17 +277,32 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
             <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
               {activeSection === 'conversations' && (
                 <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
                 </svg>
               )}
               {activeSection === 'announcements' && (
                 <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                  />
                 </svg>
               )}
               {activeSection === 'notifications' && (
                 <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 00-9.797 7.077A9.969 9.969 0 003 12c0 5.523 4.477 10 10 10a9.97 9.97 0 01-2.473-6.498z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 00-9.797 7.077A9.969 9.969 0 003 12c0 5.523 4.477 10 10 10a9.97 9.97 0 01-2.473-6.498z"
+                  />
                 </svg>
               )}
             </div>
@@ -280,20 +313,18 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
                 {activeSection === 'notifications' && 'No Notifications'}
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm">
-                {activeSection === 'conversations' && 'Start a conversation with community members to connect and collaborate.'}
+                {activeSection === 'conversations' &&
+                  'Start a conversation with community members to connect and collaborate.'}
                 {activeSection === 'announcements' && 'Stay tuned for important community announcements and updates.'}
-                {activeSection === 'notifications' && 'You\'re all caught up! Notifications will appear here when you have new activity.'}
+                {activeSection === 'notifications' &&
+                  "You're all caught up! Notifications will appear here when you have new activity."}
               </p>
               <div className="space-x-3">
                 {activeSection === 'conversations' && onCreateMessage && (
-                  <Button onClick={onCreateMessage}>
-                    Start a Conversation
-                  </Button>
+                  <Button onClick={onCreateMessage}>Start a Conversation</Button>
                 )}
                 {activeSection === 'announcements' && onCreateAnnouncement && (
-                  <Button onClick={onCreateAnnouncement}>
-                    Create Announcement
-                  </Button>
+                  <Button onClick={onCreateAnnouncement}>Create Announcement</Button>
                 )}
               </div>
             </div>
@@ -307,8 +338,18 @@ const MessagesTab: React.FC<MessagesTabProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                <svg
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"
+                  />
                 </svg>
               </div>
               <div>

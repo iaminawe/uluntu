@@ -24,13 +24,13 @@ import {
   selectFilteredPagesStatus,
   selectCurrentPageStatus,
   selectPagesError,
-  selectPagesFilters
+  selectPagesFilters,
 } from '../store/pagesSlice';
 import type { Page, CreatePageData, UpdatePageData, PageFilters } from '../types';
 
 export const usePages = () => {
   const dispatch = useAppDispatch();
-  
+
   // Selectors
   const pages = useAppSelector(selectAllPages);
   const currentPage = useAppSelector(selectCurrentPage);
@@ -48,46 +48,73 @@ export const usePages = () => {
     return dispatch(fetchPages());
   }, [dispatch]);
 
-  const loadPageById = useCallback((id: string) => {
-    return dispatch(fetchPageById(id));
-  }, [dispatch]);
+  const loadPageById = useCallback(
+    (id: string) => {
+      return dispatch(fetchPageById(id));
+    },
+    [dispatch]
+  );
 
-  const loadPageBySlug = useCallback((slug: string) => {
-    return dispatch(fetchPageBySlug(slug));
-  }, [dispatch]);
+  const loadPageBySlug = useCallback(
+    (slug: string) => {
+      return dispatch(fetchPageBySlug(slug));
+    },
+    [dispatch]
+  );
 
   const loadHomePage = useCallback(() => {
     return dispatch(fetchHomePage());
   }, [dispatch]);
 
-  const loadFilteredPages = useCallback((filters: PageFilters) => {
-    return dispatch(fetchFilteredPages(filters));
-  }, [dispatch]);
+  const loadFilteredPages = useCallback(
+    (filters: PageFilters) => {
+      return dispatch(fetchFilteredPages(filters));
+    },
+    [dispatch]
+  );
 
-  const loadChildPages = useCallback((parentId: string) => {
-    return dispatch(fetchChildPages(parentId));
-  }, [dispatch]);
+  const loadChildPages = useCallback(
+    (parentId: string) => {
+      return dispatch(fetchChildPages(parentId));
+    },
+    [dispatch]
+  );
 
-  const createNewPage = useCallback((pageData: CreatePageData) => {
-    return dispatch(createPage(pageData));
-  }, [dispatch]);
+  const createNewPage = useCallback(
+    (pageData: CreatePageData) => {
+      return dispatch(createPage(pageData));
+    },
+    [dispatch]
+  );
 
-  const updateExistingPage = useCallback((id: string, data: Partial<UpdatePageData>) => {
-    const updateData: UpdatePageData = { id, ...data };
-    return dispatch(updatePage(updateData));
-  }, [dispatch]);
+  const updateExistingPage = useCallback(
+    (id: string, data: Partial<UpdatePageData>) => {
+      const updateData: UpdatePageData = { id, ...data };
+      return dispatch(updatePage(updateData));
+    },
+    [dispatch]
+  );
 
-  const removepágina = useCallback((id: string) => {
-    return dispatch(deletePage(id));
-  }, [dispatch]);
+  const removepágina = useCallback(
+    (id: string) => {
+      return dispatch(deletePage(id));
+    },
+    [dispatch]
+  );
 
-  const updateFilters = useCallback((newFilters: PageFilters) => {
-    dispatch(setFilters(newFilters));
-  }, [dispatch]);
+  const updateFilters = useCallback(
+    (newFilters: PageFilters) => {
+      dispatch(setFilters(newFilters));
+    },
+    [dispatch]
+  );
 
-  const addToFilters = useCallback((partialFilters: Partial<PageFilters>) => {
-    dispatch(mergeFilters(partialFilters));
-  }, [dispatch]);
+  const addToFilters = useCallback(
+    (partialFilters: Partial<PageFilters>) => {
+      dispatch(mergeFilters(partialFilters));
+    },
+    [dispatch]
+  );
 
   const resetFilters = useCallback(() => {
     dispatch(clearFilters());
@@ -97,9 +124,12 @@ export const usePages = () => {
     dispatch(clearPages());
   }, [dispatch]);
 
-  const setPage = useCallback((page: Page | null) => {
-    dispatch(setCurrentPage(page));
-  }, [dispatch]);
+  const setPage = useCallback(
+    (page: Page | null) => {
+      dispatch(setCurrentPage(page));
+    },
+    [dispatch]
+  );
 
   // Computed values
   const isLoading = status === 'loading' || currentPageStatus === 'loading';
@@ -109,13 +139,19 @@ export const usePages = () => {
   const hasFilteredPages = filteredPages.length > 0;
 
   // Helper functions
-  const getPageBySlug = useCallback((slug: string): Page | undefined => {
-    return pages.find(page => page.slug === slug);
-  }, [pages]);
+  const getPageBySlug = useCallback(
+    (slug: string): Page | undefined => {
+      return pages.find(page => page.slug === slug);
+    },
+    [pages]
+  );
 
-  const getPageById = useCallback((id: string): Page | undefined => {
-    return pages.find(page => page.id === id);
-  }, [pages]);
+  const getPageById = useCallback(
+    (id: string): Page | undefined => {
+      return pages.find(page => page.id === id);
+    },
+    [pages]
+  );
 
   const getPublishedPages = useCallback((): Page[] => {
     return pages.filter(page => page.status === 'published' && !!(page as any).is_published);
@@ -125,17 +161,23 @@ export const usePages = () => {
     return pages.filter(page => page.status === 'draft' || !(page as any).is_published);
   }, [pages]);
 
-  const getPagesByTemplate = useCallback((template: string): Page[] => {
-    return pages.filter(page => page.template === template);
-  }, [pages]);
+  const getPagesByTemplate = useCallback(
+    (template: string): Page[] => {
+      return pages.filter(page => page.template === template);
+    },
+    [pages]
+  );
 
   const getRootPages = useCallback((): Page[] => {
     return pages.filter(page => !page.parent_id);
   }, [pages]);
 
-  const getChildPagesFor = useCallback((parentId: string): Page[] => {
-    return pages.filter(page => page.parent_id === parentId);
-  }, [pages]);
+  const getChildPagesFor = useCallback(
+    (parentId: string): Page[] => {
+      return pages.filter(page => page.parent_id === parentId);
+    },
+    [pages]
+  );
 
   return {
     // Data
@@ -145,7 +187,7 @@ export const usePages = () => {
     homePage,
     childPages,
     filters,
-    
+
     // Status
     status,
     filteredStatus,
@@ -156,7 +198,7 @@ export const usePages = () => {
     hasError,
     hasPages,
     hasFilteredPages,
-    
+
     // Actions
     loadPages,
     loadPageById,
@@ -172,7 +214,7 @@ export const usePages = () => {
     resetFilters,
     clearAllPages,
     setPage,
-    
+
     // Helpers
     getPageBySlug,
     getPageById,
@@ -180,7 +222,7 @@ export const usePages = () => {
     getDraftPages,
     getPagesByTemplate,
     getRootPages,
-    getChildPagesFor
+    getChildPagesFor,
   };
 };
 

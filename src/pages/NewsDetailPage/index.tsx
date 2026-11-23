@@ -15,17 +15,10 @@ export default function NewsDetailPage() {
   const { getArticleBySlug, getRelatedArticles } = useNewsHybrid();
 
   // Get article by slug
-  const { 
-    data: article, 
-    isLoading: articleLoading, 
-    error: articleError 
-  } = getArticleBySlug(slug || '');
-  
+  const { data: article, isLoading: articleLoading, error: articleError } = getArticleBySlug(slug || '');
+
   // Get related articles using the article's id
-  const { 
-    data: relatedArticles = [], 
-    isLoading: relatedLoading 
-  } = getRelatedArticles(article?.id || '', 3);
+  const { data: relatedArticles = [], isLoading: relatedLoading } = getRelatedArticles(article?.id || '', 3);
 
   if (!slug) {
     // Handle the case where slug is not available after hooks have been called
@@ -46,19 +39,16 @@ export default function NewsDetailPage() {
         <title>{article.title} - Uluntu</title>
         <meta name="description" content={article.excerpt} />
       </Helmet>
-      
+
       <ContentContainer maxWidth="3xl">
         <Card className="mb-6">
           <ArticleHeader article={article} id={article.id || ''} />
           <ArticleContent article={article} />
           <AuthorInfo author={article.author} />
         </Card>
-        
+
         <Card>
-          <RelatedArticles 
-            relatedArticles={relatedArticles} 
-            isLoading={relatedLoading} 
-          />
+          <RelatedArticles relatedArticles={relatedArticles} isLoading={relatedLoading} />
         </Card>
       </ContentContainer>
     </>

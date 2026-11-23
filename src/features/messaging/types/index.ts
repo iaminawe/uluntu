@@ -349,8 +349,7 @@ export interface MessageThread {
 
 // Type guards for conversation isolation
 export function isConversationIsolationError(error: any): error is ConversationIsolationError {
-  return error instanceof ConversationIsolationError || 
-         (error && error.name === 'ConversationIsolationError');
+  return error instanceof ConversationIsolationError || (error && error.name === 'ConversationIsolationError');
 }
 
 export function isConversationError(error: any): error is ConversationError {

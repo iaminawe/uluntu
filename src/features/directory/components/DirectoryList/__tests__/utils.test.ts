@@ -11,7 +11,7 @@ describe('DirectoryList Utils', () => {
       location: 'Nelson, BC',
       skills: ['React', 'Node.js', 'TypeScript'],
       image: 'https://example.com/image1.jpg',
-      joinDate: '2023-01-15'
+      joinDate: '2023-01-15',
     },
     {
       id: '2',
@@ -21,7 +21,7 @@ describe('DirectoryList Utils', () => {
       location: 'Rossland, BC',
       skills: ['UI/UX', 'Figma', 'User Research'],
       image: 'https://example.com/image2.jpg',
-      joinDate: '2023-02-20'
+      joinDate: '2023-02-20',
     },
     {
       id: '3',
@@ -31,8 +31,8 @@ describe('DirectoryList Utils', () => {
       location: 'Cranbrook, BC',
       skills: ['Python', 'Machine Learning', 'Data Analysis'],
       image: 'https://example.com/image3.jpg',
-      joinDate: '2023-03-10'
-    }
+      joinDate: '2023-03-10',
+    },
   ];
 
   describe('filterMembers', () => {
@@ -118,7 +118,7 @@ describe('DirectoryList Utils', () => {
         'React',
         'TypeScript',
         'UI/UX',
-        'User Research'
+        'User Research',
       ];
       expect(skills).toEqual(expectedSkills);
       expect(skills.length).toBe(9); // No duplicates
@@ -128,7 +128,7 @@ describe('DirectoryList Utils', () => {
       const membersWithoutSkills = [
         { ...testMembers[0], skills: undefined },
         { ...testMembers[1], skills: undefined },
-        { ...testMembers[2], skills: undefined }
+        { ...testMembers[2], skills: undefined },
       ];
       const skills = extractUniqueSkills(membersWithoutSkills);
       expect(skills).toEqual([]);
@@ -147,8 +147,8 @@ describe('DirectoryList Utils', () => {
           title: 'Developer',
           skills: ['Z', 'A', 'M'],
           image: 'https://example.com/image.jpg',
-          joinDate: '2023-01-01'
-        }
+          joinDate: '2023-01-01',
+        },
       ];
       const skills = extractUniqueSkills(members);
       expect(skills).toEqual(['A', 'M', 'Z']);
@@ -165,7 +165,7 @@ describe('DirectoryList Utils', () => {
     test('DU-016: returns different colors for different skills', () => {
       const reactColor = getSkillColor('React');
       const pythonColor = getSkillColor('Python');
-      
+
       // This test might occasionally fail if the hash function happens to map
       // two different skills to the same color index, but it's unlikely
       expect(reactColor).not.toBe(pythonColor);

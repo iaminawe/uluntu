@@ -15,8 +15,8 @@ const QueryError: React.FC<QueryErrorProps> = ({
   actions,
   primaryAction,
 }) => {
-  const defaultMessage = message || 
-    "We couldn't load the data. This might be due to a network issue or the server might be unavailable.";
+  const defaultMessage =
+    message || "We couldn't load the data. This might be due to a network issue or the server might be unavailable.";
 
   return (
     <ErrorDisplay
@@ -26,10 +26,15 @@ const QueryError: React.FC<QueryErrorProps> = ({
       className={className}
       icon={<WifiOff className="h-12 w-12 text-amber-500 dark:text-amber-400" />}
       actions={actions}
-      primaryAction={primaryAction || (onRetry ? {
-        text: 'Try Again',
-        onClick: onRetry
-      } : undefined)}
+      primaryAction={
+        primaryAction ||
+        (onRetry
+          ? {
+              text: 'Try Again',
+              onClick: onRetry,
+            }
+          : undefined)
+      }
     />
   );
 };

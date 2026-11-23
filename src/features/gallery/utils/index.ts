@@ -22,7 +22,7 @@ export const getImageDimensions = (file: File): Promise<{ width: number; height:
 export const generateThumbnail = (file: File, maxWidth: number = 300): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
@@ -40,13 +40,17 @@ export const generateThumbnail = (file: File, maxWidth: number = 300): Promise<s
         canvas.height = height;
         ctx.drawImage(img, 0, 0, width, height);
 
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(URL.createObjectURL(blob));
-          } else {
-            reject(new Error('Could not generate thumbnail'));
-          }
-        }, 'image/jpeg', 0.8);
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              resolve(URL.createObjectURL(blob));
+            } else {
+              reject(new Error('Could not generate thumbnail'));
+            }
+          },
+          'image/jpeg',
+          0.8
+        );
       };
       img.onerror = reject;
       img.src = e.target?.result as string;
@@ -98,7 +102,7 @@ export const extractExifData = async (file: File): Promise<any> => {
     shutterSpeed: null,
     focalLength: null,
     takenAt: null,
-    location: null
+    location: null,
   };
 };
 
@@ -118,7 +122,7 @@ export const calculateGridLayout = (
 
     if (currentRowWidth + scaledWidth + margin * currentRow.length > containerWidth && currentRow.length > 0) {
       // Finalize current row
-      const rowHeight = (containerWidth - margin * (currentRow.length - 1)) / currentRowWidth * targetHeight;
+      const rowHeight = ((containerWidth - margin * (currentRow.length - 1)) / currentRowWidth) * targetHeight;
       rows.push({ photos: currentRow, height: rowHeight });
       currentRow = [photo];
       currentRowWidth = scaledWidth;
@@ -142,13 +146,13 @@ export const calculateGridLayout = (
     row.photos.forEach((photo, index) => {
       const aspectRatio = (photo.width || 1) / (photo.height || 1);
       const width = row.height * aspectRatio;
-      
+
       layout.push({
         photo,
         width,
         height: row.height,
         x,
-        y
+        y,
       });
 
       x += width + (index < row.photos.length - 1 ? margin : 0);
@@ -163,7 +167,15 @@ export const getPhotoUrl = (photo: Photo, size: 'thumbnail' | 'medium' | 'large'
   // Return the appropriate URL based on size preference
   switch (size) {
     case 'thumbnail':
-      return photo.thumbnail_url || photo.thumbnail_path || photo.small_url || photo.medium_url || photo.url || photo.storage_path || '';
+      return (
+        photo.thumbnail_url ||
+        photo.thumbnail_path ||
+        photo.small_url ||
+        photo.medium_url ||
+        photo.url ||
+        photo.storage_path ||
+        ''
+      );
     case 'medium':
       return photo.medium_url || photo.medium_path || photo.url || photo.large_url || photo.storage_path || '';
     case 'large':

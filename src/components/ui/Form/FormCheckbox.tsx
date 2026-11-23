@@ -62,8 +62,8 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
           required={required}
           {...rest}
         />
-        <label 
-          htmlFor={id} 
+        <label
+          htmlFor={id}
           className={`ml-2 flex items-center text-sm text-slate-700 dark:text-slate-300
                     ${disabled ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
         >
@@ -71,11 +71,9 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
           {label} {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       </div>
-      
-      {helperText && !error && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 ml-6">{helperText}</p>
-      )}
-      
+
+      {helperText && !error && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 ml-6">{helperText}</p>}
+
       {error && (
         <p id={`${id}-error`} className="mt-1 text-xs text-red-500 ml-6">
           {error}

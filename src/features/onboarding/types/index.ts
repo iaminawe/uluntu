@@ -5,7 +5,7 @@ export interface OnboardingState {
   currentStep: number;
   completedSteps: number[];
   skippedSteps: number[];
-  
+
   // Form Data
   formData: {
     professional: ProfessionalInfo;
@@ -13,12 +13,12 @@ export interface OnboardingState {
     privacy: PrivacySettings;
     engagement: CommunityEngagement;
   };
-  
+
   // Status
   isLoading: boolean;
   isSaving: boolean;
   errors: Record<string, string>;
-  
+
   // Completion
   completionPercentage: number;
   isCompleted: boolean;
@@ -109,4 +109,4 @@ export const ONBOARDING_STEPS = {
   COMMUNITY_ENGAGEMENT: 5,
 } as const;
 
-export type OnboardingStepId = typeof ONBOARDING_STEPS[keyof typeof ONBOARDING_STEPS];
+export type OnboardingStepId = (typeof ONBOARDING_STEPS)[keyof typeof ONBOARDING_STEPS];

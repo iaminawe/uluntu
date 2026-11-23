@@ -5,7 +5,7 @@ const SocialLinksSidebar: React.FC<SocialLinksSidebarProps> = ({ company }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg">
       <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Connect</h2>
-      
+
       {/* Website Button */}
       {company.website && (
         <a
@@ -18,7 +18,7 @@ const SocialLinksSidebar: React.FC<SocialLinksSidebarProps> = ({ company }) => {
           <span>Visit Website</span>
         </a>
       )}
-      
+
       {/* Social Links */}
       {company.social && (
         <div className="space-y-4 mb-6">
@@ -33,7 +33,7 @@ const SocialLinksSidebar: React.FC<SocialLinksSidebarProps> = ({ company }) => {
               <span>LinkedIn</span>
             </a>
           )}
-          
+
           {company.social.twitter && (
             <a
               href={company.social.twitter}
@@ -45,7 +45,7 @@ const SocialLinksSidebar: React.FC<SocialLinksSidebarProps> = ({ company }) => {
               <span>Twitter</span>
             </a>
           )}
-          
+
           {company.social.github && (
             <a
               href={company.social.github}
@@ -59,16 +59,14 @@ const SocialLinksSidebar: React.FC<SocialLinksSidebarProps> = ({ company }) => {
           )}
         </div>
       )}
-      
+
       {/* Company Details */}
       <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
         <h3 className="font-medium text-slate-900 dark:text-white mb-3">Company Details</h3>
         <div className="space-y-2 text-sm">
           <p className="flex justify-between">
             <span className="text-slate-500 dark:text-slate-400">Industry:</span>
-            <span className="text-slate-900 dark:text-white">
-              {company.industry && company.industry[0]}
-            </span>
+            <span className="text-slate-900 dark:text-white">{company.industry && company.industry[0]}</span>
           </p>
           <p className="flex justify-between">
             <span className="text-slate-500 dark:text-slate-400">Company Size:</span>

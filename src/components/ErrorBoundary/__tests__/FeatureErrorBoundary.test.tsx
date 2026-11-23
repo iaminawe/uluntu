@@ -25,9 +25,7 @@ const RetryableTestComponent: React.FC = () => {
   return (
     <div>
       <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>
-        Increment (Error on 2)
-      </button>
+      <button onClick={() => setCount(count + 1)}>Increment (Error on 2)</button>
     </div>
   );
 };
@@ -67,10 +65,7 @@ describe('FeatureErrorBoundary', () => {
       const customFallback = <div data-testid="custom-fallback">Custom Error UI</div>;
 
       render(
-        <FeatureErrorBoundary
-          featureName="Test"
-          fallback={customFallback}
-        >
+        <FeatureErrorBoundary featureName="Test" fallback={customFallback}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );
@@ -84,10 +79,7 @@ describe('FeatureErrorBoundary', () => {
       const onError = jest.fn();
 
       render(
-        <FeatureErrorBoundary
-          featureName="Test"
-          onError={onError}
-        >
+        <FeatureErrorBoundary featureName="Test" onError={onError}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );
@@ -105,10 +97,7 @@ describe('FeatureErrorBoundary', () => {
       const onError = jest.fn();
 
       render(
-        <FeatureErrorBoundary
-          featureName="User Management"
-          onError={onError}
-        >
+        <FeatureErrorBoundary featureName="User Management" onError={onError}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );
@@ -141,8 +130,7 @@ describe('FeatureErrorBoundary', () => {
       );
 
       // Technical details should be in a details element
-      const details = screen.queryByText(/Technical Details/i) ||
-                     screen.queryByText(/Development Only/i);
+      const details = screen.queryByText(/Technical Details/i) || screen.queryByText(/Development Only/i);
 
       if (import.meta.env.DEV) {
         expect(details).toBeInTheDocument();
@@ -188,22 +176,14 @@ describe('FeatureErrorBoundary', () => {
       const onReset = jest.fn();
 
       const { rerender } = render(
-        <FeatureErrorBoundary
-          featureName="Test"
-          onReset={onReset}
-          resetKeys={[0]}
-        >
+        <FeatureErrorBoundary featureName="Test" onReset={onReset} resetKeys={[0]}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );
 
       // Reset by changing resetKeys
       rerender(
-        <FeatureErrorBoundary
-          featureName="Test"
-          onReset={onReset}
-          resetKeys={[1]}
-        >
+        <FeatureErrorBoundary featureName="Test" onReset={onReset} resetKeys={[1]}>
           <TestComponent shouldThrow={false} />
         </FeatureErrorBoundary>
       );
@@ -213,10 +193,7 @@ describe('FeatureErrorBoundary', () => {
 
     test('auto-resets when resetKeys change', () => {
       const { rerender } = render(
-        <FeatureErrorBoundary
-          featureName="Test"
-          resetKeys={[1]}
-        >
+        <FeatureErrorBoundary featureName="Test" resetKeys={[1]}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );
@@ -226,10 +203,7 @@ describe('FeatureErrorBoundary', () => {
 
       // Change resetKeys to trigger reset
       rerender(
-        <FeatureErrorBoundary
-          featureName="Test"
-          resetKeys={[2]}
-        >
+        <FeatureErrorBoundary featureName="Test" resetKeys={[2]}>
           <TestComponent shouldThrow={false} />
         </FeatureErrorBoundary>
       );
@@ -254,10 +228,7 @@ describe('FeatureErrorBoundary', () => {
       const onError = jest.fn();
 
       render(
-        <FeatureErrorBoundary
-          featureName="Analytics Module"
-          onError={onError}
-        >
+        <FeatureErrorBoundary featureName="Analytics Module" onError={onError}>
           <TestComponent shouldThrow={true} />
         </FeatureErrorBoundary>
       );

@@ -9,9 +9,9 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab, group, isAdmin
     { id: 'resources', label: 'Resources', icon: <BookOpen className="h-5 w-5" />, count: group.resourceCount },
     { id: 'posts', label: 'Posts', icon: <Newspaper className="h-5 w-5" />, count: group.postCount },
   ];
-  
+
   // Add admin tab only if user is admin
-  const tabs = isAdmin 
+  const tabs = isAdmin
     ? [...baseTabs, { id: 'admin' as TabType, label: 'Admin', icon: <Shield className="h-5 w-5" /> }]
     : baseTabs;
 
@@ -24,9 +24,10 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab, group, isAdmin
             onClick={() => setSelectedTab(tab.id)}
             className={`
               px-6 py-4 flex items-center text-sm font-medium border-b-2 -mb-px whitespace-nowrap
-              ${selectedTab === tab.id
-                ? 'border-orange-500 text-orange-500' 
-                : 'border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+              ${
+                selectedTab === tab.id
+                  ? 'border-orange-500 text-orange-500'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }
             `}
           >
@@ -34,13 +35,16 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab, group, isAdmin
               {tab.icon}
               <span className="ml-2">{tab.label}</span>
               {tab.count !== undefined && (
-                <span className={`
+                <span
+                  className={`
                   ml-2 px-2 py-0.5 rounded-full text-xs 
-                  ${selectedTab === tab.id 
-                    ? 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300' 
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                  ${
+                    selectedTab === tab.id
+                      ? 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300'
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                   }
-                `}>
+                `}
+                >
                   {tab.count}
                 </span>
               )}

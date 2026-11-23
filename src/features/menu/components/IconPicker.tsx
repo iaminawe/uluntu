@@ -163,7 +163,7 @@ const ICON_CATEGORIES = {
 };
 
 // Flatten all icons for searching
-const ALL_ICONS = Object.values(ICON_CATEGORIES).flatMap(category => 
+const ALL_ICONS = Object.values(ICON_CATEGORIES).flatMap(category =>
   category.icons.map(icon => ({ ...icon, category: category.label }))
 );
 
@@ -178,7 +178,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
   value,
   onChange,
   className,
-  placeholder = "Select an icon...",
+  placeholder = 'Select an icon...',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -196,9 +196,10 @@ export const IconPicker: React.FC<IconPickerProps> = ({
     // Filter by search term
     if (searchTerm) {
       const lowercaseSearch = searchTerm.toLowerCase();
-      icons = icons.filter(icon =>
-        icon.name.toLowerCase().includes(lowercaseSearch) ||
-        icon.keywords.some(keyword => keyword.toLowerCase().includes(lowercaseSearch))
+      icons = icons.filter(
+        icon =>
+          icon.name.toLowerCase().includes(lowercaseSearch) ||
+          icon.keywords.some(keyword => keyword.toLowerCase().includes(lowercaseSearch))
       );
     }
 
@@ -220,7 +221,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       {/* Trigger Button */}
       <button
         type="button"
@@ -237,10 +238,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
             <span className="text-gray-500">{placeholder}</span>
           )}
         </div>
-        <ChevronDown className={cn(
-          "h-4 w-4 text-gray-400 transition-transform",
-          isOpen && "rotate-180"
-        )} />
+        <ChevronDown className={cn('h-4 w-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
       </button>
 
       {/* Dropdown */}
@@ -254,7 +252,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   placeholder="Search icons..."
                   className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
@@ -272,7 +270,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
             {/* Category Filter */}
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="all">All Categories</option>
@@ -287,23 +285,21 @@ export const IconPicker: React.FC<IconPickerProps> = ({
           {/* Icon Grid */}
           <div className="max-h-64 overflow-y-auto">
             {filteredIcons.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm">
-                No icons found matching your search
-              </div>
+              <div className="p-4 text-center text-gray-500 text-sm">No icons found matching your search</div>
             ) : (
               <div className="grid grid-cols-6 gap-1 p-2">
-                {filteredIcons.map((icon) => {
+                {filteredIcons.map(icon => {
                   const IconComponent = icon.component;
                   const isSelected = value === icon.name;
-                  
+
                   return (
                     <button
                       key={icon.name}
                       type="button"
                       onClick={() => handleIconSelect(icon.name)}
                       className={cn(
-                        "p-2 rounded-md hover:bg-gray-100 flex items-center justify-center transition-colors",
-                        isSelected && "bg-blue-100 text-blue-600 ring-2 ring-blue-500"
+                        'p-2 rounded-md hover:bg-gray-100 flex items-center justify-center transition-colors',
+                        isSelected && 'bg-blue-100 text-blue-600 ring-2 ring-blue-500'
                       )}
                       title={`${icon.name} (${icon.category})`}
                     >
@@ -342,7 +338,7 @@ export const IconPreview: React.FC<IconPreviewProps> = ({
   className,
 }) => {
   const icon = iconName ? ALL_ICONS.find(i => i.name === iconName) : null;
-  
+
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-5 w-5',
@@ -351,11 +347,8 @@ export const IconPreview: React.FC<IconPreviewProps> = ({
 
   if (!icon) {
     return (
-      <div className={cn(
-        "flex items-center text-gray-400",
-        className
-      )}>
-        <div className={cn("border border-dashed border-gray-300 rounded", sizeClasses[size])} />
+      <div className={cn('flex items-center text-gray-400', className)}>
+        <div className={cn('border border-dashed border-gray-300 rounded', sizeClasses[size])} />
         {showLabel && title && <span className="ml-2 text-sm">{title}</span>}
       </div>
     );
@@ -364,8 +357,8 @@ export const IconPreview: React.FC<IconPreviewProps> = ({
   const IconComponent = icon.component;
 
   return (
-    <div className={cn("flex items-center", className)}>
-      <IconComponent className={cn("text-gray-600", sizeClasses[size])} />
+    <div className={cn('flex items-center', className)}>
+      <IconComponent className={cn('text-gray-600', sizeClasses[size])} />
       {showLabel && title && <span className="ml-2 text-sm">{title}</span>}
     </div>
   );

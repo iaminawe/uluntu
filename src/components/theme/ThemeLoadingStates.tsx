@@ -46,11 +46,7 @@ export const ThemeLoadingSpinner: React.FC<ThemeLoadingProps> = ({
           <Palette className={`${sizeClasses[size]} text-blue-400 opacity-30`} />
         </motion.div>
       </div>
-      {message && (
-        <p className={`mt-3 ${textSizes[size]} text-gray-600 text-center`}>
-          {message}
-        </p>
-      )}
+      {message && <p className={`mt-3 ${textSizes[size]} text-gray-600 text-center`}>{message}</p>}
     </motion.div>
   );
 
@@ -72,10 +68,7 @@ export const ThemeCardSkeleton: React.FC<{ count?: number }> = ({ count = 1 }) =
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
-        >
+        <div key={index} className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
@@ -87,7 +80,7 @@ export const ThemeCardSkeleton: React.FC<{ count?: number }> = ({ count = 1 }) =
 
           {/* Color swatches */}
           <div className="flex gap-2">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className="w-10 h-10 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
@@ -123,9 +116,7 @@ export const ThemeProgressBar: React.FC<{
 }> = ({ progress, message, showPercentage = true }) => {
   return (
     <div className="w-full">
-      {message && (
-        <p className="text-sm text-gray-600 mb-2">{message}</p>
-      )}
+      {message && <p className="text-sm text-gray-600 mb-2">{message}</p>}
       <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
           className="absolute inset-y-0 left-0 bg-blue-600 rounded-full"
@@ -136,9 +127,7 @@ export const ThemeProgressBar: React.FC<{
           <ThemeShimmer className="opacity-30" />
         </motion.div>
       </div>
-      {showPercentage && (
-        <p className="text-xs text-gray-500 mt-1 text-right">{Math.round(progress)}%</p>
-      )}
+      {showPercentage && <p className="text-xs text-gray-500 mt-1 text-right">{Math.round(progress)}%</p>}
     </div>
   );
 };
@@ -186,9 +175,7 @@ export const ThemeTransitionLoader: React.FC<{
               </div>
 
               {/* Text */}
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Applying Theme
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Applying Theme</h3>
               <p className="text-sm text-gray-600">
                 Transitioning from <span className="font-medium">{fromTheme}</span> to{' '}
                 <span className="font-medium">{toTheme}</span>
@@ -196,7 +183,7 @@ export const ThemeTransitionLoader: React.FC<{
 
               {/* Progress dots */}
               <div className="flex justify-center gap-1 mt-4">
-                {[0, 1, 2].map((i) => (
+                {[0, 1, 2].map(i => (
                   <motion.div
                     key={i}
                     className="h-2 w-2 bg-blue-600 rounded-full"
@@ -232,7 +219,7 @@ export const ThemeManagerLoading: React.FC = () => {
               <div className="h-4 bg-gray-200 rounded w-64"></div>
             </div>
             <div className="flex gap-2">
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3, 4].map(i => (
                 <div key={i} className="h-10 w-10 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
@@ -247,7 +234,7 @@ export const ThemeManagerLoading: React.FC = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="animate-pulse space-y-3">
               <div className="h-5 bg-gray-200 rounded w-32"></div>
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3, 4].map(i => (
                 <div key={i} className="p-3 border border-gray-200 rounded-lg">
                   <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
                   <div className="h-3 bg-gray-200 rounded w-full"></div>
@@ -263,7 +250,7 @@ export const ThemeManagerLoading: React.FC = () => {
             <div className="animate-pulse">
               <div className="h-5 bg-gray-200 rounded w-32 mb-4"></div>
               <div className="grid grid-cols-2 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
+                {[1, 2, 3, 4, 5, 6].map(i => (
                   <div key={i} className="space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-20"></div>
                     <div className="flex gap-2">
@@ -301,7 +288,12 @@ export const ThemeRetryLoading: React.FC<{
       <div className="text-center">
         <div className="text-red-500 mb-4">
           <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         <p className="text-gray-600 mb-4">{message}</p>

@@ -23,7 +23,7 @@ export function convertFormDataToInsert(formData: FormData): TablesInsert<'compa
     // Convert website to null if empty (assuming website is in the schema but not shown)
     website: formData.website || null,
     status: formData.status || 'published',
-    featured: formData.featured || false
+    featured: formData.featured || false,
     // Note: social field is not included as it's not in the Supabase schema
   };
 }
@@ -47,7 +47,7 @@ export function convertFormDataToUpdate(formData: FormData): TablesUpdate<'compa
     // Convert website to null if empty
     website: formData.website || null,
     status: formData.status || 'published',
-    featured: formData.featured || false
+    featured: formData.featured || false,
     // Note: social field is not included as it's not in the Supabase schema
   };
 }

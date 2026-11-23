@@ -10,8 +10,15 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signIn: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signUp: (
+    email: string,
+    password: string
+  ) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
   signOut: () => Promise<{ error: Error | null }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
   resetPassword: (newPassword: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
@@ -23,7 +30,7 @@ const AuthContext = createContext<AuthContextType | undefined>({} as AuthContext
 
 /**
  * AuthProvider that integrates with Redux
- * 
+ *
  * This provider maintains backward compatibility with the existing AuthContext
  * while using Redux for state management
  */
@@ -31,37 +38,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const reduxAuth = useReduxAuth();
   const dispatch = useDispatch();
   const authState = useSelector((state: RootState) => state.auth);
-  
+
   // Map Redux state to AuthContext
-  const user = authState.user ? 
-    {
-      id: authState.user.id,
-      email: authState.user.email,
-      user_metadata: { 
-        role: authState.user.role,
-        name: authState.user.name || null
-      },
-      app_metadata: {},
-      aud: 'authenticated',
-      created_at: '',
-      updated_at: '',
-      identities: [],
-      factors: []
-    } as User : null;
-  
-  const session = authState.session ? 
-    {
-      access_token: authState.session.access_token,
-      refresh_token: '',
-      expires_at: new Date(authState.session.expires_at).getTime(),
-      expires_in: 3600,
-      token_type: 'bearer',
-      user: user as User
-    } as Session : null;
-  
+  const user = authState.user
+    ? ({
+        id: authState.user.id,
+        email: authState.user.email,
+        user_metadata: {
+          role: authState.user.role,
+          name: authState.user.name || null,
+        },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: '',
+        updated_at: '',
+        identities: [],
+        factors: [],
+      } as User)
+    : null;
+
+  const session = authState.session
+    ? ({
+        access_token: authState.session.access_token,
+        refresh_token: '',
+        expires_at: new Date(authState.session.expires_at).getTime(),
+        expires_in: 3600,
+        token_type: 'bearer',
+        user: user as User,
+      } as Session)
+    : null;
+
   const loading = authState.status === 'loading';
   const error = authState.error ? new Error(authState.error) : null;
-  
+
   // Map Redux roles to userRoles
   const userRoles = authState.roles?.list || [];
   const isAdmin = authState.roles?.isAdmin || false;
@@ -71,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await reduxAuth.signIn(email, password);
     return { data: { session, user }, error: null };
   };
-  
+
   const signUp = async (email: string, password: string) => {
     await reduxAuth.signUp(email, password);
     return { data: { session, user }, error: null };
@@ -80,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await reduxAuth.signOut();
     return { error: null };
   };
-  
+
   // Implement missing functions for compatibility
   const forgotPassword = async (email: string) => {
     try {
@@ -90,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: err as Error };
     }
   };
-  
+
   const resetPassword = async (newPassword: string) => {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -111,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     forgotPassword,
     resetPassword,
     userRoles,
-    isAdmin
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value as AuthContextType}>{children}</AuthContext.Provider>;

@@ -34,7 +34,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   onLoad,
   onError,
   quality = 'medium',
-  enableLazyLoading = true
+  enableLazyLoading = true,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -56,12 +56,12 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const getBestSource = (targetQuality: string): string => {
     const qualityOrder = ['thumbnail', 'small', 'medium', 'large', 'original'];
     const targetIndex = qualityOrder.indexOf(targetQuality);
-    
+
     // Try target quality first
     if (imageSources[targetQuality as keyof ImageSources]) {
       return imageSources[targetQuality as keyof ImageSources]!;
     }
-    
+
     // Fall back to next available quality
     for (let i = targetIndex + 1; i < qualityOrder.length; i++) {
       const qual = qualityOrder[i] as keyof ImageSources;
@@ -69,7 +69,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         return imageSources[qual]!;
       }
     }
-    
+
     // Fall back to previous quality
     for (let i = targetIndex - 1; i >= 0; i--) {
       const qual = qualityOrder[i] as keyof ImageSources;
@@ -77,7 +77,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         return imageSources[qual]!;
       }
     }
-    
+
     // Return first available
     return Object.values(imageSources)[0] || '';
   };
@@ -94,7 +94,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         }
       },
       {
-        rootMargin: '50px' // Start loading 50px before image comes into view
+        rootMargin: '50px', // Start loading 50px before image comes into view
       }
     );
 
@@ -151,7 +151,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
           backgroundColor,
           width,
           height,
-          aspectRatio: width && height ? `${width}/${height}` : undefined
+          aspectRatio: width && height ? `${width}/${height}` : undefined,
         }}
       >
         <ImageIcon className="w-8 h-8 text-gray-400" />
@@ -168,7 +168,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
           backgroundColor,
           width,
           height,
-          aspectRatio: width && height ? `${width}/${height}` : undefined
+          aspectRatio: width && height ? `${width}/${height}` : undefined,
         }}
       >
         <div className="text-center">
@@ -180,24 +180,20 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={`relative overflow-hidden ${className}`}
       style={{
         backgroundColor,
         width,
         height,
-        aspectRatio: width && height ? `${width}/${height}` : undefined
+        aspectRatio: width && height ? `${width}/${height}` : undefined,
       }}
     >
       {/* Placeholder/dominant color background */}
       {placeholder && !isLoaded && (
-        <img
-          src={placeholder}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
-        />
+        <img src={placeholder} alt="" className="absolute inset-0 w-full h-full object-cover blur-sm scale-110" />
       )}
-      
+
       {/* Main image */}
       {currentSrc && (
         <img
@@ -211,7 +207,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
           height={height}
         />
       )}
-      
+
       {/* Loading state */}
       {!isLoaded && !placeholder && (
         <div className="absolute inset-0 flex items-center justify-center">

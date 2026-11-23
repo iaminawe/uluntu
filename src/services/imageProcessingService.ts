@@ -6,7 +6,7 @@ export const IMAGE_SIZES = {
   small: { width: 300, height: 300, quality: 0.8 },
   medium: { width: 800, height: 600, quality: 0.85 },
   large: { width: 1200, height: 900, quality: 0.9 },
-  original: { quality: 0.95 }
+  original: { quality: 0.95 },
 } as const;
 
 export type ImageSizeType = keyof typeof IMAGE_SIZES;
@@ -42,21 +42,21 @@ export class ImageProcessingService {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
-      
+
       img.onload = () => {
         URL.revokeObjectURL(url);
         resolve({
           width: img.naturalWidth,
           height: img.naturalHeight,
-          aspectRatio: img.naturalWidth / img.naturalHeight
+          aspectRatio: img.naturalWidth / img.naturalHeight,
         });
       };
-      
+
       img.onerror = () => {
         URL.revokeObjectURL(url);
         reject(new Error('Failed to load image'));
       };
-      
+
       img.src = url;
     });
   }
@@ -97,7 +97,7 @@ export class ImageProcessingService {
       x: Math.round(x),
       y: Math.round(y),
       width: Math.round(cropWidth),
-      height: Math.round(cropHeight)
+      height: Math.round(cropHeight),
     };
   }
 
@@ -113,7 +113,7 @@ export class ImageProcessingService {
   ): Promise<ProcessedImage> {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     if (!ctx) {
       throw new Error('Canvas context not available');
     }
@@ -124,7 +124,7 @@ export class ImageProcessingService {
     return new Promise((resolve, reject) => {
       img.onload = async () => {
         URL.revokeObjectURL(imageUrl);
-        
+
         try {
           const originalWidth = img.naturalWidth;
           const originalHeight = img.naturalHeight;
@@ -139,12 +139,7 @@ export class ImageProcessingService {
           let sourceHeight = originalHeight;
 
           if (useSmarCrop) {
-            const cropOptions = this.calculateSmartCrop(
-              originalWidth,
-              originalHeight,
-              targetWidth,
-              targetHeight
-            );
+            const cropOptions = this.calculateSmartCrop(originalWidth, originalHeight, targetWidth, targetHeight);
             sourceX = cropOptions.x;
             sourceY = cropOptions.y;
             sourceWidth = cropOptions.width;
@@ -152,26 +147,18 @@ export class ImageProcessingService {
           }
 
           // Draw the image with cropping and scaling
-          ctx.drawImage(
-            img,
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, targetWidth, targetHeight
-          );
+          ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
 
           // Convert canvas to blob
           canvas.toBlob(
-            async (blob) => {
+            async blob => {
               if (!blob) {
                 reject(new Error('Failed to create blob from canvas'));
                 return;
               }
 
               // Create file from blob
-              const processedFile = new File(
-                [blob],
-                file.name,
-                { type: file.type }
-              );
+              const processedFile = new File([blob], file.name, { type: file.type });
 
               // Create data URL for preview
               const dataUrl = canvas.toDataURL(file.type, quality);
@@ -183,7 +170,7 @@ export class ImageProcessingService {
                 width: targetWidth,
                 height: targetHeight,
                 size: blob.size,
-                sizeType: 'medium' // This will be set by the calling function
+                sizeType: 'medium', // This will be set by the calling function
               });
             },
             file.type,
@@ -215,17 +202,17 @@ export class ImageProcessingService {
 
     for (const sizeType of sizes) {
       const sizeConfig = IMAGE_SIZES[sizeType];
-      
+
       if (sizeType === 'original') {
         // For original, just compress without resizing
         const compressedFile = await imageCompression(file, {
           maxSizeMB: 5,
           useWebWorker: true,
-          initialQuality: sizeConfig.quality
+          initialQuality: sizeConfig.quality,
         });
 
         const dataUrl = await this.fileToDataUrl(compressedFile);
-        
+
         results.push({
           file: compressedFile,
           blob: compressedFile,
@@ -233,7 +220,7 @@ export class ImageProcessingService {
           width: originalDimensions.width,
           height: originalDimensions.height,
           size: compressedFile.size,
-          sizeType
+          sizeType,
         });
       } else {
         // For other sizes, resize with smart cropping
@@ -244,7 +231,7 @@ export class ImageProcessingService {
           sizeConfig.quality,
           true
         );
-        
+
         processedImage.sizeType = sizeType;
         results.push(processedImage);
       }
@@ -268,7 +255,7 @@ export class ImageProcessingService {
       maxWidthOrHeight: Math.max(maxWidth, maxHeight),
       useWebWorker: true,
       initialQuality: quality,
-      fileType: file.type as any
+      fileType: file.type as any,
     };
 
     return await imageCompression(file, options);
@@ -277,11 +264,7 @@ export class ImageProcessingService {
   /**
    * Create a thumbnail with smart cropping
    */
-  static async createThumbnail(
-    file: File,
-    size: number = 150,
-    quality: number = 0.7
-  ): Promise<ProcessedImage> {
+  static async createThumbnail(file: File, size: number = 150, quality: number = 0.7): Promise<ProcessedImage> {
     const result = await this.resizeAndCrop(file, size, size, quality, true);
     result.sizeType = 'thumbnail';
     return result;
@@ -291,18 +274,18 @@ export class ImageProcessingService {
    * Detect if image needs rotation based on EXIF data
    */
   static async getImageOrientation(file: File): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
       const url = URL.createObjectURL(file);
-      
+
       img.onload = () => {
         URL.revokeObjectURL(url);
-        
+
         // This is a simplified version - in a real app you might want to use
         // a library like exif-js to read actual EXIF orientation data
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
           resolve(1); // Default orientation
           return;
@@ -355,14 +338,14 @@ export class ImageProcessingService {
     if (!allowedTypes.includes(file.type)) {
       return {
         valid: false,
-        error: 'Invalid file type. Only JPEG, PNG, and WebP files are allowed.'
+        error: 'Invalid file type. Only JPEG, PNG, and WebP files are allowed.',
       };
     }
 
     if (file.size > maxSize) {
       return {
         valid: false,
-        error: 'File too large. Maximum size is 50MB.'
+        error: 'File too large. Maximum size is 50MB.',
       };
     }
 
@@ -376,7 +359,7 @@ export class ImageProcessingService {
     const placeholderSize = 20; // Very small for blur effect
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
     if (!ctx) {
       throw new Error('Canvas context not available');
     }
@@ -387,14 +370,14 @@ export class ImageProcessingService {
     return new Promise((resolve, reject) => {
       img.onload = () => {
         URL.revokeObjectURL(imageUrl);
-        
+
         canvas.width = placeholderSize;
         canvas.height = placeholderSize;
-        
+
         // Draw a very small, blurred version
         ctx.filter = 'blur(2px)';
         ctx.drawImage(img, 0, 0, placeholderSize, placeholderSize);
-        
+
         resolve(canvas.toDataURL('image/jpeg', 0.1));
       };
 

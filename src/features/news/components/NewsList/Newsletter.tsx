@@ -10,7 +10,7 @@ const Newsletter = () => {
     // In a real app, this would send the email to a backend service
     setSubscribed(true);
     setEmail('');
-    
+
     // Reset the subscribed state after a few seconds
     setTimeout(() => setSubscribed(false), 3000);
   };
@@ -37,7 +37,7 @@ const Newsletter = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white 
                        placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"

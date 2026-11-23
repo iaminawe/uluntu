@@ -21,14 +21,14 @@ export interface MenuSecurityRule {
   cascade?: boolean; // Apply to child items
 }
 
-export type MenuAction = 
-  | 'read' 
-  | 'create' 
-  | 'update' 
-  | 'delete' 
-  | 'toggle' 
-  | 'reorder' 
-  | 'manage_visibility' 
+export type MenuAction =
+  | 'read'
+  | 'create'
+  | 'update'
+  | 'delete'
+  | 'toggle'
+  | 'reorder'
+  | 'manage_visibility'
   | 'manage_permissions'
   | 'view_audit_logs'
   | 'export'
@@ -60,11 +60,10 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
     resource: 'menu_management',
     action: 'read',
     requiredRoles: ['admin', 'superadmin', 'menu_manager'],
-    conditions: (context) => {
+    conditions: context => {
       // Allow content editors to view menus they can manage
-      return context.userRoles.includes('content_editor') || 
-             context.userRoles.includes('menu_editor');
-    }
+      return context.userRoles.includes('content_editor') || context.userRoles.includes('menu_editor');
+    },
   },
 
   // Create permissions
@@ -78,7 +77,7 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
         return item?.menu_type !== 'admin';
       }
       return true;
-    }
+    },
   },
 
   // Update permissions
@@ -92,7 +91,7 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
         return item?.visibility === 'public' || item?.visibility === 'authenticated';
       }
       return true;
-    }
+    },
   },
 
   // Delete permissions with cascading
@@ -105,7 +104,7 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
       // Prevent deletion of system-critical menu items
       const protectedItems = ['/admin', '/signin', '/signup'];
       return !protectedItems.includes(item?.url || '');
-    }
+    },
   },
 
   // Visibility management
@@ -119,7 +118,7 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
         return context.userRoles.includes('superadmin');
       }
       return true;
-    }
+    },
   },
 
   // Permission management
@@ -127,14 +126,14 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
     resource: 'menu_item',
     action: 'manage_permissions',
     requiredRoles: ['superadmin'],
-    cascade: true
+    cascade: true,
   },
 
   // Audit log access
   {
     resource: 'menu_audit_logs',
     action: 'view_audit_logs',
-    requiredRoles: ['admin', 'superadmin', 'auditor']
+    requiredRoles: ['admin', 'superadmin', 'auditor'],
   },
 
   // Bulk operations
@@ -142,15 +141,14 @@ export const MENU_SECURITY_RULES: MenuSecurityRule[] = [
     resource: 'menu_items',
     action: 'bulk_operations',
     requiredRoles: ['admin', 'superadmin'],
-    conditions: (context) => {
+    conditions: context => {
       // Additional validation for bulk operations
       return context.userRoles.includes('superadmin');
-    }
-  }
+    },
+  },
 ];
 
 export class MenuSecurityManager {
-  
   /**
    * Check if user has permission for a specific menu action
    */
@@ -162,9 +160,7 @@ export class MenuSecurityManager {
   ): Promise<{ allowed: boolean; reason?: string }> {
     try {
       // Find applicable security rule
-      const rule = MENU_SECURITY_RULES.find(r => 
-        r.resource === resource && r.action === action
-      );
+      const rule = MENU_SECURITY_RULES.find(r => r.resource === resource && r.action === action);
 
       if (!rule) {
         logger.warn(`No security rule found for ${resource}:${action}`, 'MENU_SECURITY');
@@ -172,14 +168,12 @@ export class MenuSecurityManager {
       }
 
       // Check required roles
-      const hasRequiredRole = rule.requiredRoles.some(role => 
-        context.userRoles.includes(role)
-      );
+      const hasRequiredRole = rule.requiredRoles.some(role => context.userRoles.includes(role));
 
       if (!hasRequiredRole) {
-        return { 
-          allowed: false, 
-          reason: `Requires one of: ${rule.requiredRoles.join(', ')}` 
+        return {
+          allowed: false,
+          reason: `Requires one of: ${rule.requiredRoles.join(', ')}`,
         };
       }
 
@@ -190,9 +184,9 @@ export class MenuSecurityManager {
           context,
           item,
           resource,
-          action
+          action,
         });
-        
+
         const conditionsMet = rule.conditions(context, item);
         if (!conditionsMet) {
           // TEMPORARY: Allow superadmins to bypass conditions
@@ -200,23 +194,21 @@ export class MenuSecurityManager {
             logger.warn('Superadmin bypassing security conditions', 'MENU_SECURITY');
             return { allowed: true };
           }
-          
-          return { 
-            allowed: false, 
-            reason: 'Additional security conditions not met' 
+
+          return {
+            allowed: false,
+            reason: 'Additional security conditions not met',
           };
         }
       }
 
       // Check cascading permissions for parent items
       if (item?.parent_id && rule.cascade) {
-        const parentPermission = await this.checkParentPermissions(
-          context, resource, action, item.parent_id
-        );
+        const parentPermission = await this.checkParentPermissions(context, resource, action, item.parent_id);
         if (!parentPermission.allowed) {
           return {
             allowed: false,
-            reason: `Parent item restrictions: ${parentPermission.reason}`
+            reason: `Parent item restrictions: ${parentPermission.reason}`,
           };
         }
       }
@@ -239,11 +231,7 @@ export class MenuSecurityManager {
   ): Promise<{ allowed: boolean; reason?: string }> {
     try {
       // Get parent menu item
-      const { data: parentItem, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .eq('id', parentId)
-        .single();
+      const { data: parentItem, error } = await supabase.from('menu_items').select('*').eq('id', parentId).single();
 
       if (error || !parentItem) {
         return { allowed: false, reason: 'Parent item not found' };
@@ -260,11 +248,7 @@ export class MenuSecurityManager {
   /**
    * Filter menu items based on user permissions and visibility rules
    */
-  static filterMenuItemsByPermissions(
-    items: MenuItem[],
-    context: MenuPermissionContext,
-    user?: User
-  ): MenuItem[] {
+  static filterMenuItemsByPermissions(items: MenuItem[], context: MenuPermissionContext, user?: User): MenuItem[] {
     return items.filter(item => {
       // Check visibility rules
       switch (item.visibility) {
@@ -273,13 +257,10 @@ export class MenuSecurityManager {
         case 'authenticated':
           return !!user;
         case 'admin':
-          return context.userRoles.includes('admin') || 
-                 context.userRoles.includes('superadmin');
+          return context.userRoles.includes('admin') || context.userRoles.includes('superadmin');
         case 'role_based':
           if (!item.required_roles || !user) return false;
-          return item.required_roles.some(role => 
-            context.userRoles.includes(role)
-          );
+          return item.required_roles.some(role => context.userRoles.includes(role));
         default:
           return false;
       }
@@ -317,7 +298,7 @@ export class MenuSecurityManager {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -366,13 +347,11 @@ export class MenuSecurityManager {
         metadata: {
           session_id: context.sessionId,
           ip_address: context.ipAddress,
-          ...details.metadata
-        }
+          ...details.metadata,
+        },
       };
 
-      const { error } = await supabase
-        .from('menu_audit_logs')
-        .insert([auditLog]);
+      const { error } = await supabase.from('menu_audit_logs').insert([auditLog]);
 
       if (error) {
         logger.error('Failed to create menu audit log', 'MENU_SECURITY', error);
@@ -380,7 +359,7 @@ export class MenuSecurityManager {
         logger.info(`Menu action logged: ${action}`, 'MENU_AUDIT', {
           resourceType,
           userId: context.userId,
-          resourceId: details.resourceId
+          resourceId: details.resourceId,
         });
       }
     } catch (error) {
@@ -429,8 +408,7 @@ export class MenuSecurityManager {
         query = query.lte('created_at', filters.toDate);
       }
 
-      const { data, error, count } = await query
-        .range(offset, offset + limit - 1);
+      const { data, error, count } = await query.range(offset, offset + limit - 1);
 
       if (error) {
         throw error;
@@ -438,7 +416,7 @@ export class MenuSecurityManager {
 
       return {
         logs: data || [],
-        total: count || 0
+        total: count || 0,
       };
     } catch (error) {
       logger.error('Error fetching menu audit logs', 'MENU_SECURITY', error);
@@ -449,24 +427,18 @@ export class MenuSecurityManager {
   /**
    * Check feature flag permissions for menu items
    */
-  static async checkFeatureFlagPermissions(
-    items: MenuItem[],
-    context: MenuPermissionContext
-  ): Promise<MenuItem[]> {
+  static async checkFeatureFlagPermissions(items: MenuItem[], context: MenuPermissionContext): Promise<MenuItem[]> {
     // This would integrate with your feature flag system
     // For now, we'll implement a basic check
     return items.filter(item => {
       if (!item.css_classes) return true;
-      
+
       // Check for feature flag classes that might indicate restricted access
       const restrictedFlags = ['admin-only', 'beta-users', 'premium'];
-      const hasRestrictedFlag = restrictedFlags.some(flag => 
-        item.css_classes?.includes(flag)
-      );
+      const hasRestrictedFlag = restrictedFlags.some(flag => item.css_classes?.includes(flag));
 
       if (hasRestrictedFlag) {
-        return context.userRoles.includes('admin') || 
-               context.userRoles.includes('superadmin');
+        return context.userRoles.includes('admin') || context.userRoles.includes('superadmin');
       }
 
       return true;
@@ -484,9 +456,7 @@ export class MenuSecurityManager {
     const errors: string[] = [];
 
     // Check if user can perform bulk operations
-    const bulkPermission = await this.checkPermission(
-      context, 'menu_items', 'bulk_operations'
-    );
+    const bulkPermission = await this.checkPermission(context, 'menu_items', 'bulk_operations');
 
     if (!bulkPermission.allowed) {
       errors.push(bulkPermission.reason || 'Bulk operations not allowed');
@@ -495,20 +465,16 @@ export class MenuSecurityManager {
 
     // Check each item individually
     for (const item of items) {
-      const itemPermission = await this.checkPermission(
-        context, 'menu_item', action, item
-      );
+      const itemPermission = await this.checkPermission(context, 'menu_item', action, item);
 
       if (!itemPermission.allowed) {
-        errors.push(
-          `Cannot ${action} "${item.title}": ${itemPermission.reason}`
-        );
+        errors.push(`Cannot ${action} "${item.title}": ${itemPermission.reason}`);
       }
     }
 
     return {
       allowed: errors.length === 0,
-      errors
+      errors,
     };
   }
 }

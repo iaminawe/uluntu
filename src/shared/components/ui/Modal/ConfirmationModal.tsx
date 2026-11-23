@@ -23,7 +23,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   // Determine icon and colors based on the type
   const getTypeIcon = () => {
     if (icon) return icon;
-    
+
     switch (type) {
       case 'warning':
         return <AlertTriangle className="h-10 w-10 text-amber-500 dark:text-amber-400" />;
@@ -81,15 +81,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       closeOnOutsideClick={!isProcessing}
     >
       <div className="flex flex-col items-center text-center py-4">
-        <div className="mb-4">
-          {getTypeIcon()}
-        </div>
+        <div className="mb-4">{getTypeIcon()}</div>
         <div className="mb-6">
-          {typeof message === 'string' ? (
-            <p className="text-slate-600 dark:text-slate-300">{message}</p>
-          ) : (
-            message
-          )}
+          {typeof message === 'string' ? <p className="text-slate-600 dark:text-slate-300">{message}</p> : message}
         </div>
       </div>
     </Modal>

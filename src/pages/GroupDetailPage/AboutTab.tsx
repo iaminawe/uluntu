@@ -4,7 +4,7 @@ const AboutTab: React.FC<AboutTabProps> = ({ group }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">About This Group</h2>
-      
+
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-8">
         <div className="prose dark:prose-invert max-w-none">
           <p className="text-slate-600 dark:text-slate-300 whitespace-pre-line">
@@ -12,12 +12,12 @@ const AboutTab: React.FC<AboutTabProps> = ({ group }) => {
           </p>
         </div>
       </div>
-      
+
       {group.interests && group.interests.length > 0 && (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-8">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Interests & Goals</h3>
           <div className="flex flex-wrap gap-2">
-            {group.interests.map((interest) => (
+            {group.interests.map(interest => (
               <span
                 key={interest}
                 className="inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-700 rounded-md text-sm font-medium"
@@ -28,7 +28,7 @@ const AboutTab: React.FC<AboutTabProps> = ({ group }) => {
           </div>
         </div>
       )}
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Group Details</h3>
@@ -51,25 +51,21 @@ const AboutTab: React.FC<AboutTabProps> = ({ group }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
           <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Admins</h3>
           <div className="space-y-4">
-            {group.members.filter(member => member.role === 'admin').map(admin => (
-              <div key={admin.id} className="flex items-center">
-                <img
-                  src={admin.image}
-                  alt={admin.name}
-                  className="w-10 h-10 rounded-full mr-3"
-                />
-                <div>
-                  <h4 className="text-slate-900 dark:text-white font-medium">{admin.name}</h4>
-                  {admin.title && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{admin.title}</p>
-                  )}
+            {group.members
+              .filter(member => member.role === 'admin')
+              .map(admin => (
+                <div key={admin.id} className="flex items-center">
+                  <img src={admin.image} alt={admin.name} className="w-10 h-10 rounded-full mr-3" />
+                  <div>
+                    <h4 className="text-slate-900 dark:text-white font-medium">{admin.name}</h4>
+                    {admin.title && <p className="text-sm text-slate-500 dark:text-slate-400">{admin.title}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </div>

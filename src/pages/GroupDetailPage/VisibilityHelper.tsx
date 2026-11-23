@@ -3,7 +3,7 @@ import { VisibilityHelperProps } from './types';
 
 export const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
   if (!visibility) return null;
-  
+
   switch (visibility) {
     case 'open':
       return <Globe className="h-5 w-5 text-green-500" aria-label="Open Group" />;
@@ -16,7 +16,7 @@ export const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => 
 
 export const getVisibilityLabel = (visibility?: 'open' | 'closed' | 'secret') => {
   if (!visibility) return '';
-  
+
   switch (visibility) {
     case 'open':
       return 'Open Group';

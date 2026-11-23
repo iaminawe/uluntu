@@ -17,9 +17,9 @@ export function useAuth() {
     user: null,
     session: null,
     loading: true,
-    error: null
+    error: null,
   });
-  
+
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [rolesLoading, setRolesLoading] = useState(false);
 
@@ -30,8 +30,11 @@ export function useAuth() {
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
         if (error) {
           throw error;
         }
@@ -41,7 +44,7 @@ export function useAuth() {
             user: session?.user || null,
             session,
             loading: false,
-            error: null
+            error: null,
           });
         }
       } catch (error) {
@@ -50,7 +53,7 @@ export function useAuth() {
             user: null,
             session: null,
             loading: false,
-            error: error instanceof Error ? error.message : 'Authentication error'
+            error: error instanceof Error ? error.message : 'Authentication error',
           });
         }
       }
@@ -59,18 +62,18 @@ export function useAuth() {
     getInitialSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (mounted) {
-          setState({
-            user: session?.user || null,
-            session,
-            loading: false,
-            error: null
-          });
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (mounted) {
+        setState({
+          user: session?.user || null,
+          session,
+          loading: false,
+          error: null,
+        });
       }
-    );
+    });
 
     return () => {
       mounted = false;
@@ -83,10 +86,7 @@ export function useAuth() {
     const fetchUserRoles = async (userId: string) => {
       setRolesLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId);
+        const { data, error } = await supabase.from('user_roles').select('role').eq('user_id', userId);
 
         if (error) {
           console.warn('Failed to fetch user roles:', error.message);
@@ -141,18 +141,18 @@ export function useAuth() {
     session: state.session,
     loading: state.loading || rolesLoading,
     error: state.error,
-    
+
     // Role information
     userRoles,
     rolesLoading,
-    
+
     // Computed values
     isAuthenticated,
     hasRole,
     hasAnyRole,
     hasAllRoles,
     isAdmin,
-    isModerator
+    isModerator,
   };
 }
 

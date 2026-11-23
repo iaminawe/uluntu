@@ -20,9 +20,6 @@
 // News Article adapters moved to newsAdapter.ts
 
 // Utility function to adapt arrays
-export function adaptListFromSupabase<T, U>(
-  items: T[],
-  adapter: (item: T) => U
-): U[] {
+export function adaptListFromSupabase<T, U>(items: T[], adapter: (item: T) => U): U[] {
   return items.map(adapter);
 }

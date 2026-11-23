@@ -8,28 +8,19 @@ import {
   PhotoAnalytics,
   PhotoMetadata,
   SearchResult,
-  PhotoSearch
+  PhotoSearch,
 } from '../types';
 
 class PhotoApi {
   private tableName = 'photos';
   private analyticsTableName = 'photo_analytics';
 
-  async getPhotos(params?: {
-    filters?: PhotoFilters;
-    page?: number;
-    limit?: number;
-  }): Promise<PhotosResponse> {
+  async getPhotos(params?: { filters?: PhotoFilters; page?: number; limit?: number }): Promise<PhotosResponse> {
     try {
-      const {
-        filters = {},
-        page = 1,
-        limit = 24,
-      } = params || {};
+      const { filters = {}, page = 1, limit = 24 } = params || {};
 
-      let query = (supabase as any)
-        .from(this.tableName)
-        .select(`
+      let query = (supabase as any).from(this.tableName).select(
+        `
           *,
           gallery:galleries!photos_gallery_id_fkey(
             id,
@@ -41,7 +32,9 @@ class PhotoApi {
             name,
             image
           )
-        `, { count: 'exact' });
+        `,
+        { count: 'exact' }
+      );
 
       // Apply filters
       if (filters.status && filters.status !== 'draft') {
@@ -71,9 +64,7 @@ class PhotoApi {
       }
 
       if (filters.dateRange) {
-        query = query
-          .gte('uploaded_at', filters.dateRange.start)
-          .lte('uploaded_at', filters.dateRange.end);
+        query = query.gte('uploaded_at', filters.dateRange.start).lte('uploaded_at', filters.dateRange.end);
       }
 
       // Apply sorting
@@ -97,7 +88,7 @@ class PhotoApi {
       return {
         photos: data as Photo[],
         totalCount: count || 0,
-        hasMore: (page * limit) < (count || 0),
+        hasMore: page * limit < (count || 0),
         data: data as Photo[],
         page,
         limit,
@@ -114,7 +105,8 @@ class PhotoApi {
     try {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           gallery:galleries!photos_gallery_id_fkey(
             id,
@@ -126,7 +118,8 @@ class PhotoApi {
             name,
             image
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -144,7 +137,9 @@ class PhotoApi {
   async createPhoto(photoData: CreatePhotoData): Promise<Photo> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -163,7 +158,8 @@ class PhotoApi {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newPhoto)
-        .select(`
+        .select(
+          `
           *,
           gallery:galleries!photos_gallery_id_fkey(
             id,
@@ -175,7 +171,8 @@ class PhotoApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -200,7 +197,8 @@ class PhotoApi {
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           gallery:galleries!photos_gallery_id_fkey(
             id,
@@ -212,7 +210,8 @@ class PhotoApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -230,7 +229,7 @@ class PhotoApi {
     try {
       // First get the photo to access file paths
       const photo = await this.getPhotoById(id);
-      
+
       // Delete files from storage
       const filePaths = [photo.url, photo.thumbnail_url, photo.original_url].filter(Boolean);
       if (filePaths.length > 0) {
@@ -244,10 +243,7 @@ class PhotoApi {
       }
 
       // Delete photo record
-      const { error } = await (supabase as any)
-        .from(this.tableName)
-        .delete()
-        .eq('id', id);
+      const { error } = await (supabase as any).from(this.tableName).delete().eq('id', id);
 
       if (error) {
         throw handleSupabaseError(error);
@@ -282,7 +278,7 @@ class PhotoApi {
       }));
 
       const { error } = await (supabase as any).rpc('batch_update_photo_order', {
-        updates
+        updates,
       });
 
       if (error) {
@@ -300,9 +296,8 @@ class PhotoApi {
     try {
       const { query, filters, facets, highlight } = searchParams;
 
-      let supabaseQuery = (supabase as any)
-        .from(this.tableName)
-        .select(`
+      let supabaseQuery = (supabase as any).from(this.tableName).select(
+        `
           *,
           gallery:galleries!photos_gallery_id_fkey(
             id,
@@ -314,7 +309,9 @@ class PhotoApi {
             name,
             image
           )
-        `, { count: 'exact' });
+        `,
+        { count: 'exact' }
+      );
 
       // Full-text search
       if (query) {
@@ -342,15 +339,22 @@ class PhotoApi {
         throw handleSupabaseError(error);
       }
 
-      const facetFields = facets === true ? ['tags', 'gallery_id'] : (Array.isArray(facets) ? facets : []);
-      
+      const facetFields = facets === true ? ['tags', 'gallery_id'] : Array.isArray(facets) ? facets : [];
+
       return {
         photos: data as Photo[],
         totalCount: count || 0,
-        facets: facetFields.length > 0 ? {
-          tags: await this.getFacets(['tags'], filters).then(f => f.tags?.map(item => ({ name: item.value, count: item.count })) || []),
-          galleries: await this.getFacets(['gallery_id'], filters).then(f => f.gallery_id?.map(item => ({ name: item.value, count: item.count })) || [])
-        } : undefined,
+        facets:
+          facetFields.length > 0
+            ? {
+                tags: await this.getFacets(['tags'], filters).then(
+                  f => f.tags?.map(item => ({ name: item.value, count: item.count })) || []
+                ),
+                galleries: await this.getFacets(['gallery_id'], filters).then(
+                  f => f.gallery_id?.map(item => ({ name: item.value, count: item.count })) || []
+                ),
+              }
+            : undefined,
       };
     } catch (error) {
       console.error('Error searching photos:', error);
@@ -361,7 +365,7 @@ class PhotoApi {
   async incrementViewCount(photoId: string): Promise<void> {
     try {
       const { error } = await (supabase as any).rpc('increment_photo_views', {
-        photo_id: photoId
+        photo_id: photoId,
       });
 
       if (error) {
@@ -375,7 +379,7 @@ class PhotoApi {
   async incrementDownloadCount(photoId: string): Promise<void> {
     try {
       const { error } = await (supabase as any).rpc('increment_photo_downloads', {
-        photo_id: photoId
+        photo_id: photoId,
       });
 
       if (error) {
@@ -389,7 +393,7 @@ class PhotoApi {
   async getPhotoAnalytics(photoId: string): Promise<PhotoAnalytics> {
     try {
       const { data, error } = await (supabase as any).rpc('get_photo_analytics', {
-        photo_id: photoId
+        photo_id: photoId,
       });
 
       if (error) {
@@ -416,11 +420,11 @@ class PhotoApi {
           // Try to extract EXIF data if available
           if ((window as any).ExifReader) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = e => {
               try {
                 const arrayBuffer = e.target?.result as ArrayBuffer;
                 const tags = (window as any).ExifReader.load(arrayBuffer);
-                
+
                 if (tags.DateTime) {
                   (metadata as any).capturedAt = new Date(tags.DateTime.description).toISOString();
                 }
@@ -478,14 +482,17 @@ class PhotoApi {
     });
   }
 
-  private async getFacets(facetFields: string[], filters?: PhotoFilters): Promise<Record<string, Array<{ value: string; count: number }>>> {
+  private async getFacets(
+    facetFields: string[],
+    filters?: PhotoFilters
+  ): Promise<Record<string, Array<{ value: string; count: number }>>> {
     const facets: Record<string, Array<{ value: string; count: number }>> = {};
 
     for (const field of facetFields) {
       try {
         const { data, error } = await (supabase as any).rpc('get_photo_facets', {
           field_name: field,
-          filters: filters || {}
+          filters: filters || {},
         });
 
         if (!error && data) {
@@ -503,7 +510,7 @@ class PhotoApi {
     try {
       const { data, error } = await (supabase as any).rpc('get_search_suggestions', {
         query_text: query,
-        suggestion_limit: 5
+        suggestion_limit: 5,
       });
 
       if (error) {

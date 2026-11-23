@@ -60,7 +60,7 @@ export const adaptMainMarketplaceItemToListing = (item: MarketplaceItem): Partia
     tags: item.category ? [item.category] : null,
     seller_id: item.seller?.id || null,
     updated_at: null, // This field doesn't exist in the main type
-    created_at: item.datePosted || null
+    created_at: item.datePosted || null,
   };
 };
 
@@ -77,10 +77,10 @@ export const adaptListingToMainMarketplaceItem = (listing: MarketplaceListing): 
     seller: {
       id: listing.seller_id || '0',
       name: 'Unknown Seller', // This would need to be populated from user data
-      image: '' // This would need to be populated from user data
+      image: '', // This would need to be populated from user data
     },
     datePosted: listing.created_at || new Date().toISOString(),
-    status: (listing.status as ContentStatus) || undefined
+    status: (listing.status as ContentStatus) || undefined,
   };
 };
 
@@ -98,7 +98,7 @@ export const adaptMainMarketplaceItemToMock = (item: MarketplaceItem): Partial<M
     seller_id: item.seller?.id,
     location: '', // This field doesn't exist in the main type
     tags: [item.category],
-    status: item.status
+    status: item.status,
   };
 };
 
@@ -115,10 +115,10 @@ export const adaptMockToMainMarketplaceItem = (mock: MockMarketplaceListing): Pa
     seller: {
       id: mock.seller_id || '0',
       name: 'Unknown Seller', // This would need to be populated from user data
-      image: '' // This would need to be populated from user data
+      image: '', // This would need to be populated from user data
     },
     datePosted: mock.created_at || new Date().toISOString(),
-    status: (mock.status as ContentStatus) || undefined
+    status: (mock.status as ContentStatus) || undefined,
   };
 };
 
@@ -173,31 +173,34 @@ export interface MarketplaceItemFormInput {
 // Adapts from Supabase row to Frontend MarketplaceItem
 export function adaptMarketplaceItemFromSupabase(
   item: SupabaseMarketplaceItem & { members?: SupabaseMember }
-): MarketplaceItem { // MarketplaceItem here is from '../types'
+): MarketplaceItem {
+  // MarketplaceItem here is from '../types'
   let sellerInfo: MarketplaceItem['seller'];
 
-  if (item.members && item.members.id) { // Check if member and ID exist
+  if (item.members && item.members.id) {
+    // Check if member and ID exist
     sellerInfo = {
       id: String(item.members.id), // Convert to string for consistency
       name: item.members.name || 'Unknown Seller',
-      image: item.members.image || '/placeholder-avatar.png'
+      image: item.members.image || '/placeholder-avatar.png',
     };
   } else {
     // Fallback if no joined member or member.id is not suitable
     sellerInfo = {
       id: '0', // Use string ID for consistency
       name: 'Seller Profile Unavailable',
-      image: '/placeholder-avatar.png'
+      image: '/placeholder-avatar.png',
     };
   }
 
-  const itemType = (item.type && ['service', 'product', 'event'].includes(item.type))
-    ? item.type as MarketplaceItem['type']
-    : 'product'; // Default to 'product' or handle as error
+  const itemType =
+    item.type && ['service', 'product', 'event'].includes(item.type)
+      ? (item.type as MarketplaceItem['type'])
+      : 'product'; // Default to 'product' or handle as error
 
   // Extract 'type' into a variable to use for category fallback if needed
   const itemTypeStr = item.type || 'product';
-  
+
   return {
     id: String(item.id), // Convert to string for consistency
     title: item.title || '',
@@ -234,7 +237,6 @@ export function adaptMarketplaceItemToSupabase(
     // If your Supabase table marketplace_listings has a 'category' column, add it here:
     // category: item.category || null,
   };
-  
+
   return safeItem;
 }
-

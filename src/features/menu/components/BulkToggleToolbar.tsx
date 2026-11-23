@@ -1,18 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Switch } from '@/components/ui/Switch';
-import { 
-  CheckSquare, 
-  Square, 
-  Eye, 
-  EyeOff, 
-  RotateCcw, 
+import {
+  CheckSquare,
+  Square,
+  Eye,
+  EyeOff,
+  RotateCcw,
   Trash2,
   AlertTriangle,
   TreePine,
   Loader2,
   Settings,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { cn } from '@/utils/cn';
@@ -55,7 +55,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
   onBulkRestore,
   disabled = false,
   showCascade = true,
-  className
+  className,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -63,7 +63,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
   const [confirmation, setConfirmation] = useState<ConfirmationState>({
     isOpen: false,
     operation: null,
-    cascade: false
+    cascade: false,
   });
   const [lastOperation, setLastOperation] = useState<{
     operations: BulkOperation[];
@@ -77,7 +77,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
     const disabledCount = selectedItemsList.length - enabledCount;
     const parentCount = selectedItemsList.filter(item => !item.parent_id).length;
     const childCount = selectedItemsList.filter(item => item.parent_id).length;
-    
+
     return {
       total: selectedItems.size,
       enabled: enabledCount,
@@ -85,7 +85,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
       parents: parentCount,
       children: childCount,
       canEnable: disabledCount > 0,
-      canDisable: enabledCount > 0
+      canDisable: enabledCount > 0,
     };
   }, [items, selectedItems]);
 
@@ -96,10 +96,10 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
     }
 
     const affectedIds = new Set<string>();
-    
+
     // Add selected items
     selectedItems.forEach(id => affectedIds.add(id));
-    
+
     // Add children of selected parents
     selectedItems.forEach(selectedId => {
       const selectedItem = items.find(item => item.id === selectedId);
@@ -139,7 +139,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
     setConfirmation({
       isOpen: true,
       operation,
-      cascade
+      cascade,
     });
   };
 
@@ -167,16 +167,11 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
       }
 
       // Log bulk operation
-      await adminActivityLogger.logBulkAction(
-        `menu_item_${confirmation.operation}`,
-        'menu_item',
-        affectedIds,
-        {
-          cascade_enabled: confirmation.cascade,
-          success_count: operations.filter(op => op.success).length,
-          failure_count: operations.filter(op => !op.success).length
-        }
-      );
+      await adminActivityLogger.logBulkAction(`menu_item_${confirmation.operation}`, 'menu_item', affectedIds, {
+        cascade_enabled: confirmation.cascade,
+        success_count: operations.filter(op => op.success).length,
+        failure_count: operations.filter(op => !op.success).length,
+      });
 
       setLastOperation({ operations, timestamp: new Date() });
 
@@ -200,13 +195,9 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
       if (successCount > 0) {
         onSelectionChange(new Set());
       }
-
     } catch (error) {
       console.error(`Bulk ${confirmation.operation} failed:`, error);
-      toast.error(
-        `Failed to ${confirmation.operation} menu items. Please try again.`,
-        { duration: 6000 }
-      );
+      toast.error(`Failed to ${confirmation.operation} menu items. Please try again.`, { duration: 6000 });
     } finally {
       setIsLoading(false);
       setConfirmation({ isOpen: false, operation: null, cascade: false });
@@ -215,11 +206,9 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
 
   const handleUndo = async () => {
     if (!lastOperation || !onBulkRestore) return;
-    
-    const successfulIds = lastOperation.operations
-      .filter(op => op.success)
-      .map(op => op.id);
-    
+
+    const successfulIds = lastOperation.operations.filter(op => op.success).map(op => op.id);
+
     if (successfulIds.length === 0) return;
 
     try {
@@ -240,7 +229,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
     const count = affectedIds.length;
 
     let message = `Are you sure you want to ${operation} ${count} menu item${count !== 1 ? 's' : ''}?`;
-    
+
     if (confirmation.cascade && affectedIds.length > selectedItems.size) {
       const additionalCount = affectedIds.length - selectedItems.size;
       message += ` This will also affect ${additionalCount} child item${additionalCount !== 1 ? 's' : ''}.`;
@@ -263,11 +252,13 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
 
   return (
     <>
-      <div className={cn(
-        'bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4',
-        disabled && 'opacity-60 pointer-events-none',
-        className
-      )}>
+      <div
+        className={cn(
+          'bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4',
+          disabled && 'opacity-60 pointer-events-none',
+          className
+        )}
+      >
         {/* Selection Summary */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -277,24 +268,16 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
                 {selectionStats.total} item{selectionStats.total !== 1 ? 's' : ''} selected
               </span>
             </div>
-            
+
             <div className="text-sm text-blue-700">
               {selectionStats.enabled} enabled, {selectionStats.disabled} disabled
             </div>
           </div>
 
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-blue-700"
-          >
+          <Button size="sm" variant="ghost" onClick={() => setShowAdvanced(!showAdvanced)} className="text-blue-700">
             <Settings className="h-4 w-4 mr-1" />
             Options
-            <ChevronDown className={cn(
-              'h-4 w-4 ml-1 transition-transform',
-              showAdvanced && 'rotate-180'
-            )} />
+            <ChevronDown className={cn('h-4 w-4 ml-1 transition-transform', showAdvanced && 'rotate-180')} />
           </Button>
         </div>
 
@@ -306,11 +289,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
             disabled={!selectionStats.canEnable || isLoading}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-              <Eye className="h-4 w-4 mr-1" />
-            )}
+            {isLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Eye className="h-4 w-4 mr-1" />}
             Enable Selected ({selectionStats.disabled})
           </Button>
 
@@ -320,11 +299,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
             disabled={!selectionStats.canDisable || isLoading}
             variant="outline"
           >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-              <EyeOff className="h-4 w-4 mr-1" />
-            )}
+            {isLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <EyeOff className="h-4 w-4 mr-1" />}
             Disable Selected ({selectionStats.enabled})
           </Button>
 
@@ -342,13 +317,7 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
 
           {/* Undo button */}
           {lastOperation && onBulkRestore && (
-            <Button
-              size="sm"
-              onClick={handleUndo}
-              disabled={isLoading}
-              variant="ghost"
-              className="text-orange-600"
-            >
+            <Button size="sm" onClick={handleUndo} disabled={isLoading} variant="ghost" className="text-orange-600">
               <RotateCcw className="h-4 w-4 mr-1" />
               Undo Last Action
             </Button>
@@ -360,32 +329,17 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
           <div className="pt-2 border-t border-blue-200 space-y-3">
             {/* Selection Controls */}
             <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSelectAll}
-                className="text-blue-700"
-              >
+              <Button size="sm" variant="ghost" onClick={handleSelectAll} className="text-blue-700">
                 <Square className="h-4 w-4 mr-1" />
                 {selectedItems.size === items.length ? 'Deselect All' : 'Select All'}
               </Button>
-              
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSelectEnabled}
-                className="text-green-600"
-              >
+
+              <Button size="sm" variant="ghost" onClick={handleSelectEnabled} className="text-green-600">
                 <Eye className="h-4 w-4 mr-1" />
                 Select Enabled
               </Button>
-              
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSelectDisabled}
-                className="text-gray-600"
-              >
+
+              <Button size="sm" variant="ghost" onClick={handleSelectDisabled} className="text-gray-600">
                 <EyeOff className="h-4 w-4 mr-1" />
                 Select Disabled
               </Button>
@@ -394,14 +348,11 @@ export const BulkToggleToolbar: React.FC<BulkToggleToolbarProps> = ({
             {/* Cascade Option */}
             {showCascade && selectionStats.parents > 0 && (
               <div className="flex items-center space-x-2">
-                <Switch
-                  checked={cascadeEnabled}
-                  onCheckedChange={setCascadeEnabled}
-                  id="cascade-toggle"
-                />
+                <Switch checked={cascadeEnabled} onCheckedChange={setCascadeEnabled} id="cascade-toggle" />
                 <label htmlFor="cascade-toggle" className="text-sm text-blue-900 cursor-pointer">
                   <TreePine className="h-4 w-4 inline mr-1" />
-                  Apply changes to child items ({selectionStats.parents} parent{selectionStats.parents !== 1 ? 's' : ''} selected)
+                  Apply changes to child items ({selectionStats.parents} parent{selectionStats.parents !== 1 ? 's' : ''}{' '}
+                  selected)
                 </label>
               </div>
             )}

@@ -81,15 +81,15 @@ export interface UserContentSummary {
   featured?: boolean;
 }
 
-export type ContentType = 
-  | 'event' 
-  | 'news' 
-  | 'resource' 
-  | 'group' 
-  | 'marketplace' 
-  | 'opportunity' 
-  | 'gallery' 
-  | 'message' 
+export type ContentType =
+  | 'event'
+  | 'news'
+  | 'resource'
+  | 'group'
+  | 'marketplace'
+  | 'opportunity'
+  | 'gallery'
+  | 'message'
   | 'activity'
   | 'analytics'
   | 'company'
@@ -153,19 +153,19 @@ export interface ActivityItem {
 }
 
 export type ActivityType =
-  | 'content_published'      // New content in followed topics
-  | 'content_updated'        // Content updates
-  | 'content_featured'       // Content was featured
-  | 'user_joined_group'      // New member in groups user is in
-  | 'group_event_created'    // New event in user's groups
-  | 'comment_added'          // Comment on user's content
-  | 'content_liked'          // Someone liked user's content
-  | 'mention'                // User was mentioned
-  | 'follow'                 // Someone followed user
-  | 'collaboration_invite'   // Invitation to collaborate
-  | 'system_announcement'    // System-wide announcements
-  | 'topic_trending'         // Topic user follows is trending
-  | 'milestone_reached';     // User reached a milestone
+  | 'content_published' // New content in followed topics
+  | 'content_updated' // Content updates
+  | 'content_featured' // Content was featured
+  | 'user_joined_group' // New member in groups user is in
+  | 'group_event_created' // New event in user's groups
+  | 'comment_added' // Comment on user's content
+  | 'content_liked' // Someone liked user's content
+  | 'mention' // User was mentioned
+  | 'follow' // Someone followed user
+  | 'collaboration_invite' // Invitation to collaborate
+  | 'system_announcement' // System-wide announcements
+  | 'topic_trending' // Topic user follows is trending
+  | 'milestone_reached'; // User reached a milestone
 
 export interface ActivityFilter {
   type?: ActivityType | 'all';
@@ -280,7 +280,7 @@ export interface NotificationPreferences {
   quiet_hours: {
     enabled: boolean;
     start: string; // HH:mm format
-    end: string;   // HH:mm format
+    end: string; // HH:mm format
   };
 }
 
@@ -467,39 +467,39 @@ export type {
   DashboardUser,
   DashboardStats,
   ContentAnalytics,
-  
+
   // Content
   UserContentSummary,
   ContentFilter,
   ContentPagination,
   UserContentResponse,
-  
+
   // Activity
   ActivityItem,
   ActivityFilter,
   ActivityResponse,
-  
+
   // UI
   DashboardTab,
   MyContentTabs,
   QuickAction,
-  
+
   // Recommendations
   TrendingContent,
   ContentRecommendation,
-  
+
   // Preferences
   NotificationPreferences,
   DashboardWidget,
-  
+
   // API
   DashboardData,
   DashboardApiResponse,
   DashboardPreferencesForm,
-  
+
   // Tab Components
   MessagesTabProps,
   MessageItem,
   ActivityTabProps,
-  ActivityEntry
+  ActivityEntry,
 };

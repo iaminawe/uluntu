@@ -27,7 +27,7 @@ const initialFormData: FormData = {
   tags: [],
   authorId: 1, // Default author ID
   status: 'draft' as ContentStatus, // Default status
-  featured: false // Default not featured
+  featured: false, // Default not featured
 };
 
 export default function NewsEditPage() {
@@ -37,7 +37,7 @@ export default function NewsEditPage() {
   const articleId = id || undefined;
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [newTag, setNewTag] = useState('');
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -47,16 +47,13 @@ export default function NewsEditPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
-  
-  const { 
-    data: article, 
-    isLoading: articleLoading
-  } = useNewsArticle(articleId!);
-  
+
+  const { data: article, isLoading: articleLoading } = useNewsArticle(articleId!);
+
   // Topic management
   const { data: entityTopics } = useEntityTopics('news', articleId || '');
   const setEntityTopicsMutation = useSetEntityTopics();
-  
+
   // Populate form with article data when in edit mode
   useEffect(() => {
     if (isEditMode && article) {
@@ -67,49 +64,54 @@ export default function NewsEditPage() {
         content: article.content,
         image: article.image || '',
         tags: article.tags || [],
-        authorId: typeof article.author.id === 'string' ? parseInt(article.author.id, 10) : (typeof article.author.id === 'number' ? article.author.id : 1),
-        status: article.status || 'draft' as ContentStatus,
-        featured: article.featured || false
+        authorId:
+          typeof article.author.id === 'string'
+            ? parseInt(article.author.id, 10)
+            : typeof article.author.id === 'number'
+              ? article.author.id
+              : 1,
+        status: article.status || ('draft' as ContentStatus),
+        featured: article.featured || false,
       });
     }
   }, [isEditMode, article]);
-  
+
   // Populate topics when entity topics are loaded
   useEffect(() => {
     if (entityTopics) {
       setSelectedTopicIds(entityTopics.map(topic => topic.id));
     }
   }, [entityTopics]);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Auto-generate slug when title changes and slug is empty
     if (name === 'title' && !formData.slug) {
       setFormData(prev => ({ ...prev, slug: generateSlug(value) }));
     }
-    
+
     // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
-  
+
   const handleAddTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, newTag.trim()]
+        tags: [...prev.tags, newTag.trim()],
       }));
       setNewTag('');
     }
   };
-  
+
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter(tag => tag !== tagToRemove),
     }));
   };
 
@@ -119,50 +121,50 @@ export default function NewsEditPage() {
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({
         ...prev,
-        image: objectUrl
+        image: objectUrl,
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        image: ''
+        image: '',
       }));
     }
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
     const newErrors: Partial<FormData> = {};
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.excerpt.trim()) newErrors.excerpt = 'Excerpt is required';
     if (!formData.content.trim()) newErrors.content = 'Content is required';
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsSubmitting(true);
     let finalImageUrl = formData.image;
-    
+
     try {
       // Upload image if a new file was selected
       if (imageFile) {
         setIsUploadingImage(true);
         const newsId = id || `temp-${Date.now()}`;
         const { url, error } = await uploadNewsImage(imageFile, newsId);
-        
+
         if (error) {
           console.error('Error uploading image:', error);
           setErrors(prev => ({ ...prev, image: 'Failed to upload image. Please try again.' }));
           return;
         }
-        
+
         finalImageUrl = url || '';
         setIsUploadingImage(false);
       }
-      
+
       // Prepare data for API
       // ContentAIEditor returns markdown/HTML content which is compatible with existing format
       const newsArticleData: Partial<NewsArticle> = {
@@ -174,16 +176,16 @@ export default function NewsEditPage() {
         status: formData.status,
         featured: formData.featured,
       };
-      
+
       // Add author for new articles
       if (!isEditMode && user?.id) {
         newsArticleData.author = {
           id: user.id,
           name: user.name || 'Unknown',
-          image: user.image || ''
+          image: user.image || '',
         };
       }
-      
+
       // Add date for new articles
       if (!isEditMode) {
         newsArticleData.date = new Date().toISOString();
@@ -204,12 +206,12 @@ export default function NewsEditPage() {
           await setEntityTopicsMutation.mutateAsync({
             entityType: 'news',
             entityId: result.id,
-            topicIds: selectedTopicIds
+            topicIds: selectedTopicIds,
           });
         }
-        
+
         setSubmitSuccess(true);
-        
+
         // Navigate after successful submission
         setTimeout(() => {
           navigate(isEditMode ? `/news/${result.id}` : '/news');
@@ -225,12 +227,12 @@ export default function NewsEditPage() {
       setIsUploadingImage(false);
     }
   };
-  
+
   const handleDelete = async () => {
     if (!id) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const success = await newsApi.delete(id);
       if (success) {
@@ -244,53 +246,42 @@ export default function NewsEditPage() {
       setIsSubmitting(false);
     }
   };
-  
+
   if (articleLoading && isEditMode) {
     return <LoadingState />;
   }
-  
+
   return (
     <>
       <Helmet>
-        <title>
-          {isEditMode 
-            ? `Edit Article: ${article?.title || 'Loading...'}`
-            : 'Create New Article'
-          } - Uluntu
-        </title>
+        <title>{isEditMode ? `Edit Article: ${article?.title || 'Loading...'}` : 'Create New Article'} - Uluntu</title>
       </Helmet>
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="w-4/5 max-w-[80%] mx-auto">
-          <FormHeader 
-            isEditMode={isEditMode} 
-            title={article?.title || ''} 
-          />
-          
+          <FormHeader isEditMode={isEditMode} title={article?.title || ''} />
+
           {submitSuccess ? (
             <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6">
               <div className="flex">
                 <div>
                   <p className="text-sm text-green-700 dark:text-green-400">
-                    {isEditMode 
-                      ? 'Article updated successfully!' 
-                      : 'Article created successfully!'
-                    } Redirecting...
+                    {isEditMode ? 'Article updated successfully!' : 'Article created successfully!'} Redirecting...
                   </p>
                 </div>
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 shadow-md rounded-lg p-6">
-              <FormInputs 
+              <FormInputs
                 formData={formData}
                 handleChange={handleChange}
                 setFormData={setFormData}
                 onImageChange={handleImageChange}
                 errors={errors}
               />
-              
-              <TagsInput 
+
+              <TagsInput
                 tags={formData.tags}
                 newTag={newTag}
                 setNewTag={setNewTag}
@@ -298,12 +289,10 @@ export default function NewsEditPage() {
                 handleRemoveTag={handleRemoveTag}
                 errors={errors}
               />
-              
+
               {/* Topics Section */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Topics
-                </label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics</label>
                 <TopicSelector
                   selectedTopics={selectedTopicIds}
                   onTopicsChange={setSelectedTopicIds}
@@ -315,8 +304,8 @@ export default function NewsEditPage() {
                   Add topics to help categorize this article and make it discoverable on topic pages.
                 </p>
               </div>
-              
-              <FormActions 
+
+              <FormActions
                 isEditMode={isEditMode}
                 formData={formData}
                 isSubmitting={isSubmitting}
@@ -329,7 +318,7 @@ export default function NewsEditPage() {
           )}
         </div>
       </div>
-      
+
       <DeleteConfirmModal
         showDeleteConfirm={showDeleteConfirm}
         setShowDeleteConfirm={setShowDeleteConfirm}

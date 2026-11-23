@@ -66,7 +66,7 @@ class NewsletterSubscriptionsApi {
           email: item.email,
           member_id: item.member_id || undefined,
           status: (item.status || 'pending') as Subscription['status'],
-          preferences: item.preferences as Subscription['preferences'] || undefined,
+          preferences: (item.preferences as Subscription['preferences']) || undefined,
           subscription_token: item.subscription_token || '',
           confirmation_token: item.confirmation_token,
           confirmed_at: item.confirmed_at,
@@ -75,9 +75,9 @@ class NewsletterSubscriptionsApi {
           last_sent_at: item.last_sent_at,
           bounce_count: item.bounce_count || 0,
           created_at: item.created_at || new Date().toISOString(),
-          updated_at: item.updated_at || new Date().toISOString()
+          updated_at: item.updated_at || new Date().toISOString(),
         })),
-        total: count || 0
+        total: count || 0,
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get Subscriptions');
@@ -90,22 +90,18 @@ class NewsletterSubscriptionsApi {
    */
   async getSubscription(id: string): Promise<Subscription | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_subscriptions')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('newsletter_subscriptions').select('*').eq('id', id).single();
 
       if (error) throw error;
 
       if (!data) return null;
-      
+
       return {
         id: data.id,
         email: data.email,
         member_id: data.member_id || undefined,
         status: (data.status || 'pending') as Subscription['status'],
-        preferences: data.preferences as Subscription['preferences'] || undefined,
+        preferences: (data.preferences as Subscription['preferences']) || undefined,
         subscription_token: data.subscription_token || '',
         confirmation_token: data.confirmation_token,
         confirmed_at: data.confirmed_at,
@@ -114,7 +110,7 @@ class NewsletterSubscriptionsApi {
         last_sent_at: data.last_sent_at,
         bounce_count: data.bounce_count || 0,
         created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
+        updated_at: data.updated_at || new Date().toISOString(),
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get Subscription');
@@ -127,22 +123,18 @@ class NewsletterSubscriptionsApi {
    */
   async getSubscriptionByEmail(email: string): Promise<Subscription | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_subscriptions')
-        .select('*')
-        .eq('email', email)
-        .single();
+      const { data, error } = await supabase.from('newsletter_subscriptions').select('*').eq('email', email).single();
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
 
       if (!data) return null;
-      
+
       return {
         id: data.id,
         email: data.email,
         member_id: data.member_id || undefined,
         status: (data.status || 'pending') as Subscription['status'],
-        preferences: data.preferences as Subscription['preferences'] || undefined,
+        preferences: (data.preferences as Subscription['preferences']) || undefined,
         subscription_token: data.subscription_token || '',
         confirmation_token: data.confirmation_token,
         confirmed_at: data.confirmed_at,
@@ -151,7 +143,7 @@ class NewsletterSubscriptionsApi {
         last_sent_at: data.last_sent_at,
         bounce_count: data.bounce_count || 0,
         created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
+        updated_at: data.updated_at || new Date().toISOString(),
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Get By Email');
@@ -179,20 +171,20 @@ class NewsletterSubscriptionsApi {
           subscription_token: crypto.randomUUID(),
           bounce_count: 0,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .select()
         .single();
 
       if (error) throw error;
       if (!data) throw new Error('Failed to create subscription');
-      
+
       return {
         id: data.id,
         email: data.email,
         member_id: data.member_id || undefined,
         status: (data.status || 'active') as Subscription['status'],
-        preferences: data.preferences as Subscription['preferences'] || undefined,
+        preferences: (data.preferences as Subscription['preferences']) || undefined,
         subscription_token: data.subscription_token || '',
         confirmation_token: data.confirmation_token,
         confirmed_at: data.confirmed_at,
@@ -201,7 +193,7 @@ class NewsletterSubscriptionsApi {
         last_sent_at: data.last_sent_at,
         bounce_count: data.bounce_count || 0,
         created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
+        updated_at: data.updated_at || new Date().toISOString(),
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Create');
@@ -218,7 +210,7 @@ class NewsletterSubscriptionsApi {
         .from('newsletter_subscriptions')
         .update({
           ...updates,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', id)
         .select()
@@ -226,13 +218,13 @@ class NewsletterSubscriptionsApi {
 
       if (error) throw error;
       if (!data) throw new Error('Failed to update subscription');
-      
+
       return {
         id: data.id,
         email: data.email,
         member_id: data.member_id || undefined,
         status: (data.status || 'active') as Subscription['status'],
-        preferences: data.preferences as Subscription['preferences'] || undefined,
+        preferences: (data.preferences as Subscription['preferences']) || undefined,
         subscription_token: data.subscription_token || '',
         confirmation_token: data.confirmation_token,
         confirmed_at: data.confirmed_at,
@@ -241,7 +233,7 @@ class NewsletterSubscriptionsApi {
         last_sent_at: data.last_sent_at,
         bounce_count: data.bounce_count || 0,
         created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
+        updated_at: data.updated_at || new Date().toISOString(),
       };
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Update');
@@ -256,7 +248,7 @@ class NewsletterSubscriptionsApi {
     try {
       await this.updateSubscription(id, {
         status: 'unsubscribed',
-        unsubscribed_at: new Date().toISOString()
+        unsubscribed_at: new Date().toISOString(),
       });
     } catch (error) {
       const sanitized = logAndSanitizeError(error, 'Newsletter Subscriptions - Unsubscribe');
@@ -271,7 +263,7 @@ class NewsletterSubscriptionsApi {
     try {
       const results = {
         success: 0,
-        failed: 0
+        failed: 0,
       };
 
       for (const email of emails) {
@@ -303,22 +295,14 @@ class NewsletterSubscriptionsApi {
     try {
       const { subscriptions } = await this.getSubscriptions({
         status: status ? [status] : undefined,
-        limit: 10000 // High limit for export
+        limit: 10000, // High limit for export
       });
 
       // Convert to CSV
       const headers = ['Email', 'Status', 'Subscribed At', 'Member ID'];
-      const rows = subscriptions.map(sub => [
-        sub.email,
-        sub.status,
-        sub.subscribed_at,
-        sub.member_id || ''
-      ]);
+      const rows = subscriptions.map(sub => [sub.email, sub.status, sub.subscribed_at, sub.member_id || '']);
 
-      const csv = [
-        headers.join(','),
-        ...rows.map(row => row.join(','))
-      ].join('\n');
+      const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
 
       return csv;
     } catch (error) {
@@ -330,12 +314,12 @@ class NewsletterSubscriptionsApi {
   async recordBounce(email: string, bounceType: 'hard' | 'soft'): Promise<void> {
     try {
       console.log(`Recording ${bounceType} bounce for email: ${email}`);
-      
+
       const { error } = await supabase
         .from('newsletter_subscriptions')
-        .update({ 
+        .update({
           status: bounceType === 'hard' ? 'bounced' : 'active',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('email', email);
 

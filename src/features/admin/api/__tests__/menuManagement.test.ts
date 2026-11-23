@@ -1,6 +1,11 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { menuManagementApi } from '../menuManagement';
-import { mockMenuItems, mockCreateMenuItemInput, mockMenuReorderUpdates, createMockMenuItem } from '../../../../tests/fixtures/menuTestData';
+import {
+  mockMenuItems,
+  mockCreateMenuItemInput,
+  mockMenuReorderUpdates,
+  createMockMenuItem,
+} from '../../../../tests/fixtures/menuTestData';
 
 // Mock Supabase
 const mockSupabase = {
@@ -102,9 +107,7 @@ describe('MenuManagementAPI', () => {
         error: mockError,
       });
 
-      await expect(menuManagementApi.getMenuItem('1')).rejects.toThrow(
-        'Failed to fetch menu item: Query failed'
-      );
+      await expect(menuManagementApi.getMenuItem('1')).rejects.toThrow('Failed to fetch menu item: Query failed');
     });
   });
 
@@ -129,11 +132,13 @@ describe('MenuManagementAPI', () => {
       const result = await menuManagementApi.createMenuItem(mockCreateMenuItemInput);
 
       expect(result).toEqual(mockCreatedItem);
-      expect(mockSupabase.insert).toHaveBeenCalledWith([{
-        ...mockCreateMenuItemInput,
-        is_enabled: true,
-        order_index: 3, // Should be max + 1
-      }]);
+      expect(mockSupabase.insert).toHaveBeenCalledWith([
+        {
+          ...mockCreateMenuItemInput,
+          is_enabled: true,
+          order_index: 3, // Should be max + 1
+        },
+      ]);
     });
 
     it('should handle order_index when no existing items', async () => {
@@ -222,7 +227,7 @@ describe('MenuManagementAPI', () => {
 
     it('should handle database errors during update', async () => {
       const mockError = { message: 'Update failed' };
-      
+
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
         error: mockError,
@@ -433,9 +438,7 @@ describe('MenuManagementAPI', () => {
     });
 
     it('should handle malformed menu data gracefully', async () => {
-      const malformedData = [
-        { ...mockMenuItems[0], parent_id: 'nonexistent' }
-      ];
+      const malformedData = [{ ...mockMenuItems[0], parent_id: 'nonexistent' }];
 
       mockSupabase.select.mockResolvedValueOnce({
         data: malformedData,

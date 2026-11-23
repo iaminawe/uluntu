@@ -12,38 +12,38 @@ export default function NewsPage() {
   // State for filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  
+
   // Use hybrid hook for news data
   const { articles, isLoading, error, refetch, setSearchTerm: setFilterSearch } = useNewsHybrid();
-  
+
   const hasArticles = articles && articles.length > 0;
-  
+
   return (
     <>
       <Helmet>
         <title>Tech News - Uluntu</title>
         <meta name="description" content="Latest tech news from the Kootenay region and beyond." />
       </Helmet>
-      
+
       <PageHeader />
-      
+
       <ContentContainer>
-        <ActionBar 
+        <ActionBar
           searchTerm={searchTerm}
-          onSearch={(term) => {
+          onSearch={term => {
             setSearchTerm(term);
             setFilterSearch(typeof term === 'string' ? term : '');
           }}
           selectedTags={selectedTags}
           onTagsChange={setSelectedTags}
         />
-        
+
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
         ) : error ? (
-          <QueryError 
-            error={error instanceof Error ? error : new Error('Failed to load news articles')} 
-            retry={() => refetch()} 
+          <QueryError
+            error={error instanceof Error ? error : new Error('Failed to load news articles')}
+            retry={() => refetch()}
             message="We couldn't load the news articles. Please try again."
           />
         ) : !hasArticles ? (
@@ -52,12 +52,12 @@ export default function NewsPage() {
             description="There are no news articles published yet."
             primaryActionUrl="/news/create"
             primaryAction={{
-              text: "Create an Article",
-              onClick: () => console.log('Navigate to create article')
+              text: 'Create an Article',
+              onClick: () => console.log('Navigate to create article'),
             }}
           />
         ) : (
-          <NewsList 
+          <NewsList
             articles={articles}
             initialSearch={searchTerm}
             initialTag={selectedTags.length > 0 ? selectedTags[0] : 'all'}

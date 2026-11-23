@@ -8,17 +8,17 @@ vi.mock('../../../../shared/api/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn()
+          maybeSingle: vi.fn(),
         })),
-        single: vi.fn()
+        single: vi.fn(),
       })),
       update: vi.fn(() => ({
         eq: vi.fn(() => ({
-          select: vi.fn()
-        }))
-      }))
-    }))
-  }
+          select: vi.fn(),
+        })),
+      })),
+    })),
+  },
 }));
 
 describe('groupsApi.update', () => {
@@ -30,7 +30,7 @@ describe('groupsApi.update', () => {
     const mockId = 'test-group-id';
     const mockGroupData = {
       name: 'Test Group',
-      description: 'Test Description'
+      description: 'Test Description',
     };
 
     let callCount = 0;
@@ -44,19 +44,19 @@ describe('groupsApi.update', () => {
             eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({
                 data: { id: mockId },
-                error: null
-              })
-            })
-          })
+                error: null,
+              }),
+            }),
+          }),
         };
       } else if (callCount === 2) {
         // Second call - update
         return {
           update: vi.fn().mockReturnValue({
             eq: vi.fn().mockResolvedValue({
-              error: null
-            })
-          })
+              error: null,
+            }),
+          }),
         };
       } else {
         // Third call - select after update
@@ -65,10 +65,10 @@ describe('groupsApi.update', () => {
             eq: vi.fn().mockReturnValue({
               maybeSingle: vi.fn().mockResolvedValue({
                 data: null, // RLS blocks this
-                error: null
-              })
-            })
-          })
+                error: null,
+              }),
+            }),
+          }),
         };
       }
     });
@@ -76,7 +76,7 @@ describe('groupsApi.update', () => {
     (supabase.from as any).mockImplementation(mockFrom);
 
     const result = await groupsApi.update(mockId, mockGroupData);
-    
+
     // Should successfully return a fallback response when RLS blocks SELECT
     expect(result).toBeTruthy();
     expect(result?.name).toBe('Test Group');
@@ -87,7 +87,7 @@ describe('groupsApi.update', () => {
     const mockId = 'non-existent-group-id';
     const mockGroupData = {
       name: 'Test Group',
-      description: 'Test Description'
+      description: 'Test Description',
     };
 
     // Mock the verification query to return no data
@@ -96,10 +96,10 @@ describe('groupsApi.update', () => {
         eq: vi.fn().mockReturnValue({
           maybeSingle: vi.fn().mockResolvedValue({
             data: null,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
     });
 
     (supabase.from as any).mockReturnValue(mockFrom());

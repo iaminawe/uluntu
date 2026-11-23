@@ -1,25 +1,20 @@
 import React, { useMemo, Suspense, lazy } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Calendar, 
-  Users, 
-  Briefcase, 
-  Building
-} from 'lucide-react';
+import { Calendar, Users, Briefcase, Building } from 'lucide-react';
 import { useHomePageData } from '@/hooks/useHomePageData';
 import { ContentContainer } from '@/shared/components/ui/PageLayout';
 import { SkeletonGrid } from '@/shared/components/ui/Skeleton';
 import { QueryError } from '@/shared/components/ui/ErrorDisplay';
 
 // Import visual components
-import { 
-  DynamicHero, 
-  ImageCard, 
-  GlassCard, 
+import {
+  DynamicHero,
+  ImageCard,
+  GlassCard,
   FeatureCard,
   ImageSection,
   ImageGallery,
-  DetailedCard
+  DetailedCard,
 } from '@/shared/components/visual';
 
 // Lazy load heavy sections to improve initial load
@@ -29,65 +24,71 @@ export default function HomePage() {
   // Use optimized home page data hook
   const { stats, isLoading, error } = useHomePageData();
 
-
   // Hero images configuration
-  const heroImages = useMemo(() => [
-    {
-      src: "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=2400&h=1600&fit=crop",
-      alt: "Tech professionals working with mountain view"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=2400&h=1600&fit=crop",
-      alt: "Collaborative tech workspace"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=2400&h=1600&fit=crop",
-      alt: "Tech meetup event"
-    }
-  ], []);
+  const heroImages = useMemo(
+    () => [
+      {
+        src: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=2400&h=1600&fit=crop',
+        alt: 'Tech professionals working with mountain view',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=2400&h=1600&fit=crop',
+        alt: 'Collaborative tech workspace',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=2400&h=1600&fit=crop',
+        alt: 'Tech meetup event',
+      },
+    ],
+    []
+  );
 
   // Feature cards configuration with stats
-  const features = useMemo(() => [
-    {
-      icon: Users,
-      title: "Member Directory",
-      description: `Connect with ${stats.members}+ tech professionals in the Kootenay region`,
-      link: "/directory",
-      color: "blue" as const
-    },
-    {
-      icon: Calendar,
-      title: "Tech Events",
-      description: `Join ${stats.events}+ workshops, meetups, and conferences happening locally`,
-      link: "/events",
-      color: "orange" as const
-    },
-    {
-      icon: Briefcase,
-      title: "Job Board",
-      description: "Find your next opportunity with local tech companies",
-      link: "/opportunities",
-      color: "emerald" as const
-    },
-    {
-      icon: Building,
-      title: "Companies",
-      description: `Explore ${stats.companies}+ innovative tech companies in our region`,
-      link: "/companies",
-      color: "purple" as const
-    }
-  ], [stats]);
-
-
+  const features = useMemo(
+    () => [
+      {
+        icon: Users,
+        title: 'Member Directory',
+        description: `Connect with ${stats.members}+ tech professionals in the Kootenay region`,
+        link: '/directory',
+        color: 'blue' as const,
+      },
+      {
+        icon: Calendar,
+        title: 'Tech Events',
+        description: `Join ${stats.events}+ workshops, meetups, and conferences happening locally`,
+        link: '/events',
+        color: 'orange' as const,
+      },
+      {
+        icon: Briefcase,
+        title: 'Job Board',
+        description: 'Find your next opportunity with local tech companies',
+        link: '/opportunities',
+        color: 'emerald' as const,
+      },
+      {
+        icon: Building,
+        title: 'Companies',
+        description: `Explore ${stats.companies}+ innovative tech companies in our region`,
+        link: '/companies',
+        color: 'purple' as const,
+      },
+    ],
+    [stats]
+  );
 
   if (isLoading) {
     return (
       <>
         <Helmet>
           <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
-          <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
+          <meta
+            name="description"
+            content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities."
+          />
         </Helmet>
-        
+
         <DynamicHero
           title="Uluntu Community"
           subtitle="Kootenay Innovation Hub"
@@ -95,12 +96,12 @@ export default function HomePage() {
           images={heroImages}
           height="large"
           actions={[
-            { label: "Join the Community", href: "/directory", variant: "primary" },
-            { label: "Explore Events", href: "/events", variant: "secondary" },
-            { label: "✨ AI Editor Demo", href: "/ai-editor", variant: "secondary" }
+            { label: 'Join the Community', href: '/directory', variant: 'primary' },
+            { label: 'Explore Events', href: '/events', variant: 'secondary' },
+            { label: '✨ AI Editor Demo', href: '/ai-editor', variant: 'secondary' },
           ]}
         />
-        
+
         <div className="bg-slate-50 dark:bg-slate-900 py-20">
           <ContentContainer>
             <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 4 }} />
@@ -115,9 +116,12 @@ export default function HomePage() {
       <>
         <Helmet>
           <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
-          <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
+          <meta
+            name="description"
+            content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities."
+          />
         </Helmet>
-        
+
         <DynamicHero
           title="Uluntu Community"
           subtitle="Kootenay Innovation Hub"
@@ -125,20 +129,20 @@ export default function HomePage() {
           images={heroImages}
           height="large"
           actions={[
-            { label: "Join the Community", href: "/directory", variant: "primary" },
-            { label: "Explore Events", href: "/events", variant: "secondary" },
-            { label: "✨ AI Editor Demo", href: "/ai-editor", variant: "secondary" }
+            { label: 'Join the Community', href: '/directory', variant: 'primary' },
+            { label: 'Explore Events', href: '/events', variant: 'secondary' },
+            { label: '✨ AI Editor Demo', href: '/ai-editor', variant: 'secondary' },
           ]}
         />
-        
+
         <div className="bg-slate-50 dark:bg-slate-900 py-20">
           <ContentContainer>
-            <QueryError 
-              error={error} 
+            <QueryError
+              error={error}
               retry={() => {
                 // Data will automatically refetch with React Query
                 window.location.reload();
-              }} 
+              }}
               message="We couldn't load the community data. Please try again."
             />
           </ContentContainer>
@@ -147,12 +151,14 @@ export default function HomePage() {
     );
   }
 
-  
   return (
     <>
       <Helmet>
         <title>Uluntu Community - Connecting Kootenay Tech Professionals</title>
-        <meta name="description" content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities." />
+        <meta
+          name="description"
+          content="Join the thriving tech community in Nelson and the Kootenays. Connect with professionals, discover events, and explore opportunities."
+        />
       </Helmet>
 
       {/* Dynamic Hero Section */}
@@ -163,47 +169,39 @@ export default function HomePage() {
         images={heroImages}
         height="large"
         actions={[
-          { label: "Join the Community", href: "/directory", variant: "primary" },
-          { label: "Explore Events", href: "/events", variant: "secondary" }
+          { label: 'Join the Community', href: '/directory', variant: 'primary' },
+          { label: 'Explore Events', href: '/events', variant: 'secondary' },
         ]}
       />
-
 
       {/* Feature Cards Section */}
       <section className="py-20 bg-slate-50 dark:bg-slate-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Everything You Need
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-400">
-              Your gateway to the Kootenay tech ecosystem
-            </p>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Everything You Need</h2>
+            <p className="text-xl text-slate-600 dark:text-slate-400">Your gateway to the Kootenay tech ecosystem</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <FeatureCard
-                key={index}
-                {...feature}
-                delay={index * 0.1}
-              />
+              <FeatureCard key={index} {...feature} delay={index * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Lazy load data-heavy sections after initial render */}
-      <Suspense fallback={
-        <div className="py-20 bg-slate-50 dark:bg-slate-900">
-          <ContentContainer>
-            <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
-          </ContentContainer>
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="py-20 bg-slate-50 dark:bg-slate-900">
+            <ContentContainer>
+              <SkeletonGrid count={6} columns={{ sm: 1, md: 2, lg: 3 }} />
+            </ContentContainer>
+          </div>
+        }
+      >
         <DataSections />
       </Suspense>
-
 
       {/* Stats Section with Glass Cards */}
       <section className="py-20 bg-gradient-to-br from-orange-500 to-pink-600">
@@ -215,21 +213,21 @@ export default function HomePage() {
                 <div className="text-white/80">Active Members</div>
               </div>
             </GlassCard>
-            
+
             <GlassCard blur="lg" gradient>
               <div className="p-8 text-center">
                 <div className="text-5xl font-bold text-white mb-2">{stats.companies}+</div>
                 <div className="text-white/80">Tech Companies</div>
               </div>
             </GlassCard>
-            
+
             <GlassCard blur="lg" gradient>
               <div className="p-8 text-center">
                 <div className="text-5xl font-bold text-white mb-2">{stats.events}+</div>
                 <div className="text-white/80">Events</div>
               </div>
             </GlassCard>
-            
+
             <GlassCard blur="lg" gradient>
               <div className="p-8 text-center">
                 <div className="text-5xl font-bold text-white mb-2">{stats.groups}+</div>
@@ -245,14 +243,14 @@ export default function HomePage() {
         title="Ready to Join?"
         description="Become part of the Kootenay's fastest growing tech community"
         background={{
-          src: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=2400&h=800&fit=crop",
-          alt: "Join us background"
+          src: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=2400&h=800&fit=crop',
+          alt: 'Join us background',
         }}
         overlay={{
           gradient: {
             colors: ['from-slate-900/90', 'to-slate-900/60'],
-            direction: 'to-top'
-          }
+            direction: 'to-top',
+          },
         }}
         theme="dark"
         padding="xl"

@@ -9,10 +9,10 @@ interface PublicNewsletterSignupProps {
   showPreferences?: boolean;
 }
 
-const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({ 
+const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
   className = '',
   variant = 'default',
-  showPreferences = false 
+  showPreferences = false,
 }) => {
   const [email, setEmail] = useState('');
   const [preferences, setPreferences] = useState({
@@ -21,14 +21,14 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
       events: true,
       news: true,
       opportunities: true,
-      marketplace: false
-    }
+      marketplace: false,
+    },
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
   const subscribeMutation = useMutation({
-    mutationFn: (data: { email: string; preferences: any }) => 
+    mutationFn: (data: { email: string; preferences: any }) =>
       newsletterSubscriptionApi.subscribe({
         email: data.email,
         preferences: {
@@ -38,10 +38,10 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
             .map(([type]) => type) as any,
           format: 'digest',
           location_filter: true,
-          language: 'en'
-        }
+          language: 'en',
+        },
       }),
-    onSuccess: (result) => {
+    onSuccess: result => {
       if (result) {
         setSubmitted(true);
         setEmail('');
@@ -50,10 +50,10 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
         setError('Failed to subscribe. Please try again.');
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Newsletter subscription error:', error);
       setError('Failed to subscribe. Please try again.');
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,13 +75,8 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
         {submitted ? (
           <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
             <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
-            <p className="text-sm text-green-700 dark:text-green-400">
-              Check your email to confirm your subscription!
-            </p>
-            <button 
-              onClick={resetForm}
-              className="mt-2 text-xs text-green-600 dark:text-green-400 hover:underline"
-            >
+            <p className="text-sm text-green-700 dark:text-green-400">Check your email to confirm your subscription!</p>
+            <button onClick={resetForm} className="mt-2 text-xs text-green-600 dark:text-green-400 hover:underline">
               Subscribe another email
             </button>
           </div>
@@ -90,7 +85,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Your email"
               className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg
                        bg-white dark:bg-slate-700 text-slate-900 dark:text-white
@@ -123,34 +118,27 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
         {submitted ? (
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-8">
             <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-green-900 dark:text-green-300 mb-2">
-              Almost there!
-            </h3>
+            <h3 className="text-xl font-semibold text-green-900 dark:text-green-300 mb-2">Almost there!</h3>
             <p className="text-green-700 dark:text-green-400 mb-4">
               We've sent a confirmation email to your inbox. Click the link to complete your subscription.
             </p>
-            <button 
-              onClick={resetForm}
-              className="text-green-600 dark:text-green-400 hover:underline"
-            >
+            <button onClick={resetForm} className="text-green-600 dark:text-green-400 hover:underline">
               Subscribe another email
             </button>
           </div>
         ) : (
           <div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-              Stay Updated
-            </h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Stay Updated</h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
               Get the latest from the Nelson tech community - events, opportunities, and news.
             </p>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   placeholder="Enter your email address"
                   className="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg
                            bg-white dark:bg-slate-700 text-slate-900 dark:text-white
@@ -166,30 +154,30 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                   {subscribeMutation.isPending ? 'Subscribing...' : 'Subscribe'}
                 </button>
               </div>
-              
+
               {showPreferences && (
                 <div className="text-left max-w-md mx-auto mt-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <h4 className="font-medium text-slate-900 dark:text-white mb-3">
-                    What would you like to receive?
-                  </h4>
+                  <h4 className="font-medium text-slate-900 dark:text-white mb-3">What would you like to receive?</h4>
                   <div className="space-y-2 text-sm">
                     {[
                       { key: 'events', label: 'Events & Meetups' },
                       { key: 'news', label: 'Community News' },
                       { key: 'opportunities', label: 'Job Opportunities' },
-                      { key: 'marketplace', label: 'Marketplace Items' }
+                      { key: 'marketplace', label: 'Marketplace Items' },
                     ].map(({ key, label }) => (
                       <label key={key} className="flex items-center">
                         <input
                           type="checkbox"
                           checked={preferences.contentTypes[key as keyof typeof preferences.contentTypes]}
-                          onChange={(e) => setPreferences({
-                            ...preferences,
-                            contentTypes: {
-                              ...preferences.contentTypes,
-                              [key]: e.target.checked
-                            }
-                          })}
+                          onChange={e =>
+                            setPreferences({
+                              ...preferences,
+                              contentTypes: {
+                                ...preferences.contentTypes,
+                                [key]: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-slate-300 dark:border-slate-600 text-orange-500
                                    focus:ring-orange-500 dark:bg-slate-700 mr-2"
                         />
@@ -198,15 +186,15 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                     ))}
                   </div>
                   <div className="mt-3">
-                    <label className="block text-slate-700 dark:text-slate-300 mb-1">
-                      How often?
-                    </label>
+                    <label className="block text-slate-700 dark:text-slate-300 mb-1">How often?</label>
                     <select
                       value={preferences.frequency}
-                      onChange={(e) => setPreferences({
-                        ...preferences,
-                        frequency: e.target.value as 'daily' | 'weekly' | 'monthly'
-                      })}
+                      onChange={e =>
+                        setPreferences({
+                          ...preferences,
+                          frequency: e.target.value as 'daily' | 'weekly' | 'monthly',
+                        })
+                      }
                       className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded
                                bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                                focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -218,7 +206,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                 </div>
               )}
             </form>
-            
+
             {error && (
               <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <p className="text-sm text-red-700 dark:text-red-400 flex items-center justify-center gap-2">
@@ -227,7 +215,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                 </p>
               </div>
             )}
-            
+
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-4">
               We respect your privacy. Unsubscribe at any time.
             </p>
@@ -246,7 +234,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
             <Mail className="h-6 w-6" />
           </div>
         </div>
-        
+
         {submitted ? (
           <div>
             <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
@@ -254,10 +242,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
             <p className="text-white/80 mb-4">
               We've sent a confirmation link to your email address. Click it to complete your subscription.
             </p>
-            <button 
-              onClick={resetForm}
-              className="text-white/80 hover:text-white underline"
-            >
+            <button onClick={resetForm} className="text-white/80 hover:text-white underline">
               Subscribe another email
             </button>
           </div>
@@ -267,12 +252,12 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
             <p className="text-white/80 mb-6">
               Get the latest updates from the Nelson tech community, including events, job opportunities, and news.
             </p>
-            
+
             <form onSubmit={handleSubmit} className="flex gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white 
                          placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
@@ -287,7 +272,7 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                 {subscribeMutation.isPending ? 'Subscribing...' : 'Subscribe'}
               </button>
             </form>
-            
+
             {error && (
               <div className="mt-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
                 <p className="text-sm text-red-200 flex items-center justify-center gap-2">
@@ -296,9 +281,10 @@ const PublicNewsletterSignup: React.FC<PublicNewsletterSignupProps> = ({
                 </p>
               </div>
             )}
-            
+
             <p className="text-xs text-white/60 mt-4">
-              We respect your privacy. Your email will only be used for community communications. Unsubscribe at any time.
+              We respect your privacy. Your email will only be used for community communications. Unsubscribe at any
+              time.
             </p>
           </div>
         )}

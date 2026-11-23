@@ -9,29 +9,29 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
       order: jest.fn().mockReturnThis(),
-    }))
-  }
+    })),
+  },
 }));
 
 jest.mock('@/hooks/useSettings', () => ({
   useEnabledFeatures: () => ({
     features: {},
-    isFeatureEnabled: jest.fn(() => false)
-  })
+    isFeatureEnabled: jest.fn(() => false),
+  }),
 }));
 
 jest.mock('@/shared/contexts/SessionContextWithRedux', () => ({
   useSession: () => ({
     session: null,
-    user: null
-  })
+    user: null,
+  }),
 }));
 
 describe('Menu System Fixes', () => {
   it('should render MenuProvider and NavigationProvider without warnings', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    
+
     const TestComponent = () => (
       <MenuProvider>
         <NavigationProvider>
@@ -39,18 +39,14 @@ describe('Menu System Fixes', () => {
         </NavigationProvider>
       </MenuProvider>
     );
-    
+
     const { container } = render(<TestComponent />);
-    
+
     // Check that no errors or warnings were logged
-    expect(consoleSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining('Cannot update a component')
-    );
-    
-    expect(warnSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining('Unknown menu position')
-    );
-    
+    expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('Cannot update a component'));
+
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('Unknown menu position'));
+
     // Clean up
     consoleSpy.mockRestore();
     warnSpy.mockRestore();

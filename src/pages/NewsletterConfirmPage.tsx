@@ -8,7 +8,7 @@ const NewsletterConfirmPage: React.FC = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'already_confirmed'>('loading');
   const [message, setMessage] = useState('');
-  
+
   const token = searchParams.get('token');
   const action = searchParams.get('action'); // 'confirm' or 'unsubscribe'
 
@@ -104,29 +104,25 @@ const NewsletterConfirmPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className={`${getBackgroundColor()} rounded-lg p-8 text-center shadow-lg border border-slate-200 dark:border-slate-700`}>
+        <div
+          className={`${getBackgroundColor()} rounded-lg p-8 text-center shadow-lg border border-slate-200 dark:border-slate-700`}
+        >
           {/* Icon */}
-          <div className="mb-6">
-            {getIcon()}
-          </div>
+          <div className="mb-6">{getIcon()}</div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-            {getTitle()}
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{getTitle()}</h1>
 
           {/* Message */}
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            {message}
-          </p>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">{message}</p>
 
           {/* Additional Info for Success */}
-          {(status === 'success' && action !== 'unsubscribe') && (
+          {status === 'success' && action !== 'unsubscribe' && (
             <div className="mb-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600">
               <Mail className="w-6 h-6 text-orange-500 mx-auto mb-2" />
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                You'll receive our newsletter updates based on your preferences. 
-                You can update your preferences or unsubscribe at any time from your account settings.
+                You'll receive our newsletter updates based on your preferences. You can update your preferences or
+                unsubscribe at any time from your account settings.
               </p>
             </div>
           )}
@@ -155,9 +151,7 @@ const NewsletterConfirmPage: React.FC = () => {
 
           {/* Footer */}
           <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-600">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Uluntu Newsletter
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Uluntu Newsletter</p>
           </div>
         </div>
       </div>

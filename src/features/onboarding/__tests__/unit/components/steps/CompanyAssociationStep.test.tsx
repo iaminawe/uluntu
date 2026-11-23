@@ -14,7 +14,7 @@ const mockJoinCompany = joinCompany as jest.MockedFunction<typeof joinCompany>;
 describe('CompanyAssociationStep', () => {
   const mockOnNext = jest.fn();
   const mockOnSkip = jest.fn();
-  
+
   const defaultProps = {
     onNext: mockOnNext,
     onSkip: mockOnSkip,
@@ -110,7 +110,7 @@ describe('CompanyAssociationStep', () => {
       renderComponent();
 
       await userEvent.type(screen.getByLabelText('Search Companies'), 'Tech');
-      
+
       await waitFor(() => {
         expect(screen.getByText('Tech Corp Inc.')).toBeInTheDocument();
       });
@@ -130,9 +130,9 @@ describe('CompanyAssociationStep', () => {
 
       await userEvent.type(screen.getByLabelText('Search Companies'), 'Tech');
       await waitFor(() => screen.getByText('Tech Corp Inc.'));
-      
+
       fireEvent.click(screen.getByTestId('select-company-1'));
-      
+
       // Try to join without filling role
       fireEvent.click(screen.getByTestId('join-company-button'));
 
@@ -142,10 +142,10 @@ describe('CompanyAssociationStep', () => {
     });
 
     it('should join company with employee details', async () => {
-      const mockCompany = { 
-        id: '1', 
+      const mockCompany = {
+        id: '1',
         name: 'Tech Corp Inc.',
-        allow_direct_join: true 
+        allow_direct_join: true,
       };
       mockSearchCompanies.mockResolvedValue([mockCompany]);
       mockJoinCompany.mockResolvedValue({ success: true, verified: true });
@@ -160,7 +160,7 @@ describe('CompanyAssociationStep', () => {
       // Fill employee details
       await userEvent.type(screen.getByLabelText('Your Role'), 'Software Engineer');
       await userEvent.type(screen.getByLabelText('Department (optional)'), 'Engineering');
-      
+
       // Join company
       fireEvent.click(screen.getByTestId('join-company-button'));
 
@@ -181,17 +181,17 @@ describe('CompanyAssociationStep', () => {
     });
 
     it('should handle verification required companies', async () => {
-      const mockCompany = { 
-        id: '1', 
+      const mockCompany = {
+        id: '1',
         name: 'Tech Corp Inc.',
         allow_direct_join: false,
-        verification_required: true 
+        verification_required: true,
       };
       mockSearchCompanies.mockResolvedValue([mockCompany]);
-      mockJoinCompany.mockResolvedValue({ 
-        success: true, 
+      mockJoinCompany.mockResolvedValue({
+        success: true,
         verified: false,
-        verificationPending: true 
+        verificationPending: true,
       });
 
       renderComponent();
@@ -202,9 +202,7 @@ describe('CompanyAssociationStep', () => {
       fireEvent.click(screen.getByTestId('select-company-1'));
 
       // Should show verification notice
-      expect(screen.getByTestId('verification-notice')).toHaveTextContent(
-        'This company requires verification'
-      );
+      expect(screen.getByTestId('verification-notice')).toHaveTextContent('This company requires verification');
 
       // Fill and submit
       await userEvent.type(screen.getByLabelText('Your Role'), 'Developer');
@@ -212,7 +210,7 @@ describe('CompanyAssociationStep', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('verification-message')).toHaveTextContent(
-          'Verification request sent. You\'ll be notified once approved.'
+          "Verification request sent. You'll be notified once approved."
         );
       });
     });
@@ -251,9 +249,7 @@ describe('CompanyAssociationStep', () => {
       fireEvent.click(screen.getByTestId('create-company-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('company-email-error')).toHaveTextContent(
-          'Please enter a valid email address'
-        );
+        expect(screen.getByTestId('company-email-error')).toHaveTextContent('Please enter a valid email address');
       });
     });
 
@@ -262,17 +258,15 @@ describe('CompanyAssociationStep', () => {
       fireEvent.blur(screen.getByLabelText('Website (optional)'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('website-error')).toHaveTextContent(
-          'Please enter a valid URL'
-        );
+        expect(screen.getByTestId('website-error')).toHaveTextContent('Please enter a valid URL');
       });
     });
 
     it('should check for duplicate companies', async () => {
-      mockCreateCompany.mockRejectedValue({ 
+      mockCreateCompany.mockRejectedValue({
         code: 'COMPANY_EXISTS',
         message: 'A company with this name or email already exists',
-        existingId: 'existing-123'
+        existingId: 'existing-123',
       });
 
       // Fill form
@@ -294,7 +288,7 @@ describe('CompanyAssociationStep', () => {
 
     it('should upload company logo', async () => {
       const logoFile = new File(['logo'], 'logo.png', { type: 'image/png' });
-      
+
       const fileInput = screen.getByLabelText('Company Logo (optional)');
       await userEvent.upload(fileInput, logoFile);
 
@@ -318,10 +312,7 @@ describe('CompanyAssociationStep', () => {
       await userEvent.selectOptions(screen.getByLabelText('Industry'), 'technology');
       await userEvent.selectOptions(screen.getByLabelText('Company Size'), '1-10');
       await userEvent.type(screen.getByLabelText('Location'), 'Vancouver, BC');
-      await userEvent.type(
-        screen.getByLabelText('Description (optional)'), 
-        'Innovative tech startup'
-      );
+      await userEvent.type(screen.getByLabelText('Description (optional)'), 'Innovative tech startup');
 
       fireEvent.click(screen.getByTestId('create-company-button'));
 
@@ -336,7 +327,7 @@ describe('CompanyAssociationStep', () => {
           description: 'Innovative tech startup',
           logo: undefined,
         });
-        
+
         expect(mockOnNext).toHaveBeenCalledWith({
           action: 'created',
           companyId: 'new-123',
@@ -399,9 +390,7 @@ describe('CompanyAssociationStep', () => {
 
   describe('Loading States', () => {
     it('should show loading during company search', async () => {
-      mockSearchCompanies.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 1000))
-      );
+      mockSearchCompanies.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       renderComponent();
 
@@ -411,9 +400,7 @@ describe('CompanyAssociationStep', () => {
     });
 
     it('should show loading during company creation', async () => {
-      mockCreateCompany.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 1000))
-      );
+      mockCreateCompany.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       renderComponent();
       fireEvent.click(screen.getByTestId('create-new-tab'));
@@ -441,16 +428,12 @@ describe('CompanyAssociationStep', () => {
       await userEvent.type(screen.getByLabelText('Search Companies'), 'Tech');
 
       await waitFor(() => {
-        expect(screen.getByTestId('search-error')).toHaveTextContent(
-          'Failed to search companies. Please try again.'
-        );
+        expect(screen.getByTestId('search-error')).toHaveTextContent('Failed to search companies. Please try again.');
       });
     });
 
     it('should handle join errors', async () => {
-      mockSearchCompanies.mockResolvedValue([
-        { id: '1', name: 'Tech Corp' }
-      ]);
+      mockSearchCompanies.mockResolvedValue([{ id: '1', name: 'Tech Corp' }]);
       mockJoinCompany.mockRejectedValue(new Error('Failed to join'));
 
       renderComponent();
@@ -465,9 +448,7 @@ describe('CompanyAssociationStep', () => {
       fireEvent.click(screen.getByTestId('join-company-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('join-error')).toHaveTextContent(
-          'Failed to join company. Please try again.'
-        );
+        expect(screen.getByTestId('join-error')).toHaveTextContent('Failed to join company. Please try again.');
       });
     });
   });

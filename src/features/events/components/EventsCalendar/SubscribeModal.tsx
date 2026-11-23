@@ -10,21 +10,22 @@ interface SubscribeModalProps {
 export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string>('all');
-  
+
   const handleCopyLink = (link: string) => {
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
-  
+
   const handleDownloadICalendar = () => {
-    const filteredEvents = selectedOption === 'all' 
-      ? events 
-      : selectedOption === 'upcoming' 
-        ? events.filter(event => new Date(event.date) >= new Date())
-        : events.filter(event => new Date(event.date) < new Date());
-    
+    const filteredEvents =
+      selectedOption === 'all'
+        ? events
+        : selectedOption === 'upcoming'
+          ? events.filter(event => new Date(event.date) >= new Date())
+          : events.filter(event => new Date(event.date) < new Date());
+
     const icalContent = generateICalendar(filteredEvents);
     const blob = new Blob([icalContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
@@ -34,24 +35,26 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
     link.click();
     document.body.removeChild(link);
   };
-  
+
   const getGoogleCalendarUrl = () => {
-    const filteredEvents = selectedOption === 'all' 
-      ? events 
-      : selectedOption === 'upcoming' 
-        ? events.filter(event => new Date(event.date) >= new Date())
-        : events.filter(event => new Date(event.date) < new Date());
-    
+    const filteredEvents =
+      selectedOption === 'all'
+        ? events
+        : selectedOption === 'upcoming'
+          ? events.filter(event => new Date(event.date) >= new Date())
+          : events.filter(event => new Date(event.date) < new Date());
+
     return generateGoogleCalendarUrl(filteredEvents[0]); // For multiple events, we'd need to create multiple links
   };
-  
+
   const getOutlookCalendarUrl = () => {
-    const filteredEvents = selectedOption === 'all' 
-      ? events 
-      : selectedOption === 'upcoming' 
-        ? events.filter(event => new Date(event.date) >= new Date())
-        : events.filter(event => new Date(event.date) < new Date());
-    
+    const filteredEvents =
+      selectedOption === 'all'
+        ? events
+        : selectedOption === 'upcoming'
+          ? events.filter(event => new Date(event.date) >= new Date())
+          : events.filter(event => new Date(event.date) < new Date());
+
     return generateOutlookCalendarUrl(filteredEvents[0]); // For multiple events, we'd need to create multiple links
   };
 
@@ -60,23 +63,29 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Subscribe to Calendar</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Select events to include:
           </label>
           <select
             value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
+            onChange={e => setSelectedOption(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white"
           >
             <option value="all">All Events</option>
@@ -84,10 +93,12 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
             <option value="past">Past Events Only</option>
           </select>
         </div>
-        
+
         <div className="space-y-4">
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-            <h3 className="font-medium text-slate-900 dark:text-white mb-2">iCalendar (Apple Calendar, Outlook, etc.)</h3>
+            <h3 className="font-medium text-slate-900 dark:text-white mb-2">
+              iCalendar (Apple Calendar, Outlook, etc.)
+            </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
               Download an .ics file to import into your calendar application.
             </p>
@@ -98,7 +109,7 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
               Download .ics File
             </button>
           </div>
-          
+
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
             <h3 className="font-medium text-slate-900 dark:text-white mb-2">Google Calendar</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
@@ -124,7 +135,7 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
               </button>
             </div>
           </div>
-          
+
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
             <h3 className="font-medium text-slate-900 dark:text-white mb-2">Outlook Calendar</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
@@ -151,7 +162,7 @@ export const SubscribeModal: React.FC<SubscribeModalProps> = ({ events, onClose 
             </div>
           </div>
         </div>
-        
+
         {copied && (
           <div className="mt-4 p-2 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 text-sm rounded-md">
             Link copied to clipboard!

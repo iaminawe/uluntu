@@ -43,13 +43,7 @@ describe('ThemeManager', () => {
 
   describe('Rendering', () => {
     it('should render theme manager with all sections', () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       expect(screen.getByText('Theme Manager')).toBeInTheDocument();
       expect(screen.getByText('Preset Themes')).toBeInTheDocument();
@@ -58,13 +52,7 @@ describe('ThemeManager', () => {
     });
 
     it('should display all preset themes', () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       themePresets.forEach(preset => {
         expect(screen.getByText(preset.name)).toBeInTheDocument();
@@ -73,13 +61,7 @@ describe('ThemeManager', () => {
     });
 
     it('should highlight the selected theme', () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const selectedThemeButton = screen.getByText(defaultTheme.name).closest('button');
       expect(selectedThemeButton).toHaveClass('border-blue-500');
@@ -89,13 +71,7 @@ describe('ThemeManager', () => {
   describe('Theme Selection', () => {
     it('should change theme when preset is clicked', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const darkTheme = themePresets.find(t => t.slug === 'dark-professional')!;
       await user.click(screen.getByText(darkTheme.name));
@@ -104,17 +80,11 @@ describe('ThemeManager', () => {
     });
 
     it('should display theme colors in preview', () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const colorPreview = screen.getByText(defaultTheme.name).closest('button');
       const colorSwatches = within(colorPreview!).getAllByRole('presentation');
-      
+
       expect(colorSwatches.length).toBeGreaterThan(0);
     });
   });
@@ -122,13 +92,7 @@ describe('ThemeManager', () => {
   describe('Color Editing', () => {
     it('should enable color editing when Edit Colors is clicked', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const editButton = screen.getByText('Edit Colors');
       await user.click(editButton);
@@ -139,13 +103,7 @@ describe('ThemeManager', () => {
 
     it('should update theme when color is changed', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       // Enable editing
       await user.click(screen.getByText('Edit Colors'));
@@ -165,13 +123,7 @@ describe('ThemeManager', () => {
 
     it('should validate hex color input', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       await user.click(screen.getByText('Edit Colors'));
 
@@ -187,13 +139,7 @@ describe('ThemeManager', () => {
       jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
       jest.spyOn(mockLink, 'click');
 
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const exportButton = screen.getByLabelText('Export theme');
       await user.click(exportButton);
@@ -212,13 +158,7 @@ describe('ThemeManager', () => {
         name: 'Imported Theme',
       };
 
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File([JSON.stringify(importedTheme)], 'theme.json', {
@@ -253,13 +193,7 @@ describe('ThemeManager', () => {
     });
 
     it('should handle invalid theme file', async () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(['invalid json'], 'theme.json', {
@@ -289,13 +223,7 @@ describe('ThemeManager', () => {
   describe('Theme Saving', () => {
     it('should save theme when save button is clicked', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       await user.click(screen.getByText('Save Theme'));
 
@@ -309,13 +237,7 @@ describe('ThemeManager', () => {
       const user = userEvent.setup();
       mockOnSave.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const saveButton = screen.getByText('Save Theme');
       await user.click(saveButton);
@@ -332,13 +254,7 @@ describe('ThemeManager', () => {
       const user = userEvent.setup();
       mockOnSave.mockRejectedValueOnce(new Error('Save failed'));
 
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       await user.click(screen.getByText('Save Theme'));
 
@@ -351,32 +267,20 @@ describe('ThemeManager', () => {
   describe('Preview Functionality', () => {
     it('should toggle preview visibility', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       const previewToggle = screen.getByLabelText('Hide preview');
       await user.click(previewToggle);
 
       expect(screen.queryByText('Live Preview')).not.toBeInTheDocument();
-      
+
       await user.click(screen.getByLabelText('Show preview'));
       expect(screen.getByText('Live Preview')).toBeInTheDocument();
     });
 
     it('should switch between device previews', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       await user.click(screen.getByLabelText('Mobile preview'));
       expect(screen.getByLabelText('Mobile preview')).toHaveClass('bg-white');
@@ -402,13 +306,7 @@ describe('ThemeManager', () => {
         },
       };
 
-      render(
-        <ThemeManager
-          currentTheme={poorContrastTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={poorContrastTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       expect(screen.getByText('Accessibility Issues')).toBeInTheDocument();
       expect(screen.getByText(/contrast ratio.*below WCAG/)).toBeInTheDocument();
@@ -416,13 +314,7 @@ describe('ThemeManager', () => {
 
     it('should be keyboard navigable', async () => {
       const user = userEvent.setup();
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       // Tab through interactive elements
       await user.tab();
@@ -437,13 +329,7 @@ describe('ThemeManager', () => {
     });
 
     it('should have proper ARIA labels', () => {
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       expect(screen.getByLabelText('Import theme')).toBeInTheDocument();
       expect(screen.getByLabelText('Export theme')).toBeInTheDocument();
@@ -460,19 +346,11 @@ describe('ThemeManager', () => {
       };
       Object.assign(navigator, { clipboard: mockClipboard });
 
-      render(
-        <ThemeManager
-          currentTheme={defaultTheme}
-          onThemeChange={mockOnThemeChange}
-          onSave={mockOnSave}
-        />
-      );
+      render(<ThemeManager currentTheme={defaultTheme} onThemeChange={mockOnThemeChange} onSave={mockOnSave} />);
 
       await user.click(screen.getByLabelText('Copy CSS variables'));
 
-      expect(mockClipboard.writeText).toHaveBeenCalledWith(
-        expect.stringContaining(':root {')
-      );
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(expect.stringContaining(':root {'));
       expect(toast.success).toHaveBeenCalledWith('CSS variables copied to clipboard');
     });
   });

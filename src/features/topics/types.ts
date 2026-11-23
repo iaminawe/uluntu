@@ -26,16 +26,8 @@ export interface TopicWithAnalytics extends Topic {
   popularityPercentage: number;
 }
 
-export type TopicEntityType = 
-  | 'event'
-  | 'news'
-  | 'resource'
-  | 'group'
-  | 'marketplace'
-  | 'opportunity'
-  | 'company'
-  | 'member'
-  | 'page';
+export type TopicEntityType =
+  'event' | 'news' | 'resource' | 'group' | 'marketplace' | 'opportunity' | 'company' | 'member' | 'page';
 
 export interface TopicFormData {
   name: string;

@@ -24,17 +24,13 @@ const GroupHeader = ({ group }: GroupHeaderProps) => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                {group.name}
-              </h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{group.name}</h1>
               <div className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-sm text-slate-700 dark:text-slate-300">
                 {getVisibilityIcon(group.visibility)}
                 <span className="capitalize">{group.visibility}</span>
               </div>
             </div>
-            <p className="text-slate-600 dark:text-slate-300 mt-1">
-              {group.memberCount} members
-            </p>
+            <p className="text-slate-600 dark:text-slate-300 mt-1">{group.memberCount} members</p>
           </div>
 
           <div className="flex mt-4 md:mt-0">

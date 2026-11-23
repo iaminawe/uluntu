@@ -47,66 +47,69 @@ const eventsUISlice = createSlice({
       // Reset pagination when filters change
       state.pagination.page = 1;
     },
-    
+
     updateFilters(state, action: PayloadAction<Partial<EventFilters>>) {
       state.filters = { ...state.filters, ...action.payload };
       // Reset pagination when filters change
       state.pagination.page = 1;
     },
-    
+
     clearFilters(state) {
       state.filters = {};
       state.pagination.page = 1;
     },
-    
+
     // Selection management
     setSelectedEvents(state, action: PayloadAction<string[]>) {
       state.selectedEvents = action.payload;
     },
-    
+
     toggleEventSelection(state, action: PayloadAction<string>) {
       const eventId = action.payload;
       const isSelected = state.selectedEvents.includes(eventId);
-      
+
       if (isSelected) {
         state.selectedEvents = state.selectedEvents.filter(id => id !== eventId);
       } else {
         state.selectedEvents.push(eventId);
       }
     },
-    
+
     selectAllEvents(state, action: PayloadAction<string[]>) {
       state.selectedEvents = action.payload;
     },
-    
+
     clearSelection(state) {
       state.selectedEvents = [];
     },
-    
+
     // View preferences
     setViewMode(state, action: PayloadAction<'grid' | 'list' | 'calendar'>) {
       state.viewMode = action.payload;
     },
-    
+
     setCalendarView(state, action: PayloadAction<'month' | 'week' | 'day'>) {
       state.calendarView = action.payload;
     },
-    
-    setSorting(state, action: PayloadAction<{ sortBy: 'date' | 'name' | 'created_at'; sortDirection: 'asc' | 'desc' }>) {
+
+    setSorting(
+      state,
+      action: PayloadAction<{ sortBy: 'date' | 'name' | 'created_at'; sortDirection: 'asc' | 'desc' }>
+    ) {
       state.sortBy = action.payload.sortBy;
       state.sortDirection = action.payload.sortDirection;
     },
-    
+
     // Pagination
     setPage(state, action: PayloadAction<number>) {
       state.pagination.page = action.payload;
     },
-    
+
     setItemsPerPage(state, action: PayloadAction<number>) {
       state.pagination.itemsPerPage = action.payload;
       state.pagination.page = 1; // Reset to first page
     },
-    
+
     // Bulk actions
     resetUIState(state) {
       return initialState;
@@ -146,8 +149,6 @@ export const selectEventsSorting = (state: RootState) => ({
 export const selectEventsPagination = (state: RootState) => state.eventsUI.pagination;
 
 // Computed selectors
-export const selectHasFilters = (state: RootState) => 
-  Object.keys(state.eventsUI.filters).length > 0;
+export const selectHasFilters = (state: RootState) => Object.keys(state.eventsUI.filters).length > 0;
 
-export const selectHasSelection = (state: RootState) => 
-  state.eventsUI.selectedEvents.length > 0;
+export const selectHasSelection = (state: RootState) => state.eventsUI.selectedEvents.length > 0;

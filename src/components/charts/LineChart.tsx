@@ -25,77 +25,79 @@ const LineChart: React.FC<LineChartProps> = ({
   color = '#3b82f6',
   height = 200,
   showGrid = true,
-  showTooltip = true
+  showTooltip = true,
 }) => {
   const [tooltip, setTooltip] = useState<TooltipState>({
     visible: false,
     x: 0,
     y: 0,
     value: 0,
-    label: ''
+    label: '',
   });
   const chartRef = useRef<HTMLDivElement>(null);
-  
+
   const maxValue = Math.max(...data, 1);
   const minValue = Math.min(...data, 0);
   const range = maxValue - minValue || 1;
-  
+
   // Calculate SVG path
-  const pathData = data.map((value, index) => {
-    const x = (index / (data.length - 1)) * 100;
-    const y = 100 - ((value - minValue) / range) * 100;
-    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-  }).join(' ');
+  const pathData = data
+    .map((value, index) => {
+      const x = (index / (data.length - 1)) * 100;
+      const y = 100 - ((value - minValue) / range) * 100;
+      return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+    })
+    .join(' ');
 
   // Calculate points for hover detection
   const points = data.map((value, index) => ({
     x: (index / (data.length - 1)) * 100,
     y: 100 - ((value - minValue) / range) * 100,
     value,
-    label: labels[index]
+    label: labels[index],
   }));
 
-  const handlePointMouseEnter = (point: typeof points[0]) => {
+  const handlePointMouseEnter = (point: (typeof points)[0]) => {
     if (!showTooltip || !chartRef.current) return;
-    
+
     const rect = chartRef.current.getBoundingClientRect();
     const x = (point.x / 100) * rect.width;
     const y = (point.y / 100) * rect.height;
-    
+
     // Parse the date from label and create full date string with month name
     const currentDate = new Date();
     let fullDateLabel = point.label;
-    
+
     try {
       // Try to detect if it's just a day number and add current month/year
       if (/^\d{1,2}$/.test(point.label)) {
         const day = parseInt(point.label);
         const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-        fullDateLabel = date.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          month: 'short', 
-          day: 'numeric' 
+        fullDateLabel = date.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
         });
       } else if (/^\w{3}\s\d{1,2}$/.test(point.label)) {
         // For labels like "Mon 15", add current year
         const date = new Date(`${point.label}, ${currentDate.getFullYear()}`);
-        fullDateLabel = date.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          month: 'short', 
-          day: 'numeric' 
+        fullDateLabel = date.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
         });
       }
     } catch (e) {
       // If parsing fails, use original label
       fullDateLabel = point.label;
     }
-    
+
     setTooltip({
       visible: true,
       x: x + rect.left,
       y: y + rect.top - 40, // Position above the point
       value: point.value,
-      label: fullDateLabel
+      label: fullDateLabel,
     });
   };
 
@@ -105,13 +107,9 @@ const LineChart: React.FC<LineChartProps> = ({
 
   return (
     <div className="w-full">
-      {title && (
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-          {title}
-        </h3>
-      )}
-      
-      <div className="relative" style={{ height: height + 60 }}>        
+      {title && <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{title}</h3>}
+
+      <div className="relative" style={{ height: height + 60 }}>
         {/* Tooltip */}
         {tooltip.visible && (
           <div
@@ -119,23 +117,17 @@ const LineChart: React.FC<LineChartProps> = ({
             style={{
               left: tooltip.x,
               top: tooltip.y,
-              transform: 'translateX(-50%)'
+              transform: 'translateX(-50%)',
             }}
           >
             <div className="font-medium">{tooltip.label}</div>
             <div>{tooltip.value.toLocaleString()}</div>
           </div>
         )}
-        
+
         {/* Chart container */}
         <div ref={chartRef} className="relative" style={{ height }}>
-          <svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 100 100"
-            className="overflow-visible"
-            preserveAspectRatio="none"
-          >
+          <svg width="100%" height="100%" viewBox="0 0 100 100" className="overflow-visible" preserveAspectRatio="none">
             {/* Grid lines */}
             {showGrid && (
               <g className="stroke-gray-200 dark:stroke-gray-700" strokeWidth="0.5" fill="none">
@@ -150,24 +142,14 @@ const LineChart: React.FC<LineChartProps> = ({
                 })}
               </g>
             )}
-            
+
             {/* Area fill */}
-            <path
-              d={`${pathData} L 100 100 L 0 100 Z`}
-              fill={color}
-              fillOpacity="0.1"
-            />
-            
+            <path d={`${pathData} L 100 100 L 0 100 Z`} fill={color} fillOpacity="0.1" />
+
             {/* Line */}
-            <path
-              d={pathData}
-              fill="none"
-              stroke={color}
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-            />
+            <path d={pathData} fill="none" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
           </svg>
-          
+
           {/* HTML-based data points for perfect circles */}
           {points.map((point, index) => (
             <div
@@ -176,7 +158,7 @@ const LineChart: React.FC<LineChartProps> = ({
               style={{
                 left: `${point.x}%`,
                 top: `${point.y}%`,
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
               }}
             >
               {/* Hover area */}
@@ -186,7 +168,7 @@ const LineChart: React.FC<LineChartProps> = ({
                   width: '16px',
                   height: '16px',
                   left: '-8px',
-                  top: '-8px'
+                  top: '-8px',
                 }}
                 onMouseEnter={() => handlePointMouseEnter(point)}
                 onMouseLeave={handlePointMouseLeave}
@@ -199,34 +181,41 @@ const LineChart: React.FC<LineChartProps> = ({
                   height: '5px',
                   borderRadius: '50%',
                   backgroundColor: color,
-                  filter: tooltip.visible && tooltip.label === point.label && tooltip.value === point.value 
-                    ? 'brightness(1.2)' 
-                    : 'none'
+                  filter:
+                    tooltip.visible && tooltip.label === point.label && tooltip.value === point.value
+                      ? 'brightness(1.2)'
+                      : 'none',
                 }}
               />
             </div>
           ))}
         </div>
-        
+
         {/* X-axis labels */}
         <div className="flex justify-between mt-2 px-1">
           {labels.map((label, index) => (
             <span
               key={index}
               className="text-xs text-gray-600 dark:text-gray-400 text-center"
-              style={{ 
+              style={{
                 width: `${100 / labels.length}%`,
-                fontSize: labels.length > 10 ? '10px' : '12px'
+                fontSize: labels.length > 10 ? '10px' : '12px',
               }}
             >
               {label}
             </span>
           ))}
         </div>
-        
+
         {/* Y-axis indicators */}
         <div className="absolute left-0 top-0 h-full flex flex-col justify-between py-1 -ml-12">
-          {[maxValue, Math.round(maxValue * 0.75), Math.round(maxValue * 0.5), Math.round(maxValue * 0.25), minValue].map((value, index) => (
+          {[
+            maxValue,
+            Math.round(maxValue * 0.75),
+            Math.round(maxValue * 0.5),
+            Math.round(maxValue * 0.25),
+            minValue,
+          ].map((value, index) => (
             <span key={index} className="text-xs text-gray-600 dark:text-gray-400">
               {value.toLocaleString()}
             </span>

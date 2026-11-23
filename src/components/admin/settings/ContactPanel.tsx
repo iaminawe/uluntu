@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Mail, 
-  Phone,
-  Globe,
-  MapPin,
-  Save,
-  RefreshCw,
-  Plus,
-  Trash2,
-  ExternalLink,
-  Info
-} from 'lucide-react';
+import { Mail, Phone, Globe, MapPin, Save, RefreshCw, Plus, Trash2, ExternalLink, Info } from 'lucide-react';
 import type { ApplicationSetting, UpdateSettingRequest } from '@/types/settings';
 import { useAdminSettings } from '@/hooks/useSettings';
 
@@ -56,7 +45,7 @@ const socialPlatforms = [
   { key: 'youtube', label: 'YouTube', icon: '📺', placeholder: 'https://youtube.com/c/yourchannel' },
   { key: 'github', label: 'GitHub', icon: '💻', placeholder: 'https://github.com/yourusername' },
   { key: 'discord', label: 'Discord', icon: '🎮', placeholder: 'https://discord.gg/yourinvite' },
-  { key: 'slack', label: 'Slack', icon: '💬', placeholder: 'https://yourworkspace.slack.com' }
+  { key: 'slack', label: 'Slack', icon: '💬', placeholder: 'https://yourworkspace.slack.com' },
 ];
 
 const weekDays = [
@@ -66,13 +55,10 @@ const weekDays = [
   { key: 'thursday', label: 'Thursday' },
   { key: 'friday', label: 'Friday' },
   { key: 'saturday', label: 'Saturday' },
-  { key: 'sunday', label: 'Sunday' }
+  { key: 'sunday', label: 'Sunday' },
 ];
 
-export const ContactPanel: React.FC<ContactPanelProps> = ({ 
-  settings, 
-  onRefresh 
-}) => {
+export const ContactPanel: React.FC<ContactPanelProps> = ({ settings, onRefresh }) => {
   const { updateSetting } = useAdminSettings();
   const [contactSettings, setContactSettings] = useState<ContactSettings>({
     email: '',
@@ -92,10 +78,10 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
   useEffect(() => {
     const contactData = settings.filter(s => s.category === 'contact');
     const newSettings: any = { ...contactSettings };
-    
+
     contactData.forEach(setting => {
       let value = setting.setting_value;
-      
+
       // Parse JSON values
       if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
         try {
@@ -104,10 +90,10 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
           // Keep as string if parsing fails
         }
       }
-      
+
       newSettings[setting.setting_key] = value;
     });
-    
+
     setContactSettings(newSettings);
   }, [settings]);
 
@@ -119,32 +105,32 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
   const handleSocialLinkChange = (platform: string, url: string) => {
     const updatedSocialLinks = {
       ...contactSettings.social_links,
-      [platform]: url || undefined
+      [platform]: url || undefined,
     };
-    
+
     // Remove empty links
     Object.keys(updatedSocialLinks).forEach(key => {
       if (!updatedSocialLinks[key as keyof typeof updatedSocialLinks]) {
         delete updatedSocialLinks[key as keyof typeof updatedSocialLinks];
       }
     });
-    
+
     handleSettingChange('social_links', updatedSocialLinks);
   };
 
   const handleBusinessHoursChange = (day: string, hours: string) => {
     const updatedHours = {
       ...contactSettings.business_hours,
-      [day]: hours || undefined
+      [day]: hours || undefined,
     };
-    
+
     // Remove empty hours
     Object.keys(updatedHours).forEach(key => {
       if (!updatedHours[key as keyof typeof updatedHours]) {
         delete updatedHours[key as keyof typeof updatedHours];
       }
     });
-    
+
     handleSettingChange('business_hours', updatedHours);
   };
 
@@ -155,13 +141,12 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
         category: 'contact',
         setting_key: key,
         setting_value: value,
-        data_type: typeof value === 'boolean' ? 'boolean' : 
-                  typeof value === 'object' ? 'object' : 'string',
-        is_public: contactSettings.public_contact_info || key === 'social_links'
+        data_type: typeof value === 'boolean' ? 'boolean' : typeof value === 'object' ? 'object' : 'string',
+        is_public: contactSettings.public_contact_info || key === 'social_links',
       }));
-      
+
       await Promise.all(updates.map(update => updateSetting(update)));
-      
+
       setHasChanges(false);
       onRefresh();
     } catch (error) {
@@ -174,11 +159,11 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
   const handleReset = () => {
     const contactData = settings.filter(s => s.category === 'contact');
     const resetSettings: any = { ...contactSettings };
-    
+
     contactData.forEach(setting => {
       resetSettings[setting.setting_key] = setting.setting_value;
     });
-    
+
     setContactSettings(resetSettings);
     setHasChanges(false);
   };
@@ -193,7 +178,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
             Manage your organization's contact details and social media presence
           </p>
         </div>
-        
+
         {hasChanges && (
           <div className="flex items-center space-x-3">
             <button
@@ -204,7 +189,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
               <RefreshCw className="h-4 w-4 mr-1" />
               Reset
             </button>
-            
+
             <button
               onClick={handleSave}
               disabled={loading}
@@ -225,67 +210,57 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
             <h4 className="font-medium text-gray-900">Basic Contact Information</h4>
           </div>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Primary Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Primary Email</label>
             <input
               type="email"
               value={contactSettings.email}
-              onChange={(e) => handleSettingChange('email', e.target.value)}
+              onChange={e => handleSettingChange('email', e.target.value)}
               placeholder="info@yourorganization.com"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Support Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Support Email</label>
             <input
               type="email"
               value={contactSettings.support_email}
-              onChange={(e) => handleSettingChange('support_email', e.target.value)}
+              onChange={e => handleSettingChange('support_email', e.target.value)}
               placeholder="support@yourorganization.com"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
               type="tel"
               value={contactSettings.phone}
-              onChange={(e) => handleSettingChange('phone', e.target.value)}
+              onChange={e => handleSettingChange('phone', e.target.value)}
               placeholder="+1 (555) 123-4567"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Website URL
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Website URL</label>
             <input
               type="url"
               value={contactSettings.website}
-              onChange={(e) => handleSettingChange('website', e.target.value)}
+              onChange={e => handleSettingChange('website', e.target.value)}
               placeholder="https://yourorganization.com"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div className="md:col-span-2 space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Mailing Address
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Mailing Address</label>
             <textarea
               value={contactSettings.address}
-              onChange={(e) => handleSettingChange('address', e.target.value)}
+              onChange={e => handleSettingChange('address', e.target.value)}
               placeholder="123 Main Street, City, State, Country"
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -302,9 +277,9 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
             <h4 className="font-medium text-gray-900">Social Media Links</h4>
           </div>
         </div>
-        
+
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {socialPlatforms.map((platform) => (
+          {socialPlatforms.map(platform => (
             <div key={platform.key} className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 flex items-center">
                 <span className="mr-2">{platform.icon}</span>
@@ -314,7 +289,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
                 <input
                   type="url"
                   value={contactSettings.social_links[platform.key as keyof typeof contactSettings.social_links] || ''}
-                  onChange={(e) => handleSocialLinkChange(platform.key, e.target.value)}
+                  onChange={e => handleSocialLinkChange(platform.key, e.target.value)}
                   placeholder={platform.placeholder}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500"
                 />
@@ -342,23 +317,21 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
             <h4 className="font-medium text-gray-900">Business Hours</h4>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-4">
-          {weekDays.map((day) => (
+          {weekDays.map(day => (
             <div key={day.key} className="flex items-center space-x-4">
-              <div className="w-24 text-sm font-medium text-gray-700">
-                {day.label}
-              </div>
+              <div className="w-24 text-sm font-medium text-gray-700">{day.label}</div>
               <input
                 type="text"
                 value={contactSettings.business_hours[day.key as keyof typeof contactSettings.business_hours] || ''}
-                onChange={(e) => handleBusinessHoursChange(day.key, e.target.value)}
+                onChange={e => handleBusinessHoursChange(day.key, e.target.value)}
                 placeholder="9:00 AM - 5:00 PM"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
-          
+
           <p className="text-xs text-gray-500 mt-2">
             Leave empty for days you're closed. Use formats like "9:00 AM - 5:00 PM" or "Closed"
           </p>
@@ -373,7 +346,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
             <h4 className="font-medium text-gray-900">Contact Settings</h4>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -420,11 +393,11 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
         <div className="px-6 py-4 border-b border-gray-200">
           <h4 className="font-medium text-gray-900">Contact Information Preview</h4>
         </div>
-        
+
         <div className="p-6">
           <div className="bg-white rounded-lg border p-6 space-y-4">
             <h5 className="font-medium text-gray-900">Get in Touch</h5>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               {contactSettings.email && (
                 <div className="flex items-center space-x-2">
@@ -432,14 +405,14 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
                   <span>{contactSettings.email}</span>
                 </div>
               )}
-              
+
               {contactSettings.phone && (
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4 text-gray-500" />
                   <span>{contactSettings.phone}</span>
                 </div>
               )}
-              
+
               {contactSettings.website && (
                 <div className="flex items-center space-x-2">
                   <Globe className="h-4 w-4 text-gray-500" />
@@ -448,7 +421,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
                   </a>
                 </div>
               )}
-              
+
               {contactSettings.address && (
                 <div className="flex items-start space-x-2 md:col-span-2">
                   <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
@@ -456,7 +429,7 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
                 </div>
               )}
             </div>
-            
+
             {Object.keys(contactSettings.social_links).length > 0 && (
               <div>
                 <h6 className="font-medium text-gray-700 mb-2">Follow Us</h6>
@@ -479,19 +452,19 @@ export const ContactPanel: React.FC<ContactPanelProps> = ({
                 </div>
               </div>
             )}
-            
+
             {Object.keys(contactSettings.business_hours).length > 0 && (
               <div>
                 <h6 className="font-medium text-gray-700 mb-2">Business Hours</h6>
                 <div className="text-sm space-y-1">
-                  {Object.entries(contactSettings.business_hours).map(([day, hours]) => (
+                  {Object.entries(contactSettings.business_hours).map(([day, hours]) =>
                     hours ? (
                       <div key={day} className="flex justify-between">
                         <span className="capitalize">{day}:</span>
                         <span>{hours}</span>
                       </div>
                     ) : null
-                  ))}
+                  )}
                 </div>
               </div>
             )}

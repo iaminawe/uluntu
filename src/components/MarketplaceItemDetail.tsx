@@ -47,7 +47,7 @@ Includes original charger and box. Battery cycle count under 100.`,
   condition: 'like-new',
   images: [
     'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
-    'https://images.pexels.com/photos/5474296/pexels-photo-5474296.jpeg'
+    'https://images.pexels.com/photos/5474296/pexels-photo-5474296.jpeg',
   ],
   createdAt: '2025-03-15',
   seller: {
@@ -55,10 +55,10 @@ Includes original charger and box. Battery cycle count under 100.`,
     name: 'Sarah Johnson',
     title: 'Senior Developer',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
-    bio: 'Full-stack developer with 8 years of experience. Passionate about clean code and great user experiences.'
+    bio: 'Full-stack developer with 8 years of experience. Passionate about clean code and great user experiences.',
   },
   location: 'Nelson, BC',
-  tags: ['Apple', 'Laptop', 'Development']
+  tags: ['Apple', 'Laptop', 'Development'],
 };
 
 interface ContactModalProps {
@@ -70,7 +70,7 @@ function ContactModal({ listing, onClose }: ContactModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,10 +88,11 @@ function ContactModal({ listing, onClose }: ContactModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-            Contact about {listing.title}
-          </h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Contact about {listing.title}</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -171,7 +172,7 @@ function ContactModal({ listing, onClose }: ContactModalProps) {
 export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
-  
+
   // In a real app, you'd fetch the listing data based on the itemId
   const listing = SAMPLE_LISTING;
 
@@ -192,11 +193,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
         <div className="md:flex">
           <div className="md:w-1/2">
             <div className="relative h-96">
-              <img
-                src={listing.images[selectedImage]}
-                alt={listing.title}
-                className="w-full h-full object-cover"
-              />
+              <img src={listing.images[selectedImage]} alt={listing.title} className="w-full h-full object-cover" />
             </div>
             {listing.images.length > 1 && (
               <div className="p-4 flex gap-2">
@@ -205,10 +202,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors
-                      ${index === selectedImage
-                        ? 'border-orange-500'
-                        : 'border-transparent hover:border-orange-300'
-                      }`}
+                      ${index === selectedImage ? 'border-orange-500' : 'border-transparent hover:border-orange-300'}`}
                   >
                     <img
                       src={image}
@@ -220,15 +214,14 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
               </div>
             )}
           </div>
-          
+
           <div className="p-6 md:w-1/2">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                  {listing.title}
-                </h1>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{listing.title}</h1>
                 <p className="text-2xl text-orange-600 dark:text-orange-400">
-                  ${listing.price}{listing.type === 'service' && '/hr'}
+                  ${listing.price}
+                  {listing.type === 'service' && '/hr'}
                 </p>
               </div>
               <div className="p-2 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">
@@ -264,7 +257,11 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
                     </ul>
                   );
                 }
-                return <p key={index} className="mb-4">{paragraph}</p>;
+                return (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                );
               })}
             </div>
 
@@ -291,11 +288,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">About the Seller</h2>
               <div className="flex items-start space-x-4">
                 <Link to={getMemberProfileUrl(listing.seller)}>
-                  <img
-                    src={listing.seller.image}
-                    alt={listing.seller.name}
-                    className="w-12 h-12 rounded-full"
-                  />
+                  <img src={listing.seller.image} alt={listing.seller.name} className="w-12 h-12 rounded-full" />
                 </Link>
                 <div>
                   <Link
@@ -304,9 +297,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
                   >
                     {listing.seller.name}
                   </Link>
-                  {listing.seller.title && (
-                    <p className="text-slate-600 dark:text-slate-300">{listing.seller.title}</p>
-                  )}
+                  {listing.seller.title && <p className="text-slate-600 dark:text-slate-300">{listing.seller.title}</p>}
                   {listing.seller.bio && (
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{listing.seller.bio}</p>
                   )}
@@ -317,12 +308,7 @@ export default function MarketplaceItemDetail({ itemId }: { itemId: string }) {
         </div>
       </div>
 
-      {showContactModal && (
-        <ContactModal
-          listing={listing}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+      {showContactModal && <ContactModal listing={listing} onClose={() => setShowContactModal(false)} />}
     </div>
   );
 }

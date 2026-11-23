@@ -73,7 +73,7 @@ export interface OpportunityData {
 // Adapter function to convert from main Opportunity type to local OpportunityData type
 export const adaptMainOpportunityToEditData = (opportunity: MainOpportunity): Partial<OpportunityData> => {
   return {
-    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : opportunity.id as number,
+    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : (opportunity.id as number),
     title: opportunity.title,
     description: opportunity.description,
     // Map the main type to the local type
@@ -91,7 +91,7 @@ export const adaptMainOpportunityToEditData = (opportunity: MainOpportunity): Pa
     // These fields don't exist in the main type, so they would need to be added separately
     requirements: [],
     responsibilities: [],
-    benefits: []
+    benefits: [],
   };
 };
 
@@ -104,7 +104,7 @@ export const adaptEditDataToMainOpportunity = (data: OpportunityData): Partial<M
     company: {
       id: '0', // This would need to be set properly in a real implementation
       name: data.organization,
-      logo: data.image || ''
+      logo: data.image || '',
     },
     type: mapLocalTypeToMainType(data.type),
     location: data.location,
@@ -113,7 +113,7 @@ export const adaptEditDataToMainOpportunity = (data: OpportunityData): Partial<M
     postedDate: new Date().toISOString(), // This would need to be set properly in a real implementation
     deadline: data.deadline || undefined,
     status: data.status,
-    featured: data.featured
+    featured: data.featured,
   };
 };
 
@@ -122,21 +122,21 @@ function mapMainTypeToLocalType(mainType: MainOpportunity['type']): OpportunityT
   const typeMap: Partial<Record<MainOpportunity['type'], OpportunityType>> = {
     'full-time': 'job',
     'part-time': 'job',
-    'contract': 'job',
-    'volunteer': 'volunteer'
+    contract: 'job',
+    volunteer: 'volunteer',
   };
-  
+
   return typeMap[mainType] || 'job';
 }
 
 // Helper function to map local type to main Opportunity type
 function mapLocalTypeToMainType(localType: OpportunityType): MainOpportunity['type'] {
   const typeMap: Record<OpportunityType, MainOpportunity['type']> = {
-    'job': 'full-time',
-    'volunteer': 'volunteer',
-    'funding': 'contract',
-    'community': 'volunteer'
+    job: 'full-time',
+    volunteer: 'volunteer',
+    funding: 'contract',
+    community: 'volunteer',
   };
-  
+
   return typeMap[localType];
 }

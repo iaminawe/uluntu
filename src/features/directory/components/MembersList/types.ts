@@ -20,22 +20,22 @@ export interface FilterOptions {
 
 // Common skills for filter options
 export const SKILL_OPTIONS = [
-  'JavaScript', 
-  'React', 
-  'Node.js', 
-  'Python', 
-  'UI/UX', 
+  'JavaScript',
+  'React',
+  'Node.js',
+  'Python',
+  'UI/UX',
   'Product Management',
-  'DevOps', 
-  'Data Science', 
-  'Machine Learning', 
+  'DevOps',
+  'Data Science',
+  'Machine Learning',
   'Blockchain',
   'Ruby',
   'Java',
   'PHP',
   'AWS',
   'Docker',
-  'GraphQL'
+  'GraphQL',
 ];
 
 // Sample member data - in a real application this would come from an API
@@ -54,8 +54,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     social: {
       linkedin: 'https://linkedin.com/in/sarahjohnson',
       github: 'https://github.com/sarahjohnson',
-      website: 'https://sarahjohnson.dev'
-    }
+      website: 'https://sarahjohnson.dev',
+    },
   },
   {
     id: '2',
@@ -70,8 +70,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     joinDate: '2023-02-15',
     social: {
       linkedin: 'https://linkedin.com/in/michaelchen',
-      twitter: 'https://twitter.com/michaelchen'
-    }
+      twitter: 'https://twitter.com/michaelchen',
+    },
   },
   {
     id: '3',
@@ -86,8 +86,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     joinDate: '2022-08-22',
     social: {
       linkedin: 'https://linkedin.com/in/emmawilson',
-      github: 'https://github.com/emmawilson'
-    }
+      github: 'https://github.com/emmawilson',
+    },
   },
   {
     id: '4',
@@ -102,8 +102,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     joinDate: '2023-03-05',
     social: {
       linkedin: 'https://linkedin.com/in/davidthompson',
-      github: 'https://github.com/davidthompson'
-    }
+      github: 'https://github.com/davidthompson',
+    },
   },
   {
     id: '5',
@@ -118,8 +118,8 @@ export const SAMPLE_MEMBERS: Member[] = [
     joinDate: '2022-11-15',
     social: {
       linkedin: 'https://linkedin.com/in/jessicalee',
-      twitter: 'https://twitter.com/jessicalee'
-    }
+      twitter: 'https://twitter.com/jessicalee',
+    },
   },
   {
     id: '6',
@@ -135,7 +135,7 @@ export const SAMPLE_MEMBERS: Member[] = [
     social: {
       linkedin: 'https://linkedin.com/in/robertclark',
       github: 'https://github.com/robertclark',
-      website: 'https://robertclark.dev'
-    }
-  }
+      website: 'https://robertclark.dev',
+    },
+  },
 ];

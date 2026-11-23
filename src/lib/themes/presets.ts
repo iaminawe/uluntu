@@ -22,7 +22,7 @@ export const presetThemes: PresetTheme[] = [
         error: '#EF4444',
         warning: '#F59E0B',
         success: '#10B981',
-        info: '#3B82F6'
+        info: '#3B82F6',
       },
       typography: {
         font_family: 'Inter, system-ui, -apple-system, sans-serif',
@@ -36,7 +36,7 @@ export const presetThemes: PresetTheme[] = [
         font_size_4xl: '36px',
         line_height_base: '1.5',
         line_height_tight: '1.25',
-        line_height_loose: '1.75'
+        line_height_loose: '1.75',
       },
       spacing: {
         spacing_xs: '0.25rem',
@@ -47,7 +47,7 @@ export const presetThemes: PresetTheme[] = [
         spacing_2xl: '3rem',
         spacing_3xl: '4rem',
         container_max_width: '1280px',
-        container_padding: '1rem'
+        container_padding: '1rem',
       },
       borders: {
         radius_sm: '0.125rem',
@@ -57,15 +57,15 @@ export const presetThemes: PresetTheme[] = [
         radius_full: '9999px',
         width_thin: '1px',
         width_medium: '2px',
-        width_thick: '4px'
+        width_thick: '4px',
       },
       shadows: {
         shadow_sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         shadow_md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         shadow_lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-      }
-    }
+        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+      },
+    },
   },
   {
     name: 'Professional Blue',
@@ -88,7 +88,7 @@ export const presetThemes: PresetTheme[] = [
         error: '#EF4444',
         warning: '#F59E0B',
         success: '#10B981',
-        info: '#06B6D4'
+        info: '#06B6D4',
       },
       typography: {
         font_family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -102,7 +102,7 @@ export const presetThemes: PresetTheme[] = [
         font_size_4xl: '36px',
         line_height_base: '1.5',
         line_height_tight: '1.25',
-        line_height_loose: '1.75'
+        line_height_loose: '1.75',
       },
       spacing: {
         spacing_xs: '0.25rem',
@@ -113,7 +113,7 @@ export const presetThemes: PresetTheme[] = [
         spacing_2xl: '3rem',
         spacing_3xl: '4rem',
         container_max_width: '1280px',
-        container_padding: '1rem'
+        container_padding: '1rem',
       },
       borders: {
         radius_sm: '0.25rem',
@@ -123,15 +123,15 @@ export const presetThemes: PresetTheme[] = [
         radius_full: '9999px',
         width_thin: '1px',
         width_medium: '2px',
-        width_thick: '4px'
+        width_thick: '4px',
       },
       shadows: {
         shadow_sm: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
         shadow_md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         shadow_lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-      }
-    }
+        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+      },
+    },
   },
   {
     name: 'Modern Purple',
@@ -154,7 +154,7 @@ export const presetThemes: PresetTheme[] = [
         error: '#DC2626',
         warning: '#F59E0B',
         success: '#059669',
-        info: '#0891B2'
+        info: '#0891B2',
       },
       typography: {
         font_family: '"Plus Jakarta Sans", Inter, sans-serif',
@@ -168,7 +168,7 @@ export const presetThemes: PresetTheme[] = [
         font_size_4xl: '40px',
         line_height_base: '1.6',
         line_height_tight: '1.2',
-        line_height_loose: '1.8'
+        line_height_loose: '1.8',
       },
       spacing: {
         spacing_xs: '0.25rem',
@@ -179,7 +179,7 @@ export const presetThemes: PresetTheme[] = [
         spacing_2xl: '3rem',
         spacing_3xl: '4rem',
         container_max_width: '1280px',
-        container_padding: '1.25rem'
+        container_padding: '1.25rem',
       },
       borders: {
         radius_sm: '0.375rem',
@@ -189,15 +189,15 @@ export const presetThemes: PresetTheme[] = [
         radius_full: '9999px',
         width_thin: '1px',
         width_medium: '2px',
-        width_thick: '3px'
+        width_thick: '3px',
       },
       shadows: {
         shadow_sm: '0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         shadow_md: '0 6px 10px -2px rgba(0, 0, 0, 0.08)',
         shadow_lg: '0 12px 20px -4px rgba(0, 0, 0, 0.1)',
-        shadow_xl: '0 24px 40px -8px rgba(0, 0, 0, 0.12)'
-      }
-    }
+        shadow_xl: '0 24px 40px -8px rgba(0, 0, 0, 0.12)',
+      },
+    },
   },
   {
     name: 'Minimalist Green',
@@ -220,7 +220,7 @@ export const presetThemes: PresetTheme[] = [
         error: '#EF4444',
         warning: '#F59E0B',
         success: '#10B981',
-        info: '#3B82F6'
+        info: '#3B82F6',
       },
       typography: {
         font_family: 'Helvetica, Arial, sans-serif',
@@ -234,7 +234,7 @@ export const presetThemes: PresetTheme[] = [
         font_size_4xl: '36px',
         line_height_base: '1.625',
         line_height_tight: '1.25',
-        line_height_loose: '2'
+        line_height_loose: '2',
       },
       spacing: {
         spacing_xs: '0.25rem',
@@ -245,7 +245,7 @@ export const presetThemes: PresetTheme[] = [
         spacing_2xl: '3rem',
         spacing_3xl: '4rem',
         container_max_width: '1200px',
-        container_padding: '1rem'
+        container_padding: '1rem',
       },
       borders: {
         radius_sm: '0',
@@ -255,15 +255,15 @@ export const presetThemes: PresetTheme[] = [
         radius_full: '9999px',
         width_thin: '1px',
         width_medium: '2px',
-        width_thick: '4px'
+        width_thick: '4px',
       },
       shadows: {
         shadow_sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         shadow_md: '0 2px 4px -1px rgba(0, 0, 0, 0.07)',
         shadow_lg: '0 4px 8px -2px rgba(0, 0, 0, 0.08)',
-        shadow_xl: '0 8px 16px -4px rgba(0, 0, 0, 0.1)'
-      }
-    }
+        shadow_xl: '0 8px 16px -4px rgba(0, 0, 0, 0.1)',
+      },
+    },
   },
   {
     name: 'Dark Mode',
@@ -286,7 +286,7 @@ export const presetThemes: PresetTheme[] = [
         error: '#F87171',
         warning: '#FBBF24',
         success: '#34D399',
-        info: '#60A5FA'
+        info: '#60A5FA',
       },
       typography: {
         font_family: 'Inter, system-ui, -apple-system, sans-serif',
@@ -300,7 +300,7 @@ export const presetThemes: PresetTheme[] = [
         font_size_4xl: '36px',
         line_height_base: '1.5',
         line_height_tight: '1.25',
-        line_height_loose: '1.75'
+        line_height_loose: '1.75',
       },
       spacing: {
         spacing_xs: '0.25rem',
@@ -311,7 +311,7 @@ export const presetThemes: PresetTheme[] = [
         spacing_2xl: '3rem',
         spacing_3xl: '4rem',
         container_max_width: '1280px',
-        container_padding: '1rem'
+        container_padding: '1rem',
       },
       borders: {
         radius_sm: '0.125rem',
@@ -321,16 +321,16 @@ export const presetThemes: PresetTheme[] = [
         radius_full: '9999px',
         width_thin: '1px',
         width_medium: '2px',
-        width_thick: '4px'
+        width_thick: '4px',
       },
       shadows: {
         shadow_sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
         shadow_md: '0 4px 6px -1px rgba(0, 0, 0, 0.4)',
         shadow_lg: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
-        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.6)'
-      }
-    }
-  }
+        shadow_xl: '0 20px 25px -5px rgba(0, 0, 0, 0.6)',
+      },
+    },
+  },
 ];
 
 export function getPresetTheme(slug: string): PresetTheme | undefined {
@@ -352,7 +352,7 @@ export type ThemePreset = PresetTheme;
 // Generate CSS from theme configuration
 export function generateThemeCSS(theme: PresetTheme): string {
   const { colors, typography, spacing, borders, shadows } = theme.configurations;
-  
+
   return `
     :root {
       /* Colors */
@@ -425,33 +425,33 @@ export function validateThemeAccessibility(theme: PresetTheme): {
   const warnings: string[] = [];
   const errors: string[] = [];
   const { colors } = theme.configurations;
-  
+
   // Check contrast ratios
   const getContrastRatio = (color1: string, color2: string): number => {
     // Simplified contrast calculation - in production, use a proper library
     return 4.5; // Placeholder
   };
-  
+
   const textBgContrast = getContrastRatio(colors.text, colors.background);
   if (textBgContrast < 4.5) {
     errors.push('Text to background contrast ratio is too low (minimum 4.5:1 for WCAG AA)');
   }
-  
+
   const mutedTextBgContrast = getContrastRatio(colors.text_muted, colors.background);
   if (mutedTextBgContrast < 3) {
     warnings.push('Muted text to background contrast is low (recommended 3:1 minimum)');
   }
-  
+
   // Check font sizes
   const { typography } = theme.configurations;
   const baseFontSize = parseInt(typography.font_size_base);
   if (baseFontSize < 14) {
     warnings.push('Base font size is smaller than recommended (14px minimum)');
   }
-  
+
   return {
     valid: errors.length === 0,
     warnings,
-    errors
+    errors,
   };
 }

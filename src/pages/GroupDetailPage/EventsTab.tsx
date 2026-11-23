@@ -8,7 +8,7 @@ const EventsTab: React.FC<EventsTabProps> = ({ events, isLoading }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Group Events</h2>
-      
+
       {isLoading ? (
         <div className="animate-pulse space-y-6">
           {[1, 2, 3].map(i => (
@@ -29,16 +29,10 @@ const EventsTab: React.FC<EventsTabProps> = ({ events, isLoading }) => {
             >
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/3 h-48">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6 md:w-2/3">
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                    {event.title}
-                  </h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{event.title}</h3>
                   <div className="flex items-center text-orange-500 mb-2">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span>
@@ -51,9 +45,7 @@ const EventsTab: React.FC<EventsTabProps> = ({ events, isLoading }) => {
                       <span>{event.location}</span>
                     </div>
                   )}
-                  <p className="text-slate-600 dark:text-slate-300 line-clamp-2">
-                    {event.description}
-                  </p>
+                  <p className="text-slate-600 dark:text-slate-300 line-clamp-2">{event.description}</p>
                 </div>
               </div>
             </Link>

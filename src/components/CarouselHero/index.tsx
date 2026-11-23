@@ -32,7 +32,7 @@ export default function CarouselHero({
   autoPlayInterval = 5000,
   showDots = true,
   showArrows = true,
-  height = '500px'
+  height = '500px',
 }: CarouselHeroProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -45,20 +45,20 @@ export default function CarouselHero({
   // Auto-play functionality
   React.useEffect(() => {
     if (!autoPlay || slides.length <= 1) return;
-    
+
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
   }, [autoPlay, autoPlayInterval, slides.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setCurrentSlide(prev => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
   };
 
   const goToSlide = (index: number) => {
@@ -69,16 +69,12 @@ export default function CarouselHero({
     if (!file.type.startsWith('image/')) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const imageUrl = e.target?.result as string;
-      
+
       if (slideId) {
         // Update existing slide
-        const newSlides = slides.map(slide => 
-          slide.id === slideId 
-            ? { ...slide, image: imageUrl }
-            : slide
-        );
+        const newSlides = slides.map(slide => (slide.id === slideId ? { ...slide, image: imageUrl } : slide));
         onChange?.(newSlides);
       } else {
         // Add new slide
@@ -86,7 +82,7 @@ export default function CarouselHero({
           id: Date.now().toString(),
           image: imageUrl,
           title: 'New Slide',
-          subtitle: 'Add your content here'
+          subtitle: 'Add your content here',
         };
         onChange?.([...slides, newSlide]);
       }
@@ -95,9 +91,7 @@ export default function CarouselHero({
   };
 
   const updateSlide = (slideId: string, updates: Partial<CarouselSlide>) => {
-    const newSlides = slides.map(slide =>
-      slide.id === slideId ? { ...slide, ...updates } : slide
-    );
+    const newSlides = slides.map(slide => (slide.id === slideId ? { ...slide, ...updates } : slide));
     onChange?.(newSlides);
   };
 
@@ -114,19 +108,19 @@ export default function CarouselHero({
       id: Date.now().toString(),
       image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=600&fit=crop',
       title: 'New Slide',
-      subtitle: 'Click to edit this slide'
+      subtitle: 'Click to edit this slide',
     };
-    onChange?.([ ...slides, newSlide]);
+    onChange?.([...slides, newSlide]);
     setCurrentSlide(slides.length);
   };
 
   const handleDrop = (e: React.DragEvent, slideId?: string) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     const imageFile = files.find(file => file.type.startsWith('image/'));
-    
+
     if (imageFile) {
       handleImageUpload(imageFile, slideId);
     }
@@ -144,10 +138,10 @@ export default function CarouselHero({
 
   if (slides.length === 0 && editable) {
     return (
-      <div 
+      <div
         className={`relative ${isDark ? 'bg-slate-800' : 'bg-slate-100'} rounded-lg border-2 border-dashed ${isDark ? 'border-slate-600' : 'border-slate-300'} transition-all`}
         style={{ height }}
-        onDrop={(e) => handleDrop(e)}
+        onDrop={e => handleDrop(e)}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
@@ -170,7 +164,7 @@ export default function CarouselHero({
               accept="image/*"
               multiple
               className="hidden"
-              onChange={(e) => {
+              onChange={e => {
                 const files = Array.from(e.target.files || []);
                 files.forEach(file => handleImageUpload(file));
               }}
@@ -191,10 +185,9 @@ export default function CarouselHero({
           <div
             key={slide.id}
             className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-              index === currentSlide ? 'translate-x-0' : 
-              index < currentSlide ? '-translate-x-full' : 'translate-x-full'
+              index === currentSlide ? 'translate-x-0' : index < currentSlide ? '-translate-x-full' : 'translate-x-full'
             }`}
-            onDrop={(e) => editable ? handleDrop(e, slide.id) : undefined}
+            onDrop={e => (editable ? handleDrop(e, slide.id) : undefined)}
             onDragOver={editable ? handleDragOver : undefined}
             onDragLeave={editable ? handleDragLeave : undefined}
           >
@@ -203,23 +196,16 @@ export default function CarouselHero({
               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
-            
+
             {/* Overlay */}
-            <div 
-              className="absolute inset-0 bg-black"
-              style={{ opacity: slide.overlayOpacity || 0.4 }}
-            />
+            <div className="absolute inset-0 bg-black" style={{ opacity: slide.overlayOpacity || 0.4 }} />
 
             {/* Content */}
             <div className="relative h-full flex items-center justify-center text-center text-white px-4">
               <div className="max-w-4xl">
-                <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
-                  {slide.title}
-                </h1>
+                <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">{slide.title}</h1>
                 {slide.subtitle && (
-                  <p className="text-xl md:text-2xl mb-8 drop-shadow-lg opacity-90">
-                    {slide.subtitle}
-                  </p>
+                  <p className="text-xl md:text-2xl mb-8 drop-shadow-lg opacity-90">{slide.subtitle}</p>
                 )}
                 {slide.ctaText && slide.ctaLink && (
                   <Button
@@ -267,9 +253,7 @@ export default function CarouselHero({
                 </div>
                 {dragOver && (
                   <div className="absolute inset-0 bg-blue-500 bg-opacity-20 border-2 border-blue-400 border-dashed flex items-center justify-center">
-                    <div className="text-white text-xl font-semibold">
-                      Drop image to replace
-                    </div>
+                    <div className="text-white text-xl font-semibold">Drop image to replace</div>
                   </div>
                 )}
               </div>
@@ -304,9 +288,7 @@ export default function CarouselHero({
               key={index}
               onClick={() => goToSlide(index)}
               className={`w-3 h-3 rounded-full transition-all ${
-                index === currentSlide
-                  ? 'bg-white'
-                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50 hover:bg-opacity-75'
               }`}
             />
           ))}
@@ -329,7 +311,7 @@ export default function CarouselHero({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => {
+        onChange={e => {
           const file = e.target.files?.[0];
           if (file) {
             handleImageUpload(file, currentSlideData?.id);
@@ -341,14 +323,12 @@ export default function CarouselHero({
       {editingSlide && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-lg max-w-md w-full p-6`}>
-            <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Edit Slide
-            </h3>
-            
+            <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Edit Slide</h3>
+
             {(() => {
               const slide = slides.find(s => s.id === editingSlide);
               if (!slide) return null;
-              
+
               return (
                 <div className="space-y-4">
                   <div>
@@ -358,15 +338,13 @@ export default function CarouselHero({
                     <input
                       type="text"
                       value={slide.title}
-                      onChange={(e) => updateSlide(editingSlide, { title: e.target.value })}
+                      onChange={e => updateSlide(editingSlide, { title: e.target.value })}
                       className={`w-full px-3 py-2 border rounded-md ${
-                        isDark 
-                          ? 'bg-slate-700 border-slate-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       Subtitle
@@ -374,15 +352,13 @@ export default function CarouselHero({
                     <input
                       type="text"
                       value={slide.subtitle || ''}
-                      onChange={(e) => updateSlide(editingSlide, { subtitle: e.target.value })}
+                      onChange={e => updateSlide(editingSlide, { subtitle: e.target.value })}
                       className={`w-full px-3 py-2 border rounded-md ${
-                        isDark 
-                          ? 'bg-slate-700 border-slate-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       CTA Text
@@ -390,15 +366,13 @@ export default function CarouselHero({
                     <input
                       type="text"
                       value={slide.ctaText || ''}
-                      onChange={(e) => updateSlide(editingSlide, { ctaText: e.target.value })}
+                      onChange={e => updateSlide(editingSlide, { ctaText: e.target.value })}
                       className={`w-full px-3 py-2 border rounded-md ${
-                        isDark 
-                          ? 'bg-slate-700 border-slate-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       CTA Link
@@ -406,15 +380,13 @@ export default function CarouselHero({
                     <input
                       type="url"
                       value={slide.ctaLink || ''}
-                      onChange={(e) => updateSlide(editingSlide, { ctaLink: e.target.value })}
+                      onChange={e => updateSlide(editingSlide, { ctaLink: e.target.value })}
                       className={`w-full px-3 py-2 border rounded-md ${
-                        isDark 
-                          ? 'bg-slate-700 border-slate-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     />
                   </div>
-                  
+
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       Overlay Opacity
@@ -425,7 +397,7 @@ export default function CarouselHero({
                       max="1"
                       step="0.1"
                       value={slide.overlayOpacity || 0.4}
-                      onChange={(e) => updateSlide(editingSlide, { overlayOpacity: parseFloat(e.target.value) })}
+                      onChange={e => updateSlide(editingSlide, { overlayOpacity: parseFloat(e.target.value) })}
                       className="w-full"
                     />
                     <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -437,15 +409,10 @@ export default function CarouselHero({
             })()}
 
             <div className="flex justify-end space-x-2 mt-6">
-              <Button
-                variant="ghost"
-                onClick={() => setEditingSlide(null)}
-              >
+              <Button variant="ghost" onClick={() => setEditingSlide(null)}>
                 Cancel
               </Button>
-              <Button onClick={() => setEditingSlide(null)}>
-                Save
-              </Button>
+              <Button onClick={() => setEditingSlide(null)}>Save</Button>
             </div>
           </div>
         </div>

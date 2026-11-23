@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import {
-  BlockNoteEditor,
-  PartialBlock,
-  Block,
-} from '@blocknote/core';
-import {
-  useCreateBlockNote,
-  BlockNoteDefaultUI,
-} from '@blocknote/react';
+import { BlockNoteEditor, PartialBlock, Block } from '@blocknote/core';
+import { useCreateBlockNote, BlockNoteDefaultUI } from '@blocknote/react';
 import '@blocknote/react/style.css';
 import '@blocknote/mantine/style.css';
 
@@ -50,7 +43,7 @@ export const BlockEditorBasic: React.FC<BlockEditorProps> = ({
 }) => {
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const lastSavedContentRef = useRef<string>('');
-  
+
   // Create AI extension if available
   const aiExtension = useMemo(() => {
     if (enableAI && isAIAvailable()) {
@@ -82,7 +75,7 @@ export const BlockEditorBasic: React.FC<BlockEditorProps> = ({
       // Auto-save logic
       if (autoSave && onSave) {
         const currentContent = JSON.stringify(blocks);
-        
+
         // Only save if content has actually changed
         if (currentContent !== lastSavedContentRef.current) {
           // Clear existing timeout

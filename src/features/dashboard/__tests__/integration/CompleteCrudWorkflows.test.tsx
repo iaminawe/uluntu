@@ -10,11 +10,11 @@ import { describe, test, expect, beforeEach, jest, afterEach } from '@jest/globa
 
 import { UserDashboard } from '../../components/UserDashboard';
 import { contentManagementApi } from '../../api/contentManagementApi';
-import { 
-  createTestWrapper, 
-  createTestUser, 
+import {
+  createTestWrapper,
+  createTestUser,
   createTestContent,
-  mockSupabaseResponse 
+  mockSupabaseResponse,
 } from '../../../shared/test-utils/testHelpers';
 
 // Mock the APIs
@@ -24,9 +24,9 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(),
     auth: {
       getUser: jest.fn(),
-      getSession: jest.fn()
-    }
-  }
+      getSession: jest.fn(),
+    },
+  },
 }));
 
 const mockApi = contentManagementApi as jest.Mocked<typeof contentManagementApi>;
@@ -38,28 +38,28 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     memberId: 'member-crud',
     role: 'member',
     groups: ['general', 'test-group'],
-    companies: ['test-company']
+    companies: ['test-company'],
   });
 
   let mockContent: any[];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Initialize mock content
     mockContent = [
       createTestContent('member-crud', {
         id: 'content-1',
         type: 'photo',
         title: 'Test Photo',
-        status: 'published'
+        status: 'published',
       }),
       createTestContent('member-crud', {
         id: 'content-2',
         type: 'event',
         title: 'Test Event',
-        status: 'draft'
-      })
+        status: 'draft',
+      }),
     ];
 
     // Default API responses
@@ -72,9 +72,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         limit: 20,
         total: mockContent.length,
         total_pages: 1,
-        has_more: false
+        has_more: false,
       },
-      filters_applied: {}
+      filters_applied: {},
     });
 
     mockApi.getContentStatistics.mockResolvedValue({
@@ -83,8 +83,8 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         total_content: mockContent.length,
         total_views: 100,
         total_engagement: 20,
-        growth_percentage: 5.2
-      }
+        growth_percentage: 5.2,
+      },
     });
 
     mockApi.getContentPermissions.mockResolvedValue({
@@ -92,7 +92,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
       can_delete: true,
       can_publish: true,
       can_feature: true,
-      can_view_analytics: true
+      can_view_analytics: true,
     });
   });
 
@@ -100,10 +100,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Complete content creation workflow', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Wait for dashboard to load
       await waitFor(() => {
@@ -141,7 +138,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         title: 'New Article Title',
         description: 'This is a test article description.',
         companyId: 'test-company',
-        status: 'draft'
+        status: 'draft',
       });
 
       mockApi.updateContentItem.mockResolvedValue(newContent);
@@ -157,9 +154,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: updatedContent.length,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Step 4: Submit the form
@@ -174,7 +171,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           expect.objectContaining({
             title: 'New Article Title',
             description: 'This is a test article description.',
-            companyId: 'test-company'
+            companyId: 'test-company',
           })
         );
       });
@@ -191,10 +188,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Create content with validation errors', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       await userEventInstance.click(createButton);
@@ -232,10 +226,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
 
       mockApi.updateContentItem.mockRejectedValue(new Error('Server error'));
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const createButton = screen.getByRole('button', { name: /create/i });
       await userEventInstance.click(createButton);
@@ -266,10 +257,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
 
   describe('Read Operations', () => {
     test('Display and filter user content correctly', async () => {
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Should load and display all user content
       await waitFor(() => {
@@ -281,7 +269,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
       expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
         expect.objectContaining({
           // Should include user filtering parameters
-          filters: expect.any(Object)
+          filters: expect.any(Object),
         })
       );
     });
@@ -289,10 +277,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Search functionality works correctly', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -308,9 +293,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { search: 'Photo' }
+        filters_applied: { search: 'Photo' },
       });
 
       // Perform search
@@ -322,8 +307,8 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         expect(mockApi.getAllUserContent).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              search: 'Photo'
-            })
+              search: 'Photo',
+            }),
           })
         );
       });
@@ -339,12 +324,12 @@ describe('Complete CRUD Workflows Integration Tests', () => {
       const userEventInstance = userEvent.setup();
 
       // Mock large dataset with pagination
-      const manyItems = Array.from({ length: 30 }, (_, i) => 
+      const manyItems = Array.from({ length: 30 }, (_, i) =>
         createTestContent('member-crud', {
           id: `content-${i}`,
           type: 'photo',
           title: `Photo ${i}`,
-          status: 'published'
+          status: 'published',
         })
       );
 
@@ -357,15 +342,12 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 30,
           total_pages: 2,
-          has_more: true
+          has_more: true,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Should show first 20 items
       await waitFor(() => {
@@ -386,9 +368,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 30,
           total_pages: 2,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Click next page
@@ -410,10 +392,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Complete content editing workflow', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -440,7 +419,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
       const updatedContent = {
         ...mockContent[0],
         title: 'Updated Photo Title',
-        description: 'Updated description content.'
+        description: 'Updated description content.',
       };
 
       mockApi.updateContentItem.mockResolvedValue(updatedContent);
@@ -456,9 +435,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 2,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Step 5: Save changes
@@ -472,7 +451,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           'photo',
           expect.objectContaining({
             title: 'Updated Photo Title',
-            description: 'Updated description content.'
+            description: 'Updated description content.',
           })
         );
       });
@@ -489,10 +468,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Bulk update operations', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -520,12 +496,12 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         data: {
           success_count: 2,
           error_count: 0,
-          errors: []
+          errors: [],
         },
         error: null,
         status: 200,
         operation: 'publish',
-        total_processed: 2
+        total_processed: 2,
       });
 
       // Step 5: Confirm bulk action
@@ -541,7 +517,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         expect(mockApi.performBulkContentOperation).toHaveBeenCalledWith({
           content_ids: ['content-1', 'content-2'],
           operation: 'publish',
-          metadata: {}
+          metadata: {},
         });
       });
 
@@ -552,10 +528,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Update with validation errors', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const editButton = screen.getByRole('button', { name: /edit.*test photo/i });
       await userEventInstance.click(editButton);
@@ -585,10 +558,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Complete content deletion workflow', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -617,9 +587,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       // Step 4: Confirm deletion
@@ -644,10 +614,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Cancel deletion workflow', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -679,10 +646,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Bulk delete operations', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -710,12 +674,12 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         data: {
           success_count: 2,
           error_count: 0,
-          errors: []
+          errors: [],
         },
         error: null,
         status: 200,
         operation: 'delete',
-        total_processed: 2
+        total_processed: 2,
       });
 
       // Update mock to show empty list
@@ -728,9 +692,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 0,
           total_pages: 0,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       const confirmButton = screen.getByRole('button', { name: /confirm delete/i });
@@ -741,7 +705,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         expect(mockApi.performBulkContentOperation).toHaveBeenCalledWith({
           content_ids: ['content-1', 'content-2'],
           operation: 'delete',
-          metadata: {}
+          metadata: {},
         });
       });
 
@@ -758,10 +722,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
 
       mockApi.deleteContentItem.mockRejectedValue(new Error('Delete failed'));
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       const deleteButton = screen.getByRole('button', { name: /delete.*test photo/i });
       await userEventInstance.click(deleteButton);
@@ -783,10 +744,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Create, edit, then delete content in sequence', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       // Step 1: Create new content
       const createButton = screen.getByRole('button', { name: /create/i });
@@ -802,7 +760,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
         id: 'content-integration',
         type: 'news',
         title: 'Integration Test Article',
-        status: 'draft'
+        status: 'draft',
       });
 
       mockApi.updateContentItem.mockResolvedValue(newContent);
@@ -821,9 +779,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: mockContent.length,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       await waitFor(() => {
@@ -844,7 +802,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
 
       const updatedContent = {
         ...newContent,
-        title: 'Updated Integration Test Article'
+        title: 'Updated Integration Test Article',
       };
 
       mockApi.updateContentItem.mockResolvedValue(updatedContent);
@@ -863,9 +821,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: mockContent.length,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       await waitFor(() => {
@@ -892,9 +850,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: mockContent.length,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       await waitFor(() => {
@@ -909,10 +867,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
     test('Operations maintain proper state across filtering', async () => {
       const userEventInstance = userEvent.setup();
 
-      render(
-        <UserDashboard />,
-        { wrapper: createTestWrapper(testUser) }
-      );
+      render(<UserDashboard />, { wrapper: createTestWrapper(testUser) });
 
       await waitFor(() => {
         expect(screen.getByText('Test Photo')).toBeInTheDocument();
@@ -929,9 +884,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { type: ['photo'] }
+        filters_applied: { type: ['photo'] },
       });
 
       // Navigate to All Content tab, then Photo Galleries sub-tab
@@ -956,7 +911,7 @@ describe('Complete CRUD Workflows Integration Tests', () => {
 
       const updatedContent = {
         ...mockContent[0],
-        title: 'Filtered and Edited Photo'
+        title: 'Filtered and Edited Photo',
       };
 
       mockApi.updateContentItem.mockResolvedValue(updatedContent);
@@ -974,9 +929,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: 1,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: { type: ['photo'] }
+        filters_applied: { type: ['photo'] },
       });
 
       await waitFor(() => {
@@ -994,9 +949,9 @@ describe('Complete CRUD Workflows Integration Tests', () => {
           limit: 20,
           total: mockContent.length,
           total_pages: 1,
-          has_more: false
+          has_more: false,
         },
-        filters_applied: {}
+        filters_applied: {},
       });
 
       const allTab = screen.getByRole('tab', { name: /all content/i });

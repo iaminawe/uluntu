@@ -1,6 +1,6 @@
 /**
  * Enhanced Test Fixtures and Mock Data for Menu Management
- * 
+ *
  * Comprehensive test data covering all scenarios, edge cases,
  * and data variations for thorough testing.
  */
@@ -324,14 +324,16 @@ export const edgeCaseMenuItems: MenuItem[] = [
 
 // Performance test data - large datasets
 export const createLargeMenuDataset = (count: number): MenuItem[] => {
-  return Array.from({ length: count }, (_, i) => createMockMenuItem({
-    id: `perf-${i}`,
-    title: `Performance Test Item ${i + 1}`,
-    url: `/perf-test-${i + 1}`,
-    description: `Generated item ${i + 1} for performance testing`,
-    sort_order: i,
-    parent_id: i > 0 && i % 10 === 0 ? `perf-${i - 1}` : null, // Every 10th item has a parent
-  }));
+  return Array.from({ length: count }, (_, i) =>
+    createMockMenuItem({
+      id: `perf-${i}`,
+      title: `Performance Test Item ${i + 1}`,
+      url: `/perf-test-${i + 1}`,
+      description: `Generated item ${i + 1} for performance testing`,
+      sort_order: i,
+      parent_id: i > 0 && i % 10 === 0 ? `perf-${i - 1}` : null, // Every 10th item has a parent
+    })
+  );
 };
 
 // Deep hierarchy test data
@@ -341,13 +343,15 @@ export const createDeepHierarchy = (depth: number): MenuItem[] => {
 
   for (let i = 0; i < depth; i++) {
     const id = `deep-${i}`;
-    items.push(createMockMenuItem({
-      id,
-      title: `Level ${i + 1} Item`,
-      url: `/level-${i + 1}`,
-      parent_id: parentId,
-      sort_order: 0,
-    }));
+    items.push(
+      createMockMenuItem({
+        id,
+        title: `Level ${i + 1} Item`,
+        url: `/level-${i + 1}`,
+        parent_id: parentId,
+        sort_order: 0,
+      })
+    );
     parentId = id;
   }
 
@@ -438,15 +442,15 @@ export const securityTestInputs = {
     '<img src="x" onerror="alert(1)">',
     '<svg onload="alert(1)">',
     '"><script>alert(String.fromCharCode(88,83,83))</script>',
-    '\'; alert(\'XSS\'); //',
+    "'; alert('XSS'); //",
     '&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;',
   ],
   sqlInjectionAttempts: [
-    '\' OR 1=1 --',
-    '\'; DROP TABLE menu_items; --',
-    '\' UNION SELECT * FROM users --',
-    '\' INSERT INTO users (role) VALUES (\'admin\'); --',
-    '1\' AND (SELECT COUNT(*) FROM menu_items) > 0 --',
+    "' OR 1=1 --",
+    "'; DROP TABLE menu_items; --",
+    "' UNION SELECT * FROM users --",
+    "' INSERT INTO users (role) VALUES ('admin'); --",
+    "1' AND (SELECT COUNT(*) FROM menu_items) > 0 --",
   ],
   pathTraversalAttempts: [
     '../../../etc/passwd',
@@ -454,11 +458,7 @@ export const securityTestInputs = {
     '/../../sensitive-data',
     '\\..\\..\\sensitive-file',
   ],
-  overflowAttempts: [
-    'A'.repeat(10000),
-    'B'.repeat(100000),
-    Array(1000).fill('overflow').join(''),
-  ],
+  overflowAttempts: ['A'.repeat(10000), 'B'.repeat(100000), Array(1000).fill('overflow').join('')],
 };
 
 // User role test data
@@ -605,7 +605,9 @@ export const createMockMenuItem = (overrides: Partial<MenuItem> = {}): MenuItem 
   icon: faker.helpers.arrayElement(['Home', 'Users', 'Settings', 'Mail', 'Globe', null]),
   css_classes: faker.datatype.boolean() ? faker.lorem.word() : null,
   visibility: faker.helpers.arrayElement(['public', 'authenticated', 'admin', 'role_based'] as MenuVisibility[]),
-  required_roles: faker.datatype.boolean() ? faker.helpers.arrayElements(['admin', 'editor', 'moderator'], { min: 1, max: 3 }) : null,
+  required_roles: faker.datatype.boolean()
+    ? faker.helpers.arrayElements(['admin', 'editor', 'moderator'], { min: 1, max: 3 })
+    : null,
   is_external: faker.datatype.boolean(),
   created_at: faker.date.past().toISOString(),
   updated_at: faker.date.recent().toISOString(),
@@ -637,10 +639,10 @@ export const testScenarios = {
     update: { title: 'Test Updated Item', description: 'Updated description' },
     delete: mockMenuItems[0],
   }),
-  
+
   hierarchical: () => {
     const parent = createMockMenuItem({ title: 'Parent Item', parent_id: null });
-    const children = Array.from({ length: 3 }, (_, i) => 
+    const children = Array.from({ length: 3 }, (_, i) =>
       createMockMenuItem({
         title: `Child Item ${i + 1}`,
         parent_id: parent.id,
@@ -649,34 +651,34 @@ export const testScenarios = {
     );
     return { parent, children, all: [parent, ...children] };
   },
-  
+
   permissions: () => ({
     public: createMockMenuItem({ visibility: 'public', required_roles: null }),
     authenticated: createMockMenuItem({ visibility: 'authenticated', required_roles: null }),
     admin: createMockMenuItem({ visibility: 'admin', required_roles: ['admin'] }),
-    roleBased: createMockMenuItem({ 
-      visibility: 'role_based', 
-      required_roles: ['editor', 'moderator'] 
+    roleBased: createMockMenuItem({
+      visibility: 'role_based',
+      required_roles: ['editor', 'moderator'],
     }),
   }),
-  
+
   menuTypes: () => ({
     main: createMockMenuItem({ menu_type: 'main' }),
     footer: createMockMenuItem({ menu_type: 'footer' }),
     mobile: createMockMenuItem({ menu_type: 'mobile' }),
     admin: createMockMenuItem({ menu_type: 'admin' }),
   }),
-  
+
   external: () => ({
-    internal: createMockMenuItem({ 
-      url: '/internal-page', 
+    internal: createMockMenuItem({
+      url: '/internal-page',
       is_external: false,
-      target: '_self' 
+      target: '_self',
     }),
-    external: createMockMenuItem({ 
-      url: 'https://external-site.com', 
+    external: createMockMenuItem({
+      url: 'https://external-site.com',
       is_external: true,
-      target: '_blank' 
+      target: '_blank',
     }),
   }),
 };

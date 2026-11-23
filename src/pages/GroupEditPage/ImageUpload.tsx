@@ -1,13 +1,13 @@
 import { ImageUploadProps } from './types';
 import { FormImageUpload } from '@/shared/components/ui/Form';
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ 
-  formData, 
-  handleChange, 
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  formData,
+  handleChange,
   onHeroImageChange,
   onCoverImageChange,
   errors,
-  isSubmitting
+  isSubmitting,
 }) => {
   return (
     <div className="space-y-6">
@@ -25,7 +25,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         acceptedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/webp']}
         required
       />
-      
+
       <FormImageUpload
         id="cover-image"
         name="coverImage"

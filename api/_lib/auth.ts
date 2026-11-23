@@ -4,11 +4,9 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 // Publishable/anon key used only as the required `apikey` header when calling
 // the Supabase Auth API. Not a secret.
-const SUPABASE_PUBLISHABLE_KEY =
-  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 // Secret key (server-only) for privileged reads (e.g. validating a row exists).
-const SUPABASE_SECRET_KEY =
-  process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Minimal shapes for Vercel Node.js request/response (avoids a type dependency).
 export interface ApiReq {
@@ -41,9 +39,7 @@ function headerValue(v: string | string[] | undefined): string {
  */
 export async function getUser(req: ApiReq): Promise<AuthedUser | null> {
   const authHeader = headerValue(req.headers['authorization'] || req.headers['Authorization']);
-  const token = authHeader.toLowerCase().startsWith('bearer ')
-    ? authHeader.slice(7).trim()
-    : '';
+  const token = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
   if (!token || !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return null;
 
   try {

@@ -20,7 +20,7 @@ export function LikeButton({
   initialLikeCount = 0,
   className,
   showCount = true,
-  size = 'md'
+  size = 'md',
 }: LikeButtonProps) {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
@@ -100,13 +100,11 @@ export function LikeButton({
         }
       } else {
         // Add like
-        const { error } = await supabase
-          .from('likes')
-          .insert({
-            user_id: user.id,
-            entity_type: entityType,
-            entity_id: entityId
-          });
+        const { error } = await supabase.from('likes').insert({
+          user_id: user.id,
+          entity_type: entityType,
+          entity_id: entityId,
+        });
 
         if (!error) {
           setIsLiked(true);
@@ -127,13 +125,13 @@ export function LikeButton({
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-5 w-5',
-    lg: 'h-6 w-6'
+    lg: 'h-6 w-6',
   };
 
   const buttonSizeClasses = {
     sm: 'text-sm gap-1 px-2 py-1',
     md: 'text-base gap-1.5 px-3 py-1.5',
-    lg: 'text-lg gap-2 px-4 py-2'
+    lg: 'text-lg gap-2 px-4 py-2',
   };
 
   return (
@@ -151,18 +149,8 @@ export function LikeButton({
       )}
       aria-label={isLiked ? 'Unlike' : 'Like'}
     >
-      <Heart
-        className={cn(
-          sizeClasses[size],
-          'transition-all duration-200',
-          isLiked && 'fill-current'
-        )}
-      />
-      {showCount && (
-        <span className="font-medium tabular-nums">
-          {likeCount}
-        </span>
-      )}
+      <Heart className={cn(sizeClasses[size], 'transition-all duration-200', isLiked && 'fill-current')} />
+      {showCount && <span className="font-medium tabular-nums">{likeCount}</span>}
     </button>
   );
 }

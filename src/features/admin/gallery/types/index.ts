@@ -270,12 +270,12 @@ export interface AdminGalleryUIState {
   gridSize: 'small' | 'medium' | 'large';
   showFilters: boolean;
   showBulkActions: boolean;
-  
+
   // Selection State
   selectedGalleries: Set<string>;
   selectedPhotos: Set<string>;
   allSelected: boolean;
-  
+
   // Modal States
   modals: {
     galleryForm: {
@@ -297,7 +297,7 @@ export interface AdminGalleryUIState {
       itemId?: string;
     };
   };
-  
+
   // Loading States
   loading: {
     galleries: boolean;
@@ -306,7 +306,7 @@ export interface AdminGalleryUIState {
     moderation: boolean;
     analytics: boolean;
   };
-  
+
   // Error States
   errors: {
     galleries?: string;

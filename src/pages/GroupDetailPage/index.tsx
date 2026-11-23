@@ -25,21 +25,20 @@ export default function GroupDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [selectedTab, setSelectedTab] = useState<TabType>('about');
   const [showJoinModal, setShowJoinModal] = useState(false);
-  
+
   // Use the hybrid hook to fetch group data
   const { getGroup } = useGroupsHybrid();
   const { data: group, isLoading, error } = getGroup(slug || '');
-  
+
   // Fetch associations
   const { data: members = [], isLoading: membersLoading } = useGroupMembers(group?.id);
   const { data: events = [], isLoading: eventsLoading } = useGroupEvents(group?.id);
   const { data: resources = [], isLoading: resourcesLoading } = useGroupResources(group?.id);
   const { data: posts = [], isLoading: postsLoading } = useGroupPosts(group?.id);
-  
+
   // Check admin permissions
   const isAdmin = useIsGroupAdmin(group?.id);
-  
-  
+
   const getVisibilityIcon = (visibility?: 'open' | 'closed' | 'secret') => {
     switch (visibility) {
       case 'open':
@@ -80,56 +79,37 @@ export default function GroupDetailPage() {
         <title>{group.name} - Uluntu</title>
         <meta name="description" content={group.description?.substring(0, 160)} />
       </Helmet>
-      
+
       <PageHeader group={group as any} setShowJoinModal={setShowJoinModal} />
-      
+
       <ContentContainer>
         <Card className="overflow-hidden">
           <div className="p-8">
-            <Tabs 
-              selectedTab={selectedTab} 
-              setSelectedTab={setSelectedTab} 
-              group={{
-                ...group,
-                memberCount: members.length,
-                eventCount: events.length,
-                resourceCount: resources.length,
-                postCount: posts.length
-              } as any}
+            <Tabs
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+              group={
+                {
+                  ...group,
+                  memberCount: members.length,
+                  eventCount: events.length,
+                  resourceCount: resources.length,
+                  postCount: posts.length,
+                } as any
+              }
               isAdmin={isAdmin}
             />
-            
+
             <div className="mt-6">
-              {selectedTab === 'about' && (
-                <AboutTab group={group as any} />
-              )}
-              {selectedTab === 'events' && (
-                <EventsTab 
-                  events={events} 
-                  isLoading={eventsLoading}
-                />
-              )}
+              {selectedTab === 'about' && <AboutTab group={group as any} />}
+              {selectedTab === 'events' && <EventsTab events={events} isLoading={eventsLoading} />}
               {selectedTab === 'members' && (
-                <MembersTab 
-                  members={members} 
-                  isLoading={membersLoading}
-                  groupId={group.id}
-                  groupName={group.name}
-                />
+                <MembersTab members={members} isLoading={membersLoading} groupId={group.id} groupName={group.name} />
               )}
               {selectedTab === 'resources' && (
-                <ResourcesTab 
-                  resources={resources} 
-                  isLoading={resourcesLoading}
-                  groupId={group.id}
-                />
+                <ResourcesTab resources={resources} isLoading={resourcesLoading} groupId={group.id} />
               )}
-              {selectedTab === 'posts' && (
-                <PostsTab 
-                  posts={posts} 
-                  isLoading={postsLoading}
-                />
-              )}
+              {selectedTab === 'posts' && <PostsTab posts={posts} isLoading={postsLoading} />}
               {selectedTab === 'admin' && isAdmin && (
                 <AdminTab
                   group={group as any}
@@ -144,13 +124,8 @@ export default function GroupDetailPage() {
           </div>
         </Card>
       </ContentContainer>
-      
-      {showJoinModal && group && (
-        <JoinModal
-          group={group}
-          onClose={() => setShowJoinModal(false)}
-        />
-      )}
+
+      {showJoinModal && group && <JoinModal group={group} onClose={() => setShowJoinModal(false)} />}
     </>
   );
 }

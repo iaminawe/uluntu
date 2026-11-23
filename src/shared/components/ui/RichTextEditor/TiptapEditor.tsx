@@ -13,7 +13,7 @@ const TiptapEditor = ({
   label,
   required = false,
   id,
-  className = ''
+  className = '',
 }: RichTextEditorProps) => {
   const editor = useEditor({
     extensions: [
@@ -34,30 +34,22 @@ const TiptapEditor = ({
   return (
     <div className={className}>
       {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
-      <div 
+
+      <div
         className={`border border-slate-300 dark:border-slate-600 rounded-md 
                  bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                  ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
         style={{ minHeight: height }}
       >
-        <div className="bg-green-100 p-2 text-sm text-green-800 mb-2">
-          Tiptap Editor Test - This should work!
-        </div>
-        
-        <EditorContent 
-          editor={editor} 
-          className="min-h-[200px] p-4 prose prose-sm max-w-full focus:outline-none"
-        />
+        <div className="bg-green-100 p-2 text-sm text-green-800 mb-2">Tiptap Editor Test - This should work!</div>
+
+        <EditorContent editor={editor} className="min-h-[200px] p-4 prose prose-sm max-w-full focus:outline-none" />
       </div>
-      
+
       <style>{`
         .ProseMirror {
           outline: none;

@@ -1,12 +1,12 @@
 import { supabase } from '@/lib/supabase';
-import { 
+import {
   NewsletterTemplate,
   CreateTemplateRequest,
   UpdateTemplateRequest,
   TemplateFilters,
   PaginatedTemplates,
   TemplateCategory,
-  TemplatePreview
+  TemplatePreview,
 } from '@/types/newsletter';
 
 class NewsletterTemplateAPI {
@@ -26,14 +26,10 @@ class NewsletterTemplateAPI {
         tags: request.tags || [],
         is_active: request.is_active !== false,
         is_system: false,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
-      const { data, error } = await supabase
-        .from('newsletter_templates')
-        .insert(templateData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_templates').insert(templateData).select().single();
 
       if (error) throw error;
       return data as NewsletterTemplate;
@@ -48,9 +44,7 @@ class NewsletterTemplateAPI {
    */
   async getTemplates(filters: TemplateFilters = {}): Promise<PaginatedTemplates | null> {
     try {
-      let query = supabase
-        .from('newsletter_templates')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('newsletter_templates').select('*', { count: 'exact' });
 
       // Apply filters
       if (filters.category) {
@@ -94,7 +88,7 @@ class NewsletterTemplateAPI {
         total: count || 0,
         page: Math.floor(offset / limit) + 1,
         page_size: limit,
-        total_pages: Math.ceil((count || 0) / limit)
+        total_pages: Math.ceil((count || 0) / limit),
       };
     } catch (error) {
       console.error('Error getting templates:', error);
@@ -107,11 +101,7 @@ class NewsletterTemplateAPI {
    */
   async getTemplate(id: string): Promise<NewsletterTemplate | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_templates')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('newsletter_templates').select('*').eq('id', id).single();
 
       if (error) throw error;
       return data as NewsletterTemplate;
@@ -159,10 +149,7 @@ class NewsletterTemplateAPI {
         throw new Error('Cannot delete template that is used by campaigns');
       }
 
-      const { error } = await supabase
-        .from('newsletter_templates')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_templates').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -190,14 +177,10 @@ class NewsletterTemplateAPI {
         tags: original.tags,
         is_active: false, // New copies start as inactive
         is_system: false,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
-      const { data, error } = await supabase
-        .from('newsletter_templates')
-        .insert(duplicateData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_templates').insert(duplicateData).select().single();
 
       if (error) throw error;
       return data as NewsletterTemplate;
@@ -230,7 +213,7 @@ class NewsletterTemplateAPI {
         template_id: id,
         html,
         text: this.htmlToText(html),
-        preview_data: templateData
+        preview_data: templateData,
       };
     } catch (error) {
       console.error('Error previewing template:', error);
@@ -241,7 +224,10 @@ class NewsletterTemplateAPI {
   /**
    * Validate template content
    */
-  async validateTemplate(templateContent: string, type: 'mjml' | 'react-email'): Promise<{
+  async validateTemplate(
+    templateContent: string,
+    type: 'mjml' | 'react-email'
+  ): Promise<{
     valid: boolean;
     errors: string[];
     warnings: string[];
@@ -266,10 +252,7 @@ class NewsletterTemplateAPI {
       }
 
       // Check for required placeholders
-      const requiredPlaceholders = [
-        '{{unsubscribe_url}}',
-        '{{web_view_url}}'
-      ];
+      const requiredPlaceholders = ['{{unsubscribe_url}}', '{{web_view_url}}'];
 
       requiredPlaceholders.forEach(placeholder => {
         if (!templateContent.includes(placeholder)) {
@@ -280,14 +263,14 @@ class NewsletterTemplateAPI {
       return {
         valid: errors.length === 0,
         errors,
-        warnings
+        warnings,
       };
     } catch (error) {
       console.error('Error validating template:', error);
       return {
         valid: false,
         errors: ['Failed to validate template'],
-        warnings: []
+        warnings: [],
       };
     }
   }
@@ -304,13 +287,11 @@ class NewsletterTemplateAPI {
 
       if (error) throw error;
 
-      const categories = [...new Set((data || []).map(d => d.category))]
-        .filter(Boolean)
-        .map(category => ({
-          id: category,
-          name: this.formatCategoryName(category),
-          description: this.getCategoryDescription(category)
-        }));
+      const categories = [...new Set((data || []).map(d => d.category))].filter(Boolean).map(category => ({
+        id: category,
+        name: this.formatCategoryName(category),
+        description: this.getCategoryDescription(category),
+      }));
 
       return categories;
     } catch (error) {
@@ -336,7 +317,7 @@ class NewsletterTemplateAPI {
         default_settings: template.default_settings,
         tags: template.tags,
         exported_at: new Date().toISOString(),
-        version: '1.0'
+        version: '1.0',
       };
 
       return JSON.stringify(exportData, null, 2);
@@ -368,14 +349,10 @@ class NewsletterTemplateAPI {
         tags: templateData.tags || [],
         is_active: false, // Imported templates start as inactive
         is_system: false,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       };
 
-      const { data, error } = await supabase
-        .from('newsletter_templates')
-        .insert(importData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('newsletter_templates').insert(importData).select().single();
 
       if (error) throw error;
       return data as NewsletterTemplate;
@@ -409,14 +386,14 @@ class NewsletterTemplateAPI {
       return {
         campaign_count,
         last_used,
-        total_recipients
+        total_recipients,
       };
     } catch (error) {
       console.error('Error getting template usage:', error);
       return {
         campaign_count: 0,
         last_used: null,
-        total_recipients: 0
+        total_recipients: 0,
       };
     }
   }
@@ -481,16 +458,16 @@ class NewsletterTemplateAPI {
           title: 'Sample Event',
           description: 'This is a sample event description',
           date: new Date().toISOString(),
-          location: 'Sample Location'
-        }
+          location: 'Sample Location',
+        },
       ],
       news: [
         {
           title: 'Sample News Article',
           excerpt: 'This is a sample news excerpt',
-          read_more_url: 'https://example.com/news/1'
-        }
-      ]
+          read_more_url: 'https://example.com/news/1',
+        },
+      ],
     };
   }
 
@@ -503,12 +480,12 @@ class NewsletterTemplateAPI {
 
   private getCategoryDescription(category: string): string {
     const descriptions: Record<string, string> = {
-      'general': 'General purpose templates',
-      'event': 'Templates for event announcements',
-      'newsletter': 'Newsletter digest templates',
-      'welcome': 'Welcome email templates',
-      'promotion': 'Promotional email templates',
-      'announcement': 'General announcement templates'
+      general: 'General purpose templates',
+      event: 'Templates for event announcements',
+      newsletter: 'Newsletter digest templates',
+      welcome: 'Welcome email templates',
+      promotion: 'Promotional email templates',
+      announcement: 'General announcement templates',
     };
 
     return descriptions[category] || 'Custom template category';

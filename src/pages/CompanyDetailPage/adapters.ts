@@ -12,12 +12,13 @@ type SupabaseMember = Database['public']['Tables']['members']['Row'];
  */
 export function adaptCompanyForUI(supabaseCompany: SupabaseCompany): Company {
   // Convert status string to ContentStatus type
-  const status: ContentStatus = (supabaseCompany.status === 'published' || 
-                               supabaseCompany.status === 'draft' || 
-                               supabaseCompany.status === 'archived') 
-    ? supabaseCompany.status 
-    : 'published';
-    
+  const status: ContentStatus =
+    supabaseCompany.status === 'published' ||
+    supabaseCompany.status === 'draft' ||
+    supabaseCompany.status === 'archived'
+      ? supabaseCompany.status
+      : 'published';
+
   // Create a company object with the required frontend properties
   const company: Company = {
     id: supabaseCompany.id,
@@ -36,9 +37,9 @@ export function adaptCompanyForUI(supabaseCompany: SupabaseCompany): Company {
     created_at: supabaseCompany.created_at,
     // Handle the case where updated_at doesn't exist in the Supabase schema
     updated_at: supabaseCompany.created_at || new Date().toISOString(),
-    employees: []
+    employees: [],
   };
-  
+
   return company;
 }
 
@@ -48,12 +49,11 @@ export function adaptCompanyForUI(supabaseCompany: SupabaseCompany): Company {
  */
 export function adaptMemberForUI(supabaseMember: SupabaseMember): Member {
   // Convert status string to ContentStatus type
-  const status: ContentStatus = (supabaseMember.status === 'published' || 
-                               supabaseMember.status === 'draft' || 
-                               supabaseMember.status === 'archived') 
-    ? supabaseMember.status as ContentStatus 
-    : 'published';
-    
+  const status: ContentStatus =
+    supabaseMember.status === 'published' || supabaseMember.status === 'draft' || supabaseMember.status === 'archived'
+      ? (supabaseMember.status as ContentStatus)
+      : 'published';
+
   // Create a member object with the required frontend properties
   const member: Member = {
     id: supabaseMember.id,
@@ -72,9 +72,9 @@ export function adaptMemberForUI(supabaseMember: SupabaseMember): Member {
     status: status,
     created_at: supabaseMember.created_at || new Date().toISOString(),
     // Handle the case where updated_at doesn't exist in the Supabase schema
-    updated_at: supabaseMember.created_at || new Date().toISOString()
+    updated_at: supabaseMember.created_at || new Date().toISOString(),
   };
-  
+
   return member;
 }
 

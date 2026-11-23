@@ -8,7 +8,7 @@ const ErrorState: React.FC<ErrorStateProps> = () => {
       message="We couldn't find the resource you're looking for."
       backLink={{
         to: '/resources',
-        text: 'Back to Resources'
+        text: 'Back to Resources',
       }}
     />
   );

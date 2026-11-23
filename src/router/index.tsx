@@ -1,37 +1,37 @@
-import { createBrowserRouter } from "react-router-dom"
-import HomePage from "../pages/HomePage"
-import SignInPage from "../pages/auth/SignInPage"
-import SignUpPage from "../pages/auth/SignUpPage"
-import ProtectedPage from "../pages/ProtectedPage"
-import NotFoundPage from "../pages/404Page"
-import AuthProtectedRoute from "./AuthProtectedRoute"
-import Providers from "../Providers"
+import { createBrowserRouter } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import SignInPage from '../pages/auth/SignInPage';
+import SignUpPage from '../pages/auth/SignUpPage';
+import ProtectedPage from '../pages/ProtectedPage';
+import NotFoundPage from '../pages/404Page';
+import AuthProtectedRoute from './AuthProtectedRoute';
+import Providers from '../Providers';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Providers />,
     children: [
       // Public routes
       {
-        path: "/",
+        path: '/',
         element: <HomePage />,
       },
       {
-        path: "/auth/sign-in",
+        path: '/auth/sign-in',
         element: <SignInPage />,
       },
       {
-        path: "/auth/sign-up",
+        path: '/auth/sign-up',
         element: <SignUpPage />,
       },
       // Auth Protected routes
       {
-        path: "/",
+        path: '/',
         element: <AuthProtectedRoute />,
         children: [
           {
-            path: "/protected",
+            path: '/protected',
             element: <ProtectedPage />,
           },
         ],
@@ -39,9 +39,9 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <NotFoundPage />,
   },
-])
+]);
 
-export default router
+export default router;

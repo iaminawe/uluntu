@@ -13,7 +13,7 @@ const mockJoinGroup = joinGroup as jest.MockedFunction<typeof joinGroup>;
 describe('CommunityEngagementStep', () => {
   const mockOnNext = jest.fn();
   const mockOnSkip = jest.fn();
-  
+
   const defaultProps = {
     userData: {},
     onNext: mockOnNext,
@@ -72,7 +72,7 @@ describe('CommunityEngagementStep', () => {
 
       const reactContainer = screen.getByTestId('interest-React');
       const levelSelect = within(reactContainer).getByLabelText('Interest level');
-      
+
       await userEvent.selectOptions(levelSelect, 'high');
       expect(levelSelect).toHaveValue('high');
     });
@@ -83,9 +83,7 @@ describe('CommunityEngagementStep', () => {
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('interests-error')).toHaveTextContent(
-          'Please select at least one interest'
-        );
+        expect(screen.getByTestId('interests-error')).toHaveTextContent('Please select at least one interest');
       });
     });
 
@@ -99,9 +97,7 @@ describe('CommunityEngagementStep', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByTestId('interests-error')).toHaveTextContent(
-          'Please select up to 10 interests'
-        );
+        expect(screen.getByTestId('interests-error')).toHaveTextContent('Please select up to 10 interests');
       });
     });
   });
@@ -109,19 +105,19 @@ describe('CommunityEngagementStep', () => {
   describe('Group Suggestions', () => {
     it('should load suggested groups based on interests', async () => {
       const mockGroups = [
-        { 
-          id: '1', 
-          name: 'React Developers', 
+        {
+          id: '1',
+          name: 'React Developers',
           memberCount: 150,
           description: 'Community for React enthusiasts',
-          tags: ['react', 'frontend']
+          tags: ['react', 'frontend'],
         },
-        { 
-          id: '2', 
-          name: 'Node.js Experts', 
+        {
+          id: '2',
+          name: 'Node.js Experts',
           memberCount: 200,
           description: 'Backend development with Node.js',
-          tags: ['nodejs', 'backend']
+          tags: ['nodejs', 'backend'],
         },
       ];
       mockGetSuggestedGroups.mockResolvedValue(mockGroups);
@@ -199,9 +195,7 @@ describe('CommunityEngagementStep', () => {
     });
 
     it('should handle join errors gracefully', async () => {
-      mockGetSuggestedGroups.mockResolvedValue([
-        { id: '1', name: 'React Developers' }
-      ]);
+      mockGetSuggestedGroups.mockResolvedValue([{ id: '1', name: 'React Developers' }]);
       mockJoinGroup.mockRejectedValue(new Error('Failed to join'));
 
       renderComponent();
@@ -213,15 +207,13 @@ describe('CommunityEngagementStep', () => {
       fireEvent.click(screen.getByTestId('join-group-1'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('group-1-error')).toHaveTextContent(
-          'Failed to join group'
-        );
+        expect(screen.getByTestId('group-1-error')).toHaveTextContent('Failed to join group');
       });
     });
 
     it('should show private group indicators', async () => {
       mockGetSuggestedGroups.mockResolvedValue([
-        { id: '1', name: 'Private React Group', isPublic: false, requiresApproval: true }
+        { id: '1', name: 'Private React Group', isPublic: false, requiresApproval: true },
       ]);
 
       renderComponent();
@@ -231,9 +223,7 @@ describe('CommunityEngagementStep', () => {
       await waitFor(() => {
         const groupCard = screen.getByTestId('group-card-1');
         expect(within(groupCard).getByTestId('private-badge')).toHaveTextContent('Private');
-        expect(within(groupCard).getByTestId('approval-notice')).toHaveTextContent(
-          'Requires approval'
-        );
+        expect(within(groupCard).getByTestId('approval-notice')).toHaveTextContent('Requires approval');
       });
     });
   });
@@ -281,17 +271,15 @@ describe('CommunityEngagementStep', () => {
       renderComponent();
 
       fireEvent.click(screen.getByLabelText('Available as Mentor'));
-      
+
       // Select an interest
       fireEvent.click(screen.getByLabelText('React'));
-      
+
       // Try to submit without filling mentoring areas
       fireEvent.click(screen.getByTestId('next-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('mentoring-areas-error')).toHaveTextContent(
-          'Please specify your mentoring areas'
-        );
+        expect(screen.getByTestId('mentoring-areas-error')).toHaveTextContent('Please specify your mentoring areas');
       });
     });
   });
@@ -310,7 +298,7 @@ describe('CommunityEngagementStep', () => {
 
       expect(screen.getByLabelText('Networking Interests')).toBeInTheDocument();
       expect(screen.getByLabelText('Preferred Meeting Types')).toBeInTheDocument();
-      
+
       // Check meeting type options
       expect(screen.getByLabelText('Coffee Chats')).toBeInTheDocument();
       expect(screen.getByLabelText('Virtual Meetings')).toBeInTheDocument();
@@ -321,7 +309,7 @@ describe('CommunityEngagementStep', () => {
       renderComponent();
 
       fireEvent.click(screen.getByLabelText('Open to Networking'));
-      
+
       fireEvent.click(screen.getByLabelText('Coffee Chats'));
       fireEvent.click(screen.getByLabelText('Virtual Meetings'));
 
@@ -356,7 +344,7 @@ describe('CommunityEngagementStep', () => {
 
       expect(screen.getByLabelText('Volunteering Availability')).toBeInTheDocument();
       const availabilitySelect = screen.getByLabelText('Volunteering Availability');
-      
+
       expect(within(availabilitySelect).getByText('Weekends only')).toBeInTheDocument();
       expect(within(availabilitySelect).getByText('Evenings')).toBeInTheDocument();
       expect(within(availabilitySelect).getByText('Flexible')).toBeInTheDocument();
@@ -365,9 +353,7 @@ describe('CommunityEngagementStep', () => {
 
   describe('Form Submission', () => {
     it('should submit all preferences', async () => {
-      mockGetSuggestedGroups.mockResolvedValue([
-        { id: '1', name: 'React Group' }
-      ]);
+      mockGetSuggestedGroups.mockResolvedValue([{ id: '1', name: 'React Group' }]);
       mockJoinGroup.mockResolvedValue({ success: true });
 
       renderComponent();
@@ -378,10 +364,7 @@ describe('CommunityEngagementStep', () => {
 
       // Set interest levels
       const reactContainer = screen.getByTestId('interest-React');
-      await userEvent.selectOptions(
-        within(reactContainer).getByLabelText('Interest level'), 
-        'high'
-      );
+      await userEvent.selectOptions(within(reactContainer).getByLabelText('Interest level'), 'high');
 
       // Join a group
       await waitFor(() => screen.getByText('React Group'));
@@ -389,10 +372,7 @@ describe('CommunityEngagementStep', () => {
 
       // Set mentorship
       fireEvent.click(screen.getByLabelText('Available as Mentor'));
-      await userEvent.type(
-        screen.getByLabelText('Mentoring Areas'), 
-        'React, Frontend Development'
-      );
+      await userEvent.type(screen.getByLabelText('Mentoring Areas'), 'React, Frontend Development');
 
       // Set networking
       fireEvent.click(screen.getByLabelText('Open to Networking'));
@@ -409,7 +389,7 @@ describe('CommunityEngagementStep', () => {
         expect(mockOnNext).toHaveBeenCalledWith({
           interests: [
             { name: 'React', level: 'high' },
-            { name: 'Node.js', level: 'medium' }
+            { name: 'Node.js', level: 'medium' },
           ],
           joinedGroups: ['1'],
           mentorshipAvailableAs: 'mentor',
@@ -464,7 +444,7 @@ describe('CommunityEngagementStep', () => {
       const existingData = {
         interests: [
           { name: 'React', level: 'high' },
-          { name: 'Python', level: 'medium' }
+          { name: 'Python', level: 'medium' },
         ],
         mentorshipAvailableAs: 'both',
         networkingAvailable: true,
@@ -496,9 +476,7 @@ describe('CommunityEngagementStep', () => {
 
   describe('Loading States', () => {
     it('should show loading while fetching groups', async () => {
-      mockGetSuggestedGroups.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 1000))
-      );
+      mockGetSuggestedGroups.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       renderComponent();
 
@@ -508,17 +486,13 @@ describe('CommunityEngagementStep', () => {
     });
 
     it('should show loading while joining group', async () => {
-      mockGetSuggestedGroups.mockResolvedValue([
-        { id: '1', name: 'React Group' }
-      ]);
-      mockJoinGroup.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 1000))
-      );
+      mockGetSuggestedGroups.mockResolvedValue([{ id: '1', name: 'React Group' }]);
+      mockJoinGroup.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       renderComponent();
 
       fireEvent.click(screen.getByLabelText('React'));
-      
+
       await waitFor(() => screen.getByText('React Group'));
 
       fireEvent.click(screen.getByTestId('join-group-1'));
@@ -555,9 +529,7 @@ describe('CommunityEngagementStep', () => {
       fireEvent.click(screen.getByLabelText('React'));
 
       await waitFor(() => {
-        expect(screen.getByRole('status')).toHaveTextContent(
-          '2 groups suggested based on your interests'
-        );
+        expect(screen.getByRole('status')).toHaveTextContent('2 groups suggested based on your interests');
       });
     });
   });

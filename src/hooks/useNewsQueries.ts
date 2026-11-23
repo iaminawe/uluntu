@@ -6,7 +6,7 @@ import { NewsArticle, ContentStatus } from '../types';
 import {
   adaptNewsArticleFromDatabase as adaptNewsArticleFromSupabase, // Keep alias for minimal changes in this file
   adaptNewsArticleToDatabase as adaptNewsArticleToDatabase, // Import the to-database adapter
-  type SupabaseNewsArticleWithAuthor as NewsArticleSupabaseRow // Keep alias for minimal changes
+  type SupabaseNewsArticleWithAuthor as NewsArticleSupabaseRow, // Keep alias for minimal changes
 } from '@/adapters/newsAdapter';
 import { IS_SUPABASE_ENABLED } from '@/config/env';
 
@@ -53,11 +53,12 @@ function mapMockNewsToInternalNews(mockItem: MockNewsArticle): NewsArticle {
     content: mockItem.content || '',
     date: mockItem.publishedAt || new Date().toISOString(),
     image: mockItem.image,
-    hero_image_alt: mockItem.hero_image_alt ?? "",
+    hero_image_alt: mockItem.hero_image_alt ?? '',
     featured: mockItem.featured ?? false,
-    status: (mockItem.status && ['draft', 'published', 'archived'].includes(mockItem.status))
-      ? mockItem.status as ContentStatus
-      : 'draft',
+    status:
+      mockItem.status && ['draft', 'published', 'archived'].includes(mockItem.status)
+        ? (mockItem.status as ContentStatus)
+        : 'draft',
     author: {
       id: String(mockItem.author?.id || '1'),
       name: mockItem.author?.name || 'Unknown Author',
@@ -76,14 +77,16 @@ export function useNewsArticles() {
       if (useSupabase) {
         const { data, error } = await supabase
           .from('news')
-          .select(`
+          .select(
+            `
             *,
             members:author_id (
               id,
               name,
               image
             )
-          `)
+          `
+          )
           .order('publish_date', { ascending: false });
 
         if (error) {
@@ -115,14 +118,16 @@ export function useNewsArticlesWithFilters(filters?: {
       if (useSupabase) {
         let query = supabase
           .from('news')
-          .select(`
+          .select(
+            `
             *,
             members:author_id (
               id,
               name,
               image
             )
-          `)
+          `
+          )
           .order('publish_date', { ascending: false });
 
         if (filters?.search) {
@@ -148,9 +153,7 @@ export function useNewsArticlesWithFilters(filters?: {
 
         // Apply tag filter client-side since Supabase JSONB queries can be complex
         if (filters?.tag) {
-          mappedNews = mappedNews.filter((article: NewsArticle) => 
-            article.tags?.includes(filters.tag!)
-          );
+          mappedNews = mappedNews.filter((article: NewsArticle) => article.tags?.includes(filters.tag!));
         }
 
         return mappedNews;
@@ -160,28 +163,22 @@ export function useNewsArticlesWithFilters(filters?: {
 
         if (filters?.search) {
           const searchLower = filters.search.toLowerCase();
-          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => 
-            article.title.toLowerCase().includes(searchLower) ||
-            article.content.toLowerCase().includes(searchLower)
+          mappedMockNews = mappedMockNews.filter(
+            (article: NewsArticle) =>
+              article.title.toLowerCase().includes(searchLower) || article.content.toLowerCase().includes(searchLower)
           );
         }
 
         if (filters?.tag) {
-          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => 
-            article.tags?.includes(filters.tag!)
-          );
+          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => article.tags?.includes(filters.tag!));
         }
 
         if (filters?.featured !== undefined) {
-          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => 
-            article.featured === filters.featured
-          );
+          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => article.featured === filters.featured);
         }
 
         if (filters?.status) {
-          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => 
-            article.status === filters.status
-          );
+          mappedMockNews = mappedMockNews.filter((article: NewsArticle) => article.status === filters.status);
         }
 
         return mappedMockNews;
@@ -202,14 +199,16 @@ export function useNewsArticle(id: string | number | undefined) {
       if (useSupabase) {
         const { data, error } = await supabase
           .from('news')
-          .select(`
+          .select(
+            `
             *,
             members:author_id (
               id,
               name,
               image
             )
-          `)
+          `
+          )
           .eq('id', String(id))
           .single();
 
@@ -265,20 +264,22 @@ export function useCreateNewsArticle() {
           // Ensure required fields have non-null values
           content: supabaseData.content || '',
           slug: supabaseData.slug || '',
-          title: supabaseData.title || ''
+          title: supabaseData.title || '',
         };
-        
+
         const { data: insertedData, error } = await supabase
           .from('news')
           .insert(insertPayload)
-          .select(`
+          .select(
+            `
             *,
             members:author_id (
               id,
               name,
               image
             )
-          `)
+          `
+          )
           .single();
 
         if (error) {
@@ -322,7 +323,13 @@ export function useUpdateNewsArticle() {
   const useSupabase = IS_SUPABASE_ENABLED;
 
   return useMutation<NewsArticle | null, Error, { id: string | number; data: Partial<NewsArticleInput> }>({
-    mutationFn: async ({ id, data }: { id: string | number; data: Partial<NewsArticleInput> }): Promise<NewsArticle | null> => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string | number;
+      data: Partial<NewsArticleInput>;
+    }): Promise<NewsArticle | null> => {
       if (useSupabase) {
         const { data: updatedData, error } = await supabase
           .from('news')
@@ -339,14 +346,16 @@ export function useUpdateNewsArticle() {
             featured: data.featured,
           })
           .eq('id', String(id))
-          .select(`
+          .select(
+            `
             *,
             members:author_id (
               id,
               name,
               image
             )
-          `)
+          `
+          )
           .single();
 
         if (error) {
@@ -372,14 +381,21 @@ export function useUpdateNewsArticle() {
         return mapMockNewsToInternalNews(updatedArticle);
       }
     },
-    onSuccess: (_updatedData: NewsArticle | null, variables: { id: string | number; data: Partial<NewsArticleInput> }) => {
+    onSuccess: (
+      _updatedData: NewsArticle | null,
+      variables: { id: string | number; data: Partial<NewsArticleInput> }
+    ) => {
       queryClient.invalidateQueries({ queryKey: ['newsArticles'] });
       queryClient.invalidateQueries({ queryKey: ['newsArticle', variables.id] });
     },
   });
 }
 
-export function useRelatedNewsArticles(articleId: string | number | undefined, tags: string[] | null | undefined, limit: number = 3) {
+export function useRelatedNewsArticles(
+  articleId: string | number | undefined,
+  tags: string[] | null | undefined,
+  limit: number = 3
+) {
   return useQuery<NewsArticle[], Error>({
     queryKey: ['relatedNewsArticles', articleId, tags, limit],
     queryFn: async (): Promise<NewsArticle[]> => {
@@ -389,7 +405,7 @@ export function useRelatedNewsArticles(articleId: string | number | undefined, t
 
       // For simplicity, use mock data for related articles
       const mappedMockNews = newsArticles.map(mapMockNewsToInternalNews);
-      
+
       const related = mappedMockNews.filter((article: NewsArticle) => {
         if (article.id === String(articleId)) return false; // Exclude the current article
         if (!article.tags || article.tags.length === 0) return false;
@@ -410,10 +426,7 @@ export function useDeleteNewsArticle() {
   return useMutation<boolean, Error, string | number>({
     mutationFn: async (id: string | number): Promise<boolean> => {
       if (useSupabase) {
-        const { error } = await supabase
-          .from('news')
-          .delete()
-          .eq('id', String(id));
+        const { error } = await supabase.from('news').delete().eq('id', String(id));
 
         if (error) {
           console.error('Error deleting news article from Supabase:', error);

@@ -9,27 +9,27 @@ import { AuthProvider } from '@/shared/contexts/AuthContextWithRedux';
 // Mock components to verify they're rendered
 jest.mock('@/pages/admin/Dashboard', () => ({
   __esModule: true,
-  default: () => <div>Admin Dashboard Component</div>
+  default: () => <div>Admin Dashboard Component</div>,
 }));
 
 jest.mock('@/pages/admin/UsersPage', () => ({
   __esModule: true,
-  default: () => <div>Users Management Component</div>
+  default: () => <div>Users Management Component</div>,
 }));
 
 jest.mock('@/pages/admin/RolesPage', () => ({
   __esModule: true,
-  default: () => <div>Roles Management Component</div>
+  default: () => <div>Roles Management Component</div>,
 }));
 
 jest.mock('@/pages/admin/ModerationPage', () => ({
   __esModule: true,
-  default: () => <div>Moderation Component</div>
+  default: () => <div>Moderation Component</div>,
 }));
 
 jest.mock('@/pages/admin/entities/MembersPage', () => ({
   __esModule: true,
-  default: () => <div>Members Entity Component</div>
+  default: () => <div>Members Entity Component</div>,
 }));
 
 // Mock auth to always be authenticated as admin
@@ -39,8 +39,8 @@ jest.mock('@/features/auth/hooks/useAuth', () => ({
     userRoles: ['superadmin'],
     isAdmin: true,
     loading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 // Mock the AuthContext
@@ -50,9 +50,9 @@ jest.mock('@/shared/contexts/AuthContextWithRedux', () => ({
     userRoles: ['superadmin'],
     isAdmin: true,
     loading: false,
-    error: null
+    error: null,
   }),
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Import AdminLayout after mocks
@@ -65,8 +65,8 @@ describe('Admin System Integration', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
-        mutations: { retry: false }
-      }
+        mutations: { retry: false },
+      },
     });
   });
 
@@ -75,9 +75,7 @@ describe('Admin System Integration', () => {
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <MemoryRouter initialEntries={[route]}>
-              {component}
-            </MemoryRouter>
+            <MemoryRouter initialEntries={[route]}>{component}</MemoryRouter>
           </AuthProvider>
         </QueryClientProvider>
       </Provider>
@@ -87,7 +85,7 @@ describe('Admin System Integration', () => {
   describe('AdminLayout Navigation', () => {
     it('renders the admin layout with navigation menu', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Check main navigation sections
       expect(screen.getByText('Admin Panel')).toBeInTheDocument();
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
@@ -102,7 +100,7 @@ describe('Admin System Integration', () => {
 
     it('displays all entity management submenu items', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Check entity management items
       expect(screen.getByText('Members')).toBeInTheDocument();
       expect(screen.getByText('Companies')).toBeInTheDocument();
@@ -116,7 +114,7 @@ describe('Admin System Integration', () => {
 
     it('shows user email in the sidebar', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       expect(screen.getByText('admin@test.com')).toBeInTheDocument();
       expect(screen.getByText('Super Admin')).toBeInTheDocument();
     });
@@ -125,7 +123,7 @@ describe('Admin System Integration', () => {
   describe('Admin Route Navigation', () => {
     it('navigates to dashboard route', () => {
       const { container } = renderWithProviders(<AdminLayout />, '/admin');
-      
+
       // Check for active state on dashboard
       const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
       expect(dashboardLink).toHaveClass('bg-gray-800');
@@ -133,25 +131,25 @@ describe('Admin System Integration', () => {
 
     it('highlights active entity management routes', () => {
       renderWithProviders(<AdminLayout />, '/admin/entities/members');
-      
+
       // Members link should be active
       const membersLinks = screen.getAllByText('Members');
-      const entityMembersLink = membersLinks.find(link => 
-        link.closest('a')?.getAttribute('href') === '/admin/entities/members'
+      const entityMembersLink = membersLinks.find(
+        link => link.closest('a')?.getAttribute('href') === '/admin/entities/members'
       );
       expect(entityMembersLink?.closest('a')).toHaveClass('bg-gray-800');
     });
 
     it('highlights users route when active', () => {
       renderWithProviders(<AdminLayout />, '/admin/users');
-      
+
       const usersLink = screen.getByRole('link', { name: /users/i });
       expect(usersLink).toHaveClass('bg-gray-800');
     });
 
     it('highlights roles route when active', () => {
       renderWithProviders(<AdminLayout />, '/admin/roles');
-      
+
       const rolesLink = screen.getByRole('link', { name: /roles/i });
       expect(rolesLink).toHaveClass('bg-gray-800');
     });
@@ -160,7 +158,7 @@ describe('Admin System Integration', () => {
   describe('Admin Components Integration', () => {
     it('renders all navigation links with correct hrefs', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Check main navigation links
       expect(screen.getByRole('link', { name: /dashboard/i })).toHaveAttribute('href', '/admin');
       expect(screen.getByRole('link', { name: /users/i })).toHaveAttribute('href', '/admin/users');
@@ -172,10 +170,10 @@ describe('Admin System Integration', () => {
 
     it('renders entity management links correctly', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Find all links and check entity management ones
       const allLinks = screen.getAllByRole('link');
-      
+
       const entityLinks = [
         { text: 'Members', href: '/admin/entities/members' },
         { text: 'Companies', href: '/admin/entities/companies' },
@@ -184,34 +182,32 @@ describe('Admin System Integration', () => {
         { text: 'News', href: '/admin/entities/news' },
         { text: 'Resources', href: '/admin/entities/resources' },
         { text: 'Marketplace', href: '/admin/entities/marketplace' },
-        { text: 'Opportunities', href: '/admin/entities/opportunities' }
+        { text: 'Opportunities', href: '/admin/entities/opportunities' },
       ];
 
       entityLinks.forEach(({ text, href }) => {
         const links = screen.getAllByText(text);
-        const entityLink = links.find(link => 
-          link.closest('a')?.getAttribute('href') === href
-        );
+        const entityLink = links.find(link => link.closest('a')?.getAttribute('href') === href);
         expect(entityLink).toBeTruthy();
       });
     });
 
     it('renders newsletter submenu correctly', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Find newsletter links
       const dashboardLinks = screen.getAllByText('Dashboard');
-      const newsletterDashboard = dashboardLinks.find(link => 
-        link.closest('a')?.getAttribute('href') === '/admin/newsletter'
+      const newsletterDashboard = dashboardLinks.find(
+        link => link.closest('a')?.getAttribute('href') === '/admin/newsletter'
       );
       expect(newsletterDashboard).toBeTruthy();
 
-      expect(screen.getByRole('link', { name: /campaigns/i }))
-        .toHaveAttribute('href', '/admin/newsletter/campaigns');
-      expect(screen.getByRole('link', { name: /subscribers/i }))
-        .toHaveAttribute('href', '/admin/newsletter/subscribers');
-      expect(screen.getByRole('link', { name: /analytics/i }))
-        .toHaveAttribute('href', '/admin/newsletter/analytics');
+      expect(screen.getByRole('link', { name: /campaigns/i })).toHaveAttribute('href', '/admin/newsletter/campaigns');
+      expect(screen.getByRole('link', { name: /subscribers/i })).toHaveAttribute(
+        'href',
+        '/admin/newsletter/subscribers'
+      );
+      expect(screen.getByRole('link', { name: /analytics/i })).toHaveAttribute('href', '/admin/newsletter/analytics');
     });
   });
 
@@ -223,14 +219,13 @@ describe('Admin System Integration', () => {
         userRoles: ['authenticated'],
         isAdmin: false,
         loading: false,
-        error: null
+        error: null,
       }));
 
-      jest.spyOn(require('@/shared/contexts/AuthContextWithRedux'), 'useAuth')
-        .mockImplementation(mockUseAuth);
+      jest.spyOn(require('@/shared/contexts/AuthContextWithRedux'), 'useAuth').mockImplementation(mockUseAuth);
 
       renderWithProviders(<AdminLayout />);
-      
+
       // Should redirect (component returns Navigate)
       expect(screen.queryByText('Admin Panel')).not.toBeInTheDocument();
     });

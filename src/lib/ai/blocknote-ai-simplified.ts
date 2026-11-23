@@ -46,9 +46,7 @@ export const callAI = async (prompt: string, selectedText?: string) => {
 
   const userMessage: CoreMessage = {
     role: 'user',
-    content: selectedText
-      ? `${prompt}\n\nContent to work with:\n${selectedText}`
-      : prompt,
+    content: selectedText ? `${prompt}\n\nContent to work with:\n${selectedText}` : prompt,
   };
 
   try {
@@ -63,9 +61,7 @@ export const callAI = async (prompt: string, selectedText?: string) => {
     return fullResponse;
   } catch (error) {
     console.error('AI call failed:', error);
-    throw error instanceof Error
-      ? error
-      : new Error('Failed to generate AI response.');
+    throw error instanceof Error ? error : new Error('Failed to generate AI response.');
   }
 };
 

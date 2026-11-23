@@ -62,7 +62,7 @@ export const useProfileForm = (initialData?: Partial<ProfileFormData>) => {
     employmentStatus,
     arrivedInNelson,
     interests,
-    imageFile
+    imageFile,
   });
 
   const setFormData = (data: Partial<ProfileFormData>) => {
@@ -117,6 +117,6 @@ export const useProfileForm = (initialData?: Partial<ProfileFormData>) => {
     handleImageChange,
     // Helpers
     getFormData,
-    setFormData
+    setFormData,
   };
 };

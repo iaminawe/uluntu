@@ -7,15 +7,15 @@ import SuccessMessage from '@/features/groups/components/JoinModal/SuccessMessag
 const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
   const [_joining, setJoining] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+
   const handleSubmit = (_message: string) => {
     setJoining(true);
-    
+
     // Simulate API call to join group
     setTimeout(() => {
       setJoining(false);
       setSuccess(true);
-      
+
       // Close modal after success message is shown
       setTimeout(() => {
         onClose();
@@ -39,18 +39,11 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         {!success ? (
-          <JoinRequestForm 
-            group={group} 
-            onSubmit={handleSubmit} 
-            onCancel={onClose} 
-          />
+          <JoinRequestForm group={group} onSubmit={handleSubmit} onCancel={onClose} />
         ) : (
-          <SuccessMessage 
-            group={group} 
-            isOpenGroup={_isOpenGroup} 
-          />
+          <SuccessMessage group={group} isOpenGroup={_isOpenGroup} />
         )}
       </div>
     </div>

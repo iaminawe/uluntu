@@ -1,18 +1,11 @@
 import { supabase, handleSupabaseError } from '@/shared/api';
-import { 
-  adaptTopicFromDatabase, 
-  adaptTopicToDatabase, 
+import {
+  adaptTopicFromDatabase,
+  adaptTopicToDatabase,
   adaptTopicWithAnalyticsFromDatabase,
-  generateTopicSlug
+  generateTopicSlug,
 } from '../utils/topicAdapter';
-import type { 
-  Topic, 
-  TopicWithAnalytics, 
-  TopicFormData, 
-  TopicEntityType,
-  TopicRow,
-  TopicAnalyticsRow 
-} from '../types';
+import type { Topic, TopicWithAnalytics, TopicFormData, TopicEntityType, TopicRow, TopicAnalyticsRow } from '../types';
 
 // NOTE: Topics tables need to be added to the Supabase database and types regenerated
 // Migration file exists at: /supabase/migrations/20250627000001_create_topics_system.sql
@@ -41,11 +34,7 @@ export const topicsApi = {
 
   async getById(id: string): Promise<Topic | null> {
     try {
-      const { data, error } = await supabase
-        .from('topics')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('topics').select('*').eq('id', id).single();
 
       if (error) {
         handleSupabaseError(error, 'fetching topic by id');
@@ -61,12 +50,7 @@ export const topicsApi = {
 
   async getBySlug(slug: string): Promise<Topic | null> {
     try {
-      const { data, error } = await supabase
-        .from('topics')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
+      const { data, error } = await supabase.from('topics').select('*').eq('slug', slug).eq('is_active', true).single();
 
       if (error) {
         handleSupabaseError(error, 'fetching topic by slug');
@@ -108,14 +92,10 @@ export const topicsApi = {
         icon: topicData.icon || null,
         color: topicData.color || null,
         sort_order: topicData.sortOrder || 0,
-        is_active: topicData.isActive ?? true
+        is_active: topicData.isActive ?? true,
       };
 
-      const { data, error } = await supabase
-        .from('topics')
-        .insert(dbData)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('topics').insert(dbData).select().single();
 
       if (error) {
         handleSupabaseError(error, 'creating topic');
@@ -133,12 +113,7 @@ export const topicsApi = {
     try {
       const dbData = adaptTopicToDatabase(topicData);
 
-      const { data, error } = await supabase
-        .from('topics')
-        .update(dbData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('topics').update(dbData).eq('id', id).select().single();
 
       if (error) {
         handleSupabaseError(error, 'updating topic');
@@ -154,10 +129,7 @@ export const topicsApi = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('topics')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('topics').delete().eq('id', id);
 
       if (error) {
         handleSupabaseError(error, 'deleting topic');
@@ -179,10 +151,12 @@ export const topicsApi = {
 
       const { data, error } = await (supabase as any)
         .from(tableName)
-        .select(`
+        .select(
+          `
           topic_id,
           topics!inner (*)
-        `)
+        `
+        )
         .eq(idColumn, entityId);
 
       if (error) {
@@ -203,10 +177,7 @@ export const topicsApi = {
       const idColumn = `${entityType}_id`;
 
       // First, delete existing topics
-      const { error: deleteError } = await (supabase as any)
-        .from(tableName)
-        .delete()
-        .eq(idColumn, entityId);
+      const { error: deleteError } = await (supabase as any).from(tableName).delete().eq(idColumn, entityId);
 
       if (deleteError) {
         handleSupabaseError(deleteError, `removing ${entityType} topics`);
@@ -217,12 +188,10 @@ export const topicsApi = {
       if (topicIds.length > 0) {
         const topicData = topicIds.map(topicId => ({
           [idColumn]: entityId,
-          topic_id: topicId
+          topic_id: topicId,
         }));
 
-        const { error: insertError } = await (supabase as any)
-          .from(tableName)
-          .insert(topicData);
+        const { error: insertError } = await (supabase as any).from(tableName).insert(topicData);
 
         if (insertError) {
           handleSupabaseError(insertError, `adding ${entityType} topics`);
@@ -239,8 +208,7 @@ export const topicsApi = {
 
   async getTopicContentCounts(slug: string): Promise<Record<string, number>> {
     try {
-      const { data, error } = await supabase
-        .rpc('get_topic_content_counts', { topic_slug_param: slug });
+      const { data, error } = await supabase.rpc('get_topic_content_counts', { topic_slug_param: slug });
 
       if (error) {
         handleSupabaseError(error, 'fetching topic content counts');
@@ -259,46 +227,48 @@ export const topicsApi = {
       handleSupabaseError(error, 'fetching topic content counts');
       return {};
     }
-  }
+  },
 };
 
 // Entity-specific API exports for convenience
 export const newsTopicsApi = {
   getTopics: (newsId: string) => topicsApi.getTopicsForEntity('news', newsId),
-  setTopics: (newsId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('news', newsId, topicIds)
+  setTopics: (newsId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('news', newsId, topicIds),
 };
 
 export const eventTopicsApi = {
   getTopics: (eventId: string) => topicsApi.getTopicsForEntity('event', eventId),
-  setTopics: (eventId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('event', eventId, topicIds)
+  setTopics: (eventId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('event', eventId, topicIds),
 };
 
 export const resourceTopicsApi = {
   getTopics: (resourceId: string) => topicsApi.getTopicsForEntity('resource', resourceId),
-  setTopics: (resourceId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('resource', resourceId, topicIds)
+  setTopics: (resourceId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('resource', resourceId, topicIds),
 };
 
 export const groupTopicsApi = {
   getTopics: (groupId: string) => topicsApi.getTopicsForEntity('group', groupId),
-  setTopics: (groupId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('group', groupId, topicIds)
+  setTopics: (groupId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('group', groupId, topicIds),
 };
 
 export const marketplaceTopicsApi = {
   getTopics: (marketplaceId: string) => topicsApi.getTopicsForEntity('marketplace', marketplaceId),
-  setTopics: (marketplaceId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('marketplace', marketplaceId, topicIds)
+  setTopics: (marketplaceId: string, topicIds: string[]) =>
+    topicsApi.setTopicsForEntity('marketplace', marketplaceId, topicIds),
 };
 
 export const opportunityTopicsApi = {
   getTopics: (opportunityId: string) => topicsApi.getTopicsForEntity('opportunity', opportunityId),
-  setTopics: (opportunityId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('opportunity', opportunityId, topicIds)
+  setTopics: (opportunityId: string, topicIds: string[]) =>
+    topicsApi.setTopicsForEntity('opportunity', opportunityId, topicIds),
 };
 
 export const companyTopicsApi = {
   getTopics: (companyId: string) => topicsApi.getTopicsForEntity('company', companyId),
-  setTopics: (companyId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('company', companyId, topicIds)
+  setTopics: (companyId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('company', companyId, topicIds),
 };
 
 export const memberTopicsApi = {
   getTopics: (memberId: string) => topicsApi.getTopicsForEntity('member', memberId),
-  setTopics: (memberId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('member', memberId, topicIds)
+  setTopics: (memberId: string, topicIds: string[]) => topicsApi.setTopicsForEntity('member', memberId, topicIds),
 };

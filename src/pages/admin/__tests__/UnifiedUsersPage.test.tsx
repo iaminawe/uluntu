@@ -11,15 +11,15 @@ vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(),
     auth: {
-      getUser: vi.fn()
-    }
-  }
+      getUser: vi.fn(),
+    },
+  },
 }));
 
 vi.mock('@/features/admin/api/roles', () => ({
   adminRolesApi: {
-    getRoles: vi.fn()
-  }
+    getRoles: vi.fn(),
+  },
 }));
 
 vi.mock('@/services/adminActivityLogger', () => ({
@@ -27,15 +27,15 @@ vi.mock('@/services/adminActivityLogger', () => ({
     logUserAction: vi.fn(),
     logBulkAction: vi.fn(),
     logImport: vi.fn(),
-    logExport: vi.fn()
-  }
+    logExport: vi.fn(),
+  },
 }));
 
 vi.mock('react-hot-toast', () => ({
   toast: {
     success: vi.fn(),
-    error: vi.fn()
-  }
+    error: vi.fn(),
+  },
 }));
 
 const mockUsers = [
@@ -53,8 +53,8 @@ const mockUsers = [
       id: '1',
       email: 'john@example.com',
       created_at: '2024-01-01T00:00:00Z',
-      last_sign_in_at: '2024-01-02T00:00:00Z'
-    }
+      last_sign_in_at: '2024-01-02T00:00:00Z',
+    },
   },
   {
     id: '2',
@@ -70,15 +70,15 @@ const mockUsers = [
       id: '2',
       email: 'jane@example.com',
       created_at: '2024-01-02T00:00:00Z',
-      last_sign_in_at: '2024-01-03T00:00:00Z'
-    }
-  }
+      last_sign_in_at: '2024-01-03T00:00:00Z',
+    },
+  },
 ];
 
 const mockRoles = [
   { id: 'admin', name: 'Administrator', description: 'Full admin access' },
   { id: 'moderator', name: 'Moderator', description: 'Content moderation' },
-  { id: 'member', name: 'Member', description: 'Regular member' }
+  { id: 'member', name: 'Member', description: 'Regular member' },
 ];
 
 describe('UnifiedUsersPage', () => {
@@ -88,8 +88,8 @@ describe('UnifiedUsersPage', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
-        mutations: { retry: false }
-      }
+        mutations: { retry: false },
+      },
     });
 
     vi.mocked(supabase.from).mockReturnValue({
@@ -97,23 +97,23 @@ describe('UnifiedUsersPage', () => {
         order: vi.fn().mockReturnValue({
           range: vi.fn().mockResolvedValue({
             data: mockUsers,
-            error: null
-          })
-        })
+            error: null,
+          }),
+        }),
       }),
       update: vi.fn().mockReturnValue({
         eq: vi.fn().mockResolvedValue({
-          error: null
-        })
+          error: null,
+        }),
       }),
       delete: vi.fn().mockReturnValue({
         eq: vi.fn().mockResolvedValue({
-          error: null
-        })
+          error: null,
+        }),
       }),
       insert: vi.fn().mockResolvedValue({
-        error: null
-      })
+        error: null,
+      }),
     } as any);
 
     vi.mocked(adminRolesApi.getRoles).mockResolvedValue(mockRoles);
@@ -152,7 +152,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should display users in the table', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         expect(screen.getByText('John Doe')).toBeInTheDocument();
         expect(screen.getByText('jane@example.com')).toBeInTheDocument();
@@ -163,7 +163,7 @@ describe('UnifiedUsersPage', () => {
   describe('Search Functionality', () => {
     it('should filter users based on search term', async () => {
       renderPage();
-      
+
       const searchInput = screen.getByPlaceholderText('Search by name, email, company, or location...');
       fireEvent.change(searchInput, { target: { value: 'John' } });
 
@@ -176,7 +176,7 @@ describe('UnifiedUsersPage', () => {
   describe('User Actions', () => {
     it('should handle edit action', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const actionSelects = screen.getAllByText('Actions');
         expect(actionSelects.length).toBeGreaterThan(0);
@@ -192,7 +192,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should handle block action', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const actionSelects = screen.getAllByText('Actions');
         expect(actionSelects.length).toBeGreaterThan(0);
@@ -202,19 +202,15 @@ describe('UnifiedUsersPage', () => {
       fireEvent.change(firstActionSelect, { target: { value: 'block' } });
 
       await waitFor(() => {
-        expect(adminActivityLogger.logUserAction).toHaveBeenCalledWith(
-          'block',
-          expect.any(String),
-          expect.any(Object)
-        );
+        expect(adminActivityLogger.logUserAction).toHaveBeenCalledWith('block', expect.any(String), expect.any(Object));
       });
     });
 
     it('should handle delete action with confirmation', async () => {
       const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-      
+
       renderPage();
-      
+
       await waitFor(() => {
         const actionSelects = screen.getAllByText('Actions');
         expect(actionSelects.length).toBeGreaterThan(0);
@@ -225,10 +221,7 @@ describe('UnifiedUsersPage', () => {
 
       await waitFor(() => {
         expect(confirmSpy).toHaveBeenCalled();
-        expect(adminActivityLogger.logUserAction).toHaveBeenCalledWith(
-          'delete',
-          expect.any(String)
-        );
+        expect(adminActivityLogger.logUserAction).toHaveBeenCalledWith('delete', expect.any(String));
       });
 
       confirmSpy.mockRestore();
@@ -238,7 +231,7 @@ describe('UnifiedUsersPage', () => {
   describe('Bulk Operations', () => {
     it('should select all users when checkbox is clicked', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBeGreaterThan(0);
@@ -259,7 +252,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should show bulk actions when users are selected', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBeGreaterThan(1);
@@ -275,7 +268,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should handle bulk block action', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBeGreaterThan(1);
@@ -291,11 +284,7 @@ describe('UnifiedUsersPage', () => {
       fireEvent.click(applyButton);
 
       await waitFor(() => {
-        expect(adminActivityLogger.logBulkAction).toHaveBeenCalledWith(
-          'block',
-          'user',
-          expect.any(Array)
-        );
+        expect(adminActivityLogger.logBulkAction).toHaveBeenCalledWith('block', 'user', expect.any(Array));
       });
     });
   });
@@ -303,16 +292,16 @@ describe('UnifiedUsersPage', () => {
   describe('CSV Import', () => {
     it('should handle CSV file upload', async () => {
       renderPage();
-      
+
       const file = new File(['Name,Email\nTest User,test@example.com'], 'users.csv', { type: 'text/csv' });
-      
+
       const input = document.createElement('input');
       input.type = 'file';
       input.files = [file] as any;
-      
+
       const event = new Event('change', { bubbles: true });
       Object.defineProperty(event, 'target', { value: input, enumerable: true });
-      
+
       await waitFor(() => {
         const importButton = screen.getByText('Import CSV');
         fireEvent.click(importButton);
@@ -324,15 +313,15 @@ describe('UnifiedUsersPage', () => {
     it('should export all users when export button is clicked', async () => {
       const createElementSpy = vi.spyOn(document, 'createElement');
       const clickSpy = vi.fn();
-      
+
       createElementSpy.mockReturnValue({
         click: clickSpy,
         href: '',
-        download: ''
+        download: '',
       } as any);
-      
+
       renderPage();
-      
+
       await waitFor(() => {
         const exportButton = screen.getByText('Export');
         fireEvent.click(exportButton);
@@ -340,13 +329,13 @@ describe('UnifiedUsersPage', () => {
 
       expect(createElementSpy).toHaveBeenCalledWith('a');
       expect(clickSpy).toHaveBeenCalled();
-      
+
       createElementSpy.mockRestore();
     });
 
     it('should export selected users', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBeGreaterThan(1);
@@ -362,12 +351,7 @@ describe('UnifiedUsersPage', () => {
       fireEvent.click(applyButton);
 
       await waitFor(() => {
-        expect(adminActivityLogger.logExport).toHaveBeenCalledWith(
-          'user',
-          1,
-          'csv',
-          expect.any(Object)
-        );
+        expect(adminActivityLogger.logExport).toHaveBeenCalledWith('user', 1, 'csv', expect.any(Object));
       });
     });
   });
@@ -375,7 +359,7 @@ describe('UnifiedUsersPage', () => {
   describe('Filters', () => {
     it('should toggle filters panel', async () => {
       renderPage();
-      
+
       const filtersButton = screen.getByText('Filters');
       fireEvent.click(filtersButton);
 
@@ -388,7 +372,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should filter by status', async () => {
       renderPage();
-      
+
       const filtersButton = screen.getByText('Filters');
       fireEvent.click(filtersButton);
 
@@ -404,7 +388,7 @@ describe('UnifiedUsersPage', () => {
   describe('Pagination', () => {
     it('should display pagination controls', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         expect(screen.getByText('Showing page')).toBeInTheDocument();
         expect(screen.getAllByText('Previous').length).toBeGreaterThan(0);
@@ -414,7 +398,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should handle page navigation', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const nextButtons = screen.getAllByText('Next');
         expect(nextButtons.length).toBeGreaterThan(0);
@@ -432,7 +416,7 @@ describe('UnifiedUsersPage', () => {
   describe('Edit Modal', () => {
     it('should save user edits', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const actionSelects = screen.getAllByText('Actions');
         expect(actionSelects.length).toBeGreaterThan(0);
@@ -462,7 +446,7 @@ describe('UnifiedUsersPage', () => {
 
     it('should cancel edit without saving', async () => {
       renderPage();
-      
+
       await waitFor(() => {
         const actionSelects = screen.getAllByText('Actions');
         expect(actionSelects.length).toBeGreaterThan(0);

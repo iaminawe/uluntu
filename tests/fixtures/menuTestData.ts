@@ -126,7 +126,7 @@ export const mockMenuStructure: MenuStructure[] = [
         feature_flag: 'events_system',
         is_enabled: true,
         sort_order: 0,
-        children: []
+        children: [],
       },
       {
         id: '3',
@@ -137,9 +137,9 @@ export const mockMenuStructure: MenuStructure[] = [
         feature_flag: 'members_directory',
         is_enabled: true,
         sort_order: 1,
-        children: []
-      }
-    ]
+        children: [],
+      },
+    ],
   },
   {
     id: '4',
@@ -160,9 +160,9 @@ export const mockMenuStructure: MenuStructure[] = [
         feature_flag: 'companies_listing',
         is_enabled: false,
         sort_order: 0,
-        children: []
-      }
-    ]
+        children: [],
+      },
+    ],
   },
   {
     id: '6',
@@ -173,8 +173,8 @@ export const mockMenuStructure: MenuStructure[] = [
     feature_flag: undefined,
     is_enabled: true,
     sort_order: 2,
-    children: []
-  }
+    children: [],
+  },
 ];
 
 export const mockEnabledMenuStructure: MenuStructure[] = [
@@ -197,7 +197,7 @@ export const mockEnabledMenuStructure: MenuStructure[] = [
         feature_flag: 'events_system',
         is_enabled: true,
         sort_order: 0,
-        children: []
+        children: [],
       },
       {
         id: '3',
@@ -208,9 +208,9 @@ export const mockEnabledMenuStructure: MenuStructure[] = [
         feature_flag: 'members_directory',
         is_enabled: true,
         sort_order: 1,
-        children: []
-      }
-    ]
+        children: [],
+      },
+    ],
   },
   {
     id: '4',
@@ -221,7 +221,7 @@ export const mockEnabledMenuStructure: MenuStructure[] = [
     feature_flag: undefined,
     is_enabled: true,
     sort_order: 1,
-    children: [] // Companies filtered out because is_enabled: false
+    children: [], // Companies filtered out because is_enabled: false
   },
   {
     id: '6',
@@ -232,8 +232,8 @@ export const mockEnabledMenuStructure: MenuStructure[] = [
     feature_flag: undefined,
     is_enabled: true,
     sort_order: 2,
-    children: []
-  }
+    children: [],
+  },
 ];
 
 export const mockCreateMenuItemInput: CreateMenuItemInput = {

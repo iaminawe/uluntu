@@ -25,16 +25,16 @@ export const OpenTracker: React.FC = () => {
       }
       return null;
     },
-    enabled: !!(campaignId && subscriptionId)
+    enabled: !!(campaignId && subscriptionId),
   });
 
   // Return a 1x1 transparent pixel
   return (
-    <img 
-      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
-      alt="" 
-      width="1" 
-      height="1" 
+    <img
+      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+      alt=""
+      width="1"
+      height="1"
       style={{ border: 'none', display: 'block' }}
     />
   );
@@ -57,13 +57,13 @@ export const ClickTracker: React.FC = () => {
           '127.0.0.1',
           navigator.userAgent
         );
-        
+
         // Redirect to the actual URL
         window.location.href = decodeURIComponent(url);
       }
       return null;
     },
-    enabled: !!(campaignId && subscriptionId && url)
+    enabled: !!(campaignId && subscriptionId && url),
   });
 
   return (
@@ -82,8 +82,8 @@ export const WebhookHandler: React.FC = () => {
     <div className="p-8 text-center">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Webhook Handler</h1>
       <p className="text-gray-600 dark:text-gray-400">
-        This endpoint handles Resend webhooks for delivery tracking.
-        In a production app, this would be a server-side API route.
+        This endpoint handles Resend webhooks for delivery tracking. In a production app, this would be a server-side
+        API route.
       </p>
     </div>
   );

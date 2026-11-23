@@ -1,6 +1,6 @@
 /**
  * Error Handling and Edge Case Tests for Menu Management
- * 
+ *
  * Tests error scenarios, edge cases, network failures,
  * data corruption handling, and graceful degradation.
  */
@@ -33,9 +33,12 @@ const mockUseAppSelector = useAppSelector as Mock;
 const mockUseMenu = useMenu as Mock;
 
 // Network error simulation
-const simulateNetworkError = (method: string, errorType: 'timeout' | 'offline' | 'server_error' | 'cors' = 'server_error') => {
+const simulateNetworkError = (
+  method: string,
+  errorType: 'timeout' | 'offline' | 'server_error' | 'cors' = 'server_error'
+) => {
   let error: Error;
-  
+
   switch (errorType) {
     case 'timeout':
       error = new Error('Request timeout');
@@ -53,7 +56,7 @@ const simulateNetworkError = (method: string, errorType: 'timeout' | 'offline' |
       error = new Error('Internal server error');
       (error as any).status = 500;
   }
-  
+
   mockMenuManagementAdapter[method].mockRejectedValue(error);
 };
 
@@ -62,9 +65,7 @@ describe('Menu Management Error Handling Tests', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   beforeEach(() => {
@@ -213,7 +214,7 @@ describe('Menu Management Error Handling Tests', () => {
   describe('CRUD Operation Error Handling', () => {
     beforeEach(() => {
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([
-        createMockMenuItem({ id: '1', title: 'Existing Item' })
+        createMockMenuItem({ id: '1', title: 'Existing Item' }),
       ]);
     });
 
@@ -436,9 +437,12 @@ describe('Menu Management Error Handling Tests', () => {
       );
 
       // Should handle large datasets without crashing
-      await waitFor(() => {
-        expect(screen.getByText('Menu Management')).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Menu Management')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Should either paginate or virtualize
       expect(screen.getByText(/item/i)).toBeInTheDocument();
@@ -459,7 +463,7 @@ describe('Menu Management Error Handling Tests', () => {
 
       await user.click(screen.getByText('Add Item'));
       await user.type(screen.getByPlaceholderText('Menu item title'), 'Invalid URL Test');
-      
+
       const invalidUrls = [
         'not-a-url',
         'http://',
@@ -583,7 +587,7 @@ describe('Menu Management Error Handling Tests', () => {
 
       const LoopingComponent = () => {
         const [state, setState] = React.useState(0);
-        
+
         // This would cause infinite re-renders without proper handling
         React.useEffect(() => {
           renderCount++;
@@ -642,7 +646,7 @@ describe('Menu Management Error Handling Tests', () => {
     it('should work without JavaScript (progressive enhancement)', async () => {
       // Simulate no JavaScript environment
       const originalCreateElement = document.createElement;
-      document.createElement = vi.fn().mockImplementation((tagName) => {
+      document.createElement = vi.fn().mockImplementation(tagName => {
         const element = originalCreateElement.call(document, tagName);
         if (tagName === 'script') {
           throw new Error('JavaScript disabled');
@@ -651,9 +655,7 @@ describe('Menu Management Error Handling Tests', () => {
       });
 
       mockUseMenu.mockReturnValue({
-        menuItems: [
-          createMockMenuItem({ id: '1', title: 'Static Menu Item', url: '/static' })
-        ],
+        menuItems: [createMockMenuItem({ id: '1', title: 'Static Menu Item', url: '/static' })],
         isLoading: false,
         error: null,
         refetch: vi.fn(),
@@ -749,9 +751,12 @@ describe('Menu Management Error Handling Tests', () => {
       );
 
       // Should eventually succeed after retries
-      await waitFor(() => {
-        expect(screen.getByText('Success after retry')).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Success after retry')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       expect(attemptCount).toBe(maxAttempts);
     });
@@ -775,7 +780,7 @@ describe('Menu Management Error Handling Tests', () => {
 
       // Mock successful retry
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue([
-        createMockMenuItem({ id: '1', title: 'Retry Success' })
+        createMockMenuItem({ id: '1', title: 'Retry Success' }),
       ]);
 
       await user.click(retryButton);
@@ -788,11 +793,11 @@ describe('Menu Management Error Handling Tests', () => {
     it('should handle cascading failures gracefully', async () => {
       // Simulate multiple system failures
       mockMenuManagementAdapter.getMenuItems.mockRejectedValue(new Error('Database unavailable'));
-      
+
       // Also simulate session validation failure
       mockUseSession.mockReturnValue({
         user: null,
-        error: { message: 'Session expired' }
+        error: { message: 'Session expired' },
       });
 
       render(
@@ -808,10 +813,8 @@ describe('Menu Management Error Handling Tests', () => {
     });
 
     it('should maintain application state during error recovery', async () => {
-      const initialItems = [
-        createMockMenuItem({ id: '1', title: 'Existing Item' })
-      ];
-      
+      const initialItems = [createMockMenuItem({ id: '1', title: 'Existing Item' })];
+
       mockMenuManagementAdapter.getMenuItems.mockResolvedValue(initialItems);
 
       render(

@@ -54,7 +54,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
 
   const isEditing = mode === 'edit' && !!menuItem;
   const isDuplicating = mode === 'duplicate' && !!menuItem;
-  
+
   const modalTitle = useMemo(() => {
     if (isEditing) return `Edit Menu Item: ${menuItem?.title}`;
     if (isDuplicating) return `Duplicate Menu Item: ${menuItem?.title}`;
@@ -62,10 +62,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
   }, [isEditing, isDuplicating, menuItem?.title]);
 
   // Draft management
-  const draftKey = useMemo(() => 
-    `menu-item-draft-${isEditing ? menuItem?.id : 'new'}`, 
-    [isEditing, menuItem?.id]
-  );
+  const draftKey = useMemo(() => `menu-item-draft-${isEditing ? menuItem?.id : 'new'}`, [isEditing, menuItem?.id]);
 
   // Form setup with validation
   const {
@@ -179,31 +176,34 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
   }, [watchedValues, autoSaveEnabled, isDirty, isOpen, isEditing, draftKey, getValues]);
 
   // URL validation with real-time checking
-  const validateUrl = useCallback(async (url: string) => {
-    if (!url) return 'URL is required';
-    
-    // Basic format validation
-    const urlPattern = /^(https?:\/\/[^\s]+|\/[^\s]*|\#[^\s]*)$/;
-    if (!urlPattern.test(url)) {
-      return 'Please enter a valid URL (http://..., /path, or #anchor)';
-    }
+  const validateUrl = useCallback(
+    async (url: string) => {
+      if (!url) return 'URL is required';
 
-    // Check for external URLs
-    const isExternal = /^https?:\/\//.test(url);
-    setValue('is_external', isExternal);
+      // Basic format validation
+      const urlPattern = /^(https?:\/\/[^\s]+|\/[^\s]*|\#[^\s]*)$/;
+      if (!urlPattern.test(url)) {
+        return 'Please enter a valid URL (http://..., /path, or #anchor)';
+      }
 
-    // Additional validation could include checking if internal URLs exist
-    return true;
-  }, [setValue]);
+      // Check for external URLs
+      const isExternal = /^https?:\/\//.test(url);
+      setValue('is_external', isExternal);
+
+      // Additional validation could include checking if internal URLs exist
+      return true;
+    },
+    [setValue]
+  );
 
   // Form submission
   const onSubmit = async (data: MenuItemFormData) => {
     setIsLoading(true);
     try {
       const { auto_save_enabled, custom_attributes, subtitle, ...submitData } = data;
-      
+
       let savedItem: MenuItem;
-      
+
       if (isEditing && menuItem) {
         savedItem = await menuApi.updateMenuItem(menuItem.id, submitData);
         toast.success('Menu item updated successfully');
@@ -215,7 +215,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
       // Clear draft
       localStorage.removeItem(draftKey);
       setHasUnsavedChanges(false);
-      
+
       onSave(savedItem);
       onClose();
     } catch (error) {
@@ -272,19 +272,15 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
             <input
               type="checkbox"
               checked={autoSaveEnabled}
-              onChange={(e) => setAutoSaveEnabled(e.target.checked)}
+              onChange={e => setAutoSaveEnabled(e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="ml-2 text-sm text-gray-600">Auto-save draft</span>
           </label>
         )}
-        
-        {lastSaved && (
-          <span className="text-xs text-gray-500">
-            Saved {lastSaved.toLocaleTimeString()}
-          </span>
-        )}
-        
+
+        {lastSaved && <span className="text-xs text-gray-500">Saved {lastSaved.toLocaleTimeString()}</span>}
+
         {hasUnsavedChanges && (
           <span className="text-xs text-amber-600 flex items-center">
             <AlertCircle className="h-3 w-3 mr-1" />
@@ -304,7 +300,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
             Clear Draft
           </button>
         )}
-        
+
         {isEditing && onDelete && (
           <button
             type="button"
@@ -316,7 +312,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
             Delete
           </button>
         )}
-        
+
         <button
           type="button"
           onClick={handleClose}
@@ -325,7 +321,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
         >
           Cancel
         </button>
-        
+
         <button
           type="submit"
           form="menu-item-form"
@@ -367,9 +363,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Title <span className="text-red-500">*</span>
-                  <span className="text-xs text-gray-500 ml-2">
-                    ({watch('title')?.length || 0}/255)
-                  </span>
+                  <span className="text-xs text-gray-500 ml-2">({watch('title')?.length || 0}/255)</span>
                 </label>
                 <input
                   type="text"
@@ -390,9 +384,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Subtitle
-                  <span className="text-xs text-gray-500 ml-2">
-                    ({watch('subtitle')?.length || 0}/200)
-                  </span>
+                  <span className="text-xs text-gray-500 ml-2">({watch('subtitle')?.length || 0}/200)</span>
                 </label>
                 <input
                   type="text"
@@ -401,9 +393,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
                   placeholder="Optional subtitle or tagline"
                   maxLength={200}
                 />
-                {errors.subtitle && (
-                  <p className="mt-1 text-sm text-red-600">{errors.subtitle.message}</p>
-                )}
+                {errors.subtitle && <p className="mt-1 text-sm text-red-600">{errors.subtitle.message}</p>}
               </div>
 
               {/* URL Field with validation */}
@@ -448,9 +438,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
-                  <span className="text-xs text-gray-500 ml-2">
-                    ({watch('description')?.length || 0}/500)
-                  </span>
+                  <span className="text-xs text-gray-500 ml-2">({watch('description')?.length || 0}/500)</span>
                 </label>
                 <textarea
                   {...register('description')}
@@ -459,9 +447,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
                   placeholder="Optional description for tooltips or accessibility"
                   maxLength={500}
                 />
-                {errors.description && (
-                  <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
-                )}
+                {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
               </div>
             </div>
 
@@ -485,9 +471,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
 
               {/* Parent Menu Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Parent Menu Item
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Parent Menu Item</label>
                 <Controller
                   name="parent_id"
                   control={control}
@@ -505,26 +489,17 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
 
               {/* Icon Picker */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Icon
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
                 <Controller
                   name="icon"
                   control={control}
-                  render={({ field }) => (
-                    <IconPicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
+                  render={({ field }) => <IconPicker value={field.value} onChange={field.onChange} />}
                 />
               </div>
 
               {/* Sort Order */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sort Order
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sort Order</label>
                 <input
                   type="number"
                   {...register('sort_order', { valueAsNumber: true })}
@@ -532,16 +507,12 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
                   max={9999}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                {errors.sort_order && (
-                  <p className="mt-1 text-sm text-red-600">{errors.sort_order.message}</p>
-                )}
+                {errors.sort_order && <p className="mt-1 text-sm text-red-600">{errors.sort_order.message}</p>}
               </div>
 
               {/* Target Attribute */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Link Target
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Link Target</label>
                 <select
                   {...register('target')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -555,9 +526,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
 
               {/* Visibility Settings */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Visibility
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
                 <select
                   {...register('visibility')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -573,9 +542,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Custom CSS Classes
-                  <span className="text-xs text-gray-500 ml-2">
-                    ({watch('css_classes')?.length || 0}/500)
-                  </span>
+                  <span className="text-xs text-gray-500 ml-2">({watch('css_classes')?.length || 0}/500)</span>
                 </label>
                 <input
                   type="text"
@@ -614,9 +581,7 @@ export const MenuItemModal: React.FC<MenuItemModalProps> = ({
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
               <Trash2 className="h-6 w-6 text-red-600" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Delete Menu Item
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Menu Item</h3>
             <p className="text-sm text-gray-500 mb-6">
               Are you sure you want to delete "{menuItem?.title}"? This action cannot be undone.
             </p>

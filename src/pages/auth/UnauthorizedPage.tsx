@@ -9,13 +9,14 @@ export default function UnauthorizedPage() {
         <title>Unauthorized - Uluntu</title>
         <meta name="description" content="You don't have permission to access this page" />
       </Helmet>
-      
+
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-50 dark:bg-slate-900">
         <div className="text-center">
           <ShieldAlert className="h-16 w-16 text-orange-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Access Denied</h1>
           <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md">
-            You don't have permission to access this page. Please contact an administrator if you believe this is an error.
+            You don't have permission to access this page. Please contact an administrator if you believe this is an
+            error.
           </p>
           <Link
             to="/"

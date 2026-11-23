@@ -47,7 +47,7 @@ export const adaptMainMarketplaceItemToFormData = (item: MainMarketplaceItem): F
     type: item.type as ListingType,
     status: item.status || 'draft',
     price: item.price?.toString() || '',
-    condition: item.category as ListingCondition || '',
+    condition: (item.category as ListingCondition) || '',
     location: '', // This field doesn't exist in the main type
     tags: item.category ? [item.category] : [],
     newTag: '',
@@ -55,7 +55,7 @@ export const adaptMainMarketplaceItemToFormData = (item: MainMarketplaceItem): F
     contactEmail: '',
     contactPhone: '',
     contactMethod: '',
-    showContactInfo: false
+    showContactInfo: false,
   };
 };
 
@@ -72,23 +72,23 @@ export const adaptFormDataToMainMarketplaceItem = (formData: FormData, id?: stri
     image: '', // This would need to be handled separately with image uploads
     datePosted: new Date().toISOString(),
     status: formData.status,
-    featured: formData.featured
+    featured: formData.featured,
   };
 };
 
 // Adapter function to convert from main MarketplaceItem type to local SampleListing type
 export const adaptMainMarketplaceItemToSampleListing = (item: MainMarketplaceItem): SampleListing => {
   return {
-    id: typeof item.id === 'string' ? parseInt(item.id) : item.id as number,
+    id: typeof item.id === 'string' ? parseInt(item.id) : (item.id as number),
     title: item.title,
     description: item.description,
     type: item.type as ListingType,
     price: item.price || 0,
-    condition: item.category as ListingCondition || 'new',
+    condition: (item.category as ListingCondition) || 'new',
     location: '', // This field doesn't exist in the main type
     tags: item.category ? [item.category] : [],
     status: item.status || 'draft',
-    featured: item.featured || false
+    featured: item.featured || false,
   };
 };
 
@@ -104,7 +104,7 @@ export const adaptSampleListingToMainMarketplaceItem = (listing: SampleListing):
     image: '', // This would need to be handled separately with image uploads
     datePosted: new Date().toISOString(),
     status: listing.status,
-    featured: listing.featured
+    featured: listing.featured,
   };
 };
 

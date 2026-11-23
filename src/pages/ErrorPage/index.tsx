@@ -4,9 +4,9 @@ import ErrorContent from './ErrorContent';
 
 export default function ErrorPage() {
   const error = useRouteError();
-  
+
   let errorMessage: string;
-  
+
   if (isRouteErrorResponse(error)) {
     errorMessage = error.statusText || error.data?.message || 'Unknown error';
   } else if (error instanceof Error) {

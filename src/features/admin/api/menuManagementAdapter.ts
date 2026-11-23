@@ -21,7 +21,8 @@ export const menuManagementAdapter = {
       // Then get menu items
       const { data, error } = await supabase
         .from('menu_items')
-        .select(`
+        .select(
+          `
           id,
           menu_container_id,
           parent_id,
@@ -44,7 +45,8 @@ export const menuManagementAdapter = {
           data_attributes,
           created_at,
           updated_at
-        `)
+        `
+        )
         .order('sort_order', { ascending: true });
 
       if (error) {
@@ -54,7 +56,7 @@ export const menuManagementAdapter = {
 
       // Map to MenuItem type with container info
       const containerMap = new Map(containers?.map(c => [c.id, c]) || []);
-      
+
       return (data || []).map(item => {
         const container = containerMap.get(item.menu_container_id);
         return {
@@ -69,11 +71,11 @@ export const menuManagementAdapter = {
           target: (item.target || '_self') as MenuTarget,
           icon: item.icon || null,
           css_classes: item.css_classes || null,
-          visibility: item.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+          visibility: item.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
           required_roles: item.custom_properties?.required_roles || null,
           is_external: item.url?.startsWith('http') || false,
           created_at: item.created_at,
-          updated_at: item.updated_at
+          updated_at: item.updated_at,
         };
       });
     } catch (error) {
@@ -123,11 +125,11 @@ export const menuManagementAdapter = {
         target: (item.target || '_self') as MenuTarget,
         icon: item.icon || null,
         css_classes: item.css_classes || null,
-        visibility: item.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+        visibility: item.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
         required_roles: item.custom_properties?.required_roles || null,
         is_external: item.url?.startsWith('http') || false,
         created_at: item.created_at,
-        updated_at: item.updated_at
+        updated_at: item.updated_at,
       }));
     } catch (error) {
       logger.error('Error in getByType:', error);
@@ -140,10 +142,12 @@ export const menuManagementAdapter = {
     try {
       const { data, error } = await supabase
         .from('menu_items')
-        .select(`
+        .select(
+          `
           *,
           menu_containers!inner(type)
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -164,11 +168,11 @@ export const menuManagementAdapter = {
         target: (data.target || '_self') as MenuTarget,
         icon: data.icon || null,
         css_classes: data.css_classes || null,
-        visibility: data.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+        visibility: data.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
         required_roles: data.custom_properties?.required_roles || null,
         is_external: data.url?.startsWith('http') || false,
         created_at: data.created_at,
-        updated_at: data.updated_at
+        updated_at: data.updated_at,
       };
     } catch (error) {
       logger.error('Error in getById:', error);
@@ -209,7 +213,7 @@ export const menuManagementAdapter = {
           icon: input.icon || null,
           css_classes: input.css_classes || null,
           custom_properties: input.required_roles ? { required_roles: input.required_roles } : {},
-          item_type: 'link'
+          item_type: 'link',
         })
         .select()
         .single();
@@ -231,11 +235,11 @@ export const menuManagementAdapter = {
         target: (data.target || '_self') as MenuTarget,
         icon: data.icon || null,
         css_classes: data.css_classes || null,
-        visibility: data.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+        visibility: data.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
         required_roles: data.custom_properties?.required_roles || null,
         is_external: data.url?.startsWith('http') || false,
         created_at: data.created_at,
-        updated_at: data.updated_at
+        updated_at: data.updated_at,
       };
     } catch (error) {
       logger.error('Error in create:', error);
@@ -247,7 +251,7 @@ export const menuManagementAdapter = {
   async update(id: string, update: MenuItemUpdate): Promise<MenuItem> {
     try {
       const updateData: any = {};
-      
+
       if (update.title !== undefined) updateData.title = update.title;
       if (update.url !== undefined) updateData.url = update.url || null;
       if (update.description !== undefined) {
@@ -271,10 +275,12 @@ export const menuManagementAdapter = {
         .from('menu_items')
         .update(updateData)
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           menu_containers!inner(type)
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -294,11 +300,11 @@ export const menuManagementAdapter = {
         target: (data.target || '_self') as MenuTarget,
         icon: data.icon || null,
         css_classes: data.css_classes || null,
-        visibility: data.requires_auth ? 'authenticated' : 'public' as MenuVisibility,
+        visibility: data.requires_auth ? 'authenticated' : ('public' as MenuVisibility),
         required_roles: data.custom_properties?.required_roles || null,
         is_external: data.url?.startsWith('http') || false,
         created_at: data.created_at,
-        updated_at: data.updated_at
+        updated_at: data.updated_at,
       };
     } catch (error) {
       logger.error('Error in update:', error);
@@ -309,10 +315,7 @@ export const menuManagementAdapter = {
   // Delete menu item
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('menu_items')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('menu_items').delete().eq('id', id);
 
       if (error) {
         logger.error('Error deleting menu item:', error);
@@ -331,14 +334,11 @@ export const menuManagementAdapter = {
     try {
       // Update each item's sort order
       const promises = updates.map(({ id, sort_order }) =>
-        supabase
-          .from('menu_items')
-          .update({ sort_order })
-          .eq('id', id)
+        supabase.from('menu_items').update({ sort_order }).eq('id', id)
       );
 
       const results = await Promise.all(promises);
-      
+
       // Check if any updates failed
       const hasError = results.some(result => result.error);
       if (hasError) {
@@ -357,14 +357,11 @@ export const menuManagementAdapter = {
   async bulkToggle(updates: Array<{ id: string; is_enabled: boolean }>): Promise<boolean> {
     try {
       const promises = updates.map(({ id, is_enabled }) =>
-        supabase
-          .from('menu_items')
-          .update({ is_enabled })
-          .eq('id', id)
+        supabase.from('menu_items').update({ is_enabled }).eq('id', id)
       );
 
       const results = await Promise.all(promises);
-      
+
       const hasError = results.some(result => result.error);
       if (hasError) {
         logger.error('Error in bulk toggle:', results);
@@ -376,5 +373,5 @@ export const menuManagementAdapter = {
       logger.error('Error in bulkToggle:', error);
       throw error;
     }
-  }
+  },
 };

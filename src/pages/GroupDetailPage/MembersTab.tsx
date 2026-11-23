@@ -29,7 +29,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Group Members</h2>
-      
+
       {isLoading ? (
         <div className="animate-pulse">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
@@ -47,9 +47,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
           {/* Admins Section */}
           {admins.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-                Group Admins
-              </h3>
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Group Admins</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 {admins.map(admin => (
                   <Link
@@ -62,12 +60,8 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
                       alt={admin.name}
                       className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
                     />
-                    <h4 className="font-medium text-slate-900 dark:text-white">
-                      {admin.name}
-                    </h4>
-                    {admin.title && (
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{admin.title}</p>
-                    )}
+                    <h4 className="font-medium text-slate-900 dark:text-white">{admin.name}</h4>
+                    {admin.title && <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{admin.title}</p>}
                     <div className="mt-2 inline-block px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs rounded-full">
                       Admin
                     </div>
@@ -76,7 +70,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
               </div>
             </div>
           )}
-          
+
           {/* Members Section */}
           {regularMembers.length > 0 && (
             <div>
@@ -96,9 +90,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
                         alt={member.name}
                         className="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
                       />
-                      <h4 className="font-medium text-slate-900 dark:text-white">
-                        {member.name}
-                      </h4>
+                      <h4 className="font-medium text-slate-900 dark:text-white">{member.name}</h4>
                       {member.title && (
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{member.title}</p>
                       )}
@@ -112,18 +104,14 @@ const MembersTab: React.FC<MembersTabProps> = ({ members, isLoading }) => {
                 <p className="text-slate-600 dark:text-slate-400 text-center">No members to display for this page.</p>
               )}
               {totalPagesRegular > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPagesRegular}
-                  onPageChange={handlePageChange}
-                />
+                <Pagination currentPage={currentPage} totalPages={totalPagesRegular} onPageChange={handlePageChange} />
               )}
             </div>
           )}
           {admins.length === 0 && regularMembers.length === 0 && !isLoading && (
-             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-center">
-               <p className="text-slate-600 dark:text-slate-400">No members in this group yet.</p>
-             </div>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-center">
+              <p className="text-slate-600 dark:text-slate-400">No members in this group yet.</p>
+            </div>
           )}
         </div>
       )}

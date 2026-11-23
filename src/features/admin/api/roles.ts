@@ -15,7 +15,7 @@ export const adminRolesApi = {
 
       if (error) {
         logger.apiError('getRoles', error);
-        
+
         // If custom_roles table doesn't exist yet, return basic system roles
         if (error.code === '42P01') {
           return [
@@ -26,7 +26,7 @@ export const adminRolesApi = {
               permissions: {},
               is_system: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             },
             {
               id: 'group_member',
@@ -35,7 +35,7 @@ export const adminRolesApi = {
               permissions: {},
               is_system: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             },
             {
               id: 'admin',
@@ -44,7 +44,7 @@ export const adminRolesApi = {
               permissions: {},
               is_system: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             },
             {
               id: 'superadmin',
@@ -53,8 +53,8 @@ export const adminRolesApi = {
               permissions: {},
               is_system: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
+              updated_at: new Date().toISOString(),
+            },
           ];
         }
         return [];
@@ -62,7 +62,7 @@ export const adminRolesApi = {
 
       return (data || []).map(role => ({
         ...role,
-        permissions: role.permissions as Record<string, string[]> || {}
+        permissions: (role.permissions as Record<string, string[]>) || {},
       })) as Role[];
     } catch (error) {
       logger.apiError('getRoles', error);
@@ -73,11 +73,7 @@ export const adminRolesApi = {
   // Get single role
   async getRole(roleId: string): Promise<Role | null> {
     try {
-      const { data, error } = await supabase
-        .from('custom_roles')
-        .select('*')
-        .eq('id', roleId)
-        .single();
+      const { data, error } = await supabase.from('custom_roles').select('*').eq('id', roleId).single();
 
       if (error) {
         logger.apiError('getRole', error);
@@ -86,7 +82,7 @@ export const adminRolesApi = {
 
       return {
         ...data,
-        permissions: data.permissions as Record<string, string[]> || {}
+        permissions: (data.permissions as Record<string, string[]>) || {},
       } as Role;
     } catch (error) {
       logger.apiError('getRole', error);
@@ -103,7 +99,7 @@ export const adminRolesApi = {
           name: role.name,
           description: role.description,
           permissions: role.permissions || {},
-          is_system: false
+          is_system: false,
         })
         .select()
         .single();
@@ -115,7 +111,7 @@ export const adminRolesApi = {
 
       return {
         ...data,
-        permissions: data.permissions as Record<string, string[]> || {}
+        permissions: (data.permissions as Record<string, string[]>) || {},
       } as Role;
     } catch (error) {
       logger.apiError('createRole', error);
@@ -138,7 +134,7 @@ export const adminRolesApi = {
           name: updates.name,
           description: updates.description,
           permissions: updates.permissions,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', roleId)
         .eq('is_system', false) // Extra safety check
@@ -152,7 +148,7 @@ export const adminRolesApi = {
 
       return {
         ...data,
-        permissions: data.permissions as Record<string, string[]> || {}
+        permissions: (data.permissions as Record<string, string[]>) || {},
       } as Role;
     } catch (error) {
       logger.apiError('updateRole', error);
@@ -169,11 +165,7 @@ export const adminRolesApi = {
         throw new Error('Cannot delete system roles');
       }
 
-      const { error } = await supabase
-        .from('custom_roles')
-        .delete()
-        .eq('id', roleId)
-        .eq('is_system', false); // Extra safety check
+      const { error } = await supabase.from('custom_roles').delete().eq('id', roleId).eq('is_system', false); // Extra safety check
 
       if (error) {
         logger.apiError('deleteRole', error);
@@ -192,20 +184,20 @@ export const adminRolesApi = {
     try {
       // Check if it's a custom role (UUID) or system role (string name)
       const isCustomRole = roleId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
-      
+
       if (isCustomRole) {
         // It's a custom role, store in user_custom_roles
         const { error } = await (supabase as any)
           .from('user_custom_roles')
           .insert({
             user_id: userId,
-            role_id: roleId
+            role_id: roleId,
           })
           .select();
 
         if (error) {
           logger.apiError('assignRole - custom', error);
-          
+
           // If table doesn't exist, fall back to user_roles
           if (error.code === '42P01') {
             logger.warn('user_custom_roles table not found, migration may be needed', 'ROLES');
@@ -214,12 +206,10 @@ export const adminRolesApi = {
         }
       } else {
         // It's a system role, store in user_roles
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: userId,
-            role: roleId
-          });
+        const { error } = await supabase.from('user_roles').insert({
+          user_id: userId,
+          role: roleId,
+        });
 
         if (error) {
           logger.apiError('assignRole - system', error);
@@ -239,20 +229,17 @@ export const adminRolesApi = {
     try {
       // Check if it's a custom role (UUID) or system role (string name)
       const isCustomRole = roleId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
-      
+
       if (isCustomRole) {
         // It's a custom role, remove from user_custom_roles
-        const { error } = await (supabase as any)
-          .from('user_custom_roles')
-          .delete()
-          .match({
-            user_id: userId,
-            role_id: roleId
-          });
+        const { error } = await (supabase as any).from('user_custom_roles').delete().match({
+          user_id: userId,
+          role_id: roleId,
+        });
 
         if (error) {
           logger.apiError('removeRole - custom', error);
-          
+
           // If table doesn't exist, fall back to user_roles
           if (error.code === '42P01') {
             logger.warn('user_custom_roles table not found, migration may be needed', 'ROLES');
@@ -261,13 +248,10 @@ export const adminRolesApi = {
         }
       } else {
         // It's a system role, remove from user_roles
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .match({
-            user_id: userId,
-            role: roleId
-          });
+        const { error } = await supabase.from('user_roles').delete().match({
+          user_id: userId,
+          role: roleId,
+        });
 
         if (error) {
           logger.apiError('removeRole - system', error);
@@ -311,10 +295,13 @@ export const adminRolesApi = {
             is_system: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            type: 'system' as const
+            type: 'system' as const,
           }));
           roles.push(...systemRoleObjects);
-          logger.debug(`Found ${systemRoleObjects.length} system roles for user`, 'ROLES', { userId, roles: systemRoles.map(r => r.role) });
+          logger.debug(`Found ${systemRoleObjects.length} system roles for user`, 'ROLES', {
+            userId,
+            roles: systemRoles.map(r => r.role),
+          });
         }
       } catch (systemError) {
         logger.error('Failed to fetch system roles', 'ROLES', systemError);
@@ -359,11 +346,14 @@ export const adminRolesApi = {
               id: ur.role,
               name: ur.role,
               type: 'custom' as const,
-              permissions: {}
+              permissions: {},
             };
           });
           roles.push(...mappedRoles);
-          logger.debug(`Found ${mappedRoles.length} roles for user`, 'ROLES', { userId, roles: userRoles.map(r => r.role) });
+          logger.debug(`Found ${mappedRoles.length} roles for user`, 'ROLES', {
+            userId,
+            roles: userRoles.map(r => r.role),
+          });
         } else {
           logger.debug('No roles assigned to user', 'ROLES', { userId });
         }
@@ -412,5 +402,5 @@ export const adminRolesApi = {
       logger.apiError('checkPermission', error);
       return false;
     }
-  }
+  },
 };

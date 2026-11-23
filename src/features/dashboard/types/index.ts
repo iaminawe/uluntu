@@ -120,27 +120,14 @@ export interface PaginatedResponse<T> {
   };
 }
 
-export type ContentType = 
-  | 'photo' 
-  | 'event' 
-  | 'news' 
-  | 'resource' 
-  | 'group' 
-  | 'marketplace' 
-  | 'opportunity' 
-  | 'message'
-  | 'gallery';
+export type ContentType =
+  'photo' | 'event' | 'news' | 'resource' | 'group' | 'marketplace' | 'opportunity' | 'message' | 'gallery';
 
-export type ContentStatus = 
-  | 'draft' 
-  | 'published' 
-  | 'archived' 
-  | 'pending' 
-  | 'rejected';
+export type ContentStatus = 'draft' | 'published' | 'archived' | 'pending' | 'rejected';
 
-export type ActivityType = 
+export type ActivityType =
   | 'content_created'
-  | 'content_updated' 
+  | 'content_updated'
   | 'content_published'
   | 'content_liked'
   | 'content_commented'

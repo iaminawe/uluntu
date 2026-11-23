@@ -16,13 +16,13 @@ export function PerformanceTrackedComponent() {
     // Simulate an async operation
     const loadData = async () => {
       markPerformance('data-load-start');
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       markPerformance('data-load-end');
       const loadTime = measurePerformance('data-load', 'data-load-start', 'data-load-end');
-      
+
       console.log(`Data loaded in ${loadTime}ms`);
     };
 
@@ -37,7 +37,8 @@ export function PerformanceTrackedComponent() {
   // Track render performance
   useEffect(() => {
     const renderDuration = markEnd();
-    if (renderDuration > 16) { // Longer than one frame (60fps)
+    if (renderDuration > 16) {
+      // Longer than one frame (60fps)
       console.warn(`Slow render detected: ${renderDuration.toFixed(2)}ms`);
     }
   });
@@ -65,13 +66,9 @@ export function InteractionTrackingExample() {
     try {
       // Simulate some work
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       markPerformance('button-click-end');
-      const interactionTime = measurePerformance(
-        'button-interaction',
-        'button-click-start',
-        'button-click-end'
-      );
+      const interactionTime = measurePerformance('button-interaction', 'button-click-start', 'button-click-end');
 
       console.log(`Button interaction took ${interactionTime}ms`);
     } catch (error) {
@@ -80,10 +77,7 @@ export function InteractionTrackingExample() {
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
+    <button onClick={handleClick} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
       Click Me (Performance Tracked)
     </button>
   );

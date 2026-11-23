@@ -14,7 +14,7 @@ export default function DeleteConfirmModal({
   onClose,
   onConfirm,
   isDeleting,
-  entityName
+  entityName,
 }: DeleteConfirmModalProps) {
   if (!isOpen) return null;
 
@@ -22,7 +22,7 @@ export default function DeleteConfirmModal({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4 text-center">
         <div className="fixed inset-0 bg-black bg-opacity-25" onClick={onClose} />
-        
+
         <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
           <div className="absolute top-0 right-0 pt-4 pr-4">
             <button
@@ -33,16 +33,14 @@ export default function DeleteConfirmModal({
               <X className="h-6 w-6" />
             </button>
           </div>
-          
+
           <div className="bg-white dark:bg-slate-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start">
               <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
                 <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 className="text-lg font-medium leading-6 text-slate-900 dark:text-white">
-                  Delete {entityName}
-                </h3>
+                <h3 className="text-lg font-medium leading-6 text-slate-900 dark:text-white">Delete {entityName}</h3>
                 <div className="mt-2">
                   <p className="text-sm text-slate-500 dark:text-slate-400">
                     Are you sure you want to delete this {entityName.toLowerCase()}? This action cannot be undone.
@@ -51,7 +49,7 @@ export default function DeleteConfirmModal({
               </div>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 dark:bg-slate-900 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="button"

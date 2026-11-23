@@ -3,18 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'react-hot-toast';
-import { 
-  FileText, 
-  Layout, 
-  Users, 
-  Calendar, 
-  Briefcase, 
-  BookOpen,
-  Plus,
-  Eye,
-  Copy,
-  Trash2
-} from 'lucide-react';
+import { FileText, Layout, Users, Calendar, Briefcase, BookOpen, Plus, Eye, Copy, Trash2 } from 'lucide-react';
 
 interface PageTemplate {
   id: string;
@@ -44,8 +33,8 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
       { type: 'bulletList', content: 'Key point 3' },
       { type: 'quote', content: 'An inspiring quote related to the topic' },
       { type: 'heading', content: 'Conclusion' },
-      { type: 'paragraph', content: 'Wrap up your thoughts...' }
-    ]
+      { type: 'paragraph', content: 'Wrap up your thoughts...' },
+    ],
   },
   {
     name: 'Landing Page',
@@ -54,7 +43,7 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
     is_active: true,
     blocks: [
       { type: 'heading', content: 'Welcome to Our Amazing Product' },
-      { type: 'paragraph', content: 'The solution you\'ve been looking for...' },
+      { type: 'paragraph', content: "The solution you've been looking for..." },
       { type: 'heading', content: 'Key Features' },
       { type: 'bulletList', content: '✨ Feature 1: Amazing capability' },
       { type: 'bulletList', content: '🚀 Feature 2: Lightning fast' },
@@ -62,8 +51,8 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
       { type: 'heading', content: 'What Our Customers Say' },
       { type: 'quote', content: 'This product changed our business!' },
       { type: 'heading', content: 'Get Started Today' },
-      { type: 'paragraph', content: 'Join thousands of satisfied customers...' }
-    ]
+      { type: 'paragraph', content: 'Join thousands of satisfied customers...' },
+    ],
   },
   {
     name: 'Event Page',
@@ -83,8 +72,8 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
       { type: 'bulletList', content: '12:00 PM - Lunch Break' },
       { type: 'bulletList', content: '2:00 PM - Workshop Sessions' },
       { type: 'heading', content: 'Register Now' },
-      { type: 'paragraph', content: 'Secure your spot today!' }
-    ]
+      { type: 'paragraph', content: 'Secure your spot today!' },
+    ],
   },
   {
     name: 'Team Page',
@@ -102,8 +91,8 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
       { type: 'heading', content: 'Our Values' },
       { type: 'bulletList', content: 'Innovation & Excellence' },
       { type: 'bulletList', content: 'Collaboration & Trust' },
-      { type: 'bulletList', content: 'Customer Success' }
-    ]
+      { type: 'bulletList', content: 'Customer Success' },
+    ],
   },
   {
     name: 'Documentation',
@@ -123,9 +112,9 @@ const defaultTemplates: Omit<PageTemplate, 'id' | 'usage_count'>[] = [
       { type: 'heading', content: 'API Reference' },
       { type: 'paragraph', content: 'Detailed API documentation...' },
       { type: 'heading', content: 'Examples' },
-      { type: 'paragraph', content: 'Here are some practical examples...' }
-    ]
-  }
+      { type: 'paragraph', content: 'Here are some practical examples...' },
+    ],
+  },
 ];
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -134,7 +123,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   events: <Calendar className="h-5 w-5" />,
   about: <Users className="h-5 w-5" />,
   docs: <BookOpen className="h-5 w-5" />,
-  business: <Briefcase className="h-5 w-5" />
+  business: <Briefcase className="h-5 w-5" />,
 };
 
 export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?: (template: PageTemplate) => void }) {
@@ -154,20 +143,18 @@ export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?:
 
       if (error) throw error;
       return data as PageTemplate[];
-    }
+    },
   });
 
   // Initialize default templates
   const initializeTemplates = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('page_templates')
-        .insert(
-          defaultTemplates.map(template => ({
-            ...template,
-            id: template.name.toLowerCase().replace(/\s+/g, '-')
-          }))
-        );
+      const { error } = await supabase.from('page_templates').insert(
+        defaultTemplates.map(template => ({
+          ...template,
+          id: template.name.toLowerCase().replace(/\s+/g, '-'),
+        }))
+      );
 
       if (error) throw error;
     },
@@ -177,35 +164,35 @@ export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?:
     },
     onError: (error: any) => {
       toast.error('Failed to initialize templates: ' + error.message);
-    }
+    },
   });
 
   // Use template
   const useTemplate = useMutation({
     mutationFn: async (templateId: string) => {
       // Increment usage count
-      const { error } = await supabase.rpc('increment', {
-        table_name: 'page_templates',
-        column_name: 'usage_count',
-        row_id: templateId
-      }).single();
+      const { error } = await supabase
+        .rpc('increment', {
+          table_name: 'page_templates',
+          column_name: 'usage_count',
+          row_id: templateId,
+        })
+        .single();
 
       if (error) throw error;
-      
+
       const template = templates?.find(t => t.id === templateId);
       return template;
     },
-    onSuccess: (template) => {
+    onSuccess: template => {
       if (template && onSelectTemplate) {
         onSelectTemplate(template);
         toast.success(`Using "${template.name}" template`);
       }
-    }
+    },
   });
 
-  const filteredTemplates = templates?.filter(
-    t => selectedCategory === 'all' || t.category === selectedCategory
-  );
+  const filteredTemplates = templates?.filter(t => selectedCategory === 'all' || t.category === selectedCategory);
 
   const categories = ['all', ...Array.from(new Set(templates?.map(t => t.category) || []))];
 
@@ -262,35 +249,20 @@ export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?:
                     {categoryIcons[template.category] || <FileText className="h-5 w-5" />}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                      {template.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Used {template.usage_count} times
-                    </p>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{template.name}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Used {template.usage_count} times</p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                {template.description}
-              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{template.description}</p>
 
               <div className="flex items-center space-x-2">
-                <Button
-                  size="sm"
-                  variant="primary"
-                  onClick={() => useTemplate.mutate(template.id)}
-                  className="flex-1"
-                >
+                <Button size="sm" variant="primary" onClick={() => useTemplate.mutate(template.id)} className="flex-1">
                   <Copy className="h-4 w-4 mr-1" />
                   Use Template
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setPreviewTemplate(template)}
-                >
+                <Button size="sm" variant="ghost" onClick={() => setPreviewTemplate(template)}>
                   <Eye className="h-4 w-4" />
                 </Button>
               </div>
@@ -309,15 +281,21 @@ export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?:
             <div className="p-6">
               <div className="prose dark:prose-invert max-w-none">
                 {previewTemplate.blocks.map((block: any, index: number) => {
-                  const content = typeof block.content === 'string' 
-                    ? block.content 
-                    : block.content?.text || '';
-                  
+                  const content = typeof block.content === 'string' ? block.content : block.content?.text || '';
+
                   switch (block.type) {
                     case 'heading':
-                      return <h3 key={index} className="text-xl font-bold mt-4 mb-2">{content}</h3>;
+                      return (
+                        <h3 key={index} className="text-xl font-bold mt-4 mb-2">
+                          {content}
+                        </h3>
+                      );
                     case 'paragraph':
-                      return <p key={index} className="mb-3">{content}</p>;
+                      return (
+                        <p key={index} className="mb-3">
+                          {content}
+                        </p>
+                      );
                     case 'bulletList':
                       return (
                         <ul key={index} className="list-disc pl-6 mb-3">
@@ -337,10 +315,7 @@ export default function PageTemplates({ onSelectTemplate }: { onSelectTemplate?:
               </div>
             </div>
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
-              <Button
-                variant="ghost"
-                onClick={() => setPreviewTemplate(null)}
-              >
+              <Button variant="ghost" onClick={() => setPreviewTemplate(null)}>
                 Close
               </Button>
               <Button

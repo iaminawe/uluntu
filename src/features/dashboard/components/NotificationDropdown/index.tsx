@@ -26,19 +26,27 @@ export const NotificationDropdown: React.FC = () => {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'success': return '✅';
-      case 'warning': return '⚠️';
-      case 'error': return '❌';
-      default: return 'ℹ️';
+      case 'success':
+        return '✅';
+      case 'warning':
+        return '⚠️';
+      case 'error':
+        return '❌';
+      default:
+        return 'ℹ️';
     }
   };
 
   const getNotificationBgColor = (type: string) => {
     switch (type) {
-      case 'success': return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
-      case 'warning': return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
-      case 'error': return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
-      default: return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+      case 'success':
+        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+      case 'warning':
+        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
+      case 'error':
+        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+      default:
+        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
     }
   };
 
@@ -61,9 +69,7 @@ export const NotificationDropdown: React.FC = () => {
         <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-50 max-h-96 overflow-hidden">
           <div className="p-4 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white">
-                Notifications
-              </h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white">Notifications</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
@@ -96,13 +102,11 @@ export const NotificationDropdown: React.FC = () => {
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center">
                 <Bell className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  No notifications yet
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">No notifications yet</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                {notifications.map((notification) => (
+                {notifications.map(notification => (
                   <div
                     key={notification.id}
                     className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
@@ -110,28 +114,24 @@ export const NotificationDropdown: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 text-lg">
-                        {getNotificationIcon(notification.type)}
-                      </div>
-                      
+                      <div className="flex-shrink-0 text-lg">{getNotificationIcon(notification.type)}</div>
+
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium ${
-                          !notification.read 
-                            ? 'text-slate-900 dark:text-white' 
-                            : 'text-slate-700 dark:text-slate-300'
-                        }`}>
+                        <p
+                          className={`text-sm font-medium ${
+                            !notification.read ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
                           {notification.title}
                         </p>
-                        
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                          {notification.message}
-                        </p>
-                        
+
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{notification.message}</p>
+
                         <div className="flex items-center justify-between mt-2">
                           <time className="text-xs text-slate-400 dark:text-slate-500">
                             {formatDistanceToNow(new Date(notification.timestamp), { addSuffix: true })}
                           </time>
-                          
+
                           {notification.actionUrl && (
                             <a
                               href={notification.actionUrl}
@@ -143,7 +143,7 @@ export const NotificationDropdown: React.FC = () => {
                             </a>
                           )}
                         </div>
-                        
+
                         {!notification.read && (
                           <div className="mt-2">
                             <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>

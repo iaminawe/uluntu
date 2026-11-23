@@ -13,14 +13,14 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
   const authState = useAppSelector(state => state.auth);
   const userRoles = authState.roles.list;
   const location = useLocation();
-  
+
   // Check loading states
   const rolesLoading = authState.roles.loading;
-  
+
   // Only show loading if we're actually waiting for initial auth check
   // If we have a user and roles are loaded, we're not loading anymore
   const isActuallyLoading = loading && !user;
-  
+
   if (isActuallyLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -37,7 +37,7 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
   // If specific roles are required, check if user has at least one of them
   if (requiredRoles && requiredRoles.length > 0) {
     const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
-    
+
     if (!hasRequiredRole) {
       // Redirect to unauthorized page
       return <Navigate to="/unauthorized" replace />;

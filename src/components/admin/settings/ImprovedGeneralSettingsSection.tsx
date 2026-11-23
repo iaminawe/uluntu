@@ -4,19 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
 import ImageUploader from '@/components/ui/ImageUploader';
-import { 
-  Globe, 
-  Eye, 
-  EyeOff, 
-  Navigation, 
-  Palette, 
-  Save, 
-  RotateCcw, 
-  Info, 
-  Image,
-  FileText,
-  Type
-} from 'lucide-react';
+import { Globe, Eye, EyeOff, Navigation, Palette, Save, RotateCcw, Info, Image, FileText, Type } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface ImprovedGeneralSettingsSectionProps {
@@ -49,7 +37,7 @@ const siteSettingFields: SettingField[] = [
     placeholder: 'Uluntu',
     description: 'Main site title displayed in header and browser tab',
     required: true,
-    validation: { maxLength: 100 }
+    validation: { maxLength: 100 },
   },
   {
     key: 'site_description',
@@ -57,20 +45,20 @@ const siteSettingFields: SettingField[] = [
     type: 'textarea',
     placeholder: 'A vibrant tech community in the Kootenays',
     description: 'Site description for SEO and meta tags',
-    validation: { maxLength: 300 }
+    validation: { maxLength: 300 },
   },
   {
     key: 'site_logo',
     label: 'Site Logo',
     type: 'image',
-    description: 'Main site logo (recommended: 200x60px PNG with transparent background)'
+    description: 'Main site logo (recommended: 200x60px PNG with transparent background)',
   },
   {
     key: 'site_favicon',
     label: 'Favicon',
     type: 'image',
-    description: 'Site favicon (recommended: 32x32px ICO format)'
-  }
+    description: 'Site favicon (recommended: 32x32px ICO format)',
+  },
 ];
 
 const appearanceFields: SettingField[] = [
@@ -79,28 +67,28 @@ const appearanceFields: SettingField[] = [
     label: 'Primary Brand Color',
     type: 'color',
     placeholder: '#3B82F6',
-    description: 'Primary brand color used throughout the site'
+    description: 'Primary brand color used throughout the site',
   },
   {
     key: 'secondary_color',
     label: 'Secondary Color',
     type: 'color',
     placeholder: '#64748B',
-    description: 'Secondary color for accents and highlights'
+    description: 'Secondary color for accents and highlights',
   },
   {
     key: 'accent_color',
     label: 'Accent Color',
     type: 'color',
     placeholder: '#10B981',
-    description: 'Accent color for buttons and interactive elements'
+    description: 'Accent color for buttons and interactive elements',
   },
   {
     key: 'dark_mode_enabled',
     label: 'Enable Dark Mode',
     type: 'boolean',
-    description: 'Allow users to switch between light and dark themes'
-  }
+    description: 'Allow users to switch between light and dark themes',
+  },
 ];
 
 const typographyFields: SettingField[] = [
@@ -124,8 +112,8 @@ const typographyFields: SettingField[] = [
       { value: 'PT Serif', label: 'PT Serif (Universal Serif)' },
       { value: 'Crimson Text', label: 'Crimson Text (Book Serif)' },
       { value: 'Georgia', label: 'Georgia (Classic Serif)' },
-      { value: 'system-ui', label: 'System UI (Native)' }
-    ]
+      { value: 'system-ui', label: 'System UI (Native)' },
+    ],
   },
   {
     key: 'body_font_family',
@@ -146,8 +134,8 @@ const typographyFields: SettingField[] = [
       { value: 'PT Serif', label: 'PT Serif (Universal Serif)' },
       { value: 'Crimson Text', label: 'Crimson Text (Book Serif)' },
       { value: 'Georgia', label: 'Georgia (Classic Serif)' },
-      { value: 'system-ui', label: 'System UI (Native)' }
-    ]
+      { value: 'system-ui', label: 'System UI (Native)' },
+    ],
   },
   {
     key: 'font_size_scale',
@@ -157,8 +145,8 @@ const typographyFields: SettingField[] = [
     options: [
       { value: 'small', label: 'Small (Compact)' },
       { value: 'medium', label: 'Medium (Standard)' },
-      { value: 'large', label: 'Large (Accessible)' }
-    ]
+      { value: 'large', label: 'Large (Accessible)' },
+    ],
   },
   {
     key: 'line_height_scale',
@@ -169,9 +157,9 @@ const typographyFields: SettingField[] = [
       { value: 'tight', label: 'Tight (1.25)' },
       { value: 'normal', label: 'Normal (1.5)' },
       { value: 'relaxed', label: 'Relaxed (1.625)' },
-      { value: 'loose', label: 'Loose (2.0)' }
-    ]
-  }
+      { value: 'loose', label: 'Loose (2.0)' },
+    ],
+  },
 ];
 
 const headerFields: SettingField[] = [
@@ -179,7 +167,7 @@ const headerFields: SettingField[] = [
     key: 'hero_background_image',
     label: 'Hero Background Image',
     type: 'image',
-    description: 'Background image for hero section (recommended: 1920x600px)'
+    description: 'Background image for hero section (recommended: 1920x600px)',
   },
   {
     key: 'hero_title',
@@ -187,7 +175,7 @@ const headerFields: SettingField[] = [
     type: 'text',
     placeholder: 'Welcome to our community',
     description: 'Main heading displayed in the hero section',
-    validation: { maxLength: 100 }
+    validation: { maxLength: 100 },
   },
   {
     key: 'hero_subtitle',
@@ -195,8 +183,8 @@ const headerFields: SettingField[] = [
     type: 'textarea',
     placeholder: 'Connect, collaborate, and innovate together',
     description: 'Subtitle text below the main hero title',
-    validation: { maxLength: 200 }
-  }
+    validation: { maxLength: 200 },
+  },
 ];
 
 const navigationFields: SettingField[] = [
@@ -204,13 +192,13 @@ const navigationFields: SettingField[] = [
     key: 'show_member_count',
     label: 'Show Member Count',
     type: 'boolean',
-    description: 'Display total member count in navigation'
+    description: 'Display total member count in navigation',
   },
   {
     key: 'enable_search',
     label: 'Enable Global Search',
     type: 'boolean',
-    description: 'Show search functionality in header'
+    description: 'Show search functionality in header',
   },
   {
     key: 'footer_text',
@@ -218,15 +206,15 @@ const navigationFields: SettingField[] = [
     type: 'textarea',
     placeholder: '© 2024 Uluntu. All rights reserved.',
     description: 'Custom footer text displayed site-wide',
-    validation: { maxLength: 200 }
-  }
+    validation: { maxLength: 200 },
+  },
 ];
 
 const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionProps> = ({
   settings,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
@@ -254,22 +242,22 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
     setSaving(true);
     try {
       const updates: UpdateSettingRequest[] = [];
-      
+
       for (const fieldKey of changedFields) {
         const [category, settingKey] = fieldKey.split('.');
         const value = formData[fieldKey];
-        
+
         const setting = settings.find(s => s.setting_key === settingKey && s.category === category);
         updates.push({
           setting_key: settingKey,
           setting_value: value,
           category: category as any,
-          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType)
+          data_type: (setting?.data_type as SettingDataType) || ('string' as SettingDataType),
         });
       }
-      
+
       await Promise.all(updates.map(update => onUpdateSetting(update)));
-      
+
       setChangedFields(new Set());
       toast.success(`Saved ${updates.length} settings successfully`);
       onRefresh();
@@ -296,18 +284,18 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
     const fieldKey = `${category}.${field.key}`;
     const value = formData[fieldKey] || '';
     const hasChanged = changedFields.has(fieldKey);
-    
+
     return (
       <div key={fieldKey} className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
           {field.label}
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
-        
+
         {field.type === 'textarea' ? (
           <textarea
             value={value}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             placeholder={field.placeholder}
             rows={3}
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
@@ -320,13 +308,13 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
             <input
               type="color"
               value={value || '#3B82F6'}
-              onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+              onChange={e => handleFieldChange(category, field.key, e.target.value)}
               className="h-10 w-20 border border-gray-300 rounded cursor-pointer"
             />
             <input
               type="text"
               value={value}
-              onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+              onChange={e => handleFieldChange(category, field.key, e.target.value)}
               placeholder={field.placeholder}
               className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                 hasChanged ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
@@ -338,28 +326,28 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           <div className={`${hasChanged ? 'ring-2 ring-blue-200 rounded-lg' : ''}`}>
             <ImageUploader
               value={value}
-              onChange={(url) => handleFieldChange(category, field.key, url)}
+              onChange={url => handleFieldChange(category, field.key, url)}
               placeholder={`Upload ${field.label}`}
               maxSize={5}
-              onError={(error) => toast.error(error)}
+              onError={error => toast.error(error)}
             />
           </div>
         ) : field.type === 'boolean' ? (
           <div className="flex items-center space-x-3">
             <Switch
               checked={value || false}
-              onCheckedChange={(checked) => handleFieldChange(category, field.key, checked)}
+              onCheckedChange={checked => handleFieldChange(category, field.key, checked)}
             />
-            <span className="text-sm text-gray-600">
-              {value ? 'Enabled' : 'Disabled'}
-            </span>
+            <span className="text-sm text-gray-600">{value ? 'Enabled' : 'Disabled'}</span>
           </div>
         ) : field.type === 'select' ? (
           <select
             value={value || ''}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors ${
-              hasChanged ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20' : 'border-slate-300 dark:border-slate-600'
+              hasChanged
+                ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-slate-300 dark:border-slate-600'
             }`}
           >
             <option value="">Select an option...</option>
@@ -373,7 +361,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           <input
             type={field.type === 'url' ? 'url' : 'text'}
             value={value}
-            onChange={(e) => handleFieldChange(category, field.key, e.target.value)}
+            onChange={e => handleFieldChange(category, field.key, e.target.value)}
             placeholder={field.placeholder}
             className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
               hasChanged ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
@@ -382,14 +370,14 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
             required={field.required}
           />
         )}
-        
+
         {field.description && (
           <p className="text-xs text-gray-500 flex items-start">
             <Info className="h-3 w-3 mt-0.5 mr-1 flex-shrink-0" />
             {field.description}
           </p>
         )}
-        
+
         {field.validation?.maxLength && field.type !== 'boolean' && (
           <div className="text-xs text-gray-400 text-right">
             {String(value).length}/{field.validation.maxLength}
@@ -409,7 +397,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
             Configure your site's basic information, branding, and appearance
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -419,19 +407,14 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
             {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             <span>{previewMode ? 'Hide Preview' : 'Show Preview'}</span>
           </Button>
-          
+
           {changedFields.size > 0 && (
             <>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={saving}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" onClick={handleReset} disabled={saving} className="flex items-center space-x-2">
                 <RotateCcw className="h-4 w-4" />
                 <span>Reset</span>
               </Button>
-              
+
               <Button
                 onClick={handleSaveAll}
                 disabled={saving}
@@ -439,9 +422,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
-                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">
-                  {changedFields.size}
-                </span>
+                <span className="ml-1 px-2 py-0.5 bg-blue-500 text-xs rounded-full">{changedFields.size}</span>
               </Button>
             </>
           )}
@@ -460,46 +441,44 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
               <h4 className="font-medium text-gray-900 mb-3">Site Branding</h4>
               <div className="flex items-center space-x-4 p-4 bg-white rounded-lg border">
                 {formData['site.site_logo'] && (
-                  <img 
-                    src={formData['site.site_logo']} 
-                    alt="Logo Preview" 
+                  <img
+                    src={formData['site.site_logo']}
+                    alt="Logo Preview"
                     className="h-12 object-contain"
-                    onError={(e) => {
+                    onError={e => {
                       e.currentTarget.style.display = 'none';
                     }}
                   />
                 )}
                 <div>
-                  <h3 className="font-semibold">
-                    {formData['site.site_title'] || 'Your Site Title'}
-                  </h3>
+                  <h3 className="font-semibold">{formData['site.site_title'] || 'Your Site Title'}</h3>
                   <p className="text-sm text-gray-600">
                     {formData['site.site_description'] || 'Your site description'}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {/* Color Scheme Preview */}
             <div>
               <h4 className="font-medium text-gray-900 mb-3">Color Scheme</h4>
               <div className="flex space-x-4">
                 <div className="text-center">
-                  <div 
+                  <div
                     className="w-16 h-12 rounded-lg border-2 border-white shadow-sm"
                     style={{ backgroundColor: formData['appearance.primary_color'] || '#3B82F6' }}
                   />
                   <p className="text-xs text-gray-500 mt-1">Primary</p>
                 </div>
                 <div className="text-center">
-                  <div 
+                  <div
                     className="w-16 h-12 rounded-lg border-2 border-white shadow-sm"
                     style={{ backgroundColor: formData['appearance.secondary_color'] || '#64748B' }}
                   />
                   <p className="text-xs text-gray-500 mt-1">Secondary</p>
                 </div>
                 <div className="text-center">
-                  <div 
+                  <div
                     className="w-16 h-12 rounded-lg border-2 border-white shadow-sm"
                     style={{ backgroundColor: formData['appearance.accent_color'] || '#10B981' }}
                   />
@@ -507,34 +486,49 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
                 </div>
               </div>
             </div>
-            
+
             {/* Typography Preview */}
             <div>
               <h4 className="font-medium text-gray-900 mb-3">Typography</h4>
               <div className="bg-white p-4 rounded-lg border space-y-3">
-                <h1 
+                <h1
                   className="text-2xl font-bold"
-                  style={{ 
+                  style={{
                     fontFamily: formData['typography.heading_font_family'] || 'Inter',
-                    lineHeight: formData['typography.line_height_scale'] === 'tight' ? '1.25' :
-                               formData['typography.line_height_scale'] === 'relaxed' ? '1.625' :
-                               formData['typography.line_height_scale'] === 'loose' ? '2.0' : '1.5'
+                    lineHeight:
+                      formData['typography.line_height_scale'] === 'tight'
+                        ? '1.25'
+                        : formData['typography.line_height_scale'] === 'relaxed'
+                          ? '1.625'
+                          : formData['typography.line_height_scale'] === 'loose'
+                            ? '2.0'
+                            : '1.5',
                   }}
                 >
                   Heading Sample Text
                 </h1>
-                <p 
+                <p
                   className="text-base text-gray-600"
-                  style={{ 
+                  style={{
                     fontFamily: formData['typography.body_font_family'] || 'Inter',
-                    fontSize: formData['typography.font_size_scale'] === 'small' ? '14px' :
-                              formData['typography.font_size_scale'] === 'large' ? '18px' : '16px',
-                    lineHeight: formData['typography.line_height_scale'] === 'tight' ? '1.25' :
-                               formData['typography.line_height_scale'] === 'relaxed' ? '1.625' :
-                               formData['typography.line_height_scale'] === 'loose' ? '2.0' : '1.5'
+                    fontSize:
+                      formData['typography.font_size_scale'] === 'small'
+                        ? '14px'
+                        : formData['typography.font_size_scale'] === 'large'
+                          ? '18px'
+                          : '16px',
+                    lineHeight:
+                      formData['typography.line_height_scale'] === 'tight'
+                        ? '1.25'
+                        : formData['typography.line_height_scale'] === 'relaxed'
+                          ? '1.625'
+                          : formData['typography.line_height_scale'] === 'loose'
+                            ? '2.0'
+                            : '1.5',
                   }}
                 >
-                  This is how your body text will appear with the selected typography settings. The quick brown fox jumps over the lazy dog.
+                  This is how your body text will appear with the selected typography settings. The quick brown fox
+                  jumps over the lazy dog.
                 </p>
                 <div className="text-xs text-gray-500 flex space-x-4">
                   <span>Heading: {formData['typography.heading_font_family'] || 'Inter'}</span>
@@ -544,18 +538,22 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
                 </div>
               </div>
             </div>
-            
+
             {/* Hero Section Preview */}
             <div>
               <h4 className="font-medium text-gray-900 mb-3">Hero Section</h4>
               <div className="relative rounded-lg overflow-hidden">
-                <div 
+                <div
                   className="h-40 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white relative"
-                  style={formData['header.hero_background_image'] ? {
-                    backgroundImage: `url(${formData['header.hero_background_image']})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  } : {}}
+                  style={
+                    formData['header.hero_background_image']
+                      ? {
+                          backgroundImage: `url(${formData['header.hero_background_image']})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                        }
+                      : {}
+                  }
                 >
                   <div className="text-center relative z-10">
                     <h2 className="text-2xl font-bold mb-2">
@@ -629,9 +627,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {headerFields.map(field => renderField('header', field))}
-          </div>
+          <div className="space-y-6">{headerFields.map(field => renderField('header', field))}</div>
         </CardContent>
       </Card>
 
@@ -644,9 +640,7 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {navigationFields.map(field => renderField('navigation', field))}
-          </div>
+          <div className="space-y-6">{navigationFields.map(field => renderField('navigation', field))}</div>
         </CardContent>
       </Card>
 
@@ -677,33 +671,23 @@ const ImprovedGeneralSettingsSection: React.FC<ImprovedGeneralSettingsSectionPro
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {siteSettingFields.length}
-              </div>
+              <div className="text-2xl font-bold text-blue-600">{siteSettingFields.length}</div>
               <div className="text-sm text-gray-600">Site Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {appearanceFields.length}
-              </div>
+              <div className="text-2xl font-bold text-purple-600">{appearanceFields.length}</div>
               <div className="text-sm text-gray-600">Appearance</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600">
-                {typographyFields.length}
-              </div>
+              <div className="text-2xl font-bold text-indigo-600">{typographyFields.length}</div>
               <div className="text-sm text-gray-600">Typography</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {headerFields.length}
-              </div>
+              <div className="text-2xl font-bold text-green-600">{headerFields.length}</div>
               <div className="text-sm text-gray-600">Header Settings</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {changedFields.size}
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{changedFields.size}</div>
               <div className="text-sm text-gray-600">Unsaved Changes</div>
             </div>
           </div>

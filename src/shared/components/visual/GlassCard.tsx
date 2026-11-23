@@ -18,13 +18,13 @@ const GlassCard: React.FC<GlassCardProps> = ({
   opacity = 0.8,
   gradient = false,
   hoverable = true,
-  onClick
+  onClick,
 }) => {
   const blurClasses = {
     sm: 'backdrop-blur-sm',
     md: 'backdrop-blur-md',
     lg: 'backdrop-blur-lg',
-    xl: 'backdrop-blur-xl'
+    xl: 'backdrop-blur-xl',
   };
 
   const baseClasses = `
@@ -39,15 +39,15 @@ const GlassCard: React.FC<GlassCardProps> = ({
   const backgroundStyle = {
     backgroundColor: `rgba(255, 255, 255, ${opacity})`,
     ...(gradient && {
-      background: `linear-gradient(135deg, rgba(255, 255, 255, ${opacity}) 0%, rgba(255, 255, 255, ${opacity * 0.6}) 100%)`
-    })
+      background: `linear-gradient(135deg, rgba(255, 255, 255, ${opacity}) 0%, rgba(255, 255, 255, ${opacity * 0.6}) 100%)`,
+    }),
   };
 
   const darkBackgroundStyle = {
     backgroundColor: `rgba(30, 41, 59, ${opacity})`,
     ...(gradient && {
-      background: `linear-gradient(135deg, rgba(30, 41, 59, ${opacity}) 0%, rgba(30, 41, 59, ${opacity * 0.6}) 100%)`
-    })
+      background: `linear-gradient(135deg, rgba(30, 41, 59, ${opacity}) 0%, rgba(30, 41, 59, ${opacity * 0.6}) 100%)`,
+    }),
   };
 
   return (
@@ -58,14 +58,8 @@ const GlassCard: React.FC<GlassCardProps> = ({
       transition={{ duration: 0.3 }}
     >
       {/* Glass Background */}
-      <div 
-        className="absolute inset-0 bg-white dark:hidden"
-        style={backgroundStyle}
-      />
-      <div 
-        className="absolute inset-0 hidden dark:block"
-        style={darkBackgroundStyle}
-      />
+      <div className="absolute inset-0 bg-white dark:hidden" style={backgroundStyle} />
+      <div className="absolute inset-0 hidden dark:block" style={darkBackgroundStyle} />
 
       {/* Gradient Glow Effect */}
       {gradient && (
@@ -73,9 +67,7 @@ const GlassCard: React.FC<GlassCardProps> = ({
       )}
 
       {/* Content */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
 
       {/* Decorative Elements */}
       <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-400 rounded-full blur-3xl opacity-20" />

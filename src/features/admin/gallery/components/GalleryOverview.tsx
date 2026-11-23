@@ -18,11 +18,7 @@ interface GalleryOverviewProps {
   onViewPhotos: (gallery: AdminGalleryView) => void;
 }
 
-export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
-  onCreateGallery,
-  onEditGallery,
-  onViewPhotos
-}) => {
+export const GalleryOverview: React.FC<GalleryOverviewProps> = ({ onCreateGallery, onEditGallery, onViewPhotos }) => {
   // State management
   const [galleries, setGalleries] = useState<AdminGalleryView[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +27,12 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  
+
   // Filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<AdminGalleryFilters>({});
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // View options
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('created_at');
@@ -47,7 +43,7 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       const appliedFilters = { ...filters };
       if (searchTerm) {
         appliedFilters.search = searchTerm;
@@ -58,7 +54,7 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
         limit: 24,
         filters: appliedFilters,
         sortBy,
-        sortOrder
+        sortOrder,
       });
 
       setGalleries(response.galleries);
@@ -138,14 +134,10 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
     const variants = {
       approved: 'success',
       pending: 'warning',
-      rejected: 'error'
+      rejected: 'error',
     } as const;
 
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || 'default'}>
-        {status}
-      </Badge>
-    );
+    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
   };
 
   if (loading) {
@@ -170,12 +162,8 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Gallery Management
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Manage all user galleries and photos
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gallery Management</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage all user galleries and photos</p>
         </div>
         <Button onClick={onCreateGallery} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -191,17 +179,13 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
             type="text"
             placeholder="Search galleries by title or description..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
-        
+
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
             <Filter className="w-4 h-4" />
             Filters
             {Object.keys(filters).length > 0 && (
@@ -210,7 +194,7 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
               </Badge>
             )}
           </Button>
-          
+
           <DropdownMenu
             trigger={
               <Button variant="outline">
@@ -220,28 +204,46 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
             items={[
               {
                 label: 'Created Date (Newest)',
-                onClick: () => { setSortBy('created_at'); setSortOrder('desc'); }
+                onClick: () => {
+                  setSortBy('created_at');
+                  setSortOrder('desc');
+                },
               },
               {
                 label: 'Created Date (Oldest)',
-                onClick: () => { setSortBy('created_at'); setSortOrder('asc'); }
+                onClick: () => {
+                  setSortBy('created_at');
+                  setSortOrder('asc');
+                },
               },
               {
                 label: 'Title (A-Z)',
-                onClick: () => { setSortBy('title'); setSortOrder('asc'); }
+                onClick: () => {
+                  setSortBy('title');
+                  setSortOrder('asc');
+                },
               },
               {
                 label: 'Title (Z-A)',
-                onClick: () => { setSortBy('title'); setSortOrder('desc'); }
+                onClick: () => {
+                  setSortBy('title');
+                  setSortOrder('desc');
+                },
               },
               {
                 label: 'Photo Count (High-Low)',
-                onClick: () => { setSortBy('photo_count'); setSortOrder('desc'); }
+                onClick: () => {
+                  setSortBy('photo_count');
+                  setSortOrder('desc');
+                },
               },
               {
                 label: 'Views (High-Low)',
-                onClick: () => { setSortBy('view_count'); setSortOrder('desc'); }
-              }
+                onClick: () => {
+                  setSortBy('view_count');
+                  setSortOrder('desc');
+                },
+              },
             ]}
           />
         </div>
@@ -254,51 +256,49 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">Privacy Level</label>
               <div className="space-y-2">
-                {['public', 'members_only', 'private'].map((level) => (
+                {['public', 'members_only', 'private'].map(level => (
                   <label key={level} className="flex items-center">
                     <Checkbox
                       checked={filters.privacyLevel?.includes(level) || false}
-                      onChange={(checked) => {
+                      onChange={checked => {
                         const current = filters.privacyLevel || [];
                         if (checked) {
                           setFilters({
                             ...filters,
-                            privacyLevel: [...current, level]
+                            privacyLevel: [...current, level],
                           });
                         } else {
                           setFilters({
                             ...filters,
-                            privacyLevel: current.filter(l => l !== level)
+                            privacyLevel: current.filter(l => l !== level),
                           });
                         }
                       }}
                     />
-                    <span className="ml-2 text-sm capitalize">
-                      {level.replace('_', ' ')}
-                    </span>
+                    <span className="ml-2 text-sm capitalize">{level.replace('_', ' ')}</span>
                   </label>
                 ))}
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Visibility</label>
               <div className="space-y-2">
-                {['visible', 'hidden', 'archived'].map((visibility) => (
+                {['visible', 'hidden', 'archived'].map(visibility => (
                   <label key={visibility} className="flex items-center">
                     <Checkbox
                       checked={filters.visibility?.includes(visibility) || false}
-                      onChange={(checked) => {
+                      onChange={checked => {
                         const current = filters.visibility || [];
                         if (checked) {
                           setFilters({
                             ...filters,
-                            visibility: [...current, visibility]
+                            visibility: [...current, visibility],
                           });
                         } else {
                           setFilters({
                             ...filters,
-                            visibility: current.filter(v => v !== visibility)
+                            visibility: current.filter(v => v !== visibility),
                           });
                         }
                       }}
@@ -308,25 +308,25 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
                 ))}
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Moderation Status</label>
               <div className="space-y-2">
-                {['approved', 'pending', 'rejected'].map((status) => (
+                {['approved', 'pending', 'rejected'].map(status => (
                   <label key={status} className="flex items-center">
                     <Checkbox
                       checked={filters.moderationStatus?.includes(status) || false}
-                      onChange={(checked) => {
+                      onChange={checked => {
                         const current = filters.moderationStatus || [];
                         if (checked) {
                           setFilters({
                             ...filters,
-                            moderationStatus: [...current, status]
+                            moderationStatus: [...current, status],
                           });
                         } else {
                           setFilters({
                             ...filters,
-                            moderationStatus: current.filter(s => s !== status)
+                            moderationStatus: current.filter(s => s !== status),
                           });
                         }
                       }}
@@ -337,14 +337,12 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end mt-4 gap-2">
             <Button variant="outline" onClick={() => setFilters({})}>
               Clear Filters
             </Button>
-            <Button onClick={() => setCurrentPage(1)}>
-              Apply Filters
-            </Button>
+            <Button onClick={() => setCurrentPage(1)}>Apply Filters</Button>
           </div>
         </Card>
       )}
@@ -360,32 +358,38 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'visibility',
-                  galleryIds: Array.from(selectedGalleries),
-                  payload: { visibility: 'hidden' }
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'visibility',
+                    galleryIds: Array.from(selectedGalleries),
+                    payload: { visibility: 'hidden' },
+                  })
+                }
               >
                 Hide
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'visibility',
-                  galleryIds: Array.from(selectedGalleries),
-                  payload: { visibility: 'visible' }
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'visibility',
+                    galleryIds: Array.from(selectedGalleries),
+                    payload: { visibility: 'visible' },
+                  })
+                }
               >
                 Show
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'delete',
-                  galleryIds: Array.from(selectedGalleries)
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'delete',
+                    galleryIds: Array.from(selectedGalleries),
+                  })
+                }
                 className="text-red-600 hover:text-red-700"
               >
                 Delete
@@ -412,13 +416,8 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
           {/* Selection Header */}
           <div className="flex items-center gap-4 mb-4">
             <label className="flex items-center">
-              <Checkbox
-                checked={selectedGalleries.size === galleries.length}
-                onChange={selectAllGalleries}
-              />
-              <span className="ml-2 text-sm">
-                Select all ({galleries.length})
-              </span>
+              <Checkbox checked={selectedGalleries.size === galleries.length} onChange={selectAllGalleries} />
+              <span className="ml-2 text-sm">Select all ({galleries.length})</span>
             </label>
             <div className="text-sm text-gray-600">
               Showing {galleries.length} of {totalCount} galleries
@@ -427,7 +426,7 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
 
           {/* Gallery Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {galleries.map((gallery) => (
+            {galleries.map(gallery => (
               <Card key={gallery.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   {/* Selection Checkbox */}
@@ -442,17 +441,13 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
                   {/* Cover Image */}
                   <div className="aspect-video bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
                     {gallery.cover_photo_url ? (
-                      <img
-                        src={gallery.cover_photo_url}
-                        alt={gallery.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={gallery.cover_photo_url} alt={gallery.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <span className="text-sm">No cover photo</span>
                       </div>
                     )}
-                    
+
                     {/* Quick Actions */}
                     <div className="absolute top-3 right-3">
                       <DropdownMenu
@@ -465,19 +460,19 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
                           {
                             label: 'View Photos',
                             icon: Eye,
-                            onClick: () => onViewPhotos(gallery)
+                            onClick: () => onViewPhotos(gallery),
                           },
                           {
                             label: 'Edit Gallery',
                             icon: Edit,
-                            onClick: () => onEditGallery(gallery)
+                            onClick: () => onEditGallery(gallery),
                           },
                           {
                             label: 'Delete',
                             icon: Trash2,
                             onClick: () => handleDeleteGallery(gallery.id),
-                            className: 'text-red-600'
-                          }
+                            className: 'text-red-600',
+                          },
                         ]}
                       />
                     </div>
@@ -497,16 +492,12 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
-                      {gallery.title}
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{gallery.title}</h3>
                     {getPrivacyIcon(gallery.privacy_level)}
                   </div>
-                  
+
                   {gallery.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                      {gallery.description}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{gallery.description}</p>
                   )}
 
                   <div className="space-y-2">
@@ -514,31 +505,20 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
                       <span>{gallery.photo_count} photos</span>
                       <span>{gallery.stats.viewCount} views</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <Calendar className="w-3 h-3" />
                       {new Date(gallery.created_at).toLocaleDateString()}
                     </div>
-                    
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Owner: {gallery.owner.name}
-                    </div>
+
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Owner: {gallery.owner.name}</div>
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onViewPhotos(gallery)}
-                      className="flex-1"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => onViewPhotos(gallery)} className="flex-1">
                       View Photos
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onEditGallery(gallery)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => onEditGallery(gallery)}>
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
@@ -556,7 +536,7 @@ export const GalleryOverview: React.FC<GalleryOverviewProps> = ({
               showInfo={{
                 total: totalCount,
                 current: galleries.length,
-                perPage: 24
+                perPage: 24,
               }}
             />
           </div>

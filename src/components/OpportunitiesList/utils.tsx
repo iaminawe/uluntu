@@ -1,8 +1,8 @@
-import { 
-  Opportunity, 
-  OpportunityType, 
+import {
+  Opportunity,
+  OpportunityType,
   ExperienceLevel,
-  FilterOptions 
+  FilterOptions,
 } from '@/features/opportunities/components/OpportunitiesList/types';
 
 // Format date string to a readable format (e.g., "May 10, 2025")
@@ -11,24 +11,24 @@ export const formatDate = (dateString: string): string => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
 // Calculate how many days are left until the deadline
 export const calculateDaysLeft = (deadline?: string): number | null => {
   if (!deadline) return null;
-  
+
   const deadlineDate = new Date(deadline);
   const today = new Date();
-  
+
   // Reset hours to compare dates only
   deadlineDate.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);
-  
+
   const differenceInTime = deadlineDate.getTime() - today.getTime();
   const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-  
+
   return differenceInDays > 0 ? differenceInDays : 0;
 };
 
@@ -43,37 +43,40 @@ export const filterOpportunities = (
     if (companyId && opportunity.company.id !== companyId) {
       return false;
     }
-    
+
     // Filter by type
     if (filters.type !== 'all' && opportunity.type !== filters.type) {
       return false;
     }
-    
+
     // Filter by experience level (if both filter and opportunity have experienceLevel)
-    if (filters.experienceLevel && filters.experienceLevel !== 'all' && 
-        opportunity.experienceLevel && opportunity.experienceLevel !== filters.experienceLevel) {
+    if (
+      filters.experienceLevel &&
+      filters.experienceLevel !== 'all' &&
+      opportunity.experienceLevel &&
+      opportunity.experienceLevel !== filters.experienceLevel
+    ) {
       return false;
     }
-    
+
     // Filter by remote option
     if (filters.remote !== 'all' && opportunity.remote !== filters.remote) {
       return false;
     }
-    
+
     // Filter by search term (check title, company name, and description)
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      const matchesSearch = (
+      const matchesSearch =
         opportunity.title.toLowerCase().includes(searchLower) ||
         opportunity.company.name.toLowerCase().includes(searchLower) ||
-        opportunity.description.toLowerCase().includes(searchLower)
-      );
-      
+        opportunity.description.toLowerCase().includes(searchLower);
+
       if (!matchesSearch) {
         return false;
       }
     }
-    
+
     // If it passes all filters, include it
     return true;
   });

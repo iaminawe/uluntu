@@ -12,9 +12,9 @@ export default function ResourcesPage() {
         <title>Resources - Uluntu</title>
         <meta name="description" content="Tech resources and learning materials for the Kootenay tech community" />
       </Helmet>
-      
+
       <PageHeader />
-      
+
       <ContentContainer>
         <ResourcesList />
       </ContentContainer>

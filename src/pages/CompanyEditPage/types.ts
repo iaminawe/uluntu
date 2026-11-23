@@ -60,7 +60,7 @@ export const adaptMainCompanyToCompanyData = (company: MainCompany): CompanyData
     social: company.social,
     status: company.status,
     // Convert null to undefined for featured property
-    featured: company.featured === null ? undefined : company.featured
+    featured: company.featured === null ? undefined : company.featured,
   };
 };
 
@@ -79,13 +79,43 @@ export const adaptCompanyDataToMainCompany = (companyData: CompanyData): MainCom
     website: companyData.website,
     social: companyData.social,
     status: companyData.status,
-    featured: companyData.featured
+    featured: companyData.featured,
   };
 };
 
 export interface BasicInfoSectionProps {
-  formData: Pick<FormData, 'name' | 'slug' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'website' | 'status' | 'featured'>;
-  errors: Partial<Record<keyof Pick<FormData, 'name' | 'slug' | 'description' | 'logo' | 'coverImage' | 'size' | 'founded' | 'location' | 'status' | 'featured'>, string>>;
+  formData: Pick<
+    FormData,
+    | 'name'
+    | 'slug'
+    | 'description'
+    | 'logo'
+    | 'coverImage'
+    | 'size'
+    | 'founded'
+    | 'location'
+    | 'website'
+    | 'status'
+    | 'featured'
+  >;
+  errors: Partial<
+    Record<
+      keyof Pick<
+        FormData,
+        | 'name'
+        | 'slug'
+        | 'description'
+        | 'logo'
+        | 'coverImage'
+        | 'size'
+        | 'founded'
+        | 'location'
+        | 'status'
+        | 'featured'
+      >,
+      string
+    >
+  >;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   isSubmitting: boolean;
   logoFile: File | null;

@@ -5,7 +5,7 @@ import authReducer, {
   updateSession,
   setAuthError,
   resetAuthState,
-  AuthState
+  AuthState,
 } from '@/features/auth/store/authSlice';
 
 describe('Auth Redux State Tests', () => {
@@ -13,7 +13,7 @@ describe('Auth Redux State Tests', () => {
 
   beforeEach(() => {
     store = configureStore({
-      reducer: { auth: authReducer }
+      reducer: { auth: authReducer },
     });
   });
 
@@ -29,8 +29,8 @@ describe('Auth Redux State Tests', () => {
           list: [],
           isAdmin: false,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       });
     });
   });
@@ -39,17 +39,17 @@ describe('Auth Redux State Tests', () => {
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      role: 'user'
+      role: 'user',
     };
 
     const mockSession = {
       access_token: 'mock-token',
-      expires_at: new Date().toISOString()
+      expires_at: new Date().toISOString(),
     };
 
     it('should handle successful sign in', () => {
       store.dispatch(signIn({ user: mockUser, session: mockSession }));
-      
+
       const state = store.getState().auth;
       expect(state).toEqual({
         user: mockUser,
@@ -60,18 +60,18 @@ describe('Auth Redux State Tests', () => {
           list: ['user'], // The role from the user is added to the list
           isAdmin: false,
           loading: false, // Loading is set to false after roles are processed
-          error: null
-        }
+          error: null,
+        },
       });
     });
 
     it('should handle sign out', () => {
       // First sign in
       store.dispatch(signIn({ user: mockUser, session: mockSession }));
-      
+
       // Then sign out
       store.dispatch(signOut());
-      
+
       const state = store.getState().auth;
       expect(state).toEqual({
         user: null,
@@ -82,19 +82,19 @@ describe('Auth Redux State Tests', () => {
           list: [],
           isAdmin: false,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       });
     });
 
     it('should handle session updates', () => {
       const newSession = {
         ...mockSession,
-        access_token: 'new-token'
+        access_token: 'new-token',
       };
-      
+
       store.dispatch(updateSession(newSession));
-      
+
       const state = store.getState().auth;
       expect(state.session).toEqual(newSession);
     });
@@ -102,7 +102,7 @@ describe('Auth Redux State Tests', () => {
     it('should handle authentication errors', () => {
       const error = 'Invalid credentials';
       store.dispatch(setAuthError(error));
-      
+
       const state = store.getState().auth;
       expect(state.error).toBe(error);
       expect(state.status).toBe('error');
@@ -112,10 +112,10 @@ describe('Auth Redux State Tests', () => {
       // First set some state
       store.dispatch(signIn({ user: mockUser, session: mockSession }));
       store.dispatch(setAuthError('Some error'));
-      
+
       // Then reset
       store.dispatch(resetAuthState());
-      
+
       const state = store.getState().auth;
       expect(state).toEqual({
         user: null,
@@ -126,8 +126,8 @@ describe('Auth Redux State Tests', () => {
           list: [],
           isAdmin: false,
           loading: false,
-          error: null
-        }
+          error: null,
+        },
       });
     });
   });
@@ -137,13 +137,15 @@ describe('Auth Redux State Tests', () => {
       const userWithRole = {
         id: '123',
         email: 'test@example.com',
-        role: 'admin'
+        role: 'admin',
       };
 
-      store.dispatch(signIn({ 
-        user: userWithRole,
-        session: { access_token: 'token', expires_at: new Date().toISOString() }
-      }));
+      store.dispatch(
+        signIn({
+          user: userWithRole,
+          session: { access_token: 'token', expires_at: new Date().toISOString() },
+        })
+      );
 
       const state = store.getState().auth;
       expect(state.user?.role).toBe('admin');
@@ -153,13 +155,15 @@ describe('Auth Redux State Tests', () => {
       const userWithRole = {
         id: '123',
         email: 'test@example.com',
-        role: 'admin'
+        role: 'admin',
       };
 
-      store.dispatch(signIn({ 
-        user: userWithRole,
-        session: { access_token: 'token', expires_at: new Date().toISOString() }
-      }));
+      store.dispatch(
+        signIn({
+          user: userWithRole,
+          session: { access_token: 'token', expires_at: new Date().toISOString() },
+        })
+      );
       store.dispatch(signOut());
 
       const state = store.getState().auth;

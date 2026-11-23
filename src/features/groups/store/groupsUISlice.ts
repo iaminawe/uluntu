@@ -43,7 +43,7 @@ const groupsUISlice = createSlice({
     updateFilters: (state, action: PayloadAction<Partial<GroupsFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.filters = {
         visibility: 'all',
         memberStatus: 'all',

@@ -4,7 +4,7 @@ import {
   PromotionRequestsResponse,
   CreatePromotionRequestData,
   PromotionStatus,
-  PromotionType
+  PromotionType,
 } from '../types';
 
 class PromotionApi {
@@ -18,17 +18,10 @@ class PromotionApi {
     requestedBy?: string;
   }): Promise<PromotionRequestsResponse> {
     try {
-      const {
-        page = 1,
-        limit = 20,
-        status,
-        promotionType,
-        requestedBy,
-      } = params || {};
+      const { page = 1, limit = 20, status, promotionType, requestedBy } = params || {};
 
-      let query = (supabase as any)
-        .from(this.tableName)
-        .select(`
+      let query = (supabase as any).from(this.tableName).select(
+        `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -51,7 +44,9 @@ class PromotionApi {
             name,
             image
           )
-        `, { count: 'exact' });
+        `,
+        { count: 'exact' }
+      );
 
       // Apply filters
       if (status) {
@@ -100,7 +95,8 @@ class PromotionApi {
     try {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -130,7 +126,8 @@ class PromotionApi {
             name,
             image
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -148,7 +145,9 @@ class PromotionApi {
   async createPromotionRequest(requestData: CreatePromotionRequestData): Promise<PhotoPromotionRequest> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -176,7 +175,8 @@ class PromotionApi {
       const { data, error } = await (supabase as any)
         .from(this.tableName)
         .insert(newRequest)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -189,7 +189,8 @@ class PromotionApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -204,13 +205,15 @@ class PromotionApi {
   }
 
   async approvePromotionRequest(
-    id: string, 
+    id: string,
     reviewNotes?: string,
     metadata?: Record<string, any>
   ): Promise<PhotoPromotionRequest> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -228,7 +231,8 @@ class PromotionApi {
           metadata: metadata || (request as any).metadata,
         })
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -246,7 +250,8 @@ class PromotionApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -266,7 +271,9 @@ class PromotionApi {
   async rejectPromotionRequest(id: string, reviewNotes: string): Promise<PhotoPromotionRequest> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -280,7 +287,8 @@ class PromotionApi {
           review_notes: reviewNotes,
         })
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -298,7 +306,8 @@ class PromotionApi {
             name,
             image
           )
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -315,7 +324,9 @@ class PromotionApi {
   async cancelPromotionRequest(id: string): Promise<boolean> {
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -361,7 +372,8 @@ class PromotionApi {
     try {
       let query = (supabase as any)
         .from(this.tableName)
-        .select(`
+        .select(
+          `
           *,
           photo:photos!photo_promotion_requests_photo_id_fkey(
             id,
@@ -370,7 +382,8 @@ class PromotionApi {
             thumbnail_url,
             description
           )
-        `)
+        `
+        )
         .eq('status', 'active');
 
       if (promotionType) {
@@ -445,7 +458,6 @@ class PromotionApi {
           status: 'active' as PromotionStatus,
         })
         .eq('id', request.id);
-
     } catch (error) {
       console.error('Error executing promotion:', error);
       throw error;
@@ -455,7 +467,7 @@ class PromotionApi {
   private async executePageHeaderPromotion(request: PhotoPromotionRequest): Promise<void> {
     // This would integrate with the page header assignment API
     const { pageHeaderAssignmentApi } = await import('./pageHeaderApi');
-    
+
     await pageHeaderAssignmentApi.createAssignment({
       photo_id: (request as any).photo_id,
       page_path: (request as any).target_location || '/',

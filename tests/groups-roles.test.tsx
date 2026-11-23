@@ -12,7 +12,7 @@ describe('Group Roles and Permissions', () => {
   const mockUserId = 'user-123';
   const mockMemberId = 'member-123';
   const mockGroupId = 'group-123';
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -22,7 +22,7 @@ describe('Group Roles and Permissions', () => {
       // Mock the RPC call for group creation
       const mockRpcSpy = vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: mockGroupId,
-        error: null
+        error: null,
       });
 
       // Mock getById to return the created group
@@ -33,15 +33,15 @@ describe('Group Roles and Permissions', () => {
         description: 'Test Description',
         visibility: 'open',
         status: 'published',
-        createdBy: mockMemberId
+        createdBy: mockMemberId,
       };
-      
+
       vi.spyOn(groupsApi, 'getById').mockResolvedValueOnce(mockGroup as any);
 
       const result = await groupsApi.create({
         name: 'Test Group',
         description: 'Test Description',
-        visibility: 'open'
+        visibility: 'open',
       });
 
       expect(mockRpcSpy).toHaveBeenCalledWith('create_group_with_admin', {
@@ -49,7 +49,7 @@ describe('Group Roles and Permissions', () => {
         p_description: 'Test Description',
         p_visibility: 'open',
         p_hero_image: '',
-        p_slug: null
+        p_slug: null,
       });
 
       expect(result).toBeDefined();
@@ -59,23 +59,24 @@ describe('Group Roles and Permissions', () => {
     it('should handle group creation with slug', async () => {
       const mockRpcSpy = vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: mockGroupId,
-        error: null
+        error: null,
       });
 
       vi.spyOn(groupsApi, 'getById').mockResolvedValueOnce({
         id: mockGroupId,
-        slug: 'custom-slug'
+        slug: 'custom-slug',
       } as any);
 
       await groupsApi.create({
         name: 'Test Group',
         slug: 'custom-slug',
-        description: 'Test Description'
+        description: 'Test Description',
       });
 
-      expect(mockRpcSpy).toHaveBeenCalledWith('create_group_with_admin', 
+      expect(mockRpcSpy).toHaveBeenCalledWith(
+        'create_group_with_admin',
         expect.objectContaining({
-          p_slug: 'custom-slug'
+          p_slug: 'custom-slug',
         })
       );
     });
@@ -89,16 +90,16 @@ describe('Group Roles and Permissions', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValueOnce({
               data: { id: mockMemberId },
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       } as any);
 
       // Mock join_group RPC
       const mockRpcSpy = vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: true,
-        error: null
+        error: null,
       });
 
       const result = await groupsApi.joinGroup(mockGroupId, mockUserId);
@@ -107,7 +108,7 @@ describe('Group Roles and Permissions', () => {
       expect(mockRpcSpy).toHaveBeenCalledWith('join_group', {
         p_group_id: mockGroupId,
         p_member_id: mockMemberId,
-        p_role: 'member'
+        p_role: 'member',
       });
     });
 
@@ -117,10 +118,10 @@ describe('Group Roles and Permissions', () => {
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValueOnce({
               data: null,
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       } as any);
 
       const result = await groupsApi.joinGroup(mockGroupId, mockUserId);
@@ -132,19 +133,15 @@ describe('Group Roles and Permissions', () => {
     it('should allow admin to change member roles', async () => {
       const mockRpcSpy = vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: true,
-        error: null
+        error: null,
       });
 
-      const result = await groupMemberManagementApi.changeMemberRole(
-        mockGroupId,
-        'member-456',
-        'moderator'
-      );
+      const result = await groupMemberManagementApi.changeMemberRole(mockGroupId, 'member-456', 'moderator');
 
       expect(mockRpcSpy).toHaveBeenCalledWith('change_member_role', {
         p_group_id: mockGroupId,
         p_member_id: 'member-456',
-        p_new_role: 'moderator'
+        p_new_role: 'moderator',
       });
 
       expect(result).toBe(true);
@@ -153,14 +150,10 @@ describe('Group Roles and Permissions', () => {
     it('should reject invalid roles', async () => {
       vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: null,
-        error: { message: 'Invalid role' } as any
+        error: { message: 'Invalid role' } as any,
       });
 
-      const result = await groupMemberManagementApi.changeMemberRole(
-        mockGroupId,
-        'member-456',
-        'invalid-role' as any
-      );
+      const result = await groupMemberManagementApi.changeMemberRole(mockGroupId, 'member-456', 'invalid-role' as any);
 
       expect(result).toBe(false);
     });
@@ -168,13 +161,10 @@ describe('Group Roles and Permissions', () => {
     it('should check if user is group admin', async () => {
       vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: true,
-        error: null
+        error: null,
       });
 
-      const result = await groupMemberManagementApi.isGroupAdmin(
-        mockGroupId,
-        mockUserId
-      );
+      const result = await groupMemberManagementApi.isGroupAdmin(mockGroupId, mockUserId);
 
       expect(result).toBe(true);
     });
@@ -193,8 +183,8 @@ describe('Group Roles and Permissions', () => {
           member: {
             id: mockMemberId,
             name: 'Admin User',
-            title: 'Developer'
-          }
+            title: 'Developer',
+          },
         },
         {
           id: 'gm-2',
@@ -206,9 +196,9 @@ describe('Group Roles and Permissions', () => {
           member: {
             id: 'member-456',
             name: 'Regular User',
-            title: 'Designer'
-          }
-        }
+            title: 'Designer',
+          },
+        },
       ];
 
       vi.spyOn(supabase, 'from').mockReturnValue({
@@ -216,10 +206,10 @@ describe('Group Roles and Permissions', () => {
           eq: vi.fn().mockReturnValue({
             order: vi.fn().mockResolvedValueOnce({
               data: mockMembers,
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       } as any);
 
       const result = await groupMemberManagementApi.getGroupMembers(mockGroupId);
@@ -234,8 +224,8 @@ describe('Group Roles and Permissions', () => {
         {
           id: 'gm-1',
           role: 'admin',
-          member: { name: 'Admin User' }
-        }
+          member: { name: 'Admin User' },
+        },
       ];
 
       vi.spyOn(supabase, 'from').mockReturnValue({
@@ -244,17 +234,14 @@ describe('Group Roles and Permissions', () => {
             eq: vi.fn().mockReturnValue({
               order: vi.fn().mockResolvedValueOnce({
                 data: mockAdmins,
-                error: null
-              })
-            })
-          })
-        })
+                error: null,
+              }),
+            }),
+          }),
+        }),
       } as any);
 
-      const result = await groupMemberManagementApi.getGroupMembers(
-        mockGroupId,
-        { role: 'admin' }
-      );
+      const result = await groupMemberManagementApi.getGroupMembers(mockGroupId, { role: 'admin' });
 
       expect(result).toHaveLength(1);
       expect(result[0].role).toBe('admin');
@@ -266,13 +253,10 @@ describe('Group Roles and Permissions', () => {
       // Mock checking if user is admin
       vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: true,
-        error: null
+        error: null,
       });
 
-      const canManage = await groupMemberManagementApi.canManageGroup(
-        mockGroupId,
-        mockUserId
-      );
+      const canManage = await groupMemberManagementApi.canManageGroup(mockGroupId, mockUserId);
 
       expect(canManage).toBe(true);
     });
@@ -280,13 +264,10 @@ describe('Group Roles and Permissions', () => {
     it('should deny non-admin from admin actions', async () => {
       vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
         data: false,
-        error: null
+        error: null,
       });
 
-      const canManage = await groupMemberManagementApi.canManageGroup(
-        mockGroupId,
-        'non-admin-user'
-      );
+      const canManage = await groupMemberManagementApi.canManageGroup(mockGroupId, 'non-admin-user');
 
       expect(canManage).toBe(false);
     });
@@ -294,14 +275,10 @@ describe('Group Roles and Permissions', () => {
 
   describe('Role-Based Features Access', () => {
     it('admins should access all group features', async () => {
-      const memberRole = await groupMemberManagementApi.getMemberRole(
-        mockGroupId,
-        mockMemberId
-      );
+      const memberRole = await groupMemberManagementApi.getMemberRole(mockGroupId, mockMemberId);
 
       // Mock admin role
-      vi.spyOn(groupMemberManagementApi, 'getMemberRole')
-        .mockResolvedValueOnce('admin');
+      vi.spyOn(groupMemberManagementApi, 'getMemberRole').mockResolvedValueOnce('admin');
 
       const permissions = {
         canEditGroup: memberRole === 'admin',
@@ -309,7 +286,7 @@ describe('Group Roles and Permissions', () => {
         canInviteMembers: memberRole === 'admin' || memberRole === 'moderator',
         canRemoveMembers: memberRole === 'admin',
         canChangeRoles: memberRole === 'admin',
-        canCreateAnnouncements: memberRole === 'admin' || memberRole === 'moderator'
+        canCreateAnnouncements: memberRole === 'admin' || memberRole === 'moderator',
       };
 
       expect(permissions.canEditGroup).toBe(true);
@@ -326,7 +303,7 @@ describe('Group Roles and Permissions', () => {
         canInviteMembers: memberRole === 'admin' || memberRole === 'moderator',
         canRemoveMembers: memberRole === 'admin',
         canChangeRoles: memberRole === 'admin',
-        canCreateAnnouncements: memberRole === 'admin' || memberRole === 'moderator'
+        canCreateAnnouncements: memberRole === 'admin' || memberRole === 'moderator',
       };
 
       expect(permissions.canEditGroup).toBe(false);
@@ -347,7 +324,7 @@ describe('Group Roles and Permissions', () => {
         canChangeRoles: memberRole === 'admin',
         canCreateAnnouncements: memberRole === 'admin' || memberRole === 'moderator',
         canCreatePosts: true, // All members can create posts
-        canComment: true // All members can comment
+        canComment: true, // All members can comment
       };
 
       expect(permissions.canEditGroup).toBe(false);
@@ -367,18 +344,18 @@ describe('Group Creation to Admin Flow - Full Integration', () => {
     // Step 1: Create group
     vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
       data: groupId,
-      error: null
+      error: null,
     });
 
     vi.spyOn(groupsApi, 'getById').mockResolvedValueOnce({
       id: groupId,
       name: 'New Group',
-      createdBy: memberId
+      createdBy: memberId,
     } as any);
 
     const group = await groupsApi.create({
       name: 'New Group',
-      description: 'Test group creation'
+      description: 'Test group creation',
     });
 
     expect(group).toBeDefined();
@@ -387,7 +364,7 @@ describe('Group Creation to Admin Flow - Full Integration', () => {
     // Step 2: Verify creator is admin
     vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
       data: true,
-      error: null
+      error: null,
     });
 
     const isAdmin = await groupMemberManagementApi.isGroupAdmin(groupId, userId);
@@ -396,14 +373,10 @@ describe('Group Creation to Admin Flow - Full Integration', () => {
     // Step 3: Admin can change member roles
     vi.spyOn(supabase, 'rpc').mockResolvedValueOnce({
       data: true,
-      error: null
+      error: null,
     });
 
-    const roleChanged = await groupMemberManagementApi.changeMemberRole(
-      groupId,
-      'other-member-id',
-      'moderator'
-    );
+    const roleChanged = await groupMemberManagementApi.changeMemberRole(groupId, 'other-member-id', 'moderator');
     expect(roleChanged).toBe(true);
   });
 });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  Palette, 
-  Upload, 
+import {
+  Palette,
+  Upload,
   Download,
   Save,
   RefreshCw,
@@ -20,7 +20,7 @@ import {
   Copy,
   FileJson,
   Image as ImageIcon,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { themePresets, ThemePreset, generateThemeCSS, validateThemeAccessibility } from '@/lib/themes/presets';
@@ -36,12 +36,7 @@ interface ThemeManagerProps {
 type PreviewDevice = 'mobile' | 'tablet' | 'desktop';
 type ThemeMode = 'light' | 'dark';
 
-export const ThemeManager: React.FC<ThemeManagerProps> = ({
-  currentTheme,
-  onThemeChange,
-  onSave,
-  loading = false
-}) => {
+export const ThemeManager: React.FC<ThemeManagerProps> = ({ currentTheme, onThemeChange, onSave, loading = false }) => {
   const [selectedTheme, setSelectedTheme] = useState<ThemePreset | null>(currentTheme || themePresets[0]);
   const [customTheme, setCustomTheme] = useState<ThemePreset | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -52,7 +47,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Debounce theme changes for performance
   const debouncedTheme = useDebounce(selectedTheme, 300);
 
@@ -61,19 +56,19 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
     if (!debouncedTheme || !showPreview) {
       return;
     }
-    
+
     const style = document.createElement('style');
     style.id = 'theme-preview';
     style.innerHTML = generateThemeCSS(debouncedTheme);
-    
+
     // Remove existing preview style
     const existing = document.getElementById('theme-preview');
     if (existing) {
       existing.remove();
     }
-    
+
     document.head.appendChild(style);
-    
+
     return () => {
       const preview = document.getElementById('theme-preview');
       if (preview) {
@@ -123,7 +118,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
 
   const handleSave = async () => {
     if (!selectedTheme) return;
-    
+
     setIsSaving(true);
     try {
       await onSave(selectedTheme);
@@ -139,17 +134,17 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
 
   const handleExportTheme = () => {
     if (!selectedTheme) return;
-    
+
     const exportData = {
       ...selectedTheme,
       exportedAt: new Date().toISOString(),
       version: '1.0.0',
     };
-    
+
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json',
     });
-    
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -158,43 +153,43 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     toast.success('Theme exported successfully');
   };
 
   const handleImportTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       try {
         const content = e.target?.result as string;
         const importedTheme = JSON.parse(content) as ThemePreset;
-        
+
         // Validate imported theme structure
         if (!importedTheme.name || !importedTheme.slug || !importedTheme.configurations?.colors) {
           throw new Error('Invalid theme file structure');
         }
-        
+
         // Generate new slug for imported theme
         importedTheme.slug = `custom-${Date.now()}`;
         importedTheme.name = `${importedTheme.name} (Imported)`;
-        
+
         setSelectedTheme(importedTheme);
         setCustomTheme(importedTheme);
         setIsEditing(true);
         setShowImportDialog(false);
-        
+
         toast.success('Theme imported successfully');
       } catch (error) {
         toast.error('Failed to import theme file');
         console.error('Import error:', error);
       }
     };
-    
+
     reader.readAsText(file);
-    
+
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -203,7 +198,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
 
   const handleCopyCSS = () => {
     if (!selectedTheme) return;
-    
+
     const css = generateThemeCSS(selectedTheme);
     navigator.clipboard.writeText(css);
     toast.success('CSS variables copied to clipboard');
@@ -237,7 +232,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
               Customize your platform's visual appearance with professional themes
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowPreview(!showPreview)}
@@ -246,7 +241,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
             >
               {showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
-            
+
             <button
               onClick={() => fileInputRef.current?.click()}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -254,7 +249,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
             >
               <Upload className="h-4 w-4" />
             </button>
-            
+
             <button
               onClick={handleExportTheme}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -262,7 +257,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
             >
               <Download className="h-4 w-4" />
             </button>
-            
+
             <button
               onClick={handleCopyCSS}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -270,7 +265,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
             >
               <Copy className="h-4 w-4" />
             </button>
-            
+
             <button
               onClick={resetToDefault}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -278,22 +273,18 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
             >
               <RefreshCw className="h-4 w-4" />
             </button>
-            
+
             <button
               onClick={handleSave}
               disabled={loading || isSaving}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
             >
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save Theme
             </button>
           </div>
         </div>
-        
+
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -314,7 +305,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
               <h4 className="font-medium text-gray-900">Preset Themes</h4>
             </div>
             <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
-              {themePresets.map((preset) => (
+              {themePresets.map(preset => (
                 <button
                   key={preset.slug}
                   onClick={() => handleThemeSelect(preset)}
@@ -332,11 +323,9 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{preset.description}</p>
                     </div>
-                    {selectedTheme?.slug === preset.slug && (
-                      <Check className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                    )}
+                    {selectedTheme?.slug === preset.slug && <Check className="h-4 w-4 text-blue-600 flex-shrink-0" />}
                   </div>
-                  
+
                   {/* Color preview */}
                   <div className="flex gap-1 mt-2">
                     <div
@@ -403,14 +392,14 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
                         <input
                           type="color"
                           value={value}
-                          onChange={(e) => handleColorChange(key, e.target.value)}
+                          onChange={e => handleColorChange(key, e.target.value)}
                           disabled={!isEditing}
                           className="h-10 w-16 border border-gray-300 rounded cursor-pointer disabled:cursor-not-allowed"
                         />
                         <input
                           type="text"
                           value={value}
-                          onChange={(e) => handleColorChange(key, e.target.value)}
+                          onChange={e => handleColorChange(key, e.target.value)}
                           disabled={!isEditing}
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-50 disabled:text-gray-500"
                           pattern="^#[0-9A-Fa-f]{6}$"
@@ -458,7 +447,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
                             <Monitor className="h-4 w-4" />
                           </button>
                         </div>
-                        
+
                         {/* Theme mode toggle */}
                         <button
                           onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
@@ -470,7 +459,7 @@ export const ThemeManager: React.FC<ThemeManagerProps> = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="p-4">
                     <div className={`mx-auto transition-all duration-300 ${deviceSizes[previewDevice]}`}>
                       <iframe

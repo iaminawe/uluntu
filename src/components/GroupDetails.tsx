@@ -5,7 +5,6 @@ import { Globe, Lock, EyeOff, ArrowRight } from 'lucide-react';
 import { getMemberProfileUrl } from '@/utils/memberSlugUtils';
 import { getGroupPostUrl, getEventUrl } from '@/utils/contentUrlUtils';
 
-
 interface GroupEvent {
   id: string;
   title: string;
@@ -60,7 +59,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'AI Research Lead',
       image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       role: 'admin',
-      joinedDate: '2024-01-15'
+      joinedDate: '2024-01-15',
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440012',
@@ -68,7 +67,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'ML Engineer',
       image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       role: 'member',
-      joinedDate: '2024-02-01'
+      joinedDate: '2024-02-01',
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440013',
@@ -76,8 +75,8 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'Data Scientist',
       image: 'https://images.pexels.com/photos/3796217/pexels-photo-3796217.jpeg',
       role: 'member',
-      joinedDate: '2024-02-15'
-    }
+      joinedDate: '2024-02-15',
+    },
   ],
   events: [
     {
@@ -85,15 +84,15 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       title: 'AI Ethics Workshop',
       date: '2025-06-15T18:00:00',
       description: 'Join us for an interactive workshop on AI ethics.',
-      image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg'
+      image: 'https://images.pexels.com/photos/7089629/pexels-photo-7089629.jpeg',
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440022',
       title: 'Machine Learning Study Group',
       date: '2025-06-20T19:00:00',
       description: 'Monthly meetup to discuss and practice ML concepts.',
-      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
-    }
+      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
+    },
   ],
   resources: [
     {
@@ -102,7 +101,7 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       type: 'Guide',
       url: '#',
       addedDate: '2024-03-01',
-      description: 'A comprehensive guide for beginners in AI.'
+      description: 'A comprehensive guide for beginners in AI.',
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440032',
@@ -110,8 +109,8 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       type: 'Presentation',
       url: '#',
       addedDate: '2024-03-15',
-      description: 'Slides from our recent machine learning workshop.'
-    }
+      description: 'Slides from our recent machine learning workshop.',
+    },
   ],
   posts: [
     {
@@ -120,10 +119,10 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       excerpt: 'Highlights from our latest workshop on ethical considerations in AI development.',
       author: {
         name: 'Sarah Johnson',
-        image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+        image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       },
       date: '2024-02-16',
-      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg'
+      image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg',
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440042',
@@ -131,11 +130,11 @@ Whether you're an AI expert or just starting to explore this field, you're welco
       excerpt: 'Join our monthly machine learning study sessions starting next month.',
       author: {
         name: 'Michael Chen',
-        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       },
-      date: '2024-02-10'
-    }
-  ]
+      date: '2024-02-10',
+    },
+  ],
 };
 
 export default function GroupDetails({ groupId }: { groupId: string }) {
@@ -157,11 +156,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
     <div>
       {/* Hero Section */}
       <div className="relative h-96 rounded-xl overflow-hidden mb-8">
-        <img
-          src={group.coverImage}
-          alt={group.name}
-          className="w-full h-full object-cover"
-        />
+        <img src={group.coverImage} alt={group.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
           <div className="absolute bottom-0 left-0 right-0 p-8">
             <div className="flex items-start justify-between">
@@ -201,7 +196,11 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                     </ul>
                   );
                 }
-                return <p key={index} className="mb-4">{paragraph}</p>;
+                return (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                );
               })}
             </div>
           </div>
@@ -223,29 +222,18 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                 <div key={post.id} className="flex gap-6">
                   {post.image && (
                     <div className="w-48 h-32 flex-shrink-0">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                      <img src={post.image} alt={post.title} className="w-full h-full object-cover rounded-lg" />
                     </div>
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-2">
-                      <Link
-                        to={getGroupPostUrl(group, post.id)}
-                        className="hover:text-orange-500 transition-colors"
-                      >
+                      <Link to={getGroupPostUrl(group, post.id)} className="hover:text-orange-500 transition-colors">
                         {post.title}
                       </Link>
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 mb-3">{post.excerpt}</p>
                     <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                      <img
-                        src={post.author.image}
-                        alt={post.author.name}
-                        className="w-6 h-6 rounded-full mr-2"
-                      />
+                      <img src={post.author.image} alt={post.author.name} className="w-6 h-6 rounded-full mr-2" />
                       <span>{post.author.name}</span>
                       <span className="mx-2">•</span>
                       <span>{new Date(post.date).toLocaleDateString()}</span>
@@ -272,18 +260,11 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
               {group.events.map(event => (
                 <div key={event.id} className="flex gap-6">
                   <div className="w-48 h-32 flex-shrink-0">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover rounded-lg" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-2">
-                      <Link
-                        to={getEventUrl(event)}
-                        className="hover:text-orange-500 transition-colors"
-                      >
+                      <Link to={getEventUrl(event)} className="hover:text-orange-500 transition-colors">
                         {event.title}
                       </Link>
                     </h3>
@@ -295,7 +276,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                         month: 'long',
                         day: 'numeric',
                         hour: 'numeric',
-                        minute: 'numeric'
+                        minute: 'numeric',
                       })}
                     </div>
                   </div>
@@ -322,23 +303,14 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
             <div className="space-y-4">
               {group.members.map(member => (
                 <div key={member.id} className="flex items-center">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-10 h-10 rounded-full mr-3"
-                  />
+                  <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full mr-3" />
                   <div>
                     <h3 className="font-medium text-slate-900 dark:text-white">
-                      <Link
-                        to={getMemberProfileUrl(member)}
-                        className="hover:text-orange-500 transition-colors"
-                      >
+                      <Link to={getMemberProfileUrl(member)} className="hover:text-orange-500 transition-colors">
                         {member.name}
                       </Link>
                     </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {member.title}
-                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{member.title}</p>
                   </div>
                 </div>
               ))}
@@ -370,9 +342,7 @@ export default function GroupDetails({ groupId }: { groupId: string }) {
                       {resource.title}
                     </a>
                   </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">
-                    {resource.description}
-                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">{resource.description}</p>
                   <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                     <span>{resource.type}</span>
                     <span>{new Date(resource.addedDate).toLocaleDateString()}</span>

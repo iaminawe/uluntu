@@ -42,7 +42,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({
     (editor: any) => {
       const json = editor.getJSON();
       const htmlContent = editor.getHTML();
-      
+
       // Store as JSON string for database
       const jsonString = JSON.stringify(json);
       onChange(jsonString);
@@ -54,10 +54,10 @@ export const PageEditor: React.FC<PageEditorProps> = ({
     // TODO: Implement actual image upload to your storage service
     // For now, we'll create a placeholder URL
     // In a real implementation, you would upload to Supabase Storage or similar
-    
+
     const formData = new FormData();
     formData.append('file', file);
-    
+
     try {
       // Example implementation - replace with your actual upload service
       // const response = await fetch('/api/upload-image', {
@@ -66,7 +66,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({
       // });
       // const data = await response.json();
       // return data.url;
-      
+
       // Placeholder implementation using URL.createObjectURL
       return URL.createObjectURL(file);
     } catch (error) {
@@ -79,23 +79,24 @@ export const PageEditor: React.FC<PageEditorProps> = ({
     <div className={`novel-editor-wrapper ${className}`}>
       <EditorRoot>
         <EditorContent
-          {...{
+          {...({
             initialContent: editorContent,
             onUpdate: handleUpdate,
-            className: "min-h-96 w-full",
+            className: 'min-h-96 w-full',
             editorProps: {
               attributes: {
-                class: 'prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full',
+                class:
+                  'prose prose-lg dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full',
               },
             },
-            storageKey: "page-editor",
+            storageKey: 'page-editor',
             disableLocalStorage: false,
             onImageUpload: handleImageUpload,
             editable: editable,
-          } as any}
+          } as any)}
         />
       </EditorRoot>
-      
+
       <style>{`
         .novel-editor-wrapper .ProseMirror {
           outline: none;

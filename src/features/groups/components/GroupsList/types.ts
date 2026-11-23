@@ -10,13 +10,11 @@ export type Group = MainGroup;
 // Use the main GroupMember type directly
 export type GroupMember = MainGroupMember;
 
- 
 export interface GroupFilters {
   search?: string;
   visibility?: GroupVisibility[];
 }
 
- 
 export interface GroupsListProps {
   searchTerm?: string;
   visibilityFilter?: GroupVisibility[];

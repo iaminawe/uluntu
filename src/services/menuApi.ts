@@ -25,10 +25,10 @@ export class MenuApiService {
             target: '_self',
             icon: 'Users',
             visibility: 'public',
-            is_external: false
+            is_external: false,
           },
           {
-            id: '2', 
+            id: '2',
             title: 'Business',
             description: 'Explore opportunities',
             url: '/business',
@@ -38,7 +38,7 @@ export class MenuApiService {
             target: '_self',
             icon: 'Building2',
             visibility: 'public',
-            is_external: false
+            is_external: false,
           },
           {
             id: '3',
@@ -51,8 +51,8 @@ export class MenuApiService {
             target: '_self',
             icon: 'BookOpen',
             visibility: 'public',
-            is_external: false
-          }
+            is_external: false,
+          },
         ],
         footerMenu: [
           {
@@ -65,7 +65,7 @@ export class MenuApiService {
             target: '_self',
             icon: 'Info',
             visibility: 'public',
-            is_external: false
+            is_external: false,
           },
           {
             id: '5',
@@ -77,10 +77,10 @@ export class MenuApiService {
             target: '_self',
             icon: 'Mail',
             visibility: 'public',
-            is_external: false
-          }
+            is_external: false,
+          },
         ],
-        lastModified: new Date().toISOString()
+        lastModified: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error fetching menu configuration:', error);
@@ -117,7 +117,7 @@ export class MenuApiService {
       is_enabled: item.is_enabled ?? true,
       target: item.target ?? '_self',
       visibility: item.visibility ?? 'public',
-      is_external: item.is_external ?? false
+      is_external: item.is_external ?? false,
     };
 
     // In a full implementation, you would save this to the database

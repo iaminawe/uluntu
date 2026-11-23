@@ -5,15 +5,6 @@ interface SkeletonImageProps {
   height?: string;
 }
 
-export const SkeletonImage = ({ 
-  className = '', 
-  width = '100%', 
-  height = '200px' 
-}: SkeletonImageProps) => {
-  return (
-    <div 
-      className={`animate-pulse bg-gray-200 rounded ${className}`}
-      style={{ width, height }}
-    />
-  );
+export const SkeletonImage = ({ className = '', width = '100%', height = '200px' }: SkeletonImageProps) => {
+  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} style={{ width, height }} />;
 };

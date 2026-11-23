@@ -1,11 +1,11 @@
 import { createEmailTransport, type EmailTransport } from './emailTransport';
 import {
-  NewsletterCampaign, 
+  NewsletterCampaign,
   NewsletterSubscription,
   EmailPreview,
   SendResult,
   TemplateData,
-  ResendWebhook
+  ResendWebhook,
 } from '@/types/newsletter';
 
 class ResendService {
@@ -24,7 +24,7 @@ class ResendService {
    * Send newsletter campaign to multiple recipients
    */
   async sendNewsletterCampaign(
-    campaign: NewsletterCampaign, 
+    campaign: NewsletterCampaign,
     subscribers: NewsletterSubscription[]
   ): Promise<SendResult> {
     try {
@@ -34,7 +34,7 @@ class ResendService {
           error: 'No subscribers to send to',
           sent_count: 0,
           failed_count: 0,
-          failed_emails: []
+          failed_emails: [],
         };
       }
 
@@ -46,7 +46,7 @@ class ResendService {
           error: 'Failed to generate email content',
           sent_count: 0,
           failed_count: 0,
-          failed_emails: []
+          failed_emails: [],
         };
       }
 
@@ -61,13 +61,13 @@ class ResendService {
           'X-Campaign-ID': campaign.id,
           'X-Subscriber-ID': subscriber.id,
           'List-Unsubscribe': `<${this.getUnsubscribeUrl(subscriber.subscription_token)}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         },
         tags: [
           { name: 'campaign', value: campaign.id },
           { name: 'type', value: 'newsletter' },
-          { name: 'template', value: campaign.template_id }
-        ]
+          { name: 'template', value: campaign.template_id },
+        ],
       }));
 
       // Send emails in batches to respect rate limits
@@ -77,7 +77,7 @@ class ResendService {
 
       for (let i = 0; i < batchEmails.length; i += batchSize) {
         const batch = batchEmails.slice(i, i + batchSize);
-        
+
         try {
           const batchResult = await this.client.batch.send(batch);
           results.push(...(Array.isArray(batchResult.data) ? batchResult.data : [batchResult.data]));
@@ -101,9 +101,8 @@ class ResendService {
         sent_count: sentCount,
         failed_count: failedCount,
         failed_emails: failedEmails,
-        message_ids: results.map(r => r.id).filter(Boolean)
+        message_ids: results.map(r => r.id).filter(Boolean),
       };
-
     } catch (error) {
       console.error('Error sending newsletter campaign:', error);
       return {
@@ -111,7 +110,7 @@ class ResendService {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
         sent_count: 0,
         failed_count: subscribers.length,
-        failed_emails: subscribers.map(s => s.email)
+        failed_emails: subscribers.map(s => s.email),
       };
     }
   }
@@ -134,13 +133,13 @@ class ResendService {
           content_types: ['events', 'news', 'opportunities', 'marketplace'],
           format: 'digest',
           location_filter: true,
-          language: 'en'
+          language: 'en',
         },
         subscription_token: 'test-token',
         subscribed_at: new Date().toISOString(),
         bounce_count: 0,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const testEmails_data = testEmails.map(email => ({
@@ -151,17 +150,16 @@ class ResendService {
         text: emailContent.text,
         headers: {
           'X-Campaign-ID': campaign.id,
-          'X-Test-Email': 'true'
+          'X-Test-Email': 'true',
         },
         tags: [
           { name: 'campaign', value: campaign.id },
-          { name: 'type', value: 'test' }
-        ]
+          { name: 'type', value: 'test' },
+        ],
       }));
 
       const result = await this.client.batch.send(testEmails_data);
       return Array.isArray(result.data) ? result.data.length > 0 : !!result.data;
-
     } catch (error) {
       console.error('Error sending test email:', error);
       return false;
@@ -174,7 +172,7 @@ class ResendService {
   async sendConfirmationEmail(subscription: NewsletterSubscription): Promise<boolean> {
     try {
       const confirmationUrl = this.getConfirmationUrl(subscription.confirmation_token!);
-      
+
       const { data, error } = await this.client.emails.send({
         from: `${this.fromName} <${this.fromEmail}>`,
         to: [subscription.email],
@@ -182,11 +180,9 @@ class ResendService {
         html: this.generateConfirmationEmail(confirmationUrl, subscription.email),
         text: `Please confirm your newsletter subscription by clicking this link: ${confirmationUrl}`,
         headers: {
-          'X-Subscription-ID': subscription.id
+          'X-Subscription-ID': subscription.id,
         },
-        tags: [
-          { name: 'type', value: 'confirmation' }
-        ]
+        tags: [{ name: 'type', value: 'confirmation' }],
       });
 
       return !error && !!data;
@@ -202,7 +198,7 @@ class ResendService {
   async processWebhook(webhook: ResendWebhook): Promise<void> {
     try {
       const { type, data } = webhook;
-      
+
       // Extract campaign and subscription IDs from headers
       const campaignId = data.headers?.['X-Campaign-ID'];
       const subscriptionId = data.headers?.['X-Subscriber-ID'];
@@ -210,13 +206,16 @@ class ResendService {
       if (!campaignId) return;
 
       // Map Resend event types to our analytics event types
-      const eventTypeMap: Record<string, 'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained'> = {
+      const eventTypeMap: Record<
+        string,
+        'sent' | 'delivered' | 'bounced' | 'opened' | 'clicked' | 'unsubscribed' | 'complained'
+      > = {
         'email.sent': 'sent',
         'email.delivered': 'delivered',
         'email.bounced': 'bounced',
         'email.opened': 'opened',
         'email.clicked': 'clicked',
-        'email.complained': 'complained'
+        'email.complained': 'complained',
       };
 
       const eventType = eventTypeMap[type];
@@ -226,14 +225,19 @@ class ResendService {
       await this.recordAnalytics(campaignId, subscriptionId, eventType, {
         resend_message_id: data.email_id,
         timestamp: data.created_at,
-        event_data: data
+        event_data: data,
       });
 
       // Handle bounces
-      if (eventType === 'bounced' && data.bounce_type && typeof data.bounce_type === 'string' && data.email && typeof data.email === 'string') {
+      if (
+        eventType === 'bounced' &&
+        data.bounce_type &&
+        typeof data.bounce_type === 'string' &&
+        data.email &&
+        typeof data.email === 'string'
+      ) {
         await this.handleBounce(data.email, data.bounce_type as 'hard' | 'soft');
       }
-
     } catch (error) {
       console.error('Error processing Resend webhook:', error);
     }
@@ -246,12 +250,12 @@ class ResendService {
     try {
       // Basic HTML validation
       const errors: string[] = [];
-      
+
       // Check for required elements
       if (!htmlContent.includes('{{unsubscribe_url}}')) {
         errors.push('Template must include {{unsubscribe_url}} placeholder');
       }
-      
+
       if (!htmlContent.includes('<html')) {
         errors.push('Template must be valid HTML');
       }
@@ -267,12 +271,12 @@ class ResendService {
 
       return {
         valid: errors.length === 0,
-        errors
+        errors,
       };
     } catch (error) {
       return {
         valid: false,
-        errors: ['Failed to validate template']
+        errors: ['Failed to validate template'],
       };
     }
   }
@@ -297,9 +301,9 @@ class ResendService {
             content_types: ['events', 'news', 'opportunities'],
             format: 'digest',
             location_filter: true,
-            language: 'en'
-          }
-        }
+            language: 'en',
+          },
+        },
       };
 
       const html = this.renderNewsletterTemplate(templateData);
@@ -312,11 +316,7 @@ class ResendService {
     }
   }
 
-  private personalizeEmail(
-    html: string, 
-    subscriber: NewsletterSubscription, 
-    campaign: NewsletterCampaign
-  ): string {
+  private personalizeEmail(html: string, subscriber: NewsletterSubscription, campaign: NewsletterCampaign): string {
     const unsubscribeUrl = this.getUnsubscribeUrl(subscriber.subscription_token);
     const webViewUrl = this.getWebViewUrl(campaign.id);
     const preferencesUrl = this.getPreferencesUrl(subscriber.subscription_token);
@@ -358,54 +358,82 @@ class ResendService {
         </div>
         
         <div class="content">
-          ${data.custom_message ? `
+          ${
+            data.custom_message
+              ? `
             <div class="section">
               <h2>Message from the Community</h2>
               <p>${data.custom_message}</p>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           
-          ${data.content.events.length > 0 ? `
+          ${
+            data.content.events.length > 0
+              ? `
             <div class="section">
               <h2>🗓️ Upcoming Events</h2>
-              ${data.content.events.map(event => `
+              ${data.content.events
+                .map(
+                  event => `
                 <div class="event">
                   <h3>${event.title}</h3>
                   <p><strong>📍 ${event.location}</strong> • ${new Date(event.date).toLocaleDateString()}</p>
                   <p>${event.description}</p>
                   ${event.registration_url ? `<a href="${event.registration_url}" class="button">Register Now</a>` : ''}
                 </div>
-              `).join('')}
+              `
+                )
+                .join('')}
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           
-          ${data.content.news.length > 0 ? `
+          ${
+            data.content.news.length > 0
+              ? `
             <div class="section">
               <h2>📰 Latest News</h2>
-              ${data.content.news.map(article => `
+              ${data.content.news
+                .map(
+                  article => `
                 <div class="news">
                   <h3>${article.title}</h3>
                   <p><small>By ${article.author} • ${new Date(article.published_at).toLocaleDateString()}</small></p>
                   <p>${article.excerpt}</p>
                   <a href="${article.read_more_url}">Read more →</a>
                 </div>
-              `).join('')}
+              `
+                )
+                .join('')}
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           
-          ${data.content.opportunities.length > 0 ? `
+          ${
+            data.content.opportunities.length > 0
+              ? `
             <div class="section">
               <h2>💼 New Opportunities</h2>
-              ${data.content.opportunities.map(opp => `
+              ${data.content.opportunities
+                .map(
+                  opp => `
                 <div class="news">
                   <h3>${opp.title}</h3>
                   <p><strong>${opp.company}</strong> ${opp.location ? `• ${opp.location}` : ''} ${opp.remote ? '• Remote' : ''}</p>
                   <p>${opp.description}</p>
                   <a href="${opp.application_url}" class="button">Apply Now</a>
                 </div>
-              `).join('')}
+              `
+                )
+                .join('')}
             </div>
-          ` : ''}
+          `
+              : ''
+          }
         </div>
         
         <div class="footer">
@@ -492,12 +520,7 @@ class ResendService {
     try {
       // Use the analytics API to record events
       const { newsletterAnalyticsApi } = await import('@/api/newsletter/analytics');
-      await newsletterAnalyticsApi.recordEvent(
-        campaignId,
-        subscriptionId,
-        eventType,
-        eventData
-      );
+      await newsletterAnalyticsApi.recordEvent(campaignId, subscriptionId, eventType, eventData);
     } catch (error) {
       console.error('Error recording analytics:', error);
     }

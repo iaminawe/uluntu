@@ -1,12 +1,7 @@
 import { ConfirmDialog } from '@/shared/components/ui/Dialog';
 import { DeleteConfirmProps } from './types';
 
-const DeleteConfirmModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  isSubmitting
-}: DeleteConfirmProps) => {
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, isSubmitting }: DeleteConfirmProps) => {
   return (
     <ConfirmDialog
       title="Delete Listing"

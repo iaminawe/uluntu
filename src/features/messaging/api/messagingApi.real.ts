@@ -11,7 +11,7 @@ import {
   CreateMarketplaceThreadInput,
   CreateOpportunityThreadInput,
   UpdateConversationInput,
-  DeleteConversationInput
+  DeleteConversationInput,
 } from '../types';
 
 class MessagingApiReal {
@@ -19,19 +19,16 @@ class MessagingApiReal {
    * Get current user's member ID
    */
   private async getCurrentMemberId(): Promise<string> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    const { data: member } = await supabase.from('members').select('id').eq('user_id', user.id).single();
 
     if (!member) throw new Error('User does not have a member profile');
     return member.id;
   }
-
 
   /**
    * Get conversations for the current user
@@ -57,7 +54,8 @@ class MessagingApiReal {
     // Then get conversations with details
     let query = supabase
       .from('conversations')
-      .select(`
+      .select(
+        `
         *,
         conversation_participants(
           user_id,
@@ -70,7 +68,8 @@ class MessagingApiReal {
           created_at,
           sender_id
         )
-      `)
+      `
+      )
       .in('id', conversationIds)
       .order('updated_at', { ascending: false });
 
@@ -99,16 +98,16 @@ class MessagingApiReal {
       }
 
       // First attempt: Use secure database function
-      const { data: secureData, error: secureError } = await supabase
-        .rpc('get_conversation_secure', {
-          conversation_id: id
-        });
+      const { data: secureData, error: secureError } = await supabase.rpc('get_conversation_secure', {
+        conversation_id: id,
+      });
 
       if (secureData && !secureError) {
         // Get additional participant information
         const { data: participants, error: partError } = await supabase
           .from('conversation_participants')
-          .select(`
+          .select(
+            `
             id,
             user_id,
             role,
@@ -122,13 +121,14 @@ class MessagingApiReal {
               email,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('conversation_id', id)
           .is('left_at', null);
 
         return {
           ...secureData,
-          participants: participants || []
+          participants: participants || [],
         };
       }
 
@@ -137,7 +137,7 @@ class MessagingApiReal {
 
       // Check participant status using our secure function
       const participantInfo = await this.checkParticipantStatus(id);
-      
+
       if (!participantInfo.isParticipant && !participantInfo.isCreator) {
         return null; // User doesn't have access
       }
@@ -145,7 +145,8 @@ class MessagingApiReal {
       // Get conversation with minimal data to avoid 406 errors
       const { data, error } = await supabase
         .from('conversations')
-        .select(`
+        .select(
+          `
           id,
           title,
           type,
@@ -153,7 +154,8 @@ class MessagingApiReal {
           created_at,
           updated_at,
           archived_at
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -161,12 +163,13 @@ class MessagingApiReal {
         if (error.code === 'PGRST116') {
           return null; // Not found
         }
-        
+
         // Handle 406 errors by trying without .single()
         if (error.code === 'PGRST106') {
           const { data: arrayData, error: arrayError } = await supabase
             .from('conversations')
-            .select(`
+            .select(
+              `
               id,
               title,
               type,
@@ -174,7 +177,8 @@ class MessagingApiReal {
               created_at,
               updated_at,
               archived_at
-            `)
+            `
+            )
             .eq('id', id);
 
           if (arrayError || !arrayData || arrayData.length === 0) {
@@ -182,11 +186,12 @@ class MessagingApiReal {
           }
 
           const conversation = arrayData[0];
-          
+
           // Get participants separately to avoid complex joins
           const { data: participants } = await supabase
             .from('conversation_participants')
-            .select(`
+            .select(
+              `
               id,
               user_id,
               role,
@@ -200,23 +205,25 @@ class MessagingApiReal {
                 email,
                 avatar_url
               )
-            `)
+            `
+            )
             .eq('conversation_id', id)
             .is('left_at', null);
 
           return {
             ...conversation,
-            participants: participants || []
+            participants: participants || [],
           };
         }
-        
+
         throw error;
       }
 
       // Get participants separately
       const { data: participants } = await supabase
         .from('conversation_participants')
-        .select(`
+        .select(
+          `
           id,
           user_id,
           role,
@@ -230,22 +237,23 @@ class MessagingApiReal {
             email,
             avatar_url
           )
-        `)
+        `
+        )
         .eq('conversation_id', id)
         .is('left_at', null);
 
       return {
         ...data,
-        participants: participants || []
+        participants: participants || [],
       };
     } catch (error) {
       console.error('Error getting conversation:', error);
-      
+
       // Handle authorization errors gracefully
       if (error.message?.includes('not authorized') || error.message?.includes('access')) {
         return null;
       }
-      
+
       throw error;
     }
   }
@@ -264,7 +272,7 @@ class MessagingApiReal {
         .select('id, user_id')
         .eq('id', input.participant_ids[0])
         .single();
-      
+
       if (recipientError || !recipientMember) {
         throw new Error(`Recipient member not found: ${recipientError?.message || 'Unknown error'}`);
       }
@@ -283,52 +291,50 @@ class MessagingApiReal {
       // Create conversation using RPC function
       try {
         // First, try the enhanced version with force_new parameter (if it exists)
-        const { data, error } = await supabase
-          .rpc('create_direct_conversation', {
-            other_user_id: input.participant_ids[0],
-            initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null,
-            force_new: input.force_new || false
-          });
+        const { data, error } = await supabase.rpc('create_direct_conversation', {
+          other_user_id: input.participant_ids[0],
+          initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null,
+          force_new: input.force_new || false,
+        });
 
         if (error) {
           // If the enhanced version doesn't exist (missing force_new parameter),
           // fall back to the basic version
           if (error.code === 'PGRST202' || error.message?.includes('force_new')) {
             console.warn('Enhanced create_direct_conversation not found, using basic version');
-            
+
             // For force_new with basic version, we need a workaround
             if (input.force_new) {
               // Add timestamp to message to make it unique
-              const uniqueMessage = input.initial_message 
+              const uniqueMessage = input.initial_message
                 ? `${input.initial_message} [${new Date().toISOString()}]`
                 : `New conversation started at ${new Date().toISOString()}`;
-              
-              const { data: fallbackData, error: fallbackError } = await supabase
-                .rpc('create_direct_conversation', {
-                  other_user_id: input.participant_ids[0],
-                  initial_message: uniqueMessage
-                });
-              
+
+              const { data: fallbackData, error: fallbackError } = await supabase.rpc('create_direct_conversation', {
+                other_user_id: input.participant_ids[0],
+                initial_message: uniqueMessage,
+              });
+
               if (fallbackError) throw fallbackError;
-              
+
               console.log('Created conversation (basic RPC):', fallbackData.id);
               return fallbackData;
             } else {
               // Non-force_new, use basic version normally
-              const { data: fallbackData, error: fallbackError } = await supabase
-                .rpc('create_direct_conversation', {
-                  other_user_id: input.participant_ids[0],
-                  initial_message: input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null
-                });
-              
+              const { data: fallbackData, error: fallbackError } = await supabase.rpc('create_direct_conversation', {
+                other_user_id: input.participant_ids[0],
+                initial_message:
+                  input.initial_message && input.initial_message.trim() ? input.initial_message.trim() : null,
+              });
+
               if (fallbackError) throw fallbackError;
               return fallbackData;
             }
           }
-          
+
           throw error;
         }
-        
+
         console.log('Created conversation:', data.id, 'force_new:', input.force_new);
         return data;
       } catch (error: any) {
@@ -339,7 +345,9 @@ class MessagingApiReal {
 
     // For group conversations, we can't create manually due to RLS
     // This would require a proper database function for group conversations
-    throw new Error('Group conversation creation is not currently supported due to database restrictions. Please contact support.');
+    throw new Error(
+      'Group conversation creation is not currently supported due to database restrictions. Please contact support.'
+    );
   }
 
   /**
@@ -372,7 +380,8 @@ class MessagingApiReal {
 
     let query = supabase
       .from('messages')
-      .select(`
+      .select(
+        `
         *,
         sender:members!messages_sender_id_fkey(
           id,
@@ -392,7 +401,8 @@ class MessagingApiReal {
           mime_type,
           url
         )
-      `)
+      `
+      )
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: false });
 
@@ -430,16 +440,18 @@ class MessagingApiReal {
         conversation_id: input.conversation_id,
         sender_id: memberId,
         content: input.content,
-        parent_message_id: input.parent_message_id
+        parent_message_id: input.parent_message_id,
       })
-      .select(`
+      .select(
+        `
         *,
         sender:members!messages_sender_id_fkey(
           id,
           name,
           image
         )
-      `)
+      `
+      )
       .single();
 
     if (error) throw error;
@@ -460,11 +472,7 @@ class MessagingApiReal {
     const memberId = await this.getCurrentMemberId();
 
     // Verify user is the sender
-    const { data: message } = await supabase
-      .from('messages')
-      .select('sender_id')
-      .eq('id', id)
-      .single();
+    const { data: message } = await supabase.from('messages').select('sender_id').eq('id', id).single();
 
     if (!message || message.sender_id !== memberId) {
       throw new Error('You can only edit your own messages');
@@ -475,7 +483,7 @@ class MessagingApiReal {
       .update({
         content: input.content,
         edited: true,
-        edited_at: new Date().toISOString()
+        edited_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -492,20 +500,13 @@ class MessagingApiReal {
     const memberId = await this.getCurrentMemberId();
 
     // Verify user is the sender
-    const { data: message } = await supabase
-      .from('messages')
-      .select('sender_id')
-      .eq('id', id)
-      .single();
+    const { data: message } = await supabase.from('messages').select('sender_id').eq('id', id).single();
 
     if (!message || message.sender_id !== memberId) {
       throw new Error('You can only delete your own messages');
     }
 
-    const { error } = await supabase
-      .from('messages')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('messages').delete().eq('id', id);
 
     if (error) throw error;
   }
@@ -516,10 +517,9 @@ class MessagingApiReal {
   async markConversationAsRead(conversationId: string): Promise<void> {
     const memberId = await this.getCurrentMemberId();
 
-    const { error } = await supabase
-      .rpc('mark_conversation_as_read', {
-        conversation_uuid: conversationId
-      });
+    const { error } = await supabase.rpc('mark_conversation_as_read', {
+      conversation_uuid: conversationId,
+    });
 
     if (error) throw error;
   }
@@ -601,8 +601,7 @@ class MessagingApiReal {
    * Get unread message count
    */
   async getUnreadCount(userId?: string): Promise<number> {
-    const { data, error } = await supabase
-      .rpc('get_unread_message_count');
+    const { data, error } = await supabase.rpc('get_unread_message_count');
 
     if (error) throw error;
     return data || 0;
@@ -615,16 +614,14 @@ class MessagingApiReal {
     const conversation = await this.createConversation({
       type: 'direct',
       participant_ids: [input.sellerId],
-      initial_message: input.initialMessage
+      initial_message: input.initialMessage,
     });
 
     // Link to marketplace listing
-    await supabase
-      .from('message_marketplace_contexts')
-      .insert({
-        conversation_id: conversation.id,
-        listing_id: input.itemId
-      });
+    await supabase.from('message_marketplace_contexts').insert({
+      conversation_id: conversation.id,
+      listing_id: input.itemId,
+    });
 
     return conversation;
   }
@@ -636,16 +633,14 @@ class MessagingApiReal {
     const conversation = await this.createConversation({
       type: 'direct',
       participant_ids: [input.recruiterId],
-      initial_message: input.initialMessage
+      initial_message: input.initialMessage,
     });
 
     // Link to opportunity
-    await supabase
-      .from('message_opportunity_contexts')
-      .insert({
-        conversation_id: conversation.id,
-        opportunity_id: input.opportunityId
-      });
+    await supabase.from('message_opportunity_contexts').insert({
+      conversation_id: conversation.id,
+      opportunity_id: input.opportunityId,
+    });
 
     return conversation;
   }
@@ -657,11 +652,10 @@ class MessagingApiReal {
     try {
       // First attempt: Use secure database function for title updates
       if (updates.title !== undefined) {
-        const { data, error } = await supabase
-          .rpc('update_conversation_title', {
-            conversation_id: id,
-            new_title: updates.title
-          });
+        const { data, error } = await supabase.rpc('update_conversation_title', {
+          conversation_id: id,
+          new_title: updates.title,
+        });
 
         if (error) {
           // If function doesn't exist, use fallback immediately
@@ -669,15 +663,15 @@ class MessagingApiReal {
             console.warn('update_conversation_title function not found, using fallback');
             return await this.updateConversationFallback(id, updates);
           }
-          
+
           console.error('Database function update failed:', error);
-          
+
           // For other errors, check permissions and use fallback
           const participantInfo = await this.checkParticipantStatus(id);
           if (!participantInfo.canUpdate) {
             throw new Error('You do not have permission to update this conversation');
           }
-          
+
           // Fallback: Try direct update with error handling
           return await this.updateConversationFallback(id, updates);
         }
@@ -689,21 +683,23 @@ class MessagingApiReal {
       return await this.updateConversationFallback(id, updates);
     } catch (error) {
       console.error('Conversation update error:', error);
-      
+
       // Handle specific error cases
       if (error.message?.includes('not authorized') || error.message?.includes('permission')) {
         throw new Error('You do not have permission to update this conversation');
       }
-      
+
       if (error.message?.includes('not found')) {
         throw new Error('Conversation not found');
       }
-      
+
       // Handle RLS errors with user-friendly message
       if (error.code === '42501' || error.message?.includes('RLS')) {
-        throw new Error('Unable to update conversation due to security restrictions. Please try again or contact support.');
+        throw new Error(
+          'Unable to update conversation due to security restrictions. Please try again or contact support.'
+        );
       }
-      
+
       // Handle 406 errors (multiple/no rows)
       if (error.code === 'PGRST106' || error.message?.includes('JSON object requested')) {
         console.warn('406 error detected, attempting participant verification');
@@ -713,7 +709,7 @@ class MessagingApiReal {
         }
         throw new Error('Conversation update temporarily unavailable. Please try again.');
       }
-      
+
       throw error;
     }
   }
@@ -726,14 +722,14 @@ class MessagingApiReal {
 
     // Verify participant status using database function
     const participantInfo = await this.checkParticipantStatus(id);
-    
+
     if (!participantInfo.isParticipant && !participantInfo.isCreator) {
       throw new Error('You are not authorized to update this conversation');
     }
 
     // Prepare update object
     const updateData: any = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (updates.title !== undefined) {
@@ -754,7 +750,7 @@ class MessagingApiReal {
 
     if (error) {
       console.error('Fallback update failed:', error);
-      
+
       // If still failing, try without .single() to avoid 406 errors
       const { data: arrayData, error: arrayError } = await supabase
         .from('conversations')
@@ -776,7 +772,7 @@ class MessagingApiReal {
 
       return arrayData[0] as Conversation;
     }
-    
+
     return data;
   }
 
@@ -791,10 +787,9 @@ class MessagingApiReal {
   }> {
     try {
       // Try to use the secure database function first
-      const { data, error } = await supabase
-        .rpc('check_conversation_participant', {
-          conversation_id: conversationId
-        });
+      const { data, error } = await supabase.rpc('check_conversation_participant', {
+        conversation_id: conversationId,
+      });
 
       if (error) {
         // If function doesn't exist, use fallback method
@@ -802,13 +797,13 @@ class MessagingApiReal {
           console.warn('check_conversation_participant function not found, using fallback');
           return await this.checkParticipantStatusFallback(conversationId);
         }
-        
+
         console.error('Participant check failed:', error);
         return {
           isParticipant: false,
           isCreator: false,
           role: null,
-          canUpdate: false
+          canUpdate: false,
         };
       }
 
@@ -817,7 +812,7 @@ class MessagingApiReal {
         isParticipant: info.is_participant || false,
         isCreator: info.is_creator || false,
         role: info.role || null,
-        canUpdate: (info.is_participant && ['admin', 'moderator'].includes(info.role)) || info.is_creator || false
+        canUpdate: (info.is_participant && ['admin', 'moderator'].includes(info.role)) || info.is_creator || false,
       };
     } catch (error) {
       console.error('Error checking participant status:', error);
@@ -837,7 +832,7 @@ class MessagingApiReal {
   }> {
     try {
       const memberId = await this.getCurrentMemberId();
-      
+
       // Check if user is a participant
       const { data: participant } = await supabase
         .from('conversation_participants')
@@ -863,7 +858,7 @@ class MessagingApiReal {
         isParticipant,
         isCreator,
         role,
-        canUpdate
+        canUpdate,
       };
     } catch (error) {
       console.error('Fallback participant check failed:', error);
@@ -871,7 +866,7 @@ class MessagingApiReal {
         isParticipant: false,
         isCreator: false,
         role: null,
-        canUpdate: false
+        canUpdate: false,
       };
     }
   }
@@ -880,10 +875,9 @@ class MessagingApiReal {
    * Archive a conversation (soft delete)
    */
   async archiveConversation(id: string): Promise<void> {
-    const { error } = await supabase
-      .rpc('archive_conversation', {
-        conversation_uuid: id
-      });
+    const { error } = await supabase.rpc('archive_conversation', {
+      conversation_uuid: id,
+    });
 
     if (error) {
       console.error('Error archiving conversation:', error);
@@ -895,10 +889,9 @@ class MessagingApiReal {
    * Unarchive a conversation
    */
   async unarchiveConversation(id: string): Promise<void> {
-    const { error } = await supabase
-      .rpc('unarchive_conversation', {
-        conversation_uuid: id
-      });
+    const { error } = await supabase.rpc('unarchive_conversation', {
+      conversation_uuid: id,
+    });
 
     if (error) {
       console.error('Error unarchiving conversation:', error);
@@ -915,11 +908,10 @@ class MessagingApiReal {
       await this.archiveConversation(input.id);
     } else {
       // Hard delete: use database function for proper permission checking
-      const { error } = await supabase
-        .rpc('delete_conversation', {
-          conversation_uuid: input.id,
-          delete_reason: input.reason || null
-        });
+      const { error } = await supabase.rpc('delete_conversation', {
+        conversation_uuid: input.id,
+        delete_reason: input.reason || null,
+      });
 
       if (error) {
         console.error('Error deleting conversation:', error);
@@ -932,10 +924,9 @@ class MessagingApiReal {
    * Leave a conversation (removes user from participants)
    */
   async leaveConversation(conversationId: string): Promise<void> {
-    const { error } = await supabase
-      .rpc('leave_conversation', {
-        conversation_uuid: conversationId
-      });
+    const { error } = await supabase.rpc('leave_conversation', {
+      conversation_uuid: conversationId,
+    });
 
     if (error) {
       console.error('Error leaving conversation:', error);
@@ -947,16 +938,16 @@ class MessagingApiReal {
    * Block a user from messaging
    */
   async blockUser(userId: string, reason?: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    const { error } = await supabase
-      .from('messaging_blocks')
-      .insert({
-        blocker_id: user.id,
-        blocked_id: userId,
-        reason: reason
-      });
+    const { error } = await supabase.from('messaging_blocks').insert({
+      blocker_id: user.id,
+      blocked_id: userId,
+      reason: reason,
+    });
 
     if (error) {
       if (error.code === '23505') {
@@ -970,7 +961,9 @@ class MessagingApiReal {
    * Unblock a user
    */
   async unblockUser(userId: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
     const { error } = await supabase
@@ -986,19 +979,23 @@ class MessagingApiReal {
    * Get blocked users
    */
   async getBlockedUsers(): Promise<any[]> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return [];
 
     const { data, error } = await supabase
       .from('messaging_blocks')
-      .select(`
+      .select(
+        `
         *,
         blocked_user:members!messaging_blocks_blocked_id_fkey(
           id,
           name,
           image
         )
-      `)
+      `
+      )
       .eq('blocker_id', user.id);
 
     if (error) throw error;
@@ -1009,7 +1006,9 @@ class MessagingApiReal {
    * Add reaction to message
    */
   async addReaction(messageId: string, reaction: string): Promise<MessageReaction> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
@@ -1017,16 +1016,18 @@ class MessagingApiReal {
       .insert({
         message_id: messageId,
         user_id: user.id,
-        reaction: reaction
+        reaction: reaction,
       })
-      .select(`
+      .select(
+        `
         *,
         user:members!message_reactions_user_id_fkey(
           id,
           name,
           image
         )
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -1043,7 +1044,9 @@ class MessagingApiReal {
    * Remove reaction from message
    */
   async removeReaction(messageId: string, reaction: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
     const { error } = await supabase
@@ -1064,13 +1067,15 @@ class MessagingApiReal {
 
     const { data: conversations, error } = await supabase
       .from('conversations')
-      .select(`
+      .select(
+        `
         *,
         conversation_participants!inner(
           user_id,
           left_at
         )
-      `)
+      `
+      )
       .eq('type', 'direct')
       .eq('conversation_participants.user_id', memberId)
       .is('conversation_participants.left_at', null);
@@ -1084,7 +1089,10 @@ class MessagingApiReal {
     const { data: shared, error: sharedError } = await supabase
       .from('conversation_participants')
       .select('conversation_id')
-      .in('conversation_id', conversations.map(c => c.id))
+      .in(
+        'conversation_id',
+        conversations.map(c => c.id)
+      )
       .eq('user_id', participantId)
       .is('left_at', null)
       .limit(1);
@@ -1094,7 +1102,6 @@ class MessagingApiReal {
 
     return conversations.find(c => c.id === shared[0].conversation_id) ?? null;
   }
-
 
   /**
    * Delete multiple conversations (bulk operation)
@@ -1119,7 +1126,7 @@ class MessagingApiReal {
     }
 
     const validConversationIds = participants?.map(p => p.conversation_id) || [];
-    
+
     if (validConversationIds.length !== conversationIds.length) {
       const invalidIds = conversationIds.filter(id => !validConversationIds.includes(id));
       console.warn('Some conversations not found or user not participant:', invalidIds);
@@ -1132,9 +1139,9 @@ class MessagingApiReal {
     // Mark user as having left all conversations (bulk soft delete)
     const { error } = await supabase
       .from('conversation_participants')
-      .update({ 
+      .update({
         left_at: new Date().toISOString(),
-        is_active: false
+        is_active: false,
       })
       .in('conversation_id', validConversationIds)
       .eq('user_id', memberId);
@@ -1145,8 +1152,6 @@ class MessagingApiReal {
     }
   }
 
-
-
   /**
    * Generate conversation title from participants
    */
@@ -1155,13 +1160,15 @@ class MessagingApiReal {
 
     const { data: participants, error } = await supabase
       .from('conversation_participants')
-      .select(`
+      .select(
+        `
         user_id,
         members:members!conversation_participants_user_id_fkey(
           name,
           user_id
         )
-      `)
+      `
+      )
       .eq('conversation_id', conversationId)
       .is('left_at', null)
       .neq('user_id', memberId);
@@ -1169,9 +1176,7 @@ class MessagingApiReal {
     if (error) throw error;
 
     if (participants && participants.length > 0) {
-      const names = participants
-        .map(p => p.members?.name || 'Unknown User')
-        .join(', ');
+      const names = participants.map(p => p.members?.name || 'Unknown User').join(', ');
       return names.length > 30 ? names.substring(0, 27) + '...' : names;
     }
 

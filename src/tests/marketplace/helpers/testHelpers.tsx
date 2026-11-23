@@ -43,13 +43,13 @@ export const createMockSupabaseClient = () => ({
     getUser: jest.fn(),
     signIn: jest.fn(),
     signOut: jest.fn(),
-    signUp: jest.fn()
+    signUp: jest.fn(),
   },
   storage: {
     from: jest.fn().mockReturnThis(),
     upload: jest.fn(),
-    getPublicUrl: jest.fn()
-  }
+    getPublicUrl: jest.fn(),
+  },
 });
 
 // Custom render function
@@ -82,16 +82,14 @@ export const renderWithProviders = (
         messagingUI: messagingUIReducer as any,
         topicsUI: topicsUIReducer as any,
       },
-      preloadedState
+      preloadedState,
     }),
     ...renderOptions
   }: CustomRenderOptions = {}
 ) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <Provider store={store}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 
@@ -99,8 +97,7 @@ export const renderWithProviders = (
 };
 
 // Wait helpers
-export const waitForLoadingToFinish = () => 
-  new Promise(resolve => setTimeout(resolve, 100));
+export const waitForLoadingToFinish = () => new Promise(resolve => setTimeout(resolve, 100));
 
 // Mock data generators
 export const generateMockListing = (id: string) => ({
@@ -117,21 +114,21 @@ export const generateMockListing = (id: string) => ({
   status: 'active',
   featured: false,
   created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  updated_at: new Date().toISOString(),
 });
 
-export const generateMockListings = (count: number) => 
+export const generateMockListings = (count: number) =>
   Array.from({ length: count }, (_, i) => generateMockListing(String(i + 1)));
 
 // API mock helpers
 export const mockSuccessfulApiCall = (data: any) => ({
   data,
-  error: null
+  error: null,
 });
 
 export const mockFailedApiCall = (error: string) => ({
   data: null,
-  error: new Error(error)
+  error: new Error(error),
 });
 
 // Form helpers
@@ -147,7 +144,7 @@ export const fillListingForm = async (
   }
 ) => {
   const { fireEvent } = await import('@testing-library/react');
-  
+
   if (data.title) {
     fireEvent.change(getByLabelText(/title/i), { target: { value: data.title } });
   }
@@ -191,14 +188,10 @@ export const MockAuthProvider = ({ children, user = null }: { children: React.Re
     status: user ? 'authenticated' : 'unauthenticated',
     signIn: jest.fn(),
     signOut: jest.fn(),
-    signUp: jest.fn()
+    signUp: jest.fn(),
   };
 
-  return (
-    <div data-testid="mock-auth-provider">
-      {children}
-    </div>
-  );
+  return <div data-testid="mock-auth-provider">{children}</div>;
 };
 
 // Performance testing helpers
@@ -206,10 +199,10 @@ export const measureRenderTime = async (component: ReactElement) => {
   const start = performance.now();
   const { container } = render(component);
   const end = performance.now();
-  
+
   return {
     renderTime: end - start,
-    container
+    container,
   };
 };
 

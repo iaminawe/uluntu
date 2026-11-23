@@ -1,12 +1,7 @@
 import { TagsInputProps, FormData } from './types';
 import { TagsInput as SharedTagsInput } from '@/shared/components/ui/Form';
 
-const TagsInput: React.FC<TagsInputProps> = ({
-  formData,
-  setFormData,
-  handleAddTag,
-  handleRemoveTag
-}) => {
+const TagsInput: React.FC<TagsInputProps> = ({ formData, setFormData, handleAddTag, handleRemoveTag }) => {
   // Create a handler that will update formData with the new tags array
   const handleTagsChange = (newTags: string[]) => {
     if (setFormData) {
@@ -14,7 +9,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
         ...prev,
         tags: newTags,
         // We no longer need newTag field as the shared component manages its own input state
-        newTag: ''
+        newTag: '',
       }));
     }
   };
@@ -24,12 +19,12 @@ const TagsInput: React.FC<TagsInputProps> = ({
   const handleChange = (newTags: string[]) => {
     // Call the handleTagsChange function to update the formData
     handleTagsChange(newTags);
-    
+
     // If we're adding a tag and handleAddTag is provided, call it
     if (newTags.length > formData.tags.length && handleAddTag) {
       handleAddTag();
     }
-    
+
     // If we're removing a tag and handleRemoveTag is provided, call it
     if (newTags.length < formData.tags.length && handleRemoveTag) {
       const removedTag = formData.tags.find(tag => !newTags.includes(tag));
@@ -38,7 +33,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
       }
     }
   };
-  
+
   return (
     <SharedTagsInput
       tags={formData.tags}

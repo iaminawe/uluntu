@@ -8,7 +8,7 @@ const ErrorState: React.FC<ErrorStateProps> = () => {
       message="We couldn't find the marketplace listing you're looking for."
       backLink={{
         to: '/marketplace',
-        text: 'Back to Marketplace'
+        text: 'Back to Marketplace',
       }}
     />
   );

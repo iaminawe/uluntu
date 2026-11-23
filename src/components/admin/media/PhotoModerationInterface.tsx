@@ -19,19 +19,13 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,7 +59,7 @@ interface ModerationItem {
 const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ className }) => {
   const { user } = useSession();
   const queryClient = useQueryClient();
-  
+
   const [selectedPhoto, setSelectedPhoto] = useState<ModerationItem | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState<'all' | 'pending' | 'flagged' | 'rejected'>('pending');
@@ -100,7 +94,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
         sort_order: 0,
         visibility: 'visible',
         created_at: new Date().toISOString(),
-        processing_status: 'completed'
+        processing_status: 'completed',
       },
       status: 'pending',
       submitted_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
@@ -108,8 +102,8 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
       reporter: {
         id: 'user-2',
         name: 'John Doe',
-        email: 'john@example.com'
-      }
+        email: 'john@example.com',
+      },
     },
     {
       id: '2',
@@ -133,12 +127,12 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
         sort_order: 1,
         visibility: 'visible',
         created_at: new Date().toISOString(),
-        processing_status: 'completed'
+        processing_status: 'completed',
       },
       status: 'flagged',
       submitted_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-      flags: ['copyright-violation', 'inappropriate-content']
-    }
+      flags: ['copyright-violation', 'inappropriate-content'],
+    },
   ];
 
   // Filter items based on selected filter
@@ -171,7 +165,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
     },
     onError: () => {
       toast.error('Failed to approve photo');
-    }
+    },
   });
 
   const rejectMutation = useMutation({
@@ -189,7 +183,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
     },
     onError: () => {
       toast.error('Failed to reject photo');
-    }
+    },
   });
 
   const deleteMutation = useMutation({
@@ -206,7 +200,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
     },
     onError: () => {
       toast.error('Failed to delete photo');
-    }
+    },
   });
 
   const handleApprove = (item: ModerationItem) => {
@@ -225,7 +219,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
     if (!confirmAction.item) return;
 
     const notes = reviewNotes.trim();
-    
+
     switch (confirmAction.action) {
       case 'approve':
         approveMutation.mutate({ itemId: confirmAction.item.id, notes });
@@ -270,13 +264,33 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
   const getStatusBadge = (status: ModerationItem['status']) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
       case 'approved':
-        return <Badge variant="default" className="bg-green-500"><Check className="h-3 w-3 mr-1" />Approved</Badge>;
+        return (
+          <Badge variant="default" className="bg-green-500">
+            <Check className="h-3 w-3 mr-1" />
+            Approved
+          </Badge>
+        );
       case 'rejected':
-        return <Badge variant="destructive"><X className="h-3 w-3 mr-1" />Rejected</Badge>;
+        return (
+          <Badge variant="destructive">
+            <X className="h-3 w-3 mr-1" />
+            Rejected
+          </Badge>
+        );
       case 'flagged':
-        return <Badge variant="destructive"><Flag className="h-3 w-3 mr-1" />Flagged</Badge>;
+        return (
+          <Badge variant="destructive">
+            <Flag className="h-3 w-3 mr-1" />
+            Flagged
+          </Badge>
+        );
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -286,10 +300,10 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
     const flagLabels: Record<string, string> = {
       'inappropriate-content': 'Inappropriate',
       'copyright-violation': 'Copyright',
-      'spam': 'Spam',
-      'harassment': 'Harassment',
-      'violence': 'Violence',
-      'nudity': 'Nudity'
+      spam: 'Spam',
+      harassment: 'Harassment',
+      violence: 'Violence',
+      nudity: 'Nudity',
     };
 
     return (
@@ -313,14 +327,10 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Photo Moderation
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Review and moderate reported or flagged photos
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Photo Moderation</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Review and moderate reported or flagged photos</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Select value={filter} onValueChange={(value: any) => setFilter(value)}>
             <SelectTrigger className="w-40">
@@ -333,7 +343,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -352,7 +362,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
             {mockModerationItems.filter(i => i.status === 'pending').length}
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Flag className="h-4 w-4 text-red-500" />
@@ -362,7 +372,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
             {mockModerationItems.filter(i => i.status === 'flagged').length}
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Check className="h-4 w-4 text-green-500" />
@@ -372,7 +382,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
             {mockModerationItems.filter(i => i.status === 'approved').length}
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <X className="h-4 w-4 text-red-500" />
@@ -387,14 +397,9 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
       {filteredItems.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
           <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-            No items to review
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No items to review</h3>
           <p className="text-gray-500 dark:text-gray-400">
-            {filter === 'all' 
-              ? 'All photos have been reviewed.'
-              : `No ${filter} photos at this time.`
-            }
+            {filter === 'all' ? 'All photos have been reviewed.' : `No ${filter} photos at this time.`}
           </p>
         </div>
       ) : (
@@ -406,12 +411,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
                 {/* Navigation */}
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={goToPrevious}
-                      disabled={currentIndex === 0}
-                    >
+                    <Button variant="outline" size="sm" onClick={goToPrevious} disabled={currentIndex === 0}>
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -426,7 +426,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {getStatusBadge(selectedPhoto.status)}
                     {selectedPhoto.flags.map(flag => getFlagBadge(flag))}
@@ -449,9 +449,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
                       {selectedPhoto.photo.title || selectedPhoto.photo.file_name}
                     </h3>
                     {selectedPhoto.photo.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {selectedPhoto.photo.description}
-                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{selectedPhoto.photo.description}</p>
                     )}
                   </div>
 
@@ -474,9 +472,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
                     </div>
                     <div>
                       <span className="text-gray-500 dark:text-gray-400">Uploaded:</span>
-                      <p className="text-gray-900 dark:text-gray-100">
-                        {formatDate(selectedPhoto.photo.created_at)}
-                      </p>
+                      <p className="text-gray-900 dark:text-gray-100">{formatDate(selectedPhoto.photo.created_at)}</p>
                     </div>
                   </div>
 
@@ -502,9 +498,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
             {selectedPhoto && (
               <>
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Review Details
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Review Details</h3>
                 </div>
 
                 <div className="p-4 space-y-6">
@@ -584,7 +578,7 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
                     <Textarea
                       id="review-notes"
                       value={reviewNotes}
-                      onChange={(e) => setReviewNotes(e.target.value)}
+                      onChange={e => setReviewNotes(e.target.value)}
                       placeholder="Add notes about your decision..."
                       rows={3}
                       className="resize-none"
@@ -635,25 +629,23 @@ const PhotoModerationInterface: React.FC<PhotoModerationInterfaceProps> = ({ cla
       <ConfirmationDialog
         isOpen={confirmAction.open}
         title={
-          confirmAction.action === 'approve' ? 'Approve Photo' :
-          confirmAction.action === 'reject' ? 'Reject Photo' :
-          'Delete Photo'
+          confirmAction.action === 'approve'
+            ? 'Approve Photo'
+            : confirmAction.action === 'reject'
+              ? 'Reject Photo'
+              : 'Delete Photo'
         }
         message={
-          confirmAction.action === 'approve' 
+          confirmAction.action === 'approve'
             ? 'Are you sure you want to approve this photo? It will be visible to users.'
             : confirmAction.action === 'reject'
-            ? 'Are you sure you want to reject this photo? It will be hidden from users.'
-            : 'Are you sure you want to delete this photo? This action cannot be undone.'
+              ? 'Are you sure you want to reject this photo? It will be hidden from users.'
+              : 'Are you sure you want to delete this photo? This action cannot be undone.'
         }
         confirmLabel={
-          confirmAction.action === 'approve' ? 'Approve' :
-          confirmAction.action === 'reject' ? 'Reject' :
-          'Delete'
+          confirmAction.action === 'approve' ? 'Approve' : confirmAction.action === 'reject' ? 'Reject' : 'Delete'
         }
-        confirmVariant={
-          confirmAction.action === 'approve' ? 'default' : 'destructive'
-        }
+        confirmVariant={confirmAction.action === 'approve' ? 'default' : 'destructive'}
         onConfirm={confirmModerationAction}
         onCancel={() => setConfirmAction({ open: false, action: 'approve', item: null })}
         isLoading={approveMutation.isPending || rejectMutation.isPending || deleteMutation.isPending}

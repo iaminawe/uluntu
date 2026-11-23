@@ -58,10 +58,10 @@ export const adaptMainNewsArticleToLocal = (mainArticle: MainNewsArticle): NewsA
       name: mainArticle.author.name,
       image: mainArticle.author.image,
       title: '',
-      bio: ''
+      bio: '',
     },
     associations: [], // Default empty associations
-    comments: [] // Default empty comments
+    comments: [], // Default empty comments
   };
 };
 
@@ -79,9 +79,9 @@ export const adaptLocalNewsArticleToMain = (localArticle: NewsArticle): MainNews
     author: {
       id: localArticle.author.id.toString(),
       name: localArticle.author.name,
-      image: localArticle.author.image
+      image: localArticle.author.image,
     },
-    hero_image_alt: ''
+    hero_image_alt: '',
   };
 };
 
@@ -90,7 +90,8 @@ export const SAMPLE_ARTICLE: NewsArticle = {
   id: 1,
   title: 'Kootenay Tech Scene Continues to Grow',
   slug: 'kootenay-tech-scene-continues-to-grow',
-  excerpt: 'The Kootenay region\'s technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.',
+  excerpt:
+    "The Kootenay region's technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.",
   content: `The Kootenay region's technology sector is experiencing unprecedented growth, with new companies and startups choosing the area as their home base.
 
 This trend is driven by several factors, including:
@@ -113,11 +114,11 @@ Looking ahead, community leaders are focused on sustainable growth that maintain
     name: 'Sarah Johnson',
     title: 'Tech Community Lead',
     image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
-    bio: 'Sarah has been involved in the Kootenay tech scene for over 5 years and is passionate about building inclusive tech communities.'
+    bio: 'Sarah has been involved in the Kootenay tech scene for over 5 years and is passionate about building inclusive tech communities.',
   },
   associations: [
     { type: 'company', id: 1, name: 'Mountain Tech Solutions' },
-    { type: 'group', id: 1, name: 'Kootenay Tech Organizers' }
+    { type: 'group', id: 1, name: 'Kootenay Tech Organizers' },
   ],
   tags: ['Community', 'Growth', 'Startups'],
   comments: [
@@ -128,8 +129,8 @@ Looking ahead, community leaders are focused on sustainable growth that maintain
       author: {
         id: 2,
         name: 'Michael Chen',
-        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
-      }
-    }
-  ]
+        image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+      },
+    },
+  ],
 };

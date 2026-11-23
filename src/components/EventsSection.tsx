@@ -3,14 +3,14 @@ import { events } from '../data/mock/events';
 
 const EventsSection: React.FC = () => {
   const [filterYear, setFilterYear] = useState<string>('all');
-  
+
   // Get unique years for filter chips
   const years = [...new Set(events.map(event => new Date(event.date).getFullYear().toString()))];
-  
+
   // Filter events based on selected year filter
   const filteredEvents = events.filter(event => {
     const eventYear = new Date(event.date).getFullYear().toString();
-    return (filterYear === 'all' || eventYear === filterYear);
+    return filterYear === 'all' || eventYear === filterYear;
   });
 
   return (
@@ -19,11 +19,9 @@ const EventsSection: React.FC = () => {
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">Past Events Archive</h2>
           <div className="w-20 h-1 bg-indigo-600 mx-auto mb-6"></div>
-          <p className="text-lg text-slate-600">
-            Explore our previous meetups and catch up on what you missed.
-          </p>
+          <p className="text-lg text-slate-600">Explore our previous meetups and catch up on what you missed.</p>
         </div>
-        
+
         {/* Filter chips */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4">
@@ -32,9 +30,7 @@ const EventsSection: React.FC = () => {
               <div className="flex flex-wrap gap-2">
                 <button
                   className={`px-3 py-1 text-sm rounded-full ${
-                    filterYear === 'all' 
-                      ? 'bg-indigo-600 text-white' 
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    filterYear === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                   onClick={() => setFilterYear('all')}
                 >
@@ -44,8 +40,8 @@ const EventsSection: React.FC = () => {
                   <button
                     key={year}
                     className={`px-3 py-1 text-sm rounded-full ${
-                      filterYear === year 
-                        ? 'bg-indigo-600 text-white' 
+                      filterYear === year
+                        ? 'bg-indigo-600 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                     onClick={() => setFilterYear(year)}
@@ -57,7 +53,7 @@ const EventsSection: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Events Timeline */}
         <div className="space-y-8">
           {filteredEvents.length === 0 ? (
@@ -66,17 +62,13 @@ const EventsSection: React.FC = () => {
             </div>
           ) : (
             filteredEvents.map((event, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-slate-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="md:flex">
                   <div className="md:w-1/3 h-48 md:h-auto">
-                    <img 
-                      src={event.image} 
-                      alt={event.title} 
-                      className="w-full h-full object-cover object-center"
-                    />
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover object-center" />
                   </div>
                   <div className="p-6 md:w-2/3">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3">
@@ -86,7 +78,7 @@ const EventsSection: React.FC = () => {
                           {new Date(event.date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
-                            day: 'numeric'
+                            day: 'numeric',
                           })}
                         </p>
                       </div>
@@ -94,13 +86,11 @@ const EventsSection: React.FC = () => {
                         {event.type}
                       </span>
                     </div>
-                    <p className="text-slate-600 mb-4">
-                      {event.description}
-                    </p>
+                    <p className="text-slate-600 mb-4">{event.description}</p>
                     <div className="flex flex-wrap gap-3">
                       {event.url && (
-                        <a 
-                          href={event.url} 
+                        <a
+                          href={event.url}
                           className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 rounded-md hover:bg-indigo-100"
                           target="_blank"
                           rel="noopener noreferrer"

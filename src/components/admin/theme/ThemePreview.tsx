@@ -1,7 +1,7 @@
 import React from 'react';
-import { 
-  Monitor, 
-  Tablet, 
+import {
+  Monitor,
+  Tablet,
   Smartphone,
   Menu,
   Search,
@@ -12,7 +12,7 @@ import {
   Briefcase,
   FileText,
   ShoppingBag,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react';
 import { Theme } from './types';
 
@@ -25,21 +25,21 @@ interface ThemePreviewProps {
 
 export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange }: ThemePreviewProps) {
   const colors = isDarkMode ? generateDarkModeColors(theme.colors) : theme.colors;
-  
+
   function generateDarkModeColors(lightColors: Theme['colors']): Theme['colors'] {
     return {
       ...lightColors,
       background: '#0F172A',
       surface: '#1E293B',
       text: '#F1F5F9',
-      border: '#334155'
+      border: '#334155',
     };
   }
 
   const deviceSizes = {
     desktop: 'max-w-6xl',
     tablet: 'max-w-2xl',
-    mobile: 'max-w-sm'
+    mobile: 'max-w-sm',
   };
 
   const navItems = [
@@ -47,7 +47,7 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
     { icon: Users, label: 'Directory' },
     { icon: Briefcase, label: 'Companies' },
     { icon: FileText, label: 'News' },
-    { icon: ShoppingBag, label: 'Marketplace' }
+    { icon: ShoppingBag, label: 'Marketplace' },
   ];
 
   const sampleCards = [
@@ -55,20 +55,20 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
       title: 'Upcoming Event',
       subtitle: 'Tech Conference 2024',
       description: 'Join us for the annual technology conference featuring industry leaders.',
-      date: 'March 15, 2024'
+      date: 'March 15, 2024',
     },
     {
       title: 'Featured Member',
       subtitle: 'Jane Smith',
       description: 'Senior Developer with 10+ years of experience in web technologies.',
-      date: 'Member since 2020'
+      date: 'Member since 2020',
     },
     {
       title: 'Latest News',
       subtitle: 'Platform Update',
       description: 'New features and improvements have been added to enhance your experience.',
-      date: '2 hours ago'
-    }
+      date: '2 hours ago',
+    },
   ];
 
   return (
@@ -78,8 +78,8 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
         {[
           { id: 'desktop', icon: Monitor, label: 'Desktop' },
           { id: 'tablet', icon: Tablet, label: 'Tablet' },
-          { id: 'mobile', icon: Smartphone, label: 'Mobile' }
-        ].map((deviceOption) => {
+          { id: 'mobile', icon: Smartphone, label: 'Mobile' },
+        ].map(deviceOption => {
           const Icon = deviceOption.icon;
           return (
             <button
@@ -100,44 +100,35 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
 
       {/* Preview Container */}
       <div className="flex justify-center">
-        <div 
+        <div
           className={`${deviceSizes[device]} w-full border-2 border-gray-300 rounded-lg overflow-hidden shadow-2xl`}
-          style={{ 
+          style={{
             backgroundColor: colors.background,
-            fontFamily: `${theme.typography.fontFamily}, ${theme.typography.fontFallback}`
+            fontFamily: `${theme.typography.fontFamily}, ${theme.typography.fontFallback}`,
           }}
         >
           {/* Header */}
-          <header 
+          <header
             className="border-b"
-            style={{ 
+            style={{
               backgroundColor: colors.surface,
-              borderColor: colors.border
+              borderColor: colors.border,
             }}
           >
             <div className="px-4 py-3">
               <div className="flex items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center space-x-3">
-                  {device === 'mobile' && (
-                    <Menu className="h-6 w-6" style={{ color: colors.text }} />
-                  )}
-                  <div 
-                    className="text-xl font-bold"
-                    style={{ color: colors.primary }}
-                  >
-                    {theme.images.logo ? (
-                      <img src={theme.images.logo} alt="Logo" className="h-8" />
-                    ) : (
-                      'YourLogo'
-                    )}
+                  {device === 'mobile' && <Menu className="h-6 w-6" style={{ color: colors.text }} />}
+                  <div className="text-xl font-bold" style={{ color: colors.primary }}>
+                    {theme.images.logo ? <img src={theme.images.logo} alt="Logo" className="h-8" /> : 'YourLogo'}
                   </div>
                 </div>
 
                 {/* Navigation - Desktop/Tablet */}
                 {device !== 'mobile' && (
                   <nav className="flex items-center space-x-6">
-                    {navItems.map((item) => {
+                    {navItems.map(item => {
                       const Icon = item.icon;
                       return (
                         <button
@@ -147,9 +138,7 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
                         >
                           <Icon className="h-4 w-4" />
                           {device === 'desktop' && (
-                            <span style={{ fontSize: theme.typography.fontSize.sm }}>
-                              {item.label}
-                            </span>
+                            <span style={{ fontSize: theme.typography.fontSize.sm }}>{item.label}</span>
                           )}
                         </button>
                       );
@@ -166,20 +155,20 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
                       </button>
                       <button className="p-2 rounded-lg hover:opacity-80 transition-opacity relative">
                         <Bell className="h-5 w-5" style={{ color: colors.text }} />
-                        <span 
+                        <span
                           className="absolute top-1 right-1 h-2 w-2 rounded-full"
                           style={{ backgroundColor: colors.accent }}
                         />
                       </button>
                     </>
                   )}
-                  <button 
+                  <button
                     className="px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-80"
-                    style={{ 
+                    style={{
                       backgroundColor: colors.primary,
                       color: '#FFFFFF',
                       borderRadius: theme.layout.borderRadius.md,
-                      fontSize: theme.typography.fontSize.sm
+                      fontSize: theme.typography.fontSize.sm,
                     }}
                   >
                     Sign In
@@ -190,57 +179,57 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
           </header>
 
           {/* Hero Section */}
-          <section 
+          <section
             className="px-4 py-12"
-            style={{ 
+            style={{
               backgroundImage: theme.images.backgroundImage ? `url(${theme.images.backgroundImage})` : undefined,
               backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center',
             }}
           >
             <div className="text-center">
-              <h1 
+              <h1
                 className="font-bold mb-4"
-                style={{ 
+                style={{
                   color: colors.text,
                   fontSize: device === 'mobile' ? theme.typography.fontSize['2xl'] : theme.typography.fontSize['4xl'],
-                  fontWeight: theme.typography.fontWeight.bold
+                  fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
                 Welcome to Our Community
               </h1>
-              <p 
+              <p
                 className="mb-8 max-w-2xl mx-auto"
-                style={{ 
+                style={{
                   color: colors.text,
                   opacity: 0.8,
                   fontSize: device === 'mobile' ? theme.typography.fontSize.base : theme.typography.fontSize.lg,
-                  lineHeight: theme.typography.lineHeight.relaxed
+                  lineHeight: theme.typography.lineHeight.relaxed,
                 }}
               >
                 Connect, collaborate, and grow with professionals in your field. Join our vibrant community today.
               </p>
               <div className="flex justify-center space-x-4">
-                <button 
+                <button
                   className="px-6 py-3 font-medium transition-opacity hover:opacity-80"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.primary,
                     color: '#FFFFFF',
                     borderRadius: theme.layout.borderRadius.md,
                     fontSize: theme.typography.fontSize.base,
-                    boxShadow: theme.layout.shadow.md
+                    boxShadow: theme.layout.shadow.md,
                   }}
                 >
                   Get Started
                 </button>
-                <button 
+                <button
                   className="px-6 py-3 font-medium transition-opacity hover:opacity-80"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.surface,
                     color: colors.primary,
                     borderRadius: theme.layout.borderRadius.md,
                     fontSize: theme.typography.fontSize.base,
-                    border: `2px solid ${colors.primary}`
+                    border: `2px solid ${colors.primary}`,
                   }}
                 >
                   Learn More
@@ -251,66 +240,67 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
 
           {/* Content Section */}
           <section className="px-4 py-8">
-            <div className={`grid gap-6 ${
-              device === 'mobile' ? 'grid-cols-1' : 
-              device === 'tablet' ? 'grid-cols-2' : 'grid-cols-3'
-            }`}>
+            <div
+              className={`grid gap-6 ${
+                device === 'mobile' ? 'grid-cols-1' : device === 'tablet' ? 'grid-cols-2' : 'grid-cols-3'
+              }`}
+            >
               {sampleCards.map((card, index) => (
                 <div
                   key={index}
                   className="p-6 transition-transform hover:scale-105"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.surface,
                     borderRadius: theme.layout.borderRadius.md,
                     boxShadow: theme.layout.shadow.md,
-                    border: `1px solid ${colors.border}`
+                    border: `1px solid ${colors.border}`,
                   }}
                 >
-                  <h3 
+                  <h3
                     className="font-semibold mb-1"
-                    style={{ 
+                    style={{
                       color: colors.primary,
                       fontSize: theme.typography.fontSize.sm,
-                      fontWeight: theme.typography.fontWeight.medium
+                      fontWeight: theme.typography.fontWeight.medium,
                     }}
                   >
                     {card.title}
                   </h3>
-                  <h4 
+                  <h4
                     className="font-medium mb-3"
-                    style={{ 
+                    style={{
                       color: colors.text,
                       fontSize: theme.typography.fontSize.lg,
-                      fontWeight: theme.typography.fontWeight.semibold
+                      fontWeight: theme.typography.fontWeight.semibold,
                     }}
                   >
                     {card.subtitle}
                   </h4>
-                  <p 
+                  <p
                     className="mb-4"
-                    style={{ 
+                    style={{
                       color: colors.text,
                       opacity: 0.7,
                       fontSize: theme.typography.fontSize.sm,
-                      lineHeight: theme.typography.lineHeight.normal
+                      lineHeight: theme.typography.lineHeight.normal,
                     }}
                   >
                     {card.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span 
-                      style={{ 
+                    <span
+                      style={{
                         color: colors.secondary,
-                        fontSize: theme.typography.fontSize.xs
+                        fontSize: theme.typography.fontSize.xs,
                       }}
                     >
                       {card.date}
                     </span>
-                    <button 
+                    <button
                       className="font-medium transition-opacity hover:opacity-80"
-                      style={{ 
+                      style={{
                         color: colors.accent,
-                        fontSize: theme.typography.fontSize.sm
+                        fontSize: theme.typography.fontSize.sm,
                       }}
                     >
                       Read More →
@@ -322,34 +312,34 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
           </section>
 
           {/* Feature Strip */}
-          <section 
+          <section
             className="px-4 py-6 border-t border-b"
-            style={{ 
+            style={{
               backgroundColor: colors.surface,
-              borderColor: colors.border
+              borderColor: colors.border,
             }}
           >
             <div className={`flex ${device === 'mobile' ? 'flex-col space-y-4' : 'justify-around'} items-center`}>
               {[
                 { label: '5,000+', sublabel: 'Members' },
                 { label: '250+', sublabel: 'Companies' },
-                { label: '100+', sublabel: 'Events' }
+                { label: '100+', sublabel: 'Events' },
               ].map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div 
+                  <div
                     className="font-bold"
-                    style={{ 
+                    style={{
                       color: colors.primary,
-                      fontSize: theme.typography.fontSize['2xl']
+                      fontSize: theme.typography.fontSize['2xl'],
                     }}
                   >
                     {stat.label}
                   </div>
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       color: colors.text,
                       opacity: 0.6,
-                      fontSize: theme.typography.fontSize.sm
+                      fontSize: theme.typography.fontSize.sm,
                     }}
                   >
                     {stat.sublabel}
@@ -360,19 +350,19 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
           </section>
 
           {/* Footer */}
-          <footer 
+          <footer
             className="px-4 py-6"
-            style={{ 
+            style={{
               backgroundColor: colors.surface,
-              borderTop: `1px solid ${colors.border}`
+              borderTop: `1px solid ${colors.border}`,
             }}
           >
             <div className="text-center">
-              <p 
-                style={{ 
+              <p
+                style={{
                   color: colors.text,
                   opacity: 0.6,
-                  fontSize: theme.typography.fontSize.sm
+                  fontSize: theme.typography.fontSize.sm,
                 }}
               >
                 © 2024 Your Community Platform. All rights reserved.
@@ -382,28 +372,16 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
 
           {/* Status Colors Demo */}
           <div className="fixed bottom-4 right-4 space-y-2">
-            <div 
-              className="px-3 py-1 rounded text-white text-xs"
-              style={{ backgroundColor: colors.success }}
-            >
+            <div className="px-3 py-1 rounded text-white text-xs" style={{ backgroundColor: colors.success }}>
               Success
             </div>
-            <div 
-              className="px-3 py-1 rounded text-white text-xs"
-              style={{ backgroundColor: colors.error }}
-            >
+            <div className="px-3 py-1 rounded text-white text-xs" style={{ backgroundColor: colors.error }}>
               Error
             </div>
-            <div 
-              className="px-3 py-1 rounded text-white text-xs"
-              style={{ backgroundColor: colors.warning }}
-            >
+            <div className="px-3 py-1 rounded text-white text-xs" style={{ backgroundColor: colors.warning }}>
               Warning
             </div>
-            <div 
-              className="px-3 py-1 rounded text-white text-xs"
-              style={{ backgroundColor: colors.info }}
-            >
+            <div className="px-3 py-1 rounded text-white text-xs" style={{ backgroundColor: colors.info }}>
               Info
             </div>
           </div>
@@ -419,7 +397,7 @@ export default function ThemePreview({ theme, isDarkMode, device, onDeviceChange
 
   function generateCSSVariables(theme: Theme, darkMode: boolean) {
     const colors = darkMode ? generateDarkModeColors(theme.colors) : theme.colors;
-    
+
     return `/* CSS Variables for ${theme.name} */
 :root {
   /* Colors */

@@ -124,16 +124,33 @@ function hashtags(values: (string | null | undefined)[]): Tags {
 const GEOHASH_BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
 
 export function geohash(lat: number, lon: number, precision = 7): string {
-  let latMin = -90, latMax = 90, lonMin = -180, lonMax = 180;
+  let latMin = -90,
+    latMax = 90,
+    lonMin = -180,
+    lonMax = 180;
   let hash = '';
-  let bit = 0, ch = 0, even = true;
+  let bit = 0,
+    ch = 0,
+    even = true;
   while (hash.length < precision) {
     if (even) {
       const mid = (lonMin + lonMax) / 2;
-      if (lon >= mid) { ch = (ch << 1) | 1; lonMin = mid; } else { ch <<= 1; lonMax = mid; }
+      if (lon >= mid) {
+        ch = (ch << 1) | 1;
+        lonMin = mid;
+      } else {
+        ch <<= 1;
+        lonMax = mid;
+      }
     } else {
       const mid = (latMin + latMax) / 2;
-      if (lat >= mid) { ch = (ch << 1) | 1; latMin = mid; } else { ch <<= 1; latMax = mid; }
+      if (lat >= mid) {
+        ch = (ch << 1) | 1;
+        latMin = mid;
+      } else {
+        ch <<= 1;
+        latMax = mid;
+      }
     }
     even = !even;
     if (++bit === 5) {
@@ -147,11 +164,12 @@ export function geohash(lat: number, lon: number, precision = 7): string {
 
 // Several precisions so clients can match on a coarser prefix.
 function geohashTags(lat: unknown, lon: unknown): Tags {
-  const la = Number(lat), lo = Number(lon);
+  const la = Number(lat),
+    lo = Number(lon);
   if (lat == null || lon == null || !Number.isFinite(la) || !Number.isFinite(lo)) return [];
   if (Math.abs(la) > 90 || Math.abs(lo) > 180) return [];
   const full = geohash(la, lo, 7);
-  return [4, 5, 6, 7].map((n) => ['g', full.slice(0, n)]);
+  return [4, 5, 6, 7].map(n => ['g', full.slice(0, n)]);
 }
 
 const SECONDS_PER_DAY = 86_400;
@@ -186,7 +204,7 @@ export function eventTemplate(row: EventRow, ctx: BuildContext): EventTemplate |
     ...(end != null ? [['end', String(end)]] : []),
     ...dayTags(start, end),
     ...(ctx.timezone ? [['start_tzid', ctx.timezone]] : []),
-    ...[row.location, row.address].filter((v): v is string => !!v).map((v) => ['location', v]),
+    ...[row.location, row.address].filter((v): v is string => !!v).map(v => ['location', v]),
     ...geohashTags(row.latitude, row.longitude),
     ...(image ? [['image', image]] : []),
     ...hashtags([row.type]),
@@ -222,8 +240,8 @@ export function newsTemplate(row: NewsRow, ctx: BuildContext): EventTemplate {
 }
 
 function list(heading: string, items: string[] | null | undefined): string {
-  const clean = (items || []).map((i) => i.trim()).filter(Boolean);
-  return clean.length ? `\n\n**${heading}**\n\n${clean.map((i) => `- ${i}`).join('\n')}` : '';
+  const clean = (items || []).map(i => i.trim()).filter(Boolean);
+  return clean.length ? `\n\n**${heading}**\n\n${clean.map(i => `- ${i}`).join('\n')}` : '';
 }
 
 export function opportunityTemplate(row: OpportunityRow, ctx: BuildContext): EventTemplate {
@@ -277,20 +295,11 @@ export function profileTemplate(profile: InstanceProfile, ctx: BuildContext): Ev
 }
 
 /** NIP-09 deletion request for an addressable event we published earlier. */
-export function deletionTemplate(
-  kind: number,
-  pubkey: string,
-  dTag: string,
-  eventId?: string | null
-): EventTemplate {
+export function deletionTemplate(kind: number, pubkey: string, dTag: string, eventId?: string | null): EventTemplate {
   return {
     kind: KIND.deletion,
     created_at: 0,
-    tags: [
-      ['a', `${kind}:${pubkey}:${dTag}`],
-      ...(eventId ? [['e', eventId]] : []),
-      ['k', String(kind)],
-    ],
+    tags: [['a', `${kind}:${pubkey}:${dTag}`], ...(eventId ? [['e', eventId]] : []), ['k', String(kind)]],
     content: '',
   };
 }
@@ -357,7 +366,13 @@ export function buildTemplates(
   }
   for (const row of rows.news) {
     if (row.publish_date && row.publish_date.slice(0, 10) > today) continue;
-    out.push({ source_table: 'news', source_id: row.id, title: row.title, d_tag: row.id, template: newsTemplate(row, ctx) });
+    out.push({
+      source_table: 'news',
+      source_id: row.id,
+      title: row.title,
+      d_tag: row.id,
+      template: newsTemplate(row, ctx),
+    });
   }
   for (const row of rows.opportunities) {
     out.push({
@@ -375,13 +390,9 @@ export function buildTemplates(
  * Compares what should be public with what was published before. Deletions
  * come first so a per-run cap never delays a takedown behind new posts.
  */
-export function planActions(
-  current: SourceTemplate[],
-  publications: Publication[],
-  pubkey: string
-): PlannedItem[] {
-  const existing = new Map(publications.map((p) => [`${p.source_table}:${p.source_id}`, p]));
-  const upserts: PlannedItem[] = current.map((c) => {
+export function planActions(current: SourceTemplate[], publications: Publication[], pubkey: string): PlannedItem[] {
+  const existing = new Map(publications.map(p => [`${p.source_table}:${p.source_id}`, p]));
+  const upserts: PlannedItem[] = current.map(c => {
     const key = `${c.source_table}:${c.source_id}`;
     const hash = contentHash(c.template);
     const prev = existing.get(key);
@@ -439,7 +450,7 @@ export function verifyLinkEvent(
   if (typeof e.created_at !== 'number' || Math.abs(expected.now - e.created_at) > LINK_MAX_AGE_SECONDS) {
     return { error: 'Event expired' };
   }
-  const tag = (name: string) => e.tags.find((t) => Array.isArray(t) && t[0] === name)?.[1];
+  const tag = (name: string) => e.tags.find(t => Array.isArray(t) && t[0] === name)?.[1];
   if (tag('u') !== expected.url) return { error: 'URL mismatch' };
   if ((tag('method') || '').toUpperCase() !== 'POST') return { error: 'Method mismatch' };
   if (e.content !== linkMessage(expected.userId)) return { error: 'Account mismatch' };

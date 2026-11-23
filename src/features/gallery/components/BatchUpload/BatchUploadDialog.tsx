@@ -1,16 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  Play, 
-  Pause, 
-  Square, 
-  RotateCcw, 
-  Trash2, 
-  Upload,
-  X,
-  Settings,
-  ChevronDown,
-  ChevronUp
-} from 'lucide-react';
+import { Play, Pause, Square, RotateCcw, Trash2, Upload, X, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -33,11 +22,11 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
   onClose,
   galleryId,
   config: userConfig = {},
-  onUploadComplete
+  onUploadComplete,
 }) => {
   const [showFileList, setShowFileList] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   const {
     queue,
     addFiles,
@@ -51,19 +40,19 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
     retryFailedFiles,
     isUploading,
     isPaused,
-    canUpload
+    canUpload,
   } = useBatchUpload({
     galleryId,
     config: userConfig,
     hooks: {
-      onBatchComplete: (result) => {
+      onBatchComplete: result => {
         if (result.uploadedPhotos.length > 0) {
           onUploadComplete?.(result.uploadedPhotos);
         }
-      }
-    }
+      },
+    },
   });
-  
+
   const handleClose = useCallback(() => {
     if (isUploading) {
       const confirmed = window.confirm(
@@ -76,7 +65,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
     }
     onClose();
   }, [isUploading, cancelUpload, onClose]);
-  
+
   const handleStartUpload = useCallback(async () => {
     try {
       await startUpload();
@@ -84,28 +73,20 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
       console.error('Failed to start upload:', error);
     }
   }, [startUpload]);
-  
+
   const handleClearAll = useCallback(() => {
-    const confirmed = window.confirm(
-      'Are you sure you want to remove all files from the queue?'
-    );
+    const confirmed = window.confirm('Are you sure you want to remove all files from the queue?');
     if (confirmed) {
       removeAllFiles();
     }
   }, [removeAllFiles]);
-  
+
   const hasFiles = queue.files.length > 0;
   const hasFailedFiles = queue.files.some(f => f.status === 'error');
   const hasCompletedFiles = queue.files.some(f => f.status === 'completed');
-  
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Batch Photo Upload"
-      size="xl"
-      className="max-w-4xl"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="Batch Photo Upload" size="xl" className="max-w-4xl">
       <div className="space-y-6">
         {/* Upload Area */}
         {!hasFiles && (
@@ -117,15 +98,10 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
             acceptedTypes={queue.config.acceptedTypes}
           />
         )}
-        
+
         {/* Progress Summary */}
-        {hasFiles && (
-          <BatchUploadProgress 
-            progress={queue.progress}
-            showDetails={true}
-          />
-        )}
-        
+        {hasFiles && <BatchUploadProgress progress={queue.progress} showDetails={true} />}
+
         {/* Action Bar */}
         {hasFiles && (
           <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
@@ -142,27 +118,21 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                     Start Upload
                   </Button>
                 )}
-                
+
                 {isUploading && !isPaused && (
-                  <Button
-                    onClick={pauseUpload}
-                    variant="outline"
-                  >
+                  <Button onClick={pauseUpload} variant="outline">
                     <Pause className="w-4 h-4 mr-2" />
                     Pause
                   </Button>
                 )}
-                
+
                 {isUploading && isPaused && (
-                  <Button
-                    onClick={resumeUpload}
-                    className="bg-orange-500 hover:bg-orange-600 text-white"
-                  >
+                  <Button onClick={resumeUpload} className="bg-orange-500 hover:bg-orange-600 text-white">
                     <Play className="w-4 h-4 mr-2" />
                     Resume
                   </Button>
                 )}
-                
+
                 {isUploading && (
                   <Button
                     onClick={cancelUpload}
@@ -173,7 +143,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                     Cancel
                   </Button>
                 )}
-                
+
                 {hasFailedFiles && !isUploading && (
                   <Button
                     onClick={retryFailedFiles}
@@ -185,7 +155,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                   </Button>
                 )}
               </div>
-              
+
               {/* Right Actions */}
               <div className="flex items-center space-x-3">
                 {!hasFiles && (
@@ -197,12 +167,8 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                     Add More Files
                   </Button>
                 )}
-                
-                <Button
-                  onClick={() => setShowFileList(!showFileList)}
-                  variant="outline"
-                  size="sm"
-                >
+
+                <Button onClick={() => setShowFileList(!showFileList)} variant="outline" size="sm">
                   {showFileList ? (
                     <>
                       <ChevronUp className="w-4 h-4 mr-1" />
@@ -215,7 +181,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
                     </>
                   )}
                 </Button>
-                
+
                 {!isUploading && (
                   <Button
                     onClick={handleClearAll}
@@ -231,7 +197,7 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
             </div>
           </div>
         )}
-        
+
         {/* Additional Upload Area (when files exist) */}
         {hasFiles && (
           <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg p-4">
@@ -245,16 +211,14 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
             />
           </div>
         )}
-        
+
         {/* File List */}
         {hasFiles && showFileList && (
           <div className="max-h-96 overflow-y-auto">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white">
-                Files ({queue.files.length})
-              </h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white">Files ({queue.files.length})</h3>
             </div>
-            
+
             <BatchUploadFileList
               files={queue.files}
               onRemoveFile={removeFile}
@@ -265,30 +229,25 @@ export const BatchUploadDialog: React.FC<BatchUploadDialogProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* Footer */}
       <div className="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
         <div className="text-sm text-slate-500 dark:text-slate-400">
           {hasCompletedFiles && (
             <span className="text-green-600 dark:text-green-400">
-              {queue.progress.completedFiles} photo{queue.progress.completedFiles !== 1 ? 's' : ''} uploaded successfully
+              {queue.progress.completedFiles} photo{queue.progress.completedFiles !== 1 ? 's' : ''} uploaded
+              successfully
             </span>
           )}
         </div>
-        
+
         <div className="flex items-center space-x-3">
-          <Button
-            onClick={handleClose}
-            variant="outline"
-          >
+          <Button onClick={handleClose} variant="outline">
             {queue.progress.isComplete ? 'Close' : 'Cancel'}
           </Button>
-          
+
           {queue.progress.isComplete && hasCompletedFiles && (
-            <Button
-              onClick={handleClose}
-              className="bg-green-500 hover:bg-green-600 text-white"
-            >
+            <Button onClick={handleClose} className="bg-green-500 hover:bg-green-600 text-white">
               Done
             </Button>
           )}

@@ -17,32 +17,32 @@ const createCustomTheme = (): Theme => ({
   light: {
     colors: {
       editor: {
-        text: '#1e293b',      // slate-800
+        text: '#1e293b', // slate-800
         background: '#ffffff',
       },
       menu: {
-        text: '#1e293b',      // slate-800
+        text: '#1e293b', // slate-800
         background: '#f8fafc', // slate-50
       },
       tooltip: {
-        text: '#f8fafc',      // slate-50
+        text: '#f8fafc', // slate-50
         background: '#1e293b', // slate-800
       },
       hovered: {
-        text: '#0f172a',      // slate-900
+        text: '#0f172a', // slate-900
         background: '#f1f5f9', // slate-100
       },
       selected: {
-        text: '#0f172a',      // slate-900
+        text: '#0f172a', // slate-900
         background: '#e2e8f0', // slate-200
       },
       disabled: {
-        text: '#94a3b8',      // slate-400
+        text: '#94a3b8', // slate-400
         background: '#f1f5f9', // slate-100
       },
-      shadow: '#0f172a20',    // slate-900 with opacity
-      border: '#e2e8f0',      // slate-200
-      sideMenu: '#64748b',    // slate-500
+      shadow: '#0f172a20', // slate-900 with opacity
+      border: '#e2e8f0', // slate-200
+      sideMenu: '#64748b', // slate-500
       highlights: {
         gray: { text: '#1e293b', background: '#f1f5f9' },
         brown: { text: '#78350f', background: '#fef3c7' },
@@ -59,19 +59,19 @@ const createCustomTheme = (): Theme => ({
   dark: {
     colors: {
       editor: {
-        text: '#f1f5f9',      // slate-100
+        text: '#f1f5f9', // slate-100
         background: '#0f172a', // slate-900
       },
       menu: {
-        text: '#f1f5f9',      // slate-100
+        text: '#f1f5f9', // slate-100
         background: '#1e293b', // slate-800
       },
       tooltip: {
-        text: '#0f172a',      // slate-900
+        text: '#0f172a', // slate-900
         background: '#e2e8f0', // slate-200
       },
       hovered: {
-        text: '#f8fafc',      // slate-50
+        text: '#f8fafc', // slate-50
         background: '#334155', // slate-700
       },
       selected: {
@@ -79,12 +79,12 @@ const createCustomTheme = (): Theme => ({
         background: '#475569', // slate-600
       },
       disabled: {
-        text: '#64748b',      // slate-500
+        text: '#64748b', // slate-500
         background: '#1e293b', // slate-800
       },
-      shadow: '#00000040',    // black with opacity
-      border: '#334155',      // slate-700
-      sideMenu: '#94a3b8',    // slate-400
+      shadow: '#00000040', // black with opacity
+      border: '#334155', // slate-700
+      sideMenu: '#94a3b8', // slate-400
       highlights: {
         gray: { text: '#f1f5f9', background: '#334155' },
         brown: { text: '#fef3c7', background: '#78350f' },
@@ -118,8 +118,8 @@ export const BlockNoteEditor: React.FC<BlockNoteEditorProps> = ({
 
     checkTheme();
 
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
         if (mutation.attributeName === 'class') {
           checkTheme();
         }

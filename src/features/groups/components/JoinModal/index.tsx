@@ -12,7 +12,7 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useSession();
   const { joinGroup } = useGroupsHybrid();
-  
+
   const handleSubmit = async (_message: string) => {
     if (!user) {
       setError('You must be logged in to join a group');
@@ -21,15 +21,15 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
 
     setJoining(true);
     setError(null);
-    
+
     try {
       await joinGroup.mutateAsync({
-        groupId: group.id
+        groupId: group.id,
       });
-      
+
       setJoining(false);
       setSuccess(true);
-      
+
       // Close modal after success message is shown
       setTimeout(() => {
         onClose();
@@ -57,7 +57,7 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         {!success ? (
           <>
             {error && (
@@ -65,18 +65,10 @@ const JoinModal: React.FC<JoinModalProps> = ({ group, onClose }) => {
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             )}
-            <JoinRequestForm 
-              group={group} 
-              onSubmit={handleSubmit} 
-              onCancel={onClose}
-              joining={joining}
-            />
+            <JoinRequestForm group={group} onSubmit={handleSubmit} onCancel={onClose} joining={joining} />
           </>
         ) : (
-          <SuccessMessage 
-            group={group} 
-            isOpenGroup={_isOpenGroup} 
-          />
+          <SuccessMessage group={group} isOpenGroup={_isOpenGroup} />
         )}
       </div>
     </div>

@@ -5,9 +5,9 @@ import { supabase } from '@/shared/api/client';
 // Mock the supabaseUtils to properly mock supabase
 jest.mock('@/shared/api/client', () => ({
   supabase: {
-    from: jest.fn()
+    from: jest.fn(),
   },
-  handleSupabaseError: jest.fn()
+  handleSupabaseError: jest.fn(),
 }));
 
 describe('CompaniesApi - Employee Management', () => {
@@ -30,15 +30,15 @@ describe('CompaniesApi - Employee Management', () => {
         is_current: true,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: null,
-        member: null
+        member: null,
       };
 
       mockSupabaseFrom.mockReturnValue({
         insert: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({ data: mockData, error: null })
-          })
-        })
+            single: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+          }),
+        }),
       });
 
       const result = await companiesApi.addCompanyEmployee('comp-456', 'mem-789');
@@ -55,7 +55,7 @@ describe('CompaniesApi - Employee Management', () => {
         role: 'Senior Developer',
         department: 'Engineering',
         start_date: '2023-06-01',
-        is_current: true
+        is_current: true,
       };
 
       const mockData = {
@@ -73,16 +73,16 @@ describe('CompaniesApi - Employee Management', () => {
           image: 'https://example.com/john.jpg',
           created_at: '2023-01-01T00:00:00Z',
           status: 'published',
-          featured: false
-        }
+          featured: false,
+        },
       };
 
       mockSupabaseFrom.mockReturnValue({
         insert: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({ data: mockData, error: null })
-          })
-        })
+            single: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+          }),
+        }),
       });
 
       const result = await companiesApi.addCompanyEmployee('comp-456', 'mem-789', employeeData);
@@ -101,10 +101,10 @@ describe('CompaniesApi - Employee Management', () => {
           select: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
               data: null,
-              error: { message: 'Database error' }
-            })
-          })
-        })
+              error: { message: 'Database error' },
+            }),
+          }),
+        }),
       });
 
       const result = await companiesApi.addCompanyEmployee('comp-456', 'mem-789');
@@ -117,7 +117,7 @@ describe('CompaniesApi - Employee Management', () => {
     it('should update employee role and department', async () => {
       const updates = {
         role: 'Lead Developer',
-        department: 'Engineering'
+        department: 'Engineering',
       };
 
       const mockData = {
@@ -130,17 +130,17 @@ describe('CompaniesApi - Employee Management', () => {
         is_current: true,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-15T00:00:00Z',
-        member: null
+        member: null,
       };
 
       mockSupabaseFrom.mockReturnValue({
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             select: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({ data: mockData, error: null })
-            })
-          })
-        })
+              single: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+            }),
+          }),
+        }),
       });
 
       const result = await companiesApi.updateCompanyEmployee('emp-123', updates);
@@ -154,7 +154,7 @@ describe('CompaniesApi - Employee Management', () => {
     it('should update employee end date when marked as not current', async () => {
       const updates = {
         is_current: false,
-        end_date: '2024-12-31'
+        end_date: '2024-12-31',
       };
 
       const mockData = {
@@ -165,17 +165,17 @@ describe('CompaniesApi - Employee Management', () => {
         is_current: false,
         end_date: '2024-12-31',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-15T00:00:00Z'
+        updated_at: '2024-01-15T00:00:00Z',
       };
 
       mockSupabaseFrom.mockReturnValue({
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             select: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({ data: mockData, error: null })
-            })
-          })
-        })
+              single: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+            }),
+          }),
+        }),
       });
 
       const result = await companiesApi.updateCompanyEmployee('emp-123', updates);
@@ -192,11 +192,11 @@ describe('CompaniesApi - Employee Management', () => {
             select: jest.fn().mockReturnValue({
               single: jest.fn().mockResolvedValue({
                 data: null,
-                error: { message: 'Update failed' }
-              })
-            })
-          })
-        })
+                error: { message: 'Update failed' },
+              }),
+            }),
+          }),
+        }),
       });
 
       const result = await companiesApi.updateCompanyEmployee('emp-123', { role: 'New Role' });
@@ -209,8 +209,8 @@ describe('CompaniesApi - Employee Management', () => {
     it('should remove a company employee', async () => {
       mockSupabaseFrom.mockReturnValue({
         delete: jest.fn().mockReturnValue({
-          eq: jest.fn().mockResolvedValue({ error: null })
-        })
+          eq: jest.fn().mockResolvedValue({ error: null }),
+        }),
       });
 
       const result = await companiesApi.removeCompanyEmployee('emp-123');
@@ -222,8 +222,8 @@ describe('CompaniesApi - Employee Management', () => {
     it('should return false on error when removing employee', async () => {
       mockSupabaseFrom.mockReturnValue({
         delete: jest.fn().mockReturnValue({
-          eq: jest.fn().mockResolvedValue({ error: { message: 'Delete failed' } })
-        })
+          eq: jest.fn().mockResolvedValue({ error: { message: 'Delete failed' } }),
+        }),
       });
 
       const result = await companiesApi.removeCompanyEmployee('emp-123');
@@ -248,8 +248,8 @@ describe('CompaniesApi - Employee Management', () => {
             name: 'John Doe',
             title: 'Software Engineer',
             image: 'https://example.com/john.jpg',
-            status: 'published'
-          }
+            status: 'published',
+          },
         },
         {
           id: 'emp-124',
@@ -264,17 +264,17 @@ describe('CompaniesApi - Employee Management', () => {
             name: 'Jane Smith',
             title: 'UI Designer',
             image: 'https://example.com/jane.jpg',
-            status: 'published'
-          }
-        }
+            status: 'published',
+          },
+        },
       ];
 
       mockSupabaseFrom.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            order: jest.fn().mockResolvedValue({ data: mockData, error: null })
-          })
-        })
+            order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+          }),
+        }),
       });
 
       const result = await companiesApi.getCompanyEmployees('comp-456');
@@ -292,20 +292,20 @@ describe('CompaniesApi - Employee Management', () => {
           member_id: 'mem-789',
           role: 'Developer',
           is_current: true,
-          created_at: '2024-01-01T00:00:00Z'
-        }
+          created_at: '2024-01-01T00:00:00Z',
+        },
       ];
 
       mockSupabaseFrom.mockReturnValue({
         select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockImplementation(function() {
+          eq: jest.fn().mockImplementation(function () {
             return {
               eq: jest.fn().mockReturnValue({
-                order: jest.fn().mockResolvedValue({ data: mockData, error: null })
-              })
+                order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+              }),
             };
-          })
-        })
+          }),
+        }),
       });
 
       const result = await companiesApi.getCompanyEmployees('comp-456', { currentOnly: true });
@@ -323,20 +323,20 @@ describe('CompaniesApi - Employee Management', () => {
           role: 'Developer',
           department: 'Engineering',
           is_current: true,
-          created_at: '2024-01-01T00:00:00Z'
-        }
+          created_at: '2024-01-01T00:00:00Z',
+        },
       ];
 
       mockSupabaseFrom.mockReturnValue({
         select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockImplementation(function() {
+          eq: jest.fn().mockImplementation(function () {
             return {
               eq: jest.fn().mockReturnValue({
-                order: jest.fn().mockResolvedValue({ data: mockData, error: null })
-              })
+                order: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+              }),
             };
-          })
-        })
+          }),
+        }),
       });
 
       const result = await companiesApi.getCompanyEmployees('comp-456', { department: 'Engineering' });
@@ -351,10 +351,10 @@ describe('CompaniesApi - Employee Management', () => {
           eq: jest.fn().mockReturnValue({
             order: jest.fn().mockResolvedValue({
               data: null,
-              error: { message: 'Query failed' }
-            })
-          })
-        })
+              error: { message: 'Query failed' },
+            }),
+          }),
+        }),
       });
 
       const result = await companiesApi.getCompanyEmployees('comp-456');

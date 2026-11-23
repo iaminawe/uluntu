@@ -1,14 +1,29 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Session, User, AuthError } from '@supabase/supabase-js';
-import { supabase, signIn, signUp, signOut, checkSupabaseConnection, forgotPassword, resetPassword } from '@/lib/supabase';
+import {
+  supabase,
+  signIn,
+  signUp,
+  signOut,
+  checkSupabaseConnection,
+  forgotPassword,
+  resetPassword,
+} from '@/lib/supabase';
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signIn: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
+  signUp: (
+    email: string,
+    password: string
+  ) => Promise<{ data: { session: Session | null; user: User | null } | null; error: Error | null }>;
   signOut: () => Promise<{ error: Error | null }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
   resetPassword: (newPassword: string) => Promise<{ success: boolean; error: Error | AuthError | null }>;
@@ -29,27 +44,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function loadSession() {
       try {
         setLoading(true);
-        
+
         // Check Supabase connection first
         const isConnected = await checkSupabaseConnection();
         if (!isConnected) {
           console.error('Unable to connect to Supabase. Check your network connection or Supabase service status.');
           throw new Error('Database connection failed');
         }
-        
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+        const {
+          data: { session: currentSession },
+        } = await supabase.auth.getSession();
         setSession(currentSession);
-        
+
         if (currentSession?.user) {
           setUser(currentSession.user);
-          
+
           // Fetch user roles - but don't let it block authentication
           try {
             const { data: rolesData, error: rolesError } = await supabase
               .from('user_roles')
               .select('role')
               .eq('user_id', currentSession.user.id);
-              
+
             if (rolesError) {
               console.error('Error fetching user roles:', rolesError);
               // Set default roles even if there's an error
@@ -81,43 +98,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadSession();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user || null);
-        
-        if (newSession?.user) {
-          // Fetch user roles on auth state change - but don't let it block authentication
-          try {
-            const { data: rolesData, error: rolesError } = await supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', newSession.user.id);
-              
-            if (rolesError) {
-              console.error('Error fetching user roles on auth change:', rolesError);
-              // Set default roles even if there's an error
-              setUserRoles([]);
-              setIsAdmin(false);
-            } else {
-              const roles = rolesData?.map(r => r.role) || [];
-              setUserRoles(roles);
-              setIsAdmin(roles.includes('superadmin'));
-            }
-          } catch (roleErr) {
-            console.error('Exception fetching user roles on auth change:', roleErr);
-            // Set default roles even if there's an exception
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user || null);
+
+      if (newSession?.user) {
+        // Fetch user roles on auth state change - but don't let it block authentication
+        try {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', newSession.user.id);
+
+          if (rolesError) {
+            console.error('Error fetching user roles on auth change:', rolesError);
+            // Set default roles even if there's an error
             setUserRoles([]);
             setIsAdmin(false);
+          } else {
+            const roles = rolesData?.map(r => r.role) || [];
+            setUserRoles(roles);
+            setIsAdmin(roles.includes('superadmin'));
           }
-        } else {
+        } catch (roleErr) {
+          console.error('Exception fetching user roles on auth change:', roleErr);
+          // Set default roles even if there's an exception
           setUserRoles([]);
           setIsAdmin(false);
         }
-        
-        setLoading(false);
+      } else {
+        setUserRoles([]);
+        setIsAdmin(false);
       }
-    );
+
+      setLoading(false);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -135,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     forgotPassword,
     resetPassword,
     userRoles,
-    isAdmin
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

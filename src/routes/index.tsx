@@ -131,7 +131,6 @@ const TopicLandingPage = lazy(() => import('../pages/TopicLandingPage'));
 const ImprovedSettingsPage = lazy(() => import('../pages/admin/ImprovedSettingsPage'));
 const EnhancedSettingsPage = lazy(() => import('../pages/admin/EnhancedSettingsPage'));
 
-
 // Auth components
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 import GroupGuard from '@/features/auth/components/GroupGuard';
@@ -152,7 +151,6 @@ const GalleryEditPage = lazy(() => import('../pages/GalleryEditPage'));
 // Lazy load topics pages
 const TopicsPage = lazy(() => import('../pages/TopicsPage'));
 const TopicDetailPage = lazy(() => import('../pages/TopicDetailPage'));
-
 
 // Lazy load messaging pages
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
@@ -182,7 +180,7 @@ export const router = createBrowserRouter([
       { path: 'isolated-ai', element: withSuspense(IsolatedAIEditor) },
       { path: 'editor-demo', element: withSuspense(EditorFeatureDemo) },
       { path: 'pages/:id/advanced', element: withSuspense(AdvancedPageEdit) },
-      
+
       // Dynamic pages (must come after specific routes)
       // Using BlockNote editor for rich text editing experience
       { path: 'pages/:slug', element: withSuspense(DynamicPageBlockNote) },
@@ -192,7 +190,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
             {withSuspense(DirectoryPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'directory/create',
@@ -200,7 +198,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'directory/:slug',
@@ -208,7 +206,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
             {withSuspense(DirectoryDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'directory/:slug/edit',
@@ -216,7 +214,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="members_directory" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(DirectoryEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'companies',
@@ -224,7 +222,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
             {withSuspense(CompaniesPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'companies/create',
@@ -232,7 +230,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'companies/:slug',
@@ -240,7 +238,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
             {withSuspense(CompanyDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'companies/:slug/edit',
@@ -248,7 +246,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="companies_listing" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(CompanyEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'events',
@@ -256,7 +254,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="events_system" fallback={<NotFoundError />}>
             {withSuspense(EventsPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'events/create',
@@ -264,7 +262,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="events_system" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'events/:slug',
@@ -272,7 +270,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="events_system" fallback={<NotFoundError />}>
             {withSuspense(EventDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'events/:slug/edit',
@@ -280,7 +278,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="events_system" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(EventEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'news',
@@ -288,7 +286,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
             {withSuspense(NewsPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'news/create',
@@ -296,7 +294,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'news/:slug',
@@ -304,7 +302,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
             {withSuspense(NewsDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'news/:id/edit',
@@ -312,7 +310,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="news_blog" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(NewsEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'groups',
@@ -320,7 +318,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
             {withSuspense(GroupsPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'groups/create',
@@ -328,7 +326,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(GroupEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'groups/:slug',
@@ -336,15 +334,17 @@ export const router = createBrowserRouter([
           <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
             <GroupGuard>{withSuspense(GroupDetailPage)}</GroupGuard>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'groups/:slug/edit',
         element: (
           <FeatureGate feature="groups_communities" fallback={<NotFoundError />}>
-            <ProtectedRoute><GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard></ProtectedRoute>
+            <ProtectedRoute>
+              <GroupGuard>{withSuspense(GroupEditPage)}</GroupGuard>
+            </ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'resources',
@@ -352,7 +352,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             {withSuspense(ResourcesPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'resources/create',
@@ -360,7 +360,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'resources/:slug',
@@ -368,7 +368,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             {withSuspense(ResourceDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'resources/:slug/edit',
@@ -376,7 +376,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="resources_library" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(ResourceEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'marketplace',
@@ -384,7 +384,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             {withSuspense(MarketplacePage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'marketplace/create',
@@ -392,7 +392,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'marketplace/:slug',
@@ -400,7 +400,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             {withSuspense(MarketplaceDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'marketplace/:slug/edit',
@@ -408,7 +408,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="marketplace" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(MarketplaceEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'opportunities',
@@ -416,7 +416,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             {withSuspense(OpportunitiesPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'opportunities/create',
@@ -424,7 +424,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'opportunities/:slug',
@@ -432,7 +432,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             {withSuspense(OpportunityDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'opportunities/:slug/edit',
@@ -440,101 +440,101 @@ export const router = createBrowserRouter([
           <FeatureGate feature="opportunities_board" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(OpportunityEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
       { path: 'signin', element: <SignInPage /> },
       { path: 'signup', element: <SignUpPage /> },
       { path: 'forgot-password', element: withSuspense(ForgotPasswordPage) },
       { path: 'reset-password', element: withSuspense(ResetPasswordPage) },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
-      { 
-        path: 'onboarding/*', 
-        element: <ProtectedRoute>{withSuspense(OnboardingWizard)}</ProtectedRoute> 
+      {
+        path: 'onboarding/*',
+        element: <ProtectedRoute>{withSuspense(OnboardingWizard)}</ProtectedRoute>,
       },
       { path: 'invite/:token', element: withSuspense(AcceptInvitationPage) },
-      { 
-        path: 'profile', 
-        element: <ProtectedRoute>{withSuspense(CurrentUserProfilePage)}</ProtectedRoute> 
+      {
+        path: 'profile',
+        element: <ProtectedRoute>{withSuspense(CurrentUserProfilePage)}</ProtectedRoute>,
       },
-      { 
-        path: 'profile/edit', 
-        element: <ProtectedRoute>{withSuspense(ProfileEditPage)}</ProtectedRoute> 
+      {
+        path: 'profile/edit',
+        element: <ProtectedRoute>{withSuspense(ProfileEditPage)}</ProtectedRoute>,
       },
-      { 
-        path: 'settings', 
-        element: <ProtectedRoute>{withSuspense(UserSettingsPage)}</ProtectedRoute> 
+      {
+        path: 'settings',
+        element: <ProtectedRoute>{withSuspense(UserSettingsPage)}</ProtectedRoute>,
       },
-      { 
-        path: 'newsletter/confirm', 
-        element: withSuspense(NewsletterConfirmPage)
+      {
+        path: 'newsletter/confirm',
+        element: withSuspense(NewsletterConfirmPage),
       },
-      
+
       // Gallery routes
-      { 
-        path: 'galleries', 
+      {
+        path: 'galleries',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             {withSuspense(GalleriesPage)}
           </FeatureGate>
-        )
+        ),
       },
-      { 
-        path: 'galleries/create', 
+      {
+        path: 'galleries/create',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
-      { 
-        path: 'galleries/:slug', 
+      {
+        path: 'galleries/:slug',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             {withSuspense(GalleryDetailPage)}
           </FeatureGate>
-        )
+        ),
       },
-      { 
-        path: 'galleries/:slug/edit', 
+      {
+        path: 'galleries/:slug/edit',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(GalleryEditPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
-      { 
-        path: 'my-galleries', 
+      {
+        path: 'my-galleries',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(MyGalleriesPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
-      
+
       // Topics routes
       { path: 'topics', element: withSuspense(TopicsIndexPage) },
       { path: 'topics/:slug', element: withSuspense(TopicLandingPage) },
-      
+
       // Messaging routes
-      { 
-        path: 'messages', 
+      {
+        path: 'messages',
         element: (
           <FeatureGate feature="user_messaging" fallback={<NotFoundError />}>
             <ProtectedRoute>{withSuspense(MessagesPage)}</ProtectedRoute>
           </FeatureGate>
-        )
+        ),
       },
-      
+
       // Dashboard routes
-      { 
-        path: 'dashboard', 
-        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute> 
+      {
+        path: 'dashboard',
+        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute>,
       },
-      { 
-        path: 'dashboard/:tab', 
-        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute> 
-      }
-    ]
+      {
+        path: 'dashboard/:tab',
+        element: <ProtectedRoute>{withSuspense(UserDashboard)}</ProtectedRoute>,
+      },
+    ],
   },
   {
     path: '/admin',
@@ -554,7 +554,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="user_management" fallback={<NotFoundError />}>
             {withSuspense(SimpleUnifiedUsersPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'users-advanced',
@@ -562,7 +562,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="user_management" fallback={<NotFoundError />}>
             {withSuspense(UnifiedUsersPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'users-legacy',
@@ -570,7 +570,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="user_management" fallback={<NotFoundError />}>
             {withSuspense(UsersPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'roles',
@@ -578,7 +578,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="user_management" fallback={<NotFoundError />}>
             {withSuspense(RolesPage)}
           </FeatureGate>
-        )
+        ),
       },
       { path: 'features', element: withSuspense(FeaturesPage) },
       { path: 'menu-management', element: withSuspense(MenuManagementPage) },
@@ -590,31 +590,31 @@ export const router = createBrowserRouter([
           <FeatureGate feature="content_moderation" fallback={<NotFoundError />}>
             {withSuspense(ModerationPage)}
           </FeatureGate>
-        )
+        ),
       },
-      { 
-        path: 'settings', 
-        element: withSuspense(EnhancedSettingsPage)
+      {
+        path: 'settings',
+        element: withSuspense(EnhancedSettingsPage),
       },
-      { 
-        path: 'settings-v2', 
-        element: withSuspense(EnhancedSettingsPage)
+      {
+        path: 'settings-v2',
+        element: withSuspense(EnhancedSettingsPage),
       },
-      { 
-        path: 'settings-old', 
-        element: withSuspense(ImprovedSettingsPage)
+      {
+        path: 'settings-old',
+        element: withSuspense(ImprovedSettingsPage),
       },
-      { 
-        path: 'theme', 
-        element: withSuspense(ThemeConfigPage)
+      {
+        path: 'theme',
+        element: withSuspense(ThemeConfigPage),
       },
-      { 
-        path: 'media', 
+      {
+        path: 'media',
         element: (
           <FeatureGate feature="photo_galleries" fallback={<NotFoundError />}>
             {withSuspense(MediaManagementPage)}
           </FeatureGate>
-        )
+        ),
       },
       { path: 'contact-inbox', element: withSuspense(ContactInboxPage) },
       { path: 'contact-inbox/:id', element: withSuspense(ContactInboxDetailPage) },
@@ -624,7 +624,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="audit_logging" fallback={<NotFoundError />}>
             {withSuspense(AuditPage)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'performance',
@@ -632,7 +632,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="analytics_dashboard" fallback={<NotFoundError />}>
             {withSuspense(PerformanceMetricsPage)}
           </FeatureGate>
-        )
+        ),
       },
       { path: 'entities/companies', element: withSuspense(AdminCompaniesPage) },
       { path: 'entities/groups', element: withSuspense(AdminGroupsPage) },
@@ -652,7 +652,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(NewsletterDashboard)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/campaigns',
@@ -660,7 +660,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(CampaignManager)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/campaigns/new',
@@ -668,7 +668,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(NewsletterEditor)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/campaigns/:id/edit',
@@ -676,7 +676,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(NewsletterEditor)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/campaigns/:id',
@@ -684,7 +684,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(NewsletterEditor)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/calendar',
@@ -692,7 +692,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(CampaignCalendar)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/templates',
@@ -700,7 +700,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(TemplateManager)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/subscribers',
@@ -708,7 +708,7 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(SubscriberManager)}
           </FeatureGate>
-        )
+        ),
       },
       {
         path: 'newsletter/analytics',
@@ -716,13 +716,13 @@ export const router = createBrowserRouter([
           <FeatureGate feature="newsletter_system" fallback={<NotFoundError />}>
             {withSuspense(AnalyticsDashboard)}
           </FeatureGate>
-        )
+        ),
       },
       { path: 'utils/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
       { path: 'utils/update-company-slugs', element: withSuspense(UpdateCompanySlugs) },
       // Temporary development access to slug updaters
       { path: 'dev/update-news-slugs', element: withSuspense(UpdateNewsSlugs) },
-      { path: 'dev/update-company-slugs', element: withSuspense(UpdateCompanySlugs) }
-    ]
-  }
+      { path: 'dev/update-company-slugs', element: withSuspense(UpdateCompanySlugs) },
+    ],
+  },
 ]);

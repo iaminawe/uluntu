@@ -11,12 +11,12 @@ interface DesktopNavProps {
   showLoadingSkeleton?: boolean;
 }
 
-const DesktopNav: React.FC<DesktopNavProps> = ({ 
-  navLinks, 
-  isDark, 
+const DesktopNav: React.FC<DesktopNavProps> = ({
+  navLinks,
+  isDark,
   toggleDarkMode,
-  className = "hidden md:flex items-center space-x-6",
-  showLoadingSkeleton = false 
+  className = 'hidden md:flex items-center space-x-6',
+  showLoadingSkeleton = false,
 }) => {
   if (showLoadingSkeleton) {
     return (
@@ -32,11 +32,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   return (
     <nav className={className}>
       {navLinks.map((link, index) => (
-        <Dropdown
-          key={link.href || index}
-          item={link}
-          isDesktop={true}
-        />
+        <Dropdown key={link.href || index} item={link} isDesktop={true} />
       ))}
       <ThemeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
     </nav>

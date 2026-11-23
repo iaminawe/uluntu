@@ -24,7 +24,7 @@ export function CommentForm({
   onSuccess,
   onCancel,
   isEdit = false,
-  className
+  className,
 }: CommentFormProps) {
   const { user } = useAuth();
   const [content, setContent] = useState(initialContent);
@@ -33,7 +33,7 @@ export function CommentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       setError('You must be logged in to comment');
       return;
@@ -59,11 +59,11 @@ export function CommentForm({
           entity_type: entityType,
           entity_id: entityId,
           parent_id: parentId,
-          content: content.trim()
+          content: content.trim(),
         });
 
         if (error) throw error;
-        
+
         setContent('');
         onSuccess(content);
       }
@@ -80,7 +80,7 @@ export function CommentForm({
       <div>
         <textarea
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={e => setContent(e.target.value)}
           placeholder={parentId ? 'Write a reply...' : 'Write a comment...'}
           className={cn(
             'w-full rounded-lg border border-gray-300 dark:border-gray-700',
@@ -93,29 +93,14 @@ export function CommentForm({
           rows={3}
           disabled={isSubmitting}
         />
-        {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
-      
+
       <div className="flex gap-2 justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
+        <Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          variant="default"
-          size="sm"
-          disabled={isSubmitting || !content.trim()}
-        >
+        <Button type="submit" variant="default" size="sm" disabled={isSubmitting || !content.trim()}>
           {isSubmitting ? 'Posting...' : isEdit ? 'Save' : 'Post'}
         </Button>
       </div>

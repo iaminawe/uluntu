@@ -9,8 +9,8 @@ const ErrorState: React.FC<ErrorStateProps> = () => {
         resourceType="Event"
         message="We couldn't find the event you're looking for."
         backLink={{
-          to: "/events",
-          text: "Back to Events"
+          to: '/events',
+          text: 'Back to Events',
         }}
       />
     </ContentContainer>

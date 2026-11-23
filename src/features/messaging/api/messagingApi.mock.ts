@@ -12,7 +12,7 @@ import {
   BlockedUser,
   CreateMarketplaceThreadInput,
   CreateOpportunityThreadInput,
-  User
+  User,
 } from '../types';
 
 // Define MessageThread type locally since it's not exported from types
@@ -60,7 +60,7 @@ export const messagingApi = {
   async createConversation(input: CreateConversationInput): Promise<Conversation> {
     logger.debug('Mock: Creating conversation', 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const newConversation: Conversation = {
       id: Math.random().toString(36).substr(2, 9),
       type: input.type,
@@ -79,18 +79,18 @@ export const messagingApi = {
           email: `user${userId}@example.com`,
           avatar_url: undefined,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       })),
       unread_count: 0,
       is_archived: false,
       is_muted: false,
       metadata: input.metadata,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
-    newConversation.participants.forEach(p => p.conversation_id = newConversation.id);
+
+    newConversation.participants.forEach(p => (p.conversation_id = newConversation.id));
     mockConversations.push(newConversation);
     return newConversation;
   },
@@ -135,7 +135,7 @@ export const messagingApi = {
   async sendMessage(input: SendMessageInput): Promise<Message> {
     logger.debug('Mock: Sending message', 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const newMessage: Message = {
       id: Math.random().toString(36).substr(2, 9),
       conversation_id: input.conversation_id,
@@ -147,7 +147,7 @@ export const messagingApi = {
         email: 'current@example.com',
         avatar_url: undefined,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       message_type: input.message_type,
       parent_message_id: input.parent_message_id,
@@ -157,9 +157,9 @@ export const messagingApi = {
       is_edited: false,
       is_deleted: false,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     mockMessages.push(newMessage);
     return newMessage;
   },
@@ -167,23 +167,23 @@ export const messagingApi = {
   async updateMessage(input: UpdateMessageInput): Promise<Message> {
     logger.debug(`Mock: Updating message ${input.id}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     const message = mockMessages.find(m => m.id === input.id);
     if (!message) {
       throw new Error('Message not found');
     }
-    
+
     message.content = input.content;
     message.is_edited = true;
     message.updated_at = new Date().toISOString();
-    
+
     return message;
   },
 
   async deleteMessage(id: string): Promise<void> {
     logger.debug(`Mock: Deleting message ${id}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     const message = mockMessages.find(m => m.id === id);
     if (message) {
       message.is_deleted = true;
@@ -199,7 +199,7 @@ export const messagingApi = {
   async addReaction(messageId: string, reaction: string): Promise<MessageReaction> {
     logger.debug(`Mock: Adding reaction ${reaction} to message ${messageId}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     const newReaction: MessageReaction = {
       id: Math.random().toString(36).substr(2, 9),
       message_id: messageId,
@@ -212,10 +212,10 @@ export const messagingApi = {
         email: 'current@example.com',
         avatar_url: undefined,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      },
     };
-    
+
     mockReactions.push(newReaction);
     return newReaction;
   },
@@ -223,13 +223,11 @@ export const messagingApi = {
   async removeReaction(messageId: string, reaction: string): Promise<void> {
     logger.debug(`Mock: Removing reaction ${reaction} from message ${messageId}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
-    const index = mockReactions.findIndex(r => 
-      r.message_id === messageId && 
-      r.reaction === reaction && 
-      r.user_id === 'current-user-id'
+
+    const index = mockReactions.findIndex(
+      r => r.message_id === messageId && r.reaction === reaction && r.user_id === 'current-user-id'
     );
-    
+
     if (index > -1) {
       mockReactions.splice(index, 1);
     }
@@ -254,7 +252,7 @@ export const messagingApi = {
   async blockUser(userId: string, reason?: string): Promise<void> {
     logger.debug(`Mock: Blocking user ${userId}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     const blockedUser: BlockedUser = {
       id: Math.random().toString(36).substr(2, 9),
       blocker_id: 'current-user-id',
@@ -267,17 +265,17 @@ export const messagingApi = {
         email: `user${userId}@example.com`,
         avatar_url: undefined,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      },
     };
-    
+
     mockBlockedUsers.push(blockedUser);
   },
 
   async unblockUser(userId: string): Promise<void> {
     logger.debug(`Mock: Unblocking user ${userId}`, 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 50));
-    
+
     const index = mockBlockedUsers.findIndex(b => b.blocked_id === userId);
     if (index > -1) {
       mockBlockedUsers.splice(index, 1);
@@ -291,7 +289,7 @@ export const messagingApi = {
   async createMarketplaceThread(input: CreateMarketplaceThreadInput): Promise<MessageThread> {
     logger.debug('Mock: Creating marketplace thread', 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const conversation = await this.createConversation({
       type: 'marketplace',
       title: `${input.itemTitle} - Marketplace Inquiry`,
@@ -299,23 +297,23 @@ export const messagingApi = {
       metadata: {
         marketplace_item_id: input.itemId,
         item_title: input.itemTitle,
-        item_price: input.itemPrice
+        item_price: input.itemPrice,
       },
-      initial_message: input.initialMessage
+      initial_message: input.initialMessage,
     });
 
     return {
       id: conversation.id,
       conversation_id: conversation.id,
       created_at: conversation.created_at,
-      updated_at: conversation.updated_at
+      updated_at: conversation.updated_at,
     };
   },
 
   async createOpportunityThread(input: CreateOpportunityThreadInput): Promise<MessageThread> {
     logger.debug('Mock: Creating opportunity thread', 'MESSAGING_API');
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const conversation = await this.createConversation({
       type: 'opportunity',
       title: `${input.opportunityTitle} - Application`,
@@ -323,16 +321,16 @@ export const messagingApi = {
       metadata: {
         opportunity_id: input.opportunityId,
         opportunity_title: input.opportunityTitle,
-        company_id: input.companyId
+        company_id: input.companyId,
       },
-      initial_message: input.initialMessage
+      initial_message: input.initialMessage,
     });
 
     return {
       id: conversation.id,
       conversation_id: conversation.id,
       created_at: conversation.created_at,
-      updated_at: conversation.updated_at
+      updated_at: conversation.updated_at,
     };
-  }
+  },
 };

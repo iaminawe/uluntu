@@ -16,7 +16,7 @@ import {
 } from '../../api/_lib/nostr';
 
 const ctx = { siteUrl: 'https://uluntu.io', toMarkdown: (s: string) => s };
-const tagValues = (tags: string[][], name: string) => tags.filter((t) => t[0] === name).map((t) => t[1]);
+const tagValues = (tags: string[][], name: string) => tags.filter(t => t[0] === name).map(t => t[1]);
 const tagValue = (tags: string[][], name: string) => tagValues(tags, name)[0];
 
 describe('geohash', () => {
@@ -52,8 +52,8 @@ describe('eventTemplate (NIP-52, kind 31923)', () => {
     expect(tagValue(t.tags, 'start_tzid')).toBe('America/Vancouver');
     expect(tagValues(t.tags, 'location')).toEqual(['Nelson Library', '602 Stanley St']);
     const g = tagValues(t.tags, 'g');
-    expect(g.map((v) => v.length)).toEqual([4, 5, 6, 7]);
-    expect(g.every((v) => g[3].startsWith(v))).toBe(true);
+    expect(g.map(v => v.length)).toEqual([4, 5, 6, 7]);
+    expect(g.every(v => g[3].startsWith(v))).toBe(true);
     expect(tagValue(t.tags, 'image')).toBe('https://uluntu.io/images/sprint.jpg');
     expect(tagValue(t.tags, 'r')).toBe('https://uluntu.io/events/design-sprint');
     expect(t.content).toContain('Bring a laptop.');
@@ -93,7 +93,7 @@ describe('newsTemplate (NIP-23, kind 30023)', () => {
         publish_date: '2025-08-23',
         tags: ['AI & ML', 'ai-ml', 'Open Source'],
       },
-      { ...ctx, toMarkdown: (s) => s.replace(/<\/?p>/g, '') }
+      { ...ctx, toMarkdown: s => s.replace(/<\/?p>/g, '') }
     );
     expect(t.kind).toBe(KIND.article);
     expect(tagValue(t.tags, 'summary')).toBe('Short');
@@ -179,7 +179,10 @@ describe('verifyLinkEvent', () => {
       {
         kind: 27235,
         created_at: now,
-        tags: [['u', url], ['method', 'POST']],
+        tags: [
+          ['u', url],
+          ['method', 'POST'],
+        ],
         content: linkMessage(userId),
         ...overrides,
       },
@@ -219,7 +222,10 @@ describe('isNip05Name', () => {
 describe('buildTemplates and planActions', () => {
   const pubkey = 'ab'.repeat(32);
   const rows = {
-    events: [{ id: 'e1', title: 'Meetup', date: '2026-11-20T18:00:00Z' }, { id: 'e2', title: 'Bad', date: 'nope' }],
+    events: [
+      { id: 'e1', title: 'Meetup', date: '2026-11-20T18:00:00Z' },
+      { id: 'e2', title: 'Bad', date: 'nope' },
+    ],
     news: [
       { id: 'n1', title: 'Out now', publish_date: '2026-11-01' },
       { id: 'n2', title: 'Later', publish_date: '2026-12-01' },
@@ -228,7 +234,7 @@ describe('buildTemplates and planActions', () => {
   };
   const current = buildTemplates(rows, { name: 'Uluntu' }, ctx, '2026-11-08');
   const ids = (items: { source_table: string; source_id: string }[]) =>
-    items.map((i) => `${i.source_table}:${i.source_id}`);
+    items.map(i => `${i.source_table}:${i.source_id}`);
   const published = (table: string, id: string, hash: string, extra: Partial<Record<string, unknown>> = {}) => ({
     source_table: table,
     source_id: id,
@@ -240,7 +246,7 @@ describe('buildTemplates and planActions', () => {
     ...extra,
   });
   const hashOf = (key: string) => {
-    const t = current.find((c) => `${c.source_table}:${c.source_id}` === key)!;
+    const t = current.find(c => `${c.source_table}:${c.source_id}` === key)!;
     return contentHash(t.template);
   };
 
@@ -250,7 +256,7 @@ describe('buildTemplates and planActions', () => {
 
   it('creates everything on the first run', () => {
     const plan = planActions(current, [], pubkey);
-    expect(plan.every((p) => p.action === 'create')).toBe(true);
+    expect(plan.every(p => p.action === 'create')).toBe(true);
   });
 
   it('marks unchanged, updated and re-published rows', () => {
@@ -263,7 +269,7 @@ describe('buildTemplates and planActions', () => {
       ],
       pubkey
     );
-    const action = (key: string) => plan.find((p) => `${p.source_table}:${p.source_id}` === key)!.action;
+    const action = (key: string) => plan.find(p => `${p.source_table}:${p.source_id}` === key)!.action;
     expect(action('events:e1')).toBe('unchanged');
     expect(action('news:n1')).toBe('update');
     expect(action('opportunities:o1')).toBe('create');
@@ -283,6 +289,6 @@ describe('buildTemplates and planActions', () => {
     expect(plan[0]).toMatchObject({ source_table: 'events', source_id: 'gone', action: 'delete' });
     expect(plan[0].template.kind).toBe(KIND.deletion);
     expect(plan[0].template.tags[0]).toEqual(['a', `31923:${pubkey}:gone`]);
-    expect(plan.filter((p) => p.action === 'delete')).toHaveLength(1);
+    expect(plan.filter(p => p.action === 'delete')).toHaveLength(1);
   });
 });

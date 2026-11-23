@@ -15,7 +15,7 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
     enableNetworkTracking = true,
     enableRenderTracking = true,
     enableMemoryTracking = true,
-    enableQueryTracking = true
+    enableQueryTracking = true,
   } = options;
 
   const location = useLocation();
@@ -53,7 +53,7 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
     markPerformance,
     measurePerformance,
     getMetrics: () => performanceMonitor.getMetrics(),
-    generateReport: () => performanceMonitor.generateReport()
+    generateReport: () => performanceMonitor.generateReport(),
   };
 }
 
@@ -66,9 +66,9 @@ export function useComponentPerformance(componentName: string) {
     renderCount.current++;
     const renderEndTime = performance.now();
     const renderDuration = renderEndTime - renderStartTime.current;
-    
+
     performanceMonitor.trackComponentRender(componentName, renderDuration);
-    
+
     // Reset for next render
     renderStartTime.current = performance.now();
   });
@@ -85,6 +85,6 @@ export function useComponentPerformance(componentName: string) {
       markPerformance(`${componentName}-render-end`);
       performanceMonitor.trackComponentRender(componentName, duration);
       return duration;
-    }
+    },
   };
 }

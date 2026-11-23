@@ -26,7 +26,7 @@ export function PerformanceDashboard() {
 
     try {
       const results = [];
-      
+
       results.push(await performanceTests.testCompaniesListPerformance());
       results.push(await performanceTests.testAdminResourceManagement());
       results.push(await performanceTests.testGalleryUploadPerformance());
@@ -62,9 +62,7 @@ export function PerformanceDashboard() {
               <BarChart3 className="w-6 h-6" />
               Performance Dashboard
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
-              Real-time performance metrics and analysis
-            </p>
+            <p className="text-slate-600 dark:text-slate-400 mt-1">Real-time performance metrics and analysis</p>
           </div>
 
           <div className="p-6 space-y-6">
@@ -75,9 +73,7 @@ export function PerformanceDashboard() {
                   <Package className="w-5 h-5 text-blue-600" />
                   <h2 className="text-lg font-semibold">Bundle Size</h2>
                 </div>
-                <div className="text-3xl font-bold text-blue-600">
-                  {formatBytes(metrics.bundleSize)}
-                </div>
+                <div className="text-3xl font-bold text-blue-600">{formatBytes(metrics.bundleSize)}</div>
               </div>
             )}
 
@@ -89,20 +85,14 @@ export function PerformanceDashboard() {
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <div className="text-2xl font-bold text-green-600">
-                    {metrics.networkRequests?.length || 0}
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Total Requests
-                  </div>
+                  <div className="text-2xl font-bold text-green-600">{metrics.networkRequests?.length || 0}</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Total Requests</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-green-600">
                     {metrics.networkRequests?.filter(r => r.cached).length || 0}
                   </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Cached
-                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Cached</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-green-600">
@@ -114,9 +104,7 @@ export function PerformanceDashboard() {
                       : 0}
                     ms
                   </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Avg Duration
-                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Avg Duration</div>
                 </div>
               </div>
             </div>
@@ -129,38 +117,25 @@ export function PerformanceDashboard() {
               </div>
               <div className="grid grid-cols-4 gap-4">
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {queryMetrics.totalQueries}
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Total Queries
-                  </div>
+                  <div className="text-2xl font-bold text-purple-600">{queryMetrics.totalQueries}</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Total Queries</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-600">
                     {queryMetrics.totalQueries > 0
                       ? ((queryMetrics.cachedQueries / queryMetrics.totalQueries) * 100).toFixed(0)
-                      : 0}%
+                      : 0}
+                    %
                   </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Cache Hit Rate
-                  </div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Cache Hit Rate</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {queryMetrics.averageDuration.toFixed(0)}ms
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Avg Duration
-                  </div>
+                  <div className="text-2xl font-bold text-purple-600">{queryMetrics.averageDuration.toFixed(0)}ms</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Avg Duration</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-red-600">
-                    {queryMetrics.failedQueries}
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Failed
-                  </div>
+                  <div className="text-2xl font-bold text-red-600">{queryMetrics.failedQueries}</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-400">Failed</div>
                 </div>
               </div>
 
@@ -191,29 +166,19 @@ export function PerformanceDashboard() {
                     <div className="text-2xl font-bold text-orange-600">
                       {formatBytes(metrics.memoryUsage.usedJSHeapSize)}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Used Heap
-                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Used Heap</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-orange-600">
                       {formatBytes(metrics.memoryUsage.totalJSHeapSize)}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Total Heap
-                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Total Heap</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-orange-600">
-                      {(
-                        (metrics.memoryUsage.usedJSHeapSize /
-                          metrics.memoryUsage.jsHeapSizeLimit) *
-                        100
-                      ).toFixed(1)}%
+                      {((metrics.memoryUsage.usedJSHeapSize / metrics.memoryUsage.jsHeapSizeLimit) * 100).toFixed(1)}%
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      Usage
-                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">Usage</div>
                   </div>
                 </div>
               </div>
@@ -223,11 +188,7 @@ export function PerformanceDashboard() {
             <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Performance Tests</h2>
-                <Button
-                  onClick={runPerformanceTests}
-                  disabled={isRunningTests}
-                  size="sm"
-                >
+                <Button onClick={runPerformanceTests} disabled={isRunningTests} size="sm">
                   {isRunningTests ? 'Running Tests...' : 'Run Tests'}
                 </Button>
               </div>

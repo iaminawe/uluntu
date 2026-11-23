@@ -4,7 +4,9 @@
 const adminRolesApi = {
   getRoles: jest.fn().mockResolvedValue([]),
   getRole: jest.fn().mockResolvedValue(null),
-  createRole: jest.fn().mockResolvedValue({ id: 'temp-id', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }),
+  createRole: jest
+    .fn()
+    .mockResolvedValue({ id: 'temp-id', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }),
   updateRole: jest.fn().mockResolvedValue(true),
   deleteRole: jest.fn().mockResolvedValue(true),
   assignRole: jest.fn().mockResolvedValue(true),
@@ -28,7 +30,7 @@ describe('Admin Roles API', () => {
   describe('getRoles', () => {
     it('should return empty array (stubbed)', async () => {
       const result = await adminRolesApi.getRoles();
-      
+
       expect(result).toEqual([]);
       expect(console.warn).toHaveBeenCalledWith('Admin roles temporarily disabled - returning empty data');
     });
@@ -37,7 +39,7 @@ describe('Admin Roles API', () => {
   describe('getRole', () => {
     it('should return null (stubbed)', async () => {
       const result = await adminRolesApi.getRole('test-id');
-      
+
       expect(result).toBeNull();
       expect(console.warn).toHaveBeenCalledWith('Admin role lookup temporarily disabled');
     });
@@ -49,7 +51,7 @@ describe('Admin Roles API', () => {
         name: 'content-manager',
         description: 'Manages content',
         permissions: { content: ['create', 'read', 'update', 'delete'] },
-        is_system: false
+        is_system: false,
       };
 
       const result = await adminRolesApi.createRole(newRole);
@@ -65,7 +67,7 @@ describe('Admin Roles API', () => {
     it('should return true (stubbed)', async () => {
       const updates = { description: 'Updated description' };
       const result = await adminRolesApi.updateRole('test-id', updates);
-      
+
       expect(result).toBe(true);
       expect(console.warn).toHaveBeenCalledWith('Admin role update temporarily disabled');
     });
@@ -74,7 +76,7 @@ describe('Admin Roles API', () => {
   describe('deleteRole', () => {
     it('should return true (stubbed)', async () => {
       const result = await adminRolesApi.deleteRole('test-id');
-      
+
       expect(result).toBe(true);
       expect(console.warn).toHaveBeenCalledWith('Admin role deletion temporarily disabled');
     });
@@ -83,7 +85,7 @@ describe('Admin Roles API', () => {
   describe('assignRole', () => {
     it('should return true (stubbed)', async () => {
       const result = await adminRolesApi.assignRole('user-id', 'role-id');
-      
+
       expect(result).toBe(true);
       expect(console.warn).toHaveBeenCalledWith('Admin role assignment temporarily disabled');
     });
@@ -92,7 +94,7 @@ describe('Admin Roles API', () => {
   describe('removeRole', () => {
     it('should return true (stubbed)', async () => {
       const result = await adminRolesApi.removeRole('user-id', 'role-id');
-      
+
       expect(result).toBe(true);
       expect(console.warn).toHaveBeenCalledWith('Admin role removal temporarily disabled');
     });
@@ -101,7 +103,7 @@ describe('Admin Roles API', () => {
   describe('getUserRoles', () => {
     it('should return empty array (stubbed)', async () => {
       const result = await adminRolesApi.getUserRoles('user-id');
-      
+
       expect(result).toEqual([]);
       expect(console.warn).toHaveBeenCalledWith('Admin user roles lookup temporarily disabled');
     });
@@ -110,7 +112,7 @@ describe('Admin Roles API', () => {
   describe('checkPermission', () => {
     it('should return false (stubbed)', async () => {
       const result = await adminRolesApi.checkPermission('user-id', 'some-permission');
-      
+
       expect(result).toBe(false);
       expect(console.warn).toHaveBeenCalledWith('Admin permission check temporarily disabled');
     });

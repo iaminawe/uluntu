@@ -3,13 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { FeatureErrorBoundary } from '@/components/ErrorBoundary';
 import { NewsletterErrorFallback } from '@/components/ErrorBoundary/FeatureSpecificFallbacks';
-import { 
-  Plus, 
-  Eye, 
-  Edit, 
-  Send, 
-  Copy, 
-  Trash2, 
+import {
+  Plus,
+  Eye,
+  Edit,
+  Send,
+  Copy,
+  Trash2,
   Calendar,
   Search,
   Filter,
@@ -26,7 +26,7 @@ import {
   FileText,
   Palette,
   Target,
-  CalendarDays
+  CalendarDays,
 } from 'lucide-react';
 import { newsletterCampaignApi } from '@/features/newsletter/api/campaigns';
 import { NewsletterCampaign, CampaignFilters } from '@/types/newsletter';
@@ -34,10 +34,10 @@ import { NewsletterCampaign, CampaignFilters } from '@/types/newsletter';
 const CampaignManagerContent: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  
+
   const [filters, setFilters] = useState<CampaignFilters>({
     limit: 20,
-    offset: 0
+    offset: 0,
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -59,14 +59,18 @@ const CampaignManagerContent: React.FC = () => {
       enabled: false,
       variant_b_subject: '',
       test_percentage: 20,
-      winner_criteria: 'open_rate' as 'open_rate' | 'click_rate'
-    }
+      winner_criteria: 'open_rate' as 'open_rate' | 'click_rate',
+    },
   });
 
   // Fetch campaigns
-  const { data: campaignsData, isLoading, refetch } = useQuery({
+  const {
+    data: campaignsData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['newsletter-campaigns', filters],
-    queryFn: () => newsletterCampaignApi.getCampaigns(filters)
+    queryFn: () => newsletterCampaignApi.getCampaigns(filters),
   });
 
   // Delete campaign mutation
@@ -74,18 +78,18 @@ const CampaignManagerContent: React.FC = () => {
     mutationFn: (id: string) => newsletterCampaignApi.deleteCampaign(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaigns'] });
-    }
+    },
   });
 
   // Duplicate campaign mutation
   const duplicateMutation = useMutation({
     mutationFn: (id: string) => newsletterCampaignApi.duplicateCampaign(id),
-    onSuccess: (newCampaign) => {
+    onSuccess: newCampaign => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaigns'] });
       if (newCampaign) {
         navigate(`/admin/newsletter/campaigns/${newCampaign.id}/edit`);
       }
-    }
+    },
   });
 
   // Send campaign mutation
@@ -93,24 +97,24 @@ const CampaignManagerContent: React.FC = () => {
     mutationFn: (id: string) => newsletterCampaignApi.sendCampaign(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaigns'] });
-    }
+    },
   });
 
   // Schedule campaign mutation
   const scheduleMutation = useMutation({
-    mutationFn: ({ id, scheduledAt }: { id: string; scheduledAt: Date }) => 
+    mutationFn: ({ id, scheduledAt }: { id: string; scheduledAt: Date }) =>
       newsletterCampaignApi.scheduleCampaign(id, scheduledAt),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaigns'] });
       setShowScheduleModal(false);
       setSelectedCampaign(null);
-    }
+    },
   });
 
   // Create campaign mutation
   const createCampaignMutation = useMutation({
     mutationFn: (campaignData: any) => newsletterCampaignApi.createCampaign(campaignData),
-    onSuccess: (newCampaign) => {
+    onSuccess: newCampaign => {
       queryClient.invalidateQueries({ queryKey: ['newsletter-campaigns'] });
       setShowCreationWizard(false);
       setCampaignForm({
@@ -124,14 +128,14 @@ const CampaignManagerContent: React.FC = () => {
           enabled: false,
           variant_b_subject: '',
           test_percentage: 20,
-          winner_criteria: 'open_rate'
-        }
+          winner_criteria: 'open_rate',
+        },
       });
       setWizardStep(1);
       if (newCampaign) {
         navigate(`/admin/newsletter/campaigns/${newCampaign.id}/edit`);
       }
-    }
+    },
   });
 
   // Fetch templates for creation wizard
@@ -142,20 +146,20 @@ const CampaignManagerContent: React.FC = () => {
       return [
         { id: '1', name: 'Newsletter Digest', description: 'Weekly digest template' },
         { id: '2', name: 'Event Announcement', description: 'Event-focused template' },
-        { id: '3', name: 'News Update', description: 'News and updates template' }
+        { id: '3', name: 'News Update', description: 'News and updates template' },
       ];
-    }
+    },
   });
 
   // Preview campaign mutation
   const previewMutation = useMutation({
     mutationFn: (id: string) => newsletterCampaignApi.previewCampaign(id),
-    onSuccess: (preview) => {
+    onSuccess: preview => {
       if (preview) {
         // Handle preview display
         console.log('Preview generated:', preview);
       }
-    }
+    },
   });
 
   const handleSearch = (value: string) => {
@@ -163,7 +167,7 @@ const CampaignManagerContent: React.FC = () => {
     setFilters(prev => ({
       ...prev,
       search: value || undefined,
-      offset: 0
+      offset: 0,
     }));
   };
 
@@ -171,8 +175,8 @@ const CampaignManagerContent: React.FC = () => {
     setSelectedStatus(status);
     setFilters(prev => ({
       ...prev,
-      status: status === 'all' ? undefined : status as 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled',
-      offset: 0
+      status: status === 'all' ? undefined : (status as 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled'),
+      offset: 0,
     }));
   };
 
@@ -181,7 +185,7 @@ const CampaignManagerContent: React.FC = () => {
       alert('Cannot delete sent campaigns');
       return;
     }
-    
+
     if (confirm(`Are you sure you want to delete "${campaign.title}"?`)) {
       deleteMutation.mutate(campaign.id);
     }
@@ -196,7 +200,7 @@ const CampaignManagerContent: React.FC = () => {
       alert('Only draft campaigns can be sent');
       return;
     }
-    
+
     if (confirm(`Are you sure you want to send "${campaign.title}" to all active subscribers?`)) {
       sendMutation.mutate(campaign.id);
     }
@@ -225,9 +229,9 @@ const CampaignManagerContent: React.FC = () => {
         ab_test_config: {
           variant_b_subject: campaignForm.ab_test.variant_b_subject,
           test_percentage: campaignForm.ab_test.test_percentage,
-          winner_criteria: campaignForm.ab_test.winner_criteria
-        }
-      })
+          winner_criteria: campaignForm.ab_test.winner_criteria,
+        },
+      }),
     };
     createCampaignMutation.mutate(campaignData);
   };
@@ -252,9 +256,9 @@ const CampaignManagerContent: React.FC = () => {
       scheduled: 'bg-blue-100 text-blue-800',
       sending: 'bg-yellow-100 text-yellow-800',
       sent: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800'
+      cancelled: 'bg-red-100 text-red-800',
     };
-    
+
     return badges[status] || badges.draft;
   };
 
@@ -277,9 +281,7 @@ const CampaignManagerContent: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Newsletter Campaigns</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Create, manage, and send newsletter campaigns
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Create, manage, and send newsletter campaigns</p>
         </div>
         <div className="flex space-x-3">
           <button
@@ -308,7 +310,7 @@ const CampaignManagerContent: React.FC = () => {
               type="text"
               placeholder="Search campaigns..."
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
             />
           </div>
@@ -316,7 +318,7 @@ const CampaignManagerContent: React.FC = () => {
             <Filter className="h-4 w-4 text-gray-400" />
             <select
               value={selectedStatus}
-              onChange={(e) => handleStatusFilter(e.target.value)}
+              onChange={e => handleStatusFilter(e.target.value)}
               className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
             >
               <option value="all">All Status</option>
@@ -342,10 +344,9 @@ const CampaignManagerContent: React.FC = () => {
             <Mail className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No campaigns found</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4">
-              {searchTerm || selectedStatus !== 'all' 
+              {searchTerm || selectedStatus !== 'all'
                 ? 'Try adjusting your search or filters'
-                : 'Get started by creating your first newsletter campaign'
-              }
+                : 'Get started by creating your first newsletter campaign'}
             </p>
             <button
               onClick={() => setShowCreationWizard(true)}
@@ -381,20 +382,18 @@ const CampaignManagerContent: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {campaignsData?.data?.map((campaign) => (
+                {campaignsData?.data?.map(campaign => (
                   <tr key={campaign.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {campaign.title}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {campaign.subject}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{campaign.title}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{campaign.subject}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(campaign.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(campaign.status)}`}
+                      >
                         {getStatusIcon(campaign.status)}
                         <span className="ml-1 capitalize">{campaign.status}</span>
                       </span>
@@ -410,15 +409,17 @@ const CampaignManagerContent: React.FC = () => {
                         <div className="flex items-center space-x-4 text-sm">
                           <div className="flex items-center text-green-600">
                             <Eye className="h-4 w-4 mr-1" />
-                            {campaign.delivery_stats.sent > 0 
-                              ? Math.round((campaign.delivery_stats.opened / campaign.delivery_stats.sent) * 100) 
-                              : 0}%
+                            {campaign.delivery_stats.sent > 0
+                              ? Math.round((campaign.delivery_stats.opened / campaign.delivery_stats.sent) * 100)
+                              : 0}
+                            %
                           </div>
                           <div className="flex items-center text-blue-600">
                             <TrendingUp className="h-4 w-4 mr-1" />
-                            {campaign.delivery_stats.opened > 0 
-                              ? Math.round((campaign.delivery_stats.clicked / campaign.delivery_stats.opened) * 100) 
-                              : 0}%
+                            {campaign.delivery_stats.opened > 0
+                              ? Math.round((campaign.delivery_stats.clicked / campaign.delivery_stats.opened) * 100)
+                              : 0}
+                            %
                           </div>
                         </div>
                       ) : (
@@ -426,12 +427,11 @@ const CampaignManagerContent: React.FC = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {campaign.sent_at 
+                      {campaign.sent_at
                         ? `Sent ${new Date(campaign.sent_at).toLocaleDateString()}`
                         : campaign.scheduled_at
-                        ? `Scheduled ${new Date(campaign.scheduled_at).toLocaleDateString()}`
-                        : `Created ${new Date(campaign.created_at).toLocaleDateString()}`
-                      }
+                          ? `Scheduled ${new Date(campaign.scheduled_at).toLocaleDateString()}`
+                          : `Created ${new Date(campaign.created_at).toLocaleDateString()}`}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
@@ -442,7 +442,7 @@ const CampaignManagerContent: React.FC = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Link>
-                        
+
                         {campaign.status === 'draft' && (
                           <Link
                             to={`/admin/newsletter/campaigns/${campaign.id}/edit`}
@@ -452,7 +452,7 @@ const CampaignManagerContent: React.FC = () => {
                             <Edit className="h-4 w-4" />
                           </Link>
                         )}
-                        
+
                         <button
                           onClick={() => handleDuplicate(campaign)}
                           className="text-gray-600 hover:text-gray-900"
@@ -461,7 +461,7 @@ const CampaignManagerContent: React.FC = () => {
                         >
                           <Copy className="h-4 w-4" />
                         </button>
-                        
+
                         <button
                           onClick={() => handlePreview(campaign)}
                           className="text-purple-600 hover:text-purple-900"
@@ -469,7 +469,7 @@ const CampaignManagerContent: React.FC = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        
+
                         {campaign.status === 'draft' && (
                           <>
                             <button
@@ -489,7 +489,7 @@ const CampaignManagerContent: React.FC = () => {
                             </button>
                           </>
                         )}
-                        
+
                         {campaign.status === 'sent' && (
                           <Link
                             to={`/admin/newsletter/campaigns/${campaign.id}/analytics`}
@@ -499,7 +499,7 @@ const CampaignManagerContent: React.FC = () => {
                             <BarChart3 className="h-4 w-4" />
                           </Link>
                         )}
-                        
+
                         {campaign.status !== 'sent' && (
                           <button
                             onClick={() => handleDelete(campaign)}
@@ -542,15 +542,11 @@ const CampaignManagerContent: React.FC = () => {
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{' '}
-                <span className="font-medium">{(filters.offset || 0) + 1}</span>
-                {' '}to{' '}
+                Showing <span className="font-medium">{(filters.offset || 0) + 1}</span> to{' '}
                 <span className="font-medium">
                   {Math.min((filters.offset || 0) + filters.limit!, campaignsData.total)}
-                </span>
-                {' '}of{' '}
-                <span className="font-medium">{campaignsData.total}</span>
-                {' '}results
+                </span>{' '}
+                of <span className="font-medium">{campaignsData.total}</span> results
               </p>
             </div>
             <div>
@@ -595,21 +591,21 @@ const CampaignManagerContent: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              
+
               {/* Progress Steps */}
               <div className="mt-4">
                 <div className="flex items-center">
                   {[1, 2, 3, 4].map((step, index) => (
                     <React.Fragment key={step}>
-                      <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                        step <= wizardStep ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-                      }`}>
+                      <div
+                        className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                          step <= wizardStep ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                        }`}
+                      >
                         {step}
                       </div>
                       {index < 3 && (
-                        <div className={`flex-1 h-1 mx-2 ${
-                          step < wizardStep ? 'bg-blue-600' : 'bg-gray-200'
-                        }`} />
+                        <div className={`flex-1 h-1 mx-2 ${step < wizardStep ? 'bg-blue-600' : 'bg-gray-200'}`} />
                       )}
                     </React.Fragment>
                   ))}
@@ -630,36 +626,30 @@ const CampaignManagerContent: React.FC = () => {
                   <h4 className="text-lg font-medium text-gray-900">Basic Information</h4>
                   <div className="grid grid-cols-1 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Campaign Title
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Title</label>
                       <input
                         type="text"
                         value={campaignForm.title}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, title: e.target.value })}
+                        onChange={e => setCampaignForm({ ...campaignForm, title: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter campaign title"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Subject Line
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Subject Line</label>
                       <input
                         type="text"
                         value={campaignForm.subject}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, subject: e.target.value })}
+                        onChange={e => setCampaignForm({ ...campaignForm, subject: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter email subject"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Custom Message (Optional)
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Custom Message (Optional)</label>
                       <textarea
                         value={campaignForm.custom_message}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, custom_message: e.target.value })}
+                        onChange={e => setCampaignForm({ ...campaignForm, custom_message: e.target.value })}
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Add a custom message to your newsletter"
@@ -674,7 +664,7 @@ const CampaignManagerContent: React.FC = () => {
                 <div className="space-y-6">
                   <h4 className="text-lg font-medium text-gray-900">Choose Template</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {templates?.map((template) => (
+                    {templates?.map(template => (
                       <div
                         key={template.id}
                         onClick={() => setCampaignForm({ ...campaignForm, template_id: template.id })}
@@ -699,18 +689,16 @@ const CampaignManagerContent: React.FC = () => {
               {wizardStep === 3 && (
                 <div className="space-y-6">
                   <h4 className="text-lg font-medium text-gray-900">Campaign Settings</h4>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Send Type
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Send Type</label>
                       <div className="grid grid-cols-2 gap-4">
                         <button
                           onClick={() => setCampaignForm({ ...campaignForm, send_type: 'manual' })}
                           className={`p-4 border-2 rounded-lg text-left ${
-                            campaignForm.send_type === 'manual' 
-                              ? 'border-blue-500 bg-blue-50' 
+                            campaignForm.send_type === 'manual'
+                              ? 'border-blue-500 bg-blue-50'
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
@@ -723,8 +711,8 @@ const CampaignManagerContent: React.FC = () => {
                         <button
                           onClick={() => setCampaignForm({ ...campaignForm, send_type: 'scheduled' })}
                           className={`p-4 border-2 rounded-lg text-left ${
-                            campaignForm.send_type === 'scheduled' 
-                              ? 'border-blue-500 bg-blue-50' 
+                            campaignForm.send_type === 'scheduled'
+                              ? 'border-blue-500 bg-blue-50'
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
@@ -739,13 +727,11 @@ const CampaignManagerContent: React.FC = () => {
 
                     {campaignForm.send_type === 'scheduled' && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Schedule Date & Time
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Schedule Date & Time</label>
                         <input
                           type="datetime-local"
                           value={campaignForm.scheduled_at}
-                          onChange={(e) => setCampaignForm({ ...campaignForm, scheduled_at: e.target.value })}
+                          onChange={e => setCampaignForm({ ...campaignForm, scheduled_at: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                           min={new Date().toISOString().slice(0, 16)}
                         />
@@ -759,20 +745,24 @@ const CampaignManagerContent: React.FC = () => {
                           <p className="text-sm text-gray-600">Test different subject lines to optimize performance</p>
                         </div>
                         <button
-                          onClick={() => setCampaignForm({
-                            ...campaignForm,
-                            ab_test: { ...campaignForm.ab_test, enabled: !campaignForm.ab_test.enabled }
-                          })}
+                          onClick={() =>
+                            setCampaignForm({
+                              ...campaignForm,
+                              ab_test: { ...campaignForm.ab_test, enabled: !campaignForm.ab_test.enabled },
+                            })
+                          }
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                             campaignForm.ab_test.enabled ? 'bg-blue-600' : 'bg-gray-200'
                           }`}
                         >
-                          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            campaignForm.ab_test.enabled ? 'translate-x-6' : 'translate-x-1'
-                          }`} />
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              campaignForm.ab_test.enabled ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
                         </button>
                       </div>
-                      
+
                       {campaignForm.ab_test.enabled && (
                         <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
                           <div>
@@ -782,25 +772,27 @@ const CampaignManagerContent: React.FC = () => {
                             <input
                               type="text"
                               value={campaignForm.ab_test.variant_b_subject}
-                              onChange={(e) => setCampaignForm({
-                                ...campaignForm,
-                                ab_test: { ...campaignForm.ab_test, variant_b_subject: e.target.value }
-                              })}
+                              onChange={e =>
+                                setCampaignForm({
+                                  ...campaignForm,
+                                  ab_test: { ...campaignForm.ab_test, variant_b_subject: e.target.value },
+                                })
+                              }
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                               placeholder="Alternative subject line"
                             />
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Test Percentage
-                              </label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Test Percentage</label>
                               <select
                                 value={campaignForm.ab_test.test_percentage}
-                                onChange={(e) => setCampaignForm({
-                                  ...campaignForm,
-                                  ab_test: { ...campaignForm.ab_test, test_percentage: Number(e.target.value) }
-                                })}
+                                onChange={e =>
+                                  setCampaignForm({
+                                    ...campaignForm,
+                                    ab_test: { ...campaignForm.ab_test, test_percentage: Number(e.target.value) },
+                                  })
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                               >
                                 <option value={10}>10%</option>
@@ -810,15 +802,18 @@ const CampaignManagerContent: React.FC = () => {
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Winner Criteria
-                              </label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Winner Criteria</label>
                               <select
                                 value={campaignForm.ab_test.winner_criteria}
-                                onChange={(e) => setCampaignForm({
-                                  ...campaignForm,
-                                  ab_test: { ...campaignForm.ab_test, winner_criteria: e.target.value as 'open_rate' | 'click_rate' }
-                                })}
+                                onChange={e =>
+                                  setCampaignForm({
+                                    ...campaignForm,
+                                    ab_test: {
+                                      ...campaignForm.ab_test,
+                                      winner_criteria: e.target.value as 'open_rate' | 'click_rate',
+                                    },
+                                  })
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                               >
                                 <option value="open_rate">Open Rate</option>
@@ -864,7 +859,8 @@ const CampaignManagerContent: React.FC = () => {
                       <div>
                         <span className="text-sm font-medium text-gray-500">A/B Test:</span>
                         <p className="text-gray-900">
-                          Testing {campaignForm.ab_test.test_percentage}% with variant subject: "{campaignForm.ab_test.variant_b_subject}"
+                          Testing {campaignForm.ab_test.test_percentage}% with variant subject: "
+                          {campaignForm.ab_test.variant_b_subject}"
                         </p>
                       </div>
                     )}
@@ -906,18 +902,16 @@ const CampaignManagerContent: React.FC = () => {
                   <p className="text-sm text-gray-600 mb-2">Campaign: {selectedCampaign.title}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Schedule Date & Time
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Schedule Date & Time</label>
                   <input
                     type="datetime-local"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     min={new Date().toISOString().slice(0, 16)}
-                    onChange={(e) => {
+                    onChange={e => {
                       if (e.target.value) {
                         scheduleMutation.mutate({
                           id: selectedCampaign.id,
-                          scheduledAt: new Date(e.target.value)
+                          scheduledAt: new Date(e.target.value),
                         });
                       }
                     }}
@@ -967,7 +961,10 @@ const CampaignManagerContent: React.FC = () => {
                   <div className="p-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-4">{previewCampaign.subject}</h2>
                     <div className="prose prose-sm max-w-none">
-                      <p>This is a preview of your newsletter campaign. The actual content will be generated based on your selected template and current community content.</p>
+                      <p>
+                        This is a preview of your newsletter campaign. The actual content will be generated based on
+                        your selected template and current community content.
+                      </p>
                       <p className="text-gray-600 italic">{previewCampaign.custom_message}</p>
                     </div>
                   </div>
@@ -1002,10 +999,7 @@ const CampaignManager: React.FC = () => {
     <FeatureErrorBoundary
       featureName="Campaign Manager"
       fallback={
-        <NewsletterErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => navigate('/admin')}
-        />
+        <NewsletterErrorFallback onRetry={() => window.location.reload()} onGoBack={() => navigate('/admin')} />
       }
     >
       <CampaignManagerContent />

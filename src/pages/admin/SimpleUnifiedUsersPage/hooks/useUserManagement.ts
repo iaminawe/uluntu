@@ -27,7 +27,7 @@ export const useUserManagement = () => {
   const [deleteOptions, setDeleteOptions] = useState<DeleteOptions>({
     deleteContent: false,
     reassignTo: '',
-    makeAnonymous: false
+    makeAnonymous: false,
   });
   const [showActionDropdown, setShowActionDropdown] = useState<string | null>(null);
 
@@ -36,13 +36,10 @@ export const useUserManagement = () => {
     queryKey: ['current-user-roles', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', currentUser.id);
+      const { data } = await supabase.from('user_roles').select('role').eq('user_id', currentUser.id);
       return data?.map(r => r.role) || [];
     },
-    enabled: !!currentUser?.id
+    enabled: !!currentUser?.id,
   });
 
   const isSuperAdmin = currentUserRoles.includes('superadmin');
@@ -52,7 +49,7 @@ export const useUserManagement = () => {
   // Fetch available roles
   const { data: roles } = useQuery({
     queryKey: ['admin-roles'],
-    queryFn: () => adminRolesApi.getRoles()
+    queryFn: () => adminRolesApi.getRoles(),
   });
 
   // Save user changes (profile + roles)
@@ -61,9 +58,8 @@ export const useUserManagement = () => {
       const { profile, roles } = updates;
 
       // Update member profile
-      const { error: profileError } = await supabase
-        .from('members')
-        .upsert({
+      const { error: profileError } = await supabase.from('members').upsert(
+        {
           user_id: userId,
           name: profile.name,
           location: profile.location,
@@ -72,20 +68,19 @@ export const useUserManagement = () => {
           bio: profile.bio,
           status: profile.status,
           featured: profile.featured,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id',
+        }
+      );
 
       if (profileError) throw profileError;
 
       // Update user roles if user has permission
       if (canEditRoles && currentUser?.id !== userId) {
         // Get current roles
-        const { data: currentRolesData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId);
+        const { data: currentRolesData } = await supabase.from('user_roles').select('role').eq('user_id', userId);
 
         const currentRoles = currentRolesData?.map(r => r.role) || [];
 
@@ -99,12 +94,11 @@ export const useUserManagement = () => {
 
         // Use server-side function to manage roles (avoids recursion)
         for (const role of filteredRolesToRemove) {
-          const { error } = await supabase
-            .rpc('manage_user_roles', {
-              target_user_id: userId,
-              target_role: role,
-              action: 'remove'
-            });
+          const { error } = await supabase.rpc('manage_user_roles', {
+            target_user_id: userId,
+            target_role: role,
+            action: 'remove',
+          });
 
           if (error) {
             console.error('Error removing role:', error);
@@ -114,12 +108,11 @@ export const useUserManagement = () => {
 
         // Add new roles using server-side function
         for (const role of filteredRolesToAdd) {
-          const { error } = await supabase
-            .rpc('manage_user_roles', {
-              target_user_id: userId,
-              target_role: role,
-              action: 'add'
-            });
+          const { error } = await supabase.rpc('manage_user_roles', {
+            target_user_id: userId,
+            target_role: role,
+            action: 'add',
+          });
 
           if (error) {
             console.error('Error adding role:', error);
@@ -133,10 +126,10 @@ export const useUserManagement = () => {
       toast.success('User updated successfully');
       setEditingUser(null);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to update user:', error);
       toast.error('Failed to update user');
-    }
+    },
   });
 
   // Bulk assign role to multiple users
@@ -148,12 +141,11 @@ export const useUserManagement = () => {
       }
 
       // Use server-side function for bulk role management (avoids recursion)
-      const { data, error } = await supabase
-        .rpc('bulk_manage_user_roles', {
-          user_ids: userIds,
-          target_role: roleId,
-          action: 'add'
-        });
+      const { data, error } = await supabase.rpc('bulk_manage_user_roles', {
+        user_ids: userIds,
+        target_role: roleId,
+        action: 'add',
+      });
 
       if (error) throw error;
 
@@ -171,7 +163,7 @@ export const useUserManagement = () => {
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to assign roles');
-    }
+    },
   });
 
   // Handle user selection
@@ -199,7 +191,7 @@ export const useUserManagement = () => {
     if (bulkActionRole && selectedUsers.size > 0) {
       bulkAssignRoleMutation.mutate({
         userIds: Array.from(selectedUsers),
-        roleId: bulkActionRole
+        roleId: bulkActionRole,
       });
     }
   };
@@ -316,32 +308,38 @@ export const useUserManagement = () => {
       };
       if (deleteOptions.deleteContent) {
         // Delete all user content
-        failed(await Promise.all([
-          supabase.from('news').delete().eq('author_id', userId),
-          supabase.from('events').delete().eq('created_by', userId),
-          supabase.from('groups').delete().eq('created_by', userId),
-          supabase.from('companies').delete().eq('created_by', userId),
-          supabase.from('resources').delete().eq('created_by', userId),
-        ]));
+        failed(
+          await Promise.all([
+            supabase.from('news').delete().eq('author_id', userId),
+            supabase.from('events').delete().eq('created_by', userId),
+            supabase.from('groups').delete().eq('created_by', userId),
+            supabase.from('companies').delete().eq('created_by', userId),
+            supabase.from('resources').delete().eq('created_by', userId),
+          ])
+        );
       } else if (deleteOptions.reassignTo) {
         // Reassign content to another user
         const to = deleteOptions.reassignTo;
-        failed(await Promise.all([
-          supabase.from('news').update({ author_id: to }).eq('author_id', userId),
-          supabase.from('events').update({ created_by: to }).eq('created_by', userId),
-          supabase.from('groups').update({ created_by: to }).eq('created_by', userId),
-          supabase.from('companies').update({ created_by: to }).eq('created_by', userId),
-          supabase.from('resources').update({ created_by: to }).eq('created_by', userId),
-        ]));
+        failed(
+          await Promise.all([
+            supabase.from('news').update({ author_id: to }).eq('author_id', userId),
+            supabase.from('events').update({ created_by: to }).eq('created_by', userId),
+            supabase.from('groups').update({ created_by: to }).eq('created_by', userId),
+            supabase.from('companies').update({ created_by: to }).eq('created_by', userId),
+            supabase.from('resources').update({ created_by: to }).eq('created_by', userId),
+          ])
+        );
       } else if (deleteOptions.makeAnonymous) {
         // Set content as anonymous (null author)
-        failed(await Promise.all([
-          supabase.from('news').update({ author_id: null }).eq('author_id', userId),
-          supabase.from('events').update({ created_by: null }).eq('created_by', userId),
-          supabase.from('groups').update({ created_by: null }).eq('created_by', userId),
-          supabase.from('companies').update({ created_by: null }).eq('created_by', userId),
-          supabase.from('resources').update({ created_by: null }).eq('created_by', userId),
-        ]));
+        failed(
+          await Promise.all([
+            supabase.from('news').update({ author_id: null }).eq('author_id', userId),
+            supabase.from('events').update({ created_by: null }).eq('created_by', userId),
+            supabase.from('groups').update({ created_by: null }).eq('created_by', userId),
+            supabase.from('companies').update({ created_by: null }).eq('created_by', userId),
+            supabase.from('resources').update({ created_by: null }).eq('created_by', userId),
+          ])
+        );
       }
 
       // Delete user profile
@@ -349,20 +347,21 @@ export const useUserManagement = () => {
       if (memberError) throw memberError;
 
       // Delete user roles using server-side function (get all roles first)
-      const { data: userRoles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId);
+      const { data: userRoles } = await supabase.from('user_roles').select('role').eq('user_id', userId);
 
       // Remove each role using the server function
       if (userRoles && userRoles.length > 0) {
-        failed(await Promise.all(userRoles.map(({ role }) =>
-          supabase.rpc('manage_user_roles', {
-            target_user_id: userId,
-            target_role: role,
-            action: 'remove'
-          })
-        )));
+        failed(
+          await Promise.all(
+            userRoles.map(({ role }) =>
+              supabase.rpc('manage_user_roles', {
+                target_user_id: userId,
+                target_role: role,
+                action: 'remove',
+              })
+            )
+          )
+        );
       }
 
       toast.success('User deleted successfully');
@@ -415,6 +414,6 @@ export const useUserManagement = () => {
 
     // Mutations
     saveUserMutation,
-    bulkAssignRoleMutation
+    bulkAssignRoleMutation,
   };
 };

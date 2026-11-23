@@ -11,15 +11,15 @@ interface MobileNavProps {
   className?: string;
 }
 
-const MobileNav: React.FC<MobileNavProps> = ({ 
-  isOpen, 
-  navLinks, 
+const MobileNav: React.FC<MobileNavProps> = ({
+  isOpen,
+  navLinks,
   onLinkClick,
   showLoadingSkeleton = false,
-  className = "md:hidden bg-gradient-to-r from-orange-600 to-red-600"
+  className = 'md:hidden bg-gradient-to-r from-orange-600 to-red-600',
 }) => {
   if (!isOpen) return null;
-  
+
   if (showLoadingSkeleton) {
     return (
       <div className={className}>
@@ -31,17 +31,12 @@ const MobileNav: React.FC<MobileNavProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div className={className}>
       <div className="px-2 pt-2 pb-3 space-y-1">
         {navLinks.map((link, index) => (
-          <Dropdown
-            key={link.href || index}
-            item={link}
-            isDesktop={false}
-            onLinkClick={onLinkClick}
-          />
+          <Dropdown key={link.href || index} item={link} isDesktop={false} onLinkClick={onLinkClick} />
         ))}
         {/* User Menu for Mobile */}
         <div className="pt-2 border-t border-orange-500/30">

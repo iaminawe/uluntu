@@ -54,7 +54,7 @@ export function validateSettingValue(
             errors.push(rule.message || 'This field is required');
           }
           break;
-        
+
         case 'min':
           if (typeof value === 'number' && value < (rule.value as number)) {
             errors.push(rule.message || `Value must be at least ${rule.value}`);
@@ -62,7 +62,7 @@ export function validateSettingValue(
             errors.push(rule.message || `Length must be at least ${rule.value} characters`);
           }
           break;
-        
+
         case 'max':
           if (typeof value === 'number' && value > (rule.value as number)) {
             errors.push(rule.message || `Value must be at most ${rule.value}`);
@@ -70,7 +70,7 @@ export function validateSettingValue(
             errors.push(rule.message || `Length must be at most ${rule.value} characters`);
           }
           break;
-        
+
         case 'pattern':
           if (typeof value === 'string' && rule.value) {
             const regex = new RegExp(rule.value as string);
@@ -79,7 +79,7 @@ export function validateSettingValue(
             }
           }
           break;
-        
+
         case 'email':
           if (typeof value === 'string') {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -88,7 +88,7 @@ export function validateSettingValue(
             }
           }
           break;
-        
+
         case 'url':
           if (typeof value === 'string') {
             try {
@@ -98,7 +98,7 @@ export function validateSettingValue(
             }
           }
           break;
-        
+
         case 'custom':
           if (rule.validator) {
             const result = rule.validator(value);
@@ -130,18 +130,18 @@ export function castValue(value: any, dataType: SettingDataType): any {
   switch (dataType) {
     case 'string':
       return String(value);
-    
+
     case 'number':
       const num = Number(value);
       return isNaN(num) ? value : num;
-    
+
     case 'boolean':
       if (typeof value === 'boolean') return value;
       if (typeof value === 'string') {
         return value.toLowerCase() === 'true' || value === '1';
       }
       return Boolean(value);
-    
+
     case 'object':
     case 'array':
       if (typeof value === 'string') {
@@ -152,7 +152,7 @@ export function castValue(value: any, dataType: SettingDataType): any {
         }
       }
       return value;
-    
+
     default:
       return value;
   }
@@ -181,10 +181,7 @@ export function getDefaultValue(dataType: SettingDataType): any {
 /**
  * Deep merge settings objects
  */
-export function mergeSettings(
-  defaults: Partial<PublicSettings>,
-  overrides: PublicSettings
-): PublicSettings {
+export function mergeSettings(defaults: Partial<PublicSettings>, overrides: PublicSettings): PublicSettings {
   const merged: PublicSettings = {};
 
   // Add all default categories and settings
@@ -208,9 +205,7 @@ export function mergeSettings(
 /**
  * Extract public settings from all settings
  */
-export function extractPublicSettings(
-  settings: ApplicationSetting[]
-): PublicSettings {
+export function extractPublicSettings(settings: ApplicationSetting[]): PublicSettings {
   const publicSettings: PublicSettings = {};
 
   settings
@@ -219,7 +214,7 @@ export function extractPublicSettings(
       if (!publicSettings[setting.category]) {
         publicSettings[setting.category] = {};
       }
-      
+
       publicSettings[setting.category][setting.setting_key] = {
         value: castValue(setting.setting_value, setting.data_type as SettingDataType),
         type: setting.data_type as SettingDataType,
@@ -240,14 +235,14 @@ export function formatSettingValue(value: any, dataType: SettingDataType): strin
   switch (dataType) {
     case 'boolean':
       return value ? 'Enabled' : 'Disabled';
-    
+
     case 'object':
     case 'array':
       return JSON.stringify(value, null, 2);
-    
+
     case 'number':
       return value.toLocaleString();
-    
+
     default:
       return String(value);
   }
@@ -264,14 +259,14 @@ export function parseSettingInput(input: string, dataType: SettingDataType): any
   switch (dataType) {
     case 'string':
       return input;
-    
+
     case 'number':
       const num = Number(input);
       return isNaN(num) ? 0 : num;
-    
+
     case 'boolean':
       return input.toLowerCase() === 'true' || input === '1';
-    
+
     case 'object':
     case 'array':
       try {
@@ -279,7 +274,7 @@ export function parseSettingInput(input: string, dataType: SettingDataType): any
       } catch {
         return dataType === 'array' ? [] : {};
       }
-    
+
     default:
       return input;
   }
@@ -288,11 +283,7 @@ export function parseSettingInput(input: string, dataType: SettingDataType): any
 /**
  * Check if a setting value has changed
  */
-export function hasSettingChanged(
-  oldValue: any,
-  newValue: any,
-  dataType: SettingDataType
-): boolean {
+export function hasSettingChanged(oldValue: any, newValue: any, dataType: SettingDataType): boolean {
   const normalizedOld = castValue(oldValue, dataType);
   const normalizedNew = castValue(newValue, dataType);
 
@@ -316,12 +307,9 @@ export function createSettingsCacheKey(category?: string, key?: string): string 
 /**
  * Debounce settings updates
  */
-export function debounceSettingsUpdate(
-  fn: (...args: any[]) => void,
-  delay: number = 500
-): (...args: any[]) => void {
+export function debounceSettingsUpdate(fn: (...args: any[]) => void, delay: number = 500): (...args: any[]) => void {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: any[]) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);

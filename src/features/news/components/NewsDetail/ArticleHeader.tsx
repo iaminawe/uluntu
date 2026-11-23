@@ -20,9 +20,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
   return (
     <div className="mb-8">
       {/* Title */}
-      <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-        {article.title}
-      </h1>
+      <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">{article.title}</h1>
 
       {/* Author and meta information */}
       <div className="flex flex-col sm:flex-row sm:items-center mb-4 space-y-3 sm:space-y-0">
@@ -33,7 +31,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
             className="w-10 h-10 rounded-full object-cover mr-3"
           />
           <div>
-            <Link 
+            <Link
               to={getMemberProfileUrl(article.author)}
               className="font-medium text-slate-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400"
             >
@@ -44,7 +42,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center text-slate-500 dark:text-slate-400 ml-0 sm:ml-auto">
           <Clock className="h-4 w-4 mr-1" />
           <span className="text-sm">{formattedDate}</span>
@@ -54,7 +52,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
       {/* Tags and actions */}
       <div className="flex flex-wrap items-center justify-between">
         <div className="flex flex-wrap gap-2 mb-3 sm:mb-0">
-          {article.tags?.map((tag) => (
+          {article.tags?.map(tag => (
             <Link
               key={tag}
               to={`/news?tag=${tag}`}
@@ -77,7 +75,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
             <Share className="h-4 w-4 mr-1" />
             Share
           </button>
-          
+
           {isEditable && (
             <Link
               to={`/news/${article.id}/edit`}
@@ -97,7 +95,7 @@ const ArticleHeader = ({ article, onShare, isEditable = false }: ArticleHeaderPr
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Related to:</p>
           <div className="flex flex-wrap gap-3">
-            {article.associations.map((association) => (
+            {article.associations.map(association => (
               <Link
                 key={`${association.type}-${association.id}`}
                 to={`/${association.type}s/${association.id}`}

@@ -19,13 +19,12 @@ const ActionBar: React.FC<ActionBarProps> = ({
   selectedType,
   setSelectedType,
   selectedCondition,
-  setSelectedCondition
+  setSelectedCondition,
 }) => {
-  
   // Available options for filters
   const types: ListingType[] = ['product', 'service', 'equipment'];
   const conditions: ListingCondition[] = ['new', 'like-new', 'good', 'fair', 'poor'];
-  
+
   const handleSearch = (value: string) => {
     onSearch(value);
   };
@@ -45,12 +44,14 @@ const ActionBar: React.FC<ActionBarProps> = ({
           <div className="relative">
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as ListingType | 'all')}
+              onChange={e => setSelectedType(e.target.value as ListingType | 'all')}
               className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Types</option>
               {types.map(type => (
-                <option key={type} value={type}>{getTypeDisplayName(type)}</option>
+                <option key={type} value={type}>
+                  {getTypeDisplayName(type)}
+                </option>
               ))}
             </select>
             {selectedType === 'product' ? (
@@ -61,17 +62,19 @@ const ActionBar: React.FC<ActionBarProps> = ({
               <Monitor className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />
             )}
           </div>
-          
+
           {/* Condition Filter */}
           <div className="relative">
             <select
               value={selectedCondition}
-              onChange={(e) => setSelectedCondition(e.target.value as ListingCondition | 'all')}
+              onChange={e => setSelectedCondition(e.target.value as ListingCondition | 'all')}
               className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">Any Condition</option>
               {conditions.map(condition => (
-                <option key={condition} value={condition}>{getConditionDisplayName(condition)}</option>
+                <option key={condition} value={condition}>
+                  {getConditionDisplayName(condition)}
+                </option>
               ))}
             </select>
             <Tag className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />

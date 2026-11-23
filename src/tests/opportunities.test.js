@@ -7,7 +7,7 @@ const mockOpportunity = {
   company: {
     id: '456',
     name: 'Mountain Tech Solutions',
-    logo: 'https://example.com/images/mts-logo.jpg'
+    logo: 'https://example.com/images/mts-logo.jpg',
   },
   type: 'full-time',
   location: 'Nelson, BC',
@@ -19,19 +19,15 @@ const mockOpportunity = {
   requirements: [
     'Minimum 3 years experience with React and Node.js',
     'Experience with TypeScript and PostgreSQL',
-    'Strong problem-solving skills'
+    'Strong problem-solving skills',
   ],
   responsibilities: [
     'Develop and maintain web applications',
     'Collaborate with the design team',
-    'Participate in code reviews'
+    'Participate in code reviews',
   ],
-  benefits: [
-    'Flexible work hours',
-    'Remote work options',
-    'Health benefits'
-  ],
-  featured: true
+  benefits: ['Flexible work hours', 'Remote work options', 'Health benefits'],
+  featured: true,
 };
 
 jest.mock('../hooks/useOpportunityQueries', () => ({
@@ -39,48 +35,48 @@ jest.mock('../hooks/useOpportunityQueries', () => ({
     data: [mockOpportunity],
     isLoading: false,
     error: null,
-    refetch: jest.fn()
+    refetch: jest.fn(),
   }),
   useOpportunity: jest.fn().mockReturnValue({
     data: mockOpportunity,
     isLoading: false,
     error: null,
-    refetch: jest.fn()
+    refetch: jest.fn(),
   }),
   useCreateOpportunity: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue(mockOpportunity),
     isLoading: false,
-    error: null
+    error: null,
   }),
   useUpdateOpportunity: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue(mockOpportunity),
     isLoading: false,
-    error: null
+    error: null,
   }),
   useDeleteOpportunity: jest.fn().mockReturnValue({
     mutateAsync: jest.fn().mockResolvedValue({}),
     isLoading: false,
-    error: null
+    error: null,
   }),
   useOpportunitiesWithFilters: jest.fn().mockReturnValue({
     data: [mockOpportunity],
     isLoading: false,
     error: null,
-    refetch: jest.fn()
+    refetch: jest.fn(),
   }),
   useFeaturedOpportunities: jest.fn().mockReturnValue({
     data: [mockOpportunity],
     isLoading: false,
-    error: null
-  })
+    error: null,
+  }),
 }));
 
 // Mock the auth hook
 jest.mock('../hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue({
     user: { id: '789', name: 'Employer User', role: 'employer' },
-    status: 'authenticated'
-  })
+    status: 'authenticated',
+  }),
 }));
 
 describe('Opportunities Management', () => {
@@ -94,7 +90,7 @@ describe('Opportunities Management', () => {
     require('../hooks/useOpportunityQueries').useCreateOpportunity.mockReturnValue({
       mutateAsync: createOpportunityMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -116,15 +112,15 @@ describe('Opportunities Management', () => {
         'Minimum 5 years experience with React and Node.js',
         'Experience with TypeScript and PostgreSQL',
         'Strong problem-solving skills',
-        'Experience with AWS'
-      ]
+        'Experience with AWS',
+      ],
     };
-    
+
     const updateOpportunityMock = jest.fn().mockResolvedValue(updatedOpportunity);
     require('../hooks/useOpportunityQueries').useUpdateOpportunity.mockReturnValue({
       mutateAsync: updateOpportunityMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -141,7 +137,7 @@ describe('Opportunities Management', () => {
     require('../hooks/useOpportunityQueries').useDeleteOpportunity.mockReturnValue({
       mutateAsync: deleteOpportunityMock,
       isLoading: false,
-      error: null
+      error: null,
     });
 
     // Test steps would include:
@@ -161,15 +157,15 @@ describe('Opportunities Management', () => {
         id: '124',
         title: 'UX/UI Designer',
         type: 'part-time',
-        salary: '$40-50/hour'
-      }
+        salary: '$40-50/hour',
+      },
     ];
-    
+
     require('../hooks/useOpportunityQueries').useOpportunitiesWithFilters.mockReturnValue({
       data: filteredOpportunities,
       isLoading: false,
       error: null,
-      refetch: jest.fn()
+      refetch: jest.fn(),
     });
 
     // Test steps would include:
@@ -188,15 +184,13 @@ describe('Opportunities Management', () => {
 
   it('OPP-006: As a Job Seeker, I want to search for job opportunities by keywords', async () => {
     // Mock implementation for search results
-    const searchResults = [
-      mockOpportunity
-    ];
-    
+    const searchResults = [mockOpportunity];
+
     require('../hooks/useOpportunityQueries').useOpportunitiesWithFilters.mockReturnValue({
       data: searchResults,
       isLoading: false,
       error: null,
-      refetch: jest.fn()
+      refetch: jest.fn(),
     });
 
     // Test steps would include:
@@ -208,7 +202,7 @@ describe('Opportunities Management', () => {
   it('OPP-007: As a Job Seeker, I want to apply for a job opportunity', async () => {
     // Mock implementation for application functionality
     const applyForJobMock = jest.fn().mockResolvedValue({ success: true });
-    
+
     // Test steps would include:
     // 1. Render the opportunity detail page
     // 2. Click apply button

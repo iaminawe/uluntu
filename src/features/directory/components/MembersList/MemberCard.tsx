@@ -14,22 +14,14 @@ const MemberCard = ({ member }: MemberCardProps) => {
       className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
     >
       <div className="flex items-center mb-4">
-        <img
-          src={member.image}
-          alt={member.name}
-          className="w-24 h-24 rounded-full mr-4 object-cover"
-        />
+        <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mr-4 object-cover" />
         <div>
           <h3 className="font-semibold text-slate-900 dark:text-white">{member.name}</h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">{member.title}</p>
         </div>
       </div>
-      {member.intro && (
-        <p className="text-sm text-slate-500 dark:text-slate-400 my-3 italic">
-          "{member.intro}"
-        </p>
-      )}
-      
+      {member.intro && <p className="text-sm text-slate-500 dark:text-slate-400 my-3 italic">"{member.intro}"</p>}
+
       {(member.company || member.location) && (
         <div className="space-y-2 mb-4">
           {member.company && (
@@ -38,7 +30,7 @@ const MemberCard = ({ member }: MemberCardProps) => {
               <span>{member.company}</span>
             </div>
           )}
-          
+
           {member.location && (
             <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
               <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -47,7 +39,7 @@ const MemberCard = ({ member }: MemberCardProps) => {
           )}
         </div>
       )}
-      
+
       {member.skills && member.skills.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
           {member.skills.slice(0, 3).map(skill => (

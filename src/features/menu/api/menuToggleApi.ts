@@ -38,21 +38,17 @@ class MenuToggleApiService {
   /**
    * Toggle multiple menu items with cascade support
    */
-  async bulkToggleMenuItems(
-    itemIds: string[], 
-    enabled: boolean, 
-    cascade: boolean = false
-  ): Promise<BulkToggleResult> {
+  async bulkToggleMenuItems(itemIds: string[], enabled: boolean, cascade: boolean = false): Promise<BulkToggleResult> {
     const operations: BulkOperation[] = [];
-    
+
     try {
       // Get all items first to determine cascade relationships
       const allItems = await menuManagementApi.getMenuItems();
       const itemMap = new Map(allItems.map(item => [item.id, item]));
-      
+
       // Determine all affected items
       let affectedIds = new Set(itemIds);
-      
+
       if (cascade) {
         itemIds.forEach(itemId => {
           const item = itemMap.get(itemId);
@@ -72,14 +68,14 @@ class MenuToggleApiService {
           operations.push({
             id: itemId,
             operation: enabled ? 'enable' : 'disable',
-            success
+            success,
           });
         } catch (error) {
           operations.push({
             id: itemId,
             operation: enabled ? 'enable' : 'disable',
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
         }
       }
@@ -87,22 +83,21 @@ class MenuToggleApiService {
       return {
         operations,
         successCount: operations.filter(op => op.success).length,
-        failureCount: operations.filter(op => !op.success).length
+        failureCount: operations.filter(op => !op.success).length,
       };
-      
     } catch (error) {
       console.error('Bulk toggle failed:', error);
-      
+
       // Return failed operations for all requested items
       return {
         operations: itemIds.map(id => ({
           id,
           operation: enabled ? 'enable' : 'disable',
           success: false,
-          error: error instanceof Error ? error.message : 'Bulk operation failed'
+          error: error instanceof Error ? error.message : 'Bulk operation failed',
         })),
         successCount: 0,
-        failureCount: itemIds.length
+        failureCount: itemIds.length,
       };
     }
   }
@@ -112,7 +107,7 @@ class MenuToggleApiService {
    */
   async bulkDeleteMenuItems(itemIds: string[]): Promise<BulkToggleResult> {
     const operations: BulkOperation[] = [];
-    
+
     try {
       for (const itemId of itemIds) {
         try {
@@ -120,14 +115,14 @@ class MenuToggleApiService {
           operations.push({
             id: itemId,
             operation: 'delete',
-            success
+            success,
           });
         } catch (error) {
           operations.push({
             id: itemId,
             operation: 'delete',
             success: false,
-            error: error instanceof Error ? error.message : 'Delete failed'
+            error: error instanceof Error ? error.message : 'Delete failed',
           });
         }
       }
@@ -135,21 +130,20 @@ class MenuToggleApiService {
       return {
         operations,
         successCount: operations.filter(op => op.success).length,
-        failureCount: operations.filter(op => !op.success).length
+        failureCount: operations.filter(op => !op.success).length,
       };
-      
     } catch (error) {
       console.error('Bulk delete failed:', error);
-      
+
       return {
         operations: itemIds.map(id => ({
           id,
           operation: 'delete',
           success: false,
-          error: error instanceof Error ? error.message : 'Bulk delete failed'
+          error: error instanceof Error ? error.message : 'Bulk delete failed',
         })),
         successCount: 0,
-        failureCount: itemIds.length
+        failureCount: itemIds.length,
       };
     }
   }
@@ -167,7 +161,7 @@ class MenuToggleApiService {
    */
   private findAllChildren(parentId: string, allItems: MenuItem[]): string[] {
     const children: string[] = [];
-    
+
     const findChildren = (currentParentId: string) => {
       allItems.forEach(item => {
         if (item.parent_id === currentParentId) {
@@ -176,7 +170,7 @@ class MenuToggleApiService {
         }
       });
     };
-    
+
     findChildren(parentId);
     return children;
   }
@@ -196,7 +190,7 @@ class MenuToggleApiService {
     // Second pass: build hierarchy
     flatItems.forEach(item => {
       const menuItem = itemMap.get(item.id)!;
-      
+
       if (item.parent_id) {
         const parent = itemMap.get(item.parent_id);
         if (parent) {
@@ -210,10 +204,12 @@ class MenuToggleApiService {
 
     // Sort all levels by order_index
     const sortByOrder = (items: MenuItem[]): MenuItem[] => {
-      return items.sort((a, b) => a.order_index - b.order_index).map(item => ({
-        ...item,
-        children: item.children ? sortByOrder(item.children) : []
-      }));
+      return items
+        .sort((a, b) => a.order_index - b.order_index)
+        .map(item => ({
+          ...item,
+          children: item.children ? sortByOrder(item.children) : [],
+        }));
     };
 
     return sortByOrder(rootItems);
@@ -224,7 +220,7 @@ class MenuToggleApiService {
    */
   async restoreMenuItems(itemIds: string[], previousStates: Map<string, boolean>): Promise<BulkToggleResult> {
     const operations: BulkOperation[] = [];
-    
+
     for (const itemId of itemIds) {
       const previousState = previousStates.get(itemId);
       if (previousState !== undefined) {
@@ -233,14 +229,14 @@ class MenuToggleApiService {
           operations.push({
             id: itemId,
             operation: previousState ? 'enable' : 'disable',
-            success
+            success,
           });
         } catch (error) {
           operations.push({
             id: itemId,
             operation: previousState ? 'enable' : 'disable',
             success: false,
-            error: error instanceof Error ? error.message : 'Restore failed'
+            error: error instanceof Error ? error.message : 'Restore failed',
           });
         }
       }
@@ -249,7 +245,7 @@ class MenuToggleApiService {
     return {
       operations,
       successCount: operations.filter(op => op.success).length,
-      failureCount: operations.filter(op => !op.success).length
+      failureCount: operations.filter(op => !op.success).length,
     };
   }
 
@@ -267,7 +263,7 @@ class MenuToggleApiService {
   }> {
     try {
       const items = await menuManagementApi.getMenuItems();
-      
+
       return {
         total: items.length,
         enabled: items.filter(item => item.is_enabled).length,
@@ -275,7 +271,7 @@ class MenuToggleApiService {
         mainMenu: items.filter(item => !item.parent_id).length, // Assuming no parent_id means main menu
         footerMenu: items.filter(item => item.parent_id !== null).length,
         parents: items.filter(item => !item.parent_id).length,
-        children: items.filter(item => item.parent_id).length
+        children: items.filter(item => item.parent_id).length,
       };
     } catch (error) {
       console.error('Failed to get menu stats:', error);
@@ -286,7 +282,7 @@ class MenuToggleApiService {
         mainMenu: 0,
         footerMenu: 0,
         parents: 0,
-        children: 0
+        children: 0,
       };
     }
   }
@@ -294,7 +290,9 @@ class MenuToggleApiService {
   /**
    * Batch update menu items order
    */
-  async reorderMenuItems(updates: Array<{ id: string; order_index: number; parent_id?: string | null }>): Promise<boolean> {
+  async reorderMenuItems(
+    updates: Array<{ id: string; order_index: number; parent_id?: string | null }>
+  ): Promise<boolean> {
     try {
       return await menuManagementApi.reorderMenuItems(updates);
     } catch (error) {
@@ -315,7 +313,7 @@ class MenuToggleApiService {
       const items = await menuManagementApi.getMenuItems();
       const errors: string[] = [];
       const warnings: string[] = [];
-      
+
       // Check for orphaned children
       items.forEach(item => {
         if (item.parent_id) {
@@ -325,27 +323,27 @@ class MenuToggleApiService {
           }
         }
       });
-      
+
       // Check for circular references
       const checkCircular = (itemId: string, visited = new Set<string>()): boolean => {
         if (visited.has(itemId)) return true;
-        
+
         visited.add(itemId);
         const item = items.find(i => i.id === itemId);
-        
+
         if (item?.parent_id) {
           return checkCircular(item.parent_id, visited);
         }
-        
+
         return false;
       };
-      
+
       items.forEach(item => {
         if (checkCircular(item.id)) {
           errors.push(`Circular reference detected involving item "${item.label}"`);
         }
       });
-      
+
       // Check for disabled parents with enabled children
       items.forEach(item => {
         if (item.parent_id) {
@@ -355,17 +353,17 @@ class MenuToggleApiService {
           }
         }
       });
-      
+
       return {
         valid: errors.length === 0,
         errors,
-        warnings
+        warnings,
       };
     } catch (error) {
       return {
         valid: false,
         errors: [`Failed to validate menu hierarchy: ${error}`],
-        warnings: []
+        warnings: [],
       };
     }
   }

@@ -64,11 +64,7 @@ export interface FooterLayoutConfig {
 }
 
 // Footer menu grouping strategies
-export type FooterGroupingStrategy = 
-  | 'by-category'
-  | 'by-section' 
-  | 'flat'
-  | 'hierarchical';
+export type FooterGroupingStrategy = 'by-category' | 'by-section' | 'flat' | 'hierarchical';
 
 // Footer menu configuration
 export interface FooterMenuConfig {

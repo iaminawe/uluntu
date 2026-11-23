@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { 
+  {
     ignores: [
       'dist/**',
       'build/**',
@@ -25,8 +25,8 @@ export default tseslint.config(
       'memory/**',
       'coordination/**',
       'lib/**',
-      'tests/**/*.js'
-    ]
+      'tests/**/*.js',
+    ],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -37,49 +37,52 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.es2020,
-        ...globals.node
+        ...globals.node,
       },
       parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true
+          jsx: true,
         },
-        project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.test.json']
-      }
+        project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.test.json'],
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      '@typescript-eslint': tseslint.plugin
+      '@typescript-eslint': tseslint.plugin,
     },
     settings: {
       react: {
-        version: 'detect'
-      }
+        version: 'detect',
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // TypeScript specific rules
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/ban-ts-comment': ['warn', {
-        'ts-expect-error': 'allow-with-description',
-        'ts-ignore': 'allow-with-description',
-        'ts-nocheck': 'allow-with-description',
-        'ts-check': 'allow-with-description'
-      }],
+      '@typescript-eslint/ban-ts-comment': [
+        'warn',
+        {
+          'ts-expect-error': 'allow-with-description',
+          'ts-ignore': 'allow-with-description',
+          'ts-nocheck': 'allow-with-description',
+          'ts-check': 'allow-with-description',
+        },
+      ],
       // General rules
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'warn',
@@ -87,14 +90,14 @@ export default tseslint.config(
       'prefer-const': 'warn',
       'no-var': 'error',
       'object-shorthand': 'warn',
-      'prefer-template': 'warn'
-    }
+      'prefer-template': 'warn',
+    },
   },
   {
     files: ['**/*.js'],
     rules: {
-      '@typescript-eslint/no-var-requires': 'off'
-    }
+      '@typescript-eslint/no-var-requires': 'off',
+    },
   },
   {
     files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
@@ -103,23 +106,23 @@ export default tseslint.config(
         ...globals.browser,
         ...globals.es2020,
         ...globals.node,
-        ...globals.jest
+        ...globals.jest,
       },
       parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true
+          jsx: true,
         },
-        project: ['./tsconfig.test.json']
-      }
+        project: ['./tsconfig.test.json'],
+      },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'no-console': 'off',
-      'prefer-const': 'off'
-    }
+      'prefer-const': 'off',
+    },
   }
 );

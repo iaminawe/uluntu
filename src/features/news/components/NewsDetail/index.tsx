@@ -18,15 +18,15 @@ interface NewsDetailProps {
 
 const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
   const navigate = useNavigate();
-  
+
   // If in preview mode or no articleId, use sample data, otherwise fetch from API
   const { data: fetchedArticle } = useNewsArticle(articleId || '');
-  
+
   // Convert fetched article to local format or use sample data if in preview/no data
   const [article, setArticle] = useState<NewsArticle>(SAMPLE_ARTICLE);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  
+
   // Update article state when fetched data changes
   useEffect(() => {
     if (fetchedArticle && !isPreview) {
@@ -37,7 +37,7 @@ const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
   // Handle adding a new comment
   const handleAddComment = (content: string) => {
     if (!content.trim()) return;
-    
+
     const newComment: NewsComment = {
       id: Date.now(), // In a real app, this would come from the server
       content,
@@ -45,13 +45,13 @@ const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
       author: {
         id: 999, // This would be the current user's ID
         name: 'Current User', // This would be the current user's name
-        image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg' // This would be the current user's image
-      }
+        image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg', // This would be the current user's image
+      },
     };
-    
+
     setArticle({
       ...article,
-      comments: [newComment, ...article.comments]
+      comments: [newComment, ...article.comments],
     });
   };
 
@@ -65,13 +65,13 @@ const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
         <title>{article.title} | Uluntu</title>
         <meta name="description" content={article.content.substring(0, 155)} />
       </Helmet>
-      
+
       {/* We could show loading state here if needed */}
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {!isPreview && (
-          <button 
-            onClick={goBack} 
+          <button
+            onClick={goBack}
             className="flex items-center text-slate-600 dark:text-slate-400 hover:text-orange-500 
                      dark:hover:text-orange-400 mb-6"
           >
@@ -80,34 +80,15 @@ const NewsDetail = ({ articleId, isPreview = false }: NewsDetailProps) => {
           </button>
         )}
 
-        <ArticleHeader 
-          article={article} 
-          onShare={() => setShowShareModal(true)} 
-          isEditable={!isPreview}
-        />
-        
+        <ArticleHeader article={article} onShare={() => setShowShareModal(true)} isEditable={!isPreview} />
+
         <ArticleContent article={article} />
-        
-        {!isPreview && (
-          <CommentsSection 
-            article={article} 
-            onAddComment={() => setShowCommentModal(true)} 
-          />
-        )}
 
-        {showCommentModal && (
-          <CommentModal 
-            onClose={() => setShowCommentModal(false)} 
-            onSubmit={handleAddComment}
-          />
-        )}
+        {!isPreview && <CommentsSection article={article} onAddComment={() => setShowCommentModal(true)} />}
 
-        {showShareModal && (
-          <ShareModal 
-            article={article} 
-            onClose={() => setShowShareModal(false)}
-          />
-        )}
+        {showCommentModal && <CommentModal onClose={() => setShowCommentModal(false)} onSubmit={handleAddComment} />}
+
+        {showShareModal && <ShareModal article={article} onClose={() => setShowShareModal(false)} />}
       </div>
     </>
   );

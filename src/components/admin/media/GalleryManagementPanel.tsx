@@ -3,12 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { Gallery, GalleryFilters } from '@/features/gallery/types';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { 
-  selectSelectedGalleries, 
-  selectViewMode, 
+import {
+  selectSelectedGalleries,
+  selectViewMode,
   toggleGallerySelection,
   clearGallerySelection,
-  setViewMode
+  setViewMode,
 } from '@/features/gallery/store/galleryUISlice';
 import {
   Search,
@@ -33,17 +33,11 @@ import {
   X,
   Grid,
   List,
-  Photos
+  Photos,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,12 +56,12 @@ const GalleryManagementPanel: React.FC = () => {
   const queryClient = useQueryClient();
   const selectedGalleries = useAppSelector(selectSelectedGalleries);
   const viewMode = useAppSelector(selectViewMode);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<GalleryFilters>({
     sortBy: 'date',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -83,14 +77,19 @@ const GalleryManagementPanel: React.FC = () => {
   const pageSize = 20;
 
   // Fetch galleries with filters
-  const { data: galleriesData, isLoading, refetch } = useQuery({
+  const {
+    data: galleriesData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-galleries', currentPage, searchTerm, filters],
-    queryFn: () => galleryApi.getAllGalleries({
-      ...filters,
-      search: searchTerm,
-      page: currentPage,
-      limit: pageSize
-    })
+    queryFn: () =>
+      galleryApi.getAllGalleries({
+        ...filters,
+        search: searchTerm,
+        page: currentPage,
+        limit: pageSize,
+      }),
   });
 
   // Delete galleries mutation
@@ -101,7 +100,7 @@ const GalleryManagementPanel: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       setSelectedGalleries([]);
-    }
+    },
   });
 
   // Create gallery mutation
@@ -110,17 +109,16 @@ const GalleryManagementPanel: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       setShowCreateModal(false);
-    }
+    },
   });
 
   // Update gallery mutation
   const updateGalleryMutation = useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Gallery> }) =>
-      galleryApi.updateGallery(id, updates),
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Gallery> }) => galleryApi.updateGallery(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       setEditingGallery(null);
-    }
+    },
   });
 
   const handleBatchAction = async (action: string) => {
@@ -156,19 +154,11 @@ const GalleryManagementPanel: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Gallery Management
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {galleriesData?.totalCount || 0} galleries total
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gallery Management</h2>
+          <p className="text-gray-600 dark:text-gray-400">{galleriesData?.totalCount || 0} galleries total</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={() => refetch()}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
@@ -186,14 +176,11 @@ const GalleryManagementPanel: React.FC = () => {
           <Input
             placeholder="Search galleries..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
-        <Button
-          variant="outline"
-          onClick={() => setShowFilters(!showFilters)}
-        >
+        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
           <Filter className="h-4 w-4 mr-2" />
           Filters
         </Button>
@@ -204,12 +191,10 @@ const GalleryManagementPanel: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Privacy Level
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Privacy Level</label>
               <Select
                 value={filters.privacy || ''}
-                onValueChange={(value) => setFilters({...filters, privacy: value as any})}
+                onValueChange={value => setFilters({ ...filters, privacy: value as any })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All privacy levels" />
@@ -223,12 +208,10 @@ const GalleryManagementPanel: React.FC = () => {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Owner Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Owner Type</label>
               <Select
                 value={filters.ownerType || ''}
-                onValueChange={(value) => setFilters({...filters, ownerType: value as any})}
+                onValueChange={value => setFilters({ ...filters, ownerType: value as any })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All owner types" />
@@ -242,12 +225,10 @@ const GalleryManagementPanel: React.FC = () => {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Sort By
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort By</label>
               <Select
                 value={filters.sortBy || 'date'}
-                onValueChange={(value) => setFilters({...filters, sortBy: value as any})}
+                onValueChange={value => setFilters({ ...filters, sortBy: value as any })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -261,12 +242,10 @@ const GalleryManagementPanel: React.FC = () => {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Order
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order</label>
               <Select
                 value={filters.sortOrder || 'desc'}
-                onValueChange={(value) => setFilters({...filters, sortOrder: value as any})}
+                onValueChange={value => setFilters({ ...filters, sortOrder: value as any })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -288,27 +267,15 @@ const GalleryManagementPanel: React.FC = () => {
             {selectedGalleries.length} galleries selected
           </span>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleBatchAction('feature')}
-            >
+            <Button variant="outline" size="sm" onClick={() => handleBatchAction('feature')}>
               <Star className="h-4 w-4 mr-2" />
               Feature
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleBatchAction('archive')}
-            >
+            <Button variant="outline" size="sm" onClick={() => handleBatchAction('archive')}>
               <Archive className="h-4 w-4 mr-2" />
               Archive
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => handleBatchAction('delete')}
-            >
+            <Button variant="destructive" size="sm" onClick={() => handleBatchAction('delete')}>
               <Trash2 className="h-4 w-4 mr-2" />
               Delete
             </Button>
@@ -323,7 +290,9 @@ const GalleryManagementPanel: React.FC = () => {
             <tr>
               <th className="px-6 py-3 text-left">
                 <Checkbox
-                  checked={selectedGalleries.length === galleriesData?.galleries.length && galleriesData?.galleries.length > 0}
+                  checked={
+                    selectedGalleries.length === galleriesData?.galleries.length && galleriesData?.galleries.length > 0
+                  }
                   onCheckedChange={handleSelectAll}
                 />
               </th>
@@ -364,12 +333,12 @@ const GalleryManagementPanel: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              galleriesData?.galleries.map((gallery) => (
+              galleriesData?.galleries.map(gallery => (
                 <tr key={gallery.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4">
                     <Checkbox
                       checked={selectedGalleries.includes(gallery.id)}
-                      onCheckedChange={(checked) => {
+                      onCheckedChange={checked => {
                         if (checked) {
                           setSelectedGalleries([...selectedGalleries, gallery.id]);
                         } else {
@@ -394,9 +363,7 @@ const GalleryManagementPanel: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
-                          {gallery.title}
-                        </div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{gallery.title}</div>
                         {gallery.description && (
                           <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
                             {gallery.description}
@@ -412,18 +379,19 @@ const GalleryManagementPanel: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">
-                      {gallery.owner?.name || 'Unknown'}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {gallery.owner_type}
-                    </div>
+                    <div className="text-sm text-gray-900 dark:text-gray-100">{gallery.owner?.name || 'Unknown'}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{gallery.owner_type}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <Badge variant={
-                      gallery.privacy_level === 'public' ? 'default' :
-                      gallery.privacy_level === 'private' ? 'destructive' : 'secondary'
-                    }>
+                    <Badge
+                      variant={
+                        gallery.privacy_level === 'public'
+                          ? 'default'
+                          : gallery.privacy_level === 'private'
+                            ? 'destructive'
+                            : 'secondary'
+                      }
+                    >
                       {gallery.privacy_level}
                     </Badge>
                   </td>
@@ -448,20 +416,10 @@ const GalleryManagementPanel: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setViewingGallery(gallery)}
-                        title="View Gallery"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => setViewingGallery(gallery)} title="View Gallery">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingGallery(gallery)}
-                        title="Edit Gallery"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => setEditingGallery(gallery)} title="Edit Gallery">
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
@@ -504,7 +462,7 @@ const GalleryManagementPanel: React.FC = () => {
                             <Archive className="h-4 w-4 mr-2" />
                             Archive
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             className="text-red-600"
                             onClick={() => {
                               if (confirm(`Delete gallery "${gallery.title}"?`)) {
@@ -530,9 +488,9 @@ const GalleryManagementPanel: React.FC = () => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            Showing {((currentPage - 1) * pageSize) + 1} to{' '}
-            {Math.min(currentPage * pageSize, galleriesData?.totalCount || 0)} of{' '}
-            {galleriesData?.totalCount || 0} galleries
+            Showing {(currentPage - 1) * pageSize + 1} to{' '}
+            {Math.min(currentPage * pageSize, galleriesData?.totalCount || 0)} of {galleriesData?.totalCount || 0}{' '}
+            galleries
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -566,13 +524,8 @@ const GalleryManagementPanel: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Gallery Details
-                </h3>
-                <Button
-                  variant="ghost"
-                  onClick={() => setViewingGallery(null)}
-                >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Gallery Details</h3>
+                <Button variant="ghost" onClick={() => setViewingGallery(null)}>
                   <X className="h-5 w-5" />
                 </Button>
               </div>
@@ -589,13 +542,9 @@ const GalleryManagementPanel: React.FC = () => {
                   </div>
                 )}
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    {viewingGallery.title}
-                  </h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{viewingGallery.title}</h4>
                   {viewingGallery.description && (
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      {viewingGallery.description}
-                    </p>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">{viewingGallery.description}</p>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -607,21 +556,15 @@ const GalleryManagementPanel: React.FC = () => {
                   </div>
                   <div>
                     <span className="font-medium text-gray-700 dark:text-gray-300">Privacy:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {viewingGallery.privacy_level}
-                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">{viewingGallery.privacy_level}</p>
                   </div>
                   <div>
                     <span className="font-medium text-gray-700 dark:text-gray-300">Photos:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {viewingGallery.photo_count || 0}
-                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">{viewingGallery.photo_count || 0}</p>
                   </div>
                   <div>
                     <span className="font-medium text-gray-700 dark:text-gray-300">Views:</span>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {viewingGallery.view_count || 0}
-                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">{viewingGallery.view_count || 0}</p>
                   </div>
                   <div>
                     <span className="font-medium text-gray-700 dark:text-gray-300">Created:</span>
@@ -664,10 +607,7 @@ const GalleryManagementPanel: React.FC = () => {
                   Manage Photos
                 </Button>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setViewingGallery(null)}
-              >
+              <Button variant="outline" onClick={() => setViewingGallery(null)}>
                 Close
               </Button>
             </div>
@@ -681,43 +621,32 @@ const GalleryManagementPanel: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Edit Gallery
-                </h3>
-                <Button
-                  variant="ghost"
-                  onClick={() => setEditingGallery(null)}
-                >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Gallery</h3>
+                <Button variant="ghost" onClick={() => setEditingGallery(null)}>
                   <X className="h-5 w-5" />
                 </Button>
               </div>
             </div>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const updates = {
-                title: formData.get('title') as string,
-                description: formData.get('description') as string,
-                privacy_level: formData.get('privacy_level') as Gallery['privacy_level'],
-                is_featured: formData.get('is_featured') === 'on'
-              };
-              updateGalleryMutation.mutate({ id: editingGallery.id, updates });
-            }}>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const updates = {
+                  title: formData.get('title') as string,
+                  description: formData.get('description') as string,
+                  privacy_level: formData.get('privacy_level') as Gallery['privacy_level'],
+                  is_featured: formData.get('is_featured') === 'on',
+                };
+                updateGalleryMutation.mutate({ id: editingGallery.id, updates });
+              }}
+            >
               <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Title
-                  </label>
-                  <Input
-                    name="title"
-                    defaultValue={editingGallery.title}
-                    required
-                  />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                  <Input name="title" defaultValue={editingGallery.title} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
                   <textarea
                     name="description"
                     defaultValue={editingGallery.description || ''}
@@ -754,17 +683,10 @@ const GalleryManagementPanel: React.FC = () => {
                 </div>
               </div>
               <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setEditingGallery(null)}
-                >
+                <Button type="button" variant="outline" onClick={() => setEditingGallery(null)}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={updateGalleryMutation.isPending}
-                >
+                <Button type="submit" disabled={updateGalleryMutation.isPending}>
                   {updateGalleryMutation.isPending ? 'Saving...' : 'Save Changes'}
                 </Button>
               </div>
@@ -778,17 +700,12 @@ const GalleryManagementPanel: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Create New Gallery
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Create New Gallery</h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Gallery creation functionality will be implemented here.
               </p>
               <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowCreateModal(false)}
-                >
+                <Button variant="outline" onClick={() => setShowCreateModal(false)}>
                   Close
                 </Button>
               </div>
@@ -799,11 +716,7 @@ const GalleryManagementPanel: React.FC = () => {
 
       {/* Admin Photo Manager Modal */}
       {managingPhotos && (
-        <AdminPhotoManager
-          gallery={managingPhotos}
-          isOpen={!!managingPhotos}
-          onClose={() => setManagingPhotos(null)}
-        />
+        <AdminPhotoManager gallery={managingPhotos} isOpen={!!managingPhotos} onClose={() => setManagingPhotos(null)} />
       )}
     </div>
   );

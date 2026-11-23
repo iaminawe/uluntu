@@ -141,36 +141,40 @@ export function createMockAuthContext(overrides: any = {}) {
  * @param options - Configuration options for the wrapper
  * @returns Test wrapper component
  */
-export function createTestProviders(options: {
-  queryClient?: any;
-  store?: any;
-  router?: boolean;
-} = {}) {
+export function createTestProviders(
+  options: {
+    queryClient?: any;
+    store?: any;
+    router?: boolean;
+  } = {}
+) {
   const { QueryClient, QueryClientProvider } = require('@tanstack/react-query');
   const { Provider } = require('react-redux');
   const { BrowserRouter } = require('react-router-dom');
   const React = require('react');
-  
-  const queryClient = options.queryClient || new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-  
+
+  const queryClient =
+    options.queryClient ||
+    new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
   return function TestWrapper({ children }: { children: React.ReactNode }) {
     let wrappedChildren = children;
-    
+
     if (options.store) {
       wrappedChildren = React.createElement(Provider, { store: options.store }, wrappedChildren);
     }
-    
+
     wrappedChildren = React.createElement(QueryClientProvider, { client: queryClient }, wrappedChildren);
-    
+
     if (options.router !== false) {
       wrappedChildren = React.createElement(BrowserRouter, {}, wrappedChildren);
     }
-    
+
     return wrappedChildren;
   };
 }

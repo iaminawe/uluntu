@@ -1,7 +1,7 @@
 /**
  * Integration tests for Admin Features API
  * These tests will validate the API functionality once it's properly implemented
- * 
+ *
  * @note These tests are designed to run against the actual database
  * @requires Database with admin_features schema applied
  * @requires Test user with superadmin role
@@ -38,31 +38,19 @@ describe('Admin Features API Integration Tests', () => {
 
   beforeEach(async () => {
     // Clean up any existing test data
-    await supabase
-      .from('admin_feature_translations')
-      .delete()
-      .like('feature_id', 'test-%');
-    
-    await supabase
-      .from('admin_features')
-      .delete()
-      .like('feature_key', 'test_%');
+    await supabase.from('admin_feature_translations').delete().like('feature_id', 'test-%');
+
+    await supabase.from('admin_features').delete().like('feature_key', 'test_%');
   });
 
   afterEach(async () => {
     // Clean up test data after each test
     if (testTranslationId) {
-      await supabase
-        .from('admin_feature_translations')
-        .delete()
-        .eq('id', testTranslationId);
+      await supabase.from('admin_feature_translations').delete().eq('id', testTranslationId);
     }
-    
+
     if (testFeatureId) {
-      await supabase
-        .from('admin_features')
-        .delete()
-        .eq('id', testFeatureId);
+      await supabase.from('admin_features').delete().eq('id', testFeatureId);
     }
   });
 
@@ -71,7 +59,7 @@ describe('Admin Features API Integration Tests', () => {
       const newFeature = {
         feature_key: 'test_feature_create',
         enabled: false,
-        config: { maxItems: 10, requireApproval: true }
+        config: { maxItems: 10, requireApproval: true },
       };
 
       const result = await adminFeaturesApi.createFeature(newFeature);
@@ -83,7 +71,7 @@ describe('Admin Features API Integration Tests', () => {
         enabled: false,
         config: { maxItems: 10, requireApproval: true },
         created_at: expect.any(String),
-        updated_at: expect.any(String)
+        updated_at: expect.any(String),
       });
     });
 
@@ -92,7 +80,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_list',
         enabled: true,
-        config: { testValue: 'test' }
+        config: { testValue: 'test' },
       });
       testFeatureId = testFeature.id;
 
@@ -100,7 +88,7 @@ describe('Admin Features API Integration Tests', () => {
 
       expect(Array.isArray(features)).toBe(true);
       expect(features.length).toBeGreaterThan(0);
-      
+
       const createdFeature = features.find((f: any) => f.id === testFeatureId);
       expect(createdFeature).toBeDefined();
       expect(createdFeature?.feature_key).toBe('test_feature_list');
@@ -111,7 +99,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_single',
         enabled: true,
-        config: { singleTest: true }
+        config: { singleTest: true },
       });
       testFeatureId = testFeature.id;
 
@@ -127,13 +115,13 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_update',
         enabled: false,
-        config: { original: true }
+        config: { original: true },
       });
       testFeatureId = testFeature.id;
 
       const updates = {
         enabled: true,
-        config: { updated: true, newValue: 'test' }
+        config: { updated: true, newValue: 'test' },
       };
 
       const result = await adminFeaturesApi.updateFeature('test_feature_update', updates);
@@ -150,7 +138,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_toggle',
         enabled: false,
-        config: {}
+        config: {},
       });
       testFeatureId = testFeature.id;
 
@@ -170,7 +158,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_check',
         enabled: true,
-        config: {}
+        config: {},
       });
       testFeatureId = testFeature.id;
 
@@ -188,7 +176,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_config',
         enabled: true,
-        config: { original: true, keepThis: 'value' }
+        config: { original: true, keepThis: 'value' },
       });
       testFeatureId = testFeature.id;
 
@@ -204,7 +192,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_delete',
         enabled: true,
-        config: {}
+        config: {},
       });
       testFeatureId = testFeature.id;
 
@@ -215,7 +203,7 @@ describe('Admin Features API Integration Tests', () => {
       // Verify deletion
       const deletedFeature = await adminFeaturesApi.getFeature('test_feature_delete');
       expect(deletedFeature).toBeNull();
-      
+
       testFeatureId = ''; // Reset since it's deleted
     });
   });
@@ -226,7 +214,7 @@ describe('Admin Features API Integration Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'test_feature_translations',
         enabled: true,
-        config: {}
+        config: {},
       });
       testFeatureId = testFeature.id;
     });
@@ -236,14 +224,10 @@ describe('Admin Features API Integration Tests', () => {
         title: 'Test Feature',
         description: 'A test feature for validation',
         createButton: 'Create Test',
-        editButton: 'Edit Test'
+        editButton: 'Edit Test',
       };
 
-      const result = await adminFeaturesApi.upsertFeatureTranslation(
-        testFeatureId,
-        'en',
-        translationData
-      );
+      const result = await adminFeaturesApi.upsertFeatureTranslation(testFeatureId, 'en', translationData);
 
       testTranslationId = result.id;
 
@@ -253,7 +237,7 @@ describe('Admin Features API Integration Tests', () => {
         language_code: 'en',
         translations: translationData,
         created_at: expect.any(String),
-        updated_at: expect.any(String)
+        updated_at: expect.any(String),
       });
     });
 
@@ -261,12 +245,12 @@ describe('Admin Features API Integration Tests', () => {
       // Create test translations
       await adminFeaturesApi.upsertFeatureTranslation(testFeatureId, 'en', {
         title: 'English Title',
-        description: 'English Description'
+        description: 'English Description',
       });
 
       await adminFeaturesApi.upsertFeatureTranslation(testFeatureId, 'es', {
         title: 'Título Español',
-        description: 'Descripción Español'
+        description: 'Descripción Español',
       });
 
       const translations = await adminFeaturesApi.getFeatureTranslations(testFeatureId);
@@ -279,12 +263,12 @@ describe('Admin Features API Integration Tests', () => {
 
       expect(englishTranslation?.translations).toMatchObject({
         title: 'English Title',
-        description: 'English Description'
+        description: 'English Description',
       });
 
       expect(spanishTranslation?.translations).toMatchObject({
         title: 'Título Español',
-        description: 'Descripción Español'
+        description: 'Descripción Español',
       });
     });
 
@@ -292,7 +276,7 @@ describe('Admin Features API Integration Tests', () => {
       // Create initial translation
       const initial = await adminFeaturesApi.upsertFeatureTranslation(testFeatureId, 'en', {
         title: 'Original Title',
-        description: 'Original Description'
+        description: 'Original Description',
       });
 
       testTranslationId = initial.id;
@@ -301,14 +285,14 @@ describe('Admin Features API Integration Tests', () => {
       const updated = await adminFeaturesApi.upsertFeatureTranslation(testFeatureId, 'en', {
         title: 'Updated Title',
         description: 'Updated Description',
-        newField: 'New Content'
+        newField: 'New Content',
       });
 
       expect(updated.id).toBe(initial.id); // Should be same record
       expect(updated.translations).toMatchObject({
         title: 'Updated Title',
         description: 'Updated Description',
-        newField: 'New Content'
+        newField: 'New Content',
       });
     });
   });
@@ -327,24 +311,22 @@ describe('Admin Features API Integration Tests', () => {
       await adminFeaturesApi.createFeature({
         feature_key: 'duplicate_test',
         enabled: true,
-        config: {}
+        config: {},
       });
 
-      await expect(adminFeaturesApi.createFeature({
-        feature_key: 'duplicate_test',
-        enabled: false,
-        config: {}
-      })).rejects.toThrow();
+      await expect(
+        adminFeaturesApi.createFeature({
+          feature_key: 'duplicate_test',
+          enabled: false,
+          config: {},
+        })
+      ).rejects.toThrow();
     });
 
     it('should handle invalid translation data', async () => {
       // This should test validation of translation data
       // The specific behavior depends on implementation
-      await expect(adminFeaturesApi.upsertFeatureTranslation(
-        'invalid-feature-id',
-        'en',
-        {}
-      )).rejects.toThrow();
+      await expect(adminFeaturesApi.upsertFeatureTranslation('invalid-feature-id', 'en', {})).rejects.toThrow();
     });
   });
 
@@ -360,22 +342,24 @@ describe('Admin Features API Integration Tests', () => {
   describe('Performance', () => {
     it('should handle large numbers of features efficiently', async () => {
       const startTime = Date.now();
-      
+
       // Create multiple features
       const features = [];
       for (let i = 0; i < 50; i++) {
-        features.push(adminFeaturesApi.createFeature({
-          feature_key: `perf_test_${i}`,
-          enabled: i % 2 === 0,
-          config: { testIndex: i }
-        }));
+        features.push(
+          adminFeaturesApi.createFeature({
+            feature_key: `perf_test_${i}`,
+            enabled: i % 2 === 0,
+            config: { testIndex: i },
+          })
+        );
       }
 
       await Promise.all(features);
-      
+
       // Retrieve all features
       const allFeatures = await adminFeaturesApi.getFeatures();
-      
+
       const endTime = Date.now();
       const duration = endTime - startTime;
 
@@ -383,10 +367,7 @@ describe('Admin Features API Integration Tests', () => {
       expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
 
       // Clean up performance test data
-      await supabase
-        .from('admin_features')
-        .delete()
-        .like('feature_key', 'perf_test_%');
+      await supabase.from('admin_features').delete().like('feature_key', 'perf_test_%');
     });
   });
 });
@@ -400,12 +381,14 @@ describe('Admin Features Security Tests', () => {
     it('should sanitize feature keys', async () => {
       // Test that malicious input is properly handled
       const maliciousKey = "test'; DROP TABLE admin_features; --";
-      
-      await expect(adminFeaturesApi.createFeature({
-        feature_key: maliciousKey,
-        enabled: true,
-        config: {}
-      })).rejects.toThrow();
+
+      await expect(
+        adminFeaturesApi.createFeature({
+          feature_key: maliciousKey,
+          enabled: true,
+          config: {},
+        })
+      ).rejects.toThrow();
     });
 
     it('should validate configuration data types', async () => {
@@ -413,13 +396,13 @@ describe('Admin Features Security Tests', () => {
       const feature = await adminFeaturesApi.createFeature({
         feature_key: 'validation_test',
         enabled: true,
-        config: { number: 42, string: 'test', boolean: true }
+        config: { number: 42, string: 'test', boolean: true },
       });
 
       expect(feature.config).toEqual({
         number: 42,
         string: 'test',
-        boolean: true
+        boolean: true,
       });
     });
 
@@ -427,20 +410,16 @@ describe('Admin Features Security Tests', () => {
       const testFeature = await adminFeaturesApi.createFeature({
         feature_key: 'xss_test',
         enabled: true,
-        config: {}
+        config: {},
       });
 
       const maliciousTranslation = {
         title: '<script>alert("XSS")</script>',
-        description: '<img src="x" onerror="alert(\'XSS\')">'
+        description: '<img src="x" onerror="alert(\'XSS\')">',
       };
 
       // The system should either sanitize or reject malicious content
-      const result = await adminFeaturesApi.upsertFeatureTranslation(
-        testFeature.id,
-        'en',
-        maliciousTranslation
-      );
+      const result = await adminFeaturesApi.upsertFeatureTranslation(testFeature.id, 'en', maliciousTranslation);
 
       // Verify that scripts are not executable (implementation-dependent)
       expect(result.translations.title).not.toContain('<script>');
@@ -453,7 +432,7 @@ describe('Admin Features Security Tests', () => {
       const feature = await adminFeaturesApi.createFeature({
         feature_key: 'audit_test',
         enabled: true,
-        config: {}
+        config: {},
       });
 
       // Check that audit log entry was created
@@ -472,12 +451,12 @@ describe('Admin Features Security Tests', () => {
       const feature = await adminFeaturesApi.createFeature({
         feature_key: 'audit_config_test',
         enabled: true,
-        config: { original: true }
+        config: { original: true },
       });
 
       await adminFeaturesApi.updateFeatureConfig('audit_config_test', {
         updated: true,
-        newValue: 42
+        newValue: 42,
       });
 
       // Check that update was logged

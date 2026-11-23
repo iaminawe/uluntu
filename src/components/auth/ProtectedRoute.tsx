@@ -30,7 +30,7 @@ export default function ProtectedRoute({ children, requiredRoles }: ProtectedRou
   // If specific roles are required, check if user has at least one of them
   if (requiredRoles && requiredRoles.length > 0) {
     const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
-    
+
     if (!hasRequiredRole) {
       // Redirect to unauthorized page or home
       return <Navigate to="/unauthorized" replace />;

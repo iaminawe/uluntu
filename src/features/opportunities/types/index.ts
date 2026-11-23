@@ -39,7 +39,7 @@ export interface OpportunityGallery {
   attached_by?: string;
   created_at: string;
   updated_at?: string;
-  
+
   // Gallery details (joined data)
   gallery?: Gallery & {
     owner_name?: string;

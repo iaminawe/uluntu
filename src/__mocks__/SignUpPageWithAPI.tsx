@@ -50,7 +50,7 @@ const SignUpPageWithAPI = () => {
           // Success
           setSuccess(true);
           console.log('Registration successful!');
-          
+
           // Create member profile
           await membersApi.create({
             id: data.user.id,
@@ -74,13 +74,7 @@ const SignUpPageWithAPI = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-          />
+          <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} />
           {emailError && <p className="error">{emailError}</p>}
         </div>
         <div>
@@ -89,7 +83,7 @@ const SignUpPageWithAPI = () => {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             disabled={loading}
           />
           {passwordError && <p className="error">{passwordError}</p>}

@@ -12,42 +12,30 @@ import { useEventsHybrid } from '@/features/events/hooks/useEventsHybrid';
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-  
+
   // Use hybrid approach: React Query for data, Redux for UI state
-  const {
-    events,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    setSearchTerm
-  } = useEventsHybrid();
-  
+  const { events, isLoading, isError, error, refetch, setSearchTerm } = useEventsHybrid();
+
   const hasEvents = events && events.length > 0;
 
-  
   return (
     <>
       <Helmet>
         <title>Tech Events - Uluntu</title>
         <meta name="description" content="Upcoming tech events, workshops, and meetups in the Kootenay region" />
       </Helmet>
-      
+
       <PageHeader />
-      
+
       <ContentContainer>
-        <ActionBar 
-          onSearch={setSearchTerm} 
-          viewMode={viewMode} 
-          onViewModeChange={setViewMode} 
-        />
-        
+        <ActionBar onSearch={setSearchTerm} viewMode={viewMode} onViewModeChange={setViewMode} />
+
         {isLoading ? (
           <SkeletonGrid count={4} columns={{ sm: 1, md: 2, lg: 2 }} />
         ) : isError ? (
-          <QueryError 
-            error={error ? new Error(String(error)) : new Error('Failed to load events')} 
-            retry={refetch} 
+          <QueryError
+            error={error ? new Error(String(error)) : new Error('Failed to load events')}
+            retry={refetch}
             message="We couldn't load the events. Please try again."
           />
         ) : !hasEvents ? (
@@ -56,22 +44,14 @@ export default function EventsPage() {
             description="There are no upcoming events scheduled at this time."
             primaryActionUrl="/events/create"
             primaryAction={{
-              text: "Create an Event",
-              onClick: () => console.log('Navigate to create event')
+              text: 'Create an Event',
+              onClick: () => console.log('Navigate to create event'),
             }}
           />
         ) : viewMode === 'list' ? (
-          <EventsList 
-            parentEvents={events}
-            parentLoading={isLoading}
-            parentError={error?.message || null}
-          />
+          <EventsList parentEvents={events} parentLoading={isLoading} parentError={error?.message || null} />
         ) : (
-          <EventsCalendar 
-            events={events}
-            isLoading={isLoading}
-            error={error}
-          />
+          <EventsCalendar events={events} isLoading={isLoading} error={error} />
         )}
       </ContentContainer>
     </>

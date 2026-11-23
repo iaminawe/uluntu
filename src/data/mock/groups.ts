@@ -67,7 +67,8 @@ export const groups: Group[] = [
     id: '1',
     name: 'Kootenay Coders Collective',
     description: 'A community of developers, designers, and tech enthusiasts in the Kootenay region.',
-    longDescription: 'The Kootenay Coders Collective brings together developers, designers, and tech enthusiasts from across the Kootenay region to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
+    longDescription:
+      'The Kootenay Coders Collective brings together developers, designers, and tech enthusiasts from across the Kootenay region to share knowledge, collaborate on projects, and build a stronger tech community. We host regular meetups, workshops, and hackathons to foster learning and innovation.',
     heroImage: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg',
     coverImage: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg',
     visibility: 'open',
@@ -86,7 +87,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
         role: 'admin',
         joinedDate: '2023-01-15',
-        title: 'AI Research Lead'
+        title: 'AI Research Lead',
       },
       {
         id: '2',
@@ -94,7 +95,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
         role: 'member',
         joinedDate: '2023-01-20',
-        title: 'ML Engineer'
+        title: 'ML Engineer',
       },
       {
         id: '4',
@@ -102,8 +103,8 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'member',
         joinedDate: '2023-02-05',
-        title: 'Frontend Developer'
-      }
+        title: 'Frontend Developer',
+      },
     ],
     events: [
       {
@@ -111,15 +112,15 @@ export const groups: Group[] = [
         title: 'Kootenay Tech Conference 2025',
         date: '2025-06-15',
         description: 'Annual tech conference bringing together the Kootenay tech community.',
-        image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg'
+        image: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg',
       },
       {
         id: '5',
         title: 'Community Coding Night - Open Source Contributions',
         date: '2025-04-20',
         description: 'Join us for a night of collaborative coding and contributing to open source projects.',
-        image: 'https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg'
-      }
+        image: 'https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg',
+      },
     ],
     resources: [
       {
@@ -128,7 +129,7 @@ export const groups: Group[] = [
         type: 'guide',
         url: 'https://example.com/guides/ai-kootenays',
         addedDate: '2024-02-10',
-        description: 'A comprehensive guide to AI resources and opportunities in the Kootenay region.'
+        description: 'A comprehensive guide to AI resources and opportunities in the Kootenay region.',
       },
       {
         id: '2',
@@ -136,8 +137,8 @@ export const groups: Group[] = [
         type: 'tutorial',
         url: 'https://example.com/tutorials/local-dev-setup',
         addedDate: '2024-01-15',
-        description: 'Step-by-step tutorial for setting up a modern development environment.'
-      }
+        description: 'Step-by-step tutorial for setting up a modern development environment.',
+      },
     ],
     posts: [
       {
@@ -146,10 +147,10 @@ export const groups: Group[] = [
         excerpt: 'Looking back at the growth and achievements of the Kootenay Coders Collective in its first year.',
         author: {
           name: 'Sarah Johnson',
-          image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+          image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
         },
         date: '2024-01-15',
-        image: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg'
+        image: 'https://images.pexels.com/photos/3182746/pexels-photo-3182746.jpeg',
       },
       {
         id: '2',
@@ -157,17 +158,18 @@ export const groups: Group[] = [
         excerpt: 'Challenges and opportunities in developing a thriving tech community in the Kootenays.',
         author: {
           name: 'Michael Chen',
-          image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+          image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
         },
-        date: '2024-02-20'
-      }
-    ]
+        date: '2024-02-20',
+      },
+    ],
   },
   {
     id: '2',
     name: 'Nelson Digital Nomads',
     description: 'A community for remote workers and digital nomads living in or visiting the Nelson area.',
-    longDescription: 'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Kootenay lifestyle.',
+    longDescription:
+      'Nelson Digital Nomads connects remote workers, freelancers, and digital nomads in the Nelson area. We organize coworking sessions, networking events, and outdoor activities to help members build professional connections while enjoying the Kootenay lifestyle.',
     heroImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
     coverImage: 'https://images.pexels.com/photos/7014337/pexels-photo-7014337.jpeg',
     visibility: 'open',
@@ -186,7 +188,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'admin',
         joinedDate: '2023-03-10',
-        title: 'Frontend Developer'
+        title: 'Frontend Developer',
       },
       {
         id: '5',
@@ -194,8 +196,8 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'member',
         joinedDate: '2023-03-15',
-        title: 'UX/UI Designer'
-      }
+        title: 'UX/UI Designer',
+      },
     ],
     events: [
       {
@@ -203,15 +205,16 @@ export const groups: Group[] = [
         title: 'Nelson Farmers Market - Summer Season Opening',
         date: '2025-05-01',
         description: 'Join us for the opening day of the Nelson Farmers Market.',
-        image: 'https://images.pexels.com/photos/2284170/pexels-photo-2284170.jpeg'
-      }
-    ]
+        image: 'https://images.pexels.com/photos/2284170/pexels-photo-2284170.jpeg',
+      },
+    ],
   },
   {
     id: '3',
     name: 'Kootenay Tech Mentorship',
     description: 'Connecting experienced tech professionals with newcomers and students in the Kootenay region.',
-    longDescription: 'Kootenay Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Kootenays.',
+    longDescription:
+      'Kootenay Tech Mentorship aims to foster growth in the local tech ecosystem by pairing experienced professionals with newcomers, career changers, and students. Through structured mentorship programs, workshops, and networking events, we help build the next generation of tech talent in the Kootenays.',
     heroImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
     coverImage: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
     visibility: 'closed',
@@ -230,7 +233,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
         role: 'admin',
         joinedDate: '2023-05-20',
-        title: 'AI Research Lead'
+        title: 'AI Research Lead',
       },
       {
         id: '3',
@@ -238,15 +241,16 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
         role: 'member',
         joinedDate: '2023-05-25',
-        title: 'Data Scientist'
-      }
-    ]
+        title: 'Data Scientist',
+      },
+    ],
   },
   {
     id: '4',
     name: 'Kootenay Hikers & Adventurers',
     description: 'A group for tech professionals who love exploring the outdoors in the Kootenay region.',
-    longDescription: 'Kootenay Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Kootenay landscape.',
+    longDescription:
+      'Kootenay Hikers & Adventurers brings together tech professionals who share a passion for outdoor activities. We organize regular hikes, camping trips, and outdoor adventures, combining our love for technology and nature in the beautiful Kootenay landscape.',
     heroImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
     coverImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
     visibility: 'open',
@@ -265,7 +269,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
         role: 'admin',
         joinedDate: '2023-06-15',
-        title: 'Data Scientist'
+        title: 'Data Scientist',
       },
       {
         id: '2',
@@ -273,7 +277,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
         role: 'member',
         joinedDate: '2023-06-20',
-        title: 'ML Engineer'
+        title: 'ML Engineer',
       },
       {
         id: '5',
@@ -281,8 +285,8 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'member',
         joinedDate: '2023-06-25',
-        title: 'UX/UI Designer'
-      }
+        title: 'UX/UI Designer',
+      },
     ],
     events: [
       {
@@ -290,15 +294,16 @@ export const groups: Group[] = [
         title: 'Rossland Mountain Film Festival',
         date: '2025-04-30',
         description: 'Annual film festival celebrating mountain culture and outdoor adventure.',
-        image: 'https://images.pexels.com/photos/2686558/pexels-photo-2686558.jpeg'
-      }
-    ]
+        image: 'https://images.pexels.com/photos/2686558/pexels-photo-2686558.jpeg',
+      },
+    ],
   },
   {
     id: '5',
     name: 'West Kootenay Arts Council',
     description: 'Supporting the intersection of art and technology in the West Kootenay region.',
-    longDescription: 'The West Kootenay Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
+    longDescription:
+      'The West Kootenay Arts Council promotes collaboration between artists and technologists in the region. Through exhibitions, workshops, and funding opportunities, we support projects that blend creative expression with technological innovation.',
     heroImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
     coverImage: 'https://images.pexels.com/photos/1509534/pexels-photo-1509534.jpeg',
     visibility: 'open',
@@ -317,7 +322,7 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
         role: 'admin',
         joinedDate: '2023-08-10',
-        title: 'UX/UI Designer'
+        title: 'UX/UI Designer',
       },
       {
         id: '4',
@@ -325,8 +330,8 @@ export const groups: Group[] = [
         image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         role: 'member',
         joinedDate: '2023-08-15',
-        title: 'Frontend Developer'
-      }
+        title: 'Frontend Developer',
+      },
     ],
     events: [
       {
@@ -334,8 +339,8 @@ export const groups: Group[] = [
         title: 'Kaslo Jazz Etc. Festival 2025',
         date: '2025-07-30',
         description: 'Annual music festival featuring jazz, blues, and more on the shores of Kootenay Lake.',
-        image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg'
-      }
-    ]
-  }
+        image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg',
+      },
+    ],
+  },
 ];

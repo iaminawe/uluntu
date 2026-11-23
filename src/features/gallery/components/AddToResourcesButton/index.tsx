@@ -19,7 +19,7 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
   galleryDescription,
   galleryImage,
   className = '',
-  variant = 'default'
+  variant = 'default',
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -47,20 +47,19 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
         featured: false,
         contributorId: user.id,
         groupId: undefined, // Could be enhanced to support group association
-        tags: ['gallery', 'photos', 'community']
+        tags: ['gallery', 'photos', 'community'],
       });
 
       setIsAdded(true);
-      
+
       // Reset success state after 3 seconds
       setTimeout(() => {
         setIsAdded(false);
       }, 3000);
-
     } catch (err) {
       console.error('Error adding gallery to resources:', err);
       setError('Failed to add gallery to resources. Please try again.');
-      
+
       // Clear error after 5 seconds
       setTimeout(() => {
         setError(null);
@@ -76,9 +75,7 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
     return (
       <div className={`flex items-center gap-2 text-red-600 ${className}`}>
         <AlertCircle className="w-4 h-4" />
-        <span className={isCompact ? 'text-sm' : 'text-base'}>
-          {error}
-        </span>
+        <span className={isCompact ? 'text-sm' : 'text-base'}>{error}</span>
       </div>
     );
   }
@@ -87,9 +84,7 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
     return (
       <div className={`flex items-center gap-2 text-green-600 ${className}`}>
         <Check className="w-4 h-4" />
-        <span className={isCompact ? 'text-sm' : 'text-base'}>
-          Added to Resources!
-        </span>
+        <span className={isCompact ? 'text-sm' : 'text-base'}>Added to Resources!</span>
       </div>
     );
   }
@@ -100,9 +95,10 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
       disabled={isAdding || !user}
       className={`
         flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
-        ${!user 
-          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-          : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400'
+        ${
+          !user
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400'
         }
         ${isCompact ? 'px-3 py-1 text-sm' : ''}
         ${className}
@@ -114,9 +110,7 @@ export const AddToResourcesButton: React.FC<AddToResourcesButtonProps> = ({
       ) : (
         <BookmarkPlus className={isCompact ? 'w-4 h-4' : 'w-5 h-5'} />
       )}
-      <span>
-        {isAdding ? 'Adding...' : 'Add to Resources'}
-      </span>
+      <span>{isAdding ? 'Adding...' : 'Add to Resources'}</span>
     </button>
   );
 };

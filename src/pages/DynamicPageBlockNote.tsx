@@ -31,9 +31,13 @@ interface PageData {
 
 // Helper to detect if data is in BlockNote format
 const isBlockNoteFormat = (content: any): boolean => {
-  return Array.isArray(content) && content.length > 0 &&
-         content[0] && typeof content[0] === 'object' &&
-         ('type' in content[0] || 'id' in content[0]);
+  return (
+    Array.isArray(content) &&
+    content.length > 0 &&
+    content[0] &&
+    typeof content[0] === 'object' &&
+    ('type' in content[0] || 'id' in content[0])
+  );
 };
 
 export default function DynamicPageBlockNote() {
@@ -79,19 +83,26 @@ export default function DynamicPageBlockNote() {
 
       return !error && data && data.length > 0;
     },
-    enabled: !!user
+    enabled: !!user,
   });
 
   // Fetch page data
-  const { data: page, isLoading, error, refetch } = useQuery({
+  const {
+    data: page,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['dynamic-page-blocknote', slug, isAdmin],
     queryFn: async () => {
       const query = supabase
         .from('pages')
-        .select(`
+        .select(
+          `
           *,
           author:members!author_id(name)
-        `)
+        `
+        )
         .eq('slug', slug);
 
       // Only filter by 'published' status if user is not admin
@@ -126,13 +137,13 @@ export default function DynamicPageBlockNote() {
           {
             type: 'paragraph',
             content: '',
-          }
+          },
         ];
       }
 
       return data as PageData;
     },
-    enabled: isAdmin !== undefined
+    enabled: isAdmin !== undefined,
   });
 
   // Initialize edited data when page loads
@@ -157,7 +168,7 @@ export default function DynamicPageBlockNote() {
           meta_description: editedMetaDescription,
           content: editedContent,
           version: (page.version || 1) + 1,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', page.id);
 
@@ -186,7 +197,7 @@ export default function DynamicPageBlockNote() {
         .from('pages')
         .update({
           status: 'draft',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', page.id);
 
@@ -205,11 +216,7 @@ export default function DynamicPageBlockNote() {
 
     try {
       // Check if already in menu
-      const { data: existing } = await supabase
-        .from('menu_items')
-        .select('id')
-        .eq('url', `/${page.slug}`)
-        .single();
+      const { data: existing } = await supabase.from('menu_items').select('id').eq('url', `/${page.slug}`).single();
 
       if (existing) {
         toast.error('This page is already in the menu');
@@ -229,17 +236,15 @@ export default function DynamicPageBlockNote() {
       const nextOrder = (maxOrder?.sort_order || 0) + 1;
 
       // Add to menu
-      const { error } = await supabase
-        .from('menu_items')
-        .insert({
-          label: page.title,
-          url: `/${page.slug}`,
-          menu_type: 'main',
-          is_enabled: true,
-          sort_order: nextOrder,
-          target: '_self',
-          visibility: 'public'
-        });
+      const { error } = await supabase.from('menu_items').insert({
+        label: page.title,
+        url: `/${page.slug}`,
+        menu_type: 'main',
+        is_enabled: true,
+        sort_order: nextOrder,
+        target: '_self',
+        visibility: 'public',
+      });
 
       if (error) throw error;
 
@@ -293,7 +298,9 @@ export default function DynamicPageBlockNote() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Page Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">The page you're looking for doesn't exist or is not published.</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            The page you're looking for doesn't exist or is not published.
+          </p>
           <Button onClick={() => navigate('/')} variant="primary">
             Go to Home
           </Button>
@@ -312,20 +319,11 @@ export default function DynamicPageBlockNote() {
               <div className="flex items-center space-x-4">
                 {isEditing ? (
                   <>
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onClick={handleSave}
-                      disabled={isSaving}
-                    >
+                    <Button size="sm" variant="primary" onClick={handleSave} disabled={isSaving}>
                       <Save className="h-4 w-4 mr-1" />
                       {isSaving ? 'Saving...' : 'Save'}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleCancel}
-                    >
+                    <Button size="sm" variant="ghost" onClick={handleCancel}>
                       <X className="h-4 w-4 mr-1" />
                       Cancel
                     </Button>
@@ -360,16 +358,8 @@ export default function DynamicPageBlockNote() {
                       <Menu className="h-4 w-4 mr-1" />
                       Add to Menu
                     </Button>
-                    <a
-                      href="/admin/menu-management"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        title="Open menu management in new tab"
-                      >
+                    <a href="/admin/menu-management" target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="ghost" title="Open menu management in new tab">
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Menu Manager
                       </Button>
@@ -379,17 +369,21 @@ export default function DynamicPageBlockNote() {
               </div>
 
               <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                <span className={`px-2 py-1 rounded font-medium ${
-                  page.status === 'published'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    : page.status === 'draft'
-                    ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                    : 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded font-medium ${
+                    page.status === 'published'
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                      : page.status === 'draft'
+                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                        : 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
                   {page.status.charAt(0).toUpperCase() + page.status.slice(1)}
                 </span>
                 {page.is_system && (
-                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">System Page</span>
+                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">
+                    System Page
+                  </span>
                 )}
                 <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">
                   BlockNote Editor
@@ -419,7 +413,7 @@ export default function DynamicPageBlockNote() {
                   <input
                     type="text"
                     value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
+                    onChange={e => setEditedTitle(e.target.value)}
                     className="w-full text-4xl font-bold bg-transparent border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2 text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none"
                     placeholder="Enter page title..."
                   />
@@ -431,7 +425,7 @@ export default function DynamicPageBlockNote() {
                   </label>
                   <textarea
                     value={editedMetaDescription}
-                    onChange={(e) => setEditedMetaDescription(e.target.value)}
+                    onChange={e => setEditedMetaDescription(e.target.value)}
                     rows={2}
                     className="w-full text-lg bg-transparent border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2 text-slate-600 dark:text-slate-400 focus:border-blue-500 focus:outline-none resize-none"
                     placeholder="Enter meta description for SEO..."
@@ -445,8 +439,8 @@ export default function DynamicPageBlockNote() {
               {/* BlockNote Editor */}
               <BlockNoteEditor
                 initialContent={editedContent as PartialBlock[]}
-                onChange={(blocks) => setEditedContent(blocks)}
-                onSave={async (blocks) => {
+                onChange={blocks => setEditedContent(blocks)}
+                onSave={async blocks => {
                   setEditedContent(blocks);
                   await handleSave();
                 }}
@@ -456,9 +450,7 @@ export default function DynamicPageBlockNote() {
           ) : (
             <div className="container mx-auto max-w-4xl px-4">
               {/* Page Title */}
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-6">
-                {page.title}
-              </h1>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-6">{page.title}</h1>
 
               {/* BlockNote Renderer */}
               {editedContent && editedContent.length > 0 ? (
@@ -467,9 +459,7 @@ export default function DynamicPageBlockNote() {
                 <div className="text-center py-16">
                   <div className="text-slate-600 dark:text-slate-400">
                     <p className="text-xl mb-4">No content yet</p>
-                    {isAdmin && (
-                      <p className="text-sm">Double-click to start editing</p>
-                    )}
+                    {isAdmin && <p className="text-sm">Double-click to start editing</p>}
                   </div>
                 </div>
               )}

@@ -16,7 +16,7 @@ export const DeleteConversationModal: React.FC<DeleteConversationModalProps> = (
   onConfirm,
   conversationCount,
   isLoading = false,
-  conversationNames = []
+  conversationNames = [],
 }) => {
   if (!isOpen) return null;
 
@@ -48,10 +48,9 @@ export const DeleteConversationModal: React.FC<DeleteConversationModalProps> = (
         <div className="p-6">
           <div className="space-y-4">
             <p className="text-slate-600 dark:text-slate-400">
-              {isBulkDelete 
+              {isBulkDelete
                 ? `Are you sure you want to delete ${conversationCount} conversations?`
-                : 'Are you sure you want to delete this conversation?'
-              }
+                : 'Are you sure you want to delete this conversation?'}
             </p>
 
             {displayNames.length > 0 && (
@@ -73,7 +72,7 @@ export const DeleteConversationModal: React.FC<DeleteConversationModalProps> = (
 
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-400 rounded-lg p-3">
               <p className="text-sm text-amber-800 dark:text-amber-200">
-                <strong>Note:</strong> This will remove the conversation{isBulkDelete ? 's' : ''} from your view only. 
+                <strong>Note:</strong> This will remove the conversation{isBulkDelete ? 's' : ''} from your view only.
                 Other participants will still have access to the conversation{isBulkDelete ? 's' : ''}.
               </p>
             </div>

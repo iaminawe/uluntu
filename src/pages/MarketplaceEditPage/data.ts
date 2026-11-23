@@ -11,7 +11,7 @@ export const SAMPLE_LISTING: SampleListing = {
   location: 'Nelson, BC',
   tags: ['Apple', 'Laptop', 'Development'],
   status: 'published',
-  featured: true
+  featured: true,
 };
 
 // Initial form data state
@@ -30,5 +30,5 @@ export const initialFormData: FormData = {
   contactEmail: '',
   contactPhone: '',
   contactMethod: '',
-  showContactInfo: false
+  showContactInfo: false,
 };

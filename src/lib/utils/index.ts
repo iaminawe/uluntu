@@ -11,9 +11,9 @@ export { validateSlug, generateSlug as generateSlugSimple } from '@/utils/slugUt
 import { validateSlug as validateSlugFn } from '@/utils/slugUtils';
 
 // Basic content type definition
-export type ContentType = 
+export type ContentType =
   | 'members'
-  | 'companies' 
+  | 'companies'
   | 'events'
   | 'news'
   | 'opportunities'
@@ -45,59 +45,59 @@ export const slugUtils = {
   news: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   companies: {
     generate: (name: string) => generateSlug(name, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   events: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   opportunities: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   members: {
     generate: (name: string) => generateSlug(name, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   groups: {
     generate: (name: string) => generateSlug(name, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   resources: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   marketplace: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   pages: {
     generate: (title: string) => generateSlug(title, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
   },
   topics: {
     generate: (name: string) => generateSlug(name, { strict: true }),
     validate: (slug: string) => validateSlugFn(slug),
-    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' })
-  }
+    lookup: () => Promise.resolve({ data: null, foundBy: null, error: 'Not implemented' }),
+  },
 };
 
 // Helper functions
 function generateSlug(text: string, options: SlugOptions = {}): string {
   const { lowercase = true, separator = '-', strict = false } = options;
-  
+
   let slug = text
     .trim()
     .replace(/[^\w\s-]/g, '')

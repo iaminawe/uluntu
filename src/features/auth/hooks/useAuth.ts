@@ -7,7 +7,7 @@ import {
   setRoles,
   AuthState,
   User,
-  Session
+  Session,
 } from '../store/authSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { supabase } from '@/lib/supabase';
@@ -19,7 +19,7 @@ const convertSession = (supabaseSession: SupabaseSession): Session => {
   if (!converted) {
     converted = {
       access_token: supabaseSession.access_token,
-      expires_at: new Date(supabaseSession.expires_at || 0).toISOString()
+      expires_at: new Date(supabaseSession.expires_at || 0).toISOString(),
     };
     sessionCache.set(supabaseSession, converted);
   }
@@ -46,7 +46,7 @@ export const useAuth = () => {
 
       const response = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (!response) {
@@ -62,14 +62,16 @@ export const useAuth = () => {
       }
 
       if (data?.user && data?.session) {
-        dispatch(signInWithSession({
-          user: {
-            id: data.user.id,
-            email: data.user.email || '',
-            role: data.user.user_metadata?.role
-          },
-          session: convertSession(data.session)
-        }));
+        dispatch(
+          signInWithSession({
+            user: {
+              id: data.user.id,
+              email: data.user.email || '',
+              role: data.user.user_metadata?.role,
+            },
+            session: convertSession(data.session),
+          })
+        );
 
         // Role fetching is handled by SessionContextWithRedux
       } else {
@@ -84,7 +86,7 @@ export const useAuth = () => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
       });
 
       if (error) {
@@ -93,16 +95,18 @@ export const useAuth = () => {
       }
 
       if (data?.user && data?.session) {
-        dispatch(signInWithSession({
-          user: {
-            id: data.user.id,
-            email: data.user.email || '',
-            role: data.user.user_metadata?.role
-          },
-          session: convertSession(data.session)
-        }));
+        dispatch(
+          signInWithSession({
+            user: {
+              id: data.user.id,
+              email: data.user.email || '',
+              role: data.user.user_metadata?.role,
+            },
+            session: convertSession(data.session),
+          })
+        );
       }
-      
+
       return { data };
     } catch (err) {
       handleAuthError(dispatch, err);
@@ -133,7 +137,7 @@ export const useAuth = () => {
         dispatch(setAuthError(error.message));
         return { error };
       }
-      
+
       return { success: true };
     } catch (err) {
       handleAuthError(dispatch, err);
@@ -181,6 +185,6 @@ export const useAuth = () => {
     forgotPassword: resetPassword,
     resetPassword,
     refreshSession,
-    hasRole
+    hasRole,
   };
 };

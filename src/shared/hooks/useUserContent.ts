@@ -80,19 +80,19 @@ export function useUserGroups() {
         }
 
         let userGroups: UserGroup[] = [];
-        
+
         if (groupMemberships && groupMemberships.length > 0) {
           const groupIds = groupMemberships.map(gm => gm.group_id);
-          
+
           const { data: groups, error: groupsDataError } = await supabase
             .from('groups')
             .select('id, name, member_count')
             .in('id', groupIds);
-            
+
           if (groupsDataError) {
             throw groupsDataError;
           }
-          
+
           userGroups = groups || [];
         }
 
@@ -248,9 +248,9 @@ export function useUserMarketplaceItems() {
           title: item.title,
           price: 0, // Resources don't have prices
           condition: 'new' as const,
-          images: item.image ? [item.image] : []
+          images: item.image ? [item.image] : [],
         }));
-        
+
         setItems(transformedItems);
       } catch (err) {
         console.error('Error fetching user marketplace items:', err);

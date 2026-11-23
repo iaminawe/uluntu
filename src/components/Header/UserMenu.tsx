@@ -14,7 +14,7 @@ export default function UserMenu() {
   const userRoles = authState.roles.list;
   const isAdmin = userRoles.includes('admin') || userRoles.includes('superadmin');
   const navigate = useNavigate();
-  
+
   // Get the member profile for the current user
   const { data: member } = useMemberByUserId(user?.id);
 
@@ -68,9 +68,7 @@ export default function UserMenu() {
           {user ? (
             <>
               <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
-                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                  {user.email}
-                </p>
+                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user.email}</p>
               </div>
               {member && (
                 <Link

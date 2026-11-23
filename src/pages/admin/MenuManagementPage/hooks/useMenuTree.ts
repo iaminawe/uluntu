@@ -80,6 +80,6 @@ export const useMenuTree = ({ allMenuItems, activeTab }: UseMenuTreeProps) => {
     currentTabItems,
     menuCounts,
     getParentOptionsForItem,
-    getItemChildren
+    getItemChildren,
   };
 };

@@ -21,7 +21,7 @@ const HoverCard: React.FC<HoverCardProps> = ({
   link,
   tags = [],
   hoverEffect = 'zoom',
-  className = ''
+  className = '',
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -30,11 +30,15 @@ const HoverCard: React.FC<HoverCardProps> = ({
       className={`relative h-full overflow-hidden rounded-xl bg-slate-900 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      whileHover={hoverEffect === 'tilt' ? { 
-        rotateX: -5,
-        rotateY: 5,
-        scale: 1.02
-      } : {}}
+      whileHover={
+        hoverEffect === 'tilt'
+          ? {
+              rotateX: -5,
+              rotateY: 5,
+              scale: 1.02,
+            }
+          : {}
+      }
       transition={{ duration: 0.3 }}
       style={hoverEffect === 'tilt' ? { transformStyle: 'preserve-3d' } : {}}
     >
@@ -46,7 +50,7 @@ const HoverCard: React.FC<HoverCardProps> = ({
           className="w-full h-full object-cover"
           animate={{
             scale: isHovered && hoverEffect === 'zoom' ? 1.1 : 1,
-            x: isHovered && hoverEffect === 'slide' ? -20 : 0
+            x: isHovered && hoverEffect === 'slide' ? -20 : 0,
           }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         />
@@ -62,9 +66,7 @@ const HoverCard: React.FC<HoverCardProps> = ({
         {/* Category Badge */}
         {category && (
           <div className="absolute top-4 left-4 z-20">
-            <span className="px-3 py-1 bg-orange-500 text-white text-sm font-semibold rounded-full">
-              {category}
-            </span>
+            <span className="px-3 py-1 bg-orange-500 text-white text-sm font-semibold rounded-full">{category}</span>
           </div>
         )}
 
@@ -74,7 +76,7 @@ const HoverCard: React.FC<HoverCardProps> = ({
           <motion.h3
             className="text-2xl font-bold text-white mb-2"
             animate={{
-              y: isHovered ? -10 : 0
+              y: isHovered ? -10 : 0,
             }}
             transition={{ duration: 0.3 }}
           >
@@ -124,18 +126,8 @@ const HoverCard: React.FC<HoverCardProps> = ({
                   className="flex items-center text-orange-400 font-semibold"
                 >
                   <span>View Details</span>
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </motion.div>
               </>

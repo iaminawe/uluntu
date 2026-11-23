@@ -8,12 +8,12 @@ const FormActions: React.FC<FormActionsProps> = ({
   navigate,
   id,
   setShowDeleteConfirm,
-  setFormData
+  setFormData,
 }) => {
   // Determine the submit button text based on the form state
   const getSubmitText = () => {
     if (isSubmitting) return 'Saving...';
-    
+
     switch (formData.status) {
       case 'draft':
         return 'Save as Draft';
@@ -43,7 +43,7 @@ const FormActions: React.FC<FormActionsProps> = ({
           Delete
         </button>
       )}
-      
+
       <div className="flex items-center gap-4 ml-auto">
         {/* Cancel button */}
         <button
@@ -57,7 +57,7 @@ const FormActions: React.FC<FormActionsProps> = ({
         >
           Cancel
         </button>
-        
+
         {/* Publish/Unpublish button */}
         {formData.status === 'published' ? (
           <button
@@ -94,7 +94,7 @@ const FormActions: React.FC<FormActionsProps> = ({
             Publish
           </button>
         )}
-        
+
         {/* Submit button */}
         <button
           type="submit"

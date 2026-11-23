@@ -13,7 +13,7 @@ export const topicsQueryKeys = {
   detail: (id: string) => [...topicsQueryKeys.details(), id] as const,
   bySlug: (slug: string) => [...topicsQueryKeys.all, 'slug', slug] as const,
   analytics: () => [...topicsQueryKeys.all, 'analytics'] as const,
-  entityTopics: (entityType: TopicEntityType, entityId: string) => 
+  entityTopics: (entityType: TopicEntityType, entityId: string) =>
     [...topicsQueryKeys.all, 'entity', entityType, entityId] as const,
   contentCounts: (slug: string) => [...topicsQueryKeys.all, 'counts', slug] as const,
 };
@@ -32,10 +32,7 @@ export function useTopicsHybrid() {
 
   const topics = topicsQuery.data || [];
   const filteredTopics = filterTopics(topics, filters.search);
-  const sortedTopics = sortTopics(
-    filteredTopics, 
-    filters.sortBy === 'name' ? 'name' : 'sortOrder'
-  );
+  const sortedTopics = sortTopics(filteredTopics, filters.sortBy === 'name' ? 'name' : 'sortOrder');
 
   const setSearchTerm = (search?: string) => {
     dispatch(updateFilters({ search }));
@@ -121,8 +118,7 @@ export function useUpdateTopic() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<TopicFormData> }) => 
-      topicsApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<TopicFormData> }) => topicsApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: topicsQueryKeys.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: topicsQueryKeys.lists() });
@@ -145,18 +141,18 @@ export function useSetEntityTopics() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 
-      entityType, 
-      entityId, 
-      topicIds 
-    }: { 
-      entityType: TopicEntityType; 
-      entityId: string; 
-      topicIds: string[] 
+    mutationFn: ({
+      entityType,
+      entityId,
+      topicIds,
+    }: {
+      entityType: TopicEntityType;
+      entityId: string;
+      topicIds: string[];
     }) => topicsApi.setTopicsForEntity(entityType, entityId, topicIds),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: topicsQueryKeys.entityTopics(variables.entityType, variables.entityId) 
+      queryClient.invalidateQueries({
+        queryKey: topicsQueryKeys.entityTopics(variables.entityType, variables.entityId),
       });
       queryClient.invalidateQueries({ queryKey: topicsQueryKeys.analytics() });
     },

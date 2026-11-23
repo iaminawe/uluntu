@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+  type UseMutationResult,
+} from '@tanstack/react-query';
 import { groupsApi, type GroupInput } from '@/features/groups/api/groupsApi';
 import { Group as FrontendGroupType } from '../types'; // Import the main frontend Group type
 import { Group as FeatureGroupType } from '@/features/groups/types/index';
@@ -44,7 +50,7 @@ function adaptMockGroupToFeature(mockGroup: MockGroup): FeatureGroupType {
     members: mockGroup.members || [],
     events: mockGroup.events || [],
     created_at: mockGroup.created_at || new Date().toISOString(),
-    updated_at: mockGroup.updated_at || undefined
+    updated_at: mockGroup.updated_at || undefined,
   };
 }
 
@@ -57,24 +63,26 @@ interface MockQueries {
 
 // Mock queries implementation
 const mockQueries: MockQueries = {
-  useGroups: () => ({ 
-    data: (mockData.groups as MockGroup[]).map(adaptMockGroupToFeature), 
-    isLoading: false, 
-    error: null, 
-    isSuccess: true 
-  } as UseQueryResult<FeatureGroupType[], Error>),
+  useGroups: () =>
+    ({
+      data: (mockData.groups as MockGroup[]).map(adaptMockGroupToFeature),
+      isLoading: false,
+      error: null,
+      isSuccess: true,
+    }) as UseQueryResult<FeatureGroupType[], Error>,
   useGroupsWithFilters: (filters?: GroupFilters) => {
     let filteredData = mockData.groups as MockGroup[];
     if (filters) {
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
-        filteredData = filteredData.filter((group) =>
-          group.name.toLowerCase().includes(searchTerm) ||
-          (group.description && group.description.toLowerCase().includes(searchTerm))
+        filteredData = filteredData.filter(
+          group =>
+            group.name.toLowerCase().includes(searchTerm) ||
+            (group.description && group.description.toLowerCase().includes(searchTerm))
         );
       }
       if (filters.visibility && filters.visibility.length > 0) {
-        filteredData = filteredData.filter((group) => {
+        filteredData = filteredData.filter(group => {
           // Map visibility values from mock format to feature format
           const mapMockVisibility = (vis: string): 'public' | 'private' | 'members_only' => {
             if (vis === 'open' || vis === 'public') return 'public';
@@ -87,20 +95,20 @@ const mockQueries: MockQueries = {
         });
       }
     }
-    return { 
-      data: filteredData.map(adaptMockGroupToFeature), 
-      isLoading: false, 
-      error: null, 
-      isSuccess: true 
+    return {
+      data: filteredData.map(adaptMockGroupToFeature),
+      isLoading: false,
+      error: null,
+      isSuccess: true,
     } as UseQueryResult<FeatureGroupType[], Error>;
   },
   useGroup: (id?: string) => {
-    const group = mockData.groups.find((group) => group.id.toString() === id);
-    return { 
-      data: group ? adaptMockGroupToFeature(group as MockGroup) : null, 
-      isLoading: false, 
-      error: null, 
-      isSuccess: true 
+    const group = mockData.groups.find(group => group.id.toString() === id);
+    return {
+      data: group ? adaptMockGroupToFeature(group as MockGroup) : null,
+      isLoading: false,
+      error: null,
+      isSuccess: true,
     } as UseQueryResult<FeatureGroupType | null, Error>;
   },
 };
@@ -116,7 +124,7 @@ export type MockGroupMemberType = MainGroupMember;
 // useGroupEvents Hook
 
 export function useGroupEvents(groupId: number | string | undefined): UseQueryResult<MockEvent[], Error> {
-  const stringId = typeof groupId === 'string' ? groupId : (typeof groupId === 'number' ? groupId.toString() : undefined);
+  const stringId = typeof groupId === 'string' ? groupId : typeof groupId === 'number' ? groupId.toString() : undefined;
 
   return useQuery<MockEvent[], Error>({
     queryKey: ['groupEvents', stringId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
@@ -125,10 +133,10 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
         return [];
       }
       if (!IS_SUPABASE_ENABLED) {
-        const groupEvents = mockData.events.filter((event) => String(event.group_id) === stringId);
+        const groupEvents = mockData.events.filter(event => String(event.group_id) === stringId);
         return groupEvents as MockEvent[];
       }
-      
+
       const events = await groupsApi.getGroupEvents(stringId);
       return events.map((e): MockEvent => ({
         id: e.id,
@@ -150,7 +158,7 @@ export function useGroupEvents(groupId: number | string | undefined): UseQueryRe
         latitude: e.latitude,
         longitude: e.longitude,
         featured: e.featured || false,
-        created_at: e.created_at
+        created_at: e.created_at,
       }));
     },
     enabled: stringId !== undefined,
@@ -183,7 +191,10 @@ export function useGroups() {
 export function useGroupsWithFilters(filters?: GroupFilters) {
   const supabaseQuery = useQuery({
     queryKey: ['supabase', 'groups', 'filters', filters],
-    queryFn: (): Promise<FeatureGroupType[]> => groupsApi.getAll(filters ? { ...filters, visibility: filters.visibility as string[] } : undefined) as Promise<FeatureGroupType[]>,
+    queryFn: (): Promise<FeatureGroupType[]> =>
+      groupsApi.getAll(filters ? { ...filters, visibility: filters.visibility as string[] } : undefined) as Promise<
+        FeatureGroupType[]
+      >,
     select: (data: FeatureGroupType[]) => data,
     staleTime: 5 * 60 * 1000,
     enabled: IS_SUPABASE_ENABLED,
@@ -222,15 +233,19 @@ export function useCreateGroup() {
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (data: GroupInput) => { return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null; },
-    mutateAsync: async (data: GroupInput) => { return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null; },
+    mutate: async (data: GroupInput) => {
+      return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null;
+    },
+    mutateAsync: async (data: GroupInput) => {
+      return mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null;
+    },
     status: 'success' as const,
     data: mockData.groups?.[0] ? adaptMockGroupToFeature(mockData.groups[0] as MockGroup) : null,
     error: null,
     isPending: false,
-    isSuccess: true, 
-    isError: false, 
-    isIdle: false, 
+    isSuccess: true,
+    isError: false,
+    isIdle: false,
     reset: () => {},
   } as unknown as UseMutationResult<FrontendGroupType | null, Error, GroupInput, unknown>;
 
@@ -251,15 +266,19 @@ export function useUpdateGroup() {
   const queryClient = useQueryClient();
 
   const mockMutation = {
-    mutate: async (data: { id: string } & Partial<GroupInput>) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
-    mutateAsync: async (data: { id: string } & Partial<GroupInput>) => { return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null; },
+    mutate: async (data: { id: string } & Partial<GroupInput>) => {
+      return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null;
+    },
+    mutateAsync: async (data: { id: string } & Partial<GroupInput>) => {
+      return (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null;
+    },
     status: 'success' as const,
     data: (mockData.groups?.[0] || null) as unknown as FrontendGroupType | null,
-    error: null, 
-    isPending: false, 
-    isSuccess: true, 
-    isError: false, 
-    isIdle: false, 
+    error: null,
+    isPending: false,
+    isSuccess: true,
+    isError: false,
+    isIdle: false,
     reset: () => {},
   } as unknown as UseMutationResult<FrontendGroupType | null, Error, { id: string } & Partial<GroupInput>, unknown>;
 
@@ -305,33 +324,33 @@ export function useDeleteGroup(): UseMutationResult<
 }
 
 export function useGroupMembers(groupId: number | string | undefined): UseQueryResult<MockGroupMemberType[], Error> {
-    const stringId = typeof groupId === 'string' ? groupId : (typeof groupId === 'number' ? groupId.toString() : undefined);
+  const stringId = typeof groupId === 'string' ? groupId : typeof groupId === 'number' ? groupId.toString() : undefined;
 
-    return useQuery<MockGroupMemberType[], Error>({
-        queryKey: ['groupMembers', stringId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
-        queryFn: async (): Promise<MockGroupMemberType[]> => {
-            if (stringId === undefined) {
-                return [];
-            }
+  return useQuery<MockGroupMemberType[], Error>({
+    queryKey: ['groupMembers', stringId, IS_SUPABASE_ENABLED ? 'supabase' : 'mock'],
+    queryFn: async (): Promise<MockGroupMemberType[]> => {
+      if (stringId === undefined) {
+        return [];
+      }
 
-            if (!IS_SUPABASE_ENABLED) {
-                const groupData = mockData.groups.find((g: MockGroup) => g.id.toString() === stringId);
-                return groupData?.members || [];
-            }
-            
-            const members = await groupsApi.getGroupMembers(stringId);
-            return members.map((m): MockGroupMemberType => ({
-                id: m.member?.id || m.member_id,
-                name: m.member?.name || 'Unknown',
-                role: m.role || 'member',
-                joinDate: m.joined_date,
-                image: m.member?.avatar_url || '/placeholder-avatar.png',
-                joinedDate: m.joined_date,
-                title: m.member?.title
-            }));
-        },
-        enabled: stringId !== undefined,
-    });
+      if (!IS_SUPABASE_ENABLED) {
+        const groupData = mockData.groups.find((g: MockGroup) => g.id.toString() === stringId);
+        return groupData?.members || [];
+      }
+
+      const members = await groupsApi.getGroupMembers(stringId);
+      return members.map((m): MockGroupMemberType => ({
+        id: m.member?.id || m.member_id,
+        name: m.member?.name || 'Unknown',
+        role: m.role || 'member',
+        joinDate: m.joined_date,
+        image: m.member?.avatar_url || '/placeholder-avatar.png',
+        joinedDate: m.joined_date,
+        title: m.member?.title,
+      }));
+    },
+    enabled: stringId !== undefined,
+  });
 }
 
 export function useJoinGroup(): UseMutationResult<boolean, Error, { groupId: string }> {
@@ -386,7 +405,10 @@ export function useGroupMembership(groupId?: string, memberId?: string): UseQuer
   });
 }
 
-export function useGroupMemberRole(groupId?: string, memberId?: string): UseQueryResult<'admin' | 'moderator' | 'member' | null, Error> {
+export function useGroupMemberRole(
+  groupId?: string,
+  memberId?: string
+): UseQueryResult<'admin' | 'moderator' | 'member' | null, Error> {
   return useQuery<'admin' | 'moderator' | 'member' | null, Error>({
     queryKey: ['groupMemberRole', groupId, memberId],
     queryFn: async () => {
@@ -422,11 +444,7 @@ export function useUpdateMemberRole(): UseMutationResult<
   });
 }
 
-export function useRemoveMember(): UseMutationResult<
-  boolean,
-  Error,
-  { groupId: string; memberId: string }
-> {
+export function useRemoveMember(): UseMutationResult<boolean, Error, { groupId: string; memberId: string }> {
   const queryClient = useQueryClient();
 
   return useMutation<boolean, Error, { groupId: string; memberId: string }>({
@@ -515,7 +533,11 @@ export function useGroupAnnouncements(groupId?: string): UseQueryResult<GroupAnn
  * });
  * ```
  */
-export function useCreateActivity(): UseMutationResult<GroupActivity, Error, { groupId: string; data: GroupActivityInput }> {
+export function useCreateActivity(): UseMutationResult<
+  GroupActivity,
+  Error,
+  { groupId: string; data: GroupActivityInput }
+> {
   const queryClient = useQueryClient();
 
   return useMutation<GroupActivity, Error, { groupId: string; data: GroupActivityInput }>({
@@ -530,7 +552,7 @@ export function useCreateActivity(): UseMutationResult<GroupActivity, Error, { g
           target_type: data.target_type || null,
           target_id: data.target_id || null,
           metadata: data.metadata || null,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
       }
       const result = await groupsApi.createActivity(groupId, data);
@@ -560,7 +582,11 @@ export function useCreateActivity(): UseMutationResult<GroupActivity, Error, { g
  * });
  * ```
  */
-export function useCreateAnnouncement(): UseMutationResult<GroupAnnouncement, Error, { groupId: string; data: GroupAnnouncementInput }> {
+export function useCreateAnnouncement(): UseMutationResult<
+  GroupAnnouncement,
+  Error,
+  { groupId: string; data: GroupAnnouncementInput }
+> {
   const queryClient = useQueryClient();
 
   return useMutation<GroupAnnouncement, Error, { groupId: string; data: GroupAnnouncementInput }>({
@@ -576,7 +602,7 @@ export function useCreateAnnouncement(): UseMutationResult<GroupAnnouncement, Er
           priority: data.priority || 'normal',
           author_id: 'mock-author',
           created_at: new Date().toISOString(),
-          status: 'published'
+          status: 'published',
         };
       }
       const result = await groupsApi.createAnnouncement(groupId, data);
@@ -618,7 +644,7 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<GroupInvit
             status: 'pending',
             created_at: new Date().toISOString(),
             token: 'mock-token-1',
-            message: 'Welcome to join our group!'
+            message: 'Welcome to join our group!',
           },
           {
             id: 'mock-inv-2',
@@ -629,8 +655,8 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<GroupInvit
             status: 'pending',
             created_at: new Date().toISOString(),
             token: 'mock-token-2',
-            message: 'Join us as a moderator!'
-          }
+            message: 'Join us as a moderator!',
+          },
         ];
       }
       const invitations = await groupsApi.getGroupInvitations(groupId);
@@ -654,7 +680,11 @@ export function useGroupInvitations(groupId?: string): UseQueryResult<GroupInvit
  * });
  * ```
  */
-export function useCreateInvitation(): UseMutationResult<string | null, Error, { groupId: string; data: CreateInvitationData }> {
+export function useCreateInvitation(): UseMutationResult<
+  string | null,
+  Error,
+  { groupId: string; data: CreateInvitationData }
+> {
   const queryClient = useQueryClient();
 
   return useMutation<string | null, Error, { groupId: string; data: CreateInvitationData }>({
@@ -738,13 +768,13 @@ export function useInvitationByToken(token?: string): UseQueryResult<GroupInvita
             id: 'mock-group-1',
             name: 'Mock Group',
             description: 'A mock group for testing',
-            visibility: 'public'
+            visibility: 'public',
           },
           invited_email: 'user@example.com',
           role: 'member',
           status: 'pending',
           message: 'Welcome to join our group!',
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
       }
       const invitation = await groupsApi.getInvitationByToken(token);
@@ -756,10 +786,18 @@ export function useInvitationByToken(token?: string): UseQueryResult<GroupInvita
 
 // New invitation-related hooks
 
-export function useInviteMember(): UseMutationResult<string | null, Error, { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }> {
+export function useInviteMember(): UseMutationResult<
+  string | null,
+  Error,
+  { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }
+> {
   const queryClient = useQueryClient();
 
-  return useMutation<string | null, Error, { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }>({
+  return useMutation<
+    string | null,
+    Error,
+    { groupId: string; memberId: string; role?: 'admin' | 'moderator' | 'member'; message?: string }
+  >({
     mutationFn: ({ groupId, memberId, role = 'member', message }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock invite member - return a mock token
@@ -768,7 +806,7 @@ export function useInviteMember(): UseMutationResult<string | null, Error, { gro
       return groupsApi.createInvitation(groupId, {
         invited_member_id: memberId,
         role,
-        message
+        message,
       });
     },
     onSuccess: (_data, variables) => {
@@ -777,10 +815,30 @@ export function useInviteMember(): UseMutationResult<string | null, Error, { gro
   });
 }
 
-export function useInviteByEmail(): UseMutationResult<string | null, Error, { groupId: string; email: string; role?: 'admin' | 'moderator' | 'member'; message?: string; groupInfo?: { name: string; description?: string } }> {
+export function useInviteByEmail(): UseMutationResult<
+  string | null,
+  Error,
+  {
+    groupId: string;
+    email: string;
+    role?: 'admin' | 'moderator' | 'member';
+    message?: string;
+    groupInfo?: { name: string; description?: string };
+  }
+> {
   const queryClient = useQueryClient();
 
-  return useMutation<string | null, Error, { groupId: string; email: string; role?: 'admin' | 'moderator' | 'member'; message?: string; groupInfo?: { name: string; description?: string } }>({
+  return useMutation<
+    string | null,
+    Error,
+    {
+      groupId: string;
+      email: string;
+      role?: 'admin' | 'moderator' | 'member';
+      message?: string;
+      groupInfo?: { name: string; description?: string };
+    }
+  >({
     mutationFn: ({ groupId, email, role = 'member', message }) => {
       if (!IS_SUPABASE_ENABLED) {
         // Mock email invitation - return a mock token
@@ -789,7 +847,7 @@ export function useInviteByEmail(): UseMutationResult<string | null, Error, { gr
       return groupsApi.createInvitation(groupId, {
         invited_email: email,
         role,
-        message
+        message,
       });
     },
     onSuccess: (_data, variables) => {
@@ -798,7 +856,11 @@ export function useInviteByEmail(): UseMutationResult<string | null, Error, { gr
   });
 }
 
-export function useResendInvitation(): UseMutationResult<string | null, Error, { invitationId: string; groupId: string }> {
+export function useResendInvitation(): UseMutationResult<
+  string | null,
+  Error,
+  { invitationId: string; groupId: string }
+> {
   const queryClient = useQueryClient();
 
   return useMutation<string | null, Error, { invitationId: string; groupId: string }>({
@@ -807,22 +869,22 @@ export function useResendInvitation(): UseMutationResult<string | null, Error, {
         // Mock resend invitation - return a mock token
         return Promise.resolve('mock-resent-invitation-token-' + Date.now());
       }
-      
+
       // For resending, we need to get the original invitation details and create a new one
       // This is a simplified approach - in practice, you might want to implement a specific resend endpoint
-      const invitations = await groupsApi.getGroupInvitations(groupId) as GroupInvitation[];
-      const invitation = invitations.find((inv) => inv.id === invitationId);
+      const invitations = (await groupsApi.getGroupInvitations(groupId)) as GroupInvitation[];
+      const invitation = invitations.find(inv => inv.id === invitationId);
 
       if (!invitation) {
         throw new Error('Invitation not found');
       }
-      
+
       // Create a new invitation with the same details
       return groupsApi.createInvitation(groupId, {
         invited_email: invitation.invited_email,
         invited_member_id: invitation.invited_member_id,
         role: invitation.role,
-        message: invitation.message
+        message: invitation.message,
       });
     },
     onSuccess: (_data, variables) => {
@@ -867,7 +929,7 @@ export function useGroupResources(groupId: string | undefined): UseQueryResult<G
         created_at: r.created_at,
         category: r.category || null,
         tags: r.tags || null,
-        status: r.status || 'published'
+        status: r.status || 'published',
       }));
     },
     enabled: !!groupId,
@@ -910,14 +972,16 @@ export function useGroupPosts(groupId: string | undefined): UseQueryResult<Group
         status: (p.status as GroupPost['status']) || 'published',
         created_at: p.post?.created_at || p.created_at,
         updated_at: p.post?.updated_at || p.updated_at || null,
-        post: p.post ? {
-          id: p.post.id,
-          title: p.post.title || null,
-          content: p.post.content,
-          author_id: p.post.author_id,
-          created_at: p.post.created_at,
-          updated_at: p.post.updated_at || null
-        } : undefined
+        post: p.post
+          ? {
+              id: p.post.id,
+              title: p.post.title || null,
+              content: p.post.content,
+              author_id: p.post.author_id,
+              created_at: p.post.created_at,
+              updated_at: p.post.updated_at || null,
+            }
+          : undefined,
       }));
     },
     enabled: !!groupId,

@@ -185,7 +185,8 @@ export interface Resource extends BaseEntity {
   url: string;
   image?: string;
   dateAdded: string; // Ensure this is always provided when creating a Resource
-  contributor: { // Ensure this is always provided
+  contributor: {
+    // Ensure this is always provided
     id: string;
     name: string;
   };

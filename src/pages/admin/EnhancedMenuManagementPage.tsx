@@ -1,10 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import {
   Plus,
   Edit,
@@ -22,7 +17,7 @@ import {
   Loader2,
   BarChart3,
   FileText,
-  Download
+  Download,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
@@ -47,7 +42,7 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
     is_enabled: true,
     icon: 'Users',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: '2',
@@ -59,7 +54,7 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
     is_enabled: true,
     icon: 'Building2',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: '3',
@@ -71,7 +66,7 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
     is_enabled: true,
     icon: 'Search',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   },
   {
     id: '4',
@@ -83,8 +78,8 @@ const MOCK_MENU_ITEMS: MenuItem[] = [
     is_enabled: false,
     icon: 'BookOpen',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 interface EnhancedMenuManagementPageProps {}
@@ -108,7 +103,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onEdit,
   onDelete,
   onToggle,
-  level
+  level,
 }) => {
   const hasChildren = item.children && item.children.length > 0;
   const isParent = !item.parent_id;
@@ -134,7 +129,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
               <input
                 type="checkbox"
                 checked={isSelected}
-                onChange={(e) => onSelect(item.id, e.target.checked)}
+                onChange={e => onSelect(item.id, e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
               />
 
@@ -145,39 +140,32 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
               >
                 <GripVertical className="h-5 w-5" />
               </div>
-              
+
               {/* Menu item info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
-                  <h3 className={cn(
-                    'text-sm font-medium truncate',
-                    item.is_enabled ? 'text-gray-900' : 'text-gray-500'
-                  )}>
+                  <h3
+                    className={cn('text-sm font-medium truncate', item.is_enabled ? 'text-gray-900' : 'text-gray-500')}
+                  >
                     {item.label}
                   </h3>
-                  
+
                   {hasChildren && (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                       {item.children!.length} child{item.children!.length !== 1 ? 'ren' : ''}
                     </span>
                   )}
-                  
+
                   {isParent && (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Parent
                     </span>
                   )}
                 </div>
-                
-                {item.description && (
-                  <p className="text-xs text-gray-500 truncate mt-1">
-                    {item.description}
-                  </p>
-                )}
-                
-                <p className="text-xs text-gray-400 truncate mt-1">
-                  {item.href}
-                </p>
+
+                {item.description && <p className="text-xs text-gray-500 truncate mt-1">{item.description}</p>}
+
+                <p className="text-xs text-gray-400 truncate mt-1">{item.href}</p>
               </div>
 
               {/* Toggle component */}
@@ -189,7 +177,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 confirmCritical={true}
                 className="mx-4"
               />
-              
+
               {/* Action buttons */}
               <div className="flex items-center space-x-1">
                 <Button
@@ -201,7 +189,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
-                
+
                 <Button
                   size="sm"
                   variant="ghost"
@@ -262,7 +250,7 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
     // Second pass: build hierarchy
     menuItems.forEach(item => {
       const menuItem = itemMap.get(item.id)!;
-      
+
       if (item.parent_id) {
         const parent = itemMap.get(item.parent_id);
         if (parent) {
@@ -282,17 +270,16 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
     let filtered = hierarchicalItems;
 
     if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.href.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        item =>
+          item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.href.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (filterEnabled !== 'all') {
-      filtered = filtered.filter(item =>
-        filterEnabled === 'enabled' ? item.is_enabled : !item.is_enabled
-      );
+      filtered = filtered.filter(item => (filterEnabled === 'enabled' ? item.is_enabled : !item.is_enabled));
     }
 
     return filtered;
@@ -326,104 +313,101 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
   const handleToggleItem = async (itemId: string, enabled: boolean): Promise<boolean> => {
     try {
       // Optimistic update
-      setMenuItems(prev => prev.map(item => 
-        item.id === itemId ? { ...item, is_enabled: enabled } : item
-      ));
-      
+      setMenuItems(prev => prev.map(item => (item.id === itemId ? { ...item, is_enabled: enabled } : item)));
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       setHasChanges(true);
       return true;
     } catch (error) {
       // Rollback on failure
-      setMenuItems(prev => prev.map(item => 
-        item.id === itemId ? { ...item, is_enabled: !enabled } : item
-      ));
+      setMenuItems(prev => prev.map(item => (item.id === itemId ? { ...item, is_enabled: !enabled } : item)));
       return false;
     }
   };
 
   const handleBulkToggle = async (itemIds: string[], enabled: boolean): Promise<BulkOperation[]> => {
     const operations: BulkOperation[] = [];
-    
+
     for (const itemId of itemIds) {
       try {
         const success = await handleToggleItem(itemId, enabled);
         operations.push({
           id: itemId,
           operation: enabled ? 'enable' : 'disable',
-          success
+          success,
         });
       } catch (error) {
         operations.push({
           id: itemId,
           operation: enabled ? 'enable' : 'disable',
           success: false,
-          error: 'Toggle failed'
+          error: 'Toggle failed',
         });
       }
     }
-    
+
     return operations;
   };
 
   const handleBulkDelete = async (itemIds: string[]): Promise<BulkOperation[]> => {
     const operations: BulkOperation[] = [];
-    
+
     for (const itemId of itemIds) {
       try {
         // Remove item and its children
-        setMenuItems(prev => prev.filter(item => 
-          item.id !== itemId && item.parent_id !== itemId
-        ));
-        
+        setMenuItems(prev => prev.filter(item => item.id !== itemId && item.parent_id !== itemId));
+
         operations.push({
           id: itemId,
           operation: 'delete',
-          success: true
+          success: true,
         });
-        
+
         setHasChanges(true);
       } catch (error) {
         operations.push({
           id: itemId,
           operation: 'delete',
           success: false,
-          error: 'Delete failed'
+          error: 'Delete failed',
         });
       }
     }
-    
+
     return operations;
   };
 
-  const handleDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
 
-    const items = Array.from(filteredItems);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+      const items = Array.from(filteredItems);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
 
-    // Update order values
-    const updatedItems = items.map((item, index) => ({
-      ...item,
-      order_index: index
-    }));
+      // Update order values
+      const updatedItems = items.map((item, index) => ({
+        ...item,
+        order_index: index,
+      }));
 
-    setMenuItems(prev => {
-      const newItems = [...prev];
-      updatedItems.forEach(updated => {
-        const index = newItems.findIndex(item => item.id === updated.id);
-        if (index !== -1) {
-          newItems[index] = updated;
-        }
+      setMenuItems(prev => {
+        const newItems = [...prev];
+        updatedItems.forEach(updated => {
+          const index = newItems.findIndex(item => item.id === updated.id);
+          if (index !== -1) {
+            newItems[index] = updated;
+          }
+        });
+        return newItems;
       });
-      return newItems;
-    });
-    
-    setHasChanges(true);
-  }, [filteredItems]);
+
+      setHasChanges(true);
+    },
+    [filteredItems]
+  );
 
   const handleEdit = (item: MenuItem) => {
     toast.info(`Edit functionality for "${item.label}" would open edit modal`);
@@ -473,22 +457,14 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
             Manage your site's navigation menus with advanced toggle controls and bulk operations.
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
-          <Button
-            variant="outline"
-            onClick={() => setShowStats(!showStats)}
-            className="text-gray-600"
-          >
+          <Button variant="outline" onClick={() => setShowStats(!showStats)} className="text-gray-600">
             <BarChart3 className="h-4 w-4 mr-1" />
             {showStats ? 'Hide' : 'Show'} Stats
           </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            className="text-gray-600"
-          >
+
+          <Button variant="outline" onClick={handleExport} className="text-gray-600">
             <Download className="h-4 w-4 mr-1" />
             Export
           </Button>
@@ -530,30 +506,15 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-blue-700">
-                You have unsaved changes
-              </span>
+              <span className="text-sm font-medium text-blue-700">You have unsaved changes</span>
             </div>
             <div className="flex space-x-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setHasChanges(false)}
-                disabled={isLoading}
-              >
+              <Button variant="outline" size="sm" onClick={() => setHasChanges(false)} disabled={isLoading}>
                 <RotateCcw className="h-4 w-4 mr-1" />
                 Discard
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveChanges}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4 mr-1" />
-                )}
+              <Button size="sm" onClick={handleSaveChanges} disabled={isLoading}>
+                {isLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
                 Save Changes
               </Button>
             </div>
@@ -570,14 +531,14 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
               type="text"
               placeholder="Search menu items..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           <select
             value={filterEnabled}
-            onChange={(e) => setFilterEnabled(e.target.value as 'all' | 'enabled' | 'disabled')}
+            onChange={e => setFilterEnabled(e.target.value as 'all' | 'enabled' | 'disabled')}
             className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Items</option>
@@ -607,9 +568,7 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Menu Items ({filteredItems.length})
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900">Menu Items ({filteredItems.length})</h2>
             <Button>
               <Plus className="h-4 w-4 mr-1" />
               Add Item
@@ -623,21 +582,16 @@ const EnhancedMenuManagementPage: React.FC<EnhancedMenuManagementPageProps> = ()
               <Settings className="h-12 w-12 mx-auto mb-4 text-gray-300" />
               <p>No menu items found.</p>
               <p className="text-sm">
-                {searchTerm || filterEnabled !== 'all' 
-                  ? 'Try adjusting your filters.' 
-                  : 'Click "Add Item" to get started.'
-                }
+                {searchTerm || filterEnabled !== 'all'
+                  ? 'Try adjusting your filters.'
+                  : 'Click "Add Item" to get started.'}
               </p>
             </div>
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="menu-items">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-3"
-                  >
+                {provided => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
                     {filteredItems.map((item, index) => (
                       <MenuItemCard
                         key={item.id}

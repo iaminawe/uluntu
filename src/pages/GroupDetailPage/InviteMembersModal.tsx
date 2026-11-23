@@ -10,15 +10,10 @@ interface InviteMembersModalProps {
   groupName: string;
 }
 
-const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
-  isOpen,
-  onClose,
-  groupId,
-  groupName
-}) => {
+const InviteMembersModal: React.FC<InviteMembersModalProps> = ({ isOpen, onClose, groupId, groupName }) => {
   const { data: currentMember } = useCurrentMember();
   const createInvitation = useCreateInvitation();
-  
+
   const [emails, setEmails] = useState<string[]>(['']);
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,7 +40,7 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!currentMember) {
       setError('You must be logged in to send invitations');
       return;
@@ -73,8 +68,8 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
           data: {
             email,
             invited_by: currentMember.id,
-            message: message.trim() || undefined
-          }
+            message: message.trim() || undefined,
+          },
         })
       )
     );
@@ -135,13 +130,8 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-              Invite Members to {groupName}
-            </h2>
-            <button
-              onClick={handleClose}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-            >
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Invite Members to {groupName}</h2>
+            <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -149,12 +139,13 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
           {inviteLinks.length > 0 ? (
             <div className="space-y-4">
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                <p className="text-green-800 dark:text-green-200 font-medium mb-3">
-                  Invitations sent successfully!
-                </p>
+                <p className="text-green-800 dark:text-green-200 font-medium mb-3">Invitations sent successfully!</p>
                 <div className="space-y-2">
                   {inviteLinks.map(({ email, link }) => (
-                    <div key={email} className="bg-white dark:bg-slate-700 p-3 rounded border border-green-200 dark:border-green-700">
+                    <div
+                      key={email}
+                      className="bg-white dark:bg-slate-700 p-3 rounded border border-green-200 dark:border-green-700"
+                    >
                       <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">{email}</p>
                       <div className="flex items-center gap-2">
                         <input
@@ -200,7 +191,7 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
                         <input
                           type="email"
                           value={email}
-                          onChange={(e) => handleEmailChange(index, e.target.value)}
+                          onChange={e => handleEmailChange(index, e.target.value)}
                           placeholder="email@example.com"
                           className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                           required
@@ -233,7 +224,7 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
                 </label>
                 <textarea
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={e => setMessage(e.target.value)}
                   placeholder="Add a personal note to your invitation..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   rows={3}
@@ -241,11 +232,13 @@ const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
               </div>
 
               {error && (
-                <div className={`p-3 rounded-md text-sm ${
-                  successfulInvites.length > 0 
-                    ? 'bg-yellow-100 border border-yellow-200 text-yellow-800'
-                    : 'bg-red-100 border border-red-200 text-red-700'
-                }`}>
+                <div
+                  className={`p-3 rounded-md text-sm ${
+                    successfulInvites.length > 0
+                      ? 'bg-yellow-100 border border-yellow-200 text-yellow-800'
+                      : 'bg-red-100 border border-red-200 text-red-700'
+                  }`}
+                >
                   {error}
                 </div>
               )}

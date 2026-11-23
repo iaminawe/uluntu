@@ -38,35 +38,27 @@ const MemberProfile = ({ memberId, memberSlug }: MemberProfileProps) => {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg">
           <h2 className="text-xl font-semibold text-red-700 dark:text-red-400">Error Loading Profile</h2>
           <p className="text-red-600 dark:text-red-300 mt-2">
-            {memberError instanceof Error ? memberError.message : "Member not found"}
+            {memberError instanceof Error ? memberError.message : 'Member not found'}
           </p>
         </div>
       </div>
     );
   }
-  
+
   // Convert the mock data Member to the ProfileMember type
   const profileMember = mapMemberToProfileMember(member);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <ProfileHeader 
+      <ProfileHeader member={profileMember} onContactClick={() => setShowContactModal(true)} />
+
+      <ProfileContent
         member={profileMember}
-        onContactClick={() => setShowContactModal(true)}
-      />
-      
-      <ProfileContent 
-        member={profileMember} 
         contributions={contributions}
         isContributionsLoading={isContributionsLoading}
       />
-      
-      {showContactModal && (
-        <ContactModal
-          member={profileMember}
-          onClose={() => setShowContactModal(false)}
-        />
-      )}
+
+      {showContactModal && <ContactModal member={profileMember} onClose={() => setShowContactModal(false)} />}
     </div>
   );
 };

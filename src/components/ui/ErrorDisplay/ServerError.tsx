@@ -14,7 +14,8 @@ const ServerError: React.FC<ServerErrorProps> = ({
   actions,
   primaryAction,
 }) => {
-  const defaultMessage = message || 
+  const defaultMessage =
+    message ||
     "We're experiencing some server issues. Please try again later or contact support if the problem persists.";
 
   return (
@@ -25,10 +26,12 @@ const ServerError: React.FC<ServerErrorProps> = ({
       className={className}
       icon={<ServerCrash className="h-12 w-12 text-red-500 dark:text-red-400" />}
       actions={actions}
-      primaryAction={primaryAction || {
-        text: 'Refresh Page',
-        onClick: () => window.location.reload()
-      }}
+      primaryAction={
+        primaryAction || {
+          text: 'Refresh Page',
+          onClick: () => window.location.reload(),
+        }
+      }
     />
   );
 };

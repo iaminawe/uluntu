@@ -129,7 +129,7 @@ class ThemeCache {
    * Preload themes for better performance
    */
   async preloadThemes(themes: ThemePreset[]): Promise<void> {
-    const preloadPromises = themes.map(async (theme) => {
+    const preloadPromises = themes.map(async theme => {
       // Simulate async loading (in real app, might fetch from API)
       await new Promise(resolve => setTimeout(resolve, 10));
       this.set(`theme:${theme.slug}`, theme);
@@ -263,7 +263,7 @@ class ThemeCache {
 
   private estimateMemorySize(): number {
     let size = 0;
-    this.memoryCache.forEach((value) => {
+    this.memoryCache.forEach(value => {
       size += JSON.stringify(value).length * 2; // Rough estimate (2 bytes per char)
     });
     return size;
@@ -288,10 +288,7 @@ export const themeCache = new ThemeCache({
 /**
  * Get a theme from cache or fetch it
  */
-export async function getCachedTheme(
-  themeId: string,
-  fetcher: () => Promise<ThemePreset>
-): Promise<ThemePreset> {
+export async function getCachedTheme(themeId: string, fetcher: () => Promise<ThemePreset>): Promise<ThemePreset> {
   const cacheKey = `theme:${themeId}`;
   const cached = themeCache.get<ThemePreset>(cacheKey);
 
@@ -310,7 +307,7 @@ export async function getCachedTheme(
 export function cacheThemeCSS(themeId: string, css: string): void {
   const cacheKey = `theme-css:${themeId}`;
   const hash = simpleHash(css);
-  
+
   // Check if CSS has changed
   const existingHash = themeCache.get<string>(`theme-css-hash:${themeId}`);
   if (existingHash === hash) {
@@ -335,7 +332,7 @@ function simpleHash(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return hash.toString(36);

@@ -29,85 +29,55 @@ export const fetchPages = createAsyncThunk(
   }
 );
 
-export const fetchPageById = createAsyncThunk(
-  'pages/fetchPageById',
-  async (id: string) => {
-    const response = await pagesApi.getPageById(id);
-    return response;
-  }
-);
+export const fetchPageById = createAsyncThunk('pages/fetchPageById', async (id: string) => {
+  const response = await pagesApi.getPageById(id);
+  return response;
+});
 
-export const fetchPageBySlug = createAsyncThunk(
-  'pages/fetchPageBySlug',
-  async (slug: string) => {
-    const response = await pagesApi.getPageBySlug(slug);
-    return response;
-  }
-);
+export const fetchPageBySlug = createAsyncThunk('pages/fetchPageBySlug', async (slug: string) => {
+  const response = await pagesApi.getPageBySlug(slug);
+  return response;
+});
 
-export const createPage = createAsyncThunk(
-  'pages/createPage',
-  async (pageData: CreatePageData) => {
-    const response = await pagesApi.createPage(pageData);
-    return response;
-  }
-);
+export const createPage = createAsyncThunk('pages/createPage', async (pageData: CreatePageData) => {
+  const response = await pagesApi.createPage(pageData);
+  return response;
+});
 
-export const updatePage = createAsyncThunk(
-  'pages/updatePage',
-  async (pageData: UpdatePageData) => {
-    const response = await pagesApi.updatePage(pageData);
-    return response;
-  }
-);
+export const updatePage = createAsyncThunk('pages/updatePage', async (pageData: UpdatePageData) => {
+  const response = await pagesApi.updatePage(pageData);
+  return response;
+});
 
-export const deletePage = createAsyncThunk(
-  'pages/deletePage',
-  async (id: string) => {
-    await pagesApi.deletePage(id);
-    return id;
-  }
-);
+export const deletePage = createAsyncThunk('pages/deletePage', async (id: string) => {
+  await pagesApi.deletePage(id);
+  return id;
+});
 
-export const publishPage = createAsyncThunk(
-  'pages/publishPage',
-  async (id: string) => {
-    const response = await pagesApi.publishPage(id);
-    return response;
-  }
-);
+export const publishPage = createAsyncThunk('pages/publishPage', async (id: string) => {
+  const response = await pagesApi.publishPage(id);
+  return response;
+});
 
-export const unpublishPage = createAsyncThunk(
-  'pages/unpublishPage',
-  async (id: string) => {
-    const response = await pagesApi.unpublishPage(id);
-    return response;
-  }
-);
+export const unpublishPage = createAsyncThunk('pages/unpublishPage', async (id: string) => {
+  const response = await pagesApi.unpublishPage(id);
+  return response;
+});
 
-export const fetchHomePage = createAsyncThunk(
-  'pages/fetchHomePage',
-  async () => {
-    const response = await pagesApi.getHomePage();
-    return response;
-  }
-);
+export const fetchHomePage = createAsyncThunk('pages/fetchHomePage', async () => {
+  const response = await pagesApi.getHomePage();
+  return response;
+});
 
-export const fetchFilteredPages = createAsyncThunk(
-  'pages/fetchFilteredPages',
-  async (filters: PageFilters) => {
-    const response = await pagesApi.getPages({ filters });
-    return response;
-  }
-);
+export const fetchFilteredPages = createAsyncThunk('pages/fetchFilteredPages', async (filters: PageFilters) => {
+  const response = await pagesApi.getPages({ filters });
+  return response;
+});
 
-export const fetchChildPages = createAsyncThunk(
-  'pages/fetchChildPages',
-  async (parentId: string) => {
-    const response = await pagesApi.getChildPages(parentId);
-    return response;
-  }
-);
+export const fetchChildPages = createAsyncThunk('pages/fetchChildPages', async (parentId: string) => {
+  const response = await pagesApi.getChildPages(parentId);
+  return response;
+});
 
 const pagesSlice = createSlice({
   name: 'pages',
@@ -116,36 +86,36 @@ const pagesSlice = createSlice({
     setFilters: (state, action: PayloadAction<Partial<PageFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    
+
     mergeFilters: (state, action: PayloadAction<Partial<PageFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    
-    clearFilters: (state) => {
+
+    clearFilters: state => {
       state.filters = {
         status: 'all',
         sort_by: 'updated_at',
         sort_order: 'desc',
       };
     },
-    
+
     setCurrentPage: (state, action: PayloadAction<Page | null>) => {
       state.currentPage = action.payload;
     },
-    
-    clearCurrentPage: (state) => {
+
+    clearCurrentPage: state => {
       state.currentPage = null;
     },
-    
+
     setPagination: (state, action: PayloadAction<Partial<PagesState['pagination']>>) => {
       state.pagination = { ...state.pagination, ...action.payload };
     },
-    
-    clearError: (state) => {
+
+    clearError: state => {
       state.error = null;
     },
-    
-    clearPages: (state) => {
+
+    clearPages: state => {
       state.pages = [];
       state.currentPage = null;
       state.error = null;
@@ -156,7 +126,7 @@ const pagesSlice = createSlice({
         totalPages: 0,
       };
     },
-    
+
     // Optimistic updates
     optimisticUpdatePage: (state, action: PayloadAction<UpdatePageData>) => {
       const { id, ...updates } = action.payload;
@@ -168,7 +138,7 @@ const pagesSlice = createSlice({
         state.currentPage = { ...state.currentPage, ...updates, updated_at: new Date().toISOString() };
       }
     },
-    
+
     optimisticDeletePage: (state, action: PayloadAction<string>) => {
       state.pages = state.pages.filter(page => page.id !== action.payload);
       if (state.currentPage?.id === action.payload) {
@@ -176,11 +146,11 @@ const pagesSlice = createSlice({
       }
     },
   },
-  
-  extraReducers: (builder) => {
+
+  extraReducers: builder => {
     // Fetch pages
     builder
-      .addCase(fetchPages.pending, (state) => {
+      .addCase(fetchPages.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -201,7 +171,7 @@ const pagesSlice = createSlice({
 
     // Fetch page by ID
     builder
-      .addCase(fetchPageById.pending, (state) => {
+      .addCase(fetchPageById.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -216,7 +186,7 @@ const pagesSlice = createSlice({
 
     // Fetch page by slug
     builder
-      .addCase(fetchPageBySlug.pending, (state) => {
+      .addCase(fetchPageBySlug.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -231,7 +201,7 @@ const pagesSlice = createSlice({
 
     // Create page
     builder
-      .addCase(createPage.pending, (state) => {
+      .addCase(createPage.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -247,7 +217,7 @@ const pagesSlice = createSlice({
 
     // Update page
     builder
-      .addCase(updatePage.pending, (state) => {
+      .addCase(updatePage.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -268,7 +238,7 @@ const pagesSlice = createSlice({
 
     // Delete page
     builder
-      .addCase(deletePage.pending, (state) => {
+      .addCase(deletePage.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -285,28 +255,26 @@ const pagesSlice = createSlice({
       });
 
     // Publish page
-    builder
-      .addCase(publishPage.fulfilled, (state, action) => {
-        const index = state.pages.findIndex(page => page.id === action.payload.id);
-        if (index !== -1) {
-          state.pages[index] = action.payload;
-        }
-        if (state.currentPage?.id === action.payload.id) {
-          state.currentPage = action.payload;
-        }
-      });
+    builder.addCase(publishPage.fulfilled, (state, action) => {
+      const index = state.pages.findIndex(page => page.id === action.payload.id);
+      if (index !== -1) {
+        state.pages[index] = action.payload;
+      }
+      if (state.currentPage?.id === action.payload.id) {
+        state.currentPage = action.payload;
+      }
+    });
 
     // Unpublish page
-    builder
-      .addCase(unpublishPage.fulfilled, (state, action) => {
-        const index = state.pages.findIndex(page => page.id === action.payload.id);
-        if (index !== -1) {
-          state.pages[index] = action.payload;
-        }
-        if (state.currentPage?.id === action.payload.id) {
-          state.currentPage = action.payload;
-        }
-      });
+    builder.addCase(unpublishPage.fulfilled, (state, action) => {
+      const index = state.pages.findIndex(page => page.id === action.payload.id);
+      if (index !== -1) {
+        state.pages[index] = action.payload;
+      }
+      if (state.currentPage?.id === action.payload.id) {
+        state.currentPage = action.payload;
+      }
+    });
   },
 });
 
@@ -328,14 +296,14 @@ export const selectAllPages = (state: { pages: PagesState }) => state.pages.page
 export const selectCurrentPage = (state: { pages: PagesState }) => state.pages.currentPage;
 export const selectFilteredPages = (state: { pages: PagesState }) => {
   const { pages, filters } = state.pages;
-  
+
   return pages.filter(page => {
     // Filter by status
     if (filters.status && filters.status !== 'all') {
       if (filters.status === 'published' && page.status !== 'published') return false;
       if (filters.status === 'draft' && page.status !== 'draft') return false;
     }
-    
+
     // Filter by search
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
@@ -343,27 +311,26 @@ export const selectFilteredPages = (state: { pages: PagesState }) => {
       const contentMatch = page.content && page.content.toLowerCase().includes(searchLower);
       if (!titleMatch && !contentMatch) return false;
     }
-    
+
     // Filter by template
     if (filters.template && page.template !== filters.template) return false;
-    
+
     return true;
   });
 };
 
-export const selectHomePage = (state: { pages: PagesState }) => 
+export const selectHomePage = (state: { pages: PagesState }) =>
   state.pages.pages.find(page => page.slug === 'home' || page.is_homepage);
 
-export const selectChildPages = (state: { pages: PagesState }) => 
-  state.pages.pages.filter(page => !!page.parent_id);
+export const selectChildPages = (state: { pages: PagesState }) => state.pages.pages.filter(page => !!page.parent_id);
 
-export const selectPagesStatus = (state: { pages: PagesState }) => 
+export const selectPagesStatus = (state: { pages: PagesState }) =>
   state.pages.loading ? 'loading' : state.pages.error ? 'error' : 'success';
 
-export const selectFilteredPagesStatus = (state: { pages: PagesState }) => 
+export const selectFilteredPagesStatus = (state: { pages: PagesState }) =>
   state.pages.loading ? 'loading' : state.pages.error ? 'error' : 'success';
 
-export const selectCurrentPageStatus = (state: { pages: PagesState }) => 
+export const selectCurrentPageStatus = (state: { pages: PagesState }) =>
   state.pages.loading ? 'loading' : state.pages.error ? 'error' : 'success';
 
 export const selectPagesError = (state: { pages: PagesState }) => state.pages.error;

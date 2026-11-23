@@ -33,18 +33,22 @@ class DashboardSecurity {
   async getUserContext(): Promise<UserContext> {
     return withAuth(async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('User not authenticated');
 
         // Get member profile with role information
         const { data: member, error } = await supabase
           .from('members')
-          .select(`
+          .select(
+            `
             id, role, status, verified,
             member_roles(
               role:roles(name, permissions)
             )
-          `)
+          `
+          )
           .eq('user_id', user.id)
           .single();
 
@@ -55,7 +59,7 @@ class DashboardSecurity {
         // Extract role and permissions
         const role = member.role || 'user';
         const permissions = this.getRolePermissions(role);
-        
+
         // Add additional permissions from member_roles if available
         if (member.member_roles && Array.isArray(member.member_roles)) {
           member.member_roles.forEach((memberRole: any) => {
@@ -70,7 +74,7 @@ class DashboardSecurity {
           member_id: member.id,
           role: role as UserRole,
           permissions: [...new Set(permissions)], // Remove duplicates
-          is_verified: member.verified || false
+          is_verified: member.verified || false,
         };
       } catch (error) {
         console.error('Error getting user context:', error);
@@ -85,11 +89,12 @@ class DashboardSecurity {
   async hasPermissions(requiredPermissions: string[]): Promise<boolean> {
     try {
       const userContext = await this.getUserContext();
-      
-      return requiredPermissions.every(permission => 
-        userContext.permissions.includes(permission) ||
-        userContext.permissions.includes('*') || // Super admin wildcard
-        this.hasImplicitPermission(userContext.role, permission)
+
+      return requiredPermissions.every(
+        permission =>
+          userContext.permissions.includes(permission) ||
+          userContext.permissions.includes('*') || // Super admin wildcard
+          this.hasImplicitPermission(userContext.role, permission)
       );
     } catch (error) {
       console.error('Error checking permissions:', error);
@@ -104,7 +109,7 @@ class DashboardSecurity {
     return withAuth(async () => {
       try {
         const userContext = await this.getUserContext();
-        
+
         // Map content types to their respective tables and owner fields
         const contentConfig = this.getContentConfig(contentType);
         if (!contentConfig) {
@@ -128,7 +133,7 @@ class DashboardSecurity {
           content_type: contentType,
           owner_id: data[contentConfig.ownerField],
           created_at: data.created_at,
-          is_owner: isOwner
+          is_owner: isOwner,
         };
       } catch (error) {
         console.error('Error verifying content ownership:', error);
@@ -144,7 +149,7 @@ class DashboardSecurity {
     try {
       const [userContext, ownership] = await Promise.all([
         this.getUserContext(),
-        this.verifyContentOwnership(contentId, contentType)
+        this.verifyContentOwnership(contentId, contentType),
       ]);
 
       const isOwner = ownership.is_owner;
@@ -156,7 +161,7 @@ class DashboardSecurity {
         can_delete: isOwner || isAdmin || userContext.permissions.includes('content:delete:all'),
         can_publish: isOwner || isModerator || userContext.permissions.includes('content:publish'),
         can_feature: isAdmin || userContext.permissions.includes('content:feature'),
-        can_view_analytics: isOwner || isAdmin || userContext.permissions.includes('analytics:view:all')
+        can_view_analytics: isOwner || isAdmin || userContext.permissions.includes('analytics:view:all'),
       };
     } catch (error) {
       console.error('Error getting content permissions:', error);
@@ -165,7 +170,7 @@ class DashboardSecurity {
         can_delete: false,
         can_publish: false,
         can_feature: false,
-        can_view_analytics: false
+        can_view_analytics: false,
       };
     }
   }
@@ -176,7 +181,7 @@ class DashboardSecurity {
   async getDashboardPermissions(): Promise<DashboardPermissions> {
     try {
       const userContext = await this.getUserContext();
-      
+
       const isAdmin = userContext.role === 'admin' || userContext.role === 'super_admin';
       const isModerator = userContext.role === 'moderator' || isAdmin;
 
@@ -184,7 +189,7 @@ class DashboardSecurity {
         can_view_analytics: userContext.permissions.includes('analytics:view') || isAdmin,
         can_bulk_edit: userContext.permissions.includes('content:bulk_edit') || isModerator,
         can_export_data: userContext.permissions.includes('data:export') || isAdmin,
-        can_view_recommendations: userContext.is_verified || isModerator
+        can_view_recommendations: userContext.is_verified || isModerator,
       };
     } catch (error) {
       console.error('Error getting dashboard permissions:', error);
@@ -192,7 +197,7 @@ class DashboardSecurity {
         can_view_analytics: false,
         can_bulk_edit: false,
         can_export_data: false,
-        can_view_recommendations: false
+        can_view_recommendations: false,
       };
     }
   }
@@ -236,14 +241,12 @@ class DashboardSecurity {
       const newCount = shouldReset ? 1 : currentCount + 1;
       const resetTime = shouldReset ? new Date().toISOString() : rateLimitData?.last_reset;
 
-      await supabase
-        .from('rate_limits')
-        .upsert({
-          user_id: userContext.member_id,
-          operation,
-          count: newCount,
-          last_reset: resetTime
-        });
+      await supabase.from('rate_limits').upsert({
+        user_id: userContext.member_id,
+        operation,
+        count: newCount,
+        last_reset: resetTime,
+      });
 
       return true;
     } catch (error) {
@@ -263,18 +266,16 @@ class DashboardSecurity {
   }): Promise<void> {
     try {
       const userContext = await this.getUserContext();
-      
-      await supabase
-        .from('security_logs')
-        .insert({
-          user_id: userContext.member_id,
-          event_type: event.type,
-          description: event.description,
-          metadata: event.metadata,
-          ip_address: null, // Would need to get from request context
-          user_agent: null, // Would need to get from request context
-          created_at: new Date().toISOString()
-        });
+
+      await supabase.from('security_logs').insert({
+        user_id: userContext.member_id,
+        event_type: event.type,
+        description: event.description,
+        metadata: event.metadata,
+        ip_address: null, // Would need to get from request context
+        user_agent: null, // Would need to get from request context
+        created_at: new Date().toISOString(),
+      });
     } catch (error) {
       console.error('Error logging security event:', error);
     }
@@ -292,11 +293,11 @@ class DashboardSecurity {
         .replace(/on\w+=/gi, '')
         .trim();
     }
-    
+
     if (Array.isArray(input)) {
       return input.map(item => this.sanitizeInput(item));
     }
-    
+
     if (typeof input === 'object' && input !== null) {
       const sanitized: any = {};
       for (const [key, value] of Object.entries(input)) {
@@ -304,7 +305,7 @@ class DashboardSecurity {
       }
       return sanitized;
     }
-    
+
     return input;
   }
 
@@ -315,7 +316,7 @@ class DashboardSecurity {
     try {
       const userContext = await this.getUserContext();
       const quotaConfig = this.getQuotaConfig(userContext.role, contentType);
-      
+
       if (quotaConfig.unlimited) {
         return true;
       }
@@ -354,7 +355,7 @@ class DashboardSecurity {
         'content:view:own',
         'profile:edit:own',
         'messages:send',
-        'messages:receive'
+        'messages:receive',
       ],
       moderator: [
         'content:create:own',
@@ -367,7 +368,7 @@ class DashboardSecurity {
         'profile:edit:own',
         'messages:send',
         'messages:receive',
-        'analytics:view'
+        'analytics:view',
       ],
       admin: [
         '*', // Admin has all permissions
@@ -384,11 +385,11 @@ class DashboardSecurity {
         'messages:receive',
         'analytics:view:all',
         'data:export',
-        'users:manage'
+        'users:manage',
       ],
       super_admin: [
-        '*' // Super admin has unlimited permissions
-      ]
+        '*', // Super admin has unlimited permissions
+      ],
     };
 
     return rolePermissions[role] || rolePermissions.user;
@@ -400,7 +401,7 @@ class DashboardSecurity {
       user: [],
       moderator: ['content:view:published'],
       admin: ['content:view:all', 'analytics:view'],
-      super_admin: ['*']
+      super_admin: ['*'],
     };
 
     return implicitPermissions[role]?.includes(permission) || false;
@@ -413,7 +414,7 @@ class DashboardSecurity {
       marketplace_listing: { table: 'marketplace_listings', ownerField: 'seller_id' },
       opportunity: { table: 'opportunities', ownerField: 'employer_id' },
       group_post: { table: 'group_posts', ownerField: 'author_id' },
-      news_article: { table: 'news', ownerField: 'author_id' }
+      news_article: { table: 'news', ownerField: 'author_id' },
     };
 
     return configs[contentType] || null;
@@ -427,7 +428,7 @@ class DashboardSecurity {
         marketplace_listing: { limit: 20, unlimited: false },
         opportunity: { limit: 5, unlimited: false },
         group_post: { limit: 50, unlimited: false },
-        news_article: { limit: 5, unlimited: false }
+        news_article: { limit: 5, unlimited: false },
       },
       moderator: {
         photo: { limit: 500, unlimited: false },
@@ -435,7 +436,7 @@ class DashboardSecurity {
         marketplace_listing: { limit: 100, unlimited: false },
         opportunity: { limit: 25, unlimited: false },
         group_post: { limit: 200, unlimited: false },
-        news_article: { limit: 50, unlimited: false }
+        news_article: { limit: 50, unlimited: false },
       },
       admin: {
         photo: { limit: 0, unlimited: true },
@@ -443,7 +444,7 @@ class DashboardSecurity {
         marketplace_listing: { limit: 0, unlimited: true },
         opportunity: { limit: 0, unlimited: true },
         group_post: { limit: 0, unlimited: true },
-        news_article: { limit: 0, unlimited: true }
+        news_article: { limit: 0, unlimited: true },
       },
       super_admin: {
         photo: { limit: 0, unlimited: true },
@@ -451,8 +452,8 @@ class DashboardSecurity {
         marketplace_listing: { limit: 0, unlimited: true },
         opportunity: { limit: 0, unlimited: true },
         group_post: { limit: 0, unlimited: true },
-        news_article: { limit: 0, unlimited: true }
-      }
+        news_article: { limit: 0, unlimited: true },
+      },
     };
 
     return quotaConfigs[role]?.[contentType] || { limit: 10, unlimited: false };
@@ -467,15 +468,15 @@ export const requirePermissions = (permissions: string[]) => {
   return async <T extends (...args: any[]) => any>(fn: T): Promise<ReturnType<T>> => {
     const security = new DashboardSecurity();
     const hasPermissions = await security.hasPermissions(permissions);
-    
+
     if (!hasPermissions) {
       await security.logSecurityEvent({
         type: 'permission_denied',
-        description: `Access denied for permissions: ${permissions.join(', ')}`
+        description: `Access denied for permissions: ${permissions.join(', ')}`,
       });
       throw new Error('Insufficient permissions');
     }
-    
+
     return fn();
   };
 };
@@ -484,21 +485,21 @@ export const requireContentOwnership = (contentId: string, contentType: string) 
   return async <T extends (...args: any[]) => any>(fn: T): Promise<ReturnType<T>> => {
     const security = new DashboardSecurity();
     const ownership = await security.verifyContentOwnership(contentId, contentType);
-    
+
     if (!ownership.is_owner) {
       const userContext = await security.getUserContext();
       const isAdmin = userContext.role === 'admin' || userContext.role === 'super_admin';
-      
+
       if (!isAdmin) {
         await security.logSecurityEvent({
           type: 'unauthorized_access',
           description: `Unauthorized access attempt to content: ${contentId}`,
-          metadata: { content_type: contentType, owner_id: ownership.owner_id }
+          metadata: { content_type: contentType, owner_id: ownership.owner_id },
         });
         throw new Error('Content access denied');
       }
     }
-    
+
     return fn();
   };
 };
@@ -507,16 +508,16 @@ export const withRateLimit = (operation: string, limit: number = 100, windowMs: 
   return async <T extends (...args: any[]) => any>(fn: T): Promise<ReturnType<T>> => {
     const security = new DashboardSecurity();
     const allowed = await security.checkRateLimit(operation, limit, windowMs);
-    
+
     if (!allowed) {
       await security.logSecurityEvent({
         type: 'rate_limit_exceeded',
         description: `Rate limit exceeded for operation: ${operation}`,
-        metadata: { limit, windowMs }
+        metadata: { limit, windowMs },
       });
       throw new Error('Rate limit exceeded');
     }
-    
+
     return fn();
   };
 };
@@ -525,15 +526,15 @@ export const withQuotaCheck = (contentType: string) => {
   return async <T extends (...args: any[]) => any>(fn: T): Promise<ReturnType<T>> => {
     const security = new DashboardSecurity();
     const allowed = await security.checkContentQuota(contentType);
-    
+
     if (!allowed) {
       await security.logSecurityEvent({
         type: 'permission_denied',
-        description: `Content quota exceeded for type: ${contentType}`
+        description: `Content quota exceeded for type: ${contentType}`,
       });
       throw new Error('Content quota exceeded');
     }
-    
+
     return fn();
   };
 };

@@ -39,10 +39,10 @@ export function AuthorSelector({
   maxHeight = 300,
   searchPlaceholder = 'Search authors...',
   className = '',
-  showTitles = true
+  showTitles = true,
 }: AuthorSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const { data: authors = [], isLoading, error } = useAuthorsByIds(availableAuthorIds);
 
   const filteredAndSortedAuthors = useMemo(() => {
@@ -54,7 +54,7 @@ export function AuthorSelector({
     if (!onSelectionChange) return;
 
     let newSelection: string[];
-    
+
     if (multiple) {
       if (selectedAuthorIds.includes(author.id)) {
         newSelection = selectedAuthorIds.filter(id => id !== author.id);
@@ -64,7 +64,7 @@ export function AuthorSelector({
     } else {
       newSelection = selectedAuthorIds.includes(author.id) ? [] : [author.id];
     }
-    
+
     onSelectionChange(newSelection);
   };
 
@@ -98,9 +98,7 @@ export function AuthorSelector({
   if (error) {
     return (
       <div className={`border border-red-200 rounded-lg p-4 text-center ${className}`}>
-        <div className="text-red-600 text-sm">
-          Failed to load authors. Please try again.
-        </div>
+        <div className="text-red-600 text-sm">Failed to load authors. Please try again.</div>
       </div>
     );
   }
@@ -108,9 +106,7 @@ export function AuthorSelector({
   if (authors.length === 0) {
     return (
       <div className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center ${className}`}>
-        <div className="text-gray-500 text-sm">
-          No authors available
-        </div>
+        <div className="text-gray-500 text-sm">No authors available</div>
       </div>
     );
   }
@@ -132,17 +128,14 @@ export function AuthorSelector({
           />
         </div>
       )}
-      
-      <div 
-        className="overflow-y-auto"
-        style={{ maxHeight: `${maxHeight}px` }}
-      >
+
+      <div className="overflow-y-auto" style={{ maxHeight: `${maxHeight}px` }}>
         {filteredAndSortedAuthors.length === 0 ? (
           <div className="p-4 text-center text-gray-500 text-sm">
             {searchTerm ? 'No authors match your search' : 'No authors available'}
           </div>
         ) : (
-          filteredAndSortedAuthors.map((author) => (
+          filteredAndSortedAuthors.map(author => (
             <AuthorListItem
               key={author.id}
               author={author}
@@ -153,7 +146,7 @@ export function AuthorSelector({
           ))
         )}
       </div>
-      
+
       {multiple && selectedAuthorIds.length > 0 && (
         <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
           {selectedAuthorIds.length} author{selectedAuthorIds.length !== 1 ? 's' : ''} selected

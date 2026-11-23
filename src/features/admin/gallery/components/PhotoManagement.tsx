@@ -1,8 +1,25 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { 
-  ArrowLeft, Search, Filter, Grid, List, Star, Eye, Edit, Trash2, 
-  Download, Move, Tag, MoreVertical, Image, Calendar, FileSize,
-  CheckCircle, Clock, XCircle, AlertTriangle
+import {
+  ArrowLeft,
+  Search,
+  Filter,
+  Grid,
+  List,
+  Star,
+  Eye,
+  Edit,
+  Trash2,
+  Download,
+  Move,
+  Tag,
+  MoreVertical,
+  Image,
+  Calendar,
+  FileSize,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { AdminPhotoView, AdminPhotoFilters, BulkPhotoOperation, AdminGalleryView } from '../types';
 import { adminGalleryApi } from '../api/adminGalleryApi';
@@ -23,11 +40,7 @@ interface PhotoManagementProps {
   onEditGallery: () => void;
 }
 
-export const PhotoManagement: React.FC<PhotoManagementProps> = ({
-  gallery,
-  onBack,
-  onEditGallery
-}) => {
+export const PhotoManagement: React.FC<PhotoManagementProps> = ({ gallery, onBack, onEditGallery }) => {
   // State management
   const [photos, setPhotos] = useState<AdminPhotoView[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +49,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  
+
   // Filter and view state
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<AdminPhotoFilters>({});
@@ -44,7 +57,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('sortOrder');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  
+
   // Photo details panel
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [showPhotoDetails, setShowPhotoDetails] = useState(false);
@@ -54,7 +67,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
+
       const appliedFilters = { ...filters };
       if (searchTerm) {
         appliedFilters.search = searchTerm;
@@ -65,7 +78,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
       const response = await adminGalleryApi.getAdminGalleryPhotos(gallery.id, {
         page: currentPage,
         limit: 50,
-        filters: appliedFilters
+        filters: appliedFilters,
       });
 
       setPhotos(response.photos);
@@ -127,13 +140,13 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
       // Update sort orders in database
       const updates = items.map((photo, index) => ({
         id: photo.id,
-        order: index
+        order: index,
       }));
 
       await adminGalleryApi.bulkUpdatePhotos({
         type: 'reorder',
         photoIds: updates.map(u => u.id),
-        payload: { orders: updates }
+        payload: { orders: updates },
       });
     } catch (err) {
       // Revert on error
@@ -194,17 +207,13 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {gallery.title}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{gallery.title}</h1>
             <Badge variant="secondary">
               {totalCount} photo{totalCount !== 1 ? 's' : ''}
             </Badge>
           </div>
           {gallery.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {gallery.description}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{gallery.description}</p>
           )}
         </div>
         <Button variant="outline" onClick={onEditGallery}>
@@ -221,7 +230,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
             type="text"
             placeholder="Search photos by title or tags..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -247,11 +256,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
             </Button>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
             <Filter className="w-4 h-4" />
             Filters
             {Object.keys(filters).length > 0 && (
@@ -270,28 +275,46 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
             items={[
               {
                 label: 'Photo Order',
-                onClick: () => { setSortBy('sortOrder'); setSortOrder('asc'); }
+                onClick: () => {
+                  setSortBy('sortOrder');
+                  setSortOrder('asc');
+                },
               },
               {
                 label: 'Upload Date (Newest)',
-                onClick: () => { setSortBy('uploadDate'); setSortOrder('desc'); }
+                onClick: () => {
+                  setSortBy('uploadDate');
+                  setSortOrder('desc');
+                },
               },
               {
                 label: 'Upload Date (Oldest)',
-                onClick: () => { setSortBy('uploadDate'); setSortOrder('asc'); }
+                onClick: () => {
+                  setSortBy('uploadDate');
+                  setSortOrder('asc');
+                },
               },
               {
                 label: 'File Size (Largest)',
-                onClick: () => { setSortBy('fileSize'); setSortOrder('desc'); }
+                onClick: () => {
+                  setSortBy('fileSize');
+                  setSortOrder('desc');
+                },
               },
               {
                 label: 'File Size (Smallest)',
-                onClick: () => { setSortBy('fileSize'); setSortOrder('asc'); }
+                onClick: () => {
+                  setSortBy('fileSize');
+                  setSortOrder('asc');
+                },
               },
               {
                 label: 'Views (Most)',
-                onClick: () => { setSortBy('views'); setSortOrder('desc'); }
-              }
+                onClick: () => {
+                  setSortBy('views');
+                  setSortOrder('desc');
+                },
+              },
             ]}
           />
         </div>
@@ -304,18 +327,18 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
             <div>
               <label className="block text-sm font-medium mb-2">Visibility</label>
               <div className="space-y-2">
-                {['visible', 'hidden'].map((visibility) => (
+                {['visible', 'hidden'].map(visibility => (
                   <label key={visibility} className="flex items-center">
                     <Checkbox
                       checked={filters.visibility?.includes(visibility) || false}
-                      onChange={(checked) => {
+                      onChange={checked => {
                         const current = filters.visibility || [];
                         if (checked) {
                           setFilters({ ...filters, visibility: [...current, visibility] });
                         } else {
                           setFilters({
                             ...filters,
-                            visibility: current.filter(v => v !== visibility)
+                            visibility: current.filter(v => v !== visibility),
                           });
                         }
                       }}
@@ -333,22 +356,22 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                   { value: 'completed', label: 'Completed', icon: CheckCircle },
                   { value: 'processing', label: 'Processing', icon: Clock },
                   { value: 'failed', label: 'Failed', icon: XCircle },
-                  { value: 'pending', label: 'Pending', icon: AlertTriangle }
-                ].map((status) => (
+                  { value: 'pending', label: 'Pending', icon: AlertTriangle },
+                ].map(status => (
                   <label key={status.value} className="flex items-center">
                     <Checkbox
                       checked={filters.processingStatus?.includes(status.value) || false}
-                      onChange={(checked) => {
+                      onChange={checked => {
                         const current = filters.processingStatus || [];
                         if (checked) {
                           setFilters({
                             ...filters,
-                            processingStatus: [...current, status.value]
+                            processingStatus: [...current, status.value],
                           });
                         } else {
                           setFilters({
                             ...filters,
-                            processingStatus: current.filter(s => s !== status.value)
+                            processingStatus: current.filter(s => s !== status.value),
                           });
                         }
                       }}
@@ -369,14 +392,14 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                   type="number"
                   placeholder="Min size (MB)"
                   value={filters.fileSizeRange?.min ? filters.fileSizeRange.min / (1024 * 1024) : ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     const value = e.target.value ? parseInt(e.target.value) * 1024 * 1024 : undefined;
                     setFilters({
                       ...filters,
                       fileSizeRange: {
                         ...filters.fileSizeRange,
-                        min: value || 0
-                      }
+                        min: value || 0,
+                      },
                     });
                   }}
                 />
@@ -384,14 +407,14 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                   type="number"
                   placeholder="Max size (MB)"
                   value={filters.fileSizeRange?.max ? filters.fileSizeRange.max / (1024 * 1024) : ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     const value = e.target.value ? parseInt(e.target.value) * 1024 * 1024 : undefined;
                     setFilters({
                       ...filters,
                       fileSizeRange: {
                         ...filters.fileSizeRange,
-                        max: value || 0
-                      }
+                        max: value || 0,
+                      },
                     });
                   }}
                 />
@@ -404,26 +427,26 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                 <Input
                   type="date"
                   value={filters.uploadDateRange?.start || ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFilters({
                       ...filters,
                       uploadDateRange: {
                         ...filters.uploadDateRange,
-                        start: e.target.value
-                      }
+                        start: e.target.value,
+                      },
                     });
                   }}
                 />
                 <Input
                   type="date"
                   value={filters.uploadDateRange?.end || ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     setFilters({
                       ...filters,
                       uploadDateRange: {
                         ...filters.uploadDateRange,
-                        end: e.target.value
-                      }
+                        end: e.target.value,
+                      },
                     });
                   }}
                 />
@@ -435,9 +458,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
             <Button variant="outline" onClick={() => setFilters({})}>
               Clear Filters
             </Button>
-            <Button onClick={() => setCurrentPage(1)}>
-              Apply Filters
-            </Button>
+            <Button onClick={() => setCurrentPage(1)}>Apply Filters</Button>
           </div>
         </Card>
       )}
@@ -453,11 +474,13 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'visibility',
-                  photoIds: Array.from(selectedPhotos),
-                  payload: { visibility: 'visible' }
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'visibility',
+                    photoIds: Array.from(selectedPhotos),
+                    payload: { visibility: 'visible' },
+                  })
+                }
               >
                 <Eye className="w-4 h-4 mr-1" />
                 Show
@@ -465,21 +488,25 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'visibility',
-                  photoIds: Array.from(selectedPhotos),
-                  payload: { visibility: 'hidden' }
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'visibility',
+                    photoIds: Array.from(selectedPhotos),
+                    payload: { visibility: 'hidden' },
+                  })
+                }
               >
                 Hide
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'tag',
-                  photoIds: Array.from(selectedPhotos)
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'tag',
+                    photoIds: Array.from(selectedPhotos),
+                  })
+                }
               >
                 <Tag className="w-4 h-4 mr-1" />
                 Tag
@@ -487,10 +514,12 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleBulkOperation({
-                  type: 'delete',
-                  photoIds: Array.from(selectedPhotos)
-                })}
+                onClick={() =>
+                  handleBulkOperation({
+                    type: 'delete',
+                    photoIds: Array.from(selectedPhotos),
+                  })
+                }
                 className="text-red-600 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
@@ -518,13 +547,8 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
           {/* Selection Header */}
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <Checkbox
-                checked={selectedPhotos.size === photos.length}
-                onChange={selectAllPhotos}
-              />
-              <span className="ml-2 text-sm">
-                Select all ({photos.length})
-              </span>
+              <Checkbox checked={selectedPhotos.size === photos.length} onChange={selectAllPhotos} />
+              <span className="ml-2 text-sm">Select all ({photos.length})</span>
             </label>
             <div className="text-sm text-gray-600">
               Showing {photos.length} of {totalCount} photos
@@ -534,7 +558,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
           {/* Photo Grid */}
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="photos" direction={viewMode === 'grid' ? undefined : 'vertical'}>
-              {(provided) => (
+              {provided => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
@@ -553,9 +577,11 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                           {...provided.dragHandleProps}
                           className={`${snapshot.isDragging ? 'rotate-2 scale-105' : ''} transition-transform`}
                         >
-                          <Card className={`overflow-hidden hover:shadow-md transition-shadow ${
-                            viewMode === 'grid' ? 'aspect-square' : 'flex items-center p-3'
-                          }`}>
+                          <Card
+                            className={`overflow-hidden hover:shadow-md transition-shadow ${
+                              viewMode === 'grid' ? 'aspect-square' : 'flex items-center p-3'
+                            }`}
+                          >
                             {viewMode === 'grid' ? (
                               // Grid View
                               <div className="relative h-full">
@@ -593,7 +619,9 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                 <div className="absolute bottom-2 left-2 flex items-center gap-1">
                                   {getProcessingIcon(photo.processingStatus)}
                                   {photo.visibility === 'hidden' && (
-                                    <Badge variant="secondary" size="sm">Hidden</Badge>
+                                    <Badge variant="secondary" size="sm">
+                                      Hidden
+                                    </Badge>
                                   )}
                                 </div>
 
@@ -612,28 +640,29 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                         onClick: () => {
                                           setSelectedPhotoId(photo.id);
                                           setShowPhotoDetails(true);
-                                        }
+                                        },
                                       },
                                       {
                                         label: 'Set as Cover',
                                         icon: Star,
                                         onClick: () => setCoverPhoto(photo.id),
-                                        disabled: gallery.cover_photo_id === photo.id
+                                        disabled: gallery.cover_photo_id === photo.id,
                                       },
                                       {
                                         label: 'Download',
                                         icon: Download,
-                                        onClick: () => window.open(photo.originalUrl, '_blank')
+                                        onClick: () => window.open(photo.originalUrl, '_blank'),
                                       },
                                       {
                                         label: 'Delete',
                                         icon: Trash2,
-                                        onClick: () => handleBulkOperation({
-                                          type: 'delete',
-                                          photoIds: [photo.id]
-                                        }),
-                                        className: 'text-red-600'
-                                      }
+                                        onClick: () =>
+                                          handleBulkOperation({
+                                            type: 'delete',
+                                            photoIds: [photo.id],
+                                          }),
+                                        className: 'text-red-600',
+                                      },
                                     ]}
                                   />
                                 </div>
@@ -645,7 +674,7 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                   checked={selectedPhotos.has(photo.id)}
                                   onChange={() => togglePhotoSelection(photo.id)}
                                 />
-                                
+
                                 <img
                                   src={photo.thumbnailUrl}
                                   alt={photo.title || 'Photo'}
@@ -655,17 +684,15 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                     setShowPhotoDetails(true);
                                   }}
                                 />
-                                
+
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2">
-                                    <h4 className="font-medium truncate">
-                                      {photo.title || photo.fileName}
-                                    </h4>
+                                    <h4 className="font-medium truncate">{photo.title || photo.fileName}</h4>
                                     {gallery.cover_photo_id === photo.id && (
                                       <Star className="w-4 h-4 text-yellow-500" />
                                     )}
                                   </div>
-                                  
+
                                   <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-4">
                                     <span className="flex items-center gap-1">
                                       <FileSize className="w-3 h-3" />
@@ -675,10 +702,12 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                       <Calendar className="w-3 h-3" />
                                       {new Date(photo.uploadedAt || photo.created_at).toLocaleDateString()}
                                     </span>
-                                    <span>{photo.width} × {photo.height}</span>
+                                    <span>
+                                      {photo.width} × {photo.height}
+                                    </span>
                                   </div>
                                 </div>
-                                
+
                                 <div className="flex items-center gap-2">
                                   {getProcessingIcon(photo.processingStatus)}
                                   <Badge variant={photo.visibility === 'visible' ? 'default' : 'secondary'}>
@@ -697,28 +726,29 @@ export const PhotoManagement: React.FC<PhotoManagementProps> = ({
                                         onClick: () => {
                                           setSelectedPhotoId(photo.id);
                                           setShowPhotoDetails(true);
-                                        }
+                                        },
                                       },
                                       {
                                         label: 'Set as Cover',
                                         icon: Star,
                                         onClick: () => setCoverPhoto(photo.id),
-                                        disabled: gallery.cover_photo_id === photo.id
+                                        disabled: gallery.cover_photo_id === photo.id,
                                       },
                                       {
                                         label: 'Download',
                                         icon: Download,
-                                        onClick: () => window.open(photo.originalUrl, '_blank')
+                                        onClick: () => window.open(photo.originalUrl, '_blank'),
                                       },
                                       {
                                         label: 'Delete',
                                         icon: Trash2,
-                                        onClick: () => handleBulkOperation({
-                                          type: 'delete',
-                                          photoIds: [photo.id]
-                                        }),
-                                        className: 'text-red-600'
-                                      }
+                                        onClick: () =>
+                                          handleBulkOperation({
+                                            type: 'delete',
+                                            photoIds: [photo.id],
+                                          }),
+                                        className: 'text-red-600',
+                                      },
                                     ]}
                                   />
                                 </div>

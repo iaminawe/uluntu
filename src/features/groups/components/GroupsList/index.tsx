@@ -11,42 +11,36 @@ const GROUPS_PER_PAGE = 8;
 const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGroups }: GroupsListProps) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // Use hybrid hook for data only when no groups are passed
-  const { 
-    groups: hybridGroups, 
-    isLoading: hybridLoading, 
-    error: hybridError
-  } = useGroupsHybrid();
-  
+  const { groups: hybridGroups, isLoading: hybridLoading, error: hybridError } = useGroupsHybrid();
+
   // Choose which data source to use
   const usePassedGroups = passedGroups !== undefined;
   const groups = usePassedGroups ? passedGroups : hybridGroups;
   const isLoading = usePassedGroups ? false : hybridLoading;
   const error = usePassedGroups ? null : hybridError;
-  
+
   // Apply client-side filtering if using passed groups
   const filteredGroups = useMemo(() => {
     if (!usePassedGroups) return groups;
-    
+
     let filtered = groups;
-    
+
     // Apply search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(group => 
-        group.name?.toLowerCase().includes(searchLower) ||
-        group.description?.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        group =>
+          group.name?.toLowerCase().includes(searchLower) || group.description?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     // Apply visibility filter
     if (visibilityFilter && Array.isArray(visibilityFilter) && visibilityFilter.length > 0) {
-      filtered = filtered.filter(group => 
-        visibilityFilter.includes(group.visibility as any)
-      );
+      filtered = filtered.filter(group => visibilityFilter.includes(group.visibility as any));
     }
-    
+
     return filtered;
   }, [groups, searchTerm, visibilityFilter, usePassedGroups]);
 
@@ -76,9 +70,11 @@ const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGrou
             <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded w-64"></div>
             <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
-              {Array(GROUPS_PER_PAGE).fill(0).map((_, i) => (
-                <div key={i} className="bg-slate-200 dark:bg-slate-700 h-48 rounded-lg"></div>
-              ))}
+              {Array(GROUPS_PER_PAGE)
+                .fill(0)
+                .map((_, i) => (
+                  <div key={i} className="bg-slate-200 dark:bg-slate-700 h-48 rounded-lg"></div>
+                ))}
             </div>
           </div>
         </div>
@@ -91,9 +87,7 @@ const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGrou
       <div className="max-w-7xl mx-auto py-8">
         <div className="text-center py-12 text-red-500">
           <p>Error loading groups</p>
-          {error && typeof error === 'object' && 'message' in error && (
-            <p>{(error as any).message}</p>
-          )}
+          {error && typeof error === 'object' && 'message' in error && <p>{(error as any).message}</p>}
         </div>
       </div>
     );
@@ -106,7 +100,7 @@ const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGrou
           <div className="bg-white dark:bg-slate-800 rounded-lg p-8 text-center shadow-md">
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No groups found</h3>
             <p className="text-slate-600 dark:text-slate-300">
-              {searchTerm || (visibilityFilter && Array.isArray(visibilityFilter) && visibilityFilter.length > 0) 
+              {searchTerm || (visibilityFilter && Array.isArray(visibilityFilter) && visibilityFilter.length > 0)
                 ? 'No groups match your search criteria'
                 : 'There are no groups to display yet'}
             </p>
@@ -114,30 +108,17 @@ const GroupsList = ({ searchTerm = '', visibilityFilter = [], groups: passedGrou
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {currentGroupsToDisplay.map(group => (
-              <GroupCard 
-                key={group.id} 
-                group={group} 
-                onJoinClick={setSelectedGroup} 
-              />
+              <GroupCard key={group.id} group={group} onJoinClick={setSelectedGroup} />
             ))}
           </div>
         )}
       </div>
 
       {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
       )}
 
-      {selectedGroup && (
-        <JoinModal
-          group={selectedGroup}
-          onClose={() => setSelectedGroup(null)}
-        />
-      )}
+      {selectedGroup && <JoinModal group={selectedGroup} onClose={() => setSelectedGroup(null)} />}
     </div>
   );
 };

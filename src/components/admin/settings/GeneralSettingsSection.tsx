@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingCategory, SettingDataType } from '@/types/settings';
+import {
+  ApplicationSetting,
+  FeatureToggle,
+  UpdateSettingRequest,
+  SettingCategory,
+  SettingDataType,
+} from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -20,7 +26,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
   settings,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const { theme } = useTheme();
   const [updatingSettings, setUpdatingSettings] = useState<Set<string>>(new Set());
@@ -29,30 +35,30 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
   const handleSettingChange = (settingId: string, value: any) => {
     setLocalSettings(prev => ({
       ...prev,
-      [settingId]: value
+      [settingId]: value,
     }));
   };
 
   const handleSaveSetting = async (setting: ApplicationSetting) => {
     const newValue = localSettings[setting.id] ?? setting.setting_value;
-    
+
     setUpdatingSettings(prev => new Set(prev).add(setting.id));
-    
+
     try {
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
         category: setting.category as SettingCategory,
-        data_type: setting.data_type as SettingDataType
+        data_type: setting.data_type as SettingDataType,
       });
-      
+
       // Remove from local state after successful save
       setLocalSettings(prev => {
         const updated = { ...prev };
         delete updated[setting.id];
         return updated;
       });
-      
+
       toast.success('Setting saved successfully');
     } catch (error) {
       toast.error('Failed to save setting');
@@ -93,29 +99,29 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
       description: 'Basic site information and branding',
       icon: Globe,
       settings: siteSettings,
-      color: 'blue'
+      color: 'blue',
     },
     {
       title: 'Header Settings',
       description: 'Header layout and visibility options',
       icon: Eye,
       settings: headerSettings,
-      color: 'green'
+      color: 'green',
     },
     {
       title: 'Navigation',
       description: 'Navigation menu configuration',
       icon: Navigation,
       settings: navigationSettings,
-      color: 'purple'
+      color: 'purple',
     },
     {
       title: 'Appearance',
       description: 'Visual customization and theming',
       icon: Palette,
       settings: appearanceSettings,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   // Helper to determine if setting is an image type
@@ -126,16 +132,23 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
 
   // Helper to determine if setting is a color type
   const isColorSetting = (setting: ApplicationSetting) => {
-    const colorKeys = ['primary_color', 'secondary_color', 'accent_color', 'background_color', 'text_color', 'brand_color'];
+    const colorKeys = [
+      'primary_color',
+      'secondary_color',
+      'accent_color',
+      'background_color',
+      'text_color',
+      'brand_color',
+    ];
     return colorKeys.some(key => setting.setting_key.toLowerCase().includes(key.toLowerCase()));
   };
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8">
-        {settingsSections.map((section) => {
+        {settingsSections.map(section => {
           const Icon = section.icon;
-          
+
           return (
             <Card key={section.title} className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader>
@@ -148,34 +161,39 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
               <CardContent>
                 {section.settings.length > 0 ? (
                   <div className="space-y-4">
-                    {section.settings.map((setting) => {
+                    {section.settings.map(setting => {
                       const currentValue = getSettingValue(setting);
                       const isUpdating = updatingSettings.has(setting.id);
                       const hasChanged = hasChanges(setting.id);
 
                       return (
-                        <div key={setting.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                          <div className={`${isImageSetting(setting) ? 'space-y-4' : 'flex items-start justify-between'}`}>
+                        <div
+                          key={setting.id}
+                          className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+                        >
+                          <div
+                            className={`${isImageSetting(setting) ? 'space-y-4' : 'flex items-start justify-between'}`}
+                          >
                             <div className="flex-1 min-w-0 mr-4">
                               <h4 className="font-medium text-gray-900 dark:text-gray-100">{setting.setting_key}</h4>
                               {setting.description && (
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{setting.description}</p>
                               )}
                             </div>
-                            
+
                             <div className={`${isImageSetting(setting) ? 'w-full' : 'flex items-center space-x-3'}`}>
                               {/* Interactive Control */}
                               {typeof setting.setting_value === 'boolean' ? (
                                 <Switch
                                   checked={currentValue}
-                                  onCheckedChange={(checked) => handleSettingChange(setting.id, checked)}
+                                  onCheckedChange={checked => handleSettingChange(setting.id, checked)}
                                   disabled={isUpdating}
                                 />
                               ) : isColorSetting(setting) ? (
                                 <input
                                   type="color"
                                   value={String(currentValue)}
-                                  onChange={(e) => handleSettingChange(setting.id, e.target.value)}
+                                  onChange={e => handleSettingChange(setting.id, e.target.value)}
                                   disabled={isUpdating}
                                   className="w-16 h-8 border border-gray-300 dark:border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed"
                                 />
@@ -184,11 +202,11 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                                   <div className="w-64">
                                     <ImageUploader
                                       value={String(currentValue)}
-                                      onChange={(url) => handleSettingChange(setting.id, url)}
+                                      onChange={url => handleSettingChange(setting.id, url)}
                                       disabled={isUpdating}
                                       placeholder={`Upload ${setting.setting_key.replace(/_/g, ' ')}`}
                                       maxSize={2} // 2MB limit for admin images
-                                      onError={(error) => toast.error(error)}
+                                      onError={error => toast.error(error)}
                                     />
                                   </div>
                                   {/* Action Buttons for images */}
@@ -222,11 +240,14 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                                 <input
                                   type={typeof setting.setting_value === 'number' ? 'number' : 'text'}
                                   value={String(currentValue)}
-                                  onChange={(e) => handleSettingChange(setting.id, 
-                                    typeof setting.setting_value === 'number' 
-                                      ? parseFloat(e.target.value) || 0
-                                      : e.target.value
-                                  )}
+                                  onChange={e =>
+                                    handleSettingChange(
+                                      setting.id,
+                                      typeof setting.setting_value === 'number'
+                                        ? parseFloat(e.target.value) || 0
+                                        : e.target.value
+                                    )
+                                  }
                                   disabled={isUpdating}
                                   className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[200px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                 />
@@ -260,7 +281,7 @@ const GeneralSettingsSection: React.FC<GeneralSettingsSectionProps> = ({
                               )}
                             </div>
                           </div>
-                          
+
                           {hasChanged && (
                             <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-2 py-1 rounded">
                               Unsaved changes

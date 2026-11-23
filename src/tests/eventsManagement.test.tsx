@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { render } from '@testing-library/react';
@@ -24,12 +24,13 @@ const mockEvent = {
   date: '2025-09-15T09:00:00.000Z',
   endDate: '2025-09-16T17:00:00.000Z',
   location: 'Prestige Lakeside Resort, Nelson BC',
-  description: 'Annual technology conference featuring workshops, networking, and keynote speakers from across the Kootenay region.',
+  description:
+    'Annual technology conference featuring workshops, networking, and keynote speakers from across the Kootenay region.',
   image: 'https://example.com/images/tech-conf.jpg',
   organizer: {
     id: '456',
     name: 'Kootenay Tech Alliance',
-    image: 'https://example.com/images/kta-logo.jpg'
+    image: 'https://example.com/images/kta-logo.jpg',
   },
   attendees: 150,
   type: 'in-person',
@@ -43,7 +44,7 @@ const mockEvent = {
       time: '2025-09-15T09:30:00.000Z',
       duration: 60,
       description: 'The future of tech in rural communities',
-      resources: []
+      resources: [],
     },
     {
       id: '2',
@@ -57,11 +58,11 @@ const mockEvent = {
           id: '101',
           title: 'Workshop Slides',
           url: 'https://example.com/slides.pdf',
-          type: 'slides'
-        }
-      ]
-    }
-  ]
+          type: 'slides',
+        },
+      ],
+    },
+  ],
 };
 
 jest.mock('../redux/slices/eventsSlice', () => {
@@ -73,7 +74,7 @@ jest.mock('../redux/slices/eventsSlice', () => {
     createEvent: jest.fn(),
     updateEvent: jest.fn(),
     deleteEvent: jest.fn(),
-    fetchFilteredEvents: jest.fn()
+    fetchFilteredEvents: jest.fn(),
   };
 });
 
@@ -81,8 +82,8 @@ jest.mock('../redux/slices/eventsSlice', () => {
 jest.mock('../hooks/useAuth', () => ({
   useAuth: jest.fn().mockReturnValue({
     user: { id: '789', name: 'Event Organizer', role: 'organizer' },
-    status: 'authenticated'
-  })
+    status: 'authenticated',
+  }),
 }));
 
 // Mock the events Redux hooks
@@ -94,13 +95,13 @@ jest.mock('../hooks/useEventsRedux', () => ({
     fetchEvents: jest.fn(),
     createEvent: jest.fn().mockResolvedValue(mockEvent),
     updateEvent: jest.fn().mockResolvedValue(mockEvent),
-    deleteEvent: jest.fn().mockResolvedValue({})
+    deleteEvent: jest.fn().mockResolvedValue({}),
   }),
   useEventRedux: jest.fn().mockReturnValue({
     event: mockEvent,
     status: 'succeeded',
     error: null,
-    fetchEvent: jest.fn()
+    fetchEvent: jest.fn(),
   }),
   useFilteredEventsRedux: jest.fn().mockReturnValue({
     filteredEvents: [mockEvent],
@@ -109,17 +110,15 @@ jest.mock('../hooks/useEventsRedux', () => ({
     error: null,
     setFilters: jest.fn(),
     resetFilters: jest.fn(),
-    fetchFilteredEvents: jest.fn()
-  })
+    fetchFilteredEvents: jest.fn(),
+  }),
 }));
 
 describe('Events Management', () => {
   const renderWithProviders = (component: React.ReactNode) => {
     return render(
       <Provider store={store}>
-        <BrowserRouter>
-          {component}
-        </BrowserRouter>
+        <BrowserRouter>{component}</BrowserRouter>
       </Provider>
     );
   };
@@ -138,7 +137,7 @@ describe('Events Management', () => {
       fetchEvents: jest.fn(),
       createEvent: createEventMock,
       updateEvent: jest.fn(),
-      deleteEvent: jest.fn()
+      deleteEvent: jest.fn(),
     });
 
     // Test steps would include:
@@ -156,9 +155,9 @@ describe('Events Management', () => {
       ...mockEvent,
       title: 'Updated: Kootenay Tech Conference 2025',
       description: 'Updated description with new agenda and speakers.',
-      attendees: 200
+      attendees: 200,
     };
-    
+
     const updateEventMock = jest.fn().mockResolvedValue(updatedEvent);
     require('../hooks/useEventsRedux').useEventsRedux.mockReturnValue({
       events: [mockEvent],
@@ -167,7 +166,7 @@ describe('Events Management', () => {
       fetchEvents: jest.fn(),
       createEvent: jest.fn(),
       updateEvent: updateEventMock,
-      deleteEvent: jest.fn()
+      deleteEvent: jest.fn(),
     });
 
     // Test steps would include:
@@ -188,7 +187,7 @@ describe('Events Management', () => {
       fetchEvents: jest.fn(),
       createEvent: jest.fn(),
       updateEvent: jest.fn(),
-      deleteEvent: deleteEventMock
+      deleteEvent: deleteEventMock,
     });
 
     // Test steps would include:
@@ -209,10 +208,10 @@ describe('Events Management', () => {
         title: 'Coding Workshop for Beginners',
         date: '2025-10-05T18:00:00.000Z',
         endDate: '2025-10-05T20:00:00.000Z',
-        type: 'hybrid'
-      }
+        type: 'hybrid',
+      },
     ];
-    
+
     require('../hooks/useEventsRedux').useFilteredEventsRedux.mockReturnValue({
       filteredEvents: filteredEvents,
       filters: { type: 'workshop' },
@@ -220,7 +219,7 @@ describe('Events Management', () => {
       error: null,
       setFilters: jest.fn(),
       resetFilters: jest.fn(),
-      fetchFilteredEvents: jest.fn()
+      fetchFilteredEvents: jest.fn(),
     });
 
     // Test steps would include:
@@ -235,7 +234,7 @@ describe('Events Management', () => {
       event: mockEvent,
       status: 'succeeded',
       error: null,
-      fetchEvent: jest.fn()
+      fetchEvent: jest.fn(),
     });
 
     // Test steps would include:
@@ -247,10 +246,8 @@ describe('Events Management', () => {
 
   it('EVT-006: As a User, I want to search for events by keywords', async () => {
     // Mock implementation for search results
-    const searchResults = [
-      mockEvent
-    ];
-    
+    const searchResults = [mockEvent];
+
     require('../hooks/useEventsRedux').useFilteredEventsRedux.mockReturnValue({
       filteredEvents: searchResults,
       filters: { search: 'tech' },
@@ -258,7 +255,7 @@ describe('Events Management', () => {
       error: null,
       setFilters: jest.fn(),
       resetFilters: jest.fn(),
-      fetchFilteredEvents: jest.fn()
+      fetchFilteredEvents: jest.fn(),
     });
 
     // Test steps would include:
@@ -270,7 +267,7 @@ describe('Events Management', () => {
   it('EVT-007: As a User, I want to register for an event or indicate my attendance', async () => {
     // Mock implementation for registration functionality
     const registerForEventMock = jest.fn().mockResolvedValue({ success: true });
-    
+
     // Test steps would include:
     // 1. Render the event detail page
     // 2. Click register/attend button
@@ -289,14 +286,14 @@ describe('Events Management', () => {
       time: '2025-09-15T12:30:00.000Z',
       duration: 60,
       description: 'Networking lunch with local tech professionals',
-      resources: []
+      resources: [],
     };
-    
+
     const updatedEventWithSessions = {
       ...mockEvent,
-      sessions: [...mockEvent.sessions, newSession]
+      sessions: [...mockEvent.sessions, newSession],
     };
-    
+
     const updateEventMock = jest.fn().mockResolvedValue(updatedEventWithSessions);
     require('../hooks/useEventsRedux').useEventsRedux.mockReturnValue({
       events: [mockEvent],
@@ -305,7 +302,7 @@ describe('Events Management', () => {
       fetchEvents: jest.fn(),
       createEvent: jest.fn(),
       updateEvent: updateEventMock,
-      deleteEvent: jest.fn()
+      deleteEvent: jest.fn(),
     });
 
     // Test steps would include:

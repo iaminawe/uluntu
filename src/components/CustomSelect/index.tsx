@@ -13,7 +13,7 @@ const CustomSelect = ({
   placeholder = 'Select an option',
   disabled = false,
   className = '',
-  error
+  error,
 }: CustomSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
@@ -45,10 +45,10 @@ const CustomSelect = ({
     const syntheticEvent = {
       target: {
         name,
-        value: optionValue
-      }
+        value: optionValue,
+      },
     } as React.ChangeEvent<HTMLSelectElement>;
-    
+
     onChange(syntheticEvent);
     setIsOpen(false);
   };
@@ -56,16 +56,13 @@ const CustomSelect = ({
   return (
     <div className={className}>
       {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       {/* Hidden native select for form submission */}
-      <select 
+      <select
         id={id}
         name={name}
         value={value}
@@ -81,12 +78,9 @@ const CustomSelect = ({
           </option>
         ))}
       </select>
-      
+
       {/* Custom select UI */}
-      <div 
-        ref={selectRef}
-        className={`relative ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
-      >
+      <div ref={selectRef} className={`relative ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}>
         <div
           className={`flex items-center justify-between w-full px-4 py-2 border rounded-lg
                      bg-white dark:bg-slate-800 text-slate-900 dark:text-white 
@@ -103,11 +97,11 @@ const CustomSelect = ({
           <span className={`block truncate ${!value ? 'text-slate-500 dark:text-slate-400' : ''}`}>
             {selectedLabel}
           </span>
-          <ChevronDown 
-            className={`h-5 w-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} 
+          <ChevronDown
+            className={`h-5 w-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
           />
         </div>
-        
+
         {isOpen && (
           <ul
             className="absolute z-10 w-full mt-1 max-h-60 overflow-auto rounded-md bg-white dark:bg-slate-800 
@@ -129,10 +123,8 @@ const CustomSelect = ({
           </ul>
         )}
       </div>
-      
-      {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
-      )}
+
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );
 };

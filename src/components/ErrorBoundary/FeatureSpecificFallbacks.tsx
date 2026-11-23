@@ -15,11 +15,7 @@ interface FallbackProps {
 /**
  * MenuErrorFallback - Error fallback for Menu Management
  */
-export const MenuErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const MenuErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-yellow-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-red-500">
@@ -59,9 +55,7 @@ export const MenuErrorFallback: React.FC<FallbackProps> = ({
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          Error ID: MENU_{Date.now()}
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">Error ID: MENU_{Date.now()}</p>
       </div>
     </div>
   );
@@ -70,11 +64,7 @@ export const MenuErrorFallback: React.FC<FallbackProps> = ({
 /**
  * SettingsErrorFallback - Error fallback for Settings Management
  */
-export const SettingsErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const SettingsErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-orange-500">
@@ -114,9 +104,7 @@ export const SettingsErrorFallback: React.FC<FallbackProps> = ({
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          Your settings are safe and haven't been modified.
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">Your settings are safe and haven't been modified.</p>
       </div>
     </div>
   );
@@ -125,11 +113,7 @@ export const SettingsErrorFallback: React.FC<FallbackProps> = ({
 /**
  * UsersErrorFallback - Error fallback for User Management
  */
-export const UsersErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const UsersErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-red-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-purple-500">
@@ -138,9 +122,7 @@ export const UsersErrorFallback: React.FC<FallbackProps> = ({
           <h1 className="text-2xl font-bold text-gray-900">User Management Error</h1>
         </div>
 
-        <p className="text-gray-600 mb-6">
-          We encountered an error managing users. No user data has been modified.
-        </p>
+        <p className="text-gray-600 mb-6">We encountered an error managing users. No user data has been modified.</p>
 
         {error && (
           <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded text-sm text-purple-800">
@@ -169,9 +151,7 @@ export const UsersErrorFallback: React.FC<FallbackProps> = ({
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          All user data remains unchanged and secure.
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">All user data remains unchanged and secure.</p>
       </div>
     </div>
   );
@@ -180,11 +160,7 @@ export const UsersErrorFallback: React.FC<FallbackProps> = ({
 /**
  * NewsletterErrorFallback - Error fallback for Newsletter/Campaign Management
  */
-export const NewsletterErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const NewsletterErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-red-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-blue-500">
@@ -224,9 +200,7 @@ export const NewsletterErrorFallback: React.FC<FallbackProps> = ({
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          Your campaign data is safe and stored securely.
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">Your campaign data is safe and stored securely.</p>
       </div>
     </div>
   );
@@ -235,11 +209,7 @@ export const NewsletterErrorFallback: React.FC<FallbackProps> = ({
 /**
  * GalleryErrorFallback - Error fallback for Gallery Management
  */
-export const GalleryErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const GalleryErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-red-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-green-500">
@@ -279,9 +249,7 @@ export const GalleryErrorFallback: React.FC<FallbackProps> = ({
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          All your gallery content has been preserved.
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">All your gallery content has been preserved.</p>
       </div>
     </div>
   );
@@ -290,11 +258,7 @@ export const GalleryErrorFallback: React.FC<FallbackProps> = ({
 /**
  * AdminErrorFallback - Generic error fallback for admin pages
  */
-export const AdminErrorFallback: React.FC<FallbackProps> = ({
-  error,
-  onRetry,
-  onGoBack,
-}) => {
+export const AdminErrorFallback: React.FC<FallbackProps> = ({ error, onRetry, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-red-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-red-500">
@@ -308,9 +272,7 @@ export const AdminErrorFallback: React.FC<FallbackProps> = ({
         </p>
 
         {error && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
-            {error.message}
-          </div>
+          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">{error.message}</div>
         )}
 
         <div className="flex flex-col gap-3">
@@ -345,9 +307,7 @@ export const AdminErrorFallback: React.FC<FallbackProps> = ({
           </button>
         </div>
 
-        <p className="text-xs text-gray-500 mt-4 text-center">
-          Error ID: ADMIN_{Date.now()}
-        </p>
+        <p className="text-xs text-gray-500 mt-4 text-center">Error ID: ADMIN_{Date.now()}</p>
       </div>
     </div>
   );

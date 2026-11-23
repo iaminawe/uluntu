@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import {
-  Search,
-  Download,
-  Trash2,
-  Edit,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-  Plus
-} from 'lucide-react';
+import { Search, Download, Trash2, Edit, Eye, ChevronLeft, ChevronRight, RefreshCw, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Column<T = unknown> {
@@ -30,7 +20,12 @@ interface EntityTableProps<T = unknown> {
   editPath?: string;
   createPath?: string;
   customActions?: (item: T) => React.ReactNode;
-  customQuery?: (params: { searchTerm: string; currentPage: number; pageSize: number; sortBy: { column: string; direction: 'asc' | 'desc' } }) => Promise<{ items: T[]; total: number }>;
+  customQuery?: (params: {
+    searchTerm: string;
+    currentPage: number;
+    pageSize: number;
+    sortBy: { column: string; direction: 'asc' | 'desc' };
+  }) => Promise<{ items: T[]; total: number }>;
 }
 
 const EntityTable = <T extends { id: string } = any>({
@@ -42,7 +37,7 @@ const EntityTable = <T extends { id: string } = any>({
   editPath,
   createPath,
   customActions,
-  customQuery
+  customQuery,
 }: EntityTableProps<T>) => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,7 +46,7 @@ const EntityTable = <T extends { id: string } = any>({
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<{ column: string; direction: 'asc' | 'desc' }>({
     column: 'created_at',
-    direction: 'desc'
+    direction: 'desc',
   });
 
   // Fetch entities
@@ -62,15 +57,11 @@ const EntityTable = <T extends { id: string } = any>({
         return await customQuery({ searchTerm, currentPage, pageSize, sortBy });
       }
 
-      let query = supabase
-        .from(entityType as any)
-        .select('*', { count: 'exact' });
+      let query = supabase.from(entityType as any).select('*', { count: 'exact' });
 
       // Apply search
       if (searchTerm) {
-        const searchConditions = searchFields
-          .map(field => `${field}.ilike.%${searchTerm}%`)
-          .join(',');
+        const searchConditions = searchFields.map(field => `${field}.ilike.%${searchTerm}%`).join(',');
         query = query.or(searchConditions);
       }
 
@@ -86,7 +77,7 @@ const EntityTable = <T extends { id: string } = any>({
       if (error) throw error;
 
       return { items: (data || []) as unknown as T[], total: count || 0 };
-    }
+    },
   });
 
   // Delete mutation
@@ -101,26 +92,24 @@ const EntityTable = <T extends { id: string } = any>({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-entities', entityType] });
       setSelectedItems([]);
-    }
+    },
   });
 
   // Export data
   const handleExport = async () => {
-    const { data: allData } = await supabase
-      .from(entityType as any)
-      .select('*');
+    const { data: allData } = await supabase.from(entityType as any).select('*');
 
     if (!allData) return;
 
     // Convert to CSV
     const headers = columns.map(col => col.label).join(',');
-    const rows = allData.map(item => 
-      columns.map(col => {
-        const value = (item as Record<string, any>)[col.key];
-        return typeof value === 'string' && value.includes(',') 
-          ? `"${value}"` 
-          : value;
-      }).join(',')
+    const rows = allData.map(item =>
+      columns
+        .map(col => {
+          const value = (item as Record<string, any>)[col.key];
+          return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+        })
+        .join(',')
     );
 
     const csv = [headers, ...rows].join('\n');
@@ -137,7 +126,7 @@ const EntityTable = <T extends { id: string } = any>({
 
     setSortBy(prev => ({
       column,
-      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
 
@@ -169,7 +158,7 @@ const EntityTable = <T extends { id: string } = any>({
             type="text"
             placeholder={`Search ${entityName.toLowerCase()}...`}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           />
         </div>
@@ -194,9 +183,7 @@ const EntityTable = <T extends { id: string } = any>({
       {/* Bulk Actions */}
       {selectedItems.length > 0 && (
         <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-between">
-          <span className="text-sm text-blue-700 dark:text-blue-300">
-            {selectedItems.length} items selected
-          </span>
+          <span className="text-sm text-blue-700 dark:text-blue-300">{selectedItems.length} items selected</span>
           <button
             onClick={() => {
               if (confirm(`Delete ${selectedItems.length} items?`)) {
@@ -220,7 +207,7 @@ const EntityTable = <T extends { id: string } = any>({
                 <input
                   type="checkbox"
                   checked={selectedItems.length === data?.items.length && data?.items.length > 0}
-                  onChange={(e) => {
+                  onChange={e => {
                     if (e.target.checked) {
                       setSelectedItems(data?.items.map(item => item.id) || []);
                     } else {
@@ -230,7 +217,7 @@ const EntityTable = <T extends { id: string } = any>({
                   className="rounded border-gray-300"
                 />
               </th>
-              {columns.map((column) => (
+              {columns.map(column => (
                 <th
                   key={column.key}
                   className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${
@@ -241,9 +228,7 @@ const EntityTable = <T extends { id: string } = any>({
                   <div className="flex items-center">
                     {column.label}
                     {column.sortable && sortBy.column === column.key && (
-                      <span className="ml-1">
-                        {sortBy.direction === 'asc' ? '↑' : '↓'}
-                      </span>
+                      <span className="ml-1">{sortBy.direction === 'asc' ? '↑' : '↓'}</span>
                     )}
                   </div>
                 </th>
@@ -267,13 +252,13 @@ const EntityTable = <T extends { id: string } = any>({
                 </td>
               </tr>
             ) : (
-              data?.items.map((item) => (
+              data?.items.map(item => (
                 <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
-                      onChange={(e) => {
+                      onChange={e => {
                         if (e.target.checked) {
                           setSelectedItems([...selectedItems, item.id]);
                         } else {
@@ -283,8 +268,11 @@ const EntityTable = <T extends { id: string } = any>({
                       className="rounded border-gray-300"
                     />
                   </td>
-                  {columns.map((column) => (
-                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  {columns.map(column => (
+                    <td
+                      key={column.key}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                    >
                       {column.render ? column.render((item as any)[column.key], item) : (item as any)[column.key]}
                     </td>
                   ))}
@@ -292,9 +280,7 @@ const EntityTable = <T extends { id: string } = any>({
                     <div className="flex items-center justify-start gap-3">
                       {detailPath && (
                         <Link
-                          to={detailPath
-                            .replace(':id', item.id)
-                            .replace(':slug', (item as any).slug || item.id)}
+                          to={detailPath.replace(':id', item.id).replace(':slug', (item as any).slug || item.id)}
                           className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
                           title="View"
                         >
@@ -303,9 +289,7 @@ const EntityTable = <T extends { id: string } = any>({
                       )}
                       {editPath && (
                         <Link
-                          to={editPath
-                            .replace(':id', item.id)
-                            .replace(':slug', (item as any).slug || item.id)}
+                          to={editPath.replace(':id', item.id).replace(':slug', (item as any).slug || item.id)}
                           className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 transition-colors"
                           title="Edit"
                         >
@@ -326,8 +310,7 @@ const EntityTable = <T extends { id: string } = any>({
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            Showing {((currentPage - 1) * pageSize) + 1} to{' '}
-            {Math.min(currentPage * pageSize, data?.total || 0)} of{' '}
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.total || 0)} of{' '}
             {data?.total || 0} results
           </div>
           <div className="flex items-center space-x-2">

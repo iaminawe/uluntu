@@ -20,15 +20,14 @@ export default function NostrIdentitySection({ userId }: NostrIdentitySectionPro
 
   const busy = link.isPending || unlink.isPending;
   const error = (link.error || unlink.error) as Error | null;
-  const nip05 =
-    identity?.pubkey && identity.slug ? `${identity.slug}@${window.location.host}` : null;
+  const nip05 = identity?.pubkey && identity.slug ? `${identity.slug}@${window.location.host}` : null;
 
   return (
     <div>
       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Nostr identity</h3>
       <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-        Link your Nostr key to get a verified address on this community (NIP-05). Nostr apps will
-        show your posts as coming from a member here.
+        Link your Nostr key to get a verified address on this community (NIP-05). Nostr apps will show your posts as
+        coming from a member here.
       </p>
 
       {isLoading ? null : identity?.pubkey ? (
@@ -38,8 +37,8 @@ export default function NostrIdentitySection({ userId }: NostrIdentitySectionPro
           </p>
           {nip05 && (
             <p className="text-sm text-slate-700 dark:text-slate-300">
-              Your Nostr address: <code className="font-mono">{nip05}</code>. Add it as the NIP-05
-              identifier in your Nostr profile.
+              Your Nostr address: <code className="font-mono">{nip05}</code>. Add it as the NIP-05 identifier in your
+              Nostr profile.
             </p>
           )}
           <button
@@ -65,8 +64,7 @@ export default function NostrIdentitySection({ userId }: NostrIdentitySectionPro
         </button>
       ) : (
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          To link a key, install a Nostr signer extension such as Alby or nos2x, then reload this
-          page.
+          To link a key, install a Nostr signer extension such as Alby or nos2x, then reload this page.
         </p>
       )}
 

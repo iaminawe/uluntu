@@ -24,7 +24,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   onError,
   showPlaceholder = true,
   aspectRatio = 'auto',
-  objectFit = 'cover'
+  objectFit = 'cover',
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -56,32 +56,32 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
       case 'thumbnail':
         return {
           width: photo.thumbnail_width || 150,
-          height: photo.thumbnail_height || 150
+          height: photo.thumbnail_height || 150,
         };
       case 'small':
         return {
           width: photo.small_width || 300,
-          height: photo.small_height || 300
+          height: photo.small_height || 300,
         };
       case 'medium':
         return {
           width: photo.medium_width || 800,
-          height: photo.medium_height || 600
+          height: photo.medium_height || 600,
         };
       case 'large':
         return {
           width: photo.large_width || 1200,
-          height: photo.large_height || 900
+          height: photo.large_height || 900,
         };
       case 'original':
         return {
           width: photo.width || 1920,
-          height: photo.height || 1080
+          height: photo.height || 1080,
         };
       default:
         return {
           width: photo.width || 800,
-          height: photo.height || 600
+          height: photo.height || 600,
         };
     }
   };
@@ -111,8 +111,8 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             setShowFullImage(true);
             observer.disconnect();
@@ -120,7 +120,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
         });
       },
       {
-        rootMargin: '50px'
+        rootMargin: '50px',
       }
     );
 
@@ -205,22 +205,22 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
   if (hasError) {
     return (
-      <div 
+      <div
         ref={containerRef}
         className={`flex items-center justify-center bg-slate-100 dark:bg-slate-800 ${getAspectRatioClass()} ${className}`}
-        style={{ 
+        style={{
           width: dimensions.width,
-          height: aspectRatio === 'auto' ? dimensions.height : undefined
+          height: aspectRatio === 'auto' ? dimensions.height : undefined,
         }}
       >
         <div className="text-center p-4">
           <div className="w-12 h-12 mx-auto mb-2 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
             <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
           </div>
@@ -231,13 +231,13 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`relative overflow-hidden ${getAspectRatioClass()} ${className}`}
-      style={{ 
+      style={{
         backgroundColor: photo.dominant_color || '#f1f5f9',
         width: aspectRatio === 'auto' ? dimensions.width : undefined,
-        height: aspectRatio === 'auto' ? dimensions.height : undefined
+        height: aspectRatio === 'auto' ? dimensions.height : undefined,
       }}
     >
       {/* Placeholder */}

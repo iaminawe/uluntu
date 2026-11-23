@@ -3,6 +3,6 @@ export const useMemberContributions = (memberId: string) => {
   return {
     contributions: [],
     isLoading: false,
-    error: null
+    error: null,
   };
 };

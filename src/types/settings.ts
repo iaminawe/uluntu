@@ -1,16 +1,16 @@
 // Settings System Types
 export type SettingDataType = 'string' | 'number' | 'boolean' | 'object' | 'array';
 
-export type SettingCategory = 
-  | 'site' 
-  | 'header' 
-  | 'navigation' 
-  | 'community' 
-  | 'location' 
-  | 'contact' 
-  | 'limits' 
-  | 'appearance' 
-  | 'integration' 
+export type SettingCategory =
+  | 'site'
+  | 'header'
+  | 'navigation'
+  | 'community'
+  | 'location'
+  | 'contact'
+  | 'limits'
+  | 'appearance'
+  | 'integration'
   | 'security';
 
 export interface ApplicationSetting {
@@ -111,7 +111,7 @@ export type FeatureKey =
   | 'photo_galleries'
   | 'pages_system'
   | 'topics_system'
-  
+
   // Social Features
   | 'user_messaging'
   | 'social_feeds'
@@ -119,7 +119,7 @@ export type FeatureKey =
   | 'content_likes'
   | 'content_comments'
   | 'content_sharing'
-  
+
   // Advanced Features
   | 'advanced_search'
   | 'content_tagging'
@@ -127,29 +127,29 @@ export type FeatureKey =
   | 'calendar_integration'
   | 'payment_processing'
   | 'analytics_dashboard'
-  
+
   // Admin Features
   | 'bulk_operations'
   | 'audit_logging'
   | 'content_moderation'
   | 'user_management'
   | 'newsletter_system'
-  
+
   // Integration Features
   | 'api_access'
   | 'webhook_support'
   | 'sso_integration'
   | 'ldap_integration'
-  
+
   // Mobile Features
   | 'mobile_app'
   | 'push_notifications'
   | 'offline_mode'
-  
+
   // Experimental Features
   | 'ai_content_suggestions'
   | 'automated_moderation'
-  
+
   // UI Features
   | 'dynamic_footer_menus'
   | 'newsletter_signup'

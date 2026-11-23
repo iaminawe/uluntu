@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,7 +22,7 @@ import membersReducer, {
   deleteMember,
   setFilters,
   clearFilters,
-  clearMembers
+  clearMembers,
 } from '@/features/directory/store/membersSlice';
 import { ContentStatus } from '../../types/common';
 
@@ -45,7 +45,7 @@ const originalEnv = process.env;
 beforeEach(() => {
   jest.resetModules();
   process.env = { ...originalEnv, VITE_USE_SUPABASE: 'true' }; // Set to true to use the API path
-  
+
   // Reset all mocks before each test
   jest.clearAllMocks();
 });
@@ -78,7 +78,7 @@ const mockMember = {
   status: 'published' as ContentStatus,
   featured: true,
   company: undefined, // Added to match adapter output
-  created_at: undefined // Added to match adapter output
+  created_at: undefined, // Added to match adapter output
 };
 
 const mockMembers = [
@@ -89,8 +89,8 @@ const mockMembers = [
     name: 'Jane Smith',
     role: 'UI/UX Designer', // role matches title after adaptation
     title: 'UI/UX Designer',
-    skills: ['UI/UX', 'Figma', 'Sketch']
-  }
+    skills: ['UI/UX', 'Figma', 'Sketch'],
+  },
 ];
 
 describe('Members Slice', () => {
@@ -103,7 +103,7 @@ describe('Members Slice', () => {
         filteredMembers: [],
         filters: {},
         status: 'idle',
-        error: null
+        error: null,
       });
     });
 
@@ -125,12 +125,12 @@ describe('Members Slice', () => {
     test('should handle clearMembers', () => {
       const store = createTestStore();
       // Setup initial state with members
-      store.dispatch({ 
-        type: fetchMembers.fulfilled.type, 
-        payload: mockMembers 
+      store.dispatch({
+        type: fetchMembers.fulfilled.type,
+        payload: mockMembers,
       });
       expect(store.getState().members.members).toHaveLength(2);
-      
+
       // Clear members
       store.dispatch(clearMembers());
       expect(store.getState().members.members).toEqual([]);
@@ -142,12 +142,12 @@ describe('Members Slice', () => {
   describe('Async thunks', () => {
     test('fetchMembers should update state correctly on success', async () => {
       const store = createTestStore();
-      
+
       // Mock implementation for fetchMembers
       membersApiMock.getAll.mockResolvedValueOnce(mockMembers);
-      
+
       await store.dispatch(fetchMembers());
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.members).toEqual(mockMembers);
       expect(store.getState().members.error).toBeNull();
@@ -155,12 +155,12 @@ describe('Members Slice', () => {
 
     test('fetchMemberById should update state correctly on success', async () => {
       const store = createTestStore();
-      
+
       // Mock implementation for fetchMemberById
       membersApiMock.getById.mockResolvedValueOnce(mockMember);
-      
+
       await store.dispatch(fetchMemberById('1'));
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.currentMember).toEqual(mockMember);
       expect(store.getState().members.error).toBeNull();
@@ -169,12 +169,12 @@ describe('Members Slice', () => {
     test('fetchFilteredMembers should update state correctly on success', async () => {
       const store = createTestStore();
       const filters = { search: 'John', skills: ['JavaScript'] };
-      
+
       // Mock implementation for fetchFilteredMembers
       membersApiMock.getAll.mockResolvedValueOnce([mockMember]);
-      
+
       await store.dispatch(fetchFilteredMembers(filters));
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.filteredMembers).toEqual([mockMember]);
       expect(store.getState().members.error).toBeNull();
@@ -186,23 +186,23 @@ describe('Members Slice', () => {
         name: 'New Member',
         bio: 'New Member Bio',
         title: 'New Role',
-        status: 'published' as ContentStatus
+        status: 'published' as ContentStatus,
       };
-      
+
       const createdMember = {
         id: '3',
         ...newMemberData,
         email: 'new.member@example.com',
         image: '',
         skills: [],
-        joinDate: new Date().toISOString()
+        joinDate: new Date().toISOString(),
       };
-      
+
       // Mock implementation for createMember
       membersApiMock.create.mockResolvedValueOnce(createdMember);
-      
+
       await store.dispatch(createMember(newMemberData as any));
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.members).toHaveLength(1);
       expect(store.getState().members.members[0].name).toEqual('New Member');
@@ -210,28 +210,28 @@ describe('Members Slice', () => {
 
     test('updateMember should update a member in the state on success', async () => {
       const store = createTestStore();
-      
+
       // Setup initial state with a member
-      store.dispatch({ 
-        type: fetchMembers.fulfilled.type, 
-        payload: [mockMember] 
+      store.dispatch({
+        type: fetchMembers.fulfilled.type,
+        payload: [mockMember],
       });
-      
+
       const updateData = {
         name: 'Updated Name',
-        bio: 'Updated Bio'
+        bio: 'Updated Bio',
       };
-      
+
       const updatedMember = {
         ...mockMember,
-        ...updateData
+        ...updateData,
       };
-      
+
       // Mock implementation for updateMember
       membersApiMock.update.mockResolvedValueOnce(updatedMember);
-      
+
       await store.dispatch(updateMember({ id: '1', data: updateData }));
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.members[0].name).toEqual('Updated Name');
       expect(store.getState().members.members[0].bio).toEqual('Updated Bio');
@@ -239,19 +239,19 @@ describe('Members Slice', () => {
 
     test('deleteMember should remove a member from the state on success', async () => {
       const store = createTestStore();
-      
+
       // Setup initial state with members
-      store.dispatch({ 
-        type: fetchMembers.fulfilled.type, 
-        payload: mockMembers 
+      store.dispatch({
+        type: fetchMembers.fulfilled.type,
+        payload: mockMembers,
       });
       expect(store.getState().members.members).toHaveLength(2);
-      
+
       // Mock implementation for deleteMember
       membersApiMock.delete.mockResolvedValueOnce(true);
-      
+
       await store.dispatch(deleteMember('1'));
-      
+
       expect(store.getState().members.status).toEqual('succeeded');
       expect(store.getState().members.members).toHaveLength(1);
       expect(store.getState().members.members[0].id).toEqual('2');

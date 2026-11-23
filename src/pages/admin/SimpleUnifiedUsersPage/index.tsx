@@ -51,7 +51,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
     handleUserAction,
     handleDeleteUser,
     handleSaveUser,
-    bulkAssignRoleMutation
+    bulkAssignRoleMutation,
   } = useUserManagement();
 
   // User filters hook (search, role filter, pagination)
@@ -68,7 +68,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
     setCurrentPage,
     setShowOrphanedProfiles,
     refetch,
-    formatDate
+    formatDate,
   } = useUserFilters(isAdmin);
 
   // Import/export hook (CSV operations)
@@ -82,7 +82,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
     setImportPreview,
     exportToCSV,
     handleFileUpload,
-    processImport
+    processImport,
   } = useUserImport(canEditRoles);
 
   // Access denied for non-admins
@@ -114,8 +114,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 {showOrphanedProfiles
                   ? `Showing orphaned profiles (no user account) • ${users?.length || 0} profiles`
-                  : `Manage user accounts, profiles, roles, and permissions • ${users?.length || 0} users shown`
-                }
+                  : `Manage user accounts, profiles, roles, and permissions • ${users?.length || 0} users shown`}
               </p>
             </div>
             <div className="flex items-center">
@@ -123,7 +122,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={showOrphanedProfiles}
-                  onChange={(e) => {
+                  onChange={e => {
                     setShowOrphanedProfiles(e.target.checked);
                     setCurrentPage(1); // Reset to first page
                   }}
@@ -149,7 +148,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
           onExport={exportToCSV}
           onFileUpload={handleFileUpload}
           onBulkActionsToggle={() => setShowBulkActions(!showBulkActions)}
-          onBulkAction={(action) => handleBulkAction(action, users || [])}
+          onBulkAction={action => handleBulkAction(action, users || [])}
         />
 
         {/* Bulk Actions Panel */}
@@ -179,7 +178,7 @@ const SimpleUnifiedUsersPageContent: React.FC = () => {
           showActionDropdown={showActionDropdown}
           pageSize={pageSize}
           currentPage={currentPage}
-          onSelectAll={(checked) => handleSelectAll(users || [], checked)}
+          onSelectAll={checked => handleSelectAll(users || [], checked)}
           onSelectUser={handleUserSelect}
           onUserAction={(userId, action) => handleUserAction(userId, action, users || [])}
           onActionDropdownToggle={setShowActionDropdown}
@@ -239,12 +238,7 @@ const SimpleUnifiedUsersPage: React.FC = () => {
   return (
     <FeatureErrorBoundary
       featureName="User Management"
-      fallback={
-        <UsersErrorFallback
-          onRetry={() => window.location.reload()}
-          onGoBack={() => navigate('/admin')}
-        />
-      }
+      fallback={<UsersErrorFallback onRetry={() => window.location.reload()} onGoBack={() => navigate('/admin')} />}
     >
       <SimpleUnifiedUsersPageContent />
     </FeatureErrorBoundary>

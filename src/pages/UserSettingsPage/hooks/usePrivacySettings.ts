@@ -17,22 +17,19 @@ const defaultPrivacySettings: PrivacySettings = {
 export const usePrivacySettings = (initialData?: Partial<PrivacySettings>) => {
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     ...defaultPrivacySettings,
-    ...initialData
+    ...initialData,
   });
 
-  const updateSetting = <K extends keyof PrivacySettings>(
-    key: K,
-    value: PrivacySettings[K]
-  ) => {
+  const updateSetting = <K extends keyof PrivacySettings>(key: K, value: PrivacySettings[K]) => {
     setPrivacySettings(prev => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
   return {
     privacySettings,
     setPrivacySettings,
-    updateSetting
+    updateSetting,
   };
 };

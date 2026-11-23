@@ -17,7 +17,7 @@ function getMetaEnvVariable(key: 'VITE_USE_SUPABASE'): string | undefined {
   if (viteValue !== undefined) {
     return viteValue;
   }
-  
+
   // For Jest environment - check the global mock
   // @ts-ignore - Jest-specific global
   if (typeof globalThis !== 'undefined' && globalThis.__JEST_IMPORT_META_ENV__) {
@@ -26,7 +26,7 @@ function getMetaEnvVariable(key: 'VITE_USE_SUPABASE'): string | undefined {
   }
 
   // Note: We avoid using process.env in browser code as it causes ReferenceError
-  
+
   return undefined;
 }
 
@@ -42,7 +42,7 @@ function getMetaEnvVariable(key: 'VITE_USE_SUPABASE'): string | undefined {
 export function getIsSupabaseEnabled(): boolean {
   const envValue = getMetaEnvVariable('VITE_USE_SUPABASE');
   console.log('[config/env.ts] Dynamic check - VITE_USE_SUPABASE:', envValue);
-  
+
   return envValue === 'true';
 }
 

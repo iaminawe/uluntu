@@ -13,7 +13,7 @@ import {
   ContentResponse,
   BulkOperationResponse,
   ContentAnalytics,
-  ContentPermissions
+  ContentPermissions,
 } from '../types';
 
 // Import existing APIs for integration
@@ -26,14 +26,12 @@ class ContentManagementApi {
    * Get current user's member ID
    */
   private async getCurrentMemberId(): Promise<string> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    const { data: member } = await supabase.from('members').select('id').eq('user_id', user.id).single();
 
     if (!member) throw new Error('User does not have a member profile');
     return member.id;
@@ -56,7 +54,14 @@ class ContentManagementApi {
         let allContent: DashboardContent[] = [];
 
         // Fetch content from different sources based on type filter
-        const contentTypes = filters.type || ['photo', 'event', 'marketplace_listing', 'opportunity', 'group_post', 'news_article'];
+        const contentTypes = filters.type || [
+          'photo',
+          'event',
+          'marketplace_listing',
+          'opportunity',
+          'group_post',
+          'news_article',
+        ];
 
         if (contentTypes.includes('photo')) {
           const photos = await this.getUserPhotosDetailed(memberId, filters, includeAnalytics);
@@ -109,9 +114,9 @@ class ContentManagementApi {
             limit,
             total: allContent.length,
             total_pages: totalPages,
-            has_more: page < totalPages
+            has_more: page < totalPages,
           },
-          filters_applied: filters
+          filters_applied: filters,
         };
       } catch (error) {
         console.error('Error fetching all user content:', error);
@@ -144,7 +149,14 @@ class ContentManagementApi {
 
         // Get analytics for each content type
         const analytics: ContentAnalytics[] = [];
-        const types = content_types || ['photo', 'event', 'marketplace_listing', 'opportunity', 'group_post', 'news_article'];
+        const types = content_types || [
+          'photo',
+          'event',
+          'marketplace_listing',
+          'opportunity',
+          'group_post',
+          'news_article',
+        ];
 
         for (const type of types) {
           const stats = await this.getContentTypeStatistics(memberId, type, period, start_date, end_date);
@@ -156,12 +168,12 @@ class ContentManagementApi {
           total_content: analytics.reduce((sum, item) => sum + item.total_count, 0),
           total_views: analytics.reduce((sum, item) => sum + item.view_count, 0),
           total_engagement: analytics.reduce((sum, item) => sum + item.like_count + item.comment_count, 0),
-          growth_percentage: analytics.reduce((sum, item) => sum + item.growth_percentage, 0) / analytics.length || 0
+          growth_percentage: analytics.reduce((sum, item) => sum + item.growth_percentage, 0) / analytics.length || 0,
         };
 
         return {
           data: analytics,
-          summary
+          summary,
         };
       } catch (error) {
         console.error('Error fetching content statistics:', error);
@@ -177,11 +189,11 @@ class ContentManagementApi {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        
+
         const results = {
           success_count: 0,
           error_count: 0,
-          errors: [] as Array<{ content_id: string; error: string; }>
+          errors: [] as Array<{ content_id: string; error: string }>,
         };
 
         // Process each content item
@@ -189,7 +201,7 @@ class ContentManagementApi {
           try {
             // First, determine the content type
             const contentType = await this.getContentType(contentId);
-            
+
             // Verify ownership
             const hasPermission = await this.verifyContentOwnership(contentId, contentType, memberId);
             if (!hasPermission) {
@@ -203,7 +215,7 @@ class ContentManagementApi {
             results.error_count++;
             results.errors.push({
               content_id: contentId,
-              error: error instanceof Error ? error.message : 'Unknown error'
+              error: error instanceof Error ? error.message : 'Unknown error',
             });
           }
         }
@@ -213,7 +225,7 @@ class ContentManagementApi {
           error: null,
           status: 200,
           operation: operation.operation,
-          total_processed: operation.content_ids.length
+          total_processed: operation.content_ids.length,
         };
       } catch (error) {
         console.error('Error performing bulk operation:', error);
@@ -226,14 +238,14 @@ class ContentManagementApi {
    * Update specific content item
    */
   async updateContentItem(
-    contentId: string, 
-    contentType: string, 
+    contentId: string,
+    contentType: string,
     updates: ContentUpdateInput
   ): Promise<DashboardContent | null> {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        
+
         // Verify ownership
         const hasPermission = await this.verifyContentOwnership(contentId, contentType, memberId);
         if (!hasPermission) {
@@ -271,7 +283,7 @@ class ContentManagementApi {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        
+
         // Verify ownership
         const hasPermission = await this.verifyContentOwnership(contentId, contentType, memberId);
         if (!hasPermission) {
@@ -309,15 +321,11 @@ class ContentManagementApi {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        
+
         const isOwner = await this.verifyContentOwnership(contentId, contentType, memberId);
-        
+
         // Get user role for additional permissions
-        const { data: memberData } = await supabase
-          .from('members')
-          .select('role')
-          .eq('id', memberId)
-          .single();
+        const { data: memberData } = await supabase.from('members').select('role').eq('id', memberId).single();
 
         const isAdmin = memberData?.role === 'admin';
         const isModerator = memberData?.role === 'moderator';
@@ -327,7 +335,7 @@ class ContentManagementApi {
           can_delete: isOwner || isAdmin,
           can_publish: isOwner || isAdmin || isModerator,
           can_feature: isAdmin || isModerator,
-          can_view_analytics: isOwner || isAdmin
+          can_view_analytics: isOwner || isAdmin,
         };
       } catch (error) {
         console.error('Error fetching content permissions:', error);
@@ -336,7 +344,7 @@ class ContentManagementApi {
           can_delete: false,
           can_publish: false,
           can_feature: false,
-          can_view_analytics: false
+          can_view_analytics: false,
         };
       }
     });
@@ -345,18 +353,20 @@ class ContentManagementApi {
   // Private helper methods
 
   private async getUserPhotosDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: photos } = await supabase
       .from('photos')
-      .select(`
+      .select(
+        `
         id, title, description, status, created_at, updated_at,
         views, likes, comments, featured, thumbnail_url, storage_path,
         gallery:galleries!photos_gallery_id_fkey(title, slug)
         ${includeAnalytics ? ', analytics:photo_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('uploaded_by', memberId)
       .order('created_at', { ascending: false });
 
@@ -375,22 +385,24 @@ class ContentManagementApi {
       featured: photo.featured || false,
       thumbnail_url: photo.thumbnail_url,
       url: `/gallery/${photo.gallery?.slug || 'default'}/${photo.id}`,
-      slug: photo.id
+      slug: photo.id,
     }));
   }
 
   private async getUserEventsDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: events } = await supabase
       .from('events')
-      .select(`
+      .select(
+        `
         id, title, description, status, created_at, updated_at,
         slug, image, featured, organizer_id, date, location
         ${includeAnalytics ? ', analytics:event_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('organizer_id', memberId)
       .order('created_at', { ascending: false });
 
@@ -409,22 +421,24 @@ class ContentManagementApi {
       featured: event.featured || false,
       thumbnail_url: event.image,
       url: `/events/${event.slug || event.id}`,
-      slug: event.slug
+      slug: event.slug,
     }));
   }
 
   private async getUserMarketplaceListingsDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: listings } = await supabase
       .from('marketplace_listings')
-      .select(`
+      .select(
+        `
         id, title, description, status, created_at, updated_at,
         price, featured, seller_id, images, category
         ${includeAnalytics ? ', analytics:marketplace_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('seller_id', memberId)
       .order('created_at', { ascending: false });
 
@@ -443,22 +457,24 @@ class ContentManagementApi {
       featured: listing.featured || false,
       thumbnail_url: listing.images?.[0],
       url: `/marketplace/${listing.id}`,
-      slug: listing.id
+      slug: listing.id,
     }));
   }
 
   private async getUserOpportunitiesDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: opportunities } = await supabase
       .from('opportunities')
-      .select(`
+      .select(
+        `
         id, title, description, status, created_at, updated_at,
         employer_id, featured, company_id
         ${includeAnalytics ? ', analytics:opportunity_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('employer_id', memberId)
       .order('created_at', { ascending: false });
 
@@ -477,22 +493,24 @@ class ContentManagementApi {
       featured: opportunity.featured || false,
       thumbnail_url: undefined,
       url: `/opportunities/${opportunity.id}`,
-      slug: opportunity.id
+      slug: opportunity.id,
     }));
   }
 
   private async getUserGroupPostsDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: posts } = await supabase
       .from('group_posts')
-      .select(`
+      .select(
+        `
         id, title, content, status, created_at, updated_at,
         author_id, group_id, featured
         ${includeAnalytics ? ', analytics:group_post_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('author_id', memberId)
       .order('created_at', { ascending: false });
 
@@ -511,22 +529,24 @@ class ContentManagementApi {
       featured: post.featured || false,
       thumbnail_url: undefined,
       url: `/groups/${post.group_id}/posts/${post.id}`,
-      slug: post.id
+      slug: post.id,
     }));
   }
 
   private async getUserNewsArticlesDetailed(
-    memberId: string, 
-    filters: ContentFilters, 
+    memberId: string,
+    filters: ContentFilters,
     includeAnalytics: boolean
   ): Promise<DashboardContent[]> {
     const { data: articles } = await supabase
       .from('news')
-      .select(`
+      .select(
+        `
         id, title, content, status, created_at, updated_at,
         author_id, featured, image, slug
         ${includeAnalytics ? ', analytics:news_analytics(*)' : ''}
-      `)
+      `
+      )
       .eq('author_id', memberId)
       .order('created_at', { ascending: false });
 
@@ -545,7 +565,7 @@ class ContentManagementApi {
       featured: article.featured || false,
       thumbnail_url: article.image,
       url: `/news/${article.slug || article.id}`,
-      slug: article.slug
+      slug: article.slug,
     }));
   }
 
@@ -554,9 +574,8 @@ class ContentManagementApi {
 
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      filteredContent = filteredContent.filter(item => 
-        item.title.toLowerCase().includes(searchLower) ||
-        item.description?.toLowerCase().includes(searchLower)
+      filteredContent = filteredContent.filter(
+        item => item.title.toLowerCase().includes(searchLower) || item.description?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -569,9 +588,7 @@ class ContentManagementApi {
     }
 
     if (filters.has_engagement) {
-      filteredContent = filteredContent.filter(item => 
-        (item.like_count || 0) > 0 || (item.comment_count || 0) > 0
-      );
+      filteredContent = filteredContent.filter(item => (item.like_count || 0) > 0 || (item.comment_count || 0) > 0);
     }
 
     if (filters.min_views) {
@@ -596,7 +613,7 @@ class ContentManagementApi {
 
     return content.sort((a, b) => {
       let aValue: any, bValue: any;
-      
+
       switch (sortBy) {
         case 'title':
           aValue = a.title.toLowerCase();
@@ -649,16 +666,12 @@ class ContentManagementApi {
       { table: 'marketplace_listings', type: 'marketplace_listing' },
       { table: 'opportunities', type: 'opportunity' },
       { table: 'group_posts', type: 'group_post' },
-      { table: 'news', type: 'news_article' }
+      { table: 'news', type: 'news_article' },
     ];
 
     for (const { table, type } of tables) {
-      const { data } = await supabase
-        .from(table)
-        .select('id')
-        .eq('id', contentId)
-        .single();
-      
+      const { data } = await supabase.from(table).select('id').eq('id', contentId).single();
+
       if (data) {
         return type;
       }
@@ -674,7 +687,7 @@ class ContentManagementApi {
       marketplace_listing: 'seller_id',
       opportunity: 'employer_id',
       group_post: 'author_id',
-      news_article: 'author_id'
+      news_article: 'author_id',
     };
 
     const tableNames = {
@@ -683,7 +696,7 @@ class ContentManagementApi {
       marketplace_listing: 'marketplace_listings',
       opportunity: 'opportunities',
       group_post: 'group_posts',
-      news_article: 'news'
+      news_article: 'news',
     };
 
     const table = tableNames[contentType as keyof typeof tableNames];
@@ -693,11 +706,7 @@ class ContentManagementApi {
       return false;
     }
 
-    const { data } = await supabase
-      .from(table)
-      .select(ownerField)
-      .eq('id', contentId)
-      .single();
+    const { data } = await supabase.from(table).select(ownerField).eq('id', contentId).single();
 
     return data?.[ownerField] === memberId;
   }
@@ -714,7 +723,7 @@ class ContentManagementApi {
       marketplace_listing: 'marketplace_listings',
       opportunity: 'opportunities',
       group_post: 'group_posts',
-      news_article: 'news'
+      news_article: 'news',
     };
 
     const table = tableNames[contentType as keyof typeof tableNames];
@@ -723,17 +732,14 @@ class ContentManagementApi {
     }
 
     if (operation === 'delete') {
-      const { error } = await supabase
-        .from(table)
-        .delete()
-        .eq('id', contentId);
-      
+      const { error } = await supabase.from(table).delete().eq('id', contentId);
+
       if (error) throw error;
       return;
     }
 
     const updateData: any = { updated_at: new Date().toISOString() };
-    
+
     switch (operation) {
       case 'publish':
         updateData.status = 'published';
@@ -756,10 +762,7 @@ class ContentManagementApi {
       Object.assign(updateData, metadata);
     }
 
-    const { error } = await supabase
-      .from(table)
-      .update(updateData)
-      .eq('id', contentId);
+    const { error } = await supabase.from(table).update(updateData).eq('id', contentId);
 
     if (error) throw error;
   }
@@ -773,14 +776,14 @@ class ContentManagementApi {
   ): Promise<ContentAnalytics> {
     // This would typically use a database function for complex analytics
     // For now, return basic statistics
-    
+
     const tableNames = {
       photo: 'photos',
       event: 'events',
       marketplace_listing: 'marketplace_listings',
       opportunity: 'opportunities',
       group_post: 'group_posts',
-      news_article: 'news'
+      news_article: 'news',
     };
 
     const ownershipFields = {
@@ -789,7 +792,7 @@ class ContentManagementApi {
       marketplace_listing: 'seller_id',
       opportunity: 'employer_id',
       group_post: 'author_id',
-      news_article: 'author_id'
+      news_article: 'author_id',
     };
 
     const table = tableNames[contentType as keyof typeof tableNames];
@@ -805,7 +808,7 @@ class ContentManagementApi {
         view_count: 0,
         like_count: 0,
         comment_count: 0,
-        growth_percentage: 0
+        growth_percentage: 0,
       };
     }
 
@@ -832,12 +835,16 @@ class ContentManagementApi {
       view_count,
       like_count,
       comment_count,
-      growth_percentage: 0 // Would need historical data to calculate
+      growth_percentage: 0, // Would need historical data to calculate
     };
   }
 
   // Placeholder methods for specific content type updates and deletions
-  private async updatePhotoContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updatePhotoContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.description = updates.description;
@@ -853,27 +860,33 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'photo',
-      title: data.title || 'Untitled Photo',
-      description: data.description,
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: data.views || 0,
-      like_count: data.likes || 0,
-      comment_count: data.comments || 0,
-      featured: data.featured || false,
-      thumbnail_url: data.thumbnail_url,
-      url: `/gallery/${data.gallery_id}/${data.id}`,
-      slug: data.id
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'photo',
+          title: data.title || 'Untitled Photo',
+          description: data.description,
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: data.views || 0,
+          like_count: data.likes || 0,
+          comment_count: data.comments || 0,
+          featured: data.featured || false,
+          thumbnail_url: data.thumbnail_url,
+          url: `/gallery/${data.gallery_id}/${data.id}`,
+          slug: data.id,
+        }
+      : null;
   }
 
-  private async updateEventContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updateEventContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.description = updates.description;
@@ -889,27 +902,33 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'event',
-      title: data.title,
-      description: data.description,
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: 0,
-      like_count: 0,
-      comment_count: 0,
-      featured: data.featured || false,
-      thumbnail_url: data.image,
-      url: `/events/${data.slug || data.id}`,
-      slug: data.slug
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'event',
+          title: data.title,
+          description: data.description,
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: 0,
+          like_count: 0,
+          comment_count: 0,
+          featured: data.featured || false,
+          thumbnail_url: data.image,
+          url: `/events/${data.slug || data.id}`,
+          slug: data.slug,
+        }
+      : null;
   }
 
-  private async updateMarketplaceContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updateMarketplaceContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.description = updates.description;
@@ -925,27 +944,33 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'marketplace_listing',
-      title: data.title,
-      description: data.description,
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: 0,
-      like_count: 0,
-      comment_count: 0,
-      featured: data.featured || false,
-      thumbnail_url: data.images?.[0],
-      url: `/marketplace/${data.id}`,
-      slug: data.id
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'marketplace_listing',
+          title: data.title,
+          description: data.description,
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: 0,
+          like_count: 0,
+          comment_count: 0,
+          featured: data.featured || false,
+          thumbnail_url: data.images?.[0],
+          url: `/marketplace/${data.id}`,
+          slug: data.id,
+        }
+      : null;
   }
 
-  private async updateOpportunityContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updateOpportunityContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.description = updates.description;
@@ -961,27 +986,33 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'opportunity',
-      title: data.title,
-      description: data.description,
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: 0,
-      like_count: 0,
-      comment_count: 0,
-      featured: data.featured || false,
-      thumbnail_url: undefined,
-      url: `/opportunities/${data.id}`,
-      slug: data.id
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'opportunity',
+          title: data.title,
+          description: data.description,
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: 0,
+          like_count: 0,
+          comment_count: 0,
+          featured: data.featured || false,
+          thumbnail_url: undefined,
+          url: `/opportunities/${data.id}`,
+          slug: data.id,
+        }
+      : null;
   }
 
-  private async updateGroupPostContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updateGroupPostContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.content = updates.description;
@@ -997,27 +1028,33 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'group_post',
-      title: data.title,
-      description: data.content,
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: 0,
-      like_count: 0,
-      comment_count: 0,
-      featured: data.featured || false,
-      thumbnail_url: undefined,
-      url: `/groups/${data.group_id}/posts/${data.id}`,
-      slug: data.id
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'group_post',
+          title: data.title,
+          description: data.content,
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: 0,
+          like_count: 0,
+          comment_count: 0,
+          featured: data.featured || false,
+          thumbnail_url: undefined,
+          url: `/groups/${data.group_id}/posts/${data.id}`,
+          slug: data.id,
+        }
+      : null;
   }
 
-  private async updateNewsArticleContent(contentId: string, updates: ContentUpdateInput, memberId: string): Promise<DashboardContent | null> {
+  private async updateNewsArticleContent(
+    contentId: string,
+    updates: ContentUpdateInput,
+    memberId: string
+  ): Promise<DashboardContent | null> {
     const updateData: any = {};
     if (updates.title !== undefined) updateData.title = updates.title;
     if (updates.description !== undefined) updateData.content = updates.description;
@@ -1033,56 +1070,46 @@ class ContentManagementApi {
       .single();
 
     if (error) throw error;
-    
-    return data ? {
-      id: data.id,
-      type: 'news_article',
-      title: data.title,
-      description: data.content?.substring(0, 200) + '...',
-      status: this.normalizeStatus(data.status),
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-      user_id: memberId,
-      view_count: 0,
-      like_count: 0,
-      comment_count: 0,
-      featured: data.featured || false,
-      thumbnail_url: data.image,
-      url: `/news/${data.slug || data.id}`,
-      slug: data.slug
-    } : null;
+
+    return data
+      ? {
+          id: data.id,
+          type: 'news_article',
+          title: data.title,
+          description: data.content?.substring(0, 200) + '...',
+          status: this.normalizeStatus(data.status),
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          user_id: memberId,
+          view_count: 0,
+          like_count: 0,
+          comment_count: 0,
+          featured: data.featured || false,
+          thumbnail_url: data.image,
+          url: `/news/${data.slug || data.id}`,
+          slug: data.slug,
+        }
+      : null;
   }
 
   // Placeholder delete methods
   private async deleteMarketplaceListing(contentId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('marketplace_listings')
-      .delete()
-      .eq('id', contentId);
+    const { error } = await supabase.from('marketplace_listings').delete().eq('id', contentId);
     return !error;
   }
 
   private async deleteOpportunity(contentId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('opportunities')
-      .delete()
-      .eq('id', contentId);
+    const { error } = await supabase.from('opportunities').delete().eq('id', contentId);
     return !error;
   }
 
   private async deleteGroupPost(contentId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('group_posts')
-      .delete()
-      .eq('id', contentId);
+    const { error } = await supabase.from('group_posts').delete().eq('id', contentId);
     return !error;
   }
 
   private async deleteNewsArticle(contentId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('news')
-      .delete()
-      .eq('id', contentId);
+    const { error } = await supabase.from('news').delete().eq('id', contentId);
     return !error;
   }
 }

@@ -34,7 +34,7 @@ describe('useProfileCompletion', () => {
         image: 'profile.jpg',
         title: 'Developer',
       });
-      
+
       const { result } = renderHook(() => useProfileCompletion(member));
 
       expect(result.current.isComplete).toBe(true); // All required fields filled
@@ -56,7 +56,7 @@ describe('useProfileCompletion', () => {
         bio: 'Developer',
         image: '/placeholder-avatar.png', // Should be considered incomplete
       });
-      
+
       const { result } = renderHook(() => useProfileCompletion(member));
 
       expect(result.current.requiredFields).toContain('image');

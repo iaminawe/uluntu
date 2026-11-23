@@ -36,19 +36,19 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
       }
       return result.data!;
     },
-    onSuccess: (newItem) => {
+    onSuccess: newItem => {
       toast.success('Menu item created successfully');
       queryClient.invalidateQueries({ queryKey: ['secure-menu-items'] });
       // Log the action
       menuSecurity.logMenuAction('create', 'menu_item', {
         menuItemId: newItem.id,
-        newValues: newItem
+        newValues: newItem,
       });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to create menu item');
       logger.error('Menu item creation failed', 'MENU_UI', error);
-    }
+    },
   });
 
   /**
@@ -75,7 +75,7 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
     onError: (error: any) => {
       toast.error(error.message || 'Failed to update menu item');
       logger.error('Menu item update failed', 'MENU_UI', error);
-    }
+    },
   });
 
   /**
@@ -95,7 +95,7 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
     onError: (error: any) => {
       toast.error(error.message || 'Failed to delete menu item');
       logger.error('Menu item deletion failed', 'MENU_UI', error);
-    }
+    },
   });
 
   /**
@@ -109,14 +109,14 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
       }
       return result.data!;
     },
-    onSuccess: (updatedItem) => {
+    onSuccess: updatedItem => {
       queryClient.invalidateQueries({ queryKey: ['secure-menu-items'] });
       toast.success(`Menu item ${updatedItem.is_enabled ? 'enabled' : 'disabled'} successfully`);
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to update menu item status');
       logger.error('Menu item toggle failed', 'MENU_UI', error);
-    }
+    },
   });
 
   /**
@@ -131,7 +131,7 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to reorder menu items');
-    }
+    },
   });
 
   return {
@@ -139,6 +139,6 @@ export const useMenuMutations = ({ secureMenuApi, menuSecurity }: UseMenuMutatio
     updateMutation,
     deleteMutation,
     toggleMutation,
-    reorderMutation
+    reorderMutation,
   };
 };

@@ -7,16 +7,16 @@ interface LocationInfoProps {
 
 const LocationInfo: React.FC<LocationInfoProps> = ({ locationInfo }) => {
   const { title, address, hostedBy, mapEmbedUrl } = locationInfo;
-  
+
   return (
     <div className="bg-slate-100 p-4 rounded-lg">
       <div className="aspect-video relative">
         <div className="absolute inset-0 flex items-center justify-center">
-          <iframe 
+          <iframe
             src={mapEmbedUrl}
-            className="w-full h-full rounded-lg border-0" 
-            allowFullScreen 
-            loading="lazy" 
+            className="w-full h-full rounded-lg border-0"
+            allowFullScreen
+            loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             title={`${title} Map`}
           ></iframe>
@@ -34,7 +34,8 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ locationInfo }) => {
         </p>
         {hostedBy && (
           <p className="mt-3 text-slate-600">
-            Hosted by {hostedBy.url ? (
+            Hosted by{' '}
+            {hostedBy.url ? (
               <a href={hostedBy.url} className="text-indigo-600 hover:underline">
                 {hostedBy.name}
               </a>

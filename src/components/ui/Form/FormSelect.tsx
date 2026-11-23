@@ -82,7 +82,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <CustomSelect
         id={id}
         name={name}
@@ -95,10 +95,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
         disabled={disabled}
         className={className}
       />
-      
-      {helperText && !error && (
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
-      )}
+
+      {helperText && !error && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>}
     </div>
   );
 };

@@ -15,9 +15,7 @@ const MediaManagementPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Media Management
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Media Management</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Manage galleries, photos, and media assignments across the platform
           </p>
@@ -75,9 +73,7 @@ const MediaManagementPage: React.FC = () => {
 
         <TabsContent value="settings" className="space-y-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Media Settings
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Media Settings</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>

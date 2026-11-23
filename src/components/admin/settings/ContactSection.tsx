@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { ApplicationSetting, FeatureToggle, UpdateSettingRequest, SettingCategory, SettingDataType } from '@/types/settings';
+import {
+  ApplicationSetting,
+  FeatureToggle,
+  UpdateSettingRequest,
+  SettingCategory,
+  SettingDataType,
+} from '@/types/settings';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Switch } from '@/components/ui/Switch';
 import { Button } from '@/components/ui/Button';
@@ -19,7 +25,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
   features,
   onUpdateSetting,
   onRefresh,
-  isLoading
+  isLoading,
 }) => {
   const [updatingSettings, setUpdatingSettings] = useState<Set<string>>(new Set());
   const [localSettings, setLocalSettings] = useState<Record<string, any>>({});
@@ -27,29 +33,29 @@ const ContactSection: React.FC<ContactSectionProps> = ({
   const handleSettingChange = (settingId: string, value: any) => {
     setLocalSettings(prev => ({
       ...prev,
-      [settingId]: value
+      [settingId]: value,
     }));
   };
 
   const handleSaveSetting = async (setting: ApplicationSetting) => {
     const newValue = localSettings[setting.id] ?? setting.setting_value;
-    
+
     setUpdatingSettings(prev => new Set(prev).add(setting.id));
-    
+
     try {
       await onUpdateSetting({
         setting_key: setting.setting_key,
         setting_value: newValue,
         category: setting.category as SettingCategory,
-        data_type: setting.data_type as SettingDataType
+        data_type: setting.data_type as SettingDataType,
       });
-      
+
       setLocalSettings(prev => {
         const updated = { ...prev };
         delete updated[setting.id];
         return updated;
       });
-      
+
       toast.success('Contact setting saved successfully');
     } catch (error) {
       toast.error('Failed to save contact setting');
@@ -82,11 +88,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({
   // Filter settings by contact subcategories
   const contactSettings = settings.filter(s => s.category === 'contact');
   const locationSettings = settings.filter(s => s.category === 'location');
-  const phoneSettings = settings.filter(s => 
-    s.setting_key.includes('phone') || s.setting_key.includes('tel')
-  );
-  const contactFeatures = features.filter(f => 
-    f.feature_key.includes('contact') || f.feature_key.includes('form') || f.feature_key.includes('support')
+  const phoneSettings = settings.filter(s => s.setting_key.includes('phone') || s.setting_key.includes('tel'));
+  const contactFeatures = features.filter(
+    f => f.feature_key.includes('contact') || f.feature_key.includes('form') || f.feature_key.includes('support')
   );
 
   const settingsSections = [
@@ -95,21 +99,21 @@ const ContactSection: React.FC<ContactSectionProps> = ({
       description: 'Primary contact details and communication preferences',
       icon: MessageSquare,
       settings: contactSettings,
-      color: 'blue'
+      color: 'blue',
     },
     {
       title: 'Phone & Communication',
       description: 'Phone numbers and communication channels',
       icon: Phone,
       settings: phoneSettings,
-      color: 'green'
+      color: 'green',
     },
     {
       title: 'Location & Address',
       description: 'Physical address and location information',
       icon: MapPin,
       settings: locationSettings,
-      color: 'purple'
+      color: 'purple',
     },
     {
       title: 'Contact Features',
@@ -117,18 +121,18 @@ const ContactSection: React.FC<ContactSectionProps> = ({
       icon: Mail,
       settings: [],
       features: contactFeatures,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-8">
-        {settingsSections.map((section) => {
+        {settingsSections.map(section => {
           const Icon = section.icon;
           const sectionSettings = section.settings || [];
           const sectionFeatures = section.features || [];
-          
+
           return (
             <Card key={section.title} className="w-full">
               <CardHeader>
@@ -143,7 +147,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                 {sectionSettings.length > 0 && (
                   <div className="space-y-4 mb-6">
                     <h4 className="font-medium text-gray-900">Configuration Settings</h4>
-                    {sectionSettings.map((setting) => {
+                    {sectionSettings.map(setting => {
                       const currentValue = getSettingValue(setting);
                       const isUpdating = updatingSettings.has(setting.id);
                       const hasChanged = hasChanges(setting.id);
@@ -157,28 +161,38 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                                 <p className="text-sm text-gray-500 mt-1">{setting.description}</p>
                               )}
                             </div>
-                            
+
                             <div className="flex items-center space-x-3">
                               {/* Interactive Control */}
                               {typeof setting.setting_value === 'boolean' ? (
                                 <Switch
                                   checked={currentValue}
-                                  onCheckedChange={(checked) => handleSettingChange(setting.id, checked)}
+                                  onCheckedChange={checked => handleSettingChange(setting.id, checked)}
                                   disabled={isUpdating}
                                 />
                               ) : (
                                 <input
-                                  type={setting.setting_key.includes('email') ? 'email' :
-                                        setting.setting_key.includes('phone') || setting.setting_key.includes('tel') ? 'tel' :
-                                        setting.setting_key.includes('url') || setting.setting_key.includes('website') ? 'url' : 'text'}
+                                  type={
+                                    setting.setting_key.includes('email')
+                                      ? 'email'
+                                      : setting.setting_key.includes('phone') || setting.setting_key.includes('tel')
+                                        ? 'tel'
+                                        : setting.setting_key.includes('url') || setting.setting_key.includes('website')
+                                          ? 'url'
+                                          : 'text'
+                                  }
                                   value={String(currentValue)}
-                                  onChange={(e) => handleSettingChange(setting.id, e.target.value)}
+                                  onChange={e => handleSettingChange(setting.id, e.target.value)}
                                   disabled={isUpdating}
                                   className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[200px]"
                                   placeholder={
-                                    setting.setting_key.includes('email') ? 'contact@example.com' :
-                                    setting.setting_key.includes('phone') ? '+1 (555) 123-4567' :
-                                    setting.setting_key.includes('address') ? '123 Main St, City, State' : ''
+                                    setting.setting_key.includes('email')
+                                      ? 'contact@example.com'
+                                      : setting.setting_key.includes('phone')
+                                        ? '+1 (555) 123-4567'
+                                        : setting.setting_key.includes('address')
+                                          ? '123 Main St, City, State'
+                                          : ''
                                   }
                                 />
                               )}
@@ -211,7 +225,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                               )}
                             </div>
                           </div>
-                          
+
                           {hasChanged && (
                             <div className="mt-2 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
                               Unsaved changes
@@ -227,19 +241,17 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                 {sectionFeatures.length > 0 && (
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900">Contact Features</h4>
-                    {sectionFeatures.map((feature) => (
+                    {sectionFeatures.map(feature => (
                       <div key={feature.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0 mr-4">
                             <h4 className="font-medium text-gray-900">{feature.feature_key}</h4>
-                            {feature.description && (
-                              <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
-                            )}
+                            {feature.description && <p className="text-sm text-gray-500 mt-1">{feature.description}</p>}
                           </div>
-                          
+
                           <Switch
                             checked={feature.enabled || false}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={checked => {
                               toast.success('Contact feature toggle functionality coming soon');
                             }}
                             disabled={isLoading}
@@ -252,9 +264,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({
 
                 {/* Empty State */}
                 {sectionSettings.length === 0 && sectionFeatures.length === 0 && (
-                  <p className="text-sm text-gray-500 italic">
-                    No {section.title.toLowerCase()} configured yet.
-                  </p>
+                  <p className="text-sm text-gray-500 italic">No {section.title.toLowerCase()} configured yet.</p>
                 )}
               </CardContent>
             </Card>

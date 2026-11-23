@@ -41,11 +41,11 @@ export const adaptMainEventToLocal = (event: MainEvent): Event => {
     organizer: {
       id: event.organizer.id,
       name: event.organizer.name,
-      image: event.organizer.image
+      image: event.organizer.image,
     },
     attendees: event.attendees,
     type: event.type,
-    url: event.url
+    url: event.url,
   };
 };
 
@@ -63,15 +63,14 @@ export const adaptLocalToMainEvent = (event: Event): Partial<MainEvent> => {
     organizer: {
       id: event.organizer.id,
       name: event.organizer.name,
-      image: event.organizer.image
+      image: event.organizer.image,
     },
     attendees: event.attendees,
     type: event.type,
-    url: event.url
+    url: event.url,
   };
 };
 
- 
 export interface EventFilters {
   search?: string;
   types?: EventType[];

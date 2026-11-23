@@ -48,7 +48,7 @@ export const menuToNavLinkAdapter: MenuToNavLinkAdapter = (item: MenuItem): NavL
     feature_flag: item.feature_flag || undefined,
     sort_order: item.sort_order,
     css_classes: item.css_classes || undefined,
-    children: item.children?.map(menuToNavLinkAdapter)
+    children: item.children?.map(menuToNavLinkAdapter),
   };
 };
 
@@ -73,14 +73,15 @@ export const menuToFooterColumnsAdapter: MenuToFooterColumnAdapter = (
       id: item.id,
       title: item.title,
       order: index,
-      links: item.children?.map(child => ({
-        id: child.id,
-        title: child.title,
-        url: child.url,
-        target: child.target,
-        icon: child.icon || undefined,
-        description: child.description || undefined
-      })) || []
+      links:
+        item.children?.map(child => ({
+          id: child.id,
+          title: child.title,
+          url: child.url,
+          target: child.target,
+          icon: child.icon || undefined,
+          description: child.description || undefined,
+        })) || [],
     }));
   }
 
@@ -95,15 +96,17 @@ export const menuToFooterColumnsAdapter: MenuToFooterColumnAdapter = (
       url: child.url,
       target: child.target,
       icon: child.icon || undefined,
-      description: child.description || undefined
-    })) || [{
-      id: item.id,
-      title: item.title,
-      url: item.url,
-      target: item.target,
-      icon: item.icon || undefined,
-      description: item.description || undefined
-    }]
+      description: child.description || undefined,
+    })) || [
+      {
+        id: item.id,
+        title: item.title,
+        url: item.url,
+        target: item.target,
+        icon: item.icon || undefined,
+        description: item.description || undefined,
+      },
+    ],
   }));
 };
 
@@ -113,7 +116,7 @@ export const menuToFooterColumnsAdapter: MenuToFooterColumnAdapter = (
  */
 export function menuItemsToFooterLinks(items: MenuItem[]): FooterLink[] {
   const links: FooterLink[] = [];
-  
+
   const flatten = (menuItems: MenuItem[]) => {
     menuItems.forEach(item => {
       if (item.url) {
@@ -123,7 +126,7 @@ export function menuItemsToFooterLinks(items: MenuItem[]): FooterLink[] {
           url: item.url,
           target: item.target,
           icon: item.icon || undefined,
-          description: item.description || undefined
+          description: item.description || undefined,
         });
       }
       if (item.children?.length) {
@@ -131,7 +134,7 @@ export function menuItemsToFooterLinks(items: MenuItem[]): FooterLink[] {
       }
     });
   };
-  
+
   flatten(items);
   return links;
 }
@@ -140,7 +143,7 @@ export function menuItemsToFooterLinks(items: MenuItem[]): FooterLink[] {
  * Filters menu items based on feature flags
  */
 export function filterMenuItemsByFeatures(
-  items: MenuItem[], 
+  items: MenuItem[],
   isFeatureEnabled: (feature: FeatureKey | string) => boolean
 ): MenuItem[] {
   return items.filter(item => {
@@ -150,9 +153,7 @@ export function filterMenuItemsByFeatures(
     }
 
     // Filter children recursively
-    const filteredChildren = item.children 
-      ? filterMenuItemsByFeatures(item.children, isFeatureEnabled)
-      : undefined;
+    const filteredChildren = item.children ? filterMenuItemsByFeatures(item.children, isFeatureEnabled) : undefined;
 
     // If item has children but none passed the filter, hide the parent too
     if (item.children?.length && (!filteredChildren || filteredChildren.length === 0)) {
@@ -188,11 +189,9 @@ export function navLinkToMenuItem(navLink: NavLinkItem, sortOrder = 0): MenuItem
     required_roles: null,
     is_external: navLink.target === '_blank',
     feature_flag: navLink.feature_flag,
-    children: navLink.children?.map((child: any, index: number) => 
-      navLinkToMenuItem(child, index)
-    ),
+    children: navLink.children?.map((child: any, index: number) => navLinkToMenuItem(child, index)),
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 }
 
@@ -220,7 +219,7 @@ function createMenuItem(partial: Partial<MenuItem> & { id: string; title: string
     status: partial.status || 'published',
     featured: partial.featured !== undefined ? partial.featured : null,
     created_at: partial.created_at || new Date().toISOString(),
-    updated_at: partial.updated_at || new Date().toISOString()
+    updated_at: partial.updated_at || new Date().toISOString(),
   } as MenuItem;
 }
 
@@ -241,7 +240,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/events',
           description: 'Workshops, meetups, and tech talks',
           feature_flag: 'events_system',
-          sort_order: 10
+          sort_order: 10,
         }),
         createMenuItem({
           id: 'directory',
@@ -249,7 +248,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/directory',
           description: 'Connect with tech professionals',
           feature_flag: 'members_directory',
-          sort_order: 20
+          sort_order: 20,
         }),
         createMenuItem({
           id: 'groups',
@@ -257,7 +256,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/groups',
           description: 'Join communities of interest',
           feature_flag: 'groups_communities',
-          sort_order: 30
+          sort_order: 30,
         }),
         createMenuItem({
           id: 'news',
@@ -265,7 +264,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/news',
           description: 'Latest tech news and articles',
           feature_flag: 'news_blog',
-          sort_order: 40
+          sort_order: 40,
         }),
         createMenuItem({
           id: 'galleries',
@@ -273,9 +272,9 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/galleries',
           description: 'Browse community photo galleries',
           feature_flag: 'photo_galleries',
-          sort_order: 50
-        })
-      ]
+          sort_order: 50,
+        }),
+      ],
     }),
     createMenuItem({
       id: 'business',
@@ -289,7 +288,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/companies',
           description: 'Explore local tech companies',
           feature_flag: 'companies_listing',
-          sort_order: 10
+          sort_order: 10,
         }),
         createMenuItem({
           id: 'opportunities',
@@ -297,7 +296,7 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/opportunities',
           description: 'Find jobs and volunteer roles',
           feature_flag: 'opportunities_board',
-          sort_order: 20
+          sort_order: 20,
         }),
         createMenuItem({
           id: 'marketplace',
@@ -305,9 +304,9 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           url: '/marketplace',
           description: 'Buy and sell tech items',
           feature_flag: 'marketplace',
-          sort_order: 30
-        })
-      ]
+          sort_order: 30,
+        }),
+      ],
     }),
     createMenuItem({
       id: 'resources',
@@ -315,14 +314,14 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
       url: '/resources',
       description: 'Educational content and guides',
       feature_flag: 'resources_library',
-      sort_order: 30
+      sort_order: 30,
     }),
     createMenuItem({
       id: 'topics',
       title: 'Topics',
       url: '/topics',
       description: 'Browse content by topic',
-      sort_order: 40
+      sort_order: 40,
     }),
     createMenuItem({
       id: 'about',
@@ -335,45 +334,45 @@ export function getDefaultHeaderMenuItems(): MenuItem[] {
           title: 'About Us',
           url: '/about',
           description: 'Learn about our mission',
-          sort_order: 10
+          sort_order: 10,
         }),
         createMenuItem({
           id: 'about-uluntu',
           title: 'About Uluntu',
           url: '/about-uluntu',
           description: 'Learn about the Uluntu platform',
-          sort_order: 20
+          sort_order: 20,
         }),
         createMenuItem({
           id: 'partners',
           title: 'Partners',
           url: '/partners',
           description: 'Our community partners and sponsors',
-          sort_order: 30
+          sort_order: 30,
         }),
         createMenuItem({
           id: 'contact',
           title: 'Contact',
           url: '/contact',
           description: 'Get in touch with us',
-          sort_order: 40
+          sort_order: 40,
         }),
         createMenuItem({
           id: 'privacy',
           title: 'Privacy',
           url: '/privacy',
           description: 'Privacy policy and data protection',
-          sort_order: 50
+          sort_order: 50,
         }),
         createMenuItem({
           id: 'terms',
           title: 'Terms',
           url: '/terms',
           description: 'Terms of service and guidelines',
-          sort_order: 60
-        })
-      ]
-    })
+          sort_order: 60,
+        }),
+      ],
+    }),
   ];
 }
 
@@ -386,55 +385,55 @@ export function getDefaultFooterMenuItems(): MenuItem[] {
       id: 'footer-community',
       title: 'Community',
       url: '/community',
-      sort_order: 10
+      sort_order: 10,
     }),
     createMenuItem({
       id: 'footer-directory',
       title: 'Directory',
       url: '/directory',
-      sort_order: 20
+      sort_order: 20,
     }),
     createMenuItem({
       id: 'footer-companies',
       title: 'Companies',
       url: '/companies',
-      sort_order: 30
+      sort_order: 30,
     }),
     createMenuItem({
       id: 'footer-groups',
       title: 'Groups',
       url: '/groups',
-      sort_order: 40
+      sort_order: 40,
     }),
     createMenuItem({
       id: 'footer-resources',
       title: 'Resources',
       url: '/resources',
-      sort_order: 50
+      sort_order: 50,
     }),
     createMenuItem({
       id: 'footer-events',
       title: 'Events',
       url: '/events',
-      sort_order: 60
+      sort_order: 60,
     }),
     createMenuItem({
       id: 'footer-news',
       title: 'News',
       url: '/news',
-      sort_order: 70
+      sort_order: 70,
     }),
     createMenuItem({
       id: 'footer-marketplace',
       title: 'Marketplace',
       url: '/marketplace',
-      sort_order: 80
+      sort_order: 80,
     }),
     createMenuItem({
       id: 'footer-opportunities',
       title: 'Opportunities',
       url: '/opportunities',
-      sort_order: 90
-    })
+      sort_order: 90,
+    }),
   ];
 }

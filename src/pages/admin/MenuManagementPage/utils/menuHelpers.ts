@@ -52,15 +52,12 @@ export const isExternalUrl = (url: string): boolean => {
  * @param editingItem - Item being edited (optional)
  * @returns Filtered and sorted parent options
  */
-export const getParentOptions = (
-  allItems: MenuItem[],
-  menuType: string,
-  editingItem?: MenuItem
-): MenuItem[] => {
+export const getParentOptions = (allItems: MenuItem[], menuType: string, editingItem?: MenuItem): MenuItem[] => {
   return allItems
-    .filter(item =>
-      item.menu_type === menuType &&
-      (!editingItem || (item.id !== editingItem.id && item.parent_id !== editingItem.id))
+    .filter(
+      item =>
+        item.menu_type === menuType &&
+        (!editingItem || (item.id !== editingItem.id && item.parent_id !== editingItem.id))
     )
     .sort((a, b) => a.sort_order - b.sort_order);
 };
@@ -83,10 +80,11 @@ export const filterMenuItems = (
 
   if (searchTerm) {
     const search = searchTerm.toLowerCase();
-    filtered = filtered.filter(item =>
-      item.title.toLowerCase().includes(search) ||
-      item.url.toLowerCase().includes(search) ||
-      (item.description && item.description.toLowerCase().includes(search))
+    filtered = filtered.filter(
+      item =>
+        item.title.toLowerCase().includes(search) ||
+        item.url.toLowerCase().includes(search) ||
+        (item.description && item.description.toLowerCase().includes(search))
     );
   }
 

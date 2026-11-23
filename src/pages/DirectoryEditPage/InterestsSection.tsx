@@ -17,7 +17,7 @@ const InterestsSection = ({
   onAdd,
   onRemove,
   isSubmitting,
-  error
+  error,
 }: InterestsSectionProps) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -38,12 +38,12 @@ const InterestsSection = ({
         <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
           Add your interests to help others find common ground
         </p>
-        
+
         <div className="flex gap-2">
           <input
             type="text"
             value={newInterest}
-            onChange={(e) => setNewInterest(e.target.value)}
+            onChange={e => setNewInterest(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={isSubmitting}
             placeholder="e.g., AI, Sustainability, Design"
@@ -65,10 +65,10 @@ const InterestsSection = ({
         </div>
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>
-      
+
       {interests.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {interests.map((interest) => (
+          {interests.map(interest => (
             <span
               key={interest}
               className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-700 

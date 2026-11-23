@@ -25,7 +25,7 @@ function adaptFeatureCompanyToGlobal(featureCompany: FeatureCompany): GlobalComp
     featured: featureCompany.featured || false,
     coverImage: featureCompany.cover_image || undefined,
     created_at: featureCompany.created_at || new Date().toISOString(),
-    employees: [] // Add default empty array for compatibility
+    employees: [], // Add default empty array for compatibility
   };
 }
 
@@ -90,7 +90,7 @@ export function useUserCompanies(): UseQueryResult<GlobalCompany[], Error> {
             featured: true,
             coverImage: 'https://images.unsplash.com/photo-1497366754035-f200581a8e4a?w=1200&h=600&fit=crop&q=80',
             created_at: '2023-01-01T00:00:00.000Z',
-            employees: []
+            employees: [],
           },
           {
             id: '2',
@@ -107,8 +107,8 @@ export function useUserCompanies(): UseQueryResult<GlobalCompany[], Error> {
             featured: false,
             coverImage: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1200&h=600&fit=crop&q=80',
             created_at: '2023-02-01T00:00:00.000Z',
-            employees: []
-          }
+            employees: [],
+          },
         ];
         return mockUserCompanies;
       }
@@ -134,25 +134,24 @@ export function useCompaniesWithFilters(filters?: CompanyFilters): UseQueryResul
         // Import mock data directly and apply filters
         const { companies: mockCompanies } = await import('../data/mock/companies');
         let filteredCompanies = [...mockCompanies];
-        
+
         // Apply search filter
         if (filters?.search) {
           const searchLower = filters.search.toLowerCase();
-          filteredCompanies = filteredCompanies.filter(company => 
-            company.name.toLowerCase().includes(searchLower) ||
-            company.description.toLowerCase().includes(searchLower)
+          filteredCompanies = filteredCompanies.filter(
+            company =>
+              company.name.toLowerCase().includes(searchLower) ||
+              company.description.toLowerCase().includes(searchLower)
           );
         }
-        
+
         // Apply industry filter
         if (filters?.industries && filters.industries.length > 0) {
           filteredCompanies = filteredCompanies.filter(company =>
-            filters.industries!.some(industry => 
-              company.industry.includes(industry)
-            )
+            filters.industries!.some(industry => company.industry.includes(industry))
           );
         }
-        
+
         return filteredCompanies;
       }
       const companies = await companiesApi.getAll(filters);
@@ -217,8 +216,12 @@ export function useCompanyBySlug(slug?: string): UseQueryResult<GlobalCompany | 
       if (!USE_SUPABASE) {
         // Import mock data directly
         const { companies: mockCompanies } = await import('../data/mock/companies');
-        const company = mockCompanies.find(c => 
-          c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === slug
+        const company = mockCompanies.find(
+          c =>
+            c.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '') === slug
         );
         return company || null;
       }
@@ -264,8 +267,12 @@ export function useCompanyByIdOrSlug(idOrSlug?: string): UseQueryResult<GlobalCo
         }
 
         // Try as slug
-        const companyBySlug = mockCompanies.find(c =>
-          c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') === idOrSlug
+        const companyBySlug = mockCompanies.find(
+          c =>
+            c.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '') === idOrSlug
         );
         if (companyBySlug) {
           return companyBySlug;
@@ -361,7 +368,7 @@ export function useUpdateCompany() {
           industry: data.industry || currentCompany.industry,
           size: data.size || currentCompany.size,
           logo: data.logo !== undefined ? data.logo : currentCompany.logo,
-          website: data.website !== undefined ? data.website : (currentCompany.website || undefined), // Convert null to undefined
+          website: data.website !== undefined ? data.website : currentCompany.website || undefined, // Convert null to undefined
           featured: data.featured !== undefined ? data.featured : currentCompany.featured,
           location: data.location !== undefined ? data.location : currentCompany.location,
         };
@@ -380,8 +387,8 @@ export function useUpdateCompany() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'] });
       if (variables.id) {
-        queryClient.invalidateQueries({ 
-          queryKey: ['companies', variables.id, USE_SUPABASE ? 'supabase' : 'mock'] 
+        queryClient.invalidateQueries({
+          queryKey: ['companies', variables.id, USE_SUPABASE ? 'supabase' : 'mock'],
         });
       }
     },
@@ -407,12 +414,12 @@ export function useDeleteCompany(): UseMutationResult<
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return companiesApi.delete(id);
     },
     onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'] 
+      queryClient.invalidateQueries({
+        queryKey: ['companies', USE_SUPABASE ? 'supabase' : 'mock'],
       });
       queryClient.invalidateQueries({ queryKey: ['supabase', 'companies', id] });
     },
@@ -433,9 +440,13 @@ export function useDeleteCompany(): UseMutationResult<
  */
 export function useAddCompanyEmployee() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ companyId, memberId, employeeData }: {
+    mutationFn: async ({
+      companyId,
+      memberId,
+      employeeData,
+    }: {
       companyId: string;
       memberId: string;
       employeeData?: Partial<CompanyEmployee>;
@@ -450,18 +461,18 @@ export function useAddCompanyEmployee() {
           department: employeeData?.department,
           start_date: employeeData?.start_date || new Date().toISOString().split('T')[0],
           is_current: employeeData?.is_current ?? true,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
         return Promise.resolve(mockEmployee);
       }
-      
+
       return companiesApi.addCompanyEmployee(companyId, memberId, employeeData);
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['company', variables.companyId, 'employees'] 
+      queryClient.invalidateQueries({
+        queryKey: ['company', variables.companyId, 'employees'],
       });
-    }
+    },
   });
 }
 
@@ -471,12 +482,9 @@ export function useAddCompanyEmployee() {
  */
 export function useUpdateCompanyEmployee() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ employeeId, updates }: {
-      employeeId: string;
-      updates: Partial<CompanyEmployee>;
-    }) => {
+    mutationFn: async ({ employeeId, updates }: { employeeId: string; updates: Partial<CompanyEmployee> }) => {
       if (!USE_SUPABASE) {
         // Mock implementation
         const mockEmployee: CompanyEmployee = {
@@ -489,26 +497,26 @@ export function useUpdateCompanyEmployee() {
           end_date: updates.end_date,
           is_current: updates.is_current ?? true,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
         return Promise.resolve(mockEmployee);
       }
-      
+
       // Note: API expects (companyId, memberId, updates) but we only have employeeId
       // This needs to be fixed in the API or we need to restructure this call
       return companiesApi.updateCompanyEmployee(
-        updates.company_id || 'unknown', 
-        updates.member_id || 'unknown', 
+        updates.company_id || 'unknown',
+        updates.member_id || 'unknown',
         updates
       );
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data) {
-        queryClient.invalidateQueries({ 
-          queryKey: ['company', data.company_id, 'employees'] 
+        queryClient.invalidateQueries({
+          queryKey: ['company', data.company_id, 'employees'],
         });
       }
-    }
+    },
   });
 }
 
@@ -516,33 +524,25 @@ export function useUpdateCompanyEmployee() {
  * Custom hook to remove an employee from a company.
  * @returns A UseMutationResult object from Tanstack Query for the remove employee operation.
  */
-export function useRemoveCompanyEmployee(): UseMutationResult<
-  boolean,
-  Error,
-  string
-> {
+export function useRemoveCompanyEmployee(): UseMutationResult<boolean, Error, string> {
   const queryClient = useQueryClient();
-  
-  return useMutation<
-    boolean,
-    Error,
-    string
-  >({
-    mutationFn: async (employeeId) => {
+
+  return useMutation<boolean, Error, string>({
+    mutationFn: async employeeId => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       // Note: API expects (companyId, memberId) but we only have employeeId
       // This is a design issue that needs to be addressed
       throw new Error('Cannot remove employee with only employeeId - API requires companyId and memberId');
     },
     onSuccess: () => {
       // Invalidate all company employee queries since we don't have companyId
-      queryClient.invalidateQueries({ 
-        queryKey: ['company'] 
+      queryClient.invalidateQueries({
+        queryKey: ['company'],
       });
-    }
+    },
   });
 }
 
@@ -584,8 +584,8 @@ export function useCompanyEmployees(companyId?: string, filters?: { department?:
               joinDate: '2023-01-15',
               status: 'published',
               created_at: new Date().toISOString(),
-              featured: false
-            }
+              featured: false,
+            },
           },
           {
             id: '2',
@@ -608,11 +608,11 @@ export function useCompanyEmployees(companyId?: string, filters?: { department?:
               joinDate: '2022-06-01',
               status: 'published',
               created_at: new Date().toISOString(),
-              featured: false
-            }
-          }
+              featured: false,
+            },
+          },
         ];
-        
+
         // Apply filters
         if (filters?.currentOnly) {
           mockEmployees = mockEmployees.filter(emp => emp.is_current);
@@ -620,7 +620,7 @@ export function useCompanyEmployees(companyId?: string, filters?: { department?:
         if (filters?.department) {
           mockEmployees = mockEmployees.filter(emp => emp.department === filters.department);
         }
-        
+
         return mockEmployees;
       } catch (error) {
         console.error(`Error fetching employees for company ID ${companyId}:`, error);

@@ -1,12 +1,5 @@
-export type EntityType = 
-  | 'event' 
-  | 'news' 
-  | 'resource' 
-  | 'marketplace' 
-  | 'opportunity' 
-  | 'group' 
-  | 'company' 
-  | 'comment';
+export type EntityType =
+  'event' | 'news' | 'resource' | 'marketplace' | 'opportunity' | 'group' | 'company' | 'comment';
 
 export interface Like {
   id: string;
@@ -27,7 +20,7 @@ export interface Comment {
   updated_at: string;
   is_deleted: boolean;
   like_count?: number;
-  
+
   // Joined data
   user?: {
     id: string;

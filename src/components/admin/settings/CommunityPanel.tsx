@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   // Users, - unused
-  Shield, 
-  UserPlus, 
-  // UserCheck, - unused 
+  Shield,
+  UserPlus,
+  // UserCheck, - unused
   Settings,
   Save,
   RefreshCw,
@@ -12,7 +12,7 @@ import {
   Crown,
   Key,
   Lock,
-  Unlock
+  Unlock,
 } from 'lucide-react';
 import type { ApplicationSetting, UpdateSettingRequest } from '@/types/settings';
 import { useAdminSettings } from '@/hooks/useSettings';
@@ -42,13 +42,10 @@ const defaultRoles = [
   { value: 'member', label: 'Member', description: 'Basic member access' },
   { value: 'contributor', label: 'Contributor', description: 'Can create and share content' },
   { value: 'moderator', label: 'Moderator', description: 'Can moderate content and users' },
-  { value: 'admin', label: 'Admin', description: 'Administrative privileges' }
+  { value: 'admin', label: 'Admin', description: 'Administrative privileges' },
 ];
 
-export const CommunityPanel: React.FC<CommunityPanelProps> = ({ 
-  settings, 
-  onRefresh 
-}) => {
+export const CommunityPanel: React.FC<CommunityPanelProps> = ({ settings, onRefresh }) => {
   const { updateSetting } = useAdminSettings();
   const [communitySettings, setCommunitySettings] = useState<CommunitySettings>({
     registration_open: true,
@@ -73,10 +70,10 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
   useEffect(() => {
     const communityData = settings.filter(s => s.category === 'community');
     const newSettings: any = { ...communitySettings };
-    
+
     communityData.forEach(setting => {
       let value = setting.setting_value;
-      
+
       // Parse JSON values
       if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
         try {
@@ -85,10 +82,10 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
           // Keep as string if parsing fails
         }
       }
-      
+
       newSettings[setting.setting_key] = value;
     });
-    
+
     setCommunitySettings(newSettings);
   }, [settings]);
 
@@ -104,14 +101,19 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
         category: 'community',
         setting_key: key,
         setting_value: value,
-        data_type: typeof value === 'boolean' ? 'boolean' : 
-                  typeof value === 'number' ? 'number' : 
-                  Array.isArray(value) ? 'array' : 'string',
-        is_public: false // Community settings are typically not public
+        data_type:
+          typeof value === 'boolean'
+            ? 'boolean'
+            : typeof value === 'number'
+              ? 'number'
+              : Array.isArray(value)
+                ? 'array'
+                : 'string',
+        is_public: false, // Community settings are typically not public
       }));
-      
+
       await Promise.all(updates.map(update => updateSetting(update)));
-      
+
       setHasChanges(false);
       onRefresh();
     } catch (error) {
@@ -124,11 +126,11 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
   const handleReset = () => {
     const communityData = settings.filter(s => s.category === 'community');
     const resetSettings: any = {};
-    
+
     communityData.forEach(setting => {
       resetSettings[setting.setting_key] = setting.setting_value;
     });
-    
+
     setCommunitySettings({ ...communitySettings, ...resetSettings });
     setHasChanges(false);
   };
@@ -146,11 +148,9 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Community Settings</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage member registration, roles, and community policies
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Manage member registration, roles, and community policies</p>
         </div>
-        
+
         {hasChanges && (
           <div className="flex items-center space-x-3">
             <button
@@ -161,7 +161,7 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
               <RefreshCw className="h-4 w-4 mr-1" />
               Reset
             </button>
-            
+
             <button
               onClick={handleSave}
               disabled={loading}
@@ -177,7 +177,7 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const Icon = tab.icon;
             return (
               <button
@@ -209,7 +209,7 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                   <h4 className="font-medium text-gray-900">Member Registration</h4>
                 </div>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 {/* Registration Status */}
                 <div className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
@@ -222,10 +222,9 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                     <div>
                       <h5 className="font-medium text-gray-900">Registration Status</h5>
                       <p className="text-sm text-gray-500 mt-1">
-                        {communitySettings.registration_open 
+                        {communitySettings.registration_open
                           ? 'New members can register for accounts'
-                          : 'Registration is currently closed'
-                        }
+                          : 'Registration is currently closed'}
                       </p>
                     </div>
                   </div>
@@ -268,7 +267,12 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                       <p className="text-sm text-gray-500">Users must verify their email address</p>
                     </div>
                     <button
-                      onClick={() => handleSettingChange('email_verification_required', !communitySettings.email_verification_required)}
+                      onClick={() =>
+                        handleSettingChange(
+                          'email_verification_required',
+                          !communitySettings.email_verification_required
+                        )
+                      }
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                         communitySettings.email_verification_required ? 'bg-blue-600' : 'bg-gray-200'
                       }`}
@@ -284,10 +288,17 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <label className="font-medium text-gray-900">Profile Completion Required</label>
-                      <p className="text-sm text-gray-500">Members must complete their profile before accessing features</p>
+                      <p className="text-sm text-gray-500">
+                        Members must complete their profile before accessing features
+                      </p>
                     </div>
                     <button
-                      onClick={() => handleSettingChange('profile_completion_required', !communitySettings.profile_completion_required)}
+                      onClick={() =>
+                        handleSettingChange(
+                          'profile_completion_required',
+                          !communitySettings.profile_completion_required
+                        )
+                      }
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                         communitySettings.profile_completion_required ? 'bg-blue-600' : 'bg-gray-200'
                       }`}
@@ -303,29 +314,31 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
 
                 {/* Auto-approve Domains */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Auto-approve Email Domains
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Auto-approve Email Domains</label>
                   <textarea
                     value={(communitySettings.auto_approve_domains || []).join('\n')}
-                    onChange={(e) => handleSettingChange('auto_approve_domains', e.target.value.split('\n').filter(d => d.trim()))}
+                    onChange={e =>
+                      handleSettingChange(
+                        'auto_approve_domains',
+                        e.target.value.split('\n').filter(d => d.trim())
+                      )
+                    }
                     placeholder="example.com&#10;company.org"
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                   <p className="text-xs text-gray-500">
-                    Users with email addresses from these domains will be automatically approved. Enter one domain per line.
+                    Users with email addresses from these domains will be automatically approved. Enter one domain per
+                    line.
                   </p>
                 </div>
 
                 {/* Welcome Message */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Welcome Message
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Welcome Message</label>
                   <textarea
                     value={communitySettings.welcome_message || ''}
-                    onChange={(e) => handleSettingChange('welcome_message', e.target.value)}
+                    onChange={e => handleSettingChange('welcome_message', e.target.value)}
                     placeholder="Welcome to our community! We're excited to have you join us..."
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -348,15 +361,13 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                 <h4 className="font-medium text-gray-900">Roles & Permissions</h4>
               </div>
             </div>
-            
+
             <div className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Default Member Role
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Default Member Role</label>
                 <select
                   value={communitySettings.default_member_role}
-                  onChange={(e) => handleSettingChange('default_member_role', e.target.value)}
+                  onChange={e => handleSettingChange('default_member_role', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   {defaultRoles.map(role => (
@@ -372,14 +383,16 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
 
               <div className="space-y-4">
                 <h5 className="font-medium text-gray-900">Permission Settings</h5>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="font-medium text-gray-900">Member Invitations</label>
                     <p className="text-sm text-gray-500">Allow members to invite others to join</p>
                   </div>
                   <button
-                    onClick={() => handleSettingChange('member_invitation_enabled', !communitySettings.member_invitation_enabled)}
+                    onClick={() =>
+                      handleSettingChange('member_invitation_enabled', !communitySettings.member_invitation_enabled)
+                    }
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       communitySettings.member_invitation_enabled ? 'bg-blue-600' : 'bg-gray-200'
                     }`}
@@ -398,7 +411,9 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                     <p className="text-sm text-gray-500">Allow public access to member directory</p>
                   </div>
                   <button
-                    onClick={() => handleSettingChange('public_member_directory', !communitySettings.public_member_directory)}
+                    onClick={() =>
+                      handleSettingChange('public_member_directory', !communitySettings.public_member_directory)
+                    }
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       communitySettings.public_member_directory ? 'bg-blue-600' : 'bg-gray-200'
                     }`}
@@ -424,7 +439,7 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                 <h4 className="font-medium text-gray-900">Content Moderation</h4>
               </div>
             </div>
-            
+
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -451,7 +466,9 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                   <p className="text-sm text-gray-500">All content must be approved before being published</p>
                 </div>
                 <button
-                  onClick={() => handleSettingChange('content_approval_required', !communitySettings.content_approval_required)}
+                  onClick={() =>
+                    handleSettingChange('content_approval_required', !communitySettings.content_approval_required)
+                  }
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     communitySettings.content_approval_required ? 'bg-blue-600' : 'bg-gray-200'
                   }`}
@@ -476,18 +493,16 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
                 <h4 className="font-medium text-gray-900">Limits & Quotas</h4>
               </div>
             </div>
-            
+
             <div className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Maximum Members
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Maximum Members</label>
                 <div className="flex items-center space-x-3">
                   <input
                     type="number"
                     min="1"
                     value={communitySettings.max_members || ''}
-                    onChange={(e) => handleSettingChange('max_members', e.target.value ? parseInt(e.target.value) : null)}
+                    onChange={e => handleSettingChange('max_members', e.target.value ? parseInt(e.target.value) : null)}
                     placeholder="Unlimited"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
@@ -508,24 +523,23 @@ export const CommunityPanel: React.FC<CommunityPanelProps> = ({
       </div>
 
       {/* Warning for Sensitive Changes */}
-      {(hasChanges && (
-        !communitySettings.registration_open || 
-        communitySettings.require_approval ||
-        communitySettings.content_approval_required
-      )) && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <AlertTriangle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-amber-800">
-              <p className="font-medium mb-1">Important Configuration Changes</p>
-              <p>
-                You have made changes that may significantly impact your community's functionality. 
-                Please review carefully before saving.
-              </p>
+      {hasChanges &&
+        (!communitySettings.registration_open ||
+          communitySettings.require_approval ||
+          communitySettings.content_approval_required) && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <AlertTriangle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-amber-800">
+                <p className="font-medium mb-1">Important Configuration Changes</p>
+                <p>
+                  You have made changes that may significantly impact your community's functionality. Please review
+                  carefully before saving.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Help Text */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

@@ -10,7 +10,7 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     company: {
       id: dbOpportunity.organization ?? dbOpportunity.posted_by ?? '1',
       name: dbOpportunity.organization ?? 'Unknown Company',
-      logo: dbOpportunity.image ?? '/placeholder-company.png'
+      logo: dbOpportunity.image ?? '/placeholder-company.png',
     },
     type: (dbOpportunity.type as 'full-time' | 'part-time' | 'contract' | 'volunteer') ?? 'full-time',
     location: dbOpportunity.location ?? 'Remote',
@@ -29,7 +29,7 @@ export function adaptOpportunityFromDatabase(dbOpportunity: SupabaseOpportunity)
     image: dbOpportunity.image ?? '',
     requirements: dbOpportunity.requirements ?? [],
     responsibilities: dbOpportunity.responsibilities ?? [],
-    benefits: dbOpportunity.benefits ?? []
+    benefits: dbOpportunity.benefits ?? [],
   };
 }
 
@@ -79,14 +79,16 @@ export function adaptExtendedOpportunityFromDatabase(dbOpportunity: SupabaseOppo
     status: dbOpportunity.status ?? 'draft',
     featured: dbOpportunity.featured ?? false,
     postedBy: dbOpportunity.posted_by ?? '',
-    createdAt: dbOpportunity.created_at ?? new Date().toISOString()
+    createdAt: dbOpportunity.created_at ?? new Date().toISOString(),
   };
 }
 
-export function adaptOpportunityToDatabase(opportunity: Partial<Opportunity>): Database['public']['Tables']['opportunities']['Insert'] {
+export function adaptOpportunityToDatabase(
+  opportunity: Partial<Opportunity>
+): Database['public']['Tables']['opportunities']['Insert'] {
   // Extract organization name from company if available
   const organization = opportunity.company?.name ?? null;
-  
+
   return {
     title: opportunity.title ?? '',
     description: opportunity.description || '',
@@ -104,7 +106,7 @@ export function adaptOpportunityToDatabase(opportunity: Partial<Opportunity>): D
     responsibilities: null, // Not available in FrontendOpportunity
     benefits: null, // Not available in FrontendOpportunity
     status: opportunity.status || undefined,
-    featured: opportunity.featured === undefined ? null : opportunity.featured
+    featured: opportunity.featured === undefined ? null : opportunity.featured,
   };
 }
 
@@ -145,6 +147,6 @@ export function adaptOpportunityInputToDatabase(input: {
     benefits: input.benefits ?? null,
     posted_by: input.postedBy || '',
     status: input.status || undefined,
-    featured: input.featured ?? null
+    featured: input.featured ?? null,
   };
 }

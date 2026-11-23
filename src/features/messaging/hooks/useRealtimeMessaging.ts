@@ -45,31 +45,31 @@ export function useRealtimeMessaging() {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `conversation_id=in.(${user.id})` // This would need to be dynamically updated with user's conversation IDs
+          filter: `conversation_id=in.(${user.id})`, // This would need to be dynamically updated with user's conversation IDs
         },
-        (payload) => {
+        payload => {
           const newMessage = payload.new as Message;
-          
+
           // Don't process own messages
           if (newMessage.sender_id === user.id) return;
-          
+
           // Update relevant queries
           queryClient.invalidateQueries({ queryKey: messagingQueryKeys.conversations });
-          queryClient.invalidateQueries({ 
-            queryKey: messagingQueryKeys.messages(newMessage.conversation_id) 
+          queryClient.invalidateQueries({
+            queryKey: messagingQueryKeys.messages(newMessage.conversation_id),
           });
           queryClient.invalidateQueries({ queryKey: messagingQueryKeys.unreadCount });
-          
+
           // Play notification sound
           playNotificationSound();
-          
+
           // Show browser notification if supported and permitted
           if (showNotifications && 'Notification' in window && Notification.permission === 'granted') {
             new Notification(`New message from ${newMessage.sender?.name || 'Unknown'}`, {
               body: newMessage.content.substring(0, 100),
               icon: newMessage.sender?.avatar_url || newMessage.sender?.avatar || '/default-avatar.png',
               tag: `message-${newMessage.id}`,
-              requireInteraction: false
+              requireInteraction: false,
             });
           }
         }
@@ -93,14 +93,14 @@ export function useRealtimeMessaging() {
           event: 'UPDATE',
           schema: 'public',
           table: 'messages',
-          filter: `sender_id=eq.${user.id}`
+          filter: `sender_id=eq.${user.id}`,
         },
-        (payload) => {
+        payload => {
           const updatedMessage = payload.new as Message;
-          
+
           // Update messages queries to reflect status changes
-          queryClient.invalidateQueries({ 
-            queryKey: messagingQueryKeys.messages(updatedMessage.conversation_id) 
+          queryClient.invalidateQueries({
+            queryKey: messagingQueryKeys.messages(updatedMessage.conversation_id),
           });
         }
       )
@@ -122,14 +122,14 @@ export function useRealtimeMessaging() {
         {
           event: '*',
           schema: 'public',
-          table: 'typing_status'
+          table: 'typing_status',
         },
-        (payload) => {
+        payload => {
           const typingStatus = payload.new as TypingStatus;
-          
+
           // Don't process own typing status
           if (typingStatus.userId === user.id) return;
-          
+
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             if (typingStatus.isTyping) {
               addTypingUser(typingStatus.userId);
@@ -159,7 +159,7 @@ export function useRealtimeMessaging() {
         {
           event: '*',
           schema: 'public',
-          table: 'conversations'
+          table: 'conversations',
         },
         () => {
           // Refresh conversations when any conversation is updated
@@ -183,6 +183,6 @@ export function useRealtimeMessaging() {
   }, []);
 
   return {
-    requestNotificationPermission
+    requestNotificationPermission,
   };
 }

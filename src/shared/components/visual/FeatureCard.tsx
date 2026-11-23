@@ -19,14 +19,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   image,
   link,
   color = 'orange',
-  delay = 0
+  delay = 0,
 }) => {
   const colorClasses = {
     orange: 'from-orange-500 to-orange-600',
     blue: 'from-blue-500 to-blue-600',
     emerald: 'from-emerald-500 to-emerald-600',
     purple: 'from-purple-500 to-purple-600',
-    pink: 'from-pink-500 to-pink-600'
+    pink: 'from-pink-500 to-pink-600',
   };
 
   const cardContent = (
@@ -41,11 +41,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       {/* Background Image with Overlay */}
       {image && (
         <div className="absolute inset-0">
-          <img
-            src={image}
-            alt=""
-            className="w-full h-full object-cover opacity-10 dark:opacity-5"
-          />
+          <img src={image} alt="" className="w-full h-full object-cover opacity-10 dark:opacity-5" />
         </div>
       )}
 
@@ -60,12 +56,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         </motion.div>
 
         {/* Content */}
-        <h3 className="mt-6 text-2xl font-bold text-slate-900 dark:text-white">
-          {title}
-        </h3>
-        <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">
-          {description}
-        </p>
+        <h3 className="mt-6 text-2xl font-bold text-slate-900 dark:text-white">{title}</h3>
+        <p className="mt-3 text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
 
         {/* Link Indicator */}
         {link && (
@@ -75,25 +67,17 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             className="mt-6 flex items-center text-orange-500 font-semibold"
           >
             <span>Learn More</span>
-            <svg
-              className="w-5 h-5 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
+            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </motion.div>
         )}
       </div>
 
       {/* Decorative Elements */}
-      <div className={`absolute -bottom-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${colorClasses[color as keyof typeof colorClasses]} opacity-10 blur-3xl`} />
+      <div
+        className={`absolute -bottom-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${colorClasses[color as keyof typeof colorClasses]} opacity-10 blur-3xl`}
+      />
     </motion.div>
   );
 

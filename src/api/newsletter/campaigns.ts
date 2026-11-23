@@ -48,7 +48,7 @@ class NewsletterCampaignsApi {
       updated_at: dbCampaign.updated_at || new Date().toISOString(),
       created_by: dbCampaign.created_by,
       recipient_count: dbCampaign.recipient_count || undefined,
-      delivery_stats: dbCampaign.delivery_stats || undefined
+      delivery_stats: dbCampaign.delivery_stats || undefined,
     };
   }
 
@@ -86,7 +86,7 @@ class NewsletterCampaignsApi {
 
       return {
         campaigns: (data || []).map(this.mapDbCampaignToCampaign.bind(this)),
-        total: count || 0
+        total: count || 0,
       };
     } catch (error) {
       console.error('Error fetching campaigns:', error);
@@ -99,11 +99,7 @@ class NewsletterCampaignsApi {
    */
   async getCampaign(id: string): Promise<Campaign | null> {
     try {
-      const { data, error } = await supabase
-        .from('newsletter_campaigns')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('newsletter_campaigns').select('*').eq('id', id).single();
 
       if (error) throw error;
 
@@ -134,7 +130,7 @@ class NewsletterCampaignsApi {
             logo_url: '',
             header_image: '',
             footer_text: 'Uluntu',
-            social_links: []
+            social_links: [],
           },
           status: campaign.status || 'draft',
           send_type: campaign.send_type || 'manual',
@@ -145,9 +141,9 @@ class NewsletterCampaignsApi {
             delivered: 0,
             bounced: 0,
             opened: 0,
-            clicked: 0
+            clicked: 0,
           },
-          created_by: campaign.created_by || 'system'
+          created_by: campaign.created_by || 'system',
         })
         .select()
         .single();
@@ -169,7 +165,7 @@ class NewsletterCampaignsApi {
     try {
       // Map the updates to match database schema
       const updateData: any = {};
-      
+
       if (updates.title !== undefined) updateData.title = updates.title;
       if (updates.subject !== undefined) updateData.subject = updates.subject;
       if (updates.content !== undefined) updateData.content = updates.content;
@@ -183,7 +179,7 @@ class NewsletterCampaignsApi {
       if (updates.sent_at !== undefined) updateData.sent_at = updates.sent_at;
       if (updates.recipient_count !== undefined) updateData.recipient_count = updates.recipient_count;
       if (updates.delivery_stats !== undefined) updateData.delivery_stats = updates.delivery_stats;
-      
+
       updateData.updated_at = new Date().toISOString();
 
       const { data, error } = await supabase
@@ -208,10 +204,7 @@ class NewsletterCampaignsApi {
    */
   async deleteCampaign(id: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('newsletter_campaigns')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('newsletter_campaigns').delete().eq('id', id);
 
       if (error) throw error;
     } catch (error) {
@@ -243,7 +236,7 @@ class NewsletterCampaignsApi {
     try {
       await this.updateCampaign(id, {
         status: 'scheduled',
-        scheduled_at: scheduledAt
+        scheduled_at: scheduledAt,
       });
     } catch (error) {
       console.error('Error scheduling campaign:', error);

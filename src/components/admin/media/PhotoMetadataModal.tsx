@@ -7,13 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TagsInput } from '@/components/TagsInput';
 import { Switch } from '@/components/ui/Switch';
 import { Badge } from '@/components/ui/Badge';
@@ -26,12 +20,7 @@ interface PhotoMetadataModalProps {
   onSave: () => void;
 }
 
-const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
-  photo,
-  isOpen,
-  onClose,
-  onSave
-}) => {
+const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({ photo, isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -47,7 +36,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
     caption: photo.caption || '',
     tags: photo.tags || [],
     visibility: photo.visibility || 'visible',
-    sort_order: photo.sort_order || 0
+    sort_order: photo.sort_order || 0,
   });
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -62,10 +51,10 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
       onSave();
       setHasChanges(false);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error updating photo:', error);
       toast.error('Failed to update photo. Please try again.');
-    }
+    },
   });
 
   // Reset form data when photo changes
@@ -77,7 +66,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
       caption: photo.caption || '',
       tags: photo.tags || [],
       visibility: photo.visibility || 'visible',
-      sort_order: photo.sort_order || 0
+      sort_order: photo.sort_order || 0,
     });
     setHasChanges(false);
   }, [photo]);
@@ -91,18 +80,17 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
       caption: photo.caption || '',
       tags: photo.tags || [],
       visibility: photo.visibility || 'visible',
-      sort_order: photo.sort_order || 0
+      sort_order: photo.sort_order || 0,
     };
 
-    const hasDataChanged = (
+    const hasDataChanged =
       formData.title !== originalData.title ||
       formData.description !== originalData.description ||
       formData.alt_text !== originalData.alt_text ||
       formData.caption !== originalData.caption ||
       JSON.stringify(formData.tags.sort()) !== JSON.stringify(originalData.tags.sort()) ||
       formData.visibility !== originalData.visibility ||
-      formData.sort_order !== originalData.sort_order
-    );
+      formData.sort_order !== originalData.sort_order;
 
     setHasChanges(hasDataChanged);
   }, [formData, photo]);
@@ -122,7 +110,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
       caption: formData.caption.trim() || null,
       tags: formData.tags,
       visibility: formData.visibility,
-      sort_order: formData.sort_order
+      sort_order: formData.sort_order,
     };
 
     updatePhotoMutation.mutate(updateData);
@@ -146,7 +134,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
       caption: photo.caption || '',
       tags: photo.tags || [],
       visibility: photo.visibility || 'visible',
-      sort_order: photo.sort_order || 0
+      sort_order: photo.sort_order || 0,
     });
   };
 
@@ -195,18 +183,10 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
           <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  Edit Photo
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {photo.file_name}
-                </p>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Edit Photo</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{photo.file_name}</p>
               </div>
-              <Button 
-                variant="ghost" 
-                onClick={handleClose}
-                disabled={updatePhotoMutation.isPending}
-              >
+              <Button variant="ghost" onClick={handleClose} disabled={updatePhotoMutation.isPending}>
                 <X className="h-5 w-5" />
               </Button>
             </div>
@@ -217,10 +197,8 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Basic Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Basic Information
-                </h3>
-                
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Basic Information</h3>
+
                 <div>
                   <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Title
@@ -229,7 +207,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                     id="title"
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Enter photo title..."
                     className="mt-1"
                     disabled={updatePhotoMutation.isPending}
@@ -243,7 +221,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Enter photo description..."
                     rows={3}
                     className="mt-1"
@@ -259,14 +237,12 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                     id="alt_text"
                     type="text"
                     value={formData.alt_text}
-                    onChange={(e) => setFormData({ ...formData, alt_text: e.target.value })}
+                    onChange={e => setFormData({ ...formData, alt_text: e.target.value })}
                     placeholder="Describe the image for accessibility..."
                     className="mt-1"
                     disabled={updatePhotoMutation.isPending}
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Used by screen readers and SEO
-                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Used by screen readers and SEO</p>
                 </div>
 
                 <div>
@@ -277,7 +253,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                     id="caption"
                     type="text"
                     value={formData.caption}
-                    onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
+                    onChange={e => setFormData({ ...formData, caption: e.target.value })}
                     placeholder="Enter photo caption..."
                     className="mt-1"
                     disabled={updatePhotoMutation.isPending}
@@ -285,39 +261,29 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Tags
-                  </Label>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tags</Label>
                   <div className="mt-1">
                     <TagsInput
                       tags={formData.tags}
-                      onChange={(tags) => setFormData({ ...formData, tags })}
+                      onChange={tags => setFormData({ ...formData, tags })}
                       placeholder="Add tags..."
                       disabled={updatePhotoMutation.isPending}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Press Enter or Tab to add tags
-                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Press Enter or Tab to add tags</p>
                 </div>
               </div>
 
               {/* Settings */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Settings
-                </h3>
-                
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Settings</h3>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Visibility
-                    </Label>
-                    <Select 
-                      value={formData.visibility} 
-                      onValueChange={(value: 'visible' | 'hidden') => 
-                        setFormData({ ...formData, visibility: value })
-                      }
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Visibility</Label>
+                    <Select
+                      value={formData.visibility}
+                      onValueChange={(value: 'visible' | 'hidden') => setFormData({ ...formData, visibility: value })}
                       disabled={updatePhotoMutation.isPending}
                     >
                       <SelectTrigger className="mt-1">
@@ -348,23 +314,19 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                       id="sort_order"
                       type="number"
                       value={formData.sort_order}
-                      onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
+                      onChange={e => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
                       className="mt-1"
                       disabled={updatePhotoMutation.isPending}
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Lower numbers appear first
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Lower numbers appear first</p>
                   </div>
                 </div>
               </div>
 
               {/* Photo Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Photo Information
-                </h3>
-                
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Photo Information</h3>
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -380,7 +342,9 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                     <div className="flex items-center gap-2">
                       <Image className="h-4 w-4 text-gray-400" />
                       <span className="text-gray-600 dark:text-gray-400">Dimensions:</span>
-                      <span className="text-gray-900 dark:text-gray-100">{photo.width} × {photo.height}</span>
+                      <span className="text-gray-900 dark:text-gray-100">
+                        {photo.width} × {photo.height}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400" />
@@ -390,23 +354,27 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Image className="h-4 w-4 text-gray-400" />
                       <span className="text-gray-600 dark:text-gray-400">Type:</span>
                       <Badge variant="outline">{photo.mime_type}</Badge>
                     </div>
-                    
+
                     {photo.processing_status && (
                       <div className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-600 dark:text-gray-400">Status:</span>
-                        <Badge variant={
-                          photo.processing_status === 'completed' ? 'default' :
-                          photo.processing_status === 'failed' ? 'destructive' :
-                          'secondary'
-                        }>
+                        <Badge
+                          variant={
+                            photo.processing_status === 'completed'
+                              ? 'default'
+                              : photo.processing_status === 'failed'
+                                ? 'destructive'
+                                : 'secondary'
+                          }
+                        >
                           {photo.processing_status}
                         </Badge>
                       </div>
@@ -416,15 +384,13 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                       <div className="flex items-center gap-2">
                         <Image className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-600 dark:text-gray-400">Aspect Ratio:</span>
-                        <span className="text-gray-900 dark:text-gray-100">
-                          {photo.aspect_ratio.toFixed(2)}
-                        </span>
+                        <span className="text-gray-900 dark:text-gray-100">{photo.aspect_ratio.toFixed(2)}</span>
                       </div>
                     )}
 
                     {photo.dominant_color && (
                       <div className="flex items-center gap-2">
-                        <div 
+                        <div
                           className="w-4 h-4 rounded border border-gray-300"
                           style={{ backgroundColor: photo.dominant_color }}
                         />
@@ -445,7 +411,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                     <Camera className="h-5 w-5" />
                     Camera Information
                   </h3>
-                  
+
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     {photo.metadata.camera && (
                       <div>
@@ -498,7 +464,8 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                           <span className="text-gray-600 dark:text-gray-400">Location:</span>
                         </div>
                         <p className="text-gray-900 dark:text-gray-100">
-                          {photo.metadata.location.name || `${photo.metadata.location.latitude}, ${photo.metadata.location.longitude}`}
+                          {photo.metadata.location.name ||
+                            `${photo.metadata.location.latitude}, ${photo.metadata.location.longitude}`}
                         </p>
                       </div>
                     )}
@@ -527,10 +494,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                   >
                     Cancel
                   </Button>
-                  <Button
-                    type="submit"
-                    disabled={updatePhotoMutation.isPending || !hasChanges}
-                  >
+                  <Button type="submit" disabled={updatePhotoMutation.isPending || !hasChanges}>
                     {updatePhotoMutation.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -545,7 +509,7 @@ const PhotoMetadataModal: React.FC<PhotoMetadataModalProps> = ({
                   </Button>
                 </div>
               </div>
-              
+
               {hasChanges && (
                 <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400 text-center">
                   You have unsaved changes

@@ -24,7 +24,7 @@ import {
   Twitter,
   TrendingUp,
   Activity,
-  Award
+  Award,
 } from 'lucide-react';
 import LoadingState from './LoadingState';
 
@@ -38,13 +38,7 @@ export default function CompanyDetailPage() {
   const companiesEnabled = isFeatureEnabled('companies_listing');
 
   // Use hybrid approach for data fetching with slug support
-  const {
-    company,
-    isLoading,
-    isError,
-    error,
-    refetch
-  } = useCompanyByIdOrSlugHybrid(slug);
+  const { company, isLoading, isError, error, refetch } = useCompanyByIdOrSlugHybrid(slug);
 
   // Redirect if companies feature is disabled
   if (!featuresLoading && !companiesEnabled) {
@@ -55,10 +49,11 @@ export default function CompanyDetailPage() {
   if (featuresLoading) {
     return <LoadingState />;
   }
-  
+
   console.log('[CompanyDetailPage] Hook result:', { company, isLoading, isError, error });
 
-  const defaultCoverImage = 'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=2';
+  const defaultCoverImage =
+    'https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=2';
 
   return (
     <>
@@ -66,26 +61,26 @@ export default function CompanyDetailPage() {
         <title>{company?.name || 'Company Details'} - Uluntu</title>
         <meta name="description" content={company?.description || 'Company details page'} />
       </Helmet>
-      
+
       <ContentContainer className="px-0">
         {/* Back Navigation */}
         <div className="px-4 sm:px-6 lg:px-8 mb-6">
-          <Link 
-            to="/companies" 
+          <Link
+            to="/companies"
             className="inline-flex items-center text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Companies
           </Link>
         </div>
-        
+
         {isLoading ? (
           <CompanyDetailSkeleton />
         ) : isError ? (
           <div className="px-4 sm:px-6 lg:px-8">
-            <QueryError 
-              error={error || new Error('Failed to load company details')} 
-              retry={refetch} 
+            <QueryError
+              error={error || new Error('Failed to load company details')}
+              retry={refetch}
               message="We couldn't load the company details. Please try again."
             />
           </div>
@@ -93,31 +88,33 @@ export default function CompanyDetailPage() {
           <div className="text-center py-12 px-4">
             <Building2 className="h-16 w-16 text-slate-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Company Not Found</h2>
-            <p className="text-slate-600 dark:text-slate-400">The company you're looking for doesn't exist or has been removed.</p>
+            <p className="text-slate-600 dark:text-slate-400">
+              The company you're looking for doesn't exist or has been removed.
+            </p>
           </div>
         ) : (
           <div className="space-y-8">
             {/* Hero Section with Cover */}
             <div className="relative">
               <div className="h-64 sm:h-80 lg:h-96 w-full overflow-hidden">
-                <img 
-                  src={(company as any).cover_image || defaultCoverImage} 
+                <img
+                  src={(company as any).cover_image || defaultCoverImage}
                   alt={`${company.name} cover`}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
               </div>
-              
+
               {/* Company Header Info */}
               <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-6">
                 <div className="max-w-6xl mx-auto">
                   <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
                     <div className="w-32 h-32 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 p-2 shadow-2xl border-4 border-white dark:border-slate-800">
                       {company.logo ? (
-                        <img 
-                          src={company.logo} 
-                          alt={`${company.name} logo`} 
-                          className="w-full h-full object-contain rounded-xl" 
+                        <img
+                          src={company.logo}
+                          alt={`${company.name} logo`}
+                          className="w-full h-full object-contain rounded-xl"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center">
@@ -125,7 +122,7 @@ export default function CompanyDetailPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 text-white">
                       <div className="flex items-start justify-between flex-wrap gap-4">
                         <div>
@@ -145,7 +142,7 @@ export default function CompanyDetailPage() {
                             </span>
                           </div>
                         </div>
-                        
+
                         {company.featured && (
                           <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
                             <Star className="h-4 w-4" fill="currentColor" />
@@ -202,7 +199,9 @@ export default function CompanyDetailPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-slate-600 dark:text-slate-400">Industries</span>
-                        <span className="font-semibold text-slate-900 dark:text-white">{company.industry?.length || 0}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {company.industry?.length || 0}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -216,7 +215,7 @@ export default function CompanyDetailPage() {
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {company.industry.map((ind, index) => (
-                          <span 
+                          <span
                             key={`${ind}-${index}`}
                             className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 text-orange-700 dark:text-orange-300 rounded-lg text-sm font-medium border border-orange-200 dark:border-orange-800"
                           >
@@ -235,25 +234,27 @@ export default function CompanyDetailPage() {
                     </h3>
                     <div className="space-y-3">
                       {company.website && (
-                        <a 
+                        <a
                           href={company.website.startsWith('http') ? company.website : `https://${company.website}`}
-                          target="_blank" 
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                         >
                           <Globe className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">{company.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                          <span className="truncate">
+                            {company.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                          </span>
                           <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 ml-auto" />
                         </a>
                       )}
-                      
+
                       {/* Social Media Links */}
                       {company.social && Object.keys(company.social).length > 0 && (
                         <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
                           <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Social Media</p>
                           <div className="flex items-center gap-2 flex-wrap">
                             {company.social.linkedin && (
-                              <a 
+                              <a
                                 href={company.social.linkedin}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -264,7 +265,7 @@ export default function CompanyDetailPage() {
                               </a>
                             )}
                             {company.social.github && (
-                              <a 
+                              <a
                                 href={company.social.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -275,7 +276,7 @@ export default function CompanyDetailPage() {
                               </a>
                             )}
                             {company.social.twitter && (
-                              <a 
+                              <a
                                 href={company.social.twitter}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -290,7 +291,6 @@ export default function CompanyDetailPage() {
                       )}
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -307,7 +307,7 @@ function CompanyDetailSkeleton() {
     <div className="animate-pulse">
       {/* Hero skeleton */}
       <div className="h-64 sm:h-80 lg:h-96 bg-slate-200 dark:bg-slate-700"></div>
-      
+
       <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto -mt-20">
         <div className="flex items-end gap-4 mb-8">
           <div className="w-32 h-32 bg-slate-300 dark:bg-slate-600 rounded-2xl"></div>
@@ -316,7 +316,7 @@ function CompanyDetailSkeleton() {
             <div className="h-4 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             {[1, 2, 3].map(i => (
@@ -329,7 +329,7 @@ function CompanyDetailSkeleton() {
               </div>
             ))}
           </div>
-          
+
           <div className="space-y-6">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-6">

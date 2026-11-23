@@ -37,11 +37,11 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   queryClient?: QueryClient;
 }
 
-const AllTheProviders = ({ 
-  children, 
-  store, 
-  queryClient 
-}: { 
+const AllTheProviders = ({
+  children,
+  store,
+  queryClient,
+}: {
   children: ReactNode;
   store: ReturnType<typeof createTestStore>;
   queryClient: QueryClient;
@@ -49,9 +49,7 @@ const AllTheProviders = ({
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </Provider>
   );
@@ -108,8 +106,7 @@ export const createMockEvent = (overrides = {}) => ({
 });
 
 // Async utilities
-export const waitForLoadingToFinish = () => 
-  new Promise(resolve => setTimeout(resolve, 0));
+export const waitForLoadingToFinish = () => new Promise(resolve => setTimeout(resolve, 0));
 
 // Custom matchers
 export const expectToBeInDocument = (element: HTMLElement | null) => {

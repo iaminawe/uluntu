@@ -2,15 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { 
-  Edit, 
-  Save, 
-  X, 
-  Eye,
-  EyeOff,
-  Settings,
-  History
-} from 'lucide-react';
+import { Edit, Save, X, Eye, EyeOff, Settings, History } from 'lucide-react';
 import { BlockEditor } from '@/components/BlockEditor';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
@@ -38,7 +30,7 @@ export const EditablePageDisplay: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
-  
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedBlocks, setEditedBlocks] = useState<any[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
@@ -48,7 +40,11 @@ export const EditablePageDisplay: React.FC = () => {
   const canEdit = hasPermission('pages', 'update');
 
   // Fetch page data
-  const { data: page, isLoading, error } = useQuery({
+  const {
+    data: page,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['page-display', slug],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,17 +53,17 @@ export const EditablePageDisplay: React.FC = () => {
         .eq('slug', slug)
         .eq('status', 'published')
         .single();
-      
+
       if (error) throw error;
-      
+
       // Parse blocks if stored as string
       if (typeof data.blocks === 'string') {
         data.blocks = JSON.parse(data.blocks);
       }
-      
+
       return data as PageData;
     },
-    enabled: !!slug
+    enabled: !!slug,
   });
 
   // Save page mutation
@@ -75,11 +71,7 @@ export const EditablePageDisplay: React.FC = () => {
     mutationFn: async (blocks: any[]) => {
       if (!page || !user) throw new Error('Page or user not found');
 
-      const member = await supabase
-        .from('members')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
+      const member = await supabase.from('members').select('id').eq('user_id', user.id).single();
 
       if (!member.data) {
         throw new Error('Member profile not found');
@@ -88,7 +80,7 @@ export const EditablePageDisplay: React.FC = () => {
       // Create a version before updating
       await supabase.rpc('create_page_version', {
         p_page_id: page.id,
-        p_change_summary: 'Quick edit from page view'
+        p_change_summary: 'Quick edit from page view',
       });
 
       // Update the page
@@ -98,10 +90,10 @@ export const EditablePageDisplay: React.FC = () => {
           blocks: JSON.stringify(blocks),
           last_edited_by: member.data.id,
           last_edited_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', page.id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -110,10 +102,10 @@ export const EditablePageDisplay: React.FC = () => {
       setIsEditMode(false);
       setHasChanges(false);
     },
-    onError: (error) => {
+    onError: error => {
       toast.error('Failed to save page');
       console.error(error);
-    }
+    },
   });
 
   // Load blocks when page data is available
@@ -152,7 +144,7 @@ export const EditablePageDisplay: React.FC = () => {
     if (hasChanges && !confirm('Discard unsaved changes?')) {
       return;
     }
-    
+
     setIsEditMode(false);
     setHasChanges(false);
     if (page?.blocks) {
@@ -195,20 +187,12 @@ export const EditablePageDisplay: React.FC = () => {
       {/* Floating Edit Bar */}
       {canEdit && page.is_editable && showEditBar && !isEditMode && (
         <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-2 flex items-center space-x-2 transition-opacity">
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => setIsEditMode(true)}
-          >
+          <Button size="sm" variant="primary" onClick={() => setIsEditMode(true)}>
             <Edit className="h-4 w-4 mr-1" />
             Edit Page
           </Button>
-          
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => navigate(`/admin/pages/${page.id}/edit`)}
-          >
+
+          <Button size="sm" variant="ghost" onClick={() => navigate(`/admin/pages/${page.id}/edit`)}>
             <Settings className="h-4 w-4 mr-1" />
             Advanced Edit
           </Button>
@@ -223,13 +207,9 @@ export const EditablePageDisplay: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <Edit className="h-5 w-5" />
                 <span className="font-medium">Editing Mode</span>
-                {hasChanges && (
-                  <span className="text-xs bg-blue-700 px-2 py-1 rounded">
-                    Unsaved changes
-                  </span>
-                )}
+                {hasChanges && <span className="text-xs bg-blue-700 px-2 py-1 rounded">Unsaved changes</span>}
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Button
                   size="sm"
@@ -240,23 +220,13 @@ export const EditablePageDisplay: React.FC = () => {
                   <History className="h-4 w-4 mr-1" />
                   History
                 </Button>
-                
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-white hover:bg-blue-700"
-                  onClick={handleCancel}
-                >
+
+                <Button size="sm" variant="ghost" className="text-white hover:bg-blue-700" onClick={handleCancel}>
                   <X className="h-4 w-4 mr-1" />
                   Cancel
                 </Button>
-                
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={handleSave}
-                  disabled={!hasChanges || savePage.isPending}
-                >
+
+                <Button size="sm" variant="secondary" onClick={handleSave} disabled={!hasChanges || savePage.isPending}>
                   <Save className="h-4 w-4 mr-1" />
                   {savePage.isPending ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -267,22 +237,13 @@ export const EditablePageDisplay: React.FC = () => {
       )}
 
       {/* Page Content */}
-      <div 
-        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
-        onDoubleClick={handleDoubleClick}
-      >
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12" onDoubleClick={handleDoubleClick}>
         {/* Page Title */}
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          {page.title}
-        </h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">{page.title}</h1>
 
         {/* Page Metadata for SEO */}
-        {page.meta_description && (
-          <meta name="description" content={page.meta_description} />
-        )}
-        {page.meta_title && (
-          <title>{page.meta_title}</title>
-        )}
+        {page.meta_description && <meta name="description" content={page.meta_description} />}
+        {page.meta_title && <title>{page.meta_title}</title>}
 
         {/* Content Editor/Display */}
         <div className={`prose prose-lg max-w-none ${isEditMode ? 'border-2 border-blue-200 rounded-lg p-4' : ''}`}>

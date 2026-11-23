@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { galleryApi } from '@/features/gallery/api/galleryApi';
 import { Gallery, Photo, PhotoMetadata } from '@/features/gallery/types';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { 
-  selectSelectedPhotos, 
+import {
+  selectSelectedPhotos,
   selectIsBatchMode,
   selectViewMode,
   selectPhotoSize,
@@ -15,7 +15,7 @@ import {
   setBatchOperationType,
   setViewMode,
   setPhotoSize,
-  openLightbox
+  openLightbox,
 } from '@/features/gallery/store/galleryUISlice';
 import {
   X,
@@ -39,7 +39,7 @@ import {
   SortAsc,
   SortDesc,
   Settings,
-  Maximize2
+  Maximize2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -52,13 +52,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BulkPhotoUploader from './BulkPhotoUploader';
 import PhotoMetadataModal from './PhotoMetadataModal';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -69,19 +63,15 @@ interface AdminPhotoManagerProps {
   onClose: () => void;
 }
 
-const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
-  gallery,
-  isOpen,
-  onClose
-}) => {
+const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({ gallery, isOpen, onClose }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  
+
   const selectedPhotos = useAppSelector(selectSelectedPhotos);
   const isBatchMode = useAppSelector(selectIsBatchMode);
   const viewMode = useAppSelector(selectViewMode);
   const photoSize = useAppSelector(selectPhotoSize);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'size'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -97,10 +87,14 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
   const dragCounter = useRef(0);
 
   // Fetch gallery photos
-  const { data: photos = [], isLoading, refetch } = useQuery({
+  const {
+    data: photos = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['gallery-photos', gallery.id],
     queryFn: () => galleryApi.getGalleryPhotos(gallery.id),
-    enabled: isOpen
+    enabled: isOpen,
   });
 
   // Delete photos mutation
@@ -109,7 +103,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery-photos', gallery.id] });
       dispatch(clearPhotoSelection());
-    }
+    },
   });
 
   // Set cover photo mutation
@@ -118,25 +112,25 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-galleries'] });
       queryClient.invalidateQueries({ queryKey: ['gallery-photos', gallery.id] });
-    }
+    },
   });
 
   // Reorder photos mutation
   const reorderPhotosMutation = useMutation({
-    mutationFn: (photoOrders: { id: string; order: number }[]) => 
-      galleryApi.reorderPhotos(gallery.id, photoOrders),
+    mutationFn: (photoOrders: { id: string; order: number }[]) => galleryApi.reorderPhotos(gallery.id, photoOrders),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery-photos', gallery.id] });
-    }
+    },
   });
 
   // Filter and sort photos
   const filteredPhotos = photos
-    .filter(photo => 
-      !searchTerm || 
-      photo.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      photo.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      photo.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(
+      photo =>
+        !searchTerm ||
+        photo.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        photo.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        photo.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => {
       let comparison = 0;
@@ -168,7 +162,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
     setDeleteConfirmation({
       open: true,
       photos: photosToDelete,
-      single: false
+      single: false,
     });
   };
 
@@ -176,7 +170,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
     setDeleteConfirmation({
       open: true,
       photos: [photo],
-      single: true
+      single: true,
     });
   };
 
@@ -212,30 +206,32 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
     e.preventDefault();
     dragCounter.current = 0;
     setDragOverIndex(null);
-    
+
     if (!draggedPhoto) return;
-    
+
     const currentIndex = filteredPhotos.findIndex(p => p.id === draggedPhoto.id);
     if (currentIndex === targetIndex) return;
-    
+
     const newPhotos = [...filteredPhotos];
     newPhotos.splice(currentIndex, 1);
     newPhotos.splice(targetIndex, 0, draggedPhoto);
-    
+
     const photoOrders = newPhotos.map((photo, index) => ({
       id: photo.id,
-      order: index
+      order: index,
     }));
-    
+
     reorderPhotosMutation.mutate(photoOrders);
     setDraggedPhoto(null);
   };
 
   const handleViewPhoto = (photo: Photo, index: number) => {
-    dispatch(openLightbox({
-      photos: filteredPhotos,
-      startIndex: index
-    }));
+    dispatch(
+      openLightbox({
+        photos: filteredPhotos,
+        startIndex: index,
+      })
+    );
   };
 
   const getPhotoUrl = (photo: Photo, size: string = 'medium') => {
@@ -268,9 +264,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Manage Photos: {gallery.title}
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Manage Photos: {gallery.title}</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {photos.length} photos • {selectedPhotos.length} selected
               </p>
@@ -289,11 +283,11 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                 <Input
                   placeholder="Search photos..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
@@ -305,11 +299,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                 </SelectContent>
               </Select>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              >
+              <Button variant="outline" size="sm" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
                 {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
               </Button>
             </div>
@@ -372,11 +362,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                   <span className="text-sm text-blue-700 dark:text-blue-300">
                     {selectedPhotos.length} photos selected
                   </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => dispatch(clearPhotoSelection())}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => dispatch(clearPhotoSelection())}>
                     Clear Selection
                   </Button>
                 </div>
@@ -409,11 +395,11 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
           ) : filteredPhotos.length === 0 ? (
             <div className="p-6 flex flex-col items-center justify-center h-64">
               <Image className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                No photos found
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No photos found</h3>
               <p className="text-gray-500 dark:text-gray-400 text-center max-w-sm">
-                {searchTerm ? 'No photos match your search.' : 'This gallery is empty. Upload some photos to get started.'}
+                {searchTerm
+                  ? 'No photos match your search.'
+                  : 'This gallery is empty. Upload some photos to get started.'}
               </p>
               {!searchTerm && (
                 <Button onClick={() => setShowUploader(true)} className="mt-4">
@@ -425,19 +411,18 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
           ) : (
             <div className="h-full overflow-y-auto">
               {viewMode === 'grid' ? (
-                <div className={`grid gap-4 p-6 ${
-                  photoSize === 'small' ? 'grid-cols-6 md:grid-cols-8 lg:grid-cols-10' :
-                  photoSize === 'large' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' :
-                  'grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
-                }`}>
+                <div
+                  className={`grid gap-4 p-6 ${
+                    photoSize === 'small'
+                      ? 'grid-cols-6 md:grid-cols-8 lg:grid-cols-10'
+                      : photoSize === 'large'
+                        ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                        : 'grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
+                  }`}
+                >
                   {isBatchMode && (
                     <div className="col-span-full">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSelectAll}
-                        className="mb-4"
-                      >
+                      <Button variant="outline" size="sm" onClick={handleSelectAll} className="mb-4">
                         {selectedPhotos.length === filteredPhotos.length ? (
                           <>
                             <Square className="h-4 w-4 mr-2" />
@@ -452,7 +437,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                       </Button>
                     </div>
                   )}
-                  
+
                   {filteredPhotos.map((photo, index) => (
                     <div
                       key={photo.id}
@@ -460,11 +445,11 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                         dragOverIndex === index ? 'ring-2 ring-blue-500' : ''
                       } ${selectedPhotos.includes(photo.id) ? 'ring-2 ring-blue-500' : ''}`}
                       draggable={!isBatchMode}
-                      onDragStart={(e) => handleDragStart(e, photo)}
-                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragStart={e => handleDragStart(e, photo)}
+                      onDragOver={e => handleDragOver(e, index)}
                       onDragLeave={handleDragLeave}
                       onDragEnter={handleDragEnter}
-                      onDrop={(e) => handleDrop(e, index)}
+                      onDrop={e => handleDrop(e, index)}
                     >
                       {/* Selection Checkbox */}
                       {isBatchMode && (
@@ -488,10 +473,9 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                       )}
 
                       {/* Photo */}
-                      <div 
+                      <div
                         className={`aspect-square bg-gray-100 dark:bg-gray-600 overflow-hidden ${
-                          photoSize === 'small' ? 'h-20' :
-                          photoSize === 'large' ? 'h-48' : 'h-32'
+                          photoSize === 'small' ? 'h-20' : photoSize === 'large' ? 'h-48' : 'h-32'
                         }`}
                         onClick={() => !isBatchMode && handleViewPhoto(photo, index)}
                       >
@@ -543,10 +527,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                                 Download
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => handleSingleDelete(photo)}
-                              >
+                              <DropdownMenuItem className="text-red-600" onClick={() => handleSingleDelete(photo)}>
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete
                               </DropdownMenuItem>
@@ -562,11 +543,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
                   {isBatchMode && (
                     <div className="p-4 bg-gray-50 dark:bg-gray-700">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSelectAll}
-                      >
+                      <Button variant="outline" size="sm" onClick={handleSelectAll}>
                         {selectedPhotos.length === filteredPhotos.length ? (
                           <>
                             <Square className="h-4 w-4 mr-2" />
@@ -581,7 +558,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                       </Button>
                     </div>
                   )}
-                  
+
                   {filteredPhotos.map((photo, index) => (
                     <div
                       key={photo.id}
@@ -589,11 +566,11 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                         selectedPhotos.includes(photo.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                       }`}
                       draggable={!isBatchMode}
-                      onDragStart={(e) => handleDragStart(e, photo)}
-                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragStart={e => handleDragStart(e, photo)}
+                      onDragOver={e => handleDragOver(e, index)}
                       onDragLeave={handleDragLeave}
                       onDragEnter={handleDragEnter}
-                      onDrop={(e) => handleDrop(e, index)}
+                      onDrop={e => handleDrop(e, index)}
                     >
                       {/* Selection */}
                       {isBatchMode && (
@@ -604,7 +581,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                       )}
 
                       {/* Thumbnail */}
-                      <div 
+                      <div
                         className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
                         onClick={() => !isBatchMode && handleViewPhoto(photo, index)}
                       >
@@ -630,13 +607,13 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                           )}
                         </div>
                         {photo.description && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                            {photo.description}
-                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{photo.description}</p>
                         )}
                         <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
                           <span>{formatFileSize(photo.file_size)}</span>
-                          <span>{photo.width} × {photo.height}</span>
+                          <span>
+                            {photo.width} × {photo.height}
+                          </span>
                           <span>{new Date(photo.created_at).toLocaleDateString()}</span>
                           {photo.tags && photo.tags.length > 0 && (
                             <div className="flex gap-1">
@@ -645,9 +622,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                                   {tag}
                                 </Badge>
                               ))}
-                              {photo.tags.length > 3 && (
-                                <span className="text-xs">+{photo.tags.length - 3}</span>
-                              )}
+                              {photo.tags.length > 3 && <span className="text-xs">+{photo.tags.length - 3}</span>}
                             </div>
                           )}
                         </div>
@@ -655,18 +630,10 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
 
                       {/* Actions */}
                       <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewPhoto(photo, index)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleViewPhoto(photo, index)}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingPhoto(photo)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => setEditingPhoto(photo)}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
@@ -690,10 +657,7 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
                               Download
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => handleSingleDelete(photo)}
-                            >
+                            <DropdownMenuItem className="text-red-600" onClick={() => handleSingleDelete(photo)}>
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
@@ -739,9 +703,10 @@ const AdminPhotoManager: React.FC<AdminPhotoManagerProps> = ({
       <ConfirmationDialog
         isOpen={deleteConfirmation.open}
         title={deleteConfirmation.single ? 'Delete Photo' : 'Delete Photos'}
-        message={deleteConfirmation.single 
-          ? `Are you sure you want to delete "${deleteConfirmation.photos[0]?.title || deleteConfirmation.photos[0]?.file_name}"? This action cannot be undone.`
-          : `Are you sure you want to delete ${deleteConfirmation.photos.length} photos? This action cannot be undone.`
+        message={
+          deleteConfirmation.single
+            ? `Are you sure you want to delete "${deleteConfirmation.photos[0]?.title || deleteConfirmation.photos[0]?.file_name}"? This action cannot be undone.`
+            : `Are you sure you want to delete ${deleteConfirmation.photos.length} photos? This action cannot be undone.`
         }
         confirmLabel="Delete"
         confirmVariant="destructive"

@@ -6,12 +6,7 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
 import { galleryApi } from '../api/galleryApi';
-import galleryReducer, { 
-  fetchGalleries, 
-  createGallery, 
-  uploadPhoto, 
-  fetchGalleryById 
-} from '../store/gallerySlice';
+import galleryReducer, { fetchGalleries, createGallery, uploadPhoto, fetchGalleryById } from '../store/gallerySlice';
 import { validateImageFile, generateThumbnail } from '../utils';
 import { Gallery, Photo, PhotoUploadInput } from '../types';
 
@@ -19,27 +14,33 @@ import { Gallery, Photo, PhotoUploadInput } from '../types';
 const mockSupabaseResponses = {
   galleries: [] as Gallery[],
   photos: [] as Photo[],
-  uploadedFiles: [] as string[]
+  uploadedFiles: [] as string[],
 };
 
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn((table: string) => ({
       select: jest.fn(() => ({
-        order: jest.fn(() => Promise.resolve({
-          data: table === 'user_galleries' ? mockSupabaseResponses.galleries : mockSupabaseResponses.photos,
-          error: null
-        })),
+        order: jest.fn(() =>
+          Promise.resolve({
+            data: table === 'user_galleries' ? mockSupabaseResponses.galleries : mockSupabaseResponses.photos,
+            error: null,
+          })
+        ),
         eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({
-            data: mockSupabaseResponses.galleries[0] || null,
-            error: null
-          })),
-          order: jest.fn(() => Promise.resolve({
-            data: mockSupabaseResponses.photos,
-            error: null
-          }))
-        }))
+          single: jest.fn(() =>
+            Promise.resolve({
+              data: mockSupabaseResponses.galleries[0] || null,
+              error: null,
+            })
+          ),
+          order: jest.fn(() =>
+            Promise.resolve({
+              data: mockSupabaseResponses.photos,
+              error: null,
+            })
+          ),
+        })),
       })),
       insert: jest.fn((data: any[]) => ({
         select: jest.fn(() => ({
@@ -54,20 +55,20 @@ jest.mock('@/lib/supabase', () => ({
               return Promise.resolve({ data: newPhoto, error: null });
             }
             return Promise.resolve({ data: null, error: null });
-          })
-        }))
+          }),
+        })),
       })),
       update: jest.fn(() => ({
         eq: jest.fn(() => ({
           select: jest.fn(() => ({
-            single: jest.fn(() => Promise.resolve({ data: mockSupabaseResponses.galleries[0], error: null }))
-          }))
-        }))
+            single: jest.fn(() => Promise.resolve({ data: mockSupabaseResponses.galleries[0], error: null })),
+          })),
+        })),
       })),
       delete: jest.fn(() => ({
         eq: jest.fn(() => Promise.resolve({ error: null })),
-        in: jest.fn(() => Promise.resolve({ error: null }))
-      }))
+        in: jest.fn(() => Promise.resolve({ error: null })),
+      })),
     })),
     storage: {
       from: jest.fn(() => ({
@@ -76,7 +77,7 @@ jest.mock('@/lib/supabase', () => ({
           return Promise.resolve({ data: { path }, error: null });
         }),
         getPublicUrl: jest.fn((path: string) => ({
-          data: { publicUrl: `https://storage.example.com/${path}` }
+          data: { publicUrl: `https://storage.example.com/${path}` },
         })),
         remove: jest.fn((paths: string[]) => {
           paths.forEach(path => {
@@ -84,33 +85,35 @@ jest.mock('@/lib/supabase', () => ({
             if (index > -1) mockSupabaseResponses.uploadedFiles.splice(index, 1);
           });
           return Promise.resolve({ error: null });
-        })
-      }))
+        }),
+      })),
     },
     auth: {
-      getUser: jest.fn(() => Promise.resolve({
-        data: { user: { id: 'test-user-id', email: 'test@example.com' } }
-      }))
-    }
-  }
+      getUser: jest.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'test-user-id', email: 'test@example.com' } },
+        })
+      ),
+    },
+  },
 }));
 
 // Mock file operations
 jest.mock('../utils', () => ({
   validateImageFile: jest.fn((file: File) => ({
     valid: file.type.startsWith('image/'),
-    error: file.type.startsWith('image/') ? undefined : 'Invalid file type'
+    error: file.type.startsWith('image/') ? undefined : 'Invalid file type',
   })),
   generateThumbnail: jest.fn(() => Promise.resolve('blob:thumbnail-url')),
-  formatFileSize: jest.fn((size: number) => `${Math.round(size / 1024)} KB`)
+  formatFileSize: jest.fn((size: number) => `${Math.round(size / 1024)} KB`),
 }));
 
 // Create test store
 const createTestStore = () => {
   return configureStore({
     reducer: {
-      gallery: galleryReducer
-    }
+      gallery: galleryReducer,
+    },
   });
 };
 
@@ -134,12 +137,12 @@ describe('End-to-End Gallery Workflow', () => {
         description: 'Photos from my amazing mountain adventure',
         privacy_level: 'public' as const,
         visibility: 'visible' as const,
-        tags: ['travel', 'mountains', 'adventure']
+        tags: ['travel', 'mountains', 'adventure'],
       };
 
       const createAction = await store.dispatch(createGallery(newGallery));
       expect(createAction.type).toBe(createGallery.fulfilled.type);
-      
+
       const createdGallery = createAction.payload as Gallery;
       expect(createdGallery.title).toBe(newGallery.title);
       expect(mockSupabaseResponses.galleries).toHaveLength(1);
@@ -149,7 +152,7 @@ describe('End-to-End Gallery Workflow', () => {
         new File(['photo1-content'], 'mountain-peak.jpg', { type: 'image/jpeg' }),
         new File(['photo2-content'], 'hiking-trail.jpg', { type: 'image/jpeg' }),
         new File(['photo3-content'], 'sunset-view.jpg', { type: 'image/jpeg' }),
-        new File(['photo4-content'], 'campsite.jpg', { type: 'image/jpeg' })
+        new File(['photo4-content'], 'campsite.jpg', { type: 'image/jpeg' }),
       ];
 
       const uploadPromises = photoFiles.map((file, index) => {
@@ -158,13 +161,13 @@ describe('End-to-End Gallery Workflow', () => {
           title: `Photo ${index + 1}`,
           description: `Description for photo ${index + 1}`,
           tags: ['mountain', 'nature'],
-          galleryId: createdGallery.id
+          galleryId: createdGallery.id,
         };
         return store.dispatch(uploadPhoto(uploadInput));
       });
 
       const uploadResults = await Promise.all(uploadPromises);
-      
+
       // Verify all uploads succeeded
       uploadResults.forEach(result => {
         expect(result.type).toBe(uploadPhoto.fulfilled.type);
@@ -191,7 +194,7 @@ describe('End-to-End Gallery Workflow', () => {
       const gallery = {
         title: 'Event Photography',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const createResult = await store.dispatch(createGallery(gallery));
@@ -199,36 +202,38 @@ describe('End-to-End Gallery Workflow', () => {
 
       // Upload photos with different metadata
       const photoData = [
-        { 
+        {
           file: new File(['content1'], 'ceremony.jpg', { type: 'image/jpeg' }),
           title: 'Wedding Ceremony',
           description: 'The beautiful ceremony moment',
-          tags: ['wedding', 'ceremony', 'formal']
+          tags: ['wedding', 'ceremony', 'formal'],
         },
         {
           file: new File(['content2'], 'reception.jpg', { type: 'image/jpeg' }),
           title: 'Reception Party',
           description: 'Dancing and celebration',
-          tags: ['wedding', 'reception', 'party']
+          tags: ['wedding', 'reception', 'party'],
         },
         {
           file: new File(['content3'], 'portraits.jpg', { type: 'image/jpeg' }),
           title: 'Couple Portraits',
           description: 'Romantic couple photos',
-          tags: ['wedding', 'portraits', 'couple']
-        }
+          tags: ['wedding', 'portraits', 'couple'],
+        },
       ];
 
       for (const photo of photoData) {
-        await store.dispatch(uploadPhoto({
-          ...photo,
-          galleryId: createdGallery.id
-        }));
+        await store.dispatch(
+          uploadPhoto({
+            ...photo,
+            galleryId: createdGallery.id,
+          })
+        );
       }
 
       // Verify photos were uploaded with correct metadata
       expect(mockSupabaseResponses.photos).toHaveLength(3);
-      
+
       const uploadedPhotos = mockSupabaseResponses.photos;
       expect(uploadedPhotos[0].title).toBe('Wedding Ceremony');
       expect(uploadedPhotos[1].title).toBe('Reception Party');
@@ -238,7 +243,7 @@ describe('End-to-End Gallery Workflow', () => {
       const photoOrders = [
         { id: uploadedPhotos[2].id, order: 1 }, // Portraits first
         { id: uploadedPhotos[0].id, order: 2 }, // Ceremony second
-        { id: uploadedPhotos[1].id, order: 3 }  // Reception last
+        { id: uploadedPhotos[1].id, order: 3 }, // Reception last
       ];
 
       const reorderResult = await galleryApi.reorderPhotos(createdGallery.id, photoOrders);
@@ -250,7 +255,7 @@ describe('End-to-End Gallery Workflow', () => {
       const publicGallery = {
         title: 'Public Photo Collection',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const publicResult = await store.dispatch(createGallery(publicGallery));
@@ -260,7 +265,7 @@ describe('End-to-End Gallery Workflow', () => {
       const privateGallery = {
         title: 'Private Family Photos',
         privacy_level: 'private' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const privateResult = await store.dispatch(createGallery(privateGallery));
@@ -270,7 +275,7 @@ describe('End-to-End Gallery Workflow', () => {
       const membersGallery = {
         title: 'Community Members Gallery',
         privacy_level: 'members_only' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const membersResult = await store.dispatch(createGallery(membersGallery));
@@ -289,7 +294,7 @@ describe('End-to-End Gallery Workflow', () => {
       const gallery = {
         title: 'Test Gallery',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const createResult = await store.dispatch(createGallery(gallery));
@@ -302,41 +307,43 @@ describe('End-to-End Gallery Workflow', () => {
           uploadCount++;
           if (uploadCount === 2) {
             // Fail the second upload
-            return Promise.resolve({ 
-              data: null, 
-              error: { message: 'Storage quota exceeded' }
+            return Promise.resolve({
+              data: null,
+              error: { message: 'Storage quota exceeded' },
             });
           }
-          return Promise.resolve({ 
-            data: { path: `gallery/photo-${uploadCount}.jpg` }, 
-            error: null 
+          return Promise.resolve({
+            data: { path: `gallery/photo-${uploadCount}.jpg` },
+            error: null,
           });
         }),
         getPublicUrl: jest.fn((path: string) => ({
-          data: { publicUrl: `https://storage.example.com/${path}` }
-        }))
+          data: { publicUrl: `https://storage.example.com/${path}` },
+        })),
       });
 
       const uploadFiles = [
         new File(['content1'], 'photo1.jpg', { type: 'image/jpeg' }),
         new File(['content2'], 'photo2.jpg', { type: 'image/jpeg' }),
-        new File(['content3'], 'photo3.jpg', { type: 'image/jpeg' })
+        new File(['content3'], 'photo3.jpg', { type: 'image/jpeg' }),
       ];
 
-      const uploadPromises = uploadFiles.map((file, index) => 
-        store.dispatch(uploadPhoto({
-          file,
-          title: `Photo ${index + 1}`,
-          galleryId: createdGallery.id
-        }))
+      const uploadPromises = uploadFiles.map((file, index) =>
+        store.dispatch(
+          uploadPhoto({
+            file,
+            title: `Photo ${index + 1}`,
+            galleryId: createdGallery.id,
+          })
+        )
       );
 
       const results = await Promise.allSettled(uploadPromises);
-      
+
       // Should have one failure and two successes
       const successes = results.filter(r => r.status === 'fulfilled');
       const failures = results.filter(r => r.status === 'rejected');
-      
+
       expect(successes).toHaveLength(2);
       expect(failures).toHaveLength(1);
     });
@@ -345,7 +352,7 @@ describe('End-to-End Gallery Workflow', () => {
       const gallery = {
         title: 'Large Photo Collection',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const createResult = await store.dispatch(createGallery(gallery));
@@ -357,16 +364,19 @@ describe('End-to-End Gallery Workflow', () => {
       const batches = [];
 
       for (let i = 0; i < totalPhotos; i += batchSize) {
-        const batchFiles = Array.from({ length: Math.min(batchSize, totalPhotos - i) }, (_, j) => 
-          new File([`content-${i + j}`], `photo-${i + j + 1}.jpg`, { type: 'image/jpeg' })
+        const batchFiles = Array.from(
+          { length: Math.min(batchSize, totalPhotos - i) },
+          (_, j) => new File([`content-${i + j}`], `photo-${i + j + 1}.jpg`, { type: 'image/jpeg' })
         );
 
-        const batchPromises = batchFiles.map(file => 
-          store.dispatch(uploadPhoto({
-            file,
-            title: file.name,
-            galleryId: createdGallery.id
-          }))
+        const batchPromises = batchFiles.map(file =>
+          store.dispatch(
+            uploadPhoto({
+              file,
+              title: file.name,
+              galleryId: createdGallery.id,
+            })
+          )
         );
 
         batches.push(Promise.all(batchPromises));
@@ -385,7 +395,7 @@ describe('End-to-End Gallery Workflow', () => {
       const gallery = {
         title: 'Secure Gallery',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const createResult = await store.dispatch(createGallery(gallery));
@@ -396,19 +406,21 @@ describe('End-to-End Gallery Workflow', () => {
         new File(['image-content'], 'valid.jpg', { type: 'image/jpeg' }),
         new File(['script-content'], 'malicious.js', { type: 'application/javascript' }),
         new File(['executable'], 'virus.exe', { type: 'application/x-msdownload' }),
-        new File(['image-content'], 'valid.png', { type: 'image/png' })
+        new File(['image-content'], 'valid.png', { type: 'image/png' }),
       ];
 
-      const uploadPromises = testFiles.map(file => 
-        store.dispatch(uploadPhoto({
-          file,
-          title: file.name,
-          galleryId: createdGallery.id
-        }))
+      const uploadPromises = testFiles.map(file =>
+        store.dispatch(
+          uploadPhoto({
+            file,
+            title: file.name,
+            galleryId: createdGallery.id,
+          })
+        )
       );
 
       const results = await Promise.allSettled(uploadPromises);
-      
+
       // Only valid image files should succeed
       const successfulUploads = results.filter(r => r.status === 'fulfilled');
       expect(successfulUploads).toHaveLength(2); // Only .jpg and .png files
@@ -418,16 +430,18 @@ describe('End-to-End Gallery Workflow', () => {
   describe('Performance and Scalability', () => {
     test('handles concurrent gallery operations', async () => {
       // Create multiple galleries simultaneously
-      const galleryPromises = Array.from({ length: 5 }, (_, i) => 
-        store.dispatch(createGallery({
-          title: `Concurrent Gallery ${i + 1}`,
-          privacy_level: 'public' as const,
-          visibility: 'visible' as const
-        }))
+      const galleryPromises = Array.from({ length: 5 }, (_, i) =>
+        store.dispatch(
+          createGallery({
+            title: `Concurrent Gallery ${i + 1}`,
+            privacy_level: 'public' as const,
+            visibility: 'visible' as const,
+          })
+        )
       );
 
       const galleryResults = await Promise.all(galleryPromises);
-      
+
       // All galleries should be created successfully
       expect(galleryResults.every(r => r.type === createGallery.fulfilled.type)).toBe(true);
       expect(mockSupabaseResponses.galleries).toHaveLength(5);
@@ -435,11 +449,13 @@ describe('End-to-End Gallery Workflow', () => {
       // Upload photos to each gallery concurrently
       const uploadPromises = galleryResults.map((result, i) => {
         const gallery = result.payload as Gallery;
-        return store.dispatch(uploadPhoto({
-          file: new File([`content-${i}`], `photo-${i}.jpg`, { type: 'image/jpeg' }),
-          title: `Photo for Gallery ${i + 1}`,
-          galleryId: gallery.id
-        }));
+        return store.dispatch(
+          uploadPhoto({
+            file: new File([`content-${i}`], `photo-${i}.jpg`, { type: 'image/jpeg' }),
+            title: `Photo for Gallery ${i + 1}`,
+            galleryId: gallery.id,
+          })
+        );
       });
 
       const uploadResults = await Promise.all(uploadPromises);
@@ -450,7 +466,7 @@ describe('End-to-End Gallery Workflow', () => {
       const gallery = {
         title: 'Memory Test Gallery',
         privacy_level: 'public' as const,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const createResult = await store.dispatch(createGallery(gallery));
@@ -458,20 +474,23 @@ describe('End-to-End Gallery Workflow', () => {
 
       // Simulate processing many files
       const largeFileCount = 50;
-      const files = Array.from({ length: largeFileCount }, (_, i) => 
-        new File([`large-content-${i}`.repeat(100)], `large-${i}.jpg`, { type: 'image/jpeg' })
+      const files = Array.from(
+        { length: largeFileCount },
+        (_, i) => new File([`large-content-${i}`.repeat(100)], `large-${i}.jpg`, { type: 'image/jpeg' })
       );
 
       // Process in smaller chunks to simulate real-world usage
       const chunkSize = 10;
       for (let i = 0; i < files.length; i += chunkSize) {
         const chunk = files.slice(i, i + chunkSize);
-        const chunkPromises = chunk.map(file => 
-          store.dispatch(uploadPhoto({
-            file,
-            title: file.name,
-            galleryId: createdGallery.id
-          }))
+        const chunkPromises = chunk.map(file =>
+          store.dispatch(
+            uploadPhoto({
+              file,
+              title: file.name,
+              galleryId: createdGallery.id,
+            })
+          )
         );
 
         await Promise.all(chunkPromises);
@@ -489,22 +508,26 @@ describe('End-to-End Gallery Workflow', () => {
       expect(state.gallery.status).toBe('idle');
 
       // Create gallery
-      await store.dispatch(createGallery({
-        title: 'State Test Gallery',
-        privacy_level: 'public' as const,
-        visibility: 'visible' as const
-      }));
+      await store.dispatch(
+        createGallery({
+          title: 'State Test Gallery',
+          privacy_level: 'public' as const,
+          visibility: 'visible' as const,
+        })
+      );
 
       state = store.getState();
       expect(state.gallery.galleries).toHaveLength(1);
       expect(state.gallery.currentGallery?.title).toBe('State Test Gallery');
 
       // Upload photo
-      await store.dispatch(uploadPhoto({
-        file: new File(['content'], 'test.jpg', { type: 'image/jpeg' }),
-        title: 'Test Photo',
-        galleryId: state.gallery.currentGallery!.id
-      }));
+      await store.dispatch(
+        uploadPhoto({
+          file: new File(['content'], 'test.jpg', { type: 'image/jpeg' }),
+          title: 'Test Photo',
+          galleryId: state.gallery.currentGallery!.id,
+        })
+      );
 
       state = store.getState();
       expect(state.gallery.currentGallery?.photos).toHaveLength(1);

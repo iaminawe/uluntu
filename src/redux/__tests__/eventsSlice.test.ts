@@ -2,14 +2,14 @@
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
-    auth: { getUser: jest.fn() }
+    auth: { getUser: jest.fn() },
   },
-  sessionCache: new WeakMap()
+  sessionCache: new WeakMap(),
 }));
 
 jest.mock('@/config/env', () => ({
   getIsSupabaseEnabled: jest.fn().mockReturnValue(false),
-  IS_SUPABASE_ENABLED: false
+  IS_SUPABASE_ENABLED: false,
 }));
 
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,7 +22,7 @@ import eventsReducer, {
   deleteEvent,
   setFilters,
   clearFilters,
-  clearEvents
+  clearEvents,
 } from '@/features/events/store/eventsSlice';
 import { Event } from '../../types';
 
@@ -42,7 +42,7 @@ const originalEnv = process.env;
 beforeEach(() => {
   jest.resetModules();
   process.env = { ...originalEnv, VITE_USE_SUPABASE: 'true' }; // Set to true to use the API path
-  
+
   // Reset all mocks before each test
   jest.clearAllMocks();
 });
@@ -77,13 +77,13 @@ const mockEvent: Event = {
   organizer: {
     id: '101',
     name: 'Test Organizer',
-    image: 'organizer-image.jpg'
+    image: 'organizer-image.jpg',
   },
   status: 'published',
   featured: false,
   url: 'https://test-event.com',
   max_attendees: 100,
-  current_attendees: 50
+  current_attendees: 50,
 };
 
 const mockEvents = [
@@ -92,8 +92,8 @@ const mockEvents = [
     ...mockEvent,
     id: '2',
     title: 'Second Event',
-    date: '2023-12-15T19:00:00Z'
-  }
+    date: '2023-12-15T19:00:00Z',
+  },
 ];
 
 describe('Events Slice', () => {
@@ -106,7 +106,7 @@ describe('Events Slice', () => {
         filteredEvents: [],
         filters: {},
         status: 'idle',
-        error: null
+        error: null,
       });
     });
 
@@ -128,12 +128,12 @@ describe('Events Slice', () => {
     test('should handle clearEvents', () => {
       const store = createTestStore();
       // Setup initial state with events
-      store.dispatch({ 
-        type: fetchEvents.fulfilled.type, 
-        payload: mockEvents 
+      store.dispatch({
+        type: fetchEvents.fulfilled.type,
+        payload: mockEvents,
       });
       expect(store.getState().events.events).toHaveLength(2);
-      
+
       // Clear events
       store.dispatch(clearEvents());
       expect(store.getState().events.events).toEqual([]);
@@ -145,12 +145,12 @@ describe('Events Slice', () => {
   describe('Async thunks', () => {
     test('fetchEvents should update state correctly on success', async () => {
       const store = createTestStore();
-      
+
       // Mock implementation for fetchEvents
       eventsApiMock.getAll.mockResolvedValueOnce(mockEvents);
-      
+
       await store.dispatch(fetchEvents());
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.events).toEqual(mockEvents);
       expect(store.getState().events.error).toBeNull();
@@ -158,12 +158,12 @@ describe('Events Slice', () => {
 
     test('fetchEventById should update state correctly on success', async () => {
       const store = createTestStore();
-      
+
       // Mock implementation for fetchEventById
       eventsApiMock.getById.mockResolvedValueOnce(mockEvent);
-      
+
       await store.dispatch(fetchEventById('1'));
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.currentEvent).toEqual(mockEvent);
       expect(store.getState().events.error).toBeNull();
@@ -172,12 +172,12 @@ describe('Events Slice', () => {
     test('fetchFilteredEvents should update state correctly on success', async () => {
       const store = createTestStore();
       const filters = { search: 'Test', types: ['in-person' as const] };
-      
+
       // Mock implementation for fetchFilteredEvents
       eventsApiMock.getAll.mockResolvedValueOnce([mockEvent]);
-      
+
       await store.dispatch(fetchFilteredEvents(filters));
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.filteredEvents).toEqual([mockEvent]);
       expect(store.getState().events.error).toBeNull();
@@ -191,24 +191,24 @@ describe('Events Slice', () => {
         date: '2023-12-20T18:00:00Z',
         location: 'New Location',
         type: 'online',
-        organizer_id: '101'
+        organizer_id: '101',
       };
-      
+
       const createdEvent = {
         id: '3',
         ...newEventData,
         organizer: {
           id: '101',
           name: 'Test Organizer',
-          image: 'organizer-image.jpg'
-        }
+          image: 'organizer-image.jpg',
+        },
       };
-      
+
       // Mock implementation for createEvent
       eventsApiMock.create.mockResolvedValueOnce(createdEvent);
-      
+
       await store.dispatch(createEvent(newEventData as any));
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.events).toHaveLength(1);
       expect(store.getState().events.events[0].title).toEqual('New Event');
@@ -216,28 +216,28 @@ describe('Events Slice', () => {
 
     test('updateEvent should update an event in the state on success', async () => {
       const store = createTestStore();
-      
+
       // Setup initial state with an event
-      store.dispatch({ 
-        type: fetchEvents.fulfilled.type, 
-        payload: [mockEvent] 
+      store.dispatch({
+        type: fetchEvents.fulfilled.type,
+        payload: [mockEvent],
       });
-      
+
       const updateData = {
         title: 'Updated Event',
-        description: 'Updated Description'
+        description: 'Updated Description',
       };
-      
+
       const updatedEvent = {
         ...mockEvent,
-        ...updateData
+        ...updateData,
       };
-      
+
       // Mock implementation for updateEvent
       eventsApiMock.update.mockResolvedValueOnce(updatedEvent);
-      
+
       await store.dispatch(updateEvent({ id: '1', data: updateData }));
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.events[0].title).toEqual('Updated Event');
       expect(store.getState().events.events[0].description).toEqual('Updated Description');
@@ -245,19 +245,19 @@ describe('Events Slice', () => {
 
     test('deleteEvent should remove an event from the state on success', async () => {
       const store = createTestStore();
-      
+
       // Setup initial state with events
-      store.dispatch({ 
-        type: fetchEvents.fulfilled.type, 
-        payload: mockEvents 
+      store.dispatch({
+        type: fetchEvents.fulfilled.type,
+        payload: mockEvents,
       });
       expect(store.getState().events.events).toHaveLength(2);
-      
+
       // Mock implementation for deleteEvent
       eventsApiMock.delete.mockResolvedValueOnce(true);
-      
+
       await store.dispatch(deleteEvent('1'));
-      
+
       expect(store.getState().events.status).toEqual('succeeded');
       expect(store.getState().events.events).toHaveLength(1);
       expect(store.getState().events.events[0].id).toEqual('2');

@@ -9,13 +9,13 @@ const OpportunityTypeOptions = [
   { value: 'job', label: 'Job Posting' },
   { value: 'volunteer', label: 'Volunteer Opportunity' },
   { value: 'funding', label: 'Funding Opportunity' },
-  { value: 'community', label: 'Community Project' }
+  { value: 'community', label: 'Community Project' },
 ];
 
 const StatusOptions = [
   { value: 'draft', label: 'Save as Draft' },
   { value: 'published', label: 'Publish Now' },
-  { value: 'archived', label: 'Archive' }
+  { value: 'archived', label: 'Archive' },
 ];
 
 const BasicInfoSection = ({
@@ -24,7 +24,7 @@ const BasicInfoSection = ({
   onChange,
   onDescriptionChange,
   onImageChange,
-  isSubmitting
+  isSubmitting,
 }: FormSectionProps) => {
   const [enableImages, setEnableImages] = useState(true);
   return (
@@ -89,7 +89,7 @@ const BasicInfoSection = ({
                 type="checkbox"
                 id="enable-images"
                 checked={enableImages}
-                onChange={(e) => setEnableImages(e.target.checked)}
+                onChange={e => setEnableImages(e.target.checked)}
                 disabled={isSubmitting}
                 className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-slate-300 rounded"
               />
@@ -110,7 +110,8 @@ const BasicInfoSection = ({
           />
           {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Use the AI assistant to generate compelling opportunity descriptions, improve writing quality, or get content suggestions specific to job postings and volunteer opportunities.
+            Use the AI assistant to generate compelling opportunity descriptions, improve writing quality, or get
+            content suggestions specific to job postings and volunteer opportunities.
           </p>
         </div>
 
@@ -303,7 +304,7 @@ const BasicInfoSection = ({
             {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
           </div>
         </div>
-        
+
         <div>
           <div className="flex items-center">
             <input
@@ -311,12 +312,12 @@ const BasicInfoSection = ({
               id="featured"
               name="featured"
               checked={formData.featured}
-              onChange={(e) => {
+              onChange={e => {
                 const syntheticEvent = {
                   target: {
                     name: e.target.name,
-                    value: e.target.checked
-                  }
+                    value: e.target.checked,
+                  },
                 } as unknown as React.ChangeEvent<HTMLInputElement>;
                 onChange(syntheticEvent);
               }}

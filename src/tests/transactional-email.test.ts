@@ -1,13 +1,13 @@
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { 
-  sendTransactionalEmail, 
-  sendWelcomeEmail, 
+import {
+  sendTransactionalEmail,
+  sendWelcomeEmail,
   sendPasswordResetEmail,
   sendEmailVerification,
   sendContactAutoReply,
   sendNewsletterCampaign,
   getTransactionalTemplates,
-  testTransactionalTemplate
+  testTransactionalTemplate,
 } from '@/api/newsletter/transactional';
 
 // Mock Supabase
@@ -34,7 +34,7 @@ import { supabase } from '@/utils/checkSupabase';
 describe('Transactional Email API', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock successful response by default
     (supabase.functions.invoke as jest.Mock).mockResolvedValue({
       data: {

@@ -35,108 +35,121 @@ export const TouchGestures: React.FC<TouchGestureProps> = ({
   threshold = 50,
   longPressThreshold = 500,
   className = '',
-  children
+  children,
 }) => {
   const [touchInfo, setTouchInfo] = useState<TouchInfo | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout>();
   const elementRef = useRef<HTMLDivElement>(null);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    if (!touch) return;
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
 
-    const newTouchInfo: TouchInfo = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      startTime: Date.now(),
-      currentX: touch.clientX,
-      currentY: touch.clientY
-    };
+      const newTouchInfo: TouchInfo = {
+        startX: touch.clientX,
+        startY: touch.clientY,
+        startTime: Date.now(),
+        currentX: touch.clientX,
+        currentY: touch.clientY,
+      };
 
-    setTouchInfo(newTouchInfo);
+      setTouchInfo(newTouchInfo);
 
-    // Start long press timer
-    if (onLongPress) {
-      longPressTimerRef.current = setTimeout(() => {
-        // Add haptic feedback
-        if (navigator.vibrate) {
-          navigator.vibrate([50, 50, 50]);
+      // Start long press timer
+      if (onLongPress) {
+        longPressTimerRef.current = setTimeout(() => {
+          // Add haptic feedback
+          if (navigator.vibrate) {
+            navigator.vibrate([50, 50, 50]);
+          }
+          onLongPress();
+        }, longPressThreshold);
+      }
+
+      // Prevent default to avoid scrolling interference
+      e.preventDefault();
+    },
+    [onLongPress, longPressThreshold]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!touchInfo) return;
+
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      setTouchInfo(prev =>
+        prev
+          ? {
+              ...prev,
+              currentX: touch.clientX,
+              currentY: touch.clientY,
+            }
+          : null
+      );
+
+      // Cancel long press if significant movement
+      const deltaX = Math.abs(touch.clientX - touchInfo.startX);
+      const deltaY = Math.abs(touch.clientY - touchInfo.startY);
+
+      if (deltaX > 10 || deltaY > 10) {
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = undefined;
         }
-        onLongPress();
-      }, longPressThreshold);
-    }
+      }
 
-    // Prevent default to avoid scrolling interference
-    e.preventDefault();
-  }, [onLongPress, longPressThreshold]);
+      e.preventDefault();
+    },
+    [touchInfo]
+  );
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!touchInfo) return;
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (!touchInfo) return;
 
-    const touch = e.touches[0];
-    if (!touch) return;
-
-    setTouchInfo(prev => prev ? {
-      ...prev,
-      currentX: touch.clientX,
-      currentY: touch.clientY
-    } : null);
-
-    // Cancel long press if significant movement
-    const deltaX = Math.abs(touch.clientX - touchInfo.startX);
-    const deltaY = Math.abs(touch.clientY - touchInfo.startY);
-
-    if (deltaX > 10 || deltaY > 10) {
+      // Clear long press timer
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = undefined;
       }
-    }
 
-    e.preventDefault();
-  }, [touchInfo]);
+      const deltaX = touchInfo.currentX - touchInfo.startX;
+      const deltaY = touchInfo.currentY - touchInfo.startY;
+      const absDeltaX = Math.abs(deltaX);
+      const absDeltaY = Math.abs(deltaY);
+      const duration = Date.now() - touchInfo.startTime;
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!touchInfo) return;
-
-    // Clear long press timer
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = undefined;
-    }
-
-    const deltaX = touchInfo.currentX - touchInfo.startX;
-    const deltaY = touchInfo.currentY - touchInfo.startY;
-    const absDeltaX = Math.abs(deltaX);
-    const absDeltaY = Math.abs(deltaY);
-    const duration = Date.now() - touchInfo.startTime;
-
-    // Determine gesture type
-    if (absDeltaX > threshold || absDeltaY > threshold) {
-      // Swipe gesture
-      if (absDeltaX > absDeltaY) {
-        // Horizontal swipe
-        if (deltaX > 0 && onSwipeRight) {
-          onSwipeRight();
-        } else if (deltaX < 0 && onSwipeLeft) {
-          onSwipeLeft();
+      // Determine gesture type
+      if (absDeltaX > threshold || absDeltaY > threshold) {
+        // Swipe gesture
+        if (absDeltaX > absDeltaY) {
+          // Horizontal swipe
+          if (deltaX > 0 && onSwipeRight) {
+            onSwipeRight();
+          } else if (deltaX < 0 && onSwipeLeft) {
+            onSwipeLeft();
+          }
+        } else {
+          // Vertical swipe
+          if (deltaY > 0 && onSwipeDown) {
+            onSwipeDown();
+          } else if (deltaY < 0 && onSwipeUp) {
+            onSwipeUp();
+          }
         }
-      } else {
-        // Vertical swipe
-        if (deltaY > 0 && onSwipeDown) {
-          onSwipeDown();
-        } else if (deltaY < 0 && onSwipeUp) {
-          onSwipeUp();
-        }
+      } else if (duration < 300 && onTap) {
+        // Quick tap
+        onTap();
       }
-    } else if (duration < 300 && onTap) {
-      // Quick tap
-      onTap();
-    }
 
-    setTouchInfo(null);
-    e.preventDefault();
-  }, [touchInfo, threshold, onSwipeUp, onSwipeDown, onSwipeLeft, onSwipeRight, onTap]);
+      setTouchInfo(null);
+      e.preventDefault();
+    },
+    [touchInfo, threshold, onSwipeUp, onSwipeDown, onSwipeLeft, onSwipeRight, onTap]
+  );
 
   const handleTouchCancel = useCallback(() => {
     if (longPressTimerRef.current) {
@@ -157,7 +170,7 @@ export const TouchGestures: React.FC<TouchGestureProps> = ({
       style={{
         WebkitTouchCallout: 'none',
         WebkitUserSelect: 'none',
-        touchAction: 'none'
+        touchAction: 'none',
       }}
     >
       {children}

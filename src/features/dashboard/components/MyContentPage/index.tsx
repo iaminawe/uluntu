@@ -22,7 +22,7 @@ export const MyContentPage: React.FC = () => {
     status: 'all',
     sortBy: 'updated_at',
     sortOrder: 'desc',
-    limit: 12
+    limit: 12,
   });
 
   const debouncedSearch = useDebounce(search, 300);
@@ -30,15 +30,10 @@ export const MyContentPage: React.FC = () => {
   const currentFilters = {
     ...filters,
     type: activeTab,
-    search: debouncedSearch || undefined
+    search: debouncedSearch || undefined,
   };
 
-  const {
-    data: contentResponse,
-    isLoading,
-    error,
-    refetch
-  } = useUserContent(currentFilters);
+  const { data: contentResponse, isLoading, error, refetch } = useUserContent(currentFilters);
 
   const handleTabChange = (tab: ContentType | 'all') => {
     setActiveTab(tab);
@@ -49,7 +44,7 @@ export const MyContentPage: React.FC = () => {
     setFilters(prev => ({
       ...prev,
       ...newFilters,
-      page: 1
+      page: 1,
     }));
   };
 
@@ -62,7 +57,7 @@ export const MyContentPage: React.FC = () => {
     if (contentResponse?.pagination.hasNextPage) {
       setFilters(prev => ({
         ...prev,
-        page: (prev.page || 1) + 1
+        page: (prev.page || 1) + 1,
       }));
     }
   };
@@ -73,25 +68,17 @@ export const MyContentPage: React.FC = () => {
         {/* Page Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              My Content
-            </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Manage all your content in one place
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Content</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Manage all your content in one place</p>
           </div>
-          
+
           <div className="mt-4 lg:mt-0 flex items-center space-x-3">
             <QuickActions />
           </div>
         </div>
 
         {/* Content Tabs */}
-        <ContentTabs
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          stats={contentResponse?.stats}
-        />
+        <ContentTabs activeTab={activeTab} onTabChange={handleTabChange} stats={contentResponse?.stats} />
 
         {/* Search and Controls */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -100,11 +87,11 @@ export const MyContentPage: React.FC = () => {
               type="text"
               placeholder="Search your content..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
               className="w-full"
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -115,13 +102,8 @@ export const MyContentPage: React.FC = () => {
               <Filter className="h-4 w-4 mr-2" />
               Filters
             </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleSort('updated_at')}
-              className="flex items-center"
-            >
+
+            <Button variant="outline" size="sm" onClick={() => handleSort('updated_at')} className="flex items-center">
               {filters.sortOrder === 'desc' ? (
                 <SortDesc className="h-4 w-4 mr-2" />
               ) : (
@@ -129,7 +111,7 @@ export const MyContentPage: React.FC = () => {
               )}
               Sort
             </Button>
-            
+
             <div className="flex rounded-md shadow-sm">
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
@@ -156,13 +138,15 @@ export const MyContentPage: React.FC = () => {
           <ContentFilters
             filters={filters}
             onFilterChange={handleFilterChange}
-            onReset={() => setFilters({
-              type: activeTab,
-              status: 'all',
-              sortBy: 'updated_at',
-              sortOrder: 'desc',
-              limit: 12
-            })}
+            onReset={() =>
+              setFilters({
+                type: activeTab,
+                status: 'all',
+                sortBy: 'updated_at',
+                sortOrder: 'desc',
+                limit: 12,
+              })
+            }
           />
         )}
 

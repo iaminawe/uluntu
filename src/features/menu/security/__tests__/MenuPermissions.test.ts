@@ -9,7 +9,7 @@ describe('MenuSecurity', () => {
     userId: 'test-user-id',
     userRoles: ['admin'],
     sessionId: 'test-session',
-    ipAddress: '127.0.0.1'
+    ipAddress: '127.0.0.1',
   };
 
   const mockMenuItem: MenuItem = {
@@ -28,7 +28,7 @@ describe('MenuSecurity', () => {
     required_roles: null,
     is_external: false,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   beforeEach(() => {
@@ -37,11 +37,7 @@ describe('MenuSecurity', () => {
 
   describe('checkPermission', () => {
     test('should allow admin to read menu management', async () => {
-      const result = await MenuSecurity.checkPermission(
-        mockContext,
-        'menu_management',
-        'read'
-      );
+      const result = await MenuSecurity.checkPermission(mockContext, 'menu_management', 'read');
 
       expect(result.allowed).toBe(true);
       expect(result.reason).toBeUndefined();
@@ -50,15 +46,10 @@ describe('MenuSecurity', () => {
     test('should deny non-admin from deleting menu items', async () => {
       const nonAdminContext = {
         ...mockContext,
-        userRoles: ['user']
+        userRoles: ['user'],
       };
 
-      const result = await MenuSecurity.checkPermission(
-        nonAdminContext,
-        'menu_item',
-        'delete',
-        mockMenuItem
-      );
+      const result = await MenuSecurity.checkPermission(nonAdminContext, 'menu_item', 'delete', mockMenuItem);
 
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -67,14 +58,10 @@ describe('MenuSecurity', () => {
     test('should allow superadmin all permissions', async () => {
       const superAdminContext = {
         ...mockContext,
-        userRoles: ['superadmin']
+        userRoles: ['superadmin'],
       };
 
-      const result = await MenuSecurity.checkPermission(
-        superAdminContext,
-        'menu_item',
-        'manage_permissions'
-      );
+      const result = await MenuSecurity.checkPermission(superAdminContext, 'menu_item', 'manage_permissions');
 
       expect(result.allowed).toBe(true);
     });
@@ -84,19 +71,15 @@ describe('MenuSecurity', () => {
         ...mockMenuItem,
         id: 'child-item',
         parent_id: 'parent-item',
-        visibility: 'admin' as const
+        visibility: 'admin' as const,
       };
 
       // Mock the parent permission check
-      jest.spyOn(MenuSecurity as any, 'checkParentPermissions')
+      jest
+        .spyOn(MenuSecurity as any, 'checkParentPermissions')
         .mockResolvedValue({ allowed: false, reason: 'Parent restricted' });
 
-      const result = await MenuSecurity.checkPermission(
-        mockContext,
-        'menu_item',
-        'delete',
-        childItem
-      );
+      const result = await MenuSecurity.checkPermission(mockContext, 'menu_item', 'delete', childItem);
 
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Parent item restrictions');
@@ -110,14 +93,10 @@ describe('MenuSecurity', () => {
       const items = [
         { ...mockMenuItem, visibility: 'public' },
         { ...mockMenuItem, id: 'item2', visibility: 'admin' },
-        { ...mockMenuItem, id: 'item3', visibility: 'authenticated' }
+        { ...mockMenuItem, id: 'item3', visibility: 'authenticated' },
       ] as MenuItem[];
 
-      const filtered = MenuSecurity.filterMenuItemsByPermissions(
-        items,
-        { ...mockContext, userRoles: [] },
-        testUser
-      );
+      const filtered = MenuSecurity.filterMenuItemsByPermissions(items, { ...mockContext, userRoles: [] }, testUser);
 
       expect(filtered).toHaveLength(2); // public + authenticated
       expect(filtered[0].visibility).toBe('public');
@@ -127,14 +106,10 @@ describe('MenuSecurity', () => {
     test('should filter admin items for admin users', () => {
       const items = [
         { ...mockMenuItem, visibility: 'public' },
-        { ...mockMenuItem, id: 'item2', visibility: 'admin' }
+        { ...mockMenuItem, id: 'item2', visibility: 'admin' },
       ] as MenuItem[];
 
-      const filtered = MenuSecurity.filterMenuItemsByPermissions(
-        items,
-        mockContext,
-        testUser
-      );
+      const filtered = MenuSecurity.filterMenuItemsByPermissions(items, mockContext, testUser);
 
       expect(filtered).toHaveLength(2);
     });
@@ -144,15 +119,11 @@ describe('MenuSecurity', () => {
         {
           ...mockMenuItem,
           visibility: 'role_based',
-          required_roles: ['editor', 'admin']
-        }
+          required_roles: ['editor', 'admin'],
+        },
       ] as MenuItem[];
 
-      const filtered = MenuSecurity.filterMenuItemsByPermissions(
-        items,
-        mockContext,
-        testUser
-      );
+      const filtered = MenuSecurity.filterMenuItemsByPermissions(items, mockContext, testUser);
 
       expect(filtered).toHaveLength(1);
     });
@@ -160,14 +131,10 @@ describe('MenuSecurity', () => {
     test('should handle unauthenticated users', () => {
       const items = [
         { ...mockMenuItem, visibility: 'public' },
-        { ...mockMenuItem, id: 'item2', visibility: 'authenticated' }
+        { ...mockMenuItem, id: 'item2', visibility: 'authenticated' },
       ] as MenuItem[];
 
-      const filtered = MenuSecurity.filterMenuItemsByPermissions(
-        items,
-        mockContext,
-        undefined
-      );
+      const filtered = MenuSecurity.filterMenuItemsByPermissions(items, mockContext, undefined);
 
       expect(filtered).toHaveLength(1);
       expect(filtered[0].visibility).toBe('public');
@@ -180,7 +147,7 @@ describe('MenuSecurity', () => {
         title: 'Safe Item',
         url: '/safe-path',
         visibility: 'public',
-        is_external: false
+        is_external: false,
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(safeItem, mockContext);
@@ -193,12 +160,12 @@ describe('MenuSecurity', () => {
       const adminItem = {
         title: 'Admin Item',
         url: '/admin',
-        visibility: 'admin'
+        visibility: 'admin',
       };
 
       const nonSuperAdminContext = {
         ...mockContext,
-        userRoles: ['admin'] // admin but not superadmin
+        userRoles: ['admin'], // admin but not superadmin
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(adminItem, nonSuperAdminContext);
@@ -211,7 +178,7 @@ describe('MenuSecurity', () => {
       const unsafeItem = {
         title: 'Unsafe Item',
         url: 'javascript:alert("xss")',
-        visibility: 'public'
+        visibility: 'public',
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(unsafeItem, mockContext);
@@ -225,7 +192,7 @@ describe('MenuSecurity', () => {
         title: 'Role Item',
         url: '/role-based',
         visibility: 'role_based',
-        required_roles: []
+        required_roles: [],
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(roleBasedItem, mockContext);
@@ -240,7 +207,7 @@ describe('MenuSecurity', () => {
         url: 'https://example.com',
         visibility: 'public',
         is_external: true,
-        target: '_self' // Should be _blank for external
+        target: '_self', // Should be _blank for external
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(externalItem, mockContext);
@@ -252,16 +219,9 @@ describe('MenuSecurity', () => {
 
   describe('validateBulkOperation', () => {
     test('should validate bulk operations with proper permissions', async () => {
-      const items = [
-        mockMenuItem,
-        { ...mockMenuItem, id: 'item2' }
-      ] as MenuItem[];
+      const items = [mockMenuItem, { ...mockMenuItem, id: 'item2' }] as MenuItem[];
 
-      const result = await MenuSecurity.validateBulkOperation(
-        'update',
-        items,
-        mockContext
-      );
+      const result = await MenuSecurity.validateBulkOperation('update', items, mockContext);
 
       expect(result.allowed).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -270,16 +230,12 @@ describe('MenuSecurity', () => {
     test('should reject bulk operations without permission', async () => {
       const nonAdminContext = {
         ...mockContext,
-        userRoles: ['user']
+        userRoles: ['user'],
       };
 
       const items = [mockMenuItem] as MenuItem[];
 
-      const result = await MenuSecurity.validateBulkOperation(
-        'delete',
-        items,
-        nonAdminContext
-      );
+      const result = await MenuSecurity.validateBulkOperation('delete', items, nonAdminContext);
 
       expect(result.allowed).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -296,12 +252,10 @@ describe('MenuSecurity', () => {
         'menu_item:manage_visibility',
         'menu_item:manage_permissions',
         'menu_audit_logs:view_audit_logs',
-        'menu_items:bulk_operations'
+        'menu_items:bulk_operations',
       ];
 
-      const definedRules = MENU_SECURITY_RULES.map(rule => 
-        `${rule.resource}:${rule.action}`
-      );
+      const definedRules = MENU_SECURITY_RULES.map(rule => `${rule.resource}:${rule.action}`);
 
       requiredRules.forEach(requiredRule => {
         expect(definedRules).toContain(requiredRule);
@@ -309,9 +263,7 @@ describe('MenuSecurity', () => {
     });
 
     test('should have proper role hierarchies', () => {
-      const deleteRule = MENU_SECURITY_RULES.find(
-        rule => rule.action === 'delete' && rule.resource === 'menu_item'
-      );
+      const deleteRule = MENU_SECURITY_RULES.find(rule => rule.action === 'delete' && rule.resource === 'menu_item');
 
       expect(deleteRule).toBeDefined();
       expect(deleteRule?.requiredRoles).toContain('admin');
@@ -321,12 +273,7 @@ describe('MenuSecurity', () => {
 
   describe('Edge Cases', () => {
     test('should handle missing menu item gracefully', async () => {
-      const result = await MenuSecurity.checkPermission(
-        mockContext,
-        'menu_item',
-        'read',
-        undefined
-      );
+      const result = await MenuSecurity.checkPermission(mockContext, 'menu_item', 'read', undefined);
 
       // Should still check permission even without specific item
       expect(result).toBeDefined();
@@ -336,14 +283,10 @@ describe('MenuSecurity', () => {
     test('should handle empty user roles', async () => {
       const emptyRoleContext = {
         ...mockContext,
-        userRoles: []
+        userRoles: [],
       };
 
-      const result = await MenuSecurity.checkPermission(
-        emptyRoleContext,
-        'menu_management',
-        'read'
-      );
+      const result = await MenuSecurity.checkPermission(emptyRoleContext, 'menu_management', 'read');
 
       expect(result.allowed).toBe(false);
     });
@@ -351,7 +294,7 @@ describe('MenuSecurity', () => {
     test('should handle undefined URL validation', () => {
       const itemWithoutUrl = {
         title: 'No URL Item',
-        visibility: 'public'
+        visibility: 'public',
       };
 
       const result = MenuSecurity.validateMenuItemSecurity(itemWithoutUrl, mockContext);

@@ -12,7 +12,7 @@ const NovelRichTextEditor = ({
   label,
   required = false,
   id,
-  className = ''
+  className = '',
 }: RichTextEditorProps) => {
   const [editorContent, setEditorContent] = useState<JSONContent | undefined>();
 
@@ -28,36 +28,40 @@ const NovelRichTextEditor = ({
         // For CKEditor compatibility, we need to handle HTML content
         const content: JSONContent = {
           type: 'doc',
-          content: []
+          content: [],
         };
 
         if (value.includes('<')) {
           // Basic HTML parsing - in production, use a proper HTML to ProseMirror parser
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = value;
-          
+
           // Convert basic HTML elements to ProseMirror nodes
           Array.from(tempDiv.childNodes).forEach(node => {
             if (node.nodeType === Node.TEXT_NODE) {
               content.content?.push({
                 type: 'paragraph',
-                content: [{
-                  type: 'text',
-                  text: node.textContent || ''
-                }]
+                content: [
+                  {
+                    type: 'text',
+                    text: node.textContent || '',
+                  },
+                ],
               });
             } else if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element;
               const tagName = element.tagName.toLowerCase();
-              
+
               switch (tagName) {
                 case 'p':
                   content.content?.push({
                     type: 'paragraph',
-                    content: [{
-                      type: 'text',
-                      text: element.textContent || ''
-                    }]
+                    content: [
+                      {
+                        type: 'text',
+                        text: element.textContent || '',
+                      },
+                    ],
                   });
                   break;
                 case 'h1':
@@ -67,10 +71,12 @@ const NovelRichTextEditor = ({
                   content.content?.push({
                     type: 'heading',
                     attrs: { level: parseInt(tagName[1]) },
-                    content: [{
-                      type: 'text',
-                      text: element.textContent || ''
-                    }]
+                    content: [
+                      {
+                        type: 'text',
+                        text: element.textContent || '',
+                      },
+                    ],
                   });
                   break;
                 case 'ul':
@@ -78,17 +84,21 @@ const NovelRichTextEditor = ({
                   const listType = tagName === 'ul' ? 'bulletList' : 'orderedList';
                   const listItems = Array.from(element.querySelectorAll('li')).map(li => ({
                     type: 'listItem' as const,
-                    content: [{
-                      type: 'paragraph' as const,
-                      content: [{
-                        type: 'text' as const,
-                        text: li.textContent || ''
-                      }]
-                    }]
+                    content: [
+                      {
+                        type: 'paragraph' as const,
+                        content: [
+                          {
+                            type: 'text' as const,
+                            text: li.textContent || '',
+                          },
+                        ],
+                      },
+                    ],
                   }));
                   content.content?.push({
                     type: listType,
-                    content: listItems
+                    content: listItems,
                   });
                   break;
                 default:
@@ -96,10 +106,12 @@ const NovelRichTextEditor = ({
                   if (element.textContent) {
                     content.content?.push({
                       type: 'paragraph',
-                      content: [{
-                        type: 'text',
-                        text: element.textContent
-                      }]
+                      content: [
+                        {
+                          type: 'text',
+                          text: element.textContent,
+                        },
+                      ],
                     });
                   }
               }
@@ -107,13 +119,17 @@ const NovelRichTextEditor = ({
           });
         } else {
           // Plain text
-          content.content = [{
-            type: 'paragraph',
-            content: [{
-              type: 'text',
-              text: value
-            }]
-          }];
+          content.content = [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: value,
+                },
+              ],
+            },
+          ];
         }
 
         setEditorContent(content);
@@ -122,10 +138,12 @@ const NovelRichTextEditor = ({
       // Empty content
       setEditorContent({
         type: 'doc',
-        content: [{
-          type: 'paragraph',
-          content: []
-        }]
+        content: [
+          {
+            type: 'paragraph',
+            content: [],
+          },
+        ],
       });
     }
   }, [value]);
@@ -142,14 +160,11 @@ const NovelRichTextEditor = ({
   return (
     <div className={className}>
       {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <div 
+      <div
         className={`novel-rich-text-editor border border-slate-300 dark:border-slate-600 rounded-md 
                  bg-white dark:bg-slate-700 text-slate-900 dark:text-white
                  ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
@@ -162,7 +177,8 @@ const NovelRichTextEditor = ({
             className="min-h-full"
             editorProps={{
               attributes: {
-                class: 'prose prose-sm dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full p-4',
+                class:
+                  'prose prose-sm dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full p-4',
                 'data-placeholder': placeholder,
               },
             }}
@@ -174,12 +190,10 @@ const NovelRichTextEditor = ({
               <EditorCommandEmpty className="px-2 text-muted-foreground">No results</EditorCommandEmpty>
               <EditorCommandItem
                 value="heading2"
-                onCommand={(val) => console.log(val)}
+                onCommand={val => console.log(val)}
                 className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:bg-accent aria-selected:bg-accent"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted">
-                  H2
-                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted">H2</div>
                 <div>
                   <p className="font-medium">Heading 2</p>
                   <p className="text-xs text-muted-foreground">Medium section heading</p>
@@ -187,12 +201,10 @@ const NovelRichTextEditor = ({
               </EditorCommandItem>
               <EditorCommandItem
                 value="heading3"
-                onCommand={(val) => console.log(val)}
+                onCommand={val => console.log(val)}
                 className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:bg-accent aria-selected:bg-accent"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted">
-                  H3
-                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted">H3</div>
                 <div>
                   <p className="font-medium">Heading 3</p>
                   <p className="text-xs text-muted-foreground">Small section heading</p>
@@ -202,7 +214,7 @@ const NovelRichTextEditor = ({
           )}
         </EditorRoot>
       </div>
-      
+
       <style>{`
         .novel-rich-text-editor .ProseMirror {
           outline: none;

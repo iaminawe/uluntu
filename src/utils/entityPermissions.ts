@@ -21,7 +21,7 @@ export async function checkEntityPermission({
   entityType,
   entityId,
   permission,
-  userId
+  userId,
 }: EntityPermissionCheck): Promise<boolean> {
   try {
     // Get current user if not provided
@@ -33,11 +33,7 @@ export async function checkEntityPermission({
     }
 
     // Get member ID for the user
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', currentUserId)
-      .single();
+    const { data: member } = await supabase.from('members').select('id').eq('user_id', currentUserId).single();
 
     if (!member) {
       logger.debug('No member found for user', 'ENTITY_PERMISSIONS', { userId: currentUserId });
@@ -59,7 +55,7 @@ export async function checkEntityPermission({
       entityType,
       entityId,
       permission,
-      error
+      error,
     });
     return false;
   }
@@ -99,7 +95,7 @@ async function checkCompanyPermission(
     logger.debug('No company membership found', 'ENTITY_PERMISSIONS', {
       companyId,
       memberId,
-      permission
+      permission,
     });
     return false;
   }
@@ -139,7 +135,7 @@ async function checkGroupPermission(
     logger.debug('No group membership found', 'ENTITY_PERMISSIONS', {
       groupId,
       memberId,
-      permission
+      permission,
     });
     return false;
   }
@@ -148,13 +144,9 @@ async function checkGroupPermission(
 /**
  * Batch check multiple entity permissions for performance
  */
-export async function checkMultipleEntityPermissions(
-  checks: EntityPermissionCheck[]
-): Promise<boolean[]> {
+export async function checkMultipleEntityPermissions(checks: EntityPermissionCheck[]): Promise<boolean[]> {
   try {
-    const results = await Promise.all(
-      checks.map(check => checkEntityPermission(check))
-    );
+    const results = await Promise.all(checks.map(check => checkEntityPermission(check)));
     return results;
   } catch (error) {
     logger.error('Error checking multiple entity permissions', 'ENTITY_PERMISSIONS', error);
@@ -169,17 +161,17 @@ export async function checkMultipleEntityPermissions(
 export const entityPermissions = {
   checkPermission: checkEntityPermission,
   checkMultiple: checkMultipleEntityPermissions,
-  
+
   // Convenience methods
   isCompanyAdmin: (companyId: string, userId?: string) =>
     checkEntityPermission({ entityType: 'company', entityId: companyId, permission: 'admin', userId }),
-    
+
   isGroupAdmin: (groupId: string, userId?: string) =>
     checkEntityPermission({ entityType: 'group', entityId: groupId, permission: 'admin', userId }),
-    
+
   isCompanyMember: (companyId: string, userId?: string) =>
     checkEntityPermission({ entityType: 'company', entityId: companyId, permission: 'member', userId }),
-    
+
   isGroupMember: (groupId: string, userId?: string) =>
-    checkEntityPermission({ entityType: 'group', entityId: groupId, permission: 'member', userId })
+    checkEntityPermission({ entityType: 'group', entityId: groupId, permission: 'member', userId }),
 };

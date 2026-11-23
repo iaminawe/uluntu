@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api';
-import { 
-  getEventUrl, 
-  getNewsArticleUrl, 
-  getResourceUrl, 
-  getGroupUrl, 
-  getMarketplaceListingUrl, 
-  getOpportunityUrl, 
+import {
+  getEventUrl,
+  getNewsArticleUrl,
+  getResourceUrl,
+  getGroupUrl,
+  getMarketplaceListingUrl,
+  getOpportunityUrl,
   getCompanyUrl,
-  getGalleryUrl
+  getGalleryUrl,
 } from '@/utils/contentUrlUtils';
 
 interface TopicContentItem {
@@ -60,7 +60,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
     // Fetch events
     const { data: events } = await supabase
       .from('event_topics')
-      .select(`
+      .select(
+        `
         events!inner (
           id,
           title,
@@ -75,7 +76,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('events.status', 'published');
 
@@ -89,17 +91,18 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.events.members?.id || '',
           name: item.events.members?.name || 'Unknown',
-          image: item.events.members?.image
+          image: item.events.members?.image,
         },
         type: 'event',
-        url: getEventUrl(item.events)
+        url: getEventUrl(item.events),
       }));
     }
 
     // Fetch news
     const { data: news } = await supabase
       .from('news_topics')
-      .select(`
+      .select(
+        `
         news!inner (
           id,
           title,
@@ -114,7 +117,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('news.status', 'published');
 
@@ -128,17 +132,18 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.news.members?.id || '',
           name: item.news.members?.name || 'Unknown',
-          image: item.news.members?.image
+          image: item.news.members?.image,
         },
         type: 'news',
-        url: getNewsArticleUrl(item.news)
+        url: getNewsArticleUrl(item.news),
       }));
     }
 
     // Fetch resources
     const { data: resources } = await supabase
       .from('resource_topics')
-      .select(`
+      .select(
+        `
         resources!inner (
           id,
           title,
@@ -153,7 +158,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('resources.status', 'published');
 
@@ -165,17 +171,18 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.resources.members?.id || '',
           name: item.resources.members?.name || 'Unknown',
-          image: item.resources.members?.image
+          image: item.resources.members?.image,
         },
         type: 'resource',
-        url: getResourceUrl(item.resources)
+        url: getResourceUrl(item.resources),
       }));
     }
 
     // Fetch groups
     const { data: groups } = await supabase
       .from('group_topics')
-      .select(`
+      .select(
+        `
         groups!inner (
           id,
           name,
@@ -184,7 +191,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           status,
           visibility
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('groups.status', 'published')
       .in('groups.visibility', ['open', 'public']);
@@ -196,14 +204,15 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         excerpt: item.groups.description,
         image: item.groups.hero_image,
         type: 'group',
-        url: getGroupUrl(item.groups)
+        url: getGroupUrl(item.groups),
       }));
     }
 
     // Fetch marketplace listings
     const { data: marketplace } = await supabase
       .from('marketplace_topics')
-      .select(`
+      .select(
+        `
         marketplace_listings!inner (
           id,
           title,
@@ -217,7 +226,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('marketplace_listings.status', 'published');
 
@@ -229,17 +239,18 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.marketplace_listings.members?.id || '',
           name: item.marketplace_listings.members?.name || 'Unknown',
-          image: item.marketplace_listings.members?.image
+          image: item.marketplace_listings.members?.image,
         },
         type: 'marketplace',
-        url: getMarketplaceListingUrl(item.marketplace_listings)
+        url: getMarketplaceListingUrl(item.marketplace_listings),
       }));
     }
 
     // Fetch opportunities
     const { data: opportunities } = await supabase
       .from('opportunity_topics')
-      .select(`
+      .select(
+        `
         opportunities!inner (
           id,
           title,
@@ -252,7 +263,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('opportunities.status', 'published');
 
@@ -264,17 +276,18 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.opportunities.members?.id || '',
           name: item.opportunities.members?.name || 'Unknown',
-          image: item.opportunities.members?.image
+          image: item.opportunities.members?.image,
         },
         type: 'opportunity',
-        url: getOpportunityUrl(item.opportunities)
+        url: getOpportunityUrl(item.opportunities),
       }));
     }
 
     // Fetch companies
     const { data: companies } = await supabase
       .from('company_topics')
-      .select(`
+      .select(
+        `
         companies!inner (
           id,
           name,
@@ -282,7 +295,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
           logo,
           status
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('companies.status', 'published');
 
@@ -293,14 +307,15 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         excerpt: item.companies.description,
         image: item.companies.logo,
         type: 'company',
-        url: getCompanyUrl(item.companies)
+        url: getCompanyUrl(item.companies),
       }));
     }
 
     // Fetch galleries
     const { data: galleries } = await supabase
       .from('gallery_topics')
-      .select(`
+      .select(
+        `
         galleries!inner (
           id,
           title,
@@ -314,7 +329,8 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
             image
           )
         )
-      `)
+      `
+      )
       .eq('topic_id', topicId)
       .eq('galleries.status', 'published');
 
@@ -327,10 +343,10 @@ async function fetchTopicContent(topicSlug: string): Promise<TopicContentRespons
         author: {
           id: item.galleries.members?.id || '',
           name: item.galleries.members?.name || 'Unknown',
-          image: item.galleries.members?.image
+          image: item.galleries.members?.image,
         },
         type: 'gallery',
-        url: getGalleryUrl(item.galleries)
+        url: getGalleryUrl(item.galleries),
       }));
     }
 

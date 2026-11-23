@@ -46,15 +46,15 @@ export const LazyThemeLoader: React.FC<LazyThemeLoaderProps> = ({
       const loadedTheme = await getCachedTheme(themeId, async () => {
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // In a real app, this would fetch from an API
         const { themePresets } = await import('@/lib/themes/presets');
         const theme = themePresets.find(t => t.slug === themeId);
-        
+
         if (!theme) {
           throw new Error(`Theme ${themeId} not found`);
         }
-        
+
         return theme;
       });
 
@@ -85,10 +85,7 @@ export const LazyThemeLoader: React.FC<LazyThemeLoaderProps> = ({
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <p className="text-red-600 mb-2">Failed to load theme</p>
-          <button
-            onClick={loadTheme}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
+          <button onClick={loadTheme} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             Retry
           </button>
         </div>
@@ -122,9 +119,7 @@ export const ThemeLoadingSkeleton: React.FC = () => {
 /**
  * Default loading component
  */
-export const ThemeLoadingSpinner: React.FC<{ message?: string }> = ({ 
-  message = 'Loading theme...' 
-}) => {
+export const ThemeLoadingSpinner: React.FC<{ message?: string }> = ({ message = 'Loading theme...' }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8">
       <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-2" />
@@ -168,10 +163,8 @@ function isSystemFont(fontFamily: string): boolean {
     'Segoe UI',
     'Roboto',
   ];
-  
-  return systemFonts.some(font => 
-    fontFamily.toLowerCase().includes(font.toLowerCase())
-  );
+
+  return systemFonts.some(font => fontFamily.toLowerCase().includes(font.toLowerCase()));
 }
 
 /**
@@ -190,7 +183,7 @@ async function preloadFont(fontFamily: string): Promise<void> {
       el.style.left = '-9999px';
       el.textContent = 'Preload';
       (document as Document).body.appendChild(el);
-      
+
       // Remove after a short delay
       setTimeout(() => {
         (document as Document).body.removeChild(el);
@@ -216,21 +209,15 @@ async function preloadImage(src: string): Promise<void> {
 /**
  * Higher-order component for lazy loading themes
  */
-export function withLazyTheme<P extends { theme: PresetTheme }>(
-  Component: React.ComponentType<P>,
-  themeId: string
-) {
+export function withLazyTheme<P extends { theme: PresetTheme }>(Component: React.ComponentType<P>, themeId: string) {
   return (props: Omit<P, 'theme'>) => {
     return (
-      <LazyThemeLoader
-        themeId={themeId}
-        fallback={<ThemeLoadingSpinner />}
-      >
+      <LazyThemeLoader themeId={themeId} fallback={<ThemeLoadingSpinner />}>
         {(theme, loading) => {
           if (loading || !theme) {
             return <ThemeLoadingSpinner />;
           }
-          
+
           return <Component {...(props as P)} theme={theme} />;
         }}
       </LazyThemeLoader>

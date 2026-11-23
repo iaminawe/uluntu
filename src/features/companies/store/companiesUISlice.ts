@@ -44,62 +44,65 @@ const companiesUISlice = createSlice({
       // Reset pagination when filters change
       state.pagination.page = 1;
     },
-    
+
     updateFilters(state, action: PayloadAction<Partial<CompanyFilters>>) {
       state.filters = { ...state.filters, ...action.payload };
       // Reset pagination when filters change
       state.pagination.page = 1;
     },
-    
+
     clearFilters(state) {
       state.filters = {};
       state.pagination.page = 1;
     },
-    
+
     // Selection management
     setSelectedCompanies(state, action: PayloadAction<string[]>) {
       state.selectedCompanies = action.payload;
     },
-    
+
     toggleCompanySelection(state, action: PayloadAction<string>) {
       const companyId = action.payload;
       const isSelected = state.selectedCompanies.includes(companyId);
-      
+
       if (isSelected) {
         state.selectedCompanies = state.selectedCompanies.filter(id => id !== companyId);
       } else {
         state.selectedCompanies.push(companyId);
       }
     },
-    
+
     selectAllCompanies(state, action: PayloadAction<string[]>) {
       state.selectedCompanies = action.payload;
     },
-    
+
     clearSelection(state) {
       state.selectedCompanies = [];
     },
-    
+
     // View preferences
     setViewMode(state, action: PayloadAction<'grid' | 'list'>) {
       state.viewMode = action.payload;
     },
-    
-    setSorting(state, action: PayloadAction<{ sortBy: 'name' | 'created_at' | 'updated_at'; sortDirection: 'asc' | 'desc' }>) {
+
+    setSorting(
+      state,
+      action: PayloadAction<{ sortBy: 'name' | 'created_at' | 'updated_at'; sortDirection: 'asc' | 'desc' }>
+    ) {
       state.sortBy = action.payload.sortBy;
       state.sortDirection = action.payload.sortDirection;
     },
-    
+
     // Pagination
     setPage(state, action: PayloadAction<number>) {
       state.pagination.page = action.payload;
     },
-    
+
     setItemsPerPage(state, action: PayloadAction<number>) {
       state.pagination.itemsPerPage = action.payload;
       state.pagination.page = 1; // Reset to first page
     },
-    
+
     // Bulk actions
     resetUIState(state) {
       return initialState;
@@ -137,8 +140,6 @@ export const selectCompaniesSorting = (state: RootState) => ({
 export const selectCompaniesPagination = (state: RootState) => state.companiesUI.pagination;
 
 // Computed selectors
-export const selectHasFilters = (state: RootState) => 
-  Object.keys(state.companiesUI.filters).length > 0;
+export const selectHasFilters = (state: RootState) => Object.keys(state.companiesUI.filters).length > 0;
 
-export const selectHasSelection = (state: RootState) => 
-  state.companiesUI.selectedCompanies.length > 0;
+export const selectHasSelection = (state: RootState) => state.companiesUI.selectedCompanies.length > 0;

@@ -3,7 +3,11 @@
  */
 
 import { MenuItem, MenuType, MenuTarget, MenuVisibility } from '@/types/menu';
-import { convertDatabaseRowToMenuItem, validateMenuItem, adaptLegacyMenuItem } from '@/features/menu/utils/typeAdapters';
+import {
+  convertDatabaseRowToMenuItem,
+  validateMenuItem,
+  adaptLegacyMenuItem,
+} from '@/features/menu/utils/typeAdapters';
 
 describe('Menu Type Validation', () => {
   test('MenuItem interface should have all required fields', () => {
@@ -16,7 +20,7 @@ describe('Menu Type Validation', () => {
       is_enabled: true,
       target: '_self',
       visibility: 'public',
-      is_external: false
+      is_external: false,
     };
 
     expect(validateMenuItem(validMenuItem)).toBe(true);
@@ -44,11 +48,11 @@ describe('Menu Type Validation', () => {
       is_visible: true,
       custom_properties: { feature_flag: 'test-feature' },
       created_at: '2023-01-01T00:00:00Z',
-      updated_at: '2023-01-02T00:00:00Z'
+      updated_at: '2023-01-02T00:00:00Z',
     };
 
     const menuItem = convertDatabaseRowToMenuItem(dbRow);
-    
+
     expect(menuItem.id).toBe('db-test-id');
     expect(menuItem.title).toBe('Database Test Item');
     expect(menuItem.menu_type).toBe('footer');
@@ -65,11 +69,11 @@ describe('Menu Type Validation', () => {
       subtitle: 'Legacy subtitle',
       order: 5,
       enabled: true,
-      icon: 'legacy-icon'
+      icon: 'legacy-icon',
     };
 
     const adaptedItem = adaptLegacyMenuItem(legacyItem);
-    
+
     expect(adaptedItem.title).toBe('Legacy Label');
     expect(adaptedItem.url).toBe('/legacy');
     expect(adaptedItem.description).toBe('Legacy subtitle');
@@ -85,7 +89,7 @@ describe('Menu Type Validation', () => {
       url: '/invalid',
       menu_type: 'invalid-type', // This should cause an error
       sort_order: 1,
-      is_enabled: true
+      is_enabled: true,
     };
 
     expect(() => convertDatabaseRowToMenuItem(invalidRow)).toThrow();
@@ -97,7 +101,7 @@ describe('Menu Type Validation', () => {
       // Missing title and url
       menu_type: 'main',
       sort_order: 1,
-      is_enabled: true
+      is_enabled: true,
     };
 
     expect(validateMenuItem(incompleteItem)).toBe(false);
@@ -121,7 +125,7 @@ const testCompileTimeTypes = () => {
     is_enabled: true,
     target: '_self',
     visibility: 'public',
-    is_external: false
+    is_external: false,
   };
 
   return { menuTypes, targets, visibilities, validItem };

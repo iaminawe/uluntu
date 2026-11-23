@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Palette, 
-  Check,
-  Eye,
-  Download,
-  Sparkles,
-  Briefcase,
-  Zap,
-  Heart,
-  Minimize2
-} from 'lucide-react';
+import { Palette, Check, Eye, Download, Sparkles, Briefcase, Zap, Heart, Minimize2 } from 'lucide-react';
 import { PresetTheme } from '@/types/theme';
 import { presetThemes } from '@/lib/themes/presets';
 
@@ -22,7 +12,7 @@ interface PresetThemesProps {
 const categorizedPresets = presetThemes.map(preset => {
   // Determine category based on theme name
   let category: 'professional' | 'modern' | 'playful' | 'minimal' | 'dark' = 'professional';
-  
+
   if (preset.name.toLowerCase().includes('dark')) {
     category = 'dark';
   } else if (preset.name.toLowerCase().includes('minimal')) {
@@ -32,11 +22,11 @@ const categorizedPresets = presetThemes.map(preset => {
   } else if (preset.name.toLowerCase().includes('vibrant')) {
     category = 'playful';
   }
-  
+
   return {
     ...preset,
     category,
-    thumbnail: `/themes/${preset.slug}.png`
+    thumbnail: `/themes/${preset.slug}.png`,
   };
 });
 
@@ -45,16 +35,17 @@ const categoryIcons = {
   modern: Zap,
   playful: Heart,
   minimal: Minimize2,
-  dark: Sparkles
+  dark: Sparkles,
 };
 
 export default function PresetThemes({ onSelectPreset, currentThemeName }: PresetThemesProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [previewTheme, setPreviewTheme] = useState<typeof categorizedPresets[0] | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<(typeof categorizedPresets)[0] | null>(null);
 
-  const filteredPresets = selectedCategory === 'all' 
-    ? categorizedPresets 
-    : categorizedPresets.filter(preset => preset.category === selectedCategory);
+  const filteredPresets =
+    selectedCategory === 'all'
+      ? categorizedPresets
+      : categorizedPresets.filter(preset => preset.category === selectedCategory);
 
   const categories = [
     { id: 'all', name: 'All Themes', icon: Palette },
@@ -62,7 +53,7 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
     { id: 'modern', name: 'Modern', icon: Zap },
     { id: 'playful', name: 'Playful', icon: Heart },
     { id: 'minimal', name: 'Minimal', icon: Minimize2 },
-    { id: 'dark', name: 'Dark', icon: Sparkles }
+    { id: 'dark', name: 'Dark', icon: Sparkles },
   ];
 
   return (
@@ -93,14 +84,12 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
         {filteredPresets.map(preset => {
           const Icon = categoryIcons[preset.category];
           const isActive = currentThemeName === preset.name;
-          
+
           return (
             <div
               key={preset.slug}
               className={`relative rounded-lg border-2 transition-all ${
-                isActive 
-                  ? 'border-orange-500 shadow-lg' 
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                isActive ? 'border-orange-500 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
               }`}
             >
               {isActive && (
@@ -109,7 +98,7 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
                   Active
                 </div>
               )}
-              
+
               {/* Preview */}
               <div className="p-4 space-y-3">
                 <div className="flex items-start justify-between">
@@ -124,27 +113,27 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
 
                 {/* Color Preview */}
                 <div className="flex gap-2">
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg border"
                     style={{ backgroundColor: preset.configurations.colors.primary }}
                     title="Primary"
                   />
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg border"
                     style={{ backgroundColor: preset.configurations.colors.secondary }}
                     title="Secondary"
                   />
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg border"
                     style={{ backgroundColor: preset.configurations.colors.background }}
                     title="Background"
                   />
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg border"
                     style={{ backgroundColor: preset.configurations.colors.surface }}
                     title="Surface"
                   />
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg border"
                     style={{ backgroundColor: preset.configurations.colors.text }}
                     title="Text"
@@ -179,26 +168,23 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
 
       {/* Preview Modal */}
       {previewTheme && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={() => setPreviewTheme(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <div className="p-4 border-b flex items-center justify-between">
               <h3 className="text-lg font-semibold">Theme Preview: {previewTheme.name}</h3>
-              <button
-                onClick={() => setPreviewTheme(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={() => setPreviewTheme(null)} className="text-gray-500 hover:text-gray-700">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
               {/* Full theme preview implementation */}
               <div className="space-y-6">
@@ -207,10 +193,7 @@ export default function PresetThemes({ onSelectPreset, currentThemeName }: Prese
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {Object.entries(previewTheme.configurations.colors).map(([key, value]) => (
                       <div key={key} className="space-y-2">
-                        <div 
-                          className="h-16 rounded-lg border"
-                          style={{ backgroundColor: value }}
-                        />
+                        <div className="h-16 rounded-lg border" style={{ backgroundColor: value }} />
                         <div className="text-sm">
                           <p className="font-medium capitalize">{key.replace(/_/g, ' ')}</p>
                           <p className="text-gray-500">{value}</p>

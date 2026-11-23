@@ -36,11 +36,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Provide the context value
-  return (
-    <SessionContext.Provider value={{ session, user, loading, signOut }}>
-      {children}
-    </SessionContext.Provider>
-  );
+  return <SessionContext.Provider value={{ session, user, loading, signOut }}>{children}</SessionContext.Provider>;
 };
 
 // Hook to use the session context
@@ -50,7 +46,7 @@ export const useSession = () => useContext(SessionContext);
 export const mockSessionContext = {
   setSession: (session: Session | null) => {
     (SessionProvider as any).mockSetSession(session);
-  }
+  },
 };
 
 export default SessionContext;

@@ -18,7 +18,7 @@ export const galleryApi = {
   async getAllGalleries(filters?: GalleryFilters & { page?: number; limit?: number }): Promise<GalleriesResponse> {
     // Check if feature is enabled
     await requirePhotoGalleriesFeature();
-    
+
     const page = filters?.page || 1;
     const limit = filters?.limit || 12;
     const from = (page - 1) * limit;
@@ -26,7 +26,8 @@ export const galleryApi = {
 
     let query = supabase
       .from('user_galleries')
-      .select(`
+      .select(
+        `
         *,
         gallery_photos!gallery_photos_gallery_id_fkey (
           id,
@@ -38,7 +39,9 @@ export const galleryApi = {
           sort_order,
           visibility
         )
-      `, { count: 'exact' })
+      `,
+        { count: 'exact' }
+      )
       .eq('privacy_level', 'public')
       .order('created_at', { ascending: false })
       .range(from, to);
@@ -49,9 +52,9 @@ export const galleryApi = {
 
     if (filters?.privacy) {
       const privacyMap = {
-        'public': 'public',
-        'private': 'private',
-        'unlisted': 'members_only'
+        public: 'public',
+        private: 'private',
+        unlisted: 'members_only',
       };
       query = query.eq('privacy_level', privacyMap[filters.privacy] || filters.privacy);
     }
@@ -69,9 +72,7 @@ export const galleryApi = {
     }
 
     if (filters?.dateRange) {
-      query = query
-        .gte('created_at', filters.dateRange.start)
-        .lte('created_at', filters.dateRange.end);
+      query = query.gte('created_at', filters.dateRange.start).lte('created_at', filters.dateRange.end);
     }
 
     const { data, error, count } = await query;
@@ -93,18 +94,18 @@ export const galleryApi = {
     // Transform data to match interface
     const galleries = (data || []).map(gallery => {
       const photos = gallery.gallery_photos || [];
-      
+
       // Determine cover photo URL
       let coverPhotoUrl = null;
       let coverImage = null;
-      
+
       if (photos.length > 0) {
         // First priority: photo matching cover_photo_id
         let coverPhoto = null;
         if (gallery.cover_photo_id) {
           coverPhoto = photos.find(p => p.id === gallery.cover_photo_id && p.visibility === 'visible');
         }
-        
+
         // Second priority: first visible photo
         if (!coverPhoto) {
           // Sort by sort_order and find first visible photo
@@ -113,18 +114,19 @@ export const galleryApi = {
             .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
           coverPhoto = sortedPhotos[0];
         }
-        
+
         if (coverPhoto) {
           // Try different URL fields in order of preference
-          coverPhotoUrl = coverPhoto.thumbnail_url || 
-                         getPublicUrl(coverPhoto.thumbnail_path) ||
-                         coverPhoto.medium_url ||
-                         getPublicUrl(coverPhoto.medium_path) ||
-                         getPublicUrl(coverPhoto.storage_path);
+          coverPhotoUrl =
+            coverPhoto.thumbnail_url ||
+            getPublicUrl(coverPhoto.thumbnail_path) ||
+            coverPhoto.medium_url ||
+            getPublicUrl(coverPhoto.medium_path) ||
+            getPublicUrl(coverPhoto.storage_path);
           coverImage = coverPhotoUrl; // For compatibility
         }
       }
-      
+
       return {
         ...gallery,
         photos: photos,
@@ -134,28 +136,25 @@ export const galleryApi = {
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         ownerId: gallery.user_id,
-        privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as 'public' | 'private' | 'unlisted',
-        photo_count: gallery.photo_count || photos.length || 0
+        privacy: (gallery.privacy_level === 'members_only' ? 'unlisted' : gallery.privacy_level) as
+          'public' | 'private' | 'unlisted',
+        photo_count: gallery.photo_count || photos.length || 0,
       } as any;
     }) as Gallery[];
-    
+
     const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    
+
     return {
       galleries,
       totalCount,
       totalPages,
-      currentPage: page
+      currentPage: page,
     };
   },
 
   async getGallery(id: string): Promise<Gallery | null> {
-    const { data, error } = await supabase
-      .from('user_galleries')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('user_galleries').select('*').eq('id', id).single();
 
     if (error) {
       logger.apiError('getGallery', error);
@@ -163,7 +162,7 @@ export const galleryApi = {
     }
 
     if (!data) return null;
-    
+
     // Fetch photos separately
     const { data: photos } = await supabase
       .from('gallery_photos')
@@ -171,7 +170,7 @@ export const galleryApi = {
       .eq('gallery_id', id)
       .eq('visibility', 'visible')
       .order('sort_order', { ascending: true });
-    
+
     // Helper function to get public URL from storage path
     const getPublicUrl = (path: string) => {
       if (!path) return null;
@@ -182,12 +181,12 @@ export const galleryApi = {
       // Otherwise, construct the public URL
       return supabase.storage.from('gallery-photos').getPublicUrl(path).data.publicUrl;
     };
-    
+
     // Transform photos to include public URLs
     const processedPhotos = (photos || []).map(photo => {
       // Generate public URLs for all path fields
       const processedPhoto = { ...photo };
-      
+
       // Convert paths to URLs if they're not already
       if (photo.thumbnail_path && !photo.thumbnail_url) {
         processedPhoto.thumbnail_url = getPublicUrl(photo.thumbnail_path);
@@ -207,10 +206,10 @@ export const galleryApi = {
       if ((photo as any).storage_path && !(photo as any).url) {
         (processedPhoto as any).url = getPublicUrl((photo as any).storage_path);
       }
-      
+
       return processedPhoto;
     });
-    
+
     // Get cover photo URL
     let coverPhotoUrl = null;
     if (data.cover_photo_id && processedPhotos.length > 0) {
@@ -221,9 +220,10 @@ export const galleryApi = {
     }
     // Fallback to first photo if no cover photo set
     if (!coverPhotoUrl && processedPhotos.length > 0) {
-      coverPhotoUrl = processedPhotos[0].thumbnail_url || (processedPhotos[0] as any).small_url || (processedPhotos[0] as any).url;
+      coverPhotoUrl =
+        processedPhotos[0].thumbnail_url || (processedPhotos[0] as any).small_url || (processedPhotos[0] as any).url;
     }
-    
+
     // Transform data to match interface
     return {
       ...data,
@@ -233,7 +233,8 @@ export const galleryApi = {
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       ownerId: data.user_id,
-      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as 'public' | 'private' | 'unlisted'
+      privacy: (data.privacy_level === 'members_only' ? 'unlisted' : data.privacy_level) as
+        'public' | 'private' | 'unlisted',
     } as Gallery;
   },
 
@@ -276,10 +277,7 @@ export const galleryApi = {
   async deleteGallery(id: string): Promise<boolean> {
     // Check if feature is enabled
     await requirePhotoGalleriesFeature();
-    const { error } = await supabase
-      .from('user_galleries')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('user_galleries').delete().eq('id', id);
 
     if (error) {
       logger.apiError('deleteGallery', error);
@@ -315,10 +313,12 @@ export const galleryApi = {
   },
 
   // Photo operations
-  async batchUploadPhotos(inputs: PhotoUploadInput[]): Promise<{ success: Photo[]; failed: { input: PhotoUploadInput; error: string }[] }> {
+  async batchUploadPhotos(
+    inputs: PhotoUploadInput[]
+  ): Promise<{ success: Photo[]; failed: { input: PhotoUploadInput; error: string }[] }> {
     const results = {
       success: [] as Photo[],
-      failed: [] as { input: PhotoUploadInput; error: string }[]
+      failed: [] as { input: PhotoUploadInput; error: string }[],
     };
 
     for (const input of inputs) {
@@ -328,7 +328,7 @@ export const galleryApi = {
       } catch (error) {
         results.failed.push({
           input,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
@@ -356,7 +356,7 @@ export const galleryApi = {
     const storagePaths: Record<string, string> = {
       original: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'originals'),
       medium: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'medium'),
-      thumbnail: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'thumbs')
+      thumbnail: storageService.generateStoragePath(folderUserId, input.galleryId, input.file.name, 'thumbs'),
     };
     const fileName = storagePaths.original.split('/').pop() as string;
 
@@ -383,13 +383,11 @@ export const galleryApi = {
       if (input.processedImages) {
         const sizePromises = Object.entries(input.processedImages).map(async ([sizeType, file]) => {
           if (!file || sizeType === 'original') return; // Original already handled
-          
+
           const sizePath = storagePaths[sizeType];
           if (!sizePath) return;
 
-          const { error } = await supabase.storage
-            .from('gallery-photos')
-            .upload(sizePath, file);
+          const { error } = await supabase.storage.from('gallery-photos').upload(sizePath, file);
 
           if (error) {
             logger.warn(`Failed to upload ${sizeType} variant`, 'GALLERY', error);
@@ -397,9 +395,7 @@ export const galleryApi = {
           }
 
           uploadedPaths[sizeType] = sizePath;
-          uploadedUrls[sizeType] = supabase.storage
-            .from('gallery-photos')
-            .getPublicUrl(sizePath).data.publicUrl;
+          uploadedUrls[sizeType] = supabase.storage.from('gallery-photos').getPublicUrl(sizePath).data.publicUrl;
         });
 
         await Promise.all(sizePromises);
@@ -430,7 +426,7 @@ export const galleryApi = {
         alt_text: input.title || input.file.name,
         tags: input.tags,
         sort_order: 0,
-        visibility: 'visible' as const
+        visibility: 'visible' as const,
       };
 
       const { data, error } = await supabase
@@ -453,7 +449,6 @@ export const galleryApi = {
       (data as any).url = (data as any).medium_url || (data as any).original_url;
 
       return data as Photo;
-
     } catch (error) {
       logger.apiError('uploadPhoto', error);
       // Clean up any uploaded files
@@ -496,9 +491,7 @@ export const galleryApi = {
 
     const filePaths = storedFilePaths([photo]);
     if (filePaths.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from('gallery-photos')
-        .remove(filePaths);
+      const { error: storageError } = await supabase.storage.from('gallery-photos').remove(filePaths);
 
       if (storageError) {
         logger.error('Error deleting photo file', 'GALLERY', storageError);
@@ -506,10 +499,7 @@ export const galleryApi = {
     }
 
     // Delete record
-    const { error } = await supabase
-      .from('gallery_photos')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('gallery_photos').delete().eq('id', id);
 
     if (error) {
       logger.apiError('deletePhoto - deleteRecord', error);
@@ -535,9 +525,7 @@ export const galleryApi = {
 
     // Delete from storage
     if (filePaths.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from('gallery-photos')
-        .remove(filePaths);
+      const { error: storageError } = await supabase.storage.from('gallery-photos').remove(filePaths);
 
       if (storageError) {
         logger.error('Error deleting photo files', 'GALLERY', storageError);
@@ -545,10 +533,7 @@ export const galleryApi = {
     }
 
     // Delete records
-    const { error } = await supabase
-      .from('gallery_photos')
-      .delete()
-      .in('id', photoIds);
+    const { error } = await supabase.from('gallery_photos').delete().in('id', photoIds);
 
     if (error) {
       logger.apiError('batchDeletePhotos - deleteRecords', error);
@@ -559,12 +544,8 @@ export const galleryApi = {
   },
 
   async reorderPhotos(galleryId: string, photoOrders: { id: string; order: number }[]): Promise<boolean> {
-    const updates = photoOrders.map(({ id, order }) => 
-      supabase
-        .from('gallery_photos')
-        .update({ sort_order: order })
-        .eq('id', id)
-        .eq('gallery_id', galleryId)
+    const updates = photoOrders.map(({ id, order }) =>
+      supabase.from('gallery_photos').update({ sort_order: order }).eq('id', id).eq('gallery_id', galleryId)
     );
 
     const results = await Promise.all(updates);
@@ -581,18 +562,14 @@ export const galleryApi = {
   // Gallery stats
   async incrementViewCount(galleryId: string): Promise<void> {
     // Direct update since RPC might not exist
-    const { data: gallery } = await supabase
-      .from('user_galleries')
-      .select('view_count')
-      .eq('id', galleryId)
-      .single();
-      
+    const { data: gallery } = await supabase.from('user_galleries').select('view_count').eq('id', galleryId).single();
+
     if (gallery) {
       const { error } = await supabase
         .from('user_galleries')
         .update({ view_count: (gallery.view_count || 0) + 1 })
         .eq('id', galleryId);
-        
+
       if (error) {
         logger.error('Error incrementing view count', 'GALLERY', error);
       }
@@ -641,12 +618,14 @@ export const galleryApi = {
 
       const { data, error } = await (supabase as any)
         .from('photo_comments')
-        .insert([{ 
-          photo_id: photoId, 
-          user_id: memberId,
-          content: content.trim(),
-          moderation_status: 'approved' // Auto-approve for now
-        }])
+        .insert([
+          {
+            photo_id: photoId,
+            user_id: memberId,
+            content: content.trim(),
+            moderation_status: 'approved', // Auto-approve for now
+          },
+        ])
         .select()
         .single();
 
@@ -662,14 +641,16 @@ export const galleryApi = {
     try {
       let query = (supabase as any)
         .from('photo_comments')
-        .select(`
+        .select(
+          `
           *,
           user:members(
             id,
             name,
             avatar_url
           )
-        `)
+        `
+        )
         .eq('photo_id', photoId)
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false });
@@ -682,7 +663,7 @@ export const galleryApi = {
 
       const { data, error } = await query;
       if (error) throw error;
-      
+
       return data || [];
     } catch (error) {
       logger.apiError('getComments', error);
@@ -696,10 +677,10 @@ export const galleryApi = {
 
       const { data, error } = await (supabase as any)
         .from('photo_comments')
-        .update({ 
+        .update({
           content: content.trim(),
           edited_at: new Date().toISOString(),
-          is_edited: true
+          is_edited: true,
         })
         .eq('id', commentId)
         .eq('user_id', memberId) // Ensure user owns the comment
@@ -753,5 +734,5 @@ export const galleryApi = {
       logger.apiError('setCoverPhoto', error);
       throw error;
     }
-  }
+  },
 };

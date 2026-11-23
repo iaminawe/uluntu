@@ -30,13 +30,7 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   if (error) {
-    return (
-      <ErrorDisplay
-        title="Failed to load content"
-        message={error}
-        retry={onRefresh}
-      />
-    );
+    return <ErrorDisplay title="Failed to load content" message={error} retry={onRefresh} />;
   }
 
   // Filter and sort data
@@ -45,9 +39,10 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(item => 
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        item =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -66,11 +61,11 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
     filtered.sort((a, b) => {
       const aValue = a[sortBy as keyof GenericContentItem];
       const bValue = b[sortBy as keyof GenericContentItem];
-      
+
       let comparison = 0;
       if (aValue < bValue) comparison = -1;
       if (aValue > bValue) comparison = 1;
-      
+
       return sortOrder === 'desc' ? -comparison : comparison;
     });
 
@@ -88,21 +83,25 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
 
   const getColumnValue = (item: GenericContentItem, column: any) => {
     const value = item[column.key as keyof GenericContentItem];
-    
+
     if (column.render) {
       return column.render(value, item);
     }
-    
+
     switch (column.type) {
       case 'date':
         return new Date(value as string).toLocaleDateString();
       case 'status':
         return (
-          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-            value === 'published' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-            value === 'draft' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-            'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200'
-          }`}>
+          <span
+            className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+              value === 'published'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : value === 'draft'
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200'
+            }`}
+          >
             {String(value)}
           </span>
         );
@@ -110,9 +109,7 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
         if (typeof value === 'object' && value && 'name' in value) {
           return (
             <div className="flex items-center space-x-2">
-              {value.image && (
-                <img className="w-6 h-6 rounded-full" src={value.image} alt={value.name} />
-              )}
+              {value.image && <img className="w-6 h-6 rounded-full" src={value.image} alt={value.name} />}
               <span>{value.name}</span>
             </div>
           );
@@ -140,11 +137,21 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
               type="text"
               placeholder="Search content..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full sm:w-64 pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
-            <svg className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="absolute left-3 top-2.5 w-4 h-4 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
 
@@ -153,12 +160,14 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
             <div className="flex space-x-2">
               <select
                 value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
+                onChange={e => setFilterBy(e.target.value)}
                 className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="">Filter by...</option>
                 {getFilterableColumns().map(col => (
-                  <option key={col.key} value={col.key}>{col.label}</option>
+                  <option key={col.key} value={col.key}>
+                    {col.label}
+                  </option>
                 ))}
               </select>
               {filterBy && (
@@ -166,7 +175,7 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
                   type="text"
                   placeholder="Filter value..."
                   value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
+                  onChange={e => setFilterValue(e.target.value)}
                   className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               )}
@@ -186,7 +195,12 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                />
               </svg>
             </button>
             <button
@@ -198,7 +212,12 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                />
               </svg>
             </button>
           </div>
@@ -229,7 +248,7 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                   <thead className="bg-slate-50 dark:bg-slate-800">
                     <tr>
-                      {columns.map((column) => (
+                      {columns.map(column => (
                         <th
                           key={column.key}
                           className={`px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider ${
@@ -240,9 +259,14 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
                           <div className="flex items-center space-x-1">
                             <span>{column.label}</span>
                             {column.sortable && (
-                              <svg className={`w-4 h-4 transition-transform ${
-                                sortBy === column.key && sortOrder === 'desc' ? 'rotate-180' : ''
-                              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg
+                                className={`w-4 h-4 transition-transform ${
+                                  sortBy === column.key && sortOrder === 'desc' ? 'rotate-180' : ''
+                                }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                               </svg>
                             )}
@@ -255,42 +279,30 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700">
-                    {processedData.map((item) => (
+                    {processedData.map(item => (
                       <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                        {columns.map((column) => (
-                          <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
+                        {columns.map(column => (
+                          <td
+                            key={column.key}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white"
+                          >
                             {getColumnValue(item, column)}
                           </td>
                         ))}
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
                             {onEdit && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onEdit(item)}
-                                className="text-xs"
-                              >
+                              <Button variant="outline" size="sm" onClick={() => onEdit(item)} className="text-xs">
                                 Edit
                               </Button>
                             )}
                             {onDuplicate && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onDuplicate(item)}
-                                className="text-xs"
-                              >
+                              <Button variant="outline" size="sm" onClick={() => onDuplicate(item)} className="text-xs">
                                 Duplicate
                               </Button>
                             )}
                             {onDelete && (
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => onDelete(item)}
-                                className="text-xs"
-                              >
+                              <Button variant="danger" size="sm" onClick={() => onDelete(item)} className="text-xs">
                                 Delete
                               </Button>
                             )}
@@ -307,7 +319,7 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
           {/* Grid View */}
           {viewMode === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {processedData.map((item) => (
+              {processedData.map(item => (
                 <ContentCard
                   key={item.id}
                   item={item}
@@ -316,27 +328,39 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
                   layout="card"
                   showActions={true}
                   actions={[
-                    ...(onEdit ? [{
-                      id: 'edit',
-                      label: 'Edit',
-                      icon: 'edit',
-                      variant: 'outline' as const,
-                      onClick: () => onEdit(item),
-                    }] : []),
-                    ...(onDuplicate ? [{
-                      id: 'duplicate',
-                      label: 'Duplicate',
-                      icon: 'copy',
-                      variant: 'outline' as const,
-                      onClick: () => onDuplicate(item),
-                    }] : []),
-                    ...(onDelete ? [{
-                      id: 'delete',
-                      label: 'Delete',
-                      icon: 'trash',
-                      variant: 'danger' as const,
-                      onClick: () => onDelete(item),
-                    }] : []),
+                    ...(onEdit
+                      ? [
+                          {
+                            id: 'edit',
+                            label: 'Edit',
+                            icon: 'edit',
+                            variant: 'outline' as const,
+                            onClick: () => onEdit(item),
+                          },
+                        ]
+                      : []),
+                    ...(onDuplicate
+                      ? [
+                          {
+                            id: 'duplicate',
+                            label: 'Duplicate',
+                            icon: 'copy',
+                            variant: 'outline' as const,
+                            onClick: () => onDuplicate(item),
+                          },
+                        ]
+                      : []),
+                    ...(onDelete
+                      ? [
+                          {
+                            id: 'delete',
+                            label: 'Delete',
+                            icon: 'trash',
+                            variant: 'danger' as const,
+                            onClick: () => onDelete(item),
+                          },
+                        ]
+                      : []),
                   ]}
                 />
               ))}
@@ -351,7 +375,12 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
           <div className="flex flex-col items-center space-y-4">
             <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
               <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
             <div>
@@ -360,9 +389,8 @@ const GenericContentTab: React.FC<GenericContentTabProps> = ({
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm">
                 {searchTerm || filterValue
-                  ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
-                  : `You haven't created any ${contentType} content yet.`
-                }
+                  ? "Try adjusting your search or filter criteria to find what you're looking for."
+                  : `You haven't created any ${contentType} content yet.`}
               </p>
               {(searchTerm || filterValue) && (
                 <div className="space-x-3">

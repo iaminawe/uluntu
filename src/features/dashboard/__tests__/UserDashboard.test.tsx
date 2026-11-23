@@ -29,16 +29,16 @@ jest.mock('../api/userDashboardApi', () => ({
     getUserActivity: jest.fn(),
     updateUserContent: jest.fn(),
     deleteUserContent: jest.fn(),
-  }
+  },
 }));
 
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
     storage: {
-      from: jest.fn()
-    }
-  }
+      from: jest.fn(),
+    },
+  },
 }));
 
 // Mock user data
@@ -50,7 +50,7 @@ const mockUser: User = {
   avatar_url: null,
   role: 'member',
   created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  updated_at: new Date().toISOString(),
 };
 
 // Mock dashboard data
@@ -65,7 +65,7 @@ const mockUserContent = {
       updated_at: new Date().toISOString(),
       views: 42,
       likes: 8,
-      comments: 3
+      comments: 3,
     },
     {
       id: 'post-2',
@@ -76,8 +76,8 @@ const mockUserContent = {
       updated_at: new Date().toISOString(),
       views: 0,
       likes: 0,
-      comments: 0
-    }
+      comments: 0,
+    },
   ],
   photos: [
     {
@@ -87,8 +87,8 @@ const mockUserContent = {
       thumbnail: '/photos/sunset-thumb.jpg',
       created_at: new Date().toISOString(),
       views: 156,
-      likes: 24
-    }
+      likes: 24,
+    },
   ],
   events: [
     {
@@ -96,9 +96,9 @@ const mockUserContent = {
       title: 'Tech Meetup',
       description: 'Monthly tech meetup',
       date: new Date(Date.now() + 86400000).toISOString(),
-      attendees: 15
-    }
-  ]
+      attendees: 15,
+    },
+  ],
 };
 
 const mockAnalytics = {
@@ -107,17 +107,17 @@ const mockAnalytics = {
     totalLikes: 32,
     totalComments: 3,
     totalFollowers: 45,
-    growthRate: 12.5
+    growthRate: 12.5,
   },
   chartData: {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     views: [20, 35, 42, 38, 50, 28, 33],
-    engagement: [5, 8, 12, 9, 15, 7, 10]
+    engagement: [5, 8, 12, 9, 15, 7, 10],
   },
   topContent: [
     { id: 'post-1', title: 'My First Post', views: 42, engagement: 18.5 },
-    { id: 'photo-1', title: 'Beautiful Sunset', views: 156, engagement: 15.4 }
-  ]
+    { id: 'photo-1', title: 'Beautiful Sunset', views: 156, engagement: 15.4 },
+  ],
 };
 
 const mockActivity = {
@@ -127,7 +127,7 @@ const mockActivity = {
       type: 'like',
       user: 'john_doe',
       target: 'My First Post',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     {
       id: 'activity-2',
@@ -135,14 +135,14 @@ const mockActivity = {
       user: 'jane_smith',
       target: 'Beautiful Sunset',
       content: 'Amazing photo!',
-      timestamp: new Date(Date.now() - 3600000).toISOString()
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
     },
     {
       id: 'activity-3',
       type: 'follow',
       user: 'bob_wilson',
-      timestamp: new Date(Date.now() - 7200000).toISOString()
-    }
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+    },
   ],
   notifications: [
     {
@@ -150,16 +150,16 @@ const mockActivity = {
       type: 'milestone',
       message: 'Your post reached 100 views!',
       read: false,
-      timestamp: new Date(Date.now() - 1800000).toISOString()
-    }
-  ]
+      timestamp: new Date(Date.now() - 1800000).toISOString(),
+    },
+  ],
 };
 
 // Test setup helpers
 const createMockStore = (initialState = {}) => {
   return configureStore({
     reducer: {
-      auth: authReducer
+      auth: authReducer,
     },
     preloadedState: {
       auth: {
@@ -167,9 +167,9 @@ const createMockStore = (initialState = {}) => {
         isAuthenticated: true,
         loading: false,
         error: null,
-        ...initialState.auth
-      }
-    }
+        ...initialState.auth,
+      },
+    },
   });
 };
 
@@ -199,9 +199,7 @@ const renderWithProviders = (
   return render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          {component}
-        </MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>{component}</MemoryRouter>
       </QueryClientProvider>
     </Provider>
   );
@@ -212,7 +210,7 @@ describe('UserDashboard Component Tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Setup API mock responses
     mockApi.getUserContent.mockResolvedValue(mockUserContent);
     mockApi.getUserAnalytics.mockResolvedValue(mockAnalytics);
@@ -230,7 +228,7 @@ describe('UserDashboard Component Tests', () => {
       // Check for main dashboard elements
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Welcome back, Test User!')).toBeInTheDocument();
-      
+
       // Wait for data to load and check for tab navigation
       await waitFor(() => {
         expect(screen.getByRole('tab', { name: /overview/i })).toBeInTheDocument();
@@ -242,13 +240,13 @@ describe('UserDashboard Component Tests', () => {
 
     test('displays loading state initially', () => {
       renderWithProviders(<UserDashboard />);
-      
+
       expect(screen.getByTestId('dashboard-loading')).toBeInTheDocument();
     });
 
     test('displays error state when API fails', async () => {
       mockApi.getUserContent.mockRejectedValue(new Error('API Error'));
-      
+
       renderWithProviders(<UserDashboard />);
 
       await waitFor(() => {
@@ -306,7 +304,7 @@ describe('UserDashboard Component Tests', () => {
 
     test('maintains tab state during navigation', async () => {
       renderWithProviders(<DashboardTabs />, {
-        initialEntries: ['/dashboard?tab=analytics']
+        initialEntries: ['/dashboard?tab=analytics'],
       });
 
       await waitFor(() => {
@@ -324,10 +322,10 @@ describe('UserDashboard Component Tests', () => {
         // Check for posts
         expect(screen.getByText('My First Post')).toBeInTheDocument();
         expect(screen.getByText('Draft Post')).toBeInTheDocument();
-        
+
         // Check for photos
         expect(screen.getByText('Beautiful Sunset')).toBeInTheDocument();
-        
+
         // Check for events
         expect(screen.getByText('Tech Meetup')).toBeInTheDocument();
       });
@@ -373,7 +371,7 @@ describe('UserDashboard Component Tests', () => {
 
     test('handles content editing', async () => {
       mockApi.updateUserContent.mockResolvedValue({ success: true });
-      
+
       renderWithProviders(<ContentManager />);
 
       await waitFor(() => {
@@ -399,14 +397,14 @@ describe('UserDashboard Component Tests', () => {
 
       await waitFor(() => {
         expect(mockApi.updateUserContent).toHaveBeenCalledWith('post-1', {
-          title: 'Updated Post Title'
+          title: 'Updated Post Title',
         });
       });
     });
 
     test('handles content deletion with confirmation', async () => {
       mockApi.deleteUserContent.mockResolvedValue({ success: true });
-      
+
       renderWithProviders(<ContentManager />);
 
       await waitFor(() => {
@@ -438,8 +436,8 @@ describe('UserDashboard Component Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('198')).toBeInTheDocument(); // Total views
-        expect(screen.getByText('32')).toBeInTheDocument();  // Total likes
-        expect(screen.getByText('45')).toBeInTheDocument();  // Total followers
+        expect(screen.getByText('32')).toBeInTheDocument(); // Total likes
+        expect(screen.getByText('45')).toBeInTheDocument(); // Total followers
         expect(screen.getByText('12.5%')).toBeInTheDocument(); // Growth rate
       });
     });
@@ -546,7 +544,7 @@ describe('UserDashboard Component Tests', () => {
         configurable: true,
         value: 375,
       });
-      
+
       renderWithProviders(<UserDashboard />);
 
       await waitFor(() => {
@@ -561,7 +559,7 @@ describe('UserDashboard Component Tests', () => {
         configurable: true,
         value: 375,
       });
-      
+
       renderWithProviders(<UserDashboard />);
 
       // Sidebar should be hidden on mobile by default
@@ -588,7 +586,7 @@ describe('UserDashboard Component Tests', () => {
       await waitFor(() => {
         const tabList = screen.getByRole('tablist');
         expect(tabList).toHaveAttribute('aria-label', 'Dashboard sections');
-        
+
         const tabs = screen.getAllByRole('tab');
         tabs.forEach(tab => {
           expect(tab).toHaveAttribute('aria-controls');
@@ -608,10 +606,10 @@ describe('UserDashboard Component Tests', () => {
 
       const overviewTab = screen.getByRole('tab', { name: /overview/i });
       overviewTab.focus();
-      
+
       // Use arrow keys to navigate
       await user.keyboard('{ArrowRight}');
-      
+
       const contentTab = screen.getByRole('tab', { name: /content/i });
       expect(contentTab).toHaveFocus();
     });
@@ -637,7 +635,7 @@ describe('UserDashboard Component Tests', () => {
   describe('Error Handling', () => {
     test('handles API errors gracefully', async () => {
       mockApi.getUserContent.mockRejectedValue(new Error('Network error'));
-      
+
       renderWithProviders(<UserDashboard />);
 
       await waitFor(() => {
@@ -647,10 +645,8 @@ describe('UserDashboard Component Tests', () => {
     });
 
     test('retries failed requests', async () => {
-      mockApi.getUserContent
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce(mockUserContent);
-      
+      mockApi.getUserContent.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce(mockUserContent);
+
       renderWithProviders(<UserDashboard />);
 
       await waitFor(() => {
@@ -670,9 +666,9 @@ describe('UserDashboard Component Tests', () => {
       mockApi.getUserContent.mockResolvedValue({
         posts: [],
         photos: [],
-        events: []
+        events: [],
       });
-      
+
       renderWithProviders(<ContentManager />);
 
       await waitFor(() => {

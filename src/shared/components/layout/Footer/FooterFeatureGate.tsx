@@ -22,26 +22,21 @@ export const FooterFeatureGate: React.FC<FooterFeatureGateProps> = ({
   menuItem,
   fallback = null,
   requireAll = false,
-  showDevMode = true
+  showDevMode = true,
 }) => {
   const { isFeatureEnabled: checkFeature } = useEnabledFeatures();
   const isFeatureEnabled = (feature: string) => checkFeature(feature as any);
 
   // Get feature flags to check
   const featuresToCheck = getFeaturesToCheck(featureKey, menuItem);
-  
+
   if (featuresToCheck.length === 0) {
     // No feature flags to check, show content
     return <>{children}</>;
   }
 
   // Check feature flags
-  const hasAccess = checkFeatureAccess(
-    featuresToCheck,
-    isFeatureEnabled,
-    requireAll,
-    showDevMode
-  );
+  const hasAccess = checkFeatureAccess(featuresToCheck, isFeatureEnabled, requireAll, showDevMode);
 
   if (!hasAccess) {
     return <>{fallback}</>;
@@ -53,10 +48,7 @@ export const FooterFeatureGate: React.FC<FooterFeatureGateProps> = ({
 /**
  * Get array of features to check from props and menu item
  */
-function getFeaturesToCheck(
-  featureKey?: FeatureKey | string,
-  menuItem?: MenuItem
-): string[] {
+function getFeaturesToCheck(featureKey?: FeatureKey | string, menuItem?: MenuItem): string[] {
   const features: string[] = [];
 
   // Add explicit feature key
@@ -115,13 +107,9 @@ export function withFooterFeatureGate<T extends object>(
   ) {
     const { featureKey, menuItem, fallback, ...componentProps } = props;
     const actualFeatureKey = featureKey || defaultFeatureKey;
-    
+
     return (
-      <FooterFeatureGate
-        featureKey={actualFeatureKey}
-        menuItem={menuItem}
-        fallback={fallback}
-      >
+      <FooterFeatureGate featureKey={actualFeatureKey} menuItem={menuItem} fallback={fallback}>
         <Component {...(componentProps as T)} />
       </FooterFeatureGate>
     );
@@ -145,7 +133,7 @@ export function useFooterFeatures() {
       .filter(checkItemFeature)
       .map(item => ({
         ...item,
-        children: item.children ? filterByFeatures(item.children) : undefined
+        children: item.children ? filterByFeatures(item.children) : undefined,
       }))
       .filter(item => !item.children || item.children.length > 0 || !item.feature_flag);
   };
@@ -157,7 +145,7 @@ export function useFooterFeatures() {
       'footer_newsletter_signup',
       'footer_legal_links',
       'footer_branding',
-      'footer_search'
+      'footer_search',
     ];
 
     return footerFeatures.filter(feature => isFeatureEnabled(feature));
@@ -173,7 +161,7 @@ export function useFooterFeatures() {
     getEnabledFooterFeatures,
     isFooterFeatureEnabled,
     isFeatureEnabled,
-    features
+    features,
   };
 }
 

@@ -34,9 +34,7 @@ Try editing this content or generating new content with AI!`);
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
-            Enhanced Content AI Editor Demo
-          </h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Enhanced Content AI Editor Demo</h1>
           <p className="text-lg text-slate-600">
             Experience all the new features: image upload, markdown preview, and rich formatting
           </p>
@@ -44,7 +42,7 @@ Try editing this content or generating new content with AI!`);
 
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-semibold mb-4">Try the Editor</h2>
-          
+
           <EnhancedContentAIEditor
             value={content}
             onChange={setContent}
@@ -57,11 +55,21 @@ Try editing this content or generating new content with AI!`);
           <div className="mt-6 p-4 bg-slate-50 rounded-lg">
             <h3 className="font-semibold mb-2">✨ New Features:</h3>
             <ul className="space-y-1 text-sm text-slate-700">
-              <li>• <strong>Upload Images:</strong> Click the image icon → Upload Image</li>
-              <li>• <strong>Preview Mode:</strong> Click the Preview button to see rendered markdown</li>
-              <li>• <strong>Rich Formatting:</strong> Use toolbar buttons or keyboard shortcuts</li>
-              <li>• <strong>Undo/Redo:</strong> Ctrl+Z / Ctrl+Y</li>
-              <li>• <strong>AI Generation:</strong> Click Generate to create content</li>
+              <li>
+                • <strong>Upload Images:</strong> Click the image icon → Upload Image
+              </li>
+              <li>
+                • <strong>Preview Mode:</strong> Click the Preview button to see rendered markdown
+              </li>
+              <li>
+                • <strong>Rich Formatting:</strong> Use toolbar buttons or keyboard shortcuts
+              </li>
+              <li>
+                • <strong>Undo/Redo:</strong> Ctrl+Z / Ctrl+Y
+              </li>
+              <li>
+                • <strong>AI Generation:</strong> Click Generate to create content
+              </li>
             </ul>
           </div>
         </div>

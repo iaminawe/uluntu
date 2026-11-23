@@ -19,7 +19,7 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
   importPreview,
   isImporting,
   onClose,
-  onImport
+  onImport,
 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -31,7 +31,9 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Import Preview (First 5 rows)</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              Import Preview (First 5 rows)
+            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Review the data below before proceeding with the import. Only users with valid user_id will be updated.
             </p>
@@ -42,7 +44,10 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       {Object.keys(importPreview[0]).map(header => (
-                        <th key={header} className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                        <th
+                          key={header}
+                          className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase"
+                        >
                           {header}
                         </th>
                       ))}
@@ -53,7 +58,8 @@ export const ImportUsersModal: React.FC<ImportUsersModalProps> = ({
                       <tr key={index}>
                         {Object.values(row).map((value, cellIndex) => (
                           <td key={cellIndex} className="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
-                            {String(value).slice(0, 50)}{String(value).length > 50 ? '...' : ''}
+                            {String(value).slice(0, 50)}
+                            {String(value).length > 50 ? '...' : ''}
                           </td>
                         ))}
                       </tr>

@@ -6,10 +6,23 @@ type SupabaseMember = Database['public']['Tables']['members']['Row'];
 
 // When Supabase returns data from insert/update operations, it may not include all fields
 // This type represents the minimal data we can expect from such operations
-type PartialSupabaseMember = Pick<SupabaseMember, 
-  'id' | 'name' | 'title' | 'bio' | 'location' | 'image' | 
-  'website' | 'status' | 'featured' | 'created_at' | 'company' | 
-  'social' | 'arrived_in_nelson' | 'employment_status' | 'open_to_volunteering'
+type PartialSupabaseMember = Pick<
+  SupabaseMember,
+  | 'id'
+  | 'name'
+  | 'title'
+  | 'bio'
+  | 'location'
+  | 'image'
+  | 'website'
+  | 'status'
+  | 'featured'
+  | 'created_at'
+  | 'company'
+  | 'social'
+  | 'arrived_in_nelson'
+  | 'employment_status'
+  | 'open_to_volunteering'
 > & {
   // These fields might be missing when data comes from insert/update operations
   onboarding_completed_at?: string | null;
@@ -23,7 +36,7 @@ type PartialSupabaseMember = Pick<SupabaseMember,
 export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | SupabaseMember): Member {
   // Handle social links - dbMember.social is stored as JSON in the database
   let social: SocialLinks | undefined = undefined;
-  
+
   if (dbMember.social && typeof dbMember.social === 'object') {
     // If social is stored as JSON, use it directly
     social = dbMember.social as SocialLinks;
@@ -45,16 +58,18 @@ export function adaptMemberFromDatabase(dbMember: PartialSupabaseMember | Supaba
     skills: [], // This would need to be populated from member_skills table
     joinDate: dbMember.created_at || new Date().toISOString(),
     social: social,
-    status: (['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '') ? dbMember.status as ContentStatus : 'draft'), // Validate and cast
+    status: ['draft', 'published', 'archived', 'pending'].includes(dbMember.status ?? '')
+      ? (dbMember.status as ContentStatus)
+      : 'draft', // Validate and cast
     featured: dbMember.featured || false,
-    created_at: dbMember.created_at || new Date().toISOString()
+    created_at: dbMember.created_at || new Date().toISOString(),
   };
-  
+
   // Add user_id if available from database
   if (dbMember.user_id) {
     (member as any).user_id = dbMember.user_id;
   }
-  
+
   return member;
 }
 
@@ -68,7 +83,7 @@ export function adaptMemberToDatabase(member: Partial<Member>): Partial<Supabase
     website: member.social?.website || undefined,
     status: member.status || 'draft',
     featured: member.featured || undefined,
-    ...((member as any).intro && { intro: (member as any).intro })
+    ...((member as any).intro && { intro: (member as any).intro }),
   } as any;
 }
 
@@ -101,7 +116,7 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     image: member.image || '/placeholder-avatar.png',
     skills: member.skills || [],
     joinDate: member.joinDate || member.created_at || new Date().toISOString(), // Pass through from MainMember with fallback
-    status: member.status || 'published' as ContentStatus,     // Pass through from MainMember with default
+    status: member.status || ('published' as ContentStatus), // Pass through from MainMember with default
     // TODO(member-relationships): Populate relationship arrays from database
     // These fields require querying the member_organizations, member_groups, member_events tables
     // Current implementation: Empty arrays placeholder
@@ -119,20 +134,22 @@ export function mapMemberToProfileMember(member: MemberLike): import('../compone
     opportunities: [], // TODO: Populate from relationships
     achievements: [], // TODO: Populate from relationships
     // website: member.social?.website, // Removed as ProfileMember uses socialLinks array for website
-    socialLinks: member.social ? [
-      // Ensure 'Website' is capitalized consistently if it matters for platform identification
-      { platform: 'Website', url: member.social.website || '' }
-    ].filter(link => link.url) : [],
+    socialLinks: member.social
+      ? [
+          // Ensure 'Website' is capitalized consistently if it matters for platform identification
+          { platform: 'Website', url: member.social.website || '' },
+        ].filter(link => link.url)
+      : [],
     employmentStatus: 'not-looking' as const, // TODO(member-status): Map from member.employment_status field
     openToVolunteering: false, // TODO(member-volunteering): Add member.open_to_volunteering field to MemberLike type
-    arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString()
+    arrivedInNelson: member.joinDate || member.created_at || new Date().toISOString(),
   };
-  
+
   // Add user_id to the profile member so ProfileHeader can check ownership
   if (member.user_id) {
     (profileMember as any).user_id = member.user_id;
   }
-  
+
   return profileMember;
 }
 
@@ -149,7 +166,7 @@ export interface AdaptedMember {
   employmentStatus: string;
   openToVolunteering: boolean;
   arrivedInNelson: string;
-  status: string; 
+  status: string;
   featured: boolean;
   createdAt: string;
   company: string;
@@ -175,15 +192,15 @@ export function adaptMemberFromSupabase(member: SupabaseMember): AdaptedMember {
     status: member.status || 'published',
     featured: member.featured || false,
     createdAt: member.created_at || new Date().toISOString(),
-    company: '', 
-    skills: [], 
-    joinDate: member.created_at || new Date().toISOString(), 
+    company: '',
+    skills: [],
+    joinDate: member.created_at || new Date().toISOString(),
     social: {
       linkedin: '', // Supabase 'members' table does not have a separate linkedin column
-      twitter: '',  // Supabase 'members' table does not have a separate twitter column
-      github: '',   // Supabase 'members' table does not have a separate github column
-      website: member.website || '' // Use the 'website' column from Supabase
-    }
+      twitter: '', // Supabase 'members' table does not have a separate twitter column
+      github: '', // Supabase 'members' table does not have a separate github column
+      website: member.website || '', // Use the 'website' column from Supabase
+    },
   };
   return adaptedMember;
 }
@@ -200,8 +217,8 @@ export function adaptMemberToSupabase(member: AdaptedMember): Database['public']
     employment_status: member.employmentStatus,
     open_to_volunteering: member.openToVolunteering,
     arrived_in_nelson: member.arrivedInNelson,
-    status: member.status, 
-    featured: member.featured
+    status: member.status,
+    featured: member.featured,
     // Supabase 'members' table does not have separate linkedin, twitter, github columns
     // The 'website' column is already mapped from member.website above
   };

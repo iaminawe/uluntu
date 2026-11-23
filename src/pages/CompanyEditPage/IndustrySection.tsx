@@ -8,17 +8,17 @@ const IndustrySection = ({
   onAdd,
   onRemove,
   isSubmitting,
-  error
+  error,
 }: IndustrySectionProps) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-slate-800 dark:text-white">Industry Tags</h3>
-      
+
       <div className="flex mb-3">
         <input
           type="text"
           value={newIndustry}
-          onChange={(e) => setNewIndustry(e.target.value)}
+          onChange={e => setNewIndustry(e.target.value)}
           disabled={isSubmitting}
           className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-l-md 
                     shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500
@@ -31,14 +31,14 @@ const IndustrySection = ({
           disabled={!newIndustry.trim() || isSubmitting}
           className={`px-4 py-2 bg-orange-500 text-white rounded-r-md
                     hover:bg-orange-600 transition-colors flex items-center
-                    ${(!newIndustry.trim() || isSubmitting) ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    ${!newIndustry.trim() || isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
           <Plus className="h-5 w-5" />
         </button>
       </div>
-      
+
       {error && <p className="text-sm text-red-500">{error}</p>}
-      
+
       {industries.length > 0 ? (
         <div className="flex flex-wrap gap-2 mt-2">
           {industries.map((industry, index) => (

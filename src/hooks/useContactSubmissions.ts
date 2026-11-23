@@ -1,5 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contactSubmissionsAPI as contactSubmissionsApi, ContactSubmissionFilter, ContactSubmission } from '@/features/contact/api/contactSubmissionsApi';
+import {
+  contactSubmissionsAPI as contactSubmissionsApi,
+  ContactSubmissionFilter,
+  ContactSubmission,
+} from '@/features/contact/api/contactSubmissionsApi';
 import { logAndSanitizeError } from '@/utils/errorSanitization';
 
 export interface UseContactSubmissionsOptions {
@@ -24,24 +28,19 @@ export interface UseContactSubmissionsReturn {
 
 export function useContactSubmissions(options: UseContactSubmissionsOptions = {}): UseContactSubmissionsReturn {
   const queryClient = useQueryClient();
-  const {
-    filters = {},
-    page = 1,
-    limit = 25,
-    autoFetch = true
-  } = options;
+  const { filters = {}, page = 1, limit = 25, autoFetch = true } = options;
 
   // Fetch submissions query
-  const { 
-    data, 
-    isLoading: loading, 
+  const {
+    data,
+    isLoading: loading,
     error: queryError,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['contact-submissions', filters, page, limit],
     queryFn: () => contactSubmissionsApi.getSubmissions(filters, page, limit),
     enabled: autoFetch,
-    placeholderData: (previousData) => previousData
+    placeholderData: previousData => previousData,
   });
 
   // Create submission mutation
@@ -49,16 +48,15 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
     mutationFn: (data: any) => contactSubmissionsApi.submitContactForm(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
-    }
+    },
   });
 
   // Update submission mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => 
-      contactSubmissionsApi.updateSubmission(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) => contactSubmissionsApi.updateSubmission(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
-    }
+    },
   });
 
   // Delete submission mutation
@@ -66,7 +64,7 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
     mutationFn: (id: string) => contactSubmissionsApi.deleteSubmission(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
-    }
+    },
   });
 
   const createSubmission = async (data: any) => {
@@ -77,7 +75,7 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
       const sanitized = logAndSanitizeError(err, 'Contact Submissions - Create');
       return {
         success: false,
-        error: sanitized.userMessage
+        error: sanitized.userMessage,
       };
     }
   };
@@ -90,7 +88,7 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
       const sanitized = logAndSanitizeError(err, 'Contact Submissions - Update');
       return {
         success: false,
-        error: sanitized.userMessage
+        error: sanitized.userMessage,
       };
     }
   };
@@ -103,7 +101,7 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
       const sanitized = logAndSanitizeError(err, 'Contact Submissions - Delete');
       return {
         success: false,
-        error: sanitized.userMessage
+        error: sanitized.userMessage,
       };
     }
   };
@@ -116,9 +114,12 @@ export function useContactSubmissions(options: UseContactSubmissionsOptions = {}
     totalPages: (data as any)?.totalPages || 0,
     currentPage: page,
     refetch: () => refetch().then(() => void 0),
-    createSubmission: createSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
-    updateSubmission: updateSubmission as (id: string, data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
-    deleteSubmission: deleteSubmission as (id: string) => Promise<{ success: boolean; error?: string | undefined; }>,
+    createSubmission: createSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined }>,
+    updateSubmission: updateSubmission as (
+      id: string,
+      data: any
+    ) => Promise<{ success: boolean; error?: string | undefined }>,
+    deleteSubmission: deleteSubmission as (id: string) => Promise<{ success: boolean; error?: string | undefined }>,
   };
 }
 
@@ -140,14 +141,14 @@ export interface UseContactSubmissionStatsReturn {
 }
 
 export function useContactSubmissionStats(dateRange?: { start: string; end: string }): UseContactSubmissionStatsReturn {
-  const { 
-    data: stats, 
-    isLoading: loading, 
+  const {
+    data: stats,
+    isLoading: loading,
     error: queryError,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['contact-submission-stats', dateRange],
-    queryFn: () => contactSubmissionsApi.getSubmissionStats()
+    queryFn: () => contactSubmissionsApi.getSubmissionStats(),
   });
 
   return {
@@ -169,16 +170,16 @@ export interface UseContactSubmissionReturn {
 
 export function useContactSubmission(id: string): UseContactSubmissionReturn {
   const queryClient = useQueryClient();
-  
-  const { 
-    data: submission, 
-    isLoading: loading, 
+
+  const {
+    data: submission,
+    isLoading: loading,
     error: queryError,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['contact-submission', id],
     queryFn: () => contactSubmissionsApi.getSubmission(id),
-    enabled: !!id
+    enabled: !!id,
   });
 
   // Update submission mutation
@@ -187,7 +188,7 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submission', id] });
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
-    }
+    },
   });
 
   // Delete submission mutation
@@ -195,7 +196,7 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     mutationFn: () => contactSubmissionsApi.deleteSubmission(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
-    }
+    },
   });
 
   const updateSubmission = async (data: any) => {
@@ -205,7 +206,7 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : 'Failed to update submission'
+        error: err instanceof Error ? err.message : 'Failed to update submission',
       };
     }
   };
@@ -217,7 +218,7 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : 'Failed to delete submission'
+        error: err instanceof Error ? err.message : 'Failed to delete submission',
       };
     }
   };
@@ -227,8 +228,8 @@ export function useContactSubmission(id: string): UseContactSubmissionReturn {
     loading,
     error: queryError ? (queryError instanceof Error ? queryError.message : 'Failed to fetch submission') : null,
     refetch: () => refetch().then(() => void 0),
-    update: updateSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined; }>,
-    delete: deleteSubmission as () => Promise<{ success: boolean; error?: string | undefined; }>,
+    update: updateSubmission as (data: any) => Promise<{ success: boolean; error?: string | undefined }>,
+    delete: deleteSubmission as () => Promise<{ success: boolean; error?: string | undefined }>,
   };
 }
 
@@ -243,12 +244,12 @@ export interface UseNotificationPreferencesReturn {
 
 export function useNotificationPreferences(): UseNotificationPreferencesReturn {
   const queryClient = useQueryClient();
-  
-  const { 
-    data: preferences, 
-    isLoading: loading, 
+
+  const {
+    data: preferences,
+    isLoading: loading,
     error: queryError,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['notification-preferences'],
     queryFn: async () => {
@@ -270,7 +271,7 @@ export function useNotificationPreferences(): UseNotificationPreferencesReturn {
           timezone: 'America/Vancouver',
         },
       };
-    }
+    },
   });
 
   // Update preferences mutation
@@ -279,11 +280,11 @@ export function useNotificationPreferences(): UseNotificationPreferencesReturn {
       // This would save to your backend
       return { success: true, data: newPreferences };
     },
-    onSuccess: (result) => {
+    onSuccess: result => {
       if (result.success) {
         queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });
       }
-    }
+    },
   });
 
   const updatePreferences = async (newPreferences: any) => {
@@ -293,7 +294,7 @@ export function useNotificationPreferences(): UseNotificationPreferencesReturn {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : 'Failed to update preferences'
+        error: err instanceof Error ? err.message : 'Failed to update preferences',
       };
     }
   };

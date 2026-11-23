@@ -14,11 +14,12 @@ if (typeof window !== 'undefined') {
   window.import = {
     meta: {
       env: {
-        VITE_SUPABASE_URL: useRealSupabase 
-          ? (process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321')
+        VITE_SUPABASE_URL: useRealSupabase
+          ? process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321'
           : 'https://example.supabase.co',
-        VITE_SUPABASE_ANON_KEY: useRealSupabase 
-          ? (process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0')
+        VITE_SUPABASE_ANON_KEY: useRealSupabase
+          ? process.env.VITE_SUPABASE_ANON_KEY ||
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
           : 'mock-anon-key',
         VITE_PROFILE_IMAGES_BUCKET: process.env.VITE_PROFILE_IMAGES_BUCKET || 'profile-images',
         VITE_USE_SUPABASE: process.env.VITE_USE_SUPABASE || 'false',
@@ -26,7 +27,7 @@ if (typeof window !== 'undefined') {
       },
     },
   };
-  
+
   // Mock window.alert
   window.alert = jest.fn();
 }

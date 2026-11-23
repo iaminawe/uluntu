@@ -40,12 +40,15 @@ export interface Opportunity {
 // Adapter function to convert from main Opportunity type to local Opportunity type
 export const adaptMainOpportunityToLocal = (opportunity: MainOpportunity): Partial<Opportunity> => {
   return {
-    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : opportunity.id as number,
+    id: typeof opportunity.id === 'string' ? parseInt(opportunity.id) : (opportunity.id as number),
     title: opportunity.title,
     company: {
-      id: typeof opportunity.company.id === 'string' ? parseInt(opportunity.company.id) : opportunity.company.id as number,
+      id:
+        typeof opportunity.company.id === 'string'
+          ? parseInt(opportunity.company.id)
+          : (opportunity.company.id as number),
       name: opportunity.company.name,
-      logo: opportunity.company.logo
+      logo: opportunity.company.logo,
     },
     type: opportunity.type as OpportunityType,
     location: opportunity.location,
@@ -55,7 +58,7 @@ export const adaptMainOpportunityToLocal = (opportunity: MainOpportunity): Parti
     postedDate: opportunity.postedDate,
     deadline: opportunity.deadline,
     featured: nullToUndefined(opportunity.featured),
-    status: opportunity.status
+    status: opportunity.status,
   };
 };
 
@@ -67,7 +70,7 @@ export const adaptLocalOpportunityToMain = (opportunity: Opportunity): Partial<M
     company: {
       id: opportunity.company.id.toString(),
       name: opportunity.company.name,
-      logo: opportunity.company.logo
+      logo: opportunity.company.logo,
     },
     type: opportunity.type as MainOpportunity['type'],
     location: opportunity.location,
@@ -77,7 +80,7 @@ export const adaptLocalOpportunityToMain = (opportunity: Opportunity): Partial<M
     postedDate: opportunity.postedDate,
     deadline: opportunity.deadline,
     featured: nullToUndefined(opportunity.featured),
-    status: opportunity.status
+    status: opportunity.status,
   };
 };
 
@@ -104,7 +107,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       id: 1,
       name: 'Mountain Tech Solutions',
       logo: 'https://images.pexels.com/photos/2764678/pexels-photo-2764678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-      location: 'Nelson, BC'
+      location: 'Nelson, BC',
     },
     type: 'full-time',
     category: 'engineering',
@@ -116,19 +119,19 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       'Develop and maintain web applications using React and Node.js',
       'Collaborate with cross-functional teams to define and implement new features',
       'Optimize applications for maximum performance and scalability',
-      'Implement automated testing strategies'
+      'Implement automated testing strategies',
     ],
     requirements: [
       '5+ years of experience with modern JavaScript frameworks',
       'Strong knowledge of React, TypeScript, and Node.js',
       'Experience with cloud platforms (AWS/Azure/GCP)',
-      'Strong communication skills'
+      'Strong communication skills',
     ],
     salary: '$90,000 - $120,000 CAD',
     postedDate: '2025-04-15',
     deadline: '2025-06-15',
     applyUrl: 'https://example.com/apply',
-    featured: true
+    featured: true,
   },
   {
     id: 2,
@@ -136,29 +139,30 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     company: {
       id: 2,
       name: 'Creative Solutions',
-      logo: 'https://images.pexels.com/photos/2469/El-Capitan-Yosemite-Apple-Mac.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      logo: 'https://images.pexels.com/photos/2469/El-Capitan-Yosemite-Apple-Mac.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     },
     type: 'contract',
     category: 'design',
     experienceLevel: 'mid',
     location: 'Kelowna, BC',
     remote: true,
-    description: 'Looking for a talented UX/UI designer to help create engaging user experiences for our digital products.',
+    description:
+      'Looking for a talented UX/UI designer to help create engaging user experiences for our digital products.',
     responsibilities: [
       'Create wireframes, prototypes, and high-fidelity designs',
       'Conduct user research and usability testing',
       'Collaborate with developers to implement designs',
-      'Maintain and evolve our design system'
+      'Maintain and evolve our design system',
     ],
     requirements: [
       '3+ years of experience in UX/UI design',
       'Proficiency in design tools (Figma, Sketch, Adobe XD)',
       'Portfolio demonstrating strong design thinking',
-      'Experience with responsive web design'
+      'Experience with responsive web design',
     ],
     salary: '$40-60/hour',
     postedDate: '2025-05-01',
-    deadline: '2025-06-01'
+    deadline: '2025-06-01',
   },
   {
     id: 3,
@@ -166,7 +170,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     company: {
       id: 3,
       name: 'Kootenay Tech Association',
-      logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      logo: 'https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     },
     type: 'volunteer',
     category: 'marketing',
@@ -178,9 +182,9 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       'Coordinate regular meetups and networking events',
       'Manage social media accounts and community engagement',
       'Connect with local businesses and professionals',
-      'Assist with grant applications and fundraising'
+      'Assist with grant applications and fundraising',
     ],
-    postedDate: '2025-05-10'
+    postedDate: '2025-05-10',
   },
   {
     id: 4,
@@ -188,7 +192,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     company: {
       id: 4,
       name: 'Alpine Software',
-      logo: 'https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      logo: 'https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     },
     type: 'full-time',
     category: 'management',
@@ -200,18 +204,18 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       'Define product vision, strategy, and roadmap',
       'Gather and prioritize product requirements',
       'Work closely with engineering, design, and marketing teams',
-      'Analyze market trends and competitive landscape'
+      'Analyze market trends and competitive landscape',
     ],
     requirements: [
       '5+ years of product management experience',
       'Strong analytical and problem-solving skills',
       'Experience with agile development methodologies',
-      'Excellent communication and leadership abilities'
+      'Excellent communication and leadership abilities',
     ],
     salary: '$85,000 - $110,000 CAD',
     postedDate: '2025-04-20',
     deadline: '2025-06-20',
-    featured: true
+    featured: true,
   },
   {
     id: 5,
@@ -219,7 +223,7 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     company: {
       id: 2,
       name: 'Creative Solutions',
-      logo: 'https://images.pexels.com/photos/2469/El-Capitan-Yosemite-Apple-Mac.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      logo: 'https://images.pexels.com/photos/2469/El-Capitan-Yosemite-Apple-Mac.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     },
     type: 'internship',
     category: 'marketing',
@@ -231,15 +235,15 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       'Assist with social media management and content creation',
       'Help organize marketing campaigns and events',
       'Conduct market research and competitor analysis',
-      'Support the marketing team with various administrative tasks'
+      'Support the marketing team with various administrative tasks',
     ],
     requirements: [
       'Currently enrolled in a marketing, communications, or business program',
       'Strong written and verbal communication skills',
       'Familiarity with social media platforms',
-      'Self-motivated and eager to learn'
+      'Self-motivated and eager to learn',
     ],
     postedDate: '2025-05-05',
-    deadline: '2025-05-25'
-  }
+    deadline: '2025-05-25',
+  },
 ];

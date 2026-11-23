@@ -1,13 +1,7 @@
 import { supabase, handleSupabaseError } from '@/shared/api/client';
 import { galleryApi } from './galleryApi';
 import { imageProcessingService } from '../services/imageProcessingService';
-import {
-  PhotoUploadInput,
-  BatchUploadConfig,
-  BatchUploadFile,
-  BatchUploadResult,
-  Photo
-} from '../types';
+import { PhotoUploadInput, BatchUploadConfig, BatchUploadFile, BatchUploadResult, Photo } from '../types';
 
 // Compatibility types
 type PhotoUpload = PhotoUploadInput;
@@ -36,21 +30,14 @@ class UploadApi {
   private maxFileSize = 50 * 1024 * 1024; // 50MB
   private allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-  async uploadPhoto(
-    file: File,
-    options: UploadOptions = {},
-    onProgress?: (progress: number) => void
-  ): Promise<Photo> {
+  async uploadPhoto(file: File, options: UploadOptions = {}, onProgress?: (progress: number) => void): Promise<Photo> {
     try {
       this.validateFile(file);
 
       // Same path as the batch upload dialog: resize in the browser, then
       // galleryApi stores every size under the uploader's own folder in the
       // gallery-photos bucket and creates the gallery_photos row.
-      const input = await imageProcessingService.enhanceUploadInput(
-        file,
-        options.galleryId || options.gallery_id
-      );
+      const input = await imageProcessingService.enhanceUploadInput(file, options.galleryId || options.gallery_id);
       const photo = await galleryApi.uploadPhoto({
         ...input,
         title: options.title || input.title,
@@ -100,20 +87,16 @@ class UploadApi {
       const uploadPromises = files.map(async (file, index) => {
         try {
           batchUpload.files[index].status = 'uploading';
-          
-          const photo = await this.uploadPhoto(
-            file,
-            options,
-            (progress) => {
-              batchUpload.files[index].progress = progress;
-              if (onFileProgress) {
-                onFileProgress(index, progress);
-              }
-              if (onBatchProgress) {
-                onBatchProgress({ ...batchUpload });
-              }
+
+          const photo = await this.uploadPhoto(file, options, progress => {
+            batchUpload.files[index].progress = progress;
+            if (onFileProgress) {
+              onFileProgress(index, progress);
             }
-          );
+            if (onBatchProgress) {
+              onBatchProgress({ ...batchUpload });
+            }
+          });
 
           batchUpload.files[index].status = 'completed';
           batchUpload.files[index].photoId = photo.id;
@@ -139,10 +122,8 @@ class UploadApi {
       });
 
       const results = await Promise.allSettled(uploadPromises);
-      
-      batchUpload.status = batchUpload.failedFiles > 0 && batchUpload.completedFiles === 0 
-        ? 'failed' 
-        : 'completed';
+
+      batchUpload.status = batchUpload.failedFiles > 0 && batchUpload.completedFiles === 0 ? 'failed' : 'completed';
       batchUpload.completedAt = new Date().toISOString();
 
       if (onBatchProgress) {
@@ -171,7 +152,7 @@ class UploadApi {
 
   async retryFailedUploads(batchUpload: BatchUpload, options: UploadOptions = {}): Promise<BatchUpload> {
     const failedFiles = batchUpload.files.filter((upload: any) => upload.status === 'failed');
-    
+
     if (failedFiles.length === 0) {
       return batchUpload;
     }
@@ -182,9 +163,7 @@ class UploadApi {
 
   async deleteUploadedFile(filePath: string): Promise<boolean> {
     try {
-      const { error } = await supabase.storage
-        .from(this.storageBucket)
-        .remove([filePath]);
+      const { error } = await supabase.storage.from(this.storageBucket).remove([filePath]);
 
       if (error) {
         throw handleSupabaseError(error);

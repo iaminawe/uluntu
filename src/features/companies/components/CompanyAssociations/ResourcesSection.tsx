@@ -47,7 +47,7 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
           Resources
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <SkeletonCard key={i} className="h-40" />
           ))}
         </div>
@@ -62,9 +62,7 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
           <BookOpen className="w-6 h-6" />
           Resources
         </h2>
-        <div className="text-center py-8 text-slate-600 dark:text-slate-400">
-          Failed to load resources
-        </div>
+        <div className="text-center py-8 text-slate-600 dark:text-slate-400">Failed to load resources</div>
       </div>
     );
   }
@@ -74,12 +72,15 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
   }
 
   // Group resources by type
-  const groupedResources = resources.reduce((acc, resource) => {
-    const type = resource.type || 'other';
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(resource);
-    return acc;
-  }, {} as Record<string, Resource[]>);
+  const groupedResources = resources.reduce(
+    (acc, resource) => {
+      const type = resource.type || 'other';
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(resource);
+      return acc;
+    },
+    {} as Record<string, Resource[]>
+  );
 
   return (
     <div className="mb-8">
@@ -87,7 +88,7 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
         <BookOpen className="w-6 h-6" />
         Resources ({resources.length})
       </h2>
-      
+
       <div className="space-y-6">
         {Object.entries(groupedResources).map(([type, typeResources]) => (
           <div key={type}>
@@ -95,7 +96,7 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
               {type}s ({typeResources.length})
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {typeResources.map((resource) => (
+              {typeResources.map(resource => (
                 <a
                   key={resource.id}
                   href={resource.url}
@@ -109,17 +110,15 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
                     </div>
                     <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
                   </div>
-                  
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2">
-                    {resource.title}
-                  </h4>
-                  
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 line-clamp-2">{resource.title}</h4>
+
                   {resource.description && (
                     <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
                       {resource.description}
                     </p>
                   )}
-                  
+
                   {resource.tags && resource.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {resource.tags.slice(0, 3).map((tag, index) => (
@@ -138,12 +137,10 @@ export function ResourcesSection({ resources, isLoading, error }: ResourcesSecti
                       )}
                     </div>
                   )}
-                  
+
                   <div className="mt-3 text-xs text-slate-500 dark:text-slate-500">
                     By {resource.contributor?.name || 'Unknown'}
-                    {resource.dateAdded && (
-                      <> • {new Date(resource.dateAdded).toLocaleDateString()}</>
-                    )}
+                    {resource.dateAdded && <> • {new Date(resource.dateAdded).toLocaleDateString()}</>}
                   </div>
                 </a>
               ))}

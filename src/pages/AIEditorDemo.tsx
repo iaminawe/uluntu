@@ -15,7 +15,8 @@ export default function AIEditorDemo() {
     },
     {
       type: 'paragraph',
-      content: 'Welcome to the AI-enhanced BlockNote editor! This powerful editor includes AI assistance for content creation with automatic image insertion from Unsplash.',
+      content:
+        'Welcome to the AI-enhanced BlockNote editor! This powerful editor includes AI assistance for content creation with automatic image insertion from Unsplash.',
     },
     {
       type: 'heading',
@@ -24,7 +25,8 @@ export default function AIEditorDemo() {
     },
     {
       type: 'paragraph',
-      content: 'Click the ✨ AI Assistant button in the toolbar to access all AI commands, or type "/" to use the slash menu.',
+      content:
+        'Click the ✨ AI Assistant button in the toolbar to access all AI commands, or type "/" to use the slash menu.',
     },
     {
       type: 'paragraph',
@@ -61,35 +63,23 @@ export default function AIEditorDemo() {
             <div>
               <h1 className="text-xl font-bold text-gray-900">AI BlockNote Editor</h1>
               <p className="text-sm text-gray-500">
-                {aiConfig.isConfigured ? `✨ AI Features Enabled (${aiConfig.provider})` : '⚠️ Configure API keys to enable AI'}
+                {aiConfig.isConfigured
+                  ? `✨ AI Features Enabled (${aiConfig.provider})`
+                  : '⚠️ Configure API keys to enable AI'}
                 {unsplashConfigured && <span className="ml-2">📷 Images Enabled</span>}
               </p>
             </div>
-            
+
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsPreview(!isPreview)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setIsPreview(!isPreview)}>
                 {isPreview ? '✏️ Edit' : '👁️ Preview'}
               </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLoad}
-                disabled={!savedContent}
-              >
+
+              <Button variant="ghost" size="sm" onClick={handleLoad} disabled={!savedContent}>
                 📥 Load Saved
               </Button>
-              
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSave}
-                disabled={isSaving}
-              >
+
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? '⏳ Saving...' : '💾 Save'}
               </Button>
             </div>
@@ -102,16 +92,14 @@ export default function AIEditorDemo() {
         {/* Editor Card */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="border-b px-6 py-4 bg-gradient-to-r from-purple-50 to-pink-50">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {isPreview ? '👁️ Preview Mode' : '✏️ Edit Mode'}
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{isPreview ? '👁️ Preview Mode' : '✏️ Edit Mode'}</h2>
             <p className="text-sm text-gray-600 mt-1">
-              {isPreview 
+              {isPreview
                 ? 'This is how your content will appear to readers'
                 : 'Select text and use AI commands to enhance your content'}
             </p>
           </div>
-          
+
           <div className="p-6">
             <SimpleBlockEditor
               initialContent={content}
@@ -128,7 +116,7 @@ export default function AIEditorDemo() {
             <span className="text-2xl mr-2">✨</span>
             Available AI Commands
           </h3>
-          
+
           {/* Content Creation Commands */}
           <div className="mb-6">
             <h4 className="text-md font-semibold mb-3 text-gray-700">📝 Content Creation (Type "/" to access)</h4>
@@ -150,7 +138,10 @@ export default function AIEditorDemo() {
                 { icon: '💡', title: 'Generate Ideas', desc: '10-15 detailed ideas' },
                 { icon: '📰', title: 'Headlines', desc: '15-20 varied headlines' },
               ].map((cmd, idx) => (
-                <div key={idx} className="border border-blue-100 bg-blue-50 rounded-lg p-3 hover:shadow-md transition-shadow">
+                <div
+                  key={idx}
+                  className="border border-blue-100 bg-blue-50 rounded-lg p-3 hover:shadow-md transition-shadow"
+                >
                   <div className="flex items-start">
                     <span className="text-lg mr-2">{cmd.icon}</span>
                     <div>
@@ -176,7 +167,10 @@ export default function AIEditorDemo() {
                 { icon: '•', title: 'Convert to Bullets', desc: 'Create bullet points' },
                 { icon: '✅', title: 'Fix Grammar', desc: 'Correct all errors' },
               ].map((cmd, idx) => (
-                <div key={idx} className="border border-green-100 bg-green-50 rounded-lg p-3 hover:shadow-md transition-shadow">
+                <div
+                  key={idx}
+                  className="border border-green-100 bg-green-50 rounded-lg p-3 hover:shadow-md transition-shadow"
+                >
                   <div className="flex items-start">
                     <span className="text-lg mr-2">{cmd.icon}</span>
                     <div>
@@ -193,9 +187,7 @@ export default function AIEditorDemo() {
         {/* Setup Instructions */}
         {!aiConfig.isConfigured && (
           <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-3 text-yellow-900">
-              🔧 Setup AI Features
-            </h3>
+            <h3 className="text-lg font-semibold mb-3 text-yellow-900">🔧 Setup AI Features</h3>
             <p className="text-sm text-yellow-800 mb-4">
               To enable AI features, add your API key to the environment variables:
             </p>
@@ -209,9 +201,7 @@ export default function AIEditorDemo() {
                 <div>VITE_UNSPLASH_ACCESS_KEY=your-unsplash-key</div>
               </div>
             </div>
-            <p className="text-xs text-yellow-700 mt-3">
-              After adding your API key, restart the development server.
-            </p>
+            <p className="text-xs text-yellow-700 mt-3">After adding your API key, restart the development server.</p>
           </div>
         )}
 

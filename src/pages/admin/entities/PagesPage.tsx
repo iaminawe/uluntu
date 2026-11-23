@@ -13,23 +13,13 @@ const PagesPage: React.FC = () => {
             Manage static pages and content for your community platform.
           </p>
         </div>
-        
+
         <Link
           to="/admin/pages/new"
           className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           New Page
         </Link>
@@ -41,12 +31,7 @@ const PagesPage: React.FC = () => {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -57,9 +42,7 @@ const PagesPage: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Pages
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Total Pages</dt>
                   <dd className="text-lg font-medium text-gray-900">-</dd>
                 </dl>
               </div>
@@ -71,25 +54,13 @@ const PagesPage: React.FC = () => {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-green-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                <svg className="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Published
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Published</dt>
                   <dd className="text-lg font-medium text-gray-900">-</dd>
                 </dl>
               </div>
@@ -101,12 +72,7 @@ const PagesPage: React.FC = () => {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-yellow-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -117,9 +83,7 @@ const PagesPage: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Drafts
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Drafts</dt>
                   <dd className="text-lg font-medium text-gray-900">-</dd>
                 </dl>
               </div>
@@ -131,12 +95,7 @@ const PagesPage: React.FC = () => {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -147,9 +106,7 @@ const PagesPage: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Featured
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Featured</dt>
                   <dd className="text-lg font-medium text-gray-900">-</dd>
                 </dl>
               </div>

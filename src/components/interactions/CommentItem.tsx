@@ -24,7 +24,7 @@ export function CommentItem({
   entityId,
   isReply = false,
   onDeleted,
-  onReplyAdded
+  onReplyAdded,
 }: CommentItemProps) {
   const { user } = useAuth();
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -32,11 +32,8 @@ export function CommentItem({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isOwner = user?.id === comment.user_id;
-  const authorName = comment.member?.name || 
-    comment.user?.raw_user_meta_data?.name || 
-    'Anonymous';
-  const authorAvatar = comment.member?.avatar_url || 
-    comment.user?.raw_user_meta_data?.avatar_url;
+  const authorName = comment.member?.name || comment.user?.raw_user_meta_data?.name || 'Anonymous';
+  const authorAvatar = comment.member?.avatar_url || comment.user?.raw_user_meta_data?.avatar_url;
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this comment?')) return;
@@ -44,10 +41,7 @@ export function CommentItem({
     setIsDeleting(true);
     try {
       // @ts-ignore - comments table doesn't exist in types yet
-      const { error } = await supabase
-        .from('comments')
-        .update({ is_deleted: true })
-        .eq('id', comment.id);
+      const { error } = await supabase.from('comments').update({ is_deleted: true }).eq('id', comment.id);
 
       if (!error) {
         onDeleted(comment.id);
@@ -64,9 +58,9 @@ export function CommentItem({
       // @ts-ignore - comments table doesn't exist in types yet
       const { error } = await supabase
         .from('comments')
-        .update({ 
+        .update({
           content,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', comment.id);
 
@@ -91,11 +85,7 @@ export function CommentItem({
         {/* Avatar */}
         <div className="flex-shrink-0">
           {authorAvatar ? (
-            <img
-              src={authorAvatar}
-              alt={authorName}
-              className="h-10 w-10 rounded-full object-cover"
-            />
+            <img src={authorAvatar} alt={authorName} className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -109,9 +99,7 @@ export function CommentItem({
         <div className="flex-1 min-w-0">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3">
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {authorName}
-              </h4>
+              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">{authorName}</h4>
               <time className="text-xs text-gray-500 dark:text-gray-400">
                 {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
               </time>
@@ -127,9 +115,7 @@ export function CommentItem({
                 isEdit
               />
             ) : (
-              <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                {comment.content}
-              </p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{comment.content}</p>
             )}
           </div>
 
@@ -196,7 +182,7 @@ export function CommentItem({
           {/* Replies */}
           {comment.replies && comment.replies.length > 0 && (
             <div className="mt-4 space-y-4">
-              {comment.replies.map((reply) => (
+              {comment.replies.map(reply => (
                 <CommentItem
                   key={reply.id}
                   comment={reply}

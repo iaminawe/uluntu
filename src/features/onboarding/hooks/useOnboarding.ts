@@ -20,8 +20,8 @@ import type { OnboardingState } from '../types';
 export const useOnboarding = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const onboarding = useAppSelector((state) => state.onboarding);
-  const { user } = useAppSelector((state) => state.auth);
+  const onboarding = useAppSelector(state => state.onboarding);
+  const { user } = useAppSelector(state => state.auth);
   const { totalSteps } = useOnboardingSteps();
 
   // Auto-save onboarding progress to localStorage
@@ -91,7 +91,7 @@ export const useOnboarding = () => {
         // For any additional steps, no specific validation required
         break;
     }
-    
+
     return true;
   }, [dispatch, onboarding]);
 
@@ -101,7 +101,7 @@ export const useOnboarding = () => {
       if (!user?.id) {
         throw new Error('User not authenticated');
       }
-      
+
       const { professional, company, privacy, engagement } = onboarding.formData;
 
       // First, check if the member already has a slug
@@ -127,15 +127,15 @@ export const useOnboarding = () => {
         employment_status: professional.employmentStatus,
         professional_goals: professional.professionalGoals,
         years_of_experience: professional.yearsOfExperience,
-        
+
         // Add slug if generated
         ...(slug && { slug }),
-        
+
         // Privacy and profile status
         status: privacy.profileVisibility === 'private' ? 'draft' : 'published',
         privacy_settings: privacy,
       };
-      
+
       // Only add onboarding tracking fields if they exist in the database
       // This prevents errors if the migration hasn't been run yet
       const onboardingData = {
@@ -154,11 +154,8 @@ export const useOnboarding = () => {
         // If it fails due to missing columns, try without onboarding fields
         if (memberErrorWithOnboarding.code === 'PGRST204') {
           console.warn('Onboarding columns not available, updating without tracking fields');
-          const { error: memberError } = await supabase
-            .from('members')
-            .update(updateData)
-            .eq('user_id', user.id);
-          
+          const { error: memberError } = await supabase.from('members').update(updateData).eq('user_id', user.id);
+
           if (memberError) throw memberError;
         } else {
           throw memberErrorWithOnboarding;
@@ -166,12 +163,8 @@ export const useOnboarding = () => {
       }
 
       // Get the actual member ID from the database
-      const { data: memberData } = await supabase
-        .from('members')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-      
+      const { data: memberData } = await supabase.from('members').select('id').eq('user_id', user.id).single();
+
       const memberId = memberData?.id;
       if (!memberId) {
         console.warn('Could not find member ID for user:', user.id);
@@ -180,10 +173,7 @@ export const useOnboarding = () => {
       // Save skills if provided
       if (professional.skills && professional.skills.length > 0 && memberId) {
         // First, delete existing skills
-        await supabase
-          .from('member_skills')
-          .delete()
-          .eq('member_id', memberId);
+        await supabase.from('member_skills').delete().eq('member_id', memberId);
 
         // Then insert new skills
         const skillsData = professional.skills.map(skill => ({
@@ -192,9 +182,7 @@ export const useOnboarding = () => {
           level: 'intermediate', // Default level
         }));
 
-        const { error: skillsError } = await supabase
-          .from('member_skills')
-          .insert(skillsData);
+        const { error: skillsError } = await supabase.from('member_skills').insert(skillsData);
 
         if (skillsError) {
           console.warn('Failed to save skills:', skillsError);
@@ -203,14 +191,12 @@ export const useOnboarding = () => {
 
       // Save company association if provided
       if (company.companyId && company.role && memberId) {
-        const { error: companyError } = await supabase
-          .from('company_members')
-          .insert({
-            company_id: company.companyId,
-            member_id: memberId,
-            role: company.role,
-            verified: false,
-          });
+        const { error: companyError } = await supabase.from('company_members').insert({
+          company_id: company.companyId,
+          member_id: memberId,
+          role: company.role,
+          verified: false,
+        });
 
         if (companyError) {
           console.warn('Failed to save company association:', companyError);
@@ -226,9 +212,7 @@ export const useOnboarding = () => {
           status: 'active',
         }));
 
-        const { error: groupError } = await supabase
-          .from('group_members')
-          .insert(groupMemberships);
+        const { error: groupError } = await supabase.from('group_members').insert(groupMemberships);
 
         if (groupError) {
           console.warn('Failed to save group memberships:', groupError);
@@ -265,7 +249,7 @@ export const useOnboarding = () => {
   // Handle step navigation
   const handleNext = useCallback(async () => {
     dispatch(clearAllErrors());
-    
+
     // Validate current step before proceeding
     const isValid = await validateCurrentStep();
     if (!isValid) return;
@@ -291,16 +275,19 @@ export const useOnboarding = () => {
     await saveProgress();
   }, [dispatch, saveProgress]);
 
-  const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= 5) {
-      navigate(`/onboarding/step-${step}`);
-    }
-  }, [navigate]);
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step >= 1 && step <= 5) {
+        navigate(`/onboarding/step-${step}`);
+      }
+    },
+    [navigate]
+  );
 
   return {
     // State
     ...onboarding,
-    
+
     // Actions
     handleNext,
     handleBack,
@@ -308,7 +295,7 @@ export const useOnboarding = () => {
     handleComplete,
     goToStep,
     saveProgress,
-    
+
     // Computed
     isFirstStep: onboarding.currentStep === 1,
     isLastStep: onboarding.currentStep >= totalSteps,

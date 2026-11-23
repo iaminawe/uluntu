@@ -24,49 +24,51 @@ jest.mock('@/lib/supabase', () => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({ data: null, error: null })),
-          order: jest.fn(() => Promise.resolve({ data: [], error: null }))
+          order: jest.fn(() => Promise.resolve({ data: [], error: null })),
         })),
         order: jest.fn(() => ({
-          range: jest.fn(() => Promise.resolve({ data: [], error: null, count: 0 }))
-        }))
+          range: jest.fn(() => Promise.resolve({ data: [], error: null, count: 0 })),
+        })),
       })),
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
-        }))
+          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+        })),
       })),
       update: jest.fn(() => ({
         eq: jest.fn(() => ({
           select: jest.fn(() => ({
-            single: jest.fn(() => Promise.resolve({ data: null, error: null }))
-          }))
-        }))
+            single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+          })),
+        })),
       })),
       delete: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ error: null }))
-      }))
+        eq: jest.fn(() => Promise.resolve({ error: null })),
+      })),
     })),
     auth: {
       getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'test-user-id' } } })),
       admin: {
-        listUsers: jest.fn(() => Promise.resolve({ 
-          data: { 
-            users: [
-              {
-                id: 'user-1',
-                email: 'test@example.com',
-                created_at: '2024-01-01',
-                last_sign_in_at: '2024-01-15',
-                app_metadata: {},
-                user_metadata: { name: 'Test User' }
-              }
-            ] 
-          },
-          error: null 
-        }))
-      }
-    }
-  }
+        listUsers: jest.fn(() =>
+          Promise.resolve({
+            data: {
+              users: [
+                {
+                  id: 'user-1',
+                  email: 'test@example.com',
+                  created_at: '2024-01-01',
+                  last_sign_in_at: '2024-01-15',
+                  app_metadata: {},
+                  user_metadata: { name: 'Test User' },
+                },
+              ],
+            },
+            error: null,
+          })
+        ),
+      },
+    },
+  },
 }));
 
 // Mock the API modules
@@ -77,7 +79,7 @@ jest.mock('@/api/admin/stats');
 // Test utilities
 const mockStore = configureStore({
   reducer: {
-    auth: authReducer
+    auth: authReducer,
   },
   preloadedState: {
     auth: {
@@ -86,9 +88,9 @@ const mockStore = configureStore({
       isLoading: false,
       error: null,
       userRoles: [{ role: 'superadmin' }],
-      isAdmin: true
-    }
-  }
+      isAdmin: true,
+    },
+  },
 });
 
 const mockAuthContext = {
@@ -102,14 +104,14 @@ const mockAuthContext = {
   forgotPassword: jest.fn(),
   resetPassword: jest.fn(),
   userRoles: [{ role: 'superadmin' }],
-  isAdmin: true
+  isAdmin: true,
 };
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
-    mutations: { retry: false }
-  }
+    mutations: { retry: false },
+  },
 });
 
 const renderWithProviders = (component: React.ReactElement) => {
@@ -117,9 +119,7 @@ const renderWithProviders = (component: React.ReactElement) => {
     <Provider store={mockStore}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AuthContext.Provider value={mockAuthContext}>
-            {component}
-          </AuthContext.Provider>
+          <AuthContext.Provider value={mockAuthContext}>{component}</AuthContext.Provider>
         </BrowserRouter>
       </QueryClientProvider>
     </Provider>
@@ -137,7 +137,7 @@ describe('Admin Area Tests', () => {
       const nonAdminContext = {
         ...mockAuthContext,
         userRoles: [{ role: 'user' }],
-        isAdmin: false
+        isAdmin: false,
       };
 
       render(
@@ -158,7 +158,7 @@ describe('Admin Area Tests', () => {
 
     it('should allow superadmin access', () => {
       renderWithProviders(<AdminLayout />);
-      
+
       // Should show admin panel
       expect(screen.getByText('Admin Panel')).toBeInTheDocument();
     });
@@ -177,7 +177,7 @@ describe('Admin Area Tests', () => {
         totalMarketplaceListings: 35,
         totalOpportunities: 10,
         pendingModeration: 5,
-        recentActivity: []
+        recentActivity: [],
       });
     });
 
@@ -203,37 +203,39 @@ describe('Admin Area Tests', () => {
 
   describe('User Management', () => {
     beforeEach(() => {
-      (supabase.from as jest.Mock).mockImplementation((table) => {
+      (supabase.from as jest.Mock).mockImplementation(table => {
         if (table === 'user_roles') {
           return {
-            select: jest.fn(() => Promise.resolve({
-              data: [
-                {
-                  user_id: 'user-1',
-                  role_id: 'role-1',
-                  role: { id: 'role-1', name: 'user' },
-                  user: {
-                    id: 'user-1',
-                    email: 'test@example.com',
-                    created_at: '2024-01-01',
-                    last_sign_in_at: '2024-01-15',
-                    raw_app_meta_data: {},
-                    raw_user_meta_data: { name: 'Test User' }
-                  }
-                }
-              ],
-              error: null
-            }))
+            select: jest.fn(() =>
+              Promise.resolve({
+                data: [
+                  {
+                    user_id: 'user-1',
+                    role_id: 'role-1',
+                    role: { id: 'role-1', name: 'user' },
+                    user: {
+                      id: 'user-1',
+                      email: 'test@example.com',
+                      created_at: '2024-01-01',
+                      last_sign_in_at: '2024-01-15',
+                      raw_app_meta_data: {},
+                      raw_user_meta_data: { name: 'Test User' },
+                    },
+                  },
+                ],
+                error: null,
+              })
+            ),
           };
         }
         return {
-          select: jest.fn(() => Promise.resolve({ data: [], error: null }))
+          select: jest.fn(() => Promise.resolve({ data: [], error: null })),
         };
       });
 
       (adminRolesApi.getRoles as jest.Mock).mockResolvedValue([
         { id: 'role-1', name: 'user', description: 'Standard user', permissions: {}, is_system: true },
-        { id: 'role-2', name: 'admin', description: 'Administrator', permissions: {}, is_system: true }
+        { id: 'role-2', name: 'admin', description: 'Administrator', permissions: {}, is_system: true },
       ]);
     });
 
@@ -273,24 +275,24 @@ describe('Admin Area Tests', () => {
 
   describe('Role Management', () => {
     const mockRoles = [
-      { 
-        id: 'role-1', 
-        name: 'superadmin', 
-        description: 'Full system access', 
-        permissions: { '*': ['*'] }, 
+      {
+        id: 'role-1',
+        name: 'superadmin',
+        description: 'Full system access',
+        permissions: { '*': ['*'] },
         is_system: true,
         created_at: '2024-01-01',
-        updated_at: '2024-01-01'
+        updated_at: '2024-01-01',
       },
-      { 
-        id: 'role-2', 
-        name: 'custom-role', 
-        description: 'Custom role', 
-        permissions: { members: ['read'] }, 
+      {
+        id: 'role-2',
+        name: 'custom-role',
+        description: 'Custom role',
+        permissions: { members: ['read'] },
         is_system: false,
         created_at: '2024-01-01',
-        updated_at: '2024-01-01'
-      }
+        updated_at: '2024-01-01',
+      },
     ];
 
     beforeEach(() => {
@@ -313,11 +315,11 @@ describe('Admin Area Tests', () => {
       await waitFor(() => {
         const superadminCard = screen.getByText('superadmin').closest('div.bg-white');
         expect(superadminCard).toBeInTheDocument();
-        
+
         // System roles should show lock icon
         const lockIcon = superadminCard?.querySelector('svg[title="System role"]');
         expect(lockIcon).toBeInTheDocument();
-        
+
         // Should not have edit/delete buttons
         const editButtons = superadminCard?.querySelectorAll('button');
         expect(editButtons?.length).toBe(0);
@@ -350,36 +352,40 @@ describe('Admin Area Tests', () => {
         submitted_by: 'user-1',
         submitted_by_user: { email: 'user@example.com' },
         status: 'pending',
-        created_at: '2024-01-15'
-      }
+        created_at: '2024-01-15',
+      },
     ];
 
     beforeEach(() => {
-      (supabase.from as jest.Mock).mockImplementation((table) => {
+      (supabase.from as jest.Mock).mockImplementation(table => {
         if (table === 'moderation_queue') {
           return {
             select: jest.fn(() => ({
               eq: jest.fn(() => ({
                 order: jest.fn(() => ({
-                  range: jest.fn(() => Promise.resolve({
-                    data: mockModerationItems,
-                    error: null,
-                    count: 1
-                  }))
-                }))
+                  range: jest.fn(() =>
+                    Promise.resolve({
+                      data: mockModerationItems,
+                      error: null,
+                      count: 1,
+                    })
+                  ),
+                })),
               })),
               order: jest.fn(() => ({
-                range: jest.fn(() => Promise.resolve({
-                  data: mockModerationItems,
-                  error: null,
-                  count: 1
-                }))
-              }))
-            }))
+                range: jest.fn(() =>
+                  Promise.resolve({
+                    data: mockModerationItems,
+                    error: null,
+                    count: 1,
+                  })
+                ),
+              })),
+            })),
           };
         }
         return {
-          select: jest.fn(() => Promise.resolve({ data: [], error: null }))
+          select: jest.fn(() => Promise.resolve({ data: [], error: null })),
         };
       });
     });
@@ -428,7 +434,7 @@ describe('Admin Area Tests', () => {
         enabled: true,
         config: { maxProfilesPerUser: 1, requireApproval: false },
         created_at: '2024-01-01',
-        updated_at: '2024-01-01'
+        updated_at: '2024-01-01',
       },
       {
         id: 'feat-2',
@@ -436,13 +442,13 @@ describe('Admin Area Tests', () => {
         enabled: false,
         config: { maxEventsPerUser: 20, requireApproval: true },
         created_at: '2024-01-01',
-        updated_at: '2024-01-01'
-      }
+        updated_at: '2024-01-01',
+      },
     ];
 
     beforeEach(() => {
       (adminFeaturesApi.getFeatures as jest.Mock).mockResolvedValue(mockFeatures);
-      (adminFeaturesApi.toggleFeature as jest.Mock).mockImplementation((key, enabled) => 
+      (adminFeaturesApi.toggleFeature as jest.Mock).mockImplementation((key, enabled) =>
         Promise.resolve({ ...mockFeatures.find(f => f.feature_key === key), enabled })
       );
     });
@@ -455,9 +461,9 @@ describe('Admin Area Tests', () => {
     it('should check if features are disabled', async () => {
       (adminFeaturesApi.getFeature as jest.Mock).mockResolvedValue({
         ...mockFeatures[1],
-        enabled: false
+        enabled: false,
       });
-      
+
       const isEnabled = await adminFeaturesApi.isFeatureEnabled('events');
       expect(isEnabled).toBe(false);
     });
@@ -491,11 +497,11 @@ describe('Admin API Integration Tests', () => {
       const newConfig = { maxItems: 10, requireApproval: true };
       (adminFeaturesApi.updateFeatureConfig as jest.Mock).mockResolvedValue({
         feature_key: 'test-feature',
-        config: newConfig
+        config: newConfig,
       });
 
       const result = await adminFeaturesApi.updateFeatureConfig('test-feature', newConfig);
-      
+
       expect(result.config).toEqual(newConfig);
       expect(adminFeaturesApi.updateFeatureConfig).toHaveBeenCalledWith('test-feature', newConfig);
     });
@@ -506,19 +512,17 @@ describe('Admin API Integration Tests', () => {
       (adminRolesApi.checkPermission as jest.Mock).mockResolvedValue(true);
 
       const hasPermission = await adminRolesApi.checkPermission('user-1', 'members', 'create');
-      
+
       expect(hasPermission).toBe(true);
       expect(adminRolesApi.checkPermission).toHaveBeenCalledWith('user-1', 'members', 'create');
     });
 
     it('should handle wildcard permissions', async () => {
-      (adminRolesApi.getUserRoles as jest.Mock).mockResolvedValue([
-        { role: { permissions: { '*': ['*'] } } }
-      ]);
+      (adminRolesApi.getUserRoles as jest.Mock).mockResolvedValue([{ role: { permissions: { '*': ['*'] } } }]);
       (adminRolesApi.checkPermission as jest.Mock).mockImplementation(async () => true);
 
       const hasPermission = await adminRolesApi.checkPermission('admin-user', 'any-resource', 'any-action');
-      
+
       expect(hasPermission).toBe(true);
     });
   });

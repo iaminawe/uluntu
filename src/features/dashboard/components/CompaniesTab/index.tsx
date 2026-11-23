@@ -1,14 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Building2, 
-  Users, 
-  MapPin, 
-  Calendar,
-  ExternalLink,
-  Eye,
-  Plus
-} from 'lucide-react';
+import { Building2, Users, MapPin, Calendar, ExternalLink, Eye, Plus } from 'lucide-react';
 import { useUserCompanies } from '@/hooks/useCompanyQueries';
 import { useSession } from '@/shared/contexts/SessionContextWithRedux';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -28,11 +20,11 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
   error: propError,
   onRefresh,
   onCreateCompany,
-  className = ''
+  className = '',
 }) => {
   const navigate = useNavigate();
   const { user } = useSession();
-  
+
   // Use a custom hook to fetch only user-associated companies
   const { data: userCompanies = [], isLoading, error, refetch } = useUserCompanies();
 
@@ -50,10 +42,7 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
   if (errorState) {
     return (
       <div className={`text-center py-12 ${className}`}>
-        <ErrorDisplay 
-          error={errorState} 
-          retry={onRefresh || (() => refetch())} 
-        />
+        <ErrorDisplay error={errorState} retry={onRefresh || (() => refetch())} />
       </div>
     );
   }
@@ -62,13 +51,14 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const getCompanySize = (size?: string) => {
     if (!size) return 'Unknown size';
-    return size.replace(/[-_]/g, ' ')
+    return size
+      .replace(/[-_]/g, ' ')
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
@@ -99,12 +89,8 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            My Companies
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Companies you've created or are associated with
-          </p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Companies</h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">Companies you've created or are associated with</p>
         </div>
         <button
           onClick={handleCreateCompany}
@@ -123,12 +109,8 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
               <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Total Companies
-              </p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                {userCompanies.length}
-              </p>
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Companies</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{userCompanies.length}</p>
             </div>
           </div>
         </div>
@@ -139,9 +121,7 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
               <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Team Members
-              </p>
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Team Members</p>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">
                 {userCompanies.reduce((total, company) => total + (company.employees?.length || 0), 0)}
               </p>
@@ -155,12 +135,8 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
               <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Profile Views
-              </p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                0
-              </p>
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Profile Views</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">0</p>
             </div>
           </div>
         </div>
@@ -170,12 +146,8 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
       {userCompanies.length === 0 ? (
         <div className="text-center py-12">
           <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-            No companies yet
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Get started by creating your first company profile.
-          </p>
+          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No companies yet</h3>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">Get started by creating your first company profile.</p>
           <button
             onClick={handleCreateCompany}
             className="inline-flex items-center px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors"
@@ -186,7 +158,7 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {userCompanies.map((company) => (
+          {userCompanies.map(company => (
             <div
               key={company.id}
               className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow"
@@ -207,9 +179,7 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-                    {company.name}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white truncate">{company.name}</h3>
                   <div className="flex items-center space-x-4 text-sm text-slate-600 dark:text-slate-400">
                     {company.location && (
                       <div className="flex items-center">
@@ -246,9 +216,7 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
                 {/* Company Metrics */}
                 <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-700">
                   <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">
-                      Size: {getCompanySize(company.size)}
-                    </span>
+                    <span className="text-slate-600 dark:text-slate-400">Size: {getCompanySize(company.size)}</span>
                     {company.industry && company.industry.length > 0 && (
                       <span className="text-slate-600 dark:text-slate-400">
                         Industry: {company.industry.slice(0, 2).join(', ')}
@@ -265,13 +233,13 @@ export const CompaniesTab: React.FC<CompaniesTabProps> = ({
 
                 {/* Action Buttons */}
                 <div className="flex items-center space-x-2 pt-2">
-                  <button 
+                  <button
                     onClick={() => handleViewProfile(company)}
                     className="flex-1 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                   >
                     View Profile
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleManageCompany(company)}
                     className="flex-1 px-3 py-2 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
                   >

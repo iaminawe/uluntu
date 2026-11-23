@@ -2,10 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import membersReducer, {
-  updateMember,
-  fetchMemberById
-} from '@/features/directory/store/membersSlice';
+import membersReducer, { updateMember, fetchMemberById } from '@/features/directory/store/membersSlice';
 import { ContentStatus } from '../types/common';
 
 // Mock the API calls
@@ -27,33 +24,31 @@ jest.mock('../hooks/useAuth', () => ({
     status: 'authenticated',
     signOut: jest.fn(),
     signIn: jest.fn(),
-  }))
+  })),
 }));
 
 // Create mock components directly without trying to mock modules that might not exist
-const MockMemberProfileForm = ({ member, onSubmit, isLoading }: { 
-  member: any; 
-  onSubmit: (data: any) => void; 
-  isLoading: boolean 
+const MockMemberProfileForm = ({
+  member,
+  onSubmit,
+  isLoading,
+}: {
+  member: any;
+  onSubmit: (data: any) => void;
+  isLoading: boolean;
 }) => (
   <div data-testid="member-profile-form">
-    <input 
-      data-testid="name-input" 
-      defaultValue={member?.name || ''} 
-      onChange={() => {}}
-    />
-    <input 
-      data-testid="bio-input" 
-      defaultValue={member?.bio || ''} 
-      onChange={() => {}}
-    />
-    <button 
-      data-testid="submit-profile" 
-      onClick={() => onSubmit({ 
-        name: 'Updated Name', 
-        bio: 'Updated Bio',
-        title: 'Updated Title'
-      })}
+    <input data-testid="name-input" defaultValue={member?.name || ''} onChange={() => {}} />
+    <input data-testid="bio-input" defaultValue={member?.bio || ''} onChange={() => {}} />
+    <button
+      data-testid="submit-profile"
+      onClick={() =>
+        onSubmit({
+          name: 'Updated Name',
+          bio: 'Updated Bio',
+          title: 'Updated Title',
+        })
+      }
       disabled={isLoading}
     >
       Save Profile
@@ -64,7 +59,7 @@ const MockMemberProfileForm = ({ member, onSubmit, isLoading }: {
 const MockMemberProfilePage = () => {
   const { useAuth } = require('../hooks/useAuth');
   const { user } = useAuth();
-  
+
   return (
     <div data-testid="member-profile-page">
       <h1>Edit Profile</h1>
@@ -90,7 +85,7 @@ const mockMember = {
   skills: ['JavaScript', 'React'],
   joinDate: '2023-01-01T00:00:00.000Z',
   status: 'published' as ContentStatus,
-  featured: false
+  featured: false,
 };
 
 // Create a mock store for testing
@@ -107,23 +102,23 @@ const membersApiMock = require('../api/membersApi').membersApi;
 
 describe('Directory Profile Management', () => {
   let store: ReturnType<typeof createTestStore>;
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
     store = createTestStore();
-    
+
     // Set up initial state with the mock member
-    store.dispatch({ 
-      type: fetchMemberById.fulfilled.type, 
-      payload: mockMember 
+    store.dispatch({
+      type: fetchMemberById.fulfilled.type,
+      payload: mockMember,
     });
   });
-  
+
   describe('DPM-001: View Profile', () => {
     test('User should be able to view their profile information', async () => {
       // Mock the API response for fetching the member
       membersApiMock.getById.mockResolvedValueOnce(mockMember);
-      
+
       // Render the profile page with Redux provider
       render(
         <Provider store={store}>
@@ -132,18 +127,18 @@ describe('Directory Profile Management', () => {
           </div>
         </Provider>
       );
-      
+
       // Verify the profile page is rendered
       expect(screen.getByTestId('member-profile-page')).toBeInTheDocument();
-      
+
       // Verify the profile form is rendered with the correct data
       expect(screen.getByTestId('member-profile-form')).toBeInTheDocument();
-      
+
       // Verify user ID is displayed (to confirm we're showing the right profile)
       expect(screen.getByTestId('user-id').textContent).toBe('test-user-id');
     });
   });
-  
+
   describe('DPM-002: Update Profile', () => {
     test('User should be able to update their profile information', async () => {
       // Mock the API response for updating the member
@@ -151,36 +146,30 @@ describe('Directory Profile Management', () => {
         ...mockMember,
         name: 'Updated Name',
         bio: 'Updated Bio',
-        title: 'Updated Title'
+        title: 'Updated Title',
       };
-      
+
       membersApiMock.update.mockResolvedValueOnce(updatedMember);
-      
+
       // Create a component that will handle the form submission
       const ProfileUpdateComponent = () => {
         const handleSubmit = (data: any) => {
           store.dispatch(updateMember({ id: 'member-1', data }));
         };
-        
-        return (
-          <MockMemberProfileForm
-            member={mockMember}
-            onSubmit={handleSubmit}
-            isLoading={false}
-          />
-        );
+
+        return <MockMemberProfileForm member={mockMember} onSubmit={handleSubmit} isLoading={false} />;
       };
-      
+
       // Render the component
       render(
         <Provider store={store}>
           <ProfileUpdateComponent />
         </Provider>
       );
-      
+
       // Click the save button to trigger the update
       fireEvent.click(screen.getByTestId('submit-profile'));
-      
+
       // Wait for the update to be processed
       await waitFor(() => {
         // Verify the update function was called with the correct parameters
@@ -189,12 +178,12 @@ describe('Directory Profile Management', () => {
           expect.objectContaining({
             name: 'Updated Name',
             bio: 'Updated Bio',
-            title: 'Updated Title'
+            title: 'Updated Title',
           })
         );
       });
     });
-    
+
     test('Should show loading state during profile update', async () => {
       // Create a mock implementation that doesn't resolve immediately
       membersApiMock.update.mockImplementationOnce(() => {
@@ -202,166 +191,162 @@ describe('Directory Profile Management', () => {
           setTimeout(() => {
             resolve({
               ...mockMember,
-              name: 'Updated Name'
+              name: 'Updated Name',
             });
           }, 100);
         });
       });
-      
+
       // Dispatch the update action to set loading state
-      store.dispatch(updateMember({ 
-        id: 'member-1', 
-        data: { name: 'Updated Name' } 
-      }));
-      
+      store.dispatch(
+        updateMember({
+          id: 'member-1',
+          data: { name: 'Updated Name' },
+        })
+      );
+
       // Create a component that displays loading state
       const LoadingStateComponent = () => {
         const isLoading = store.getState().members.status === 'loading';
-        return (
-          <div data-testid="loading-state">
-            {isLoading ? 'Loading...' : 'Not Loading'}
-          </div>
-        );
+        return <div data-testid="loading-state">{isLoading ? 'Loading...' : 'Not Loading'}</div>;
       };
-      
+
       // Render the component
       render(
         <Provider store={store}>
           <LoadingStateComponent />
         </Provider>
       );
-      
+
       // Verify the loading state is reflected in the UI
       expect(store.getState().members.status).toBe('loading');
-      
+
       // Wait for the update to complete
-      await waitFor(() => {
-        expect(store.getState().members.status).not.toBe('loading');
-      }, { timeout: 200 });
+      await waitFor(
+        () => {
+          expect(store.getState().members.status).not.toBe('loading');
+        },
+        { timeout: 200 }
+      );
     });
-    
+
     test('Should handle errors during profile update', async () => {
       // Mock an API error
       membersApiMock.update.mockRejectedValueOnce(new Error('Update failed'));
-      
+
       // Create a component that will handle the form submission
       const ErrorHandlingComponent = () => {
         const handleSubmit = (data: any) => {
           store.dispatch(updateMember({ id: 'member-1', data }));
         };
-        
-        return (
-          <MockMemberProfileForm
-            member={mockMember}
-            onSubmit={handleSubmit}
-            isLoading={false}
-          />
-        );
+
+        return <MockMemberProfileForm member={mockMember} onSubmit={handleSubmit} isLoading={false} />;
       };
-      
+
       // Render the component
       render(
         <Provider store={store}>
           <ErrorHandlingComponent />
         </Provider>
       );
-      
+
       // Click the save button to trigger the update
       fireEvent.click(screen.getByTestId('submit-profile'));
-      
+
       // Dispatch the action to simulate the error state
-      store.dispatch({ 
-        type: updateMember.rejected.type, 
-        payload: 'Update failed' 
+      store.dispatch({
+        type: updateMember.rejected.type,
+        payload: 'Update failed',
       });
-      
+
       // Verify the error state is reflected in the store
       expect(store.getState().members.status).toBe('failed');
       expect(store.getState().members.error).toBe('Update failed');
     });
   });
-  
+
   describe('DPM-003: Profile Fields Validation', () => {
     test('Required fields should be validated', async () => {
       // Create a component with validation logic
       const ValidationComponent = () => {
-        const [errors, setErrors] = React.useState<{[key: string]: string}>({});
-        
-        const validateForm = (data: {name?: string; bio?: string}) => {
-          const newErrors: {[key: string]: string} = {};
+        const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
+
+        const validateForm = (data: { name?: string; bio?: string }) => {
+          const newErrors: { [key: string]: string } = {};
           if (!data.name) newErrors.name = 'Name is required';
           setErrors(newErrors);
           return Object.keys(newErrors).length === 0;
         };
-        
+
         const handleSubmit = (data: any) => {
           if (validateForm(data)) {
             store.dispatch(updateMember({ id: 'member-1', data }));
           }
         };
-        
+
         return (
           <div>
             <div data-testid="validation-errors">
               {Object.entries(errors).map(([field, message]) => (
-                <div key={field} data-testid={`error-${field}`}>{message}</div>
+                <div key={field} data-testid={`error-${field}`}>
+                  {message}
+                </div>
               ))}
             </div>
-            <button 
-              data-testid="validate-empty" 
-              onClick={() => handleSubmit({ name: '', bio: 'Test' })}
-            >
+            <button data-testid="validate-empty" onClick={() => handleSubmit({ name: '', bio: 'Test' })}>
               Submit Empty Name
             </button>
           </div>
         );
       };
-      
+
       // Render the component
       render(
         <Provider store={store}>
           <ValidationComponent />
         </Provider>
       );
-      
+
       // Click the button to submit with empty name
       fireEvent.click(screen.getByTestId('validate-empty'));
-      
+
       // Check that validation error is displayed
       await waitFor(() => {
         expect(screen.getByTestId('error-name')).toBeInTheDocument();
         expect(screen.getByTestId('error-name').textContent).toBe('Name is required');
       });
-      
+
       // Verify the API was not called
       expect(membersApiMock.update).not.toHaveBeenCalled();
     });
   });
-  
+
   describe('DPM-004: Profile Privacy Settings', () => {
     test('User should be able to set profile visibility', async () => {
       // Mock the API response for updating the member status
       const updatedMember = {
         ...mockMember,
-        status: 'draft' as ContentStatus // Change from published to draft
+        status: 'draft' as ContentStatus, // Change from published to draft
       };
-      
+
       membersApiMock.update.mockResolvedValueOnce(updatedMember);
-      
+
       // Dispatch the update action
-      await store.dispatch(updateMember({ 
-        id: 'member-1', 
-        data: { status: 'draft' } 
-      }));
-      
+      await store.dispatch(
+        updateMember({
+          id: 'member-1',
+          data: { status: 'draft' },
+        })
+      );
+
       // Verify the API was called with the correct parameters
       expect(membersApiMock.update).toHaveBeenCalledWith(
         'member-1',
         expect.objectContaining({
-          status: 'draft'
+          status: 'draft',
         })
       );
-      
+
       // Verify the state was updated
       expect(store.getState().members.status).toBe('succeeded');
     });

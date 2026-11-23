@@ -18,7 +18,7 @@ import { useUserGroups, useUserResources, useUserMarketplaceItems } from '@/shar
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseMemberByUserId = useMemberByUserId as jest.MockedFunction<typeof useMemberByUserId>;
-const mockUseUserGroups = useUserGroups as jest.MockedFunction<typeof useUserGroups>;  
+const mockUseUserGroups = useUserGroups as jest.MockedFunction<typeof useUserGroups>;
 const mockUseUserResources = useUserResources as jest.MockedFunction<typeof useUserResources>;
 const mockUseUserMarketplaceItems = useUserMarketplaceItems as jest.MockedFunction<typeof useUserMarketplaceItems>;
 
@@ -40,7 +40,7 @@ const renderUserMenu = () => {
 describe('UserMenu Basic Functionality Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Default mock implementations
     mockUseUserGroups.mockReturnValue({ groups: [], isLoading: false });
     mockUseUserResources.mockReturnValue({ resources: [], isLoading: false });
@@ -70,7 +70,7 @@ describe('UserMenu Basic Functionality Tests', () => {
       renderUserMenu();
       const button = screen.getByRole('button');
       fireEvent.click(button);
-      
+
       expect(screen.getByText('Sign in')).toBeInTheDocument();
       expect(screen.getByText('Sign up')).toBeInTheDocument();
     });
@@ -78,10 +78,10 @@ describe('UserMenu Basic Functionality Tests', () => {
     it('should have correct ARIA attributes', () => {
       renderUserMenu();
       const button = screen.getByRole('button');
-      
+
       expect(button).toHaveAttribute('aria-expanded', 'false');
       expect(button).toHaveAttribute('aria-haspopup', 'true');
-      
+
       fireEvent.click(button);
       expect(button).toHaveAttribute('aria-expanded', 'true');
     });
@@ -117,14 +117,14 @@ describe('UserMenu Basic Functionality Tests', () => {
     it('should display user email in dropdown', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('test@example.com')).toBeInTheDocument();
     });
 
     it('should show profile link when member data is available', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const profileLink = screen.getByText('Your Profile');
       expect(profileLink).toBeInTheDocument();
       expect(profileLink.closest('a')).toHaveAttribute('href', '/directory/member123');
@@ -133,7 +133,7 @@ describe('UserMenu Basic Functionality Tests', () => {
     it('should show enhanced menu items', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Your Profile')).toBeInTheDocument();
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
       expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -152,10 +152,10 @@ describe('UserMenu Basic Functionality Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const signOutButton = screen.getByText('Sign out');
       fireEvent.click(signOutButton);
-      
+
       await waitFor(() => {
         expect(mockSignOut).toHaveBeenCalled();
       });
@@ -175,7 +175,7 @@ describe('UserMenu Basic Functionality Tests', () => {
     it('should show admin dashboard link for admin users', () => {
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       const adminLink = screen.getByText('Admin Dashboard');
       expect(adminLink).toBeInTheDocument();
       expect(adminLink.closest('a')).toHaveAttribute('href', '/admin');
@@ -189,28 +189,28 @@ describe('UserMenu Basic Functionality Tests', () => {
         signOut: jest.fn(),
         isAdmin: false,
       });
-      mockUseMemberByUserId.mockReturnValue({ 
-        data: { id: 'member123', name: 'Test User' } 
+      mockUseMemberByUserId.mockReturnValue({
+        data: { id: 'member123', name: 'Test User' },
       });
     });
 
     it('should show user content counts', () => {
-      mockUseUserGroups.mockReturnValue({ 
-        groups: [{ id: '1' }, { id: '2' }], 
-        isLoading: false 
+      mockUseUserGroups.mockReturnValue({
+        groups: [{ id: '1' }, { id: '2' }],
+        isLoading: false,
       });
-      mockUseUserResources.mockReturnValue({ 
-        resources: [{ id: '1' }], 
-        isLoading: false 
+      mockUseUserResources.mockReturnValue({
+        resources: [{ id: '1' }],
+        isLoading: false,
       });
-      mockUseUserMarketplaceItems.mockReturnValue({ 
-        items: [{ id: '1' }, { id: '2' }, { id: '3' }], 
-        isLoading: false 
+      mockUseUserMarketplaceItems.mockReturnValue({
+        items: [{ id: '1' }, { id: '2' }, { id: '3' }],
+        isLoading: false,
       });
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Check for content indicators
       expect(screen.getByText('Your Groups')).toBeInTheDocument();
       expect(screen.getByText('Your Resources')).toBeInTheDocument();
@@ -224,7 +224,7 @@ describe('UserMenu Basic Functionality Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Content links should still be present even during loading
       expect(screen.getByText('Your Groups')).toBeInTheDocument();
       expect(screen.getByText('Your Resources')).toBeInTheDocument();
@@ -243,12 +243,12 @@ describe('UserMenu Basic Functionality Tests', () => {
 
       renderUserMenu();
       fireEvent.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
-      
+
       // Click outside - simulate clicking on document body
       fireEvent.mouseDown(document.body);
-      
+
       await waitFor(() => {
         expect(screen.queryByText('Edit Profile')).not.toBeInTheDocument();
       });
@@ -256,7 +256,7 @@ describe('UserMenu Basic Functionality Tests', () => {
 
     it('should only add event listener when menu is open', () => {
       const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
-      
+
       mockUseAuth.mockReturnValue({
         user: { id: 'user123', email: 'test@example.com' },
         signOut: jest.fn(),
@@ -265,16 +265,16 @@ describe('UserMenu Basic Functionality Tests', () => {
       mockUseMemberByUserId.mockReturnValue({ data: null });
 
       renderUserMenu();
-      
+
       // Event listener should not be added when menu is closed
       expect(addEventListenerSpy).not.toHaveBeenCalled();
-      
+
       // Open menu
       fireEvent.click(screen.getByRole('button'));
-      
+
       // Event listener should be added when menu is open
       expect(addEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
-      
+
       addEventListenerSpy.mockRestore();
     });
   });

@@ -7,9 +7,6 @@ interface AppearancePanelProps {
   onRefresh: () => void;
 }
 
-export const AppearancePanel: React.FC<AppearancePanelProps> = ({ 
-  settings, 
-  onRefresh 
-}) => {
+export const AppearancePanel: React.FC<AppearancePanelProps> = ({ settings, onRefresh }) => {
   return <ThemeEditor settings={settings} onRefresh={onRefresh} />;
 };

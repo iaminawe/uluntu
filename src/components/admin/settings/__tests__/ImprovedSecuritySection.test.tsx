@@ -227,9 +227,7 @@ describe('ImprovedSecuritySection', () => {
       });
 
       // Should show warning when disabling
-      expect(toast.warning).toHaveBeenCalledWith(
-        'Disabling email verification may increase spam accounts'
-      );
+      expect(toast.warning).toHaveBeenCalledWith('Disabling email verification may increase spam accounts');
     });
 
     it('handles two-factor authentication toggle', async () => {
@@ -247,7 +245,7 @@ describe('ImprovedSecuritySection', () => {
       render(<ImprovedSecuritySection {...defaultProps} />);
 
       const timeoutInput = screen.getByLabelText('Session Timeout (seconds)');
-      
+
       // Try to set invalid value
       fireEvent.change(timeoutInput, { target: { value: '0' } });
 
@@ -260,7 +258,7 @@ describe('ImprovedSecuritySection', () => {
       render(<ImprovedSecuritySection {...defaultProps} />);
 
       const attemptsInput = screen.getByLabelText('Max Login Attempts');
-      
+
       // Set valid value
       fireEvent.change(attemptsInput, { target: { value: '10' } });
 
@@ -287,7 +285,7 @@ describe('ImprovedSecuritySection', () => {
 
       // Check if password requirements are displayed
       expect(screen.getByText(/At least 8 characters/)).toBeInTheDocument();
-      
+
       // When strong password is enabled
       expect(screen.getByText(/uppercase letter/i)).toBeInTheDocument();
       expect(screen.getByText(/lowercase letter/i)).toBeInTheDocument();
@@ -320,9 +318,7 @@ describe('ImprovedSecuritySection', () => {
         expect(toggle).not.toBeChecked();
       });
 
-      expect(toast.warning).toHaveBeenCalledWith(
-        'Disabling rate limiting may expose your site to brute force attacks'
-      );
+      expect(toast.warning).toHaveBeenCalledWith('Disabling rate limiting may expose your site to brute force attacks');
     });
 
     it('handles CORS origins input', async () => {
@@ -330,7 +326,7 @@ describe('ImprovedSecuritySection', () => {
 
       const originsInput = screen.getByLabelText('Allowed Origins (CORS)');
       const newOrigins = 'https://new.example.com,https://another.example.com';
-      
+
       fireEvent.change(originsInput, { target: { value: newOrigins } });
 
       await waitFor(() => {
@@ -342,7 +338,7 @@ describe('ImprovedSecuritySection', () => {
       render(<ImprovedSecuritySection {...defaultProps} />);
 
       const originsInput = screen.getByLabelText('Allowed Origins (CORS)');
-      
+
       // Invalid URL
       fireEvent.change(originsInput, { target: { value: 'not-a-url' } });
 
@@ -383,7 +379,8 @@ describe('ImprovedSecuritySection', () => {
     it('handles partial save failures', async () => {
       const errorProps = {
         ...defaultProps,
-        onUpdateSetting: jest.fn()
+        onUpdateSetting: jest
+          .fn()
           .mockResolvedValueOnce(undefined) // First succeeds
           .mockRejectedValueOnce(new Error('Failed')), // Second fails
       };

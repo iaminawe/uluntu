@@ -5,9 +5,9 @@ import type { OnboardingStepProps } from '../../types';
 
 const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
   const dispatch = useAppDispatch();
-  const { professional } = useAppSelector((state) => state.onboarding.formData);
-  const { user } = useAppSelector((state) => state.auth);
-  
+  const { professional } = useAppSelector(state => state.onboarding.formData);
+  const { user } = useAppSelector(state => state.auth);
+
   const [bio, setBio] = useState(professional.bio || '');
   const [title, setTitle] = useState(professional.title || '');
   const [skills, setSkills] = useState<string[]>(professional.skills || []);
@@ -19,14 +19,16 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
   // Auto-save on changes
   useEffect(() => {
     const timer = setTimeout(() => {
-      dispatch(updateProfessionalInfo({
-        bio,
-        title,
-        skills,
-        employmentStatus: employmentStatus as any,
-        yearsOfExperience,
-        professionalGoals,
-      }));
+      dispatch(
+        updateProfessionalInfo({
+          bio,
+          title,
+          skills,
+          employmentStatus: employmentStatus as any,
+          yearsOfExperience,
+          professionalGoals,
+        })
+      );
     }, 500);
 
     return () => clearTimeout(timer);
@@ -71,7 +73,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
             id="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             placeholder="e.g., Full Stack Developer, Product Manager"
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
@@ -87,7 +89,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <textarea
             id="bio"
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={e => setBio(e.target.value)}
             rows={4}
             placeholder="Share a brief overview of your professional background, experience, and what you're passionate about..."
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
@@ -95,9 +97,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
                      focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 
                      resize-none"
           />
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {bio.length}/500 characters
-          </p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{bio.length}/500 characters</p>
         </div>
 
         {/* Employment Status */}
@@ -108,7 +108,11 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <select
             id="employment"
             value={employmentStatus}
-            onChange={(e) => setEmploymentStatus(e.target.value as 'employed' | 'self_employed' | 'looking' | 'student' | 'retired' | 'other')}
+            onChange={e =>
+              setEmploymentStatus(
+                e.target.value as 'employed' | 'self_employed' | 'looking' | 'student' | 'retired' | 'other'
+              )
+            }
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
                      focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -130,7 +134,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <select
             id="experience"
             value={yearsOfExperience}
-            onChange={(e) => setYearsOfExperience(Number(e.target.value))}
+            onChange={e => setYearsOfExperience(Number(e.target.value))}
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
                      bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
                      focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -154,7 +158,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
               id="skills"
               type="text"
               value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
+              onChange={e => setSkillInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a skill and press Enter"
               className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 
@@ -170,10 +174,10 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
               Add
             </button>
           </div>
-          
+
           {/* Skill Tags */}
           <div className="flex flex-wrap gap-2">
-            {skills.map((skill) => (
+            {skills.map(skill => (
               <span
                 key={skill}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 
@@ -200,7 +204,7 @@ const ProfessionalInfoStep: React.FC<OnboardingStepProps> = ({ onNext }) => {
           <textarea
             id="goals"
             value={professionalGoals}
-            onChange={(e) => setProfessionalGoals(e.target.value)}
+            onChange={e => setProfessionalGoals(e.target.value)}
             rows={3}
             placeholder="What are you looking to achieve in the community? (e.g., find collaborators, learn new skills, mentor others)"
             className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg 

@@ -12,10 +12,10 @@ import { useSession } from '@/shared/contexts/SessionContextWithRedux';
  */
 export function useIsCompanyAdmin(companyId: string | undefined) {
   const { user } = useSession();
-  
+
   return useQuery({
     queryKey: ['entity-permission', 'company', companyId, 'admin', user?.id],
-    queryFn: () => companyId ? entityPermissions.isCompanyAdmin(companyId) : Promise.resolve(false),
+    queryFn: () => (companyId ? entityPermissions.isCompanyAdmin(companyId) : Promise.resolve(false)),
     enabled: !!companyId && !!user,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
@@ -27,10 +27,10 @@ export function useIsCompanyAdmin(companyId: string | undefined) {
  */
 export function useIsGroupAdmin(groupId: string | undefined) {
   const { user } = useSession();
-  
+
   return useQuery({
     queryKey: ['entity-permission', 'group', groupId, 'admin', user?.id],
-    queryFn: () => groupId ? entityPermissions.isGroupAdmin(groupId) : Promise.resolve(false),
+    queryFn: () => (groupId ? entityPermissions.isGroupAdmin(groupId) : Promise.resolve(false)),
     enabled: !!groupId && !!user,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
@@ -42,10 +42,10 @@ export function useIsGroupAdmin(groupId: string | undefined) {
  */
 export function useIsCompanyMember(companyId: string | undefined) {
   const { user } = useSession();
-  
+
   return useQuery({
     queryKey: ['entity-permission', 'company', companyId, 'member', user?.id],
-    queryFn: () => companyId ? entityPermissions.isCompanyMember(companyId) : Promise.resolve(false),
+    queryFn: () => (companyId ? entityPermissions.isCompanyMember(companyId) : Promise.resolve(false)),
     enabled: !!companyId && !!user,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
@@ -57,10 +57,10 @@ export function useIsCompanyMember(companyId: string | undefined) {
  */
 export function useIsGroupMember(groupId: string | undefined) {
   const { user } = useSession();
-  
+
   return useQuery({
     queryKey: ['entity-permission', 'group', groupId, 'member', user?.id],
-    queryFn: () => groupId ? entityPermissions.isGroupMember(groupId) : Promise.resolve(false),
+    queryFn: () => (groupId ? entityPermissions.isGroupMember(groupId) : Promise.resolve(false)),
     enabled: !!groupId && !!user,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
@@ -76,7 +76,7 @@ export function useEntityPermission(
   permission: 'admin' | 'member' | 'moderator'
 ) {
   const { user } = useSession();
-  
+
   return useQuery({
     queryKey: ['entity-permission', entityType, entityId, permission, user?.id],
     queryFn: () => {
@@ -84,7 +84,7 @@ export function useEntityPermission(
       return entityPermissions.checkPermission({
         entityType,
         entityId,
-        permission
+        permission,
       });
     },
     enabled: !!entityId && !!user,
@@ -103,7 +103,7 @@ export function useCombinedPermissions(
   entityPermission?: 'admin' | 'member' | 'moderator'
 ) {
   const { user } = useSession();
-  
+
   // Entity permission check
   const entityPermissionQuery = useQuery({
     queryKey: ['entity-permission', entityType, entityId, entityPermission, user?.id],
@@ -112,7 +112,7 @@ export function useCombinedPermissions(
       return entityPermissions.checkPermission({
         entityType,
         entityId,
-        permission: entityPermission
+        permission: entityPermission,
       });
     },
     enabled: !!entityType && !!entityId && !!entityPermission && !!user,
@@ -124,9 +124,9 @@ export function useCombinedPermissions(
     // Entity permissions
     hasEntityPermission: entityPermissionQuery.data ?? false,
     isEntityPermissionLoading: entityPermissionQuery.isLoading,
-    
+
     // Helper methods
-    isEntityAdmin: entityPermission === 'admin' ? entityPermissionQuery.data ?? false : false,
+    isEntityAdmin: entityPermission === 'admin' ? (entityPermissionQuery.data ?? false) : false,
     isEntityMember: entityPermissionQuery.data ?? false, // Any permission means member
   };
 }

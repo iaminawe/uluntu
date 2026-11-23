@@ -23,7 +23,8 @@ export const newsArticles: NewsArticle[] = [
     id: '1',
     title: 'Kootenay Tech Ecosystem Sees Record Growth in 2024',
     slug: 'kootenay-tech-ecosystem-growth-2024',
-    excerpt: 'The Kootenay region has experienced unprecedented growth in its technology sector, with new startups, increased investment, and expanding talent pool.',
+    excerpt:
+      'The Kootenay region has experienced unprecedented growth in its technology sector, with new startups, increased investment, and expanding talent pool.',
     content: `
       <p>The Kootenay region's technology ecosystem has reached new heights in 2024, according to a recent report by the BC Tech Association. The report highlights a 35% increase in tech-related businesses, a significant jump from previous years.</p>
       
@@ -50,17 +51,18 @@ export const newsArticles: NewsArticle[] = [
     author: {
       id: '1',
       name: 'Emma Wilson',
-      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
+      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
     },
     tags: ['Technology', 'Economic Development', 'Startups'],
     status: 'published' as ContentStatus,
-    featured: true
+    featured: true,
   },
   {
     id: '2',
     title: 'Local AI Startup Secures $2M in Funding for Environmental Monitoring Platform',
     slug: 'local-ai-startup-funding-environmental-monitoring',
-    excerpt: 'Mountain Tech Solutions has secured $2 million in seed funding to develop an AI-powered platform for monitoring forest health and wildfire risk in the Kootenay region.',
+    excerpt:
+      'Mountain Tech Solutions has secured $2 million in seed funding to develop an AI-powered platform for monitoring forest health and wildfire risk in the Kootenay region.',
     content: `
       <p>Nelson-based AI startup Mountain Tech Solutions has announced a $2 million seed funding round to accelerate development of its environmental monitoring platform, KootenayWatch.</p>
       
@@ -81,17 +83,18 @@ export const newsArticles: NewsArticle[] = [
     author: {
       id: '2',
       name: 'David Park',
-      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'
+      image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
     },
     tags: ['Artificial Intelligence', 'Funding', 'Environmental Tech'],
     status: 'published' as ContentStatus,
-    featured: true
+    featured: true,
   },
   {
     id: '3',
     title: 'Kootenay Tech Conference Announces 2025 Program and Keynote Speakers',
     slug: 'kootenay-tech-conference-2025-program',
-    excerpt: 'The annual Kootenay Tech Conference has revealed its program for 2025, featuring keynote speakers from leading tech companies and a focus on rural innovation.',
+    excerpt:
+      'The annual Kootenay Tech Conference has revealed its program for 2025, featuring keynote speakers from leading tech companies and a focus on rural innovation.',
     content: `
       <p>The organizing committee for the Kootenay Tech Conference (KTC) has announced the program for its 2025 edition, scheduled for June 15-17 at the Nelson Innovation Centre.</p>
       
@@ -118,17 +121,18 @@ export const newsArticles: NewsArticle[] = [
     author: {
       id: '3',
       name: 'Michael Chen',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg'
+      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     },
     tags: ['Events', 'Conference', 'Rural Innovation'],
     status: 'published' as ContentStatus,
-    featured: false
+    featured: false,
   },
   {
     id: '4',
     title: 'New Digital Nomad Program Launches in Nelson',
     slug: 'digital-nomad-program-nelson',
-    excerpt: 'The City of Nelson has partnered with local tech organizations to launch a program supporting digital nomads who choose the Kootenay region as their remote work destination.',
+    excerpt:
+      'The City of Nelson has partnered with local tech organizations to launch a program supporting digital nomads who choose the Kootenay region as their remote work destination.',
     content: `
       <p>The City of Nelson, in partnership with the Nelson Innovation Centre and the Nelson Digital Nomads group, has launched a new program designed to attract and support remote workers to the area.</p>
       
@@ -157,17 +161,18 @@ export const newsArticles: NewsArticle[] = [
     author: {
       id: '4',
       name: 'Olivia Martinez',
-      image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
+      image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
     },
     tags: ['Remote Work', 'Digital Nomads', 'Community'],
     status: 'published' as ContentStatus,
-    featured: false
+    featured: false,
   },
   {
     id: '5',
     title: 'Kootenay Tech Mentorship Program Celebrates First Year of Success',
     slug: 'kootenay-tech-mentorship-program-first-year',
-    excerpt: 'The Kootenay Tech Mentorship program marks its first anniversary, having connected over 50 mentors and mentees in the regional tech community.',
+    excerpt:
+      'The Kootenay Tech Mentorship program marks its first anniversary, having connected over 50 mentors and mentees in the regional tech community.',
     content: `
       <p>The Kootenay Tech Mentorship program is celebrating its first year of operation, having successfully paired over 50 experienced tech professionals with newcomers, career changers, and students in the region.</p>
       
@@ -188,10 +193,10 @@ export const newsArticles: NewsArticle[] = [
     author: {
       id: '1',
       name: 'Emma Wilson',
-      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg'
+      image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
     },
     tags: ['Mentorship', 'Education', 'Community'],
     status: 'published' as ContentStatus,
-    featured: false
-  }
+    featured: false,
+  },
 ];

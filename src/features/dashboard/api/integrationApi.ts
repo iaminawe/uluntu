@@ -19,7 +19,7 @@ import {
   DashboardContent,
   ActivityItem,
   ContentRecommendation,
-  EngagementMetrics
+  EngagementMetrics,
 } from '../types';
 
 class IntegrationApi {
@@ -27,14 +27,12 @@ class IntegrationApi {
    * Get current user's member ID
    */
   private async getCurrentMemberId(): Promise<string> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    const { data: member } = await supabase
-      .from('members')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    const { data: member } = await supabase.from('members').select('id').eq('user_id', user.id).single();
 
     if (!member) throw new Error('User does not have a member profile');
     return member.id;
@@ -57,10 +55,10 @@ class IntegrationApi {
         const photos = await photoApi.getPhotos({
           filters: {
             uploadedBy: memberId,
-            ...(gallery_id && { galleryId: gallery_id })
+            ...(gallery_id && { galleryId: gallery_id }),
           },
           limit,
-          page: 1
+          page: 1,
         });
 
         return photos.data.map(photo => ({
@@ -74,7 +72,7 @@ class IntegrationApi {
           download_count: photo.downloads || 0,
           created_at: photo.created_at || new Date().toISOString(),
           thumbnail_url: photo.thumbnail_url,
-          url: photo.url || ''
+          url: photo.url || '',
         }));
       } catch (error) {
         console.error('Error fetching photo dashboard data:', error);
@@ -102,24 +100,18 @@ class IntegrationApi {
         });
 
         // Filter events organized by current user
-        const userEvents = events.filter(event => 
-          event.organizer?.id === memberId
-        );
+        const userEvents = events.filter(event => event.organizer?.id === memberId);
 
         // Apply additional filtering
         let filteredEvents = userEvents;
 
         if (status_filter && status_filter.length > 0) {
-          filteredEvents = filteredEvents.filter(event => 
-            status_filter.includes(event.status)
-          );
+          filteredEvents = filteredEvents.filter(event => status_filter.includes(event.status));
         }
 
         if (!include_past) {
           const now = new Date();
-          filteredEvents = filteredEvents.filter(event => 
-            new Date(event.date) >= now
-          );
+          filteredEvents = filteredEvents.filter(event => new Date(event.date) >= now);
         }
 
         // Limit results
@@ -136,7 +128,7 @@ class IntegrationApi {
           max_attendees: event.maxAttendees,
           created_at: event.organizer?.joinDate || new Date().toISOString(),
           image: event.image,
-          url: `/events/${event.id}`
+          url: `/events/${event.id}`,
         }));
       } catch (error) {
         console.error('Error fetching event dashboard data:', error);
@@ -161,10 +153,12 @@ class IntegrationApi {
         // Query marketplace listings directly since we don't have a specific API imported
         let query = supabase
           .from('marketplace_listings')
-          .select(`
+          .select(
+            `
             id, title, description, price, status, created_at,
             images, category, seller_id, view_count, inquiry_count
-          `)
+          `
+          )
           .eq('seller_id', memberId)
           .order('created_at', { ascending: false });
 
@@ -196,7 +190,7 @@ class IntegrationApi {
           inquiry_count: listing.inquiry_count || 0,
           created_at: listing.created_at,
           thumbnail_url: listing.images?.[0],
-          url: `/marketplace/${listing.id}`
+          url: `/marketplace/${listing.id}`,
         }));
       } catch (error) {
         console.error('Error fetching marketplace dashboard data:', error);
@@ -208,10 +202,7 @@ class IntegrationApi {
   /**
    * Get recent messages and conversations
    */
-  async getRecentMessages(params?: {
-    limit?: number;
-    conversation_types?: string[];
-  }): Promise<{
+  async getRecentMessages(params?: { limit?: number; conversation_types?: string[] }): Promise<{
     conversations: any[];
     unread_count: number;
     recent_messages: any[];
@@ -224,18 +215,18 @@ class IntegrationApi {
         const [conversations, unreadCount] = await Promise.all([
           messagingApi.getConversations({
             limit,
-            ...(conversation_types && { type: conversation_types[0] as any })
+            ...(conversation_types && { type: conversation_types[0] as any }),
           }),
-          messagingApi.getUnreadCount()
+          messagingApi.getUnreadCount(),
         ]);
 
         // Get recent messages from the first few conversations
         let recentMessages: any[] = [];
         if (conversations.length > 0) {
-          const messagePromises = conversations.slice(0, 3).map(conv => 
-            messagingApi.getMessages(conv.id, { limit: 3 })
-          );
-          
+          const messagePromises = conversations
+            .slice(0, 3)
+            .map(conv => messagingApi.getMessages(conv.id, { limit: 3 }));
+
           const messageResults = await Promise.all(messagePromises);
           recentMessages = messageResults.flat().slice(0, 10);
         }
@@ -243,14 +234,14 @@ class IntegrationApi {
         return {
           conversations,
           unread_count: unreadCount,
-          recent_messages: recentMessages
+          recent_messages: recentMessages,
         };
       } catch (error) {
         console.error('Error fetching recent messages:', error);
         return {
           conversations: [],
           unread_count: 0,
-          recent_messages: []
+          recent_messages: [],
         };
       }
     });
@@ -271,20 +262,20 @@ class IntegrationApi {
 
         // Get member profile data
         const member = await membersApi.getById(memberId);
-        
+
         if (!member) {
           return {
             completion_percentage: 0,
             missing_fields: ['name', 'title', 'bio', 'location', 'image'],
             suggestions: ['Complete your profile to increase visibility'],
-            profile_views: 0
+            profile_views: 0,
           };
         }
 
         // Calculate completion
         const requiredFields = ['name', 'title', 'bio', 'location', 'image'];
         const optionalFields = ['social', 'intro'];
-        
+
         const completedRequired = requiredFields.filter(field => {
           const value = member[field as keyof typeof member];
           return value && value.toString().trim().length > 0;
@@ -292,15 +283,19 @@ class IntegrationApi {
 
         const completedOptional = optionalFields.filter(field => {
           const value = member[field as keyof typeof member];
-          return value && (
-            typeof value === 'string' ? value.trim().length > 0 :
-            typeof value === 'object' ? Object.keys(value).length > 0 : false
+          return (
+            value &&
+            (typeof value === 'string'
+              ? value.trim().length > 0
+              : typeof value === 'object'
+                ? Object.keys(value).length > 0
+                : false)
           );
         });
 
         const completionPercentage = Math.round(
-          ((completedRequired.length / requiredFields.length) * 80) +
-          ((completedOptional.length / optionalFields.length) * 20)
+          (completedRequired.length / requiredFields.length) * 80 +
+            (completedOptional.length / optionalFields.length) * 20
         );
 
         const missingFields = requiredFields.filter(field => {
@@ -327,7 +322,7 @@ class IntegrationApi {
           completion_percentage: completionPercentage,
           missing_fields: missingFields,
           suggestions,
-          profile_views: 0 // Would need to be tracked separately
+          profile_views: 0, // Would need to be tracked separately
         };
       } catch (error) {
         console.error('Error fetching profile insights:', error);
@@ -335,7 +330,7 @@ class IntegrationApi {
           completion_percentage: 0,
           missing_fields: [],
           suggestions: ['Error loading profile insights'],
-          profile_views: 0
+          profile_views: 0,
         };
       }
     });
@@ -352,7 +347,11 @@ class IntegrationApi {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        const { types = ['event', 'group', 'opportunity', 'marketplace_listing'], limit = 10, min_relevance = 0.3 } = params || {};
+        const {
+          types = ['event', 'group', 'opportunity', 'marketplace_listing'],
+          limit = 10,
+          min_relevance = 0.3,
+        } = params || {};
 
         const recommendations: ContentRecommendation[] = [];
 
@@ -363,9 +362,9 @@ class IntegrationApi {
         // Event recommendations
         if (types.includes('event')) {
           const events = await eventsApi.getAll({
-            search: userLocation ? userLocation.split(',')[0] : undefined
+            search: userLocation ? userLocation.split(',')[0] : undefined,
           });
-          
+
           events.slice(0, 3).forEach(event => {
             recommendations.push({
               id: event.id,
@@ -374,11 +373,12 @@ class IntegrationApi {
               description: event.description,
               image_url: event.image,
               url: `/events/${event.id}`,
-              reason: userLocation && event.location.includes(userLocation.split(',')[0]) 
-                ? 'Event in your area' 
-                : 'Popular upcoming event',
+              reason:
+                userLocation && event.location.includes(userLocation.split(',')[0])
+                  ? 'Event in your area'
+                  : 'Popular upcoming event',
               relevance_score: userLocation && event.location.includes(userLocation.split(',')[0]) ? 0.8 : 0.5,
-              created_at: event.organizer?.joinDate || new Date().toISOString()
+              created_at: event.organizer?.joinDate || new Date().toISOString(),
             });
           });
         }
@@ -402,7 +402,7 @@ class IntegrationApi {
               url: `/groups/${group.id}`,
               reason: 'Popular group in the community',
               relevance_score: 0.6,
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
             });
           });
         }
@@ -426,7 +426,7 @@ class IntegrationApi {
               url: `/marketplace/${listing.id}`,
               reason: 'Recent marketplace listing',
               relevance_score: 0.4,
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
             });
           });
         }
@@ -436,7 +436,6 @@ class IntegrationApi {
           .filter(rec => rec.relevance_score >= min_relevance)
           .sort((a, b) => b.relevance_score - a.relevance_score)
           .slice(0, limit);
-
       } catch (error) {
         console.error('Error fetching content recommendations:', error);
         return [];
@@ -451,11 +450,11 @@ class IntegrationApi {
     return withAuth(async () => {
       try {
         const memberId = await this.getCurrentMemberId();
-        
+
         // Calculate date range
         const endDate = new Date();
         const startDate = new Date();
-        
+
         switch (period) {
           case 'week':
             startDate.setDate(endDate.getDate() - 7);
@@ -473,7 +472,7 @@ class IntegrationApi {
           this.getPhotoEngagementMetrics(memberId, startDate, endDate),
           this.getEventEngagementMetrics(memberId, startDate, endDate),
           this.getMarketplaceEngagementMetrics(memberId, startDate, endDate),
-          this.getMessageEngagementMetrics(memberId, startDate, endDate)
+          this.getMessageEngagementMetrics(memberId, startDate, endDate),
         ]);
 
         return {
@@ -492,13 +491,12 @@ class IntegrationApi {
           growth_metrics: {
             profile_views_growth: 0, // Would need historical comparison
             content_views_growth: 0, // Would need historical comparison
-            engagement_growth: 0 // Would need historical comparison
-          }
+            engagement_growth: 0, // Would need historical comparison
+          },
         };
-
       } catch (error) {
         console.error('Error fetching cross-platform engagement:', error);
-        
+
         // Return default metrics
         const now = new Date();
         const start = new Date();
@@ -522,8 +520,8 @@ class IntegrationApi {
           growth_metrics: {
             profile_views_growth: 0,
             content_views_growth: 0,
-            engagement_growth: 0
-          }
+            engagement_growth: 0,
+          },
         };
       }
     });
@@ -568,14 +566,14 @@ class IntegrationApi {
         return {
           success: errors.length === 0,
           synced_sources: syncedSources,
-          errors
+          errors,
         };
       } catch (error) {
         console.error('Error syncing external data:', error);
         return {
           success: false,
           synced_sources: [],
-          errors: ['Failed to sync external data']
+          errors: ['Failed to sync external data'],
         };
       }
     });
@@ -638,7 +636,7 @@ class IntegrationApi {
       profile_views: 0, // Photos don't contribute to profile views directly
       content_views: photos.reduce((sum, photo) => sum + (photo.views || 0), 0),
       likes_received: photos.reduce((sum, photo) => sum + (photo.likes || 0), 0),
-      comments_received: photos.reduce((sum, photo) => sum + (photo.comments || 0), 0)
+      comments_received: photos.reduce((sum, photo) => sum + (photo.comments || 0), 0),
     };
   }
 
@@ -657,7 +655,7 @@ class IntegrationApi {
       content_views: 0, // Events don't track views currently
       likes_received: 0, // Events don't track likes currently
       comments_received: 0, // Events don't track comments currently
-      events_attended: 0 // Would need to track event attendance
+      events_attended: 0, // Would need to track event attendance
     };
   }
 
@@ -673,7 +671,7 @@ class IntegrationApi {
     const listings = data || [];
     return {
       content_views: listings.reduce((sum, listing) => sum + (listing.view_count || 0), 0),
-      marketplace_interactions: listings.reduce((sum, listing) => sum + (listing.inquiry_count || 0), 0)
+      marketplace_interactions: listings.reduce((sum, listing) => sum + (listing.inquiry_count || 0), 0),
     };
   }
 
@@ -681,16 +679,16 @@ class IntegrationApi {
     // Get messaging engagement data
     try {
       const conversations = await messagingApi.getConversations();
-      
+
       // Estimate message counts based on conversation activity
       return {
         messages_sent: conversations.length * 2, // Estimate
-        messages_received: conversations.length * 2 // Estimate
+        messages_received: conversations.length * 2, // Estimate
       };
     } catch (error) {
       return {
         messages_sent: 0,
-        messages_received: 0
+        messages_received: 0,
       };
     }
   }

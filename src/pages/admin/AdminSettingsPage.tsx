@@ -31,7 +31,7 @@ const AdminSettingsPage: React.FC = () => {
     updateFeature,
     deleteSetting,
     deleteFeature,
-    refetch
+    refetch,
   } = useUnifiedSettings();
 
   const renderSection = () => {
@@ -44,7 +44,7 @@ const AdminSettingsPage: React.FC = () => {
       onDeleteSetting: deleteSetting,
       onDeleteFeature: deleteFeature,
       onRefresh: refetch,
-      isLoading
+      isLoading,
     };
 
     switch (activeSection) {
@@ -56,7 +56,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'users':
         return permissions.canViewUsers ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -65,7 +65,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'features':
         return permissions.canViewFeatures ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -74,7 +74,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'security':
         return permissions.canViewSecurity ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -83,7 +83,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'email':
         return permissions.canViewEmail ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -92,7 +92,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'performance':
         return permissions.canViewPerformance ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -101,7 +101,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'contact':
         return permissions.canViewContact ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -110,7 +110,7 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       case 'audit':
         return permissions.canViewAudit ? (
           <Suspense fallback={<LoadingSpinner />}>
@@ -119,16 +119,12 @@ const AdminSettingsPage: React.FC = () => {
         ) : (
           <UnauthorizedSection />
         );
-      
+
       default:
         return (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Settings Section Not Found
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              The requested settings section could not be loaded.
-            </p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Settings Section Not Found</h3>
+            <p className="text-gray-600 dark:text-gray-400">The requested settings section could not be loaded.</p>
           </div>
         );
     }
@@ -146,7 +142,12 @@ const AdminSettingsPage: React.FC = () => {
     return (
       <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <ErrorAlert
-          error={{ userMessage: error, errorCode: ErrorCode.GENERIC_UNKNOWN, debugId: Date.now().toString(), timestamp: new Date().toISOString() }}
+          error={{
+            userMessage: error,
+            errorCode: ErrorCode.GENERIC_UNKNOWN,
+            debugId: Date.now().toString(),
+            timestamp: new Date().toISOString(),
+          }}
           onRetry={refetch}
           canRetry={true}
         />
@@ -160,19 +161,13 @@ const AdminSettingsPage: React.FC = () => {
         <div className="flex items-center justify-center h-64 bg-gray-50 dark:bg-gray-900">
           <div className="text-center">
             <div className="text-4xl mb-4">🔒</div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Admin Access Required
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              This area is restricted to administrators only.
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Admin Access Required</h2>
+            <p className="text-gray-600 dark:text-gray-400">This area is restricted to administrators only.</p>
           </div>
         </div>
       }
     >
-      <AdminSettingsLayout>
-        {renderSection()}
-      </AdminSettingsLayout>
+      <AdminSettingsLayout>{renderSection()}</AdminSettingsLayout>
     </AdminOnly>
   );
 };
@@ -181,12 +176,8 @@ const AdminSettingsPage: React.FC = () => {
 const UnauthorizedSection: React.FC = () => (
   <div className="text-center py-12">
     <div className="text-4xl mb-4">🔒</div>
-    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-      Insufficient Permissions
-    </h3>
-    <p className="text-gray-600 dark:text-gray-400">
-      You don't have the required permissions to access this section.
-    </p>
+    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Insufficient Permissions</h3>
+    <p className="text-gray-600 dark:text-gray-400">You don't have the required permissions to access this section.</p>
   </div>
 );
 

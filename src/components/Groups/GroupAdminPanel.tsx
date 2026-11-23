@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
-import { 
-  UsersIcon, 
-  CogIcon, 
-  EnvelopeIcon, 
+import {
+  UsersIcon,
+  CogIcon,
+  EnvelopeIcon,
   ChartBarIcon,
   ClockIcon,
   PlusCircleIcon,
   TrashIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
 } from '@heroicons/react/24/outline';
 import { groupsApi } from '@/features/groups/api/groupsApi';
 import { groupMemberManagementApi } from '@/lib/api/groups/memberManagement';
@@ -36,7 +36,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
     totalMembers: 0,
     activeMembers: 0,
     totalPosts: 0,
-    weeklyActivity: 0
+    weeklyActivity: 0,
   });
   const [loading, setLoading] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -68,7 +68,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           description: groupData.description,
           visibility: groupData.visibility,
           maxMembers: (groupData as any).max_members || 100,
-          settings: (groupData as any).settings || {}
+          settings: (groupData as any).settings || {},
         });
       }
 
@@ -81,7 +81,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           const weekAgo = new Date();
           weekAgo.setDate(weekAgo.getDate() - 7);
           return new Date(a.created_at) > weekAgo;
-        }).length
+        }).length,
       });
     } catch (error) {
       console.error('Error loading group data:', error);
@@ -103,7 +103,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
     const success = await groupMemberManagementApi.updateMemberRole({
       group_id: groupId,
       member_id: memberId,
-      role: newRole
+      role: newRole,
     });
     if (success) {
       loadGroupData();
@@ -130,23 +130,21 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
     { name: 'Settings', icon: CogIcon },
     { name: 'Invitations', icon: EnvelopeIcon },
     { name: 'Activity', icon: ClockIcon },
-    { name: 'Statistics', icon: ChartBarIcon }
+    { name: 'Statistics', icon: ChartBarIcon },
   ];
 
   return (
     <div className="bg-white shadow-sm rounded-lg">
       <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
         <Tab.List className="flex space-x-1 rounded-t-lg bg-gray-100 p-1">
-          {tabs.map((tab) => (
+          {tabs.map(tab => (
             <Tab
               key={tab.name}
               className={({ selected }) =>
                 classNames(
                   'w-full rounded-lg py-2.5 text-sm font-medium leading-5',
                   'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                  selected
-                    ? 'bg-white text-blue-700 shadow'
-                    : 'text-gray-600 hover:bg-white/[0.12] hover:text-gray-900'
+                  selected ? 'bg-white text-blue-700 shadow' : 'text-gray-600 hover:bg-white/[0.12] hover:text-gray-900'
                 )
               }
             >
@@ -195,7 +193,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {members.map((member) => (
+                    {members.map(member => (
                       <tr key={member.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
@@ -213,7 +211,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select
                             value={member.role}
-                            onChange={(e) => handleChangeRole(member.id, e.target.value as any)}
+                            onChange={e => handleChangeRole(member.id, e.target.value as any)}
                             className="text-sm border-gray-300 rounded-md"
                             disabled={member.id === currentUserId}
                           >
@@ -223,11 +221,11 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                           </select>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            member.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
                             {member.status}
                           </span>
                         </td>
@@ -256,7 +254,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           <Tab.Panel>
             <form onSubmit={handleUpdateSettings} className="space-y-6">
               <h3 className="text-lg font-semibold">Group Settings</h3>
-              
+
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                   Group Name
@@ -265,7 +263,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                   type="text"
                   id="name"
                   value={groupSettings.name || ''}
-                  onChange={(e) => setGroupSettings({ ...groupSettings, name: e.target.value })}
+                  onChange={e => setGroupSettings({ ...groupSettings, name: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
@@ -278,7 +276,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                   id="description"
                   rows={4}
                   value={groupSettings.description || ''}
-                  onChange={(e) => setGroupSettings({ ...groupSettings, description: e.target.value })}
+                  onChange={e => setGroupSettings({ ...groupSettings, description: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
@@ -290,7 +288,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                 <select
                   id="visibility"
                   value={groupSettings.visibility || 'open'}
-                  onChange={(e) => setGroupSettings({ ...groupSettings, visibility: e.target.value })}
+                  onChange={e => setGroupSettings({ ...groupSettings, visibility: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="open">Open - Anyone can join</option>
@@ -307,15 +305,12 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                   type="number"
                   id="maxMembers"
                   value={groupSettings.maxMembers || 100}
-                  onChange={(e) => setGroupSettings({ ...groupSettings, maxMembers: parseInt(e.target.value) })}
+                  onChange={e => setGroupSettings({ ...groupSettings, maxMembers: parseInt(e.target.value) })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-              >
+              <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
                 Save Settings
               </button>
             </form>
@@ -325,7 +320,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           <Tab.Panel>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Pending Invitations ({invitations.length})</h3>
-              
+
               {invitations.length === 0 ? (
                 <p className="text-gray-500">No pending invitations</p>
               ) : (
@@ -351,14 +346,12 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {invitations.map((invitation) => (
+                      {invitations.map(invitation => (
                         <tr key={invitation.id}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {invitation.invited_email || invitation.invited_member?.name}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {invitation.role}
-                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{invitation.role}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {invitation.invited_by_member?.name}
                           </td>
@@ -386,17 +379,14 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           <Tab.Panel>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Recent Activity</h3>
-              
+
               <div className="flow-root">
                 <ul className="-mb-8">
                   {activities.slice(0, 20).map((activity, idx) => (
                     <li key={activity.id}>
                       <div className="relative pb-8">
                         {idx !== activities.length - 1 ? (
-                          <span
-                            className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                            aria-hidden="true"
-                          />
+                          <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
                         ) : null}
                         <div className="relative flex space-x-3">
                           <div>
@@ -407,9 +397,7 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
                           <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                             <div>
                               <p className="text-sm text-gray-500">
-                                <span className="font-medium text-gray-900">
-                                  {activity.actor?.name || 'System'}
-                                </span>{' '}
+                                <span className="font-medium text-gray-900">{activity.actor?.name || 'System'}</span>{' '}
                                 {activity.action.replace(/_/g, ' ')}
                               </p>
                             </div>
@@ -430,23 +418,23 @@ const GroupAdminPanel: React.FC<GroupAdminPanelProps> = ({ groupId, groupName, c
           <Tab.Panel>
             <div className="space-y-6">
               <h3 className="text-lg font-semibold">Group Statistics</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <div className="text-sm font-medium text-gray-500">Total Members</div>
                   <div className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalMembers}</div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <div className="text-sm font-medium text-gray-500">Active Members</div>
                   <div className="mt-2 text-3xl font-semibold text-gray-900">{stats.activeMembers}</div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <div className="text-sm font-medium text-gray-500">Total Posts</div>
                   <div className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalPosts}</div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <div className="text-sm font-medium text-gray-500">Weekly Activity</div>
                   <div className="mt-2 text-3xl font-semibold text-gray-900">{stats.weeklyActivity}</div>

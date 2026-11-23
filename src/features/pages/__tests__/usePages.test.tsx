@@ -8,7 +8,7 @@ import type { Page } from '../types';
 
 // Mock the environment config
 jest.mock('@/config/env', () => ({
-  getIsSupabaseEnabled: () => false
+  getIsSupabaseEnabled: () => false,
 }));
 
 // Mock the API
@@ -20,19 +20,17 @@ jest.mock('../api/pagesApi', () => ({
     getHomePage: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
-    delete: jest.fn()
-  }
+    delete: jest.fn(),
+  },
 }));
 
 const mockStore = configureStore({
   reducer: {
-    pages: pagesReducer
-  }
+    pages: pagesReducer,
+  },
 });
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <Provider store={mockStore}>{children}</Provider>
-);
+const wrapper = ({ children }: { children: React.ReactNode }) => <Provider store={mockStore}>{children}</Provider>;
 
 describe('usePages hook', () => {
   it('should return initial state', () => {
@@ -136,7 +134,7 @@ describe('usePages hook', () => {
       await result.current.createNewPage({
         title: 'Test Page',
         content: '<p>Test content</p>',
-        status: 'draft'
+        status: 'draft',
       });
     });
 
@@ -147,10 +145,10 @@ describe('usePages hook', () => {
 
     if (result.current.pages.length > 0) {
       const pageId = result.current.pages[0].id;
-      
+
       await act(async () => {
         await result.current.updateExistingPage(pageId, {
-          title: 'Updated Title'
+          title: 'Updated Title',
         });
       });
 

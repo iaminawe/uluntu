@@ -24,7 +24,7 @@ import topicsUIReducer from '@/features/topics/store/topicsUISlice';
 const _logger = createLogger({
   collapsed: true,
   // We can filter actions here to reduce noise
-  predicate: (_getState, action) => !action.type.includes('@@redux-form')
+  predicate: (_getState, action) => !action.type.includes('@@redux-form'),
 });
 
 // Configure and create the Redux store
@@ -49,46 +49,48 @@ export const store = configureStore({
     topicsUI: topicsUIReducer,
     // Other reducers will be added as they are implemented
   },
-  middleware: (getDefaultMiddleware) => 
-    getDefaultMiddleware(),
-  devTools: (typeof window !== 'undefined' && import.meta.env.MODE !== 'production') ? {
-    // Custom name for the instance shown in DevTools
-    name: 'Uluntu',
-    // Trace action execution path through middleware, enhancers, and reducers
-    trace: true,
-    // Maximum number of actions to keep in history
-    maxAge: 50,
-    // Functions to sanitize data before sending to DevTools (remove sensitive info)
-    actionSanitizer: (action: any) => {
-      // Sanitize actions with sensitive data (e.g., authentication)
-      if (action.type === 'auth/signIn' && action.payload?.password) {
-        return {
-          ...action,
-          payload: {
-            ...action.payload,
-            password: '[REDACTED]'
-          }
-        };
-      }
-      return action;
-    },
-    stateSanitizer: (state: any) => {
-      // Sanitize sensitive data in state if needed
-      if (state.auth?.session?.access_token) {
-        return {
-          ...state,
-          auth: {
-            ...state.auth,
-            session: {
-              ...state.auth.session,
-              access_token: '[REDACTED TOKEN]'
+  middleware: getDefaultMiddleware => getDefaultMiddleware(),
+  devTools:
+    typeof window !== 'undefined' && import.meta.env.MODE !== 'production'
+      ? {
+          // Custom name for the instance shown in DevTools
+          name: 'Uluntu',
+          // Trace action execution path through middleware, enhancers, and reducers
+          trace: true,
+          // Maximum number of actions to keep in history
+          maxAge: 50,
+          // Functions to sanitize data before sending to DevTools (remove sensitive info)
+          actionSanitizer: (action: any) => {
+            // Sanitize actions with sensitive data (e.g., authentication)
+            if (action.type === 'auth/signIn' && action.payload?.password) {
+              return {
+                ...action,
+                payload: {
+                  ...action.payload,
+                  password: '[REDACTED]',
+                },
+              };
             }
-          }
-        };
-      }
-      return state;
-    }
-  } : false,
+            return action;
+          },
+          stateSanitizer: (state: any) => {
+            // Sanitize sensitive data in state if needed
+            if (state.auth?.session?.access_token) {
+              return {
+                ...state,
+                auth: {
+                  ...state.auth,
+                  session: {
+                    ...state.auth.session,
+                    access_token: '[REDACTED TOKEN]',
+                  },
+                },
+              };
+            }
+            return state;
+          },
+        }
+      : false,
 });
 
 // Define types for TypeScript

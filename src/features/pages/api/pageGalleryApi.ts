@@ -12,7 +12,7 @@ export interface PageGallery {
   attached_by?: string;
   created_at: string;
   updated_at?: string;
-  
+
   // Gallery details (joined data)
   gallery?: Gallery & {
     owner_name?: string;
@@ -46,8 +46,10 @@ export const pageGalleryApi = {
    */
   async attachGallery(entityId: string, galleryId: string, galleryType?: string): Promise<PageGallery | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       const { data, error } = await supabase
         .from('page_galleries')
         .insert({
@@ -55,7 +57,7 @@ export const pageGalleryApi = {
           gallery_id: galleryId,
           display_order: 0,
           featured: false,
-          attached_by: user?.id
+          attached_by: user?.id,
         })
         .select()
         .single();
@@ -64,11 +66,13 @@ export const pageGalleryApi = {
         handleSupabaseError(error, 'attaching gallery to page');
         return null;
       }
-      
-      return data ? {
-        ...data,
-        created_at: data.created_at || new Date().toISOString()
-      } as PageGallery : null;
+
+      return data
+        ? ({
+            ...data,
+            created_at: data.created_at || new Date().toISOString(),
+          } as PageGallery)
+        : null;
     } catch (error) {
       handleSupabaseError(error, 'attaching gallery to page');
       return null;
@@ -90,7 +94,7 @@ export const pageGalleryApi = {
         handleSupabaseError(error, 'detaching gallery from page');
         return false;
       }
-      
+
       return true;
     } catch (error) {
       handleSupabaseError(error, 'detaching gallery from page');
@@ -104,46 +108,51 @@ export const pageGalleryApi = {
   async getEntityGalleries(entityId: string): Promise<PageGallery[]> {
     try {
       const { data, error } = await supabase.rpc('get_page_galleries', {
-        page_uuid: entityId
+        page_uuid: entityId,
       });
 
       if (error) {
         handleSupabaseError(error, `fetching galleries for page ${entityId}`);
         return [];
       }
-      
-      return (data || []).map((item: any) => ({
-        id: item.id,
-        page_id: entityId,
-        gallery_id: item.gallery_id,
-        display_order: item.display_order || 0,
-        featured: item.featured || false,
-        caption: item.caption,
-        attached_by: item.attached_by,
-        created_at: item.created_at || new Date().toISOString(),
-        updated_at: item.updated_at,
-        gallery: item.gallery_id ? {
-          id: item.gallery_id,
-          title: item.gallery_title || '',
-          description: item.gallery_description || '',
-          slug: item.gallery_slug || '',
-          cover_photo_id: item.gallery_cover_photo_id,
-          photo_count: item.gallery_photo_count || 0,
-          privacy_level: item.gallery_privacy_level || 'public',
-          visibility: 'visible' as const,
-          owner_type: 'user' as const,
-          owner_id: '',
-          owner_name: item.gallery_owner_name,
-          owner_image: item.gallery_owner_image,
-          photos: [],
-          created_at: item.created_at || new Date().toISOString(),
-          updated_at: item.updated_at || new Date().toISOString(),
-          user_id: item.gallery_owner_id || '',
-          sort_order: 0,
-          view_count: 0,
-          is_featured: false
-        } : undefined
-      } as PageGallery));
+
+      return (data || []).map(
+        (item: any) =>
+          ({
+            id: item.id,
+            page_id: entityId,
+            gallery_id: item.gallery_id,
+            display_order: item.display_order || 0,
+            featured: item.featured || false,
+            caption: item.caption,
+            attached_by: item.attached_by,
+            created_at: item.created_at || new Date().toISOString(),
+            updated_at: item.updated_at,
+            gallery: item.gallery_id
+              ? {
+                  id: item.gallery_id,
+                  title: item.gallery_title || '',
+                  description: item.gallery_description || '',
+                  slug: item.gallery_slug || '',
+                  cover_photo_id: item.gallery_cover_photo_id,
+                  photo_count: item.gallery_photo_count || 0,
+                  privacy_level: item.gallery_privacy_level || 'public',
+                  visibility: 'visible' as const,
+                  owner_type: 'user' as const,
+                  owner_id: '',
+                  owner_name: item.gallery_owner_name,
+                  owner_image: item.gallery_owner_image,
+                  photos: [],
+                  created_at: item.created_at || new Date().toISOString(),
+                  updated_at: item.updated_at || new Date().toISOString(),
+                  user_id: item.gallery_owner_id || '',
+                  sort_order: 0,
+                  view_count: 0,
+                  is_featured: false,
+                }
+              : undefined,
+          }) as PageGallery
+      );
     } catch (error) {
       handleSupabaseError(error, `fetching galleries for page ${entityId}`);
       return [];
@@ -155,12 +164,8 @@ export const pageGalleryApi = {
    */
   async updateGalleryOrder(entityId: string, galleryOrders: { id: string; order: number }[]): Promise<boolean> {
     try {
-      const updates = galleryOrders.map(({ id, order }) => 
-        supabase
-          .from('page_galleries')
-          .update({ display_order: order })
-          .eq('id', id)
-          .eq('page_id', entityId)
+      const updates = galleryOrders.map(({ id, order }) =>
+        supabase.from('page_galleries').update({ display_order: order }).eq('id', id).eq('page_id', entityId)
       );
 
       const results = await Promise.all(updates);
@@ -184,10 +189,7 @@ export const pageGalleryApi = {
   async setFeaturedGallery(entityId: string, galleryId: string): Promise<boolean> {
     try {
       // First, remove featured status from all galleries for this page
-      await supabase
-        .from('page_galleries')
-        .update({ featured: false })
-        .eq('page_id', entityId);
+      await supabase.from('page_galleries').update({ featured: false }).eq('page_id', entityId);
 
       // Then set the specified gallery as featured
       const { error } = await supabase
@@ -213,19 +215,21 @@ export const pageGalleryApi = {
    */
   async getAttachableGalleries(entityId: string): Promise<AttachableGallery[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const userId = user?.id;
 
       const { data, error } = await supabase.rpc('get_attachable_galleries_for_page', {
         page_uuid: entityId,
-        user_uuid: userId
+        user_uuid: userId,
       });
 
       if (error) {
         handleSupabaseError(error, `fetching attachable galleries for page ${entityId}`);
         return [];
       }
-      
+
       return (data || []).map((item: any) => ({
         id: item.id,
         title: item.title,
@@ -244,11 +248,11 @@ export const pageGalleryApi = {
         sort_order: 0,
         view_count: 0,
         is_featured: false,
-        updated_at: item.created_at
+        updated_at: item.created_at,
       }));
     } catch (error) {
       handleSupabaseError(error, `fetching attachable galleries for page ${entityId}`);
       return [];
     }
-  }
+  },
 };

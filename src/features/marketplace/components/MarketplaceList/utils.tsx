@@ -1,10 +1,4 @@
-import { 
-  Listing, 
-  ListingType, 
-  ListingCondition,
-  ListingPriceRange,
-  FilterOptions 
-} from './types';
+import { Listing, ListingType, ListingCondition, ListingPriceRange, FilterOptions } from './types';
 import { Package, Briefcase, Monitor } from 'lucide-react';
 
 // Get appropriate icon for listing type
@@ -53,7 +47,7 @@ export const formatDate = (dateString: string): string => {
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     return 'Today';
   } else if (diffDays === 1) {
@@ -64,7 +58,7 @@ export const formatDate = (dateString: string): string => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 };
@@ -89,65 +83,57 @@ export const isInPriceRange = (price: number, range: ListingPriceRange): boolean
 };
 
 // Filter listings based on filter options
-export const filterListings = (
-  listings: Listing[],
-  filters: FilterOptions,
-  sellerId?: number
-): Listing[] => {
+export const filterListings = (listings: Listing[], filters: FilterOptions, sellerId?: number): Listing[] => {
   return listings.filter(listing => {
     // Filter by seller if specified
     if (sellerId && listing.seller.id !== sellerId) {
       return false;
     }
-    
+
     // Filter by search term
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       const titleMatches = listing.title.toLowerCase().includes(searchLower);
       const descriptionMatches = listing.description.toLowerCase().includes(searchLower);
       const tagsMatch = listing.tags.some(tag => tag.toLowerCase().includes(searchLower));
-      
+
       if (!titleMatches && !descriptionMatches && !tagsMatch) {
         return false;
       }
     }
-    
+
     // Filter by type
     if (filters.type !== 'all' && listing.type !== filters.type) {
       return false;
     }
-    
+
     // Filter by condition
     if (filters.condition !== 'all') {
       if (!listing.condition) return false;
       if (listing.condition !== filters.condition) return false;
     }
-    
+
     // Filter by price range
     if (filters.priceRange !== 'all' && !isInPriceRange(listing.price, filters.priceRange)) {
       return false;
     }
-    
+
     // Filter by tags
     if (filters.tags && filters.tags.length > 0) {
-      const hasMatchingTag = filters.tags.some(tag => 
-        listing.tags.some(listingTag => 
-          listingTag.toLowerCase().includes(tag.toLowerCase())
-        )
+      const hasMatchingTag = filters.tags.some(tag =>
+        listing.tags.some(listingTag => listingTag.toLowerCase().includes(tag.toLowerCase()))
       );
-      
+
       if (!hasMatchingTag) {
         return false;
       }
     }
-    
+
     return true;
   });
 };
 
 // Sort listings by date (newest first)
 export const sortListingsByDate = (listings: Listing[]): Listing[] => {
-  return [...listings].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  return [...listings].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 };

@@ -42,18 +42,18 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onTypeChange, currentFi
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<ResourceType | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
-  
+
   // Resource types from the main application's Resource type
   const resourceTypes: ResourceType[] = ['document', 'video', 'guide', 'tool', 'article', 'link', 'gallery'];
-  
+
   // Sample categories - would come from API in real implementation
   const categories = ['Guides', 'Tutorials', 'Research', 'Tools', 'Templates'];
-  
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     onSearch?.(value);
   };
-  
+
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedType(value as ResourceType | 'all');
@@ -80,22 +80,26 @@ const ActionBar: React.FC<ActionBarProps> = ({ onSearch, onTypeChange, currentFi
             >
               <option value="all">All Types</option>
               {resourceTypes.map(type => (
-                <option key={type} value={type}>{getResourceTypeLabel(type)}</option>
+                <option key={type} value={type}>
+                  {getResourceTypeLabel(type)}
+                </option>
               ))}
             </select>
             <FileType2 className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />
           </div>
-          
+
           {/* Category Filter */}
           <div className="relative">
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-md text-sm shadow-sm border border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 focus:border-orange-500 focus:ring focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-colors font-medium"
             >
               <option value="all">All Categories</option>
               {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
             <Tag className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />

@@ -21,7 +21,7 @@ import {
   Linkedin,
   Github,
   ArrowRight,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import CarouselHero from '@/components/CarouselHero';
@@ -33,21 +33,13 @@ import CarouselHero from '@/components/CarouselHero';
  */
 const VIDEO_EMBED_CONFIG = {
   ALLOWED_TAGS: ['iframe', 'div'],
-  ALLOWED_ATTR: [
-    'src',
-    'title',
-    'width',
-    'height',
-    'frameborder',
-    'allowfullscreen',
-    'allow',
-    'class',
-  ],
+  ALLOWED_ATTR: ['src', 'title', 'width', 'height', 'frameborder', 'allowfullscreen', 'allow', 'class'],
   ALLOW_DATA_ATTR: false,
   FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input'],
   FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
   // Only allow iframe sources from trusted video platforms
-  ALLOWED_URI_REGEXP: /^(?:https?:)?\/\/(?:www\.)?(youtube\.com|youtube-nocookie\.com|player\.vimeo\.com|dailymotion\.com|vimeo\.com)\//i,
+  ALLOWED_URI_REGEXP:
+    /^(?:https?:)?\/\/(?:www\.)?(youtube\.com|youtube-nocookie\.com|player\.vimeo\.com|dailymotion\.com|vimeo\.com)\//i,
 };
 
 interface PageBlock {
@@ -85,7 +77,7 @@ const iconMap: Record<string, React.ReactNode> = {
   linkedin: <Linkedin className="h-5 w-5" />,
   github: <Github className="h-5 w-5" />,
   arrow: <ArrowRight className="h-5 w-5" />,
-  check: <CheckCircle className="h-5 w-5" />
+  check: <CheckCircle className="h-5 w-5" />,
 };
 
 // Component renderers for special sections
@@ -94,9 +86,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
     <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 dark:from-blue-800 dark:to-purple-900 text-white rounded-2xl p-12 mb-8">
       <div className="relative z-10">
         <h1 className="text-5xl font-bold mb-4">{content}</h1>
-        {metadata?.subtitle && (
-          <p className="text-xl opacity-90 mb-6">{metadata.subtitle}</p>
-        )}
+        {metadata?.subtitle && <p className="text-xl opacity-90 mb-6">{metadata.subtitle}</p>}
         {metadata?.cta && (
           <div className="flex gap-4">
             <Button size="lg" variant="white">
@@ -128,8 +118,8 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
   image: ({ content, metadata }) => {
     const alignmentClass = {
       left: 'text-left',
-      center: 'text-center', 
-      right: 'text-right'
+      center: 'text-center',
+      right: 'text-right',
     }[metadata?.alignment || 'center'];
 
     return (
@@ -141,9 +131,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
             className="w-full h-auto rounded-lg shadow-sm"
           />
           {metadata?.caption !== false && content && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">
-              {content}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">{content}</p>
           )}
         </div>
       </div>
@@ -153,13 +141,13 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
   video: ({ content, metadata }) => {
     const getVideoEmbed = () => {
       const src = metadata?.src || '';
-      
+
       // YouTube URL
       if (src.includes('youtube.com') || src.includes('youtu.be')) {
-        const videoId = src.includes('youtu.be') 
+        const videoId = src.includes('youtu.be')
           ? src.split('youtu.be/')[1]?.split('?')[0]
           : src.split('v=')[1]?.split('&')[0];
-        
+
         if (videoId) {
           return (
             <iframe
@@ -171,7 +159,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           );
         }
       }
-      
+
       // Vimeo URL
       if (src.includes('vimeo.com')) {
         const videoId = src.split('vimeo.com/')[1]?.split('/')[0];
@@ -186,7 +174,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           );
         }
       }
-      
+
       // MP4 or direct video file
       if (metadata?.type === 'mp4' || src.endsWith('.mp4') || src.endsWith('.webm') || src.endsWith('.ogg')) {
         return (
@@ -201,7 +189,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           </video>
         );
       }
-      
+
       // Custom embed code
       if (metadata?.type === 'embed' && src.includes('<')) {
         /**
@@ -217,7 +205,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           />
         );
       }
-      
+
       // Fallback
       return (
         <div className="w-full aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
@@ -228,9 +216,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
 
     return (
       <div className="mb-8">
-        {content && (
-          <h3 className="text-xl font-semibold mb-4">{content}</h3>
-        )}
+        {content && <h3 className="text-xl font-semibold mb-4">{content}</h3>}
         {getVideoEmbed()}
       </div>
     );
@@ -241,15 +227,13 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
     const gap = metadata?.gap || 'medium';
     const gapClass = {
       small: 'gap-4',
-      medium: 'gap-6', 
-      large: 'gap-8'
+      medium: 'gap-6',
+      large: 'gap-8',
     }[gap];
 
     return (
       <div className="mb-8">
-        {content && (
-          <h3 className="text-xl font-semibold mb-6">{content}</h3>
-        )}
+        {content && <h3 className="text-xl font-semibold mb-6">{content}</h3>}
         <div className={`grid grid-cols-1 md:grid-cols-${columnCount} ${gapClass}`}>
           {(metadata?.columns || []).map((column: any, index: number) => (
             <div key={column.id || index} className="space-y-4">
@@ -260,17 +244,13 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Column {index + 1} - Block {blockIndex + 1}
                     </p>
-                    <p className="text-gray-500 text-xs mt-1">
-                      Nested block content coming soon
-                    </p>
+                    <p className="text-gray-500 text-xs mt-1">Nested block content coming soon</p>
                   </div>
                 </div>
               ))}
               {column.blocks?.length === 0 && (
                 <div className="p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center">
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Empty column - add content in edit mode
-                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Empty column - add content in edit mode</p>
                 </div>
               )}
             </div>
@@ -287,7 +267,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
       { icon: 'bookopen', title: 'Learn', desc: 'Access resources and knowledge sharing' },
       { icon: 'target', title: 'Find Jobs', desc: 'Explore career opportunities in tech' },
       { icon: 'rocket', title: 'Showcase', desc: 'Share your projects and achievements' },
-      { icon: 'calendar', title: 'Events', desc: 'Join meetups and workshops' }
+      { icon: 'calendar', title: 'Events', desc: 'Join meetups and workshops' },
     ];
 
     return (
@@ -295,7 +275,10 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
         <h2 className="text-3xl font-bold mb-8 text-center">{content}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <div key={index} className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+            <div
+              key={index}
+              className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow"
+            >
               <div className="flex items-center mb-4">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                   {iconMap[feature.icon]}
@@ -315,7 +298,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
       { value: '500+', label: 'Community Members' },
       { value: '50+', label: 'Tech Companies' },
       { value: '100+', label: 'Monthly Events' },
-      { value: '1000+', label: 'Job Opportunities' }
+      { value: '1000+', label: 'Job Opportunities' },
     ];
 
     return (
@@ -344,7 +327,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           .order('date', { ascending: true })
           .limit(3);
         return data || [];
-      }
+      },
     });
 
     return (
@@ -358,20 +341,20 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {events?.length ? events.map((event: any) => (
-            <Link key={event.id} to={`/events/${event.slug}`} className="block">
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow">
-                <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
-                  {new Date(event.date).toLocaleDateString()}
+          {events?.length ? (
+            events.map((event: any) => (
+              <Link key={event.id} to={`/events/${event.slug}`} className="block">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm hover:shadow-lg transition-shadow">
+                  <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                    {new Date(event.date).toLocaleDateString()}
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">{event.description}</p>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">{event.description}</p>
-              </div>
-            </Link>
-          )) : (
-            <div className="col-span-3 text-center py-8 text-gray-500">
-              No upcoming events at the moment
-            </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-8 text-gray-500">No upcoming events at the moment</div>
           )}
         </div>
       </div>
@@ -382,13 +365,9 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
     const { data: companies } = useQuery({
       queryKey: ['featured-companies'],
       queryFn: async () => {
-        const { data } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('is_verified', true)
-          .limit(6);
+        const { data } = await supabase.from('companies').select('*').eq('is_verified', true).limit(6);
         return data || [];
-      }
+      },
     });
 
     return (
@@ -422,9 +401,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
   cta: ({ content, metadata }) => (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 text-center mb-12">
       <h2 className="text-3xl font-bold mb-4">{content}</h2>
-      {metadata?.description && (
-        <p className="text-xl opacity-90 mb-6 max-w-2xl mx-auto">{metadata.description}</p>
-      )}
+      {metadata?.description && <p className="text-xl opacity-90 mb-6 max-w-2xl mx-auto">{metadata.description}</p>}
       <div className="flex gap-4 justify-center">
         <Link to="/signup">
           <Button size="lg" variant="white">
@@ -446,7 +423,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
       { icon: 'bookopen', title: 'Knowledge Sharing', desc: 'Learning and teaching go hand in hand' },
       { icon: 'trending', title: 'Growth Mindset', desc: 'Always evolving and improving' },
       { icon: 'target', title: 'Inclusivity', desc: 'Tech is for everyone' },
-      { icon: 'rocket', title: 'Innovation', desc: 'Embracing new ideas and technologies' }
+      { icon: 'rocket', title: 'Innovation', desc: 'Embracing new ideas and technologies' },
     ];
 
     return (
@@ -454,7 +431,10 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
         <h2 className="text-3xl font-bold mb-8">{content}</h2>
         <div className="space-y-4">
           {values.map((value, index) => (
-            <div key={index} className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+            <div
+              key={index}
+              className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+            >
               <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400 mt-1">
                 {iconMap[value.icon]}
               </div>
@@ -474,15 +454,24 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
       <h2 className="text-3xl font-bold mb-6">{content}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <a href="mailto:hello@nelson.tech" className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+          <a
+            href="mailto:hello@nelson.tech"
+            className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
             <Mail className="h-5 w-5" />
             hello@nelson.tech
           </a>
-          <a href="https://twitter.com/NelsonTechNZ" className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+          <a
+            href="https://twitter.com/NelsonTechNZ"
+            className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
             <Twitter className="h-5 w-5" />
             @NelsonTechNZ
           </a>
-          <a href="https://linkedin.com/company/nelson-tech" className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+          <a
+            href="https://linkedin.com/company/nelson-tech"
+            className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
             <Linkedin className="h-5 w-5" />
             Uluntu Community
           </a>
@@ -494,13 +483,13 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
         <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
           <h3 className="font-semibold mb-3">Send us a message</h3>
           <form className="space-y-4">
-            <input 
-              type="email" 
-              placeholder="Your email" 
+            <input
+              type="email"
+              placeholder="Your email"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800"
             />
-            <textarea 
-              placeholder="Your message" 
+            <textarea
+              placeholder="Your message"
               rows={4}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800"
             />
@@ -511,7 +500,7 @@ const ComponentRenderers: Record<string, React.FC<any>> = {
         </div>
       </div>
     </div>
-  )
+  ),
 };
 
 export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendererProps) {
@@ -519,22 +508,23 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
   if (slug === 'home' && (!blocks || blocks.length === 0)) {
     return (
       <div className="max-w-7xl mx-auto">
-        <ComponentRenderers.hero 
-          content="Welcome to Uluntu Community" 
-          metadata={{ 
-            subtitle: "Connect with the vibrant tech community in Nelson, New Zealand",
-            cta: true 
-          }} 
+        <ComponentRenderers.hero
+          content="Welcome to Uluntu Community"
+          metadata={{
+            subtitle: 'Connect with the vibrant tech community in Nelson, New Zealand',
+            cta: true,
+          }}
         />
         <ComponentRenderers.features content="Community Features" metadata={{}} />
         <ComponentRenderers.stats content="Our Growing Community" />
         <ComponentRenderers.events content="Upcoming Events" />
         <ComponentRenderers.companies content="Featured Companies" />
-        <ComponentRenderers.cta 
-          content="Ready to Join?" 
-          metadata={{ 
-            description: "Whether you're a developer, designer, entrepreneur, or tech enthusiast, there's a place for you in Uluntu." 
-          }} 
+        <ComponentRenderers.cta
+          content="Ready to Join?"
+          metadata={{
+            description:
+              "Whether you're a developer, designer, entrepreneur, or tech enthusiast, there's a place for you in Uluntu.",
+          }}
         />
       </div>
     );
@@ -547,16 +537,16 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-6">About Uluntu Community</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Uluntu is a community-driven platform that connects technology professionals, 
-            companies, and enthusiasts in the Nelson-Tasman region.
+            Uluntu is a community-driven platform that connects technology professionals, companies, and enthusiasts in
+            the Nelson-Tasman region.
           </p>
         </div>
 
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 mb-12">
           <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
           <p className="text-lg">
-            To foster innovation, collaboration, and growth in Nelson's technology ecosystem 
-            by providing a central hub for networking, knowledge sharing, and professional development.
+            To foster innovation, collaboration, and growth in Nelson's technology ecosystem by providing a central hub
+            for networking, knowledge sharing, and professional development.
           </p>
         </div>
 
@@ -571,7 +561,7 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
               'Provide a platform for sharing resources',
               'Support tech education and career development',
               'Promote Nelson as a destination for tech talent',
-              'Foster innovation and entrepreneurship'
+              'Foster innovation and entrepreneurship',
             ].map((item, index) => (
               <div key={index} className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
@@ -581,11 +571,12 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
           </div>
         </div>
 
-        <ComponentRenderers.cta 
-          content="Get Involved" 
-          metadata={{ 
-            description: "Join us in building Nelson's tech future. Whether you want to attend events, share your expertise, or connect with like-minded professionals, we welcome you." 
-          }} 
+        <ComponentRenderers.cta
+          content="Get Involved"
+          metadata={{
+            description:
+              "Join us in building Nelson's tech future. Whether you want to attend events, share your expertise, or connect with like-minded professionals, we welcome you.",
+          }}
         />
       </div>
     );
@@ -595,16 +586,14 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
   return (
     <div className="prose prose-slate dark:prose-invert max-w-none">
       {blocks.map((block: any, index: number) => {
-        const content = typeof block.content === 'string' 
-          ? block.content 
-          : block.content?.text || '';
-        
+        const content = typeof block.content === 'string' ? block.content : block.content?.text || '';
+
         // Check if this is a special component
         if (block.type in ComponentRenderers) {
           const Component = ComponentRenderers[block.type];
           return <Component key={index} content={content} metadata={block.metadata} />;
         }
-        
+
         // Enhanced default block rendering with metadata support
         switch (block.type) {
           case 'heading': {
@@ -612,59 +601,71 @@ export default function DynamicPageRenderer({ blocks, slug }: DynamicPageRendere
             const Component = level as keyof JSX.IntrinsicElements;
             const sizeClasses = {
               h1: 'text-4xl font-bold mb-8',
-              h2: 'text-3xl font-bold mb-6', 
+              h2: 'text-3xl font-bold mb-6',
               h3: 'text-2xl font-bold mb-4',
-              h4: 'text-xl font-bold mb-3'
+              h4: 'text-xl font-bold mb-3',
             };
-            
+
             return (
-              <Component key={index} className={`${sizeClasses[level as keyof typeof sizeClasses]} text-slate-900 dark:text-slate-100`}>
+              <Component
+                key={index}
+                className={`${sizeClasses[level as keyof typeof sizeClasses]} text-slate-900 dark:text-slate-100`}
+              >
                 {content}
               </Component>
             );
           }
-          
+
           case 'paragraph': {
             const size = block.metadata?.size || 'base';
             const sizeClasses = {
               sm: 'text-sm',
               base: 'text-base',
               lg: 'text-lg',
-              xl: 'text-xl'
+              xl: 'text-xl',
             };
-            
+
             return (
-              <p key={index} className={`${sizeClasses[size as keyof typeof sizeClasses]} mb-6 leading-relaxed text-slate-700 dark:text-slate-300`}>
+              <p
+                key={index}
+                className={`${sizeClasses[size as keyof typeof sizeClasses]} mb-6 leading-relaxed text-slate-700 dark:text-slate-300`}
+              >
                 {content}
               </p>
             );
           }
-          
+
           case 'bulletList':
             return (
               <ul key={index} className="list-disc list-inside mb-6">
                 <li className="text-lg leading-relaxed text-slate-700 dark:text-slate-300">{content}</li>
               </ul>
             );
-            
+
           case 'quote': {
             const style = block.metadata?.style || 'default';
             const styleClasses = {
               default: 'border-l-4 border-blue-500 pl-6 py-4 mb-6 italic text-xl text-gray-700 dark:text-gray-300',
-              bordered: 'border border-slate-300 dark:border-slate-600 rounded-lg p-6 mb-6 italic text-xl text-gray-700 dark:text-gray-300 bg-slate-50 dark:bg-slate-800',
-              highlighted: 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 pl-6 py-4 mb-6 italic text-xl text-blue-800 dark:text-blue-200',
-              minimal: 'pl-6 py-4 mb-6 italic text-xl text-gray-600 dark:text-gray-400'
+              bordered:
+                'border border-slate-300 dark:border-slate-600 rounded-lg p-6 mb-6 italic text-xl text-gray-700 dark:text-gray-300 bg-slate-50 dark:bg-slate-800',
+              highlighted:
+                'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 pl-6 py-4 mb-6 italic text-xl text-blue-800 dark:text-blue-200',
+              minimal: 'pl-6 py-4 mb-6 italic text-xl text-gray-600 dark:text-gray-400',
             };
-            
+
             return (
               <blockquote key={index} className={styleClasses[style as keyof typeof styleClasses]}>
                 "{content}"
               </blockquote>
             );
           }
-          
+
           default:
-            return <div key={index} className="mb-4">{content}</div>;
+            return (
+              <div key={index} className="mb-4">
+                {content}
+              </div>
+            );
         }
       })}
     </div>

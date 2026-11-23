@@ -43,10 +43,7 @@ const PageCreatePage: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <a
-                    href="/admin/pages"
-                    className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2"
-                  >
+                  <a href="/admin/pages" className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">
                     Pages
                   </a>
                 </div>
@@ -65,9 +62,7 @@ const PageCreatePage: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                    New Page
-                  </span>
+                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">New Page</span>
                 </div>
               </li>
             </ol>
@@ -75,18 +70,12 @@ const PageCreatePage: React.FC = () => {
 
           <div className="mt-4">
             <h1 className="text-3xl font-bold text-gray-900">Create New Page</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Create a new page with rich content using the Novel editor.
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Create a new page with rich content using the Novel editor.</p>
           </div>
         </div>
 
         {/* Form */}
-        <PageForm
-          mode="create"
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
+        <PageForm mode="create" onSuccess={handleSuccess} onCancel={handleCancel} />
       </div>
     </div>
   );

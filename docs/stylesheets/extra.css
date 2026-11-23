@@ -107,14 +107,36 @@
 }
 
 /* Syntax highlighting improvements */
-.highlight .hll { background-color: #fef3c7; }
-.highlight .c { color: #6b7280; font-style: italic; }
-.highlight .k { color: #8b5cf6; font-weight: bold; }
-.highlight .o { color: #f59e0b; }
-.highlight .cm { color: #6b7280; font-style: italic; }
-.highlight .cp { color: #10b981; }
-.highlight .c1 { color: #6b7280; font-style: italic; }
-.highlight .cs { color: #6b7280; font-weight: bold; font-style: italic; }
+.highlight .hll {
+  background-color: #fef3c7;
+}
+.highlight .c {
+  color: #6b7280;
+  font-style: italic;
+}
+.highlight .k {
+  color: #8b5cf6;
+  font-weight: bold;
+}
+.highlight .o {
+  color: #f59e0b;
+}
+.highlight .cm {
+  color: #6b7280;
+  font-style: italic;
+}
+.highlight .cp {
+  color: #10b981;
+}
+.highlight .c1 {
+  color: #6b7280;
+  font-style: italic;
+}
+.highlight .cs {
+  color: #6b7280;
+  font-weight: bold;
+  font-style: italic;
+}
 
 /* Mermaid diagram styling */
 .mermaid {

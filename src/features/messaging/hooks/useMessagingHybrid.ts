@@ -18,7 +18,7 @@ import {
   messagingQueryKeys,
   invalidateMessagingQueries,
   clearConversationCache,
-  resetConversationState
+  resetConversationState,
 } from '@/hooks/messaging';
 import {
   setSelectedConversation,
@@ -34,7 +34,7 @@ import {
   cancelEdit,
   toggleMessageSelection,
   clearMessageSelection,
-  resetState
+  resetState,
 } from '../store/messagingUISlice';
 import {
   selectMessagingUI,
@@ -45,7 +45,7 @@ import {
   selectEditingMessage,
   selectSelectedMessages,
   selectHasActiveFilters,
-  selectCanSendMessage
+  selectCanSendMessage,
 } from '../store/messagingUISlice';
 import {
   CreateConversationInput,
@@ -54,7 +54,7 @@ import {
   UpdateConversationInput,
   ConversationFilters,
   MessageFilters,
-  Message
+  Message,
 } from '../types';
 
 /**
@@ -65,7 +65,7 @@ import {
 export function useMessagingHybrid() {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  
+
   // Get UI state from Redux
   const uiState = useAppSelector(selectMessagingUI);
   const selectedConversationId = useAppSelector(selectSelectedConversationId);
@@ -101,186 +101,225 @@ export function useMessagingHybrid() {
   // CONVERSATION ACTIONS
   // =============================================
 
-  const selectConversation = useCallback((conversationId: string) => {
-    // If switching conversations, clear any stale cache for better isolation
-    if (selectedConversationId && selectedConversationId !== conversationId) {
-      // Clear previous conversation's cache to prevent message bleed-through
-      clearConversationCache(queryClient, selectedConversationId);
-      
-      // Reset UI state for the new conversation
-      dispatch(cancelReply());
-      dispatch(cancelEdit());
-      dispatch(clearMessageSelection());
-    }
-    
-    dispatch(setSelectedConversation(conversationId));
-    // Automatically mark as read when selecting (not implemented yet)
-    // markAsReadMutation.mutate(conversationId);
-  }, [dispatch, selectedConversationId, queryClient]);
-
-  const createConversation = useCallback(async (input: CreateConversationInput) => {
-    try {
-      const conversation = await createConversationMutation.mutateAsync(input);
-      
-      // Clear any existing cache for better isolation
-      if (selectedConversationId) {
+  const selectConversation = useCallback(
+    (conversationId: string) => {
+      // If switching conversations, clear any stale cache for better isolation
+      if (selectedConversationId && selectedConversationId !== conversationId) {
+        // Clear previous conversation's cache to prevent message bleed-through
         clearConversationCache(queryClient, selectedConversationId);
-      }
-      
-      // Reset UI state when creating new conversation
-      dispatch(cancelReply());
-      dispatch(cancelEdit());
-      dispatch(clearMessageSelection());
-      
-      // Select the new conversation
-      dispatch(setSelectedConversation(conversation.id));
-      return conversation;
-    } catch (error) {
-      console.error('Failed to create conversation:', error);
-      throw error;
-    }
-  }, [createConversationMutation, dispatch, selectedConversationId, queryClient]);
 
-  const archiveConversation = useCallback(async (conversationId: string) => {
-    try {
-      // Archive functionality not implemented yet
-      console.log('Archive not implemented yet for conversation:', conversationId);
-      // If the archived conversation was selected, clear selection
-      if (selectedConversationId === conversationId) {
-        dispatch(setSelectedConversation(undefined));
+        // Reset UI state for the new conversation
+        dispatch(cancelReply());
+        dispatch(cancelEdit());
+        dispatch(clearMessageSelection());
       }
-    } catch (error) {
-      console.error('Failed to archive conversation:', error);
-      throw error;
-    }
-  }, [selectedConversationId, dispatch]);
 
-  const updateConversation = useCallback(async (conversationId: string, updates: UpdateConversationInput) => {
-    try {
-      const conversation = await updateConversationMutation.mutateAsync({ id: conversationId, ...updates });
-      return conversation;
-    } catch (error) {
-      console.error('Failed to update conversation:', error);
-      throw error;
-    }
-  }, [updateConversationMutation]);
+      dispatch(setSelectedConversation(conversationId));
+      // Automatically mark as read when selecting (not implemented yet)
+      // markAsReadMutation.mutate(conversationId);
+    },
+    [dispatch, selectedConversationId, queryClient]
+  );
+
+  const createConversation = useCallback(
+    async (input: CreateConversationInput) => {
+      try {
+        const conversation = await createConversationMutation.mutateAsync(input);
+
+        // Clear any existing cache for better isolation
+        if (selectedConversationId) {
+          clearConversationCache(queryClient, selectedConversationId);
+        }
+
+        // Reset UI state when creating new conversation
+        dispatch(cancelReply());
+        dispatch(cancelEdit());
+        dispatch(clearMessageSelection());
+
+        // Select the new conversation
+        dispatch(setSelectedConversation(conversation.id));
+        return conversation;
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        throw error;
+      }
+    },
+    [createConversationMutation, dispatch, selectedConversationId, queryClient]
+  );
+
+  const archiveConversation = useCallback(
+    async (conversationId: string) => {
+      try {
+        // Archive functionality not implemented yet
+        console.log('Archive not implemented yet for conversation:', conversationId);
+        // If the archived conversation was selected, clear selection
+        if (selectedConversationId === conversationId) {
+          dispatch(setSelectedConversation(undefined));
+        }
+      } catch (error) {
+        console.error('Failed to archive conversation:', error);
+        throw error;
+      }
+    },
+    [selectedConversationId, dispatch]
+  );
+
+  const updateConversation = useCallback(
+    async (conversationId: string, updates: UpdateConversationInput) => {
+      try {
+        const conversation = await updateConversationMutation.mutateAsync({ id: conversationId, ...updates });
+        return conversation;
+      } catch (error) {
+        console.error('Failed to update conversation:', error);
+        throw error;
+      }
+    },
+    [updateConversationMutation]
+  );
 
   // =============================================
   // MESSAGE ACTIONS
   // =============================================
 
-  const sendMessage = useCallback(async (content: string, attachments?: File[]) => {
-    if (!selectedConversationId || !canSendMessage) {
-      throw new Error('No conversation selected or cannot send message');
-    }
-
-    const input: SendMessageInput = {
-      conversation_id: selectedConversationId,
-      content: content.trim(),
-      message_type: 'text',
-      parent_message_id: replyingToMessage?.id,
-      attachments,
-      metadata: {}
-    };
-
-    try {
-      const message = await sendMessageMutation.mutateAsync(input);
-      
-      // Clear reply state after sending
-      if (replyingToMessage) {
-        dispatch(cancelReply());
+  const sendMessage = useCallback(
+    async (content: string, attachments?: File[]) => {
+      if (!selectedConversationId || !canSendMessage) {
+        throw new Error('No conversation selected or cannot send message');
       }
-      
-      return message;
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      throw error;
-    }
-  }, [selectedConversationId, canSendMessage, replyingToMessage, sendMessageMutation, dispatch]);
 
-  const updateMessage = useCallback(async (messageId: string, content: string) => {
-    const input: UpdateMessageInput = {
-      id: messageId,
-      content: content.trim()
-    };
+      const input: SendMessageInput = {
+        conversation_id: selectedConversationId,
+        content: content.trim(),
+        message_type: 'text',
+        parent_message_id: replyingToMessage?.id,
+        attachments,
+        metadata: {},
+      };
 
-    try {
-      const message = await updateMessageMutation.mutateAsync(input);
-      
-      // Clear editing state after updating
-      if (editingMessage?.id === messageId) {
-        dispatch(cancelEdit());
+      try {
+        const message = await sendMessageMutation.mutateAsync(input);
+
+        // Clear reply state after sending
+        if (replyingToMessage) {
+          dispatch(cancelReply());
+        }
+
+        return message;
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        throw error;
       }
-      
-      return message;
-    } catch (error) {
-      console.error('Failed to update message:', error);
-      throw error;
-    }
-  }, [updateMessageMutation, editingMessage, dispatch]);
+    },
+    [selectedConversationId, canSendMessage, replyingToMessage, sendMessageMutation, dispatch]
+  );
 
-  const deleteMessage = useCallback(async (messageId: string) => {
-    try {
-      await deleteMessageMutation.mutateAsync(messageId);
-      
-      // Clear any UI state related to the deleted message
-      if (editingMessage?.id === messageId) {
-        dispatch(cancelEdit());
-      }
-      if (replyingToMessage?.id === messageId) {
-        dispatch(cancelReply());
-      }
-      // Remove from selection if it was selected
-      if (selectedMessages.includes(messageId)) {
-        dispatch(toggleMessageSelection(messageId));
-      }
-    } catch (error) {
-      console.error('Failed to delete message:', error);
-      throw error;
-    }
-  }, [deleteMessageMutation, editingMessage, replyingToMessage, dispatch]);
+  const updateMessage = useCallback(
+    async (messageId: string, content: string) => {
+      const input: UpdateMessageInput = {
+        id: messageId,
+        content: content.trim(),
+      };
 
-  const addReaction = useCallback(async (messageId: string, reaction: string) => {
-    try {
-      return await addReactionMutation.mutateAsync({ messageId, reaction });
-    } catch (error) {
-      console.error('Failed to add reaction:', error);
-      throw error;
-    }
-  }, [addReactionMutation]);
+      try {
+        const message = await updateMessageMutation.mutateAsync(input);
 
-  const removeReaction = useCallback(async (messageId: string, reaction: string) => {
-    try {
-      await removeReactionMutation.mutateAsync({ messageId, reaction });
-    } catch (error) {
-      console.error('Failed to remove reaction:', error);
-      throw error;
-    }
-  }, [removeReactionMutation]);
+        // Clear editing state after updating
+        if (editingMessage?.id === messageId) {
+          dispatch(cancelEdit());
+        }
+
+        return message;
+      } catch (error) {
+        console.error('Failed to update message:', error);
+        throw error;
+      }
+    },
+    [updateMessageMutation, editingMessage, dispatch]
+  );
+
+  const deleteMessage = useCallback(
+    async (messageId: string) => {
+      try {
+        await deleteMessageMutation.mutateAsync(messageId);
+
+        // Clear any UI state related to the deleted message
+        if (editingMessage?.id === messageId) {
+          dispatch(cancelEdit());
+        }
+        if (replyingToMessage?.id === messageId) {
+          dispatch(cancelReply());
+        }
+        // Remove from selection if it was selected
+        if (selectedMessages.includes(messageId)) {
+          dispatch(toggleMessageSelection(messageId));
+        }
+      } catch (error) {
+        console.error('Failed to delete message:', error);
+        throw error;
+      }
+    },
+    [deleteMessageMutation, editingMessage, replyingToMessage, dispatch]
+  );
+
+  const addReaction = useCallback(
+    async (messageId: string, reaction: string) => {
+      try {
+        return await addReactionMutation.mutateAsync({ messageId, reaction });
+      } catch (error) {
+        console.error('Failed to add reaction:', error);
+        throw error;
+      }
+    },
+    [addReactionMutation]
+  );
+
+  const removeReaction = useCallback(
+    async (messageId: string, reaction: string) => {
+      try {
+        await removeReactionMutation.mutateAsync({ messageId, reaction });
+      } catch (error) {
+        console.error('Failed to remove reaction:', error);
+        throw error;
+      }
+    },
+    [removeReactionMutation]
+  );
 
   // =============================================
   // UI STATE ACTIONS
   // =============================================
 
-  const setSearchTermAction = useCallback((search: string) => {
-    dispatch(setSearchTerm(search));
-  }, [dispatch]);
+  const setSearchTermAction = useCallback(
+    (search: string) => {
+      dispatch(setSearchTerm(search));
+    },
+    [dispatch]
+  );
 
-  const updateFiltersAction = useCallback((filters: Partial<ConversationFilters>) => {
-    dispatch(updateFilters(filters));
-  }, [dispatch]);
+  const updateFiltersAction = useCallback(
+    (filters: Partial<ConversationFilters>) => {
+      dispatch(updateFilters(filters));
+    },
+    [dispatch]
+  );
 
   const clearFiltersAction = useCallback(() => {
     dispatch(updateFilters({ search: '', archived: false }));
   }, [dispatch]);
 
-  const setReplyingToAction = useCallback((message: Message | undefined) => {
-    dispatch(setReplyingTo(message));
-  }, [dispatch]);
+  const setReplyingToAction = useCallback(
+    (message: Message | undefined) => {
+      dispatch(setReplyingTo(message));
+    },
+    [dispatch]
+  );
 
-  const setEditingAction = useCallback((message: Message | undefined) => {
-    dispatch(setEditing(message));
-  }, [dispatch]);
+  const setEditingAction = useCallback(
+    (message: Message | undefined) => {
+      dispatch(setEditing(message));
+    },
+    [dispatch]
+  );
 
   const toggleEmojiPickerAction = useCallback(() => {
     dispatch(toggleEmojiPicker());
@@ -290,9 +329,12 @@ export function useMessagingHybrid() {
     dispatch(toggleAttachmentMenu());
   }, [dispatch]);
 
-  const toggleMessageSelectionAction = useCallback((messageId: string) => {
-    dispatch(toggleMessageSelection(messageId));
-  }, [dispatch]);
+  const toggleMessageSelectionAction = useCallback(
+    (messageId: string) => {
+      dispatch(toggleMessageSelection(messageId));
+    },
+    [dispatch]
+  );
 
   const clearSelection = useCallback(() => {
     dispatch(clearMessageSelection());
@@ -310,33 +352,42 @@ export function useMessagingHybrid() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Composer state for external triggers
-  const composerState = React.useMemo(() => ({
-    open: uiState.isComposing,
-    recipientId: null, // Could be expanded to support direct messaging
-    context: null // Could be expanded to support marketplace/opportunity contexts
-  }), [uiState.isComposing]);
+  const composerState = React.useMemo(
+    () => ({
+      open: uiState.isComposing,
+      recipientId: null, // Could be expanded to support direct messaging
+      context: null, // Could be expanded to support marketplace/opportunity contexts
+    }),
+    [uiState.isComposing]
+  );
 
   // =============================================
   // USER BLOCKING ACTIONS
   // =============================================
 
-  const blockUser = useCallback(async (userId: string, reason?: string) => {
-    try {
-      await blockUserMutation.mutateAsync({ userId, reason });
-    } catch (error) {
-      console.error('Failed to block user:', error);
-      throw error;
-    }
-  }, [blockUserMutation]);
+  const blockUser = useCallback(
+    async (userId: string, reason?: string) => {
+      try {
+        await blockUserMutation.mutateAsync({ userId, reason });
+      } catch (error) {
+        console.error('Failed to block user:', error);
+        throw error;
+      }
+    },
+    [blockUserMutation]
+  );
 
-  const unblockUser = useCallback(async (userId: string) => {
-    try {
-      await unblockUserMutation.mutateAsync(userId);
-    } catch (error) {
-      console.error('Failed to unblock user:', error);
-      throw error;
-    }
-  }, [unblockUserMutation]);
+  const unblockUser = useCallback(
+    async (userId: string) => {
+      try {
+        await unblockUserMutation.mutateAsync(userId);
+      } catch (error) {
+        console.error('Failed to unblock user:', error);
+        throw error;
+      }
+    },
+    [unblockUserMutation]
+  );
 
   // =============================================
   // UTILITY ACTIONS
@@ -368,15 +419,11 @@ export function useMessagingHybrid() {
   }, [messagesQuery.data]);
 
   const isLoading = useMemo(() => {
-    return conversationsQuery.isLoading || 
-           selectedConversationQuery.isLoading || 
-           messagesQuery.isLoading;
+    return conversationsQuery.isLoading || selectedConversationQuery.isLoading || messagesQuery.isLoading;
   }, [conversationsQuery.isLoading, selectedConversationQuery.isLoading, messagesQuery.isLoading]);
 
   const error = useMemo(() => {
-    return conversationsQuery.error || 
-           selectedConversationQuery.error || 
-           messagesQuery.error;
+    return conversationsQuery.error || selectedConversationQuery.error || messagesQuery.error;
   }, [conversationsQuery.error, selectedConversationQuery.error, messagesQuery.error]);
 
   const isCreatingConversation = createConversationMutation.isPending;
@@ -402,7 +449,7 @@ export function useMessagingHybrid() {
     unreadCount: unreadCountQuery.data || 0,
     isLoading,
     error,
-    
+
     // Additional loading states for pages
     isLoadingConversations,
     conversationsError,
@@ -430,7 +477,7 @@ export function useMessagingHybrid() {
     showAttachmentMenu: uiState.showAttachmentMenu,
     isComposing: uiState.isComposing,
     searchTerm: uiState.searchTerm,
-    
+
     // Layout state
     sidebarOpen,
     setSidebarOpen,
@@ -471,6 +518,6 @@ export function useMessagingHybrid() {
     refreshData,
     refetch: conversationsQuery.refetch,
     refetchConversation: selectedConversationQuery.refetch,
-    refetchMessages: messagesQuery.refetch
+    refetchMessages: messagesQuery.refetch,
   };
 }

@@ -5,13 +5,13 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg">
       <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Contact Information</h2>
-      
+
       {/* Contact Button */}
       <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors mb-6 flex items-center justify-center">
         <Mail className="h-5 w-5 mr-2" />
         <span>Contact {member.name.split(' ')[0]}</span>
       </button>
-      
+
       {/* Social Links */}
       {member.social && (
         <div className="space-y-4">
@@ -26,7 +26,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
               <span>Personal Website</span>
             </a>
           )}
-          
+
           {member.social.linkedin && (
             <a
               href={member.social.linkedin}
@@ -38,7 +38,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
               <span>LinkedIn Profile</span>
             </a>
           )}
-          
+
           {member.social.twitter && (
             <a
               href={member.social.twitter}
@@ -50,7 +50,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
               <span>Twitter</span>
             </a>
           )}
-          
+
           {member.social.github && (
             <a
               href={member.social.github}
@@ -64,11 +64,12 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({ member }) => {
           )}
         </div>
       )}
-      
+
       {/* Join Date */}
       <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Member of Uluntu since {new Date(member.joinDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          Member of Uluntu since{' '}
+          {new Date(member.joinDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
     </div>

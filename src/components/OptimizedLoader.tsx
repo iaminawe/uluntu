@@ -5,10 +5,7 @@ interface OptimizedLoaderProps {
   minimal?: boolean;
 }
 
-export const OptimizedLoader: React.FC<OptimizedLoaderProps> = ({ 
-  message = "Loading...", 
-  minimal = false 
-}) => {
+export const OptimizedLoader: React.FC<OptimizedLoaderProps> = ({ message = 'Loading...', minimal = false }) => {
   if (minimal) {
     return (
       <div className="flex justify-center items-center p-4">

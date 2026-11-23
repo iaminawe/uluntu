@@ -56,17 +56,13 @@ export class FeatureErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error with context
-    logger.error(
-      `Error in ${this.props.featureName}`,
-      'FEATURE_ERROR_BOUNDARY',
-      {
-        featureName: this.props.featureName,
-        errorMessage: error.message,
-        errorStack: error.stack,
-        componentStack: errorInfo.componentStack,
-        resetCount: this.state.resetCount,
-      }
-    );
+    logger.error(`Error in ${this.props.featureName}`, 'FEATURE_ERROR_BOUNDARY', {
+      featureName: this.props.featureName,
+      errorMessage: error.message,
+      errorStack: error.stack,
+      componentStack: errorInfo.componentStack,
+      resetCount: this.state.resetCount,
+    });
 
     // Update state with error info
     this.setState({
@@ -83,8 +79,8 @@ export class FeatureErrorBoundary extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     // Reset error boundary when resetKeys change
     if (this.state.hasError && this.props.resetKeys) {
-      const keysChanged = !prevProps.resetKeys ||
-        prevProps.resetKeys.some((key, index) => key !== this.props.resetKeys?.[index]);
+      const keysChanged =
+        !prevProps.resetKeys || prevProps.resetKeys.some((key, index) => key !== this.props.resetKeys?.[index]);
 
       if (keysChanged) {
         this.resetErrorBoundary();
@@ -138,12 +134,7 @@ interface ErrorFallbackUIProps {
   onRetry: () => void;
 }
 
-const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
-  featureName,
-  error,
-  errorInfo,
-  onRetry,
-}) => {
+const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({ featureName, error, errorInfo, onRetry }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 px-4 py-8">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8 border-l-4 border-red-500">
@@ -151,9 +142,7 @@ const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="text-4xl">⚠️</div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Error in {featureName}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Error in {featureName}</h1>
           </div>
           <p className="text-gray-600">
             We encountered an unexpected error while using this feature. Please try the options below.
@@ -163,9 +152,7 @@ const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm font-mono text-red-700 break-words">
-              {error.message}
-            </p>
+            <p className="text-sm font-mono text-red-700 break-words">{error.message}</p>
           </div>
         )}
 
@@ -176,13 +163,9 @@ const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
               Technical Details (Development Only)
             </summary>
             <div className="mt-3 p-3 bg-gray-100 rounded-lg overflow-auto max-h-64">
-              <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words">
-                {errorInfo.componentStack}
-              </pre>
+              <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words">{errorInfo.componentStack}</pre>
               {error?.stack && (
-                <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words mt-2">
-                  {error.stack}
-                </pre>
+                <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words mt-2">{error.stack}</pre>
               )}
             </div>
           </details>

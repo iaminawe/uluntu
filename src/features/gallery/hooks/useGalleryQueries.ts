@@ -12,7 +12,8 @@ const USE_SUPABASE = IS_SUPABASE_ENABLED;
 export const galleryQueryKeys = {
   all: ['galleries'] as const,
   lists: () => [...galleryQueryKeys.all, 'list'] as const,
-  list: (filters?: GalleryFilters & { page?: number; limit?: number }) => [...galleryQueryKeys.lists(), { filters }] as const,
+  list: (filters?: GalleryFilters & { page?: number; limit?: number }) =>
+    [...galleryQueryKeys.lists(), { filters }] as const,
   details: () => [...galleryQueryKeys.all, 'detail'] as const,
   detail: (id: string) => [...galleryQueryKeys.details(), id] as const,
   photos: (galleryId: string) => [...galleryQueryKeys.all, 'photos', galleryId] as const,
@@ -21,7 +22,9 @@ export const galleryQueryKeys = {
 /**
  * Fetch all galleries with optional filters and pagination
  */
-export function useGalleries(filters?: GalleryFilters & { page?: number; limit?: number }): UseQueryResult<GalleriesResponse, Error> {
+export function useGalleries(
+  filters?: GalleryFilters & { page?: number; limit?: number }
+): UseQueryResult<GalleriesResponse, Error> {
   return useQuery<GalleriesResponse, Error>({
     queryKey: galleryQueryKeys.list(filters),
     queryFn: async () => {
@@ -48,26 +51,23 @@ export function useGalleries(filters?: GalleryFilters & { page?: number; limit?:
               viewCount: 150,
               likeCount: 45,
               commentCount: 8,
-              downloadCount: 23
-            }
-          }
+              downloadCount: 23,
+            },
+          },
         ];
-        
+
         // Apply filters to mock data
         let filtered = [...mockGalleries];
         if (filters?.search) {
           const searchLower = filters.search.toLowerCase();
-          filtered = filtered.filter(g => 
-            g.title.toLowerCase().includes(searchLower) ||
-            g.description?.toLowerCase().includes(searchLower)
+          filtered = filtered.filter(
+            g => g.title.toLowerCase().includes(searchLower) || g.description?.toLowerCase().includes(searchLower)
           );
         }
         if (filters?.tags && filters.tags.length > 0) {
-          filtered = filtered.filter(g => 
-            g.tags?.some(tag => filters.tags?.includes(tag))
-          );
+          filtered = filtered.filter(g => g.tags?.some(tag => filters.tags?.includes(tag)));
         }
-        
+
         // Mock pagination
         const page = filters?.page || 1;
         const limit = filters?.limit || 12;
@@ -76,15 +76,15 @@ export function useGalleries(filters?: GalleryFilters & { page?: number; limit?:
         const start = (page - 1) * limit;
         const end = start + limit;
         const paginatedGalleries = filtered.slice(start, end);
-        
+
         return {
           galleries: paginatedGalleries,
           totalCount,
           totalPages,
-          currentPage: page
+          currentPage: page,
         };
       }
-      
+
       return galleryApi.getAllGalleries(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -99,7 +99,7 @@ export function useGallery(id?: string): UseQueryResult<Gallery | null, Error> {
     queryKey: galleryQueryKeys.detail(id!),
     queryFn: async () => {
       if (!id) return null;
-      
+
       if (!USE_SUPABASE) {
         // Mock implementation
         return {
@@ -122,18 +122,18 @@ export function useGallery(id?: string): UseQueryResult<Gallery | null, Error> {
             viewCount: 150,
             likeCount: 45,
             commentCount: 8,
-            downloadCount: 23
-          }
+            downloadCount: 23,
+          },
         };
       }
-      
+
       const gallery = await galleryApi.getGallery(id);
-      
+
       // Increment view count in background
       if (gallery) {
         galleryApi.incrementViewCount(id).catch(console.error);
       }
-      
+
       return gallery;
     },
     enabled: !!id,
@@ -148,7 +148,7 @@ export function useGalleryPhotos(galleryId?: string): UseQueryResult<Photo[], Er
     queryKey: galleryQueryKeys.photos(galleryId!),
     queryFn: async () => {
       if (!galleryId) return [];
-      
+
       if (!USE_SUPABASE) {
         // Mock photos
         return [
@@ -169,10 +169,10 @@ export function useGalleryPhotos(galleryId?: string): UseQueryResult<Photo[], Er
             sort_order: 0,
             visibility: 'visible' as const,
             created_at: new Date().toISOString(),
-          }
+          },
         ];
       }
-      
+
       return galleryApi.getGalleryPhotos(galleryId);
     },
     enabled: !!galleryId,
@@ -184,9 +184,9 @@ export function useGalleryPhotos(galleryId?: string): UseQueryResult<Photo[], Er
  */
 export function useCreateGallery(): UseMutationResult<Gallery, Error, CreateGalleryInput> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<Gallery, Error, CreateGalleryInput>({
-    mutationFn: async (input) => {
+    mutationFn: async input => {
       if (!USE_SUPABASE) {
         // Mock creation
         const newGallery: Gallery = {
@@ -204,17 +204,17 @@ export function useCreateGallery(): UseMutationResult<Gallery, Error, CreateGall
           tags: input.tags || [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          photos: []
+          photos: [],
         };
         return Promise.resolve(newGallery);
       }
-      
+
       return galleryApi.createGallery(input);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       GalleryErrorHandler.showSuccess(`Gallery "${data.title}" created successfully!`);
-    }
+    },
   });
 }
 
@@ -223,7 +223,7 @@ export function useCreateGallery(): UseMutationResult<Gallery, Error, CreateGall
  */
 export function useUpdateGallery(): UseMutationResult<Gallery, Error, { id: string; updates: UpdateGalleryInput }> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<Gallery, Error, { id: string; updates: UpdateGalleryInput }>({
     mutationFn: async ({ id, updates }) => {
       if (!USE_SUPABASE) {
@@ -243,18 +243,18 @@ export function useUpdateGallery(): UseMutationResult<Gallery, Error, { id: stri
           tags: updates.tags || [],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          photos: []
+          photos: [],
         };
         return Promise.resolve(mockGallery);
       }
-      
+
       return galleryApi.updateGallery(id, updates);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.detail(data.id) });
       GalleryErrorHandler.showSuccess('Gallery updated successfully!');
-    }
+    },
   });
 }
 
@@ -263,20 +263,20 @@ export function useUpdateGallery(): UseMutationResult<Gallery, Error, { id: stri
  */
 export function useDeleteGallery(): UseMutationResult<boolean, Error, string> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<boolean, Error, string>({
-    mutationFn: async (id) => {
+    mutationFn: async id => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.deleteGallery(id);
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: galleryQueryKeys.lists() });
       queryClient.removeQueries({ queryKey: galleryQueryKeys.detail(id) });
       GalleryErrorHandler.showSuccess('Gallery deleted successfully!');
-    }
+    },
   });
 }
 
@@ -285,9 +285,9 @@ export function useDeleteGallery(): UseMutationResult<boolean, Error, string> {
  */
 export function useUploadPhoto(): UseMutationResult<Photo, Error, PhotoUploadInput> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<Photo, Error, PhotoUploadInput>({
-    mutationFn: async (input) => {
+    mutationFn: async input => {
       if (!USE_SUPABASE) {
         // Mock upload
         const mockPhoto: Photo = {
@@ -311,10 +311,10 @@ export function useUploadPhoto(): UseMutationResult<Photo, Error, PhotoUploadInp
         };
         return Promise.resolve(mockPhoto);
       }
-      
+
       return galleryApi.uploadPhoto(input);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.gallery_id) {
         queryClient.invalidateQueries({ queryKey: galleryQueryKeys.photos(data.gallery_id) });
         queryClient.invalidateQueries({ queryKey: galleryQueryKeys.detail(data.gallery_id) });
@@ -332,38 +332,41 @@ export function useBatchUploadPhotos(): UseMutationResult<
   PhotoUploadInput[]
 > {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (inputs: PhotoUploadInput[]) => {
       if (!USE_SUPABASE) {
         // Mock batch upload
         const results = {
-          success: inputs.map((input, idx) => ({
-            id: `${Date.now()}-${idx}`,
-            gallery_id: input.galleryId || '',
-            user_id: 'user-1',
-            file_name: input.file.name,
-            original_file_name: input.file.name,
-            file_size: input.file.size,
-            mime_type: input.file.type,
-            storage_path: `gallery/${input.file.name}`,
-            url: URL.createObjectURL(input.file),
-            width: 800,
-            height: 600,
-            title: input.title || input.file.name,
-            tags: input.tags,
-            sort_order: idx,
-            visibility: 'visible' as const,
-            created_at: new Date().toISOString(),
-          } as Photo)),
-          failed: [] as { input: PhotoUploadInput; error: string }[]
+          success: inputs.map(
+            (input, idx) =>
+              ({
+                id: `${Date.now()}-${idx}`,
+                gallery_id: input.galleryId || '',
+                user_id: 'user-1',
+                file_name: input.file.name,
+                original_file_name: input.file.name,
+                file_size: input.file.size,
+                mime_type: input.file.type,
+                storage_path: `gallery/${input.file.name}`,
+                url: URL.createObjectURL(input.file),
+                width: 800,
+                height: 600,
+                title: input.title || input.file.name,
+                tags: input.tags,
+                sort_order: idx,
+                visibility: 'visible' as const,
+                created_at: new Date().toISOString(),
+              }) as Photo
+          ),
+          failed: [] as { input: PhotoUploadInput; error: string }[],
         };
         return Promise.resolve(results);
       }
-      
+
       return galleryApi.batchUploadPhotos(inputs);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Invalidate affected galleries
       const galleryIds = new Set(data.success.map(photo => photo.gallery_id));
       galleryIds.forEach(galleryId => {
@@ -379,13 +382,13 @@ export function useBatchUploadPhotos(): UseMutationResult<
  */
 export function useDeletePhoto(): UseMutationResult<boolean, Error, { photoId: string; galleryId: string }> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<boolean, Error, { photoId: string; galleryId: string }>({
     mutationFn: async ({ photoId }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.deletePhoto(photoId);
     },
     onSuccess: (_, { galleryId }) => {
@@ -400,13 +403,13 @@ export function useDeletePhoto(): UseMutationResult<boolean, Error, { photoId: s
  */
 export function useBatchDeletePhotos(): UseMutationResult<boolean, Error, { photoIds: string[]; galleryId: string }> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<boolean, Error, { photoIds: string[]; galleryId: string }>({
     mutationFn: async ({ photoIds }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.batchDeletePhotos(photoIds);
     },
     onSuccess: (_, { galleryId }) => {
@@ -425,13 +428,13 @@ export function useReorderPhotos(): UseMutationResult<
   { galleryId: string; photoOrders: { id: string; order: number }[] }
 > {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ galleryId, photoOrders }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.reorderPhotos(galleryId, photoOrders);
     },
     onSuccess: (_, { galleryId }) => {
@@ -445,13 +448,13 @@ export function useReorderPhotos(): UseMutationResult<
  */
 export function useTogglePhotoLike(): UseMutationResult<boolean, Error, string> {
   const queryClient = useQueryClient();
-  
+
   return useMutation<boolean, Error, string>({
-    mutationFn: async (photoId) => {
+    mutationFn: async photoId => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.likePhoto(photoId);
     },
     onSuccess: () => {
@@ -465,20 +468,20 @@ export function useTogglePhotoLike(): UseMutationResult<boolean, Error, string> 
 export function usePhotoComments(photoId: string | undefined) {
   return useQuery({
     queryKey: ['photo-comments', photoId],
-    queryFn: () => photoId ? galleryApi.getComments(photoId) : Promise.resolve([]),
+    queryFn: () => (photoId ? galleryApi.getComments(photoId) : Promise.resolve([])),
     enabled: !!photoId && USE_SUPABASE,
   });
 }
 
 export function useAddPhotoComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ photoId, content }: { photoId: string; content: string }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve({ id: Date.now().toString(), content });
       }
-      
+
       return galleryApi.addComment(photoId, content);
     },
     onSuccess: (_, variables) => {
@@ -490,13 +493,13 @@ export function useAddPhotoComment() {
 
 export function useUpdatePhotoComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ commentId, content }: { commentId: string; content: string }) => {
       if (!USE_SUPABASE) {
         return Promise.resolve({ id: commentId, content });
       }
-      
+
       return galleryApi.updateComment(commentId, content);
     },
     onSuccess: () => {
@@ -507,13 +510,13 @@ export function useUpdatePhotoComment() {
 
 export function useDeletePhotoComment() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (commentId: string) => {
       if (!USE_SUPABASE) {
         return Promise.resolve(true);
       }
-      
+
       return galleryApi.deleteComment(commentId);
     },
     onSuccess: () => {

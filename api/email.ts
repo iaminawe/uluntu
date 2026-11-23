@@ -14,18 +14,11 @@
 //    (e.g. newsletter confirmation), with the default `from`.
 //  - Everything else is rejected.
 import { Resend } from 'resend';
-import {
-  getUser,
-  isSiteAdmin,
-  secretRestSelect,
-  parseBody,
-  type ApiReq,
-  type ApiRes,
-} from './_lib/auth.js';
+import { getUser, isSiteAdmin, secretRestSelect, parseBody, type ApiReq, type ApiRes } from './_lib/auth.js';
 
 const SUPABASE_CONFIGURED = Boolean(
   (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) &&
-    (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
+  (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
 );
 
 const RESEND_KEY = process.env.RESEND_API_KEY || '';
@@ -48,7 +41,7 @@ interface EmailPayload {
 }
 
 function recipients(to: string | string[]): string[] {
-  return (Array.isArray(to) ? to : [to]).map((e) => (e || '').toLowerCase().trim());
+  return (Array.isArray(to) ? to : [to]).map(e => (e || '').toLowerCase().trim());
 }
 
 function domainOf(address: string): string {
@@ -116,7 +109,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
     // --- Admins: free-form sends and batches --------------------------------
     if (admin) {
       if (body.batch && Array.isArray(body.batch)) {
-        const payloads = body.batch.map((e) => ({ ...e, from: safeFrom(e.from) }));
+        const payloads = body.batch.map(e => ({ ...e, from: safeFrom(e.from) }));
         const { data, error } = await resend.batch.send(payloads as never);
         if (error) {
           res.status(502).json({ error: error.message });
@@ -167,8 +160,7 @@ export default async function handler(req: ApiReq, res: ApiRes): Promise<void> {
       );
       const submission = rows && (rows[0] as { email?: string; created_at?: string } | undefined);
       const fresh =
-        submission?.created_at &&
-        Date.now() - new Date(submission.created_at).getTime() < SUBMISSION_MAX_AGE_MS;
+        submission?.created_at && Date.now() - new Date(submission.created_at).getTime() < SUBMISSION_MAX_AGE_MS;
       if (!submission || !fresh) {
         res.status(401).json({ error: 'Unauthorized' });
         return;

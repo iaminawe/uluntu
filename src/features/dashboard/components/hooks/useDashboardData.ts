@@ -9,22 +9,18 @@ export const useDashboardData = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
-    retry: 2
+    retry: 2,
   });
 };
 
-export const useUserContent = (
-  filters: ContentFilters = {},
-  page: number = 1,
-  limit: number = 20
-) => {
+export const useUserContent = (filters: ContentFilters = {}, page: number = 1, limit: number = 20) => {
   return useQuery({
     queryKey: ['user-content', filters, page, limit],
     queryFn: () => dashboardApi.getUserContent(filters, page, limit),
     staleTime: 2 * 60 * 1000, // 2 minutes
     cacheTime: 5 * 60 * 1000, // 5 minutes
     keepPreviousData: true,
-    retry: 2
+    retry: 2,
   });
 };
 
@@ -35,7 +31,7 @@ export const useActivityFeed = (limit: number = 10) => {
     staleTime: 1 * 60 * 1000, // 1 minute
     cacheTime: 3 * 60 * 1000, // 3 minutes
     refetchInterval: 2 * 60 * 1000, // Auto-refresh every 2 minutes
-    retry: 2
+    retry: 2,
   });
 };
 
@@ -46,7 +42,7 @@ export const useContentAnalytics = (contentId: string) => {
     staleTime: 10 * 60 * 1000, // 10 minutes
     cacheTime: 15 * 60 * 1000, // 15 minutes
     enabled: !!contentId,
-    retry: 2
+    retry: 2,
   });
 };
 
@@ -57,7 +53,7 @@ export const useNotifications = () => {
     staleTime: 30 * 1000, // 30 seconds
     cacheTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 60 * 1000, // Auto-refresh every minute
-    retry: 2
+    retry: 2,
   });
 };
 
@@ -68,6 +64,6 @@ export const useRecommendations = (contentTypes: string[], limit: number = 5) =>
     staleTime: 15 * 60 * 1000, // 15 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
     enabled: contentTypes.length > 0,
-    retry: 1
+    retry: 1,
   });
 };

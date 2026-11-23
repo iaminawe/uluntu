@@ -7,7 +7,7 @@ export default function WorkingAIEditor() {
   const [content, setContent] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [includeImages, setIncludeImages] = useState(true);
-  
+
   const aiConfig = checkAIConfiguration();
   const unsplashConfigured = unsplashService.isConfigured();
 
@@ -20,63 +20,65 @@ export default function WorkingAIEditor() {
       // Generate content
       const prompt = `Write a comprehensive, engaging blog post of 1000-1500 words (8-12 paragraphs) with introduction, main body sections, and conclusion about: ${topic}`;
       const result = await callAI(prompt, '');
-      
+
       let finalContent = result;
-      
+
       // Add images if configured
       if (includeImages && unsplashConfigured) {
         console.log('Unsplash configured:', unsplashConfigured);
         console.log('Include images enabled:', includeImages);
         console.log('Fetching images for topic:', topic);
-        
+
         try {
-          const photos = await unsplashService.findRelevantPhotos(
-            result.substring(0, 500),
-            topic,
-            3
-          );
-          
+          const photos = await unsplashService.findRelevantPhotos(result.substring(0, 500), topic, 3);
+
           console.log('Photos fetched:', photos.length);
-          
+
           if (photos.length > 0) {
             // Add hero image after title
             const lines = result.split('\n');
             const processedLines = [];
             let addedHero = false;
             let addedSection = false;
-            
+
             for (let i = 0; i < lines.length; i++) {
               processedLines.push(lines[i]);
-              
+
               // Add hero image after first heading
               if (!addedHero && lines[i].trim().startsWith('#') && photos[0]) {
                 console.log('Adding hero image after heading:', lines[i]);
                 processedLines.push('');
-                processedLines.push(`![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`);
+                processedLines.push(
+                  `![${photos[0].photo.alt_description || topic}](${unsplashService.getOptimalImageUrl(photos[0].photo)})`
+                );
                 processedLines.push(`*${unsplashService.formatAttribution(photos[0].photo)}*`);
                 processedLines.push('');
                 addedHero = true;
               }
-              
+
               // Add section image in the middle
               if (!addedSection && i > Math.floor(lines.length / 2) && photos[1]) {
                 console.log('Adding section image at line:', i);
                 processedLines.push('');
-                processedLines.push(`![${photos[1].photo.alt_description || 'Section image'}](${unsplashService.getOptimalImageUrl(photos[1].photo)})`);
+                processedLines.push(
+                  `![${photos[1].photo.alt_description || 'Section image'}](${unsplashService.getOptimalImageUrl(photos[1].photo)})`
+                );
                 processedLines.push(`*${unsplashService.formatAttribution(photos[1].photo)}*`);
                 processedLines.push('');
                 addedSection = true;
               }
             }
-            
+
             // Add conclusion image if we have a third photo and haven't added it yet
             if (photos[2] && !processedLines.some(line => line.includes(photos[2].photo.urls.regular))) {
               console.log('Adding conclusion image');
               processedLines.push('');
-              processedLines.push(`![${photos[2].photo.alt_description || 'Conclusion image'}](${unsplashService.getOptimalImageUrl(photos[2].photo)})`);
+              processedLines.push(
+                `![${photos[2].photo.alt_description || 'Conclusion image'}](${unsplashService.getOptimalImageUrl(photos[2].photo)})`
+              );
               processedLines.push(`*${unsplashService.formatAttribution(photos[2].photo)}*`);
             }
-            
+
             finalContent = processedLines.join('\n');
             console.log('Images successfully added to content');
           } else {
@@ -86,9 +88,14 @@ export default function WorkingAIEditor() {
           console.error('Error fetching Unsplash images:', error);
         }
       } else {
-        console.log('Images not being added - includeImages:', includeImages, 'unsplashConfigured:', unsplashConfigured);
+        console.log(
+          'Images not being added - includeImages:',
+          includeImages,
+          'unsplashConfigured:',
+          unsplashConfigured
+        );
       }
-      
+
       setContent(finalContent);
     } catch (error) {
       console.error('Failed to generate content:', error);
@@ -128,7 +135,7 @@ export default function WorkingAIEditor() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Working AI Editor</h1>
-        
+
         {/* Status */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex items-center justify-between">
@@ -138,16 +145,14 @@ export default function WorkingAIEditor() {
               ) : (
                 <span className="text-red-600">⚠️ Configure API keys in .env.local</span>
               )}
-              {unsplashConfigured && (
-                <span className="ml-4 text-blue-600">📷 Images Available</span>
-              )}
+              {unsplashConfigured && <span className="ml-4 text-blue-600">📷 Images Available</span>}
             </div>
             {unsplashConfigured && (
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   checked={includeImages}
-                  onChange={(e) => setIncludeImages(e.target.checked)}
+                  onChange={e => setIncludeImages(e.target.checked)}
                   className="mr-2"
                 />
                 Include Images
@@ -159,18 +164,10 @@ export default function WorkingAIEditor() {
         {/* Toolbar */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={generateBlogPost}
-              disabled={isProcessing || !aiConfig.isConfigured}
-              variant="primary"
-            >
+            <Button onClick={generateBlogPost} disabled={isProcessing || !aiConfig.isConfigured} variant="primary">
               📄 Generate Blog Post
             </Button>
-            <Button
-              onClick={improveSelected}
-              disabled={isProcessing || !aiConfig.isConfigured}
-              variant="secondary"
-            >
+            <Button onClick={improveSelected} disabled={isProcessing || !aiConfig.isConfigured} variant="secondary">
               ✨ Improve Selected
             </Button>
             <Button
@@ -178,7 +175,10 @@ export default function WorkingAIEditor() {
                 const topic = prompt('Enter topic for introduction:');
                 if (topic) {
                   setIsProcessing(true);
-                  callAI(`Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ${topic}`, '')
+                  callAI(
+                    `Write an engaging introduction of 200-300 words (2-3 substantial paragraphs) that hooks the reader for an article about: ${topic}`,
+                    ''
+                  )
                     .then(result => setContent(content + '\n\n' + result))
                     .finally(() => setIsProcessing(false));
                 }
@@ -193,7 +193,10 @@ export default function WorkingAIEditor() {
                 const topic = prompt('Enter topic for conclusion:');
                 if (topic) {
                   setIsProcessing(true);
-                  callAI(`Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ${topic}`, '')
+                  callAI(
+                    `Write a compelling conclusion of 200-300 words (2-3 substantial paragraphs) that summarizes key points and provides a call to action for: ${topic}`,
+                    ''
+                  )
                     .then(result => setContent(content + '\n\n' + result))
                     .finally(() => setIsProcessing(false));
                 }
@@ -204,9 +207,7 @@ export default function WorkingAIEditor() {
               🏁 Add Conclusion
             </Button>
           </div>
-          {isProcessing && (
-            <div className="mt-2 text-sm text-gray-600">⏳ AI is processing...</div>
-          )}
+          {isProcessing && <div className="mt-2 text-sm text-gray-600">⏳ AI is processing...</div>}
         </div>
 
         {/* Editor */}
@@ -215,12 +216,14 @@ export default function WorkingAIEditor() {
             className="w-full p-4 border rounded-lg font-mono text-sm"
             rows={30}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
             placeholder="Start typing or use AI commands to generate content..."
             disabled={isProcessing}
           />
           <div className="mt-4 text-sm text-gray-600">
-            <p>Word count: {content.split(/\s+/).filter(w => w).length} | Character count: {content.length}</p>
+            <p>
+              Word count: {content.split(/\s+/).filter(w => w).length} | Character count: {content.length}
+            </p>
           </div>
         </div>
 

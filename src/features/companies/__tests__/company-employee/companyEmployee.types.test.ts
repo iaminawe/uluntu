@@ -8,7 +8,7 @@ describe('CompanyEmployee Type Tests', () => {
         id: 'emp-123',
         company_id: 'comp-456',
         member_id: 'mem-789',
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       expect(employee.id).toBeDefined();
@@ -28,7 +28,7 @@ describe('CompanyEmployee Type Tests', () => {
         end_date: '2024-12-31',
         is_current: false,
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-02T00:00:00Z'
+        updated_at: '2024-01-02T00:00:00Z',
       };
 
       expect(employee.role).toBe('Software Engineer');
@@ -48,7 +48,7 @@ describe('CompanyEmployee Type Tests', () => {
         joinDate: '2023-01-01',
         status: 'published',
         created_at: '2023-01-01T00:00:00Z',
-        featured: false
+        featured: false,
       };
 
       const employee: CompanyEmployee = {
@@ -56,7 +56,7 @@ describe('CompanyEmployee Type Tests', () => {
         company_id: 'comp-456',
         member_id: 'mem-789',
         created_at: '2024-01-01T00:00:00Z',
-        member: mockMember
+        member: mockMember,
       };
 
       expect(employee.member).toBeDefined();
@@ -68,7 +68,8 @@ describe('CompanyEmployee Type Tests', () => {
   describe('Type Guards', () => {
     it('should validate CompanyEmployee type guard', () => {
       const isCompanyEmployee = (obj: any): obj is CompanyEmployee => {
-        return !!(obj &&
+        return !!(
+          obj &&
           typeof obj.id === 'string' &&
           typeof obj.company_id === 'string' &&
           typeof obj.member_id === 'string' &&
@@ -79,21 +80,22 @@ describe('CompanyEmployee Type Tests', () => {
           (obj.end_date === undefined || typeof obj.end_date === 'string') &&
           (obj.is_current === undefined || typeof obj.is_current === 'boolean') &&
           (obj.updated_at === undefined || typeof obj.updated_at === 'string') &&
-          (obj.member === undefined || (obj.member && typeof obj.member.id === 'string')));
+          (obj.member === undefined || (obj.member && typeof obj.member.id === 'string'))
+        );
       };
 
       const validEmployee = {
         id: 'emp-123',
         company_id: 'comp-456',
         member_id: 'mem-789',
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       const invalidEmployee = {
         id: 123, // Should be string
         company_id: 'comp-456',
         member_id: 'mem-789',
-        created_at: '2024-01-01T00:00:00Z'
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       expect(isCompanyEmployee(validEmployee)).toBe(true);

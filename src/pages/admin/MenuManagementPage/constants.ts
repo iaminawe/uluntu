@@ -25,7 +25,7 @@ import {
   ExternalLink,
   Menu,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
 
 /**
@@ -53,7 +53,7 @@ export const ICON_COMPONENTS = {
   ExternalLink,
   Menu,
   Eye,
-  EyeOff
+  EyeOff,
 } as const;
 
 /**
@@ -79,7 +79,7 @@ export const ICON_OPTIONS = [
   { value: 'FileText', label: 'Document' },
   { value: 'Link', label: 'Link' },
   { value: 'ExternalLink', label: 'External Link' },
-  { value: 'Menu', label: 'Menu' }
+  { value: 'Menu', label: 'Menu' },
 ] as const;
 
-export type IconType = typeof ICON_OPTIONS[number]['value'];
+export type IconType = (typeof ICON_OPTIONS)[number]['value'];

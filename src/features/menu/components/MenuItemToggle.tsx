@@ -33,16 +33,16 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
   showLabel = false,
   showVisualIndicator = true,
   confirmCritical = true,
-  className
+  className,
 }) => {
   const [toggleState, setToggleState] = useState<ToggleState>({
     isLoading: false,
     hasError: false,
-    canUndo: false
+    canUndo: false,
   });
-  
+
   const [optimisticState, setOptimisticState] = useState(item.is_enabled);
-  
+
   // Sync optimistic state with item changes
   useEffect(() => {
     setOptimisticState(item.is_enabled);
@@ -61,7 +61,7 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
   const handleToggle = async (newEnabled: boolean) => {
     // Check if this is a critical operation that needs confirmation
     const isCritical = item.menu_type === 'main' || (item.children && item.children.length > 0);
-    
+
     if (confirmCritical && isCritical && !newEnabled) {
       const confirmed = window.confirm(
         `Disabling "${item.title}" will make it invisible to users${
@@ -73,15 +73,15 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
 
     // Store previous state for undo functionality
     const previousState = optimisticState;
-    
+
     // Optimistic update
     setOptimisticState(newEnabled);
     setToggleState({ isLoading: true, hasError: false, canUndo: false, previousState });
-    
+
     try {
       // Call the toggle function
       const success = await onToggle(item.id, newEnabled);
-      
+
       if (success) {
         // Log the action for audit trail
         await adminActivityLogger.log({
@@ -92,60 +92,56 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
             item_title: item.title,
             menu_type: item.menu_type,
             previous_state: previousState,
-            new_state: newEnabled
-          }
+            new_state: newEnabled,
+          },
         });
 
-        setToggleState({ 
-          isLoading: false, 
-          hasError: false, 
+        setToggleState({
+          isLoading: false,
+          hasError: false,
           canUndo: true,
-          previousState 
+          previousState,
         });
-        
-        toast.success(
-          `Menu item "${item.title}" ${newEnabled ? 'enabled' : 'disabled'}`,
-          {
-            duration: 4000,
-            action: onUndo && {
-              label: 'Undo',
-              onClick: () => handleUndo()
-            }
-          } as any
-        );
+
+        toast.success(`Menu item "${item.title}" ${newEnabled ? 'enabled' : 'disabled'}`, {
+          duration: 4000,
+          action: onUndo && {
+            label: 'Undo',
+            onClick: () => handleUndo(),
+          },
+        } as any);
       } else {
         throw new Error('Toggle operation failed');
       }
     } catch (error) {
       console.error('Failed to toggle menu item:', error);
-      
+
       // Rollback optimistic update
       setOptimisticState(previousState);
-      setToggleState({ 
-        isLoading: false, 
-        hasError: true, 
-        canUndo: false 
+      setToggleState({
+        isLoading: false,
+        hasError: true,
+        canUndo: false,
       });
-      
-      toast.error(
-        `Failed to ${newEnabled ? 'enable' : 'disable'} "${item.title}". Please try again.`,
-        { duration: 6000 }
-      );
+
+      toast.error(`Failed to ${newEnabled ? 'enable' : 'disable'} "${item.title}". Please try again.`, {
+        duration: 6000,
+      });
     }
   };
 
   const handleUndo = async () => {
     if (!toggleState.canUndo || toggleState.previousState === undefined) return;
-    
+
     const undoState = toggleState.previousState;
     setToggleState(prev => ({ ...prev, canUndo: false }));
-    
+
     if (onUndo) {
       onUndo(item.id);
     } else {
       await handleToggle(undoState);
     }
-    
+
     toast.success(`Undid toggle for "${item.title}"`, { duration: 3000 });
   };
 
@@ -156,12 +152,11 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
     <div className={cn('flex items-center space-x-2', className)}>
       {/* Visual indicator for disabled state */}
       {showVisualIndicator && (
-        <div className={cn(
-          'w-2 h-2 rounded-full transition-colors',
-          optimisticState ? 'bg-green-500' : 'bg-gray-400'
-        )} />
+        <div
+          className={cn('w-2 h-2 rounded-full transition-colors', optimisticState ? 'bg-green-500' : 'bg-gray-400')}
+        />
       )}
-      
+
       {/* Switch component */}
       <div className="relative">
         <Switch
@@ -175,7 +170,7 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
             toggleState.isLoading && 'opacity-70'
           )}
         />
-        
+
         {/* Loading overlay */}
         {toggleState.isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -186,7 +181,7 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
 
       {/* Label */}
       {showLabel && (
-        <label 
+        <label
           htmlFor={switchId}
           className={cn(
             'text-sm font-medium cursor-pointer transition-colors',
@@ -200,16 +195,10 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
 
       {/* Status icon */}
       <div className="flex items-center space-x-1">
-        {optimisticState ? (
-          <Eye className="h-4 w-4 text-green-600" />
-        ) : (
-          <EyeOff className="h-4 w-4 text-gray-400" />
-        )}
-        
+        {optimisticState ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
+
         {/* Error indicator */}
-        {toggleState.hasError && (
-          <AlertTriangle className="h-4 w-4 text-red-500" />
-        )}
+        {toggleState.hasError && <AlertTriangle className="h-4 w-4 text-red-500" />}
       </div>
 
       {/* Undo button */}
@@ -229,22 +218,24 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
 };
 
 // Keyboard navigation support
-export const MenuItemToggleWithKeyboard: React.FC<MenuItemToggleProps & {
-  onKeyDown?: (event: React.KeyboardEvent) => void;
-}> = ({ onKeyDown, ...props }) => {
+export const MenuItemToggleWithKeyboard: React.FC<
+  MenuItemToggleProps & {
+    onKeyDown?: (event: React.KeyboardEvent) => void;
+  }
+> = ({ onKeyDown, ...props }) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       props.onToggle(props.item.id, !props.item.is_enabled);
     }
-    
+
     if (onKeyDown) {
       onKeyDown(event);
     }
   };
 
   return (
-    <div 
+    <div
       tabIndex={0}
       onKeyDown={handleKeyDown}
       className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
